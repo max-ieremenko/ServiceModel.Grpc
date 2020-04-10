@@ -1,0 +1,8 @@
+obj/
+bin/
+.vs/
+
+launchSettings.json
+*.sln.DotSettings.user
+
+todo.txt

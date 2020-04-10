@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="Default rules" Description="No description" ToolsVersion="15.0">
+  <IncludeAll Action="Warning" />
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <Rule Id="SA1101" Action="None" />
+	<!-- SA1118: ParameterMustNotSpanMultipleLines -->
+	<Rule Id="SA1118" Action="None" />
+	<!-- SA1129: DoNotUseDefaultValueTypeConstructor -->
+	<Rule Id="SA1129" Action="None" />
+    <Rule Id="SA1200" Action="None" />
+    <Rule Id="SA1309" Action="None" />
+    <Rule Id="SA1633" Action="None" />
+    <Rule Id="SA1652" Action="None" />
+	<!-- SA1028 CodeMustNotContainTrailingWhitespace -->
+    <Rule Id="SA1028" Action="None" />
+
+	<!-- SA1600	Elements should be documented -->
+    <Rule Id="SA1600" Action="None" />
+	<!-- SA0001	XML comment analysis is disabled due to project configuration -->
+    <Rule Id="SA0001" Action="None" />
+	<!-- SA1601	Partial elements should be documented -->
+    <Rule Id="SA1601" Action="None" />
+	<!-- SA1602	Enumeration items should be documented -->
+    <Rule Id="SA1602" Action="None" />
+
+	<!-- SA1413	Use trailing comma in multi-line initializers -->
+    <Rule Id="SA1413" Action="None" />
+  </Rules>
+</RuleSet>
