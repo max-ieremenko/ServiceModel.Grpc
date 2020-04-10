@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Grpc.Core;
-using Grpc.Net.Client;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Hosting;
@@ -9,6 +8,7 @@ using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
+using GrpcChannel = Grpc.Core.Channel;
 
 namespace ServiceModel.Grpc.AspNetCore
 {
@@ -35,14 +35,14 @@ namespace ServiceModel.Grpc.AspNetCore
             await _host.StartAsync();
 
             GrpcChannelExtensions.Http2UnencryptedSupport = true;
-            _channel = GrpcChannel.ForAddress($"http://localhost:{Port}");
+            _channel = new GrpcChannel("localhost", Port, ChannelCredentials.Insecure);
             _domainService = new ClientFactory().CreateClient<IMultipurposeService>(_channel);
         }
 
         [OneTimeTearDown]
         public async Task AfterAll()
         {
-            _channel?.Dispose();
+            await _channel.ShutdownAsync();
             await _host.StopAsync();
         }
 
