@@ -9,15 +9,21 @@ namespace ServiceModel.Grpc.SelfHost.Internal
         where TResponse : class
     {
         private readonly Func<TService> _serviceFactory;
-        private readonly DuplexStreamingServerMethod<TService, TRequest, TResponse> _invoker;
+        private readonly DuplexStreamingServerMethod _invoker;
 
         public DuplexStreamingServerCallHandler(
             Func<TService> serviceFactory,
-            DuplexStreamingServerMethod<TService, TRequest, TResponse> invoker)
+            DuplexStreamingServerMethod invoker)
         {
             _serviceFactory = serviceFactory;
             _invoker = invoker;
         }
+
+        internal delegate Task DuplexStreamingServerMethod(
+            TService service,
+            IAsyncStreamReader<TRequest> requestStream,
+            IServerStreamWriter<TResponse> responseStream,
+            ServerCallContext context);
 
         public Task Handle(IAsyncStreamReader<TRequest> requestStream, IServerStreamWriter<TResponse> responseStream, ServerCallContext context)
         {
