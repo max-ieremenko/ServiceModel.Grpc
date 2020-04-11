@@ -13,7 +13,7 @@ namespace ServiceModel.Grpc.SelfHost.Internal
         private readonly ServerServiceDefinition.Builder _builder;
 
         public SelfHostGrpcServiceFactory(
-            ILog logger,
+            ILogger logger,
             IMarshallerFactory marshallerFactory,
             Func<TService> serviceFactory,
             ServerServiceDefinition.Builder builder)

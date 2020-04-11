@@ -1,6 +1,6 @@
-﻿namespace ServiceModel.Grpc.Hosting
+﻿namespace ServiceModel.Grpc
 {
-    internal interface ILog
+    public interface ILogger
     {
         void LogError(string message, params object[] args);
     }

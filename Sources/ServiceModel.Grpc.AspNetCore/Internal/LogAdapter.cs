@@ -1,13 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
-using ServiceModel.Grpc.Hosting;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal
 {
-    internal sealed class LogAdapter : ILog
+    internal sealed class LogAdapter : ILogger
     {
-        private readonly ILogger _logger;
+        private readonly Microsoft.Extensions.Logging.ILogger _logger;
 
-        public LogAdapter(ILogger logger)
+        public LogAdapter(Microsoft.Extensions.Logging.ILogger logger)
         {
             _logger = logger;
         }

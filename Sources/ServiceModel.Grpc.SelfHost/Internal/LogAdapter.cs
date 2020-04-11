@@ -1,13 +1,10 @@
-﻿using Grpc.Core.Logging;
-using ServiceModel.Grpc.Hosting;
-
-namespace ServiceModel.Grpc.SelfHost.Internal
+﻿namespace ServiceModel.Grpc.SelfHost.Internal
 {
-    internal sealed class LogAdapter : ILog
+    internal sealed class LogAdapter : ILogger
     {
-        private readonly ILogger _logger;
+        private readonly global::Grpc.Core.Logging.ILogger _logger;
 
-        public LogAdapter(ILogger logger)
+        public LogAdapter(global::Grpc.Core.Logging.ILogger logger)
         {
             _logger = logger;
         }

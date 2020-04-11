@@ -14,7 +14,7 @@ namespace ServiceModel.Grpc.AspNetCore.Internal
         private readonly ServiceMethodProviderContext<TService> _context;
 
         public AspNetCoreGrpcServiceFactory(
-            ILog logger,
+            ILogger logger,
             ServiceMethodProviderContext<TService> context,
             IMarshallerFactory marshallerFactory)
             : base(logger, marshallerFactory)
