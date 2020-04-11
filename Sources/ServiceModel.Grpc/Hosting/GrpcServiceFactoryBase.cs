@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Internal;
@@ -28,7 +29,7 @@ namespace ServiceModel.Grpc.Hosting
             var serviceContracts = ServiceContract.GetServiceContractInterfaces(serviceType);
             if (serviceContracts.Count == 0)
             {
-                Logger.LogError("The [{0}] does not implement any service contracts.".FormatWith(serviceType));
+                Logger.LogError("The [{0}] does not implement any contracts.".FormatWith(serviceType));
                 return;
             }
 
@@ -51,14 +52,17 @@ namespace ServiceModel.Grpc.Hosting
 
                 foreach (var message in messages)
                 {
-                    var addMethod = (Action<string, string, MethodType, GrpcServiceBuilder>)addMethodGeneric
+                    var addMethod = (Action<string, string, MethodType, MethodInfo, GrpcServiceBuilder>)addMethodGeneric
                         .MakeGenericMethod(message.RequestType, message.ResponseType)
-                        .CreateDelegate(typeof(Action<string, string, MethodType, GrpcServiceBuilder>), this);
+                        .CreateDelegate(typeof(Action<string, string, MethodType, MethodInfo, GrpcServiceBuilder>), this);
+
+                    var serviceMethod = ReflectionTools.ImplementationOfMethod(serviceType, serviceContract, message.Operation);
 
                     addMethod(
                         serviceName,
                         ServiceContract.GetServiceOperationName(message.Operation),
                         message.OperationType,
+                        serviceMethod,
                         serviceBuilder);
                 }
             }
@@ -66,24 +70,28 @@ namespace ServiceModel.Grpc.Hosting
 
         protected abstract void AddUnaryServerMethod<TRequest, TResponse>(
             Method<TRequest, TResponse> method,
+            MethodInfo serviceMethod,
             GrpcServiceBuilder serviceBuilder)
             where TRequest : class
             where TResponse : class;
 
         protected abstract void AddClientStreamingServerMethod<TRequest, TResponse>(
             Method<TRequest, TResponse> method,
+            MethodInfo serviceMethod,
             GrpcServiceBuilder serviceBuilder)
             where TRequest : class
             where TResponse : class;
 
         protected abstract void AddServerStreamingServerMethod<TRequest, TResponse>(
             Method<TRequest, TResponse> method,
+            MethodInfo serviceMethod,
             GrpcServiceBuilder serviceBuilder)
             where TRequest : class
             where TResponse : class;
 
         protected abstract void AddDuplexStreamingServerMethod<TRequest, TResponse>(
             Method<TRequest, TResponse> method,
+            MethodInfo serviceMethod,
             GrpcServiceBuilder serviceBuilder)
             where TRequest : class
             where TResponse : class;
@@ -92,6 +100,7 @@ namespace ServiceModel.Grpc.Hosting
             string serviceName,
             string operationName,
             MethodType operationType,
+            MethodInfo serviceMethod,
             GrpcServiceBuilder serviceBuilder)
             where TRequest : class
             where TResponse : class
@@ -106,19 +115,19 @@ namespace ServiceModel.Grpc.Hosting
             switch (operationType)
             {
                 case MethodType.Unary:
-                    AddUnaryServerMethod(method, serviceBuilder);
+                    AddUnaryServerMethod(method, serviceMethod, serviceBuilder);
                     return;
 
                 case MethodType.ClientStreaming:
-                    AddClientStreamingServerMethod(method, serviceBuilder);
+                    AddClientStreamingServerMethod(method, serviceMethod, serviceBuilder);
                     return;
 
                 case MethodType.ServerStreaming:
-                    AddServerStreamingServerMethod(method, serviceBuilder);
+                    AddServerStreamingServerMethod(method, serviceMethod, serviceBuilder);
                     return;
 
                 case MethodType.DuplexStreaming:
-                    AddDuplexStreamingServerMethod(method, serviceBuilder);
+                    AddDuplexStreamingServerMethod(method, serviceMethod, serviceBuilder);
                     return;
             }
 

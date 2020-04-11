@@ -157,5 +157,19 @@ namespace ServiceModel.Grpc.Internal
 
             return result;
         }
+
+        public static MethodInfo ImplementationOfMethod(Type instance, Type methodDeclaringType, MethodInfo method)
+        {
+            var map = instance.GetInterfaceMap(methodDeclaringType);
+            for (var i = 0; i < map.InterfaceMethods.Length; i++)
+            {
+                if (map.InterfaceMethods[i].Equals(method))
+                {
+                    return map.TargetMethods[i];
+                }
+            }
+
+            throw new ArgumentOutOfRangeException("Implementation of method {0}.{1} not found in {2}.".FormatWith(methodDeclaringType.Name, method.Name, instance.FullName));
+        }
     }
 }
