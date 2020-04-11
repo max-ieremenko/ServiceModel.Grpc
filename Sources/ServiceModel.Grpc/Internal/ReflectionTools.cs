@@ -114,13 +114,25 @@ namespace ServiceModel.Grpc.Internal
             return result;
         }
 
+        public static FieldInfo StaticFiled(this Type type, string name)
+        {
+            var result = type.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly);
+
+            if (result == null)
+            {
+                throw new ArgumentOutOfRangeException("{0} does not have static field {1}.".FormatWith(type.Name, name));
+            }
+
+            return result;
+        }
+
         public static MethodInfo StaticMethod(this Type type, string name)
         {
             var result = type.GetMethod(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly);
 
             if (result == null)
             {
-                throw new ArgumentOutOfRangeException("{0} does not implement method {1}.".FormatWith(type.Name, name));
+                throw new ArgumentOutOfRangeException("{0} does not implement static method {1}.".FormatWith(type.Name, name));
             }
 
             return result;

@@ -6,6 +6,7 @@ namespace ServiceModel.Grpc.Internal.Emit
 {
     internal static class ProxyAssembly
     {
+        public static readonly object SyncRoot = new object();
         public static readonly ModuleBuilder DefaultModule = CreateModule("ServiceModel.Grpc.Proxy");
 
         private static ModuleBuilder CreateModule(string name)

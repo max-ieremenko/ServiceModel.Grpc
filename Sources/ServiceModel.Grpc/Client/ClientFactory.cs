@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Threading;
 using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Internal.Emit;
@@ -8,13 +10,21 @@ namespace ServiceModel.Grpc.Client
 {
     public sealed class ClientFactory
     {
+        private static int _instanceCounter;
+
+        private readonly object _syncRoot;
         private readonly ServiceModelGrpcClientOptions _defaultOptions;
         private readonly IDictionary<Type, Delegate> _factoryByContract;
+        private readonly string _factoryId;
 
         public ClientFactory(ServiceModelGrpcClientOptions defaultOptions = null)
         {
             _defaultOptions = defaultOptions;
             _factoryByContract = new Dictionary<Type, Delegate>();
+            _syncRoot = new object();
+
+            var instanceNumber = Interlocked.Increment(ref _instanceCounter);
+            _factoryId = instanceNumber.ToString(CultureInfo.InvariantCulture);
         }
 
         public void AddClient<TContract>(Action<ServiceModelGrpcClientOptions> configure = null)
@@ -36,9 +46,13 @@ namespace ServiceModel.Grpc.Client
         {
             callInvoker.AssertNotNull(nameof(callInvoker));
 
-            if (!_factoryByContract.TryGetValue(typeof(TContract), out var factory))
+            Delegate factory;
+            lock (_syncRoot)
             {
-                factory = RegisterClient<TContract>(null);
+                if (!_factoryByContract.TryGetValue(typeof(TContract), out factory))
+                {
+                    factory = RegisterClient<TContract>(null);
+                }
             }
 
             var method = (Func<CallInvoker, TContract>)factory;
@@ -48,17 +62,37 @@ namespace ServiceModel.Grpc.Client
         public Delegate RegisterClient<TContract>(Action<ServiceModelGrpcClientOptions> configure)
             where TContract : class
         {
-            ServiceModelGrpcClientOptions options = null;
-            if (configure != null)
+            var options = new ServiceModelGrpcClientOptions();
+            configure?.Invoke(options);
+
+            var builder = CreateClientBuilder(options);
+            var contractType = typeof(TContract);
+
+            Func<CallInvoker, TContract> factory;
+            lock (_syncRoot)
             {
-                options = new ServiceModelGrpcClientOptions();
-                configure(options);
+                if (_factoryByContract.ContainsKey(contractType))
+                {
+                    throw new InvalidOperationException("Client for contract {0} is already initialized and cannot be changed.".FormatWith(contractType.FullName));
+                }
+
+                factory = builder.Build<TContract>(_factoryId);
+                _factoryByContract.Add(contractType, factory);
             }
 
-            var marshallerFactory = (options?.MarshallerFactory ?? _defaultOptions?.MarshallerFactory) ?? DataContractMarshallerFactory.Default;
-            var factory = new GrpcServiceClientBuilder<TContract>().Build(marshallerFactory);
-            _factoryByContract.Add(typeof(TContract), factory);
             return factory;
+        }
+
+        internal IServiceClientBuilder CreateClientBuilder(ServiceModelGrpcClientOptions clientOptions)
+        {
+            var builderFactory = clientOptions.ClientBuilder ?? _defaultOptions?.ClientBuilder;
+            var builder = builderFactory?.Invoke() ?? new GrpcServiceClientBuilder();
+
+            builder.MarshallerFactory = (clientOptions.MarshallerFactory ?? _defaultOptions?.MarshallerFactory) ?? DataContractMarshallerFactory.Default;
+            builder.DefaultCallOptions = clientOptions.DefaultCallOptions ?? _defaultOptions?.DefaultCallOptions;
+            builder.Logger = clientOptions.Logger ?? _defaultOptions?.Logger;
+
+            return builder;
         }
     }
 }

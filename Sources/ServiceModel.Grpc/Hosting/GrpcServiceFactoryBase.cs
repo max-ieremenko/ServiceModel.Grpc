@@ -12,7 +12,7 @@ namespace ServiceModel.Grpc.Hosting
     {
         private readonly IMarshallerFactory _marshallerFactory;
 
-        protected GrpcServiceFactoryBase(ILog logger, IMarshallerFactory marshallerFactory)
+        protected GrpcServiceFactoryBase(ILogger logger, IMarshallerFactory marshallerFactory)
         {
             logger.AssertNotNull(nameof(logger));
 
@@ -20,7 +20,7 @@ namespace ServiceModel.Grpc.Hosting
             _marshallerFactory = marshallerFactory ?? DataContractMarshallerFactory.Default;
         }
 
-        public ILog Logger { get; }
+        public ILogger Logger { get; }
 
         public void Bind()
         {

@@ -4,65 +4,54 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
 using Grpc.Core;
+using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.Configuration;
 
 namespace ServiceModel.Grpc.Internal.Emit
 {
-    internal sealed class GrpcServiceClientBuilder<TContract>
-        where TContract : class
+    internal sealed class GrpcServiceClientBuilder : IServiceClientBuilder
     {
-        private readonly TypeBuilder _typeBuilder;
+        private TypeBuilder _typeBuilder;
+        private FieldBuilder _defaultCallOptions;
 
-        public GrpcServiceClientBuilder()
+        public IMarshallerFactory MarshallerFactory { get; set; }
+
+        public CallOptions? DefaultCallOptions { get; set; }
+
+        public ILogger Logger { get; set; }
+
+        public Func<CallInvoker, TContract> Build<TContract>(string factoryId)
         {
             var contractType = typeof(TContract);
 
-            _typeBuilder = ProxyAssembly
-                .DefaultModule
-                .DefineType(
-                    "{0}.{1}Client".FormatWith(ReflectionTools.GetNamespace(contractType), contractType.Name),
-                    TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit,
-                    typeof(ClientBase));
-        }
+            Type implementationType;
 
-        public Func<CallInvoker, TContract> Build(IMarshallerFactory marshallerFactory)
-        {
-            // ctor(CallInvoker callInvoker)
-            BuildCtor();
-
-            var defineGrpcMethod = _typeBuilder
-                .DefineMethod(
-                    "DefineGrpcMethods",
-                    MethodAttributes.Static | MethodAttributes.HideBySig | MethodAttributes.Public,
-                    typeof(void),
-                    new[] { typeof(IMarshallerFactory) })
-                .GetILGenerator();
-
-            foreach (var interfaceType in ReflectionTools.ExpandInterface(typeof(TContract)))
+            lock (ProxyAssembly.SyncRoot)
             {
-                _typeBuilder.AddInterfaceImplementation(interfaceType);
+                _typeBuilder = ProxyAssembly
+                    .DefaultModule
+                    .DefineType(
+                        "{0}.{1}Client{2}".FormatWith(ReflectionTools.GetNamespace(contractType), contractType.Name, factoryId),
+                        TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit,
+                        typeof(GrpcClientBase));
 
-                foreach (var operation in ReflectionTools.GetMethods(interfaceType))
-                {
-                    var message = new MessageAssembler(operation);
+                BuildImplementation(contractType);
 
-                    var grpcMethodFiled = InitializeGrpcMethod(defineGrpcMethod, interfaceType, message);
-                    BuildMethod(interfaceType, message, grpcMethodFiled);
-                }
+                implementationType = _typeBuilder.CreateTypeInfo();
             }
 
-            defineGrpcMethod.Emit(OpCodes.Ret);
-
-            return CreateFactory(marshallerFactory);
+            return CreateFactory<TContract>(implementationType);
         }
 
         private static MethodInfo GetCallOptionsCombine(MessageAssembler message)
         {
-            var parameters = new Type[message.ContextInput.Length];
-            for (var i = 0; i < parameters.Length; i++)
+            var parameters = new Type[message.ContextInput.Length + 1];
+            for (var i = 0; i < message.ContextInput.Length; i++)
             {
-                parameters[i] = message.Parameters[message.ContextInput[i]].ParameterType;
+                parameters[i + 1] = message.Parameters[message.ContextInput[i]].ParameterType;
             }
+
+            parameters[0] = typeof(CallOptions?);
 
             MethodInfo method = null;
             try
@@ -77,18 +66,54 @@ namespace ServiceModel.Grpc.Internal.Emit
             return method;
         }
 
-        private Func<CallInvoker, TContract> CreateFactory(IMarshallerFactory marshallerFactory)
+        private void BuildImplementation(Type contractType)
         {
-            var type = _typeBuilder.CreateTypeInfo();
+            // ctor(CallInvoker callInvoker)
+            BuildCtor();
 
-            var defineGrpcMethod = (Action<IMarshallerFactory>)type
+            // private static CallOptions? DefaultCallOptions
+            _defaultCallOptions = _typeBuilder
+                .DefineField(
+                    nameof(DefaultCallOptions),
+                    typeof(CallOptions?),
+                    FieldAttributes.Private | FieldAttributes.Static);
+
+            var defineGrpcMethod = _typeBuilder
+                .DefineMethod(
+                    "DefineGrpcMethods",
+                    MethodAttributes.Static | MethodAttributes.HideBySig | MethodAttributes.Public,
+                    typeof(void),
+                    new[] { typeof(IMarshallerFactory) })
+                .GetILGenerator();
+
+            foreach (var interfaceType in ReflectionTools.ExpandInterface(contractType))
+            {
+                _typeBuilder.AddInterfaceImplementation(interfaceType);
+
+                foreach (var operation in ReflectionTools.GetMethods(interfaceType))
+                {
+                    var message = new MessageAssembler(operation);
+
+                    var grpcMethodFiled = InitializeGrpcMethod(defineGrpcMethod, interfaceType, message);
+                    BuildMethod(interfaceType, message, grpcMethodFiled);
+                }
+            }
+
+            defineGrpcMethod.Emit(OpCodes.Ret);
+        }
+
+        private Func<CallInvoker, TContract> CreateFactory<TContract>(Type implementationType)
+        {
+            var defineGrpcMethod = (Action<IMarshallerFactory>)implementationType
                 .StaticMethod("DefineGrpcMethods")
                 .CreateDelegate(typeof(Action<IMarshallerFactory>));
-            defineGrpcMethod(marshallerFactory);
+            defineGrpcMethod(MarshallerFactory);
+
+            implementationType.StaticFiled(_defaultCallOptions.Name).SetValue(null, DefaultCallOptions);
 
             var callInvoker = Expression.Parameter(typeof(CallInvoker), "callInvoker");
 
-            var ctor = Expression.New(type.Constructor(typeof(CallInvoker)), callInvoker);
+            var ctor = Expression.New(implementationType.Constructor(typeof(CallInvoker)), callInvoker);
 
             return Expression.Lambda<Func<CallInvoker, TContract>>(ctor, callInvoker).Compile();
         }
@@ -174,6 +199,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.DeclareLocal(message.RequestType); // var message
 
             // options = CallOptionsBuilder.Combine(context);
+            body.Emit(OpCodes.Ldsfld, _defaultCallOptions); // DefaultOptions
             foreach (var i in message.ContextInput)
             {
                 body.EmitLdarg(i + 1);
@@ -193,7 +219,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             
             // var invoker = base.CallInvoker
             body.Emit(OpCodes.Ldarg_0);
-            body.Emit(OpCodes.Call, typeof(ClientBase).InstanceProperty("CallInvoker").GetMethod);
+            body.Emit(OpCodes.Call, typeof(GrpcClientBase).InstanceProperty(nameof(GrpcClientBase.CallInvoker)).GetMethod);
 
             body.Emit(OpCodes.Ldsfld, grpcMethodFiled); // var method = static Method
             body.Emit(OpCodes.Ldnull); // var host = null
@@ -266,6 +292,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.DeclareLocal(callOptionsCombine.ReturnType); // var options
 
             // options = CallOptionsBuilder.Combine(context);
+            body.Emit(OpCodes.Ldsfld, _defaultCallOptions); // DefaultOptions
             foreach (var i in message.ContextInput)
             {
                 body.EmitLdarg(i + 1);
@@ -276,7 +303,7 @@ namespace ServiceModel.Grpc.Internal.Emit
 
             // var invoker = base.CallInvoker
             body.Emit(OpCodes.Ldarg_0);
-            body.Emit(OpCodes.Call, typeof(ClientBase).InstanceProperty("CallInvoker").GetMethod);
+            body.Emit(OpCodes.Call, typeof(GrpcClientBase).InstanceProperty(nameof(GrpcClientBase.CallInvoker)).GetMethod);
 
             body.Emit(OpCodes.Ldsfld, grpcMethodFiled); // var method = static Method
             body.Emit(OpCodes.Ldnull); // var host = null
@@ -304,7 +331,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             var il = ctor.GetILGenerator();
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Ldarg_1);
-            il.Emit(OpCodes.Call, typeof(ClientBase).GetConstructor(parameterTypes));
+            il.Emit(OpCodes.Call, typeof(GrpcClientBase).Constructor(parameterTypes));
             il.Emit(OpCodes.Ret);
         }
     }

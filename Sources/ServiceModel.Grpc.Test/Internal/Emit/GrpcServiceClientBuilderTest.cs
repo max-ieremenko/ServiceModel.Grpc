@@ -22,8 +22,12 @@ namespace ServiceModel.Grpc.Internal.Emit
         [OneTimeSetUp]
         public void BeforeAllTests()
         {
-            var factory = new GrpcServiceClientBuilder<IContract>()
-                .Build(DataContractMarshallerFactory.Default);
+            var builder = new GrpcServiceClientBuilder
+            {
+                MarshallerFactory = DataContractMarshallerFactory.Default
+            };
+
+            var factory = builder.Build<IContract>(nameof(GrpcServiceClientBuilderTest));
 
             _factory = () => factory(_callInvoker.Object);
         }
