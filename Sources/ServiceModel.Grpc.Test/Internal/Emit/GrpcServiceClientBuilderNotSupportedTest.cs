@@ -51,7 +51,19 @@ namespace ServiceModel.Grpc.Internal.Emit
 
             ex.Message.ShouldBe(log);
         }
-        
+
+        [Test]
+        public void GenericMethod()
+        {
+            var log = _logger.Errors.Find(i => i.Contains(nameof(IInvalidContract.Generic)));
+            log.ShouldNotBeNull();
+
+            var ex = Assert.Throws<NotSupportedException>(() => _contract.Generic<int, string>(2));
+            Console.WriteLine(ex.Message);
+
+            ex.Message.ShouldBe(log);
+        }
+
         [Test]
         public void DisposeIsNotOperation()
         {

@@ -180,16 +180,6 @@ namespace ServiceModel.Grpc.Internal.Emit
         }
 
         [Test]
-        public void DisposableNotSupported()
-        {
-            Console.WriteLine(_factory().GetType().InstanceMethod(nameof(IContract.Dispose)).Disassemble());
-
-            var ex = Assert.Throws<NotSupportedException>(_factory().Dispose);
-
-            ex.Message.ShouldContain("System.IDisposable.Dispose");
-        }
-
-        [Test]
         public async Task ServerStreamingRepeatValue()
         {
             Console.WriteLine(_factory().GetType().InstanceMethod(nameof(IContract.ServerStreamingRepeatValue)).Disassemble());

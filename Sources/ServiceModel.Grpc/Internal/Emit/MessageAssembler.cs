@@ -179,6 +179,11 @@ namespace ServiceModel.Grpc.Internal.Emit
 
         private void ValidateSignature()
         {
+            if (Operation.IsGenericMethod)
+            {
+                ThrowInvalidSignature();
+            }
+
             for (var i = 0; i < Parameters.Length; i++)
             {
                 var parameter = Parameters[i];

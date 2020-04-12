@@ -369,6 +369,12 @@ namespace ServiceModel.Grpc.Internal.Emit
                     signature.ReturnType,
                     parameterTypes);
 
+            if (signature.IsGenericMethod)
+            {
+                var genericParameters = signature.GetGenericArguments().Select(i => i.Name).ToArray();
+                method.DefineGenericParameters(genericParameters);
+            }
+
             // explicit interface implementation
             _typeBuilder.DefineMethodOverride(method, signature);
 

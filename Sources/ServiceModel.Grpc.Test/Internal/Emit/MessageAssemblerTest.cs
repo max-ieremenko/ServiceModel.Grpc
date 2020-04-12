@@ -35,6 +35,9 @@ namespace ServiceModel.Grpc.Internal.Emit
             _method
                 .Setup(m => m.GetParameters())
                 .Returns(Array.Empty<ParameterInfo>());
+            _method
+                .SetupGet(m => m.IsGenericMethod)
+                .Returns(false);
         }
 
         [Test]
@@ -136,6 +139,17 @@ namespace ServiceModel.Grpc.Internal.Emit
         public void NotSupportedParameters(params Type[] parameters)
         {
             MethodSetupParameters(parameters);
+
+            Assert.Throws<NotSupportedException>(() => new MessageAssembler(_method.Object));
+        }
+
+        [Test]
+        public void GenericNotSupported()
+        {
+            MethodSetupParameters(Array.Empty<Type>());
+            _method
+                .SetupGet(m => m.IsGenericMethod)
+                .Returns(true);
 
             Assert.Throws<NotSupportedException>(() => new MessageAssembler(_method.Object));
         }

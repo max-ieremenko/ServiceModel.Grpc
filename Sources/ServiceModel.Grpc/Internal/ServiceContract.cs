@@ -16,8 +16,6 @@ namespace ServiceModel.Grpc.Internal
         public static bool IsServiceOperation(MethodInfo method)
         {
             return method.IsPublic
-                   && !method.IsGenericMethod
-                   && !method.IsSpecialName
                    && method.GetCustomAttribute<OperationContractAttribute>() != null;
         }
 
