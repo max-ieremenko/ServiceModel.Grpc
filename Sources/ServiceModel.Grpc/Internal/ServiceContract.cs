@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using System.ServiceModel;
 using Grpc.Core;
 
 namespace ServiceModel.Grpc.Internal
@@ -17,18 +16,18 @@ namespace ServiceModel.Grpc.Internal
         {
             return (type.IsPublic || type.IsNestedPublic)
                    && !type.IsGenericType
-                   && type.GetCustomAttribute<ServiceContractAttribute>() != null;
+                   && GetServiceContractAttribute(type) != null;
         }
 
         public static bool IsServiceOperation(MethodInfo method)
         {
             return method.IsPublic
-                   && method.GetCustomAttribute<OperationContractAttribute>() != null;
+                   && GetOperationContractAttribute(method) != null;
         }
 
         public static string GetServiceName(Type serviceType)
         {
-            var attribute = serviceType.GetCustomAttribute<ServiceContractAttribute>();
+            var attribute = GetServiceContractAttribute(serviceType);
             if (attribute == null)
             {
                 throw new ArgumentOutOfRangeException(nameof(serviceType));
@@ -39,7 +38,7 @@ namespace ServiceModel.Grpc.Internal
 
         public static string GetServiceOperationName(MethodInfo method)
         {
-            var attribute = method.GetCustomAttribute<OperationContractAttribute>();
+            var attribute = GetOperationContractAttribute(method);
             if (attribute == null)
             {
                 throw new ArgumentOutOfRangeException(nameof(method));
@@ -48,15 +47,17 @@ namespace ServiceModel.Grpc.Internal
             return GetServiceOperationName(method.Name, attribute);
         }
 
-        internal static string GetServiceName(Type serviceType, ServiceContractAttribute attribute)
+        internal static string GetServiceName(Type serviceType, Attribute serviceContractAttribute)
         {
-            var @namespace = attribute.Namespace;
+            var attributeType = serviceContractAttribute.GetType();
+
+            var @namespace = (string)attributeType.InstanceProperty("Namespace").GetValue(serviceContractAttribute);
             if (string.IsNullOrWhiteSpace(@namespace))
             {
                 @namespace = ReflectionTools.GetNamespace(serviceType);
             }
 
-            var name = attribute.Name;
+            var name = (string)attributeType.InstanceProperty("Name").GetValue(serviceContractAttribute);
             if (string.IsNullOrWhiteSpace(name))
             {
                 name = serviceType.Name;
@@ -65,9 +66,23 @@ namespace ServiceModel.Grpc.Internal
             return @namespace + "." + name;
         }
 
-        internal static string GetServiceOperationName(string methodName, OperationContractAttribute attribute)
+        internal static string GetServiceOperationName(string methodName, Attribute operationContractAttribute)
         {
-            return string.IsNullOrWhiteSpace(attribute.Name) ? methodName : attribute.Name;
+            var name = (string)operationContractAttribute
+                .GetType()
+                .InstanceProperty("Name")
+                .GetValue(operationContractAttribute);
+            return string.IsNullOrWhiteSpace(name) ? methodName : name;
+        }
+
+        private static Attribute GetServiceContractAttribute(Type type)
+        {
+            return ReflectionTools.GetCustomAttribute(type, "System.ServiceModel.ServiceContractAttribute");
+        }
+
+        private static Attribute GetOperationContractAttribute(MethodInfo method)
+        {
+            return ReflectionTools.GetCustomAttribute(method, "System.ServiceModel.OperationContractAttribute");
         }
     }
 }

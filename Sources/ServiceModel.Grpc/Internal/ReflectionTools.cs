@@ -228,6 +228,13 @@ namespace ServiceModel.Grpc.Internal
                    && (type.IsPublic || type.IsNestedPublic);
         }
 
+        public static Attribute GetCustomAttribute(MemberInfo owner, string attributeTypeFullName)
+        {
+            return owner
+                .GetCustomAttributes()
+                .FirstOrDefault(i => string.Equals(attributeTypeFullName, i.GetType().FullName, StringComparison.Ordinal));
+        }
+
         public static TDelegate CreateDelegate<TDelegate>(this MethodInfo method, object target = null)
             where TDelegate : Delegate
         {
