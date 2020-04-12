@@ -11,71 +11,63 @@ using System.Runtime.Serialization;
 namespace ServiceModel.Grpc.Channel
 {
     [Serializable]
-    internal sealed class Message : ISerializable
+    [DataContract]
+    internal sealed class Message
     {
         public Message()
         {
         }
 
-        public Message(SerializationInfo info, StreamingContext context)
-        {
-        }
-
-
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-        }
     }
 
     [Serializable]
-    internal sealed class Message<T1> : ISerializable
+    [DataContract]
+    internal sealed class Message<T1>
     {
+        public Message()
+        {
+        }
+
         public Message(T1 value1)
         {
             Value1 = value1;
         }
 
-        public Message(SerializationInfo info, StreamingContext context)
-        {
-            Value1 = (T1)info.GetValue(nameof(Value1), typeof(T1));
-        }
+        [DataMember(Name = "Value1", Order = 1)]
+        public T1 Value1 { get; set; }
 
-        public T1 Value1 { get; }
-
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue(nameof(Value1), Value1);
-        }
     }
 
     [Serializable]
-    internal sealed class Message<T1, T2> : ISerializable
+    [DataContract]
+    internal sealed class Message<T1, T2>
     {
+        public Message()
+        {
+        }
+
         public Message(T1 value1, T2 value2)
         {
             Value1 = value1;
             Value2 = value2;
         }
 
-        public Message(SerializationInfo info, StreamingContext context)
-        {
-            Value1 = (T1)info.GetValue(nameof(Value1), typeof(T1));
-            Value2 = (T2)info.GetValue(nameof(Value2), typeof(T2));
-        }
+        [DataMember(Name = "Value1", Order = 1)]
+        public T1 Value1 { get; set; }
 
-        public T1 Value1 { get; }
-        public T2 Value2 { get; }
+        [DataMember(Name = "Value2", Order = 2)]
+        public T2 Value2 { get; set; }
 
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue(nameof(Value1), Value1);
-            info.AddValue(nameof(Value2), Value2);
-        }
     }
 
     [Serializable]
-    internal sealed class Message<T1, T2, T3> : ISerializable
+    [DataContract]
+    internal sealed class Message<T1, T2, T3>
     {
+        public Message()
+        {
+        }
+
         public Message(T1 value1, T2 value2, T3 value3)
         {
             Value1 = value1;
@@ -83,28 +75,25 @@ namespace ServiceModel.Grpc.Channel
             Value3 = value3;
         }
 
-        public Message(SerializationInfo info, StreamingContext context)
-        {
-            Value1 = (T1)info.GetValue(nameof(Value1), typeof(T1));
-            Value2 = (T2)info.GetValue(nameof(Value2), typeof(T2));
-            Value3 = (T3)info.GetValue(nameof(Value3), typeof(T3));
-        }
+        [DataMember(Name = "Value1", Order = 1)]
+        public T1 Value1 { get; set; }
 
-        public T1 Value1 { get; }
-        public T2 Value2 { get; }
-        public T3 Value3 { get; }
+        [DataMember(Name = "Value2", Order = 2)]
+        public T2 Value2 { get; set; }
 
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue(nameof(Value1), Value1);
-            info.AddValue(nameof(Value2), Value2);
-            info.AddValue(nameof(Value3), Value3);
-        }
+        [DataMember(Name = "Value3", Order = 3)]
+        public T3 Value3 { get; set; }
+
     }
 
     [Serializable]
-    internal sealed class Message<T1, T2, T3, T4> : ISerializable
+    [DataContract]
+    internal sealed class Message<T1, T2, T3, T4>
     {
+        public Message()
+        {
+        }
+
         public Message(T1 value1, T2 value2, T3 value3, T4 value4)
         {
             Value1 = value1;
@@ -113,26 +102,282 @@ namespace ServiceModel.Grpc.Channel
             Value4 = value4;
         }
 
-        public Message(SerializationInfo info, StreamingContext context)
+        [DataMember(Name = "Value1", Order = 1)]
+        public T1 Value1 { get; set; }
+
+        [DataMember(Name = "Value2", Order = 2)]
+        public T2 Value2 { get; set; }
+
+        [DataMember(Name = "Value3", Order = 3)]
+        public T3 Value3 { get; set; }
+
+        [DataMember(Name = "Value4", Order = 4)]
+        public T4 Value4 { get; set; }
+
+    }
+
+    [Serializable]
+    [DataContract]
+    internal sealed class Message<T1, T2, T3, T4, T5>
+    {
+        public Message()
         {
-            Value1 = (T1)info.GetValue(nameof(Value1), typeof(T1));
-            Value2 = (T2)info.GetValue(nameof(Value2), typeof(T2));
-            Value3 = (T3)info.GetValue(nameof(Value3), typeof(T3));
-            Value4 = (T4)info.GetValue(nameof(Value4), typeof(T4));
         }
 
-        public T1 Value1 { get; }
-        public T2 Value2 { get; }
-        public T3 Value3 { get; }
-        public T4 Value4 { get; }
-
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        public Message(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5)
         {
-            info.AddValue(nameof(Value1), Value1);
-            info.AddValue(nameof(Value2), Value2);
-            info.AddValue(nameof(Value3), Value3);
-            info.AddValue(nameof(Value4), Value4);
+            Value1 = value1;
+            Value2 = value2;
+            Value3 = value3;
+            Value4 = value4;
+            Value5 = value5;
         }
+
+        [DataMember(Name = "Value1", Order = 1)]
+        public T1 Value1 { get; set; }
+
+        [DataMember(Name = "Value2", Order = 2)]
+        public T2 Value2 { get; set; }
+
+        [DataMember(Name = "Value3", Order = 3)]
+        public T3 Value3 { get; set; }
+
+        [DataMember(Name = "Value4", Order = 4)]
+        public T4 Value4 { get; set; }
+
+        [DataMember(Name = "Value5", Order = 5)]
+        public T5 Value5 { get; set; }
+
+    }
+
+    [Serializable]
+    [DataContract]
+    internal sealed class Message<T1, T2, T3, T4, T5, T6>
+    {
+        public Message()
+        {
+        }
+
+        public Message(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5, T6 value6)
+        {
+            Value1 = value1;
+            Value2 = value2;
+            Value3 = value3;
+            Value4 = value4;
+            Value5 = value5;
+            Value6 = value6;
+        }
+
+        [DataMember(Name = "Value1", Order = 1)]
+        public T1 Value1 { get; set; }
+
+        [DataMember(Name = "Value2", Order = 2)]
+        public T2 Value2 { get; set; }
+
+        [DataMember(Name = "Value3", Order = 3)]
+        public T3 Value3 { get; set; }
+
+        [DataMember(Name = "Value4", Order = 4)]
+        public T4 Value4 { get; set; }
+
+        [DataMember(Name = "Value5", Order = 5)]
+        public T5 Value5 { get; set; }
+
+        [DataMember(Name = "Value6", Order = 6)]
+        public T6 Value6 { get; set; }
+
+    }
+
+    [Serializable]
+    [DataContract]
+    internal sealed class Message<T1, T2, T3, T4, T5, T6, T7>
+    {
+        public Message()
+        {
+        }
+
+        public Message(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5, T6 value6, T7 value7)
+        {
+            Value1 = value1;
+            Value2 = value2;
+            Value3 = value3;
+            Value4 = value4;
+            Value5 = value5;
+            Value6 = value6;
+            Value7 = value7;
+        }
+
+        [DataMember(Name = "Value1", Order = 1)]
+        public T1 Value1 { get; set; }
+
+        [DataMember(Name = "Value2", Order = 2)]
+        public T2 Value2 { get; set; }
+
+        [DataMember(Name = "Value3", Order = 3)]
+        public T3 Value3 { get; set; }
+
+        [DataMember(Name = "Value4", Order = 4)]
+        public T4 Value4 { get; set; }
+
+        [DataMember(Name = "Value5", Order = 5)]
+        public T5 Value5 { get; set; }
+
+        [DataMember(Name = "Value6", Order = 6)]
+        public T6 Value6 { get; set; }
+
+        [DataMember(Name = "Value7", Order = 7)]
+        public T7 Value7 { get; set; }
+
+    }
+
+    [Serializable]
+    [DataContract]
+    internal sealed class Message<T1, T2, T3, T4, T5, T6, T7, T8>
+    {
+        public Message()
+        {
+        }
+
+        public Message(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5, T6 value6, T7 value7, T8 value8)
+        {
+            Value1 = value1;
+            Value2 = value2;
+            Value3 = value3;
+            Value4 = value4;
+            Value5 = value5;
+            Value6 = value6;
+            Value7 = value7;
+            Value8 = value8;
+        }
+
+        [DataMember(Name = "Value1", Order = 1)]
+        public T1 Value1 { get; set; }
+
+        [DataMember(Name = "Value2", Order = 2)]
+        public T2 Value2 { get; set; }
+
+        [DataMember(Name = "Value3", Order = 3)]
+        public T3 Value3 { get; set; }
+
+        [DataMember(Name = "Value4", Order = 4)]
+        public T4 Value4 { get; set; }
+
+        [DataMember(Name = "Value5", Order = 5)]
+        public T5 Value5 { get; set; }
+
+        [DataMember(Name = "Value6", Order = 6)]
+        public T6 Value6 { get; set; }
+
+        [DataMember(Name = "Value7", Order = 7)]
+        public T7 Value7 { get; set; }
+
+        [DataMember(Name = "Value8", Order = 8)]
+        public T8 Value8 { get; set; }
+
+    }
+
+    [Serializable]
+    [DataContract]
+    internal sealed class Message<T1, T2, T3, T4, T5, T6, T7, T8, T9>
+    {
+        public Message()
+        {
+        }
+
+        public Message(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5, T6 value6, T7 value7, T8 value8, T9 value9)
+        {
+            Value1 = value1;
+            Value2 = value2;
+            Value3 = value3;
+            Value4 = value4;
+            Value5 = value5;
+            Value6 = value6;
+            Value7 = value7;
+            Value8 = value8;
+            Value9 = value9;
+        }
+
+        [DataMember(Name = "Value1", Order = 1)]
+        public T1 Value1 { get; set; }
+
+        [DataMember(Name = "Value2", Order = 2)]
+        public T2 Value2 { get; set; }
+
+        [DataMember(Name = "Value3", Order = 3)]
+        public T3 Value3 { get; set; }
+
+        [DataMember(Name = "Value4", Order = 4)]
+        public T4 Value4 { get; set; }
+
+        [DataMember(Name = "Value5", Order = 5)]
+        public T5 Value5 { get; set; }
+
+        [DataMember(Name = "Value6", Order = 6)]
+        public T6 Value6 { get; set; }
+
+        [DataMember(Name = "Value7", Order = 7)]
+        public T7 Value7 { get; set; }
+
+        [DataMember(Name = "Value8", Order = 8)]
+        public T8 Value8 { get; set; }
+
+        [DataMember(Name = "Value9", Order = 9)]
+        public T9 Value9 { get; set; }
+
+    }
+
+    [Serializable]
+    [DataContract]
+    internal sealed class Message<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>
+    {
+        public Message()
+        {
+        }
+
+        public Message(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5, T6 value6, T7 value7, T8 value8, T9 value9, T10 value10)
+        {
+            Value1 = value1;
+            Value2 = value2;
+            Value3 = value3;
+            Value4 = value4;
+            Value5 = value5;
+            Value6 = value6;
+            Value7 = value7;
+            Value8 = value8;
+            Value9 = value9;
+            Value10 = value10;
+        }
+
+        [DataMember(Name = "Value1", Order = 1)]
+        public T1 Value1 { get; set; }
+
+        [DataMember(Name = "Value2", Order = 2)]
+        public T2 Value2 { get; set; }
+
+        [DataMember(Name = "Value3", Order = 3)]
+        public T3 Value3 { get; set; }
+
+        [DataMember(Name = "Value4", Order = 4)]
+        public T4 Value4 { get; set; }
+
+        [DataMember(Name = "Value5", Order = 5)]
+        public T5 Value5 { get; set; }
+
+        [DataMember(Name = "Value6", Order = 6)]
+        public T6 Value6 { get; set; }
+
+        [DataMember(Name = "Value7", Order = 7)]
+        public T7 Value7 { get; set; }
+
+        [DataMember(Name = "Value8", Order = 8)]
+        public T8 Value8 { get; set; }
+
+        [DataMember(Name = "Value9", Order = 9)]
+        public T9 Value9 { get; set; }
+
+        [DataMember(Name = "Value10", Order = 10)]
+        public T10 Value10 { get; set; }
+
     }
 
 }

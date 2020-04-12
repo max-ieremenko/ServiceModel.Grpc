@@ -17,7 +17,7 @@ using System.Runtime.Serialization;
 namespace ServiceModel.Grpc.Channel
 {
 <#
-for (var argsCount=0; argsCount<5; argsCount++)
+for (var argsCount=0; argsCount<=10; argsCount++)
 {
     var genericArgs = string.Join(", ", Enumerable.Range(1, argsCount).Select(i => "T" + i));
     if (argsCount > 0)
@@ -28,8 +28,20 @@ for (var argsCount=0; argsCount<5; argsCount++)
     var ctorArgs = string.Join(", ", Enumerable.Range(1, argsCount).Select(i => "T" + i + " value" + i));
 #>
     [Serializable]
-    internal sealed class Message<#= genericArgs #> : ISerializable
+    [DataContract]
+    internal sealed class Message<#= genericArgs #>
     {
+<#
+if (argsCount > 0)
+{
+#>
+        public Message()
+        {
+        }
+
+<#
+}
+#>
         public Message(<#= ctorArgs #>)
         {
 <#
@@ -42,38 +54,16 @@ for (var argsCount=0; argsCount<5; argsCount++)
 #>
         }
 
-        public Message(SerializationInfo info, StreamingContext context)
-        {
 <#
             for (var a=1; a<=argsCount; a++)
             {
 #>
-            Value<#= a #> = (T<#= a #>)info.GetValue(nameof(Value<#= a #>), typeof(T<#= a #>));
-<#
-            }
-#>
-        }
+        [DataMember(Name = "Value<#= a #>", Order = <#= a #>)]
+        public T<#= a #> Value<#= a #> { get; set; }
 
 <#
-            for (var a=1; a<=argsCount; a++)
-            {
-#>
-        public T<#= a #> Value<#= a #> { get; }
-<#
             }
 #>
-
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-<#
-            for (var a=1; a<=argsCount; a++)
-            {
-#>
-            info.AddValue(nameof(Value<#= a #>), Value<#= a #>);
-<#
-            }
-#>
-        }
     }
 
 <#
