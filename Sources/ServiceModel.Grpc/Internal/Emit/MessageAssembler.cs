@@ -50,7 +50,8 @@ namespace ServiceModel.Grpc.Internal.Emit
         private static bool IsDataParameter(Type type)
         {
             return !ReflectionTools.IsTask(type)
-                && !IsContextParameter(type);
+                && !IsContextParameter(type)
+                && !ReflectionTools.IsStream(type);
         }
 
         private Type GetResponseType()
@@ -73,14 +74,14 @@ namespace ServiceModel.Grpc.Internal.Emit
                 responseType = returnType.GenericTypeArguments[0];
             }
 
-            if (IsContextParameter(responseType))
-            {
-                ThrowInvalidSignature();
-            }
-
             if (ReflectionTools.IsAsyncEnumerable(responseType))
             {
                 responseType = returnType.GenericTypeArguments[0];
+            }
+
+            if (IsContextParameter(responseType) || !IsDataParameter(responseType))
+            {
+                ThrowInvalidSignature();
             }
 
             return typeof(Message<>).MakeGenericType(responseType);
@@ -145,25 +146,22 @@ namespace ServiceModel.Grpc.Internal.Emit
 
         private int[] GetContextInput()
         {
-            var argIndex = -1;
+            if (Parameters.Length == 0)
+            {
+                return Array.Empty<int>();
+            }
+
+            var indexes = new List<int>();
 
             for (var i = 0; i < Parameters.Length; i++)
             {
-                var parameter = Parameters[i];
-                if (!IsContextParameter(parameter.ParameterType))
+                if (IsContextParameter(Parameters[i].ParameterType))
                 {
-                    continue;
+                    indexes.Add(i);
                 }
-
-                if (argIndex >= 0)
-                {
-                    ThrowInvalidSignature();
-                }
-
-                argIndex = i;
             }
 
-            return argIndex < 0 ? Array.Empty<int>() : new[] { argIndex };
+            return indexes.Count == 0 ? Array.Empty<int>() : indexes.ToArray();
         }
 
         private MethodType GetOperationType()
@@ -185,7 +183,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             {
                 var parameter = Parameters[i];
 
-                if (!ReflectionTools.IsPureInParameter(parameter))
+                if (parameter.IsOut() || parameter.IsRef())
                 {
                     ThrowInvalidSignature();
                 }
@@ -199,7 +197,8 @@ namespace ServiceModel.Grpc.Internal.Emit
 
         private void ThrowInvalidSignature(Exception ex = default)
         {
-            var message = "Operation method signature is not supported, method {0}.{1}.".FormatWith(Operation.DeclaringType?.FullName, Operation.Name);
+            var message = "Method signature [{0}] is not supported.".FormatWith(Operation);
+
             if (ex == null)
             {
                 throw new NotSupportedException(message);

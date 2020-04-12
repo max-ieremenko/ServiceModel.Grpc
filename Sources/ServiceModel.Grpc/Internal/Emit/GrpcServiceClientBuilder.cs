@@ -13,6 +13,7 @@ namespace ServiceModel.Grpc.Internal.Emit
     {
         private TypeBuilder _typeBuilder;
         private FieldBuilder _defaultCallOptions;
+        private ILGenerator _defineGrpcMethod;
 
         public IMarshallerFactory MarshallerFactory { get; set; }
 
@@ -22,54 +23,25 @@ namespace ServiceModel.Grpc.Internal.Emit
 
         public Func<CallInvoker, TContract> Build<TContract>(string factoryId)
         {
-            var contractType = typeof(TContract);
-
             Type implementationType;
 
             lock (ProxyAssembly.SyncRoot)
             {
-                _typeBuilder = ProxyAssembly
-                    .DefaultModule
-                    .DefineType(
-                        "{0}.{1}Client{2}".FormatWith(ReflectionTools.GetNamespace(contractType), contractType.Name, factoryId),
-                        TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit,
-                        typeof(GrpcClientBase));
-
-                BuildImplementation(contractType);
-
+                BuildCore(typeof(TContract), factoryId);
                 implementationType = _typeBuilder.CreateTypeInfo();
             }
 
             return CreateFactory<TContract>(implementationType);
         }
 
-        private static MethodInfo GetCallOptionsCombine(MessageAssembler message)
+        private void BuildCore(Type contractType, string factoryId)
         {
-            var parameters = new Type[message.ContextInput.Length + 1];
-            for (var i = 0; i < message.ContextInput.Length; i++)
-            {
-                parameters[i + 1] = message.Parameters[message.ContextInput[i]].ParameterType;
-            }
-
-            parameters[0] = typeof(CallOptions?);
-
-            MethodInfo method = null;
-            try
-            {
-                method = typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.Combine), parameters);
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                // method not found
-            }
-
-            return method;
-        }
-
-        private void BuildImplementation(Type contractType)
-        {
-            // ctor(CallInvoker callInvoker)
-            BuildCtor();
+            _typeBuilder = ProxyAssembly
+                .DefaultModule
+                .DefineType(
+                    "{0}.{1}Client{2}".FormatWith(ReflectionTools.GetNamespace(contractType), contractType.Name, factoryId),
+                    TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit,
+                    typeof(GrpcClientBase));
 
             // private static CallOptions? DefaultCallOptions
             _defaultCallOptions = _typeBuilder
@@ -78,7 +50,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                     typeof(CallOptions?),
                     FieldAttributes.Private | FieldAttributes.Static);
 
-            var defineGrpcMethod = _typeBuilder
+            _defineGrpcMethod = _typeBuilder
                 .DefineMethod(
                     "DefineGrpcMethods",
                     MethodAttributes.Static | MethodAttributes.HideBySig | MethodAttributes.Public,
@@ -86,20 +58,20 @@ namespace ServiceModel.Grpc.Internal.Emit
                     new[] { typeof(IMarshallerFactory) })
                 .GetILGenerator();
 
-            foreach (var interfaceType in ReflectionTools.ExpandInterface(contractType))
+            // ctor(CallInvoker callInvoker)
+            BuildCtor();
+
+            foreach (var interfaceType in ContractDescription.GetInterfacesImplementation(contractType))
             {
                 _typeBuilder.AddInterfaceImplementation(interfaceType);
 
-                foreach (var operation in ReflectionTools.GetMethods(interfaceType))
+                foreach (var method in ContractDescription.GetMethodsForImplementation(interfaceType))
                 {
-                    var message = new MessageAssembler(operation);
-
-                    var grpcMethodFiled = InitializeGrpcMethod(defineGrpcMethod, interfaceType, message);
-                    BuildMethod(interfaceType, message, grpcMethodFiled);
+                    ImplementMethod(interfaceType, method);
                 }
             }
 
-            defineGrpcMethod.Emit(OpCodes.Ret);
+            _defineGrpcMethod.Emit(OpCodes.Ret);
         }
 
         private Func<CallInvoker, TContract> CreateFactory<TContract>(Type implementationType)
@@ -118,13 +90,8 @@ namespace ServiceModel.Grpc.Internal.Emit
             return Expression.Lambda<Func<CallInvoker, TContract>>(ctor, callInvoker).Compile();
         }
 
-        private FieldBuilder InitializeGrpcMethod(ILGenerator defineGrpcMethod, Type interfaceType, MessageAssembler message)
+        private FieldBuilder InitializeGrpcMethod(Type interfaceType, MessageAssembler message)
         {
-            if (!ServiceContract.IsServiceContractInterface(interfaceType) || !ServiceContract.IsServiceOperation(message.Operation))
-            {
-                return null;
-            }
-
             var filedType = typeof(Method<,>).MakeGenericType(message.RequestType, message.ResponseType);
 
             // private static Method<string, string> ConcatBMethod;
@@ -136,77 +103,98 @@ namespace ServiceModel.Grpc.Internal.Emit
 
             var createMarshaller = typeof(IMarshallerFactory).InstanceMethod(nameof(IMarshallerFactory.CreateMarshaller));
 
-            defineGrpcMethod.EmitLdcI4((int)message.OperationType); // MethodType
-            defineGrpcMethod.Emit(OpCodes.Ldstr, ServiceContract.GetServiceName(interfaceType));
-            defineGrpcMethod.Emit(OpCodes.Ldstr, ServiceContract.GetServiceOperationName(message.Operation));
-            defineGrpcMethod.Emit(OpCodes.Ldarg_0);
-            defineGrpcMethod.Emit(OpCodes.Callvirt, createMarshaller.MakeGenericMethod(message.RequestType));
-            defineGrpcMethod.Emit(OpCodes.Ldarg_0);
-            defineGrpcMethod.Emit(OpCodes.Callvirt, createMarshaller.MakeGenericMethod(message.ResponseType));
-            defineGrpcMethod.Emit(OpCodes.Newobj, filedType.GetConstructor(new[]
-            {
-                typeof(MethodType),
-                typeof(string),
-                typeof(string),
-                typeof(Marshaller<>).MakeGenericType(message.RequestType),
-                typeof(Marshaller<>).MakeGenericType(message.ResponseType)
-            }));
-            defineGrpcMethod.Emit(OpCodes.Stsfld, field);
+            _defineGrpcMethod.EmitLdcI4((int)message.OperationType); // MethodType
+            _defineGrpcMethod.Emit(OpCodes.Ldstr, ServiceContract.GetServiceName(interfaceType));
+            _defineGrpcMethod.Emit(OpCodes.Ldstr, ServiceContract.GetServiceOperationName(message.Operation));
+            _defineGrpcMethod.Emit(OpCodes.Ldarg_0);
+            _defineGrpcMethod.Emit(OpCodes.Callvirt, createMarshaller.MakeGenericMethod(message.RequestType));
+            _defineGrpcMethod.Emit(OpCodes.Ldarg_0);
+            _defineGrpcMethod.Emit(OpCodes.Callvirt, createMarshaller.MakeGenericMethod(message.ResponseType));
+            _defineGrpcMethod.Emit(
+                OpCodes.Newobj,
+                filedType.Constructor(
+                    typeof(MethodType),
+                    typeof(string),
+                    typeof(string),
+                    typeof(Marshaller<>).MakeGenericType(message.RequestType),
+                    typeof(Marshaller<>).MakeGenericType(message.ResponseType)));
+
+            _defineGrpcMethod.Emit(OpCodes.Stsfld, field);
 
             return field;
         }
 
-        private void BuildMethod(Type interfaceType, MessageAssembler message, FieldBuilder grpcMethodFiled)
+        private void ImplementMethod(Type interfaceType, MethodInfo method)
         {
-            var parameterTypes = message.Parameters.Select(i => i.ParameterType).ToArray();
-            var method = _typeBuilder
-                .DefineMethod(
-                    message.Operation.Name,
-                    MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
-                    message.Operation.ReturnType,
-                    parameterTypes);
+            var body = CreateMethodWithSignature(method);
 
-            _typeBuilder.DefineMethodOverride(method, message.Operation);
-
-            var body = method.GetILGenerator();
-
-            if (grpcMethodFiled == null)
+            if (!ContractDescription.IsOperationMethod(interfaceType, method))
             {
-                // throw new NotSupportedException("Method is not operation contract.");
-                body.Emit(OpCodes.Ldstr, "Method {0}.{1}.{2} is not service message.".FormatWith(ReflectionTools.GetNamespace(interfaceType), interfaceType.Name, method.Name));
-                body.Emit(OpCodes.Newobj, typeof(NotSupportedException).GetConstructor(new[] { typeof(string) }));
+                var text = "Method {0}.{1}.{2} is not service operation.".FormatWith(
+                    ReflectionTools.GetNamespace(interfaceType),
+                    interfaceType.Name,
+                    method.Name);
+
+                // throw new NotSupportedException("...");
+                body.Emit(OpCodes.Ldstr, text);
+                body.Emit(OpCodes.Newobj, typeof(NotSupportedException).Constructor(typeof(string)));
                 body.Emit(OpCodes.Throw);
+
+                Logger?.LogError(text);
                 return;
             }
 
-            var callOptionsCombine = GetCallOptionsCombine(message);
+            if (!ContractDescription.TryCreateMessage(method, out var message, out var error))
+            {
+                // throw new NotSupportedException("...");
+                body.Emit(OpCodes.Ldstr, error);
+                body.Emit(OpCodes.Newobj, typeof(NotSupportedException).Constructor(typeof(string)));
+                body.Emit(OpCodes.Throw);
+
+                Logger?.LogError(error);
+                return;
+            }
+
+            var callOptionsCombine = ContractDescription.GetClientCallOptionsCombine(message);
             if (callOptionsCombine == null)
             {
-                // throw new NotSupportedException("Signature is not supported.");
-                body.Emit(OpCodes.Ldstr, "Method {0}.{1}.{2} signature is not supported.".FormatWith(ReflectionTools.GetNamespace(interfaceType), interfaceType.Name, method.Name));
-                body.Emit(OpCodes.Newobj, typeof(NotSupportedException).GetConstructor(new[] { typeof(string) }));
+                var text = "Context options in [{0}] are not supported.".FormatWith(ReflectionTools.GetSignature(method));
+
+                // throw new NotSupportedException("...");
+                body.Emit(OpCodes.Ldstr, text);
+                body.Emit(OpCodes.Newobj, typeof(NotSupportedException).Constructor(typeof(string)));
                 body.Emit(OpCodes.Throw);
+
+                Logger?.LogError(text);
                 return;
             }
 
-            if (message.OperationType == MethodType.DuplexStreaming)
+            var grpcMethodFiled = InitializeGrpcMethod(interfaceType, message);
+            switch (message.OperationType)
             {
-                BuildDuplexStreamingMethod(message, grpcMethodFiled, callOptionsCombine, body);
-                return;
+                case MethodType.Unary:
+                    BuildUnary(body, message, grpcMethodFiled, callOptionsCombine);
+                    break;
+                case MethodType.ClientStreaming:
+                    BuildClientStreaming(body, message, grpcMethodFiled, callOptionsCombine);
+                    break;
+                case MethodType.ServerStreaming:
+                    BuildServerStreaming(body, message, grpcMethodFiled, callOptionsCombine);
+                    break;
+                case MethodType.DuplexStreaming:
+                    BuildDuplexStreaming(body, message, grpcMethodFiled, callOptionsCombine);
+                    break;
+                default:
+                    throw new NotImplementedException("{0} operation is not implemented.".FormatWith(message.OperationType));
             }
+        }
 
+        private void BuildUnary(ILGenerator body, MessageAssembler message, FieldBuilder grpcMethodFiled, MethodInfo callOptionsCombine)
+        {
             body.DeclareLocal(callOptionsCombine.ReturnType); // var options
             body.DeclareLocal(message.RequestType); // var message
 
-            // options = CallOptionsBuilder.Combine(context);
-            body.Emit(OpCodes.Ldsfld, _defaultCallOptions); // DefaultOptions
-            foreach (var i in message.ContextInput)
-            {
-                body.EmitLdarg(i + 1);
-            }
-
-            body.Emit(OpCodes.Call, callOptionsCombine);
-            body.Emit(OpCodes.Stloc_0);
+            InitializeCallOptionsVariable(body, message, callOptionsCombine);
 
             // message = new Message<string, string>(value12, value3);
             foreach (var i in message.RequestTypeInput)
@@ -216,7 +204,7 @@ namespace ServiceModel.Grpc.Internal.Emit
 
             body.Emit(OpCodes.Newobj, message.RequestType.Constructor(message.RequestType.GenericTypeArguments));
             body.Emit(OpCodes.Stloc_1);
-            
+
             // var invoker = base.CallInvoker
             body.Emit(OpCodes.Ldarg_0);
             body.Emit(OpCodes.Call, typeof(GrpcClientBase).InstanceProperty(nameof(GrpcClientBase.CallInvoker)).GetMethod);
@@ -224,39 +212,9 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ldsfld, grpcMethodFiled); // var method = static Method
             body.Emit(OpCodes.Ldnull); // var host = null
             body.Emit(OpCodes.Ldloc_0); // options
-
-            if (message.OperationType != MethodType.ClientStreaming)
-            {
-                body.Emit(OpCodes.Ldloc_1); // message
-            }
-
-            if (message.OperationType == MethodType.ServerStreaming)
-            {
-                // CallInvoker.AsyncServerStreamingCall(...Method, null, context, value);
-                body.Emit(OpCodes.Callvirt, typeof(CallInvoker).InstanceMethod(nameof(CallInvoker.AsyncServerStreamingCall)).MakeGenericMethod(message.RequestType, message.ResponseType));
-
-                // GetServerStreamingCallResult(call, options)
-                body.Emit(OpCodes.Ldloc_0); // options
-                body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.GetServerStreamingCallResult)).MakeGenericMethod(message.ResponseType.GenericTypeArguments[0]));
-            }
-            else if (message.OperationType == MethodType.ClientStreaming)
-            {
-                // CallInvoker.AsyncClientStreamingCall()
-                body.Emit(OpCodes.Callvirt, typeof(CallInvoker).InstanceMethod(nameof(CallInvoker.AsyncClientStreamingCall)).MakeGenericMethod(message.RequestType, message.ResponseType));
-
-                // WriteClientStreamingRequest(call, request, options)
-                body.EmitLdarg(message.RequestTypeInput[0] + 1);
-                body.Emit(OpCodes.Ldloc_0); // options
-                if (message.ResponseType.IsGenericType)
-                {
-                    body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.WriteClientStreamingRequest)).MakeGenericMethod(message.RequestType.GenericTypeArguments[0], message.ResponseType.GenericTypeArguments[0]));
-                }
-                else
-                {
-                    body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.WriteClientStreamingRequestWait)).MakeGenericMethod(message.RequestType.GenericTypeArguments[0]));
-                }
-            }
-            else if (message.IsAsync)
+            body.Emit(OpCodes.Ldloc_1); // message
+            
+            if (message.IsAsync)
             {
                 // CallInvoker.AsyncUnaryCall(...Method, null, context, value);
                 body.Emit(OpCodes.Callvirt, typeof(CallInvoker).InstanceMethod(nameof(CallInvoker.AsyncUnaryCall)).MakeGenericMethod(message.RequestType, message.ResponseType));
@@ -287,19 +245,88 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ret);
         }
 
-        private void BuildDuplexStreamingMethod(MessageAssembler message, FieldBuilder grpcMethodFiled, MethodInfo callOptionsCombine, ILGenerator body)
+        private void BuildServerStreaming(ILGenerator body, MessageAssembler message, FieldBuilder grpcMethodFiled, MethodInfo callOptionsCombine)
         {
             body.DeclareLocal(callOptionsCombine.ReturnType); // var options
+            body.DeclareLocal(message.RequestType); // var message
 
-            // options = CallOptionsBuilder.Combine(context);
-            body.Emit(OpCodes.Ldsfld, _defaultCallOptions); // DefaultOptions
-            foreach (var i in message.ContextInput)
+            InitializeCallOptionsVariable(body, message, callOptionsCombine);
+
+            // message = new Message<string, string>(value12, value3);
+            foreach (var i in message.RequestTypeInput)
             {
                 body.EmitLdarg(i + 1);
             }
 
-            body.Emit(OpCodes.Call, callOptionsCombine);
-            body.Emit(OpCodes.Stloc_0);
+            body.Emit(OpCodes.Newobj, message.RequestType.Constructor(message.RequestType.GenericTypeArguments));
+            body.Emit(OpCodes.Stloc_1);
+
+            // var invoker = base.CallInvoker
+            body.Emit(OpCodes.Ldarg_0);
+            body.Emit(OpCodes.Call, typeof(GrpcClientBase).InstanceProperty(nameof(GrpcClientBase.CallInvoker)).GetMethod);
+
+            body.Emit(OpCodes.Ldsfld, grpcMethodFiled); // var method = static Method
+            body.Emit(OpCodes.Ldnull); // var host = null
+            body.Emit(OpCodes.Ldloc_0); // options
+            body.Emit(OpCodes.Ldloc_1); // message
+
+            // CallInvoker.AsyncServerStreamingCall(...Method, null, context, value);
+            body.Emit(OpCodes.Callvirt, typeof(CallInvoker).InstanceMethod(nameof(CallInvoker.AsyncServerStreamingCall)).MakeGenericMethod(message.RequestType, message.ResponseType));
+
+            // GetServerStreamingCallResult(call, options)
+            body.Emit(OpCodes.Ldloc_0); // options
+            body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.GetServerStreamingCallResult)).MakeGenericMethod(message.ResponseType.GenericTypeArguments[0]));
+
+            body.Emit(OpCodes.Ret);
+        }
+
+        private void BuildClientStreaming(ILGenerator body, MessageAssembler message, FieldBuilder grpcMethodFiled, MethodInfo callOptionsCombine)
+        {
+            body.DeclareLocal(callOptionsCombine.ReturnType); // var options
+            body.DeclareLocal(message.RequestType); // var message
+
+            InitializeCallOptionsVariable(body, message, callOptionsCombine);
+
+            // message = new Message<string, string>(value12, value3);
+            foreach (var i in message.RequestTypeInput)
+            {
+                body.EmitLdarg(i + 1);
+            }
+
+            body.Emit(OpCodes.Newobj, message.RequestType.Constructor(message.RequestType.GenericTypeArguments));
+            body.Emit(OpCodes.Stloc_1);
+
+            // var invoker = base.CallInvoker
+            body.Emit(OpCodes.Ldarg_0);
+            body.Emit(OpCodes.Call, typeof(GrpcClientBase).InstanceProperty(nameof(GrpcClientBase.CallInvoker)).GetMethod);
+
+            body.Emit(OpCodes.Ldsfld, grpcMethodFiled); // var method = static Method
+            body.Emit(OpCodes.Ldnull); // var host = null
+            body.Emit(OpCodes.Ldloc_0); // options
+
+            // CallInvoker.AsyncClientStreamingCall()
+            body.Emit(OpCodes.Callvirt, typeof(CallInvoker).InstanceMethod(nameof(CallInvoker.AsyncClientStreamingCall)).MakeGenericMethod(message.RequestType, message.ResponseType));
+
+            // WriteClientStreamingRequest(call, request, options)
+            body.EmitLdarg(message.RequestTypeInput[0] + 1);
+            body.Emit(OpCodes.Ldloc_0); // options
+            if (message.ResponseType.IsGenericType)
+            {
+                body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.WriteClientStreamingRequest)).MakeGenericMethod(message.RequestType.GenericTypeArguments[0], message.ResponseType.GenericTypeArguments[0]));
+            }
+            else
+            {
+                body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.WriteClientStreamingRequestWait)).MakeGenericMethod(message.RequestType.GenericTypeArguments[0]));
+            }
+
+            body.Emit(OpCodes.Ret);
+        }
+
+        private void BuildDuplexStreaming(ILGenerator body, MessageAssembler message, FieldBuilder grpcMethodFiled, MethodInfo callOptionsCombine)
+        {
+            body.DeclareLocal(callOptionsCombine.ReturnType); // var options
+
+            InitializeCallOptionsVariable(body, message, callOptionsCombine);
 
             // var invoker = base.CallInvoker
             body.Emit(OpCodes.Ldarg_0);
@@ -317,6 +344,35 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.GetDuplexCallResult)).MakeGenericMethod(message.RequestType.GenericTypeArguments[0], message.ResponseType.GenericTypeArguments[0]));
 
             body.Emit(OpCodes.Ret);
+        }
+
+        private void InitializeCallOptionsVariable(ILGenerator body, MessageAssembler message, MethodInfo callOptionsCombine)
+        {
+            // options = CallOptionsBuilder.Combine(context);
+            body.Emit(OpCodes.Ldsfld, _defaultCallOptions); // DefaultOptions
+            foreach (var i in message.ContextInput)
+            {
+                body.EmitLdarg(i + 1);
+            }
+
+            body.Emit(OpCodes.Call, callOptionsCombine);
+            body.Emit(OpCodes.Stloc_0);
+        }
+
+        private ILGenerator CreateMethodWithSignature(MethodInfo signature)
+        {
+            var parameterTypes = signature.GetParameters().Select(i => i.ParameterType).ToArray();
+            var method = _typeBuilder
+                .DefineMethod(
+                    signature.Name,
+                    MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
+                    signature.ReturnType,
+                    parameterTypes);
+
+            // explicit interface implementation
+            _typeBuilder.DefineMethodOverride(method, signature);
+
+            return method.GetILGenerator();
         }
 
         private void BuildCtor()

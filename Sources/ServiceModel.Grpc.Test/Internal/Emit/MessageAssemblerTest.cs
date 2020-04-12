@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -79,6 +80,8 @@ namespace ServiceModel.Grpc.Internal.Emit
         [TestCase(typeof(CallOptions))]
         [TestCase(typeof(ServerCallContext))]
         [TestCase(typeof(Task<CallOptions>))]
+        [TestCase(typeof(Stream))]
+        [TestCase(typeof(Task<Stream>))]
         public void NotSupportedResponseType(Type returnType)
         {
             _method
@@ -129,7 +132,7 @@ namespace ServiceModel.Grpc.Internal.Emit
 
         [Test]
         [TestCase(typeof(Task))]
-        [TestCase(typeof(CallOptions), typeof(CancellationToken))]
+        [TestCase(typeof(Stream))]
         public void NotSupportedParameters(params Type[] parameters)
         {
             MethodSetupParameters(parameters);

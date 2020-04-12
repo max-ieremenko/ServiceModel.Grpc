@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Linq;
 using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Internal;
@@ -11,6 +11,7 @@ namespace ServiceModel.Grpc.Hosting
     internal abstract class GrpcServiceFactoryBase<TService>
     {
         private readonly IMarshallerFactory _marshallerFactory;
+        private readonly Type _serviceType;
 
         protected GrpcServiceFactoryBase(ILogger logger, IMarshallerFactory marshallerFactory)
         {
@@ -18,90 +19,109 @@ namespace ServiceModel.Grpc.Hosting
 
             Logger = logger;
             _marshallerFactory = marshallerFactory ?? DataContractMarshallerFactory.Default;
+            _serviceType = typeof(TService);
         }
 
         public ILogger Logger { get; }
 
         public void Bind()
         {
-            var serviceType = typeof(TService);
-
-            var serviceContracts = ServiceContract.GetServiceContractInterfaces(serviceType);
-            if (serviceContracts.Count == 0)
+            foreach (var interfaceType in ContractDescription.GetInterfacesImplementation(_serviceType))
             {
-                Logger.LogError("The [{0}] does not implement any contracts.".FormatWith(serviceType));
-                return;
-            }
-
-            var addMethodGeneric = typeof(GrpcServiceFactoryBase<TService>).InstanceMethod(nameof(AddMethod));
-
-            foreach (var serviceContract in serviceContracts)
-            {
-                var serviceName = ServiceContract.GetServiceName(serviceContract);
-                var operations = ServiceContract.GetServiceOperations(serviceContract);
-
-                var serviceBuilder = new GrpcServiceBuilder(serviceContract);
                 var messages = new List<MessageAssembler>();
 
-                foreach (var operation in operations)
+                foreach (var method in ContractDescription.GetMethodsForImplementation(interfaceType))
                 {
-                    var message = new MessageAssembler(operation);
-                    serviceBuilder.BuildCall(message);
-                    messages.Add(message);
+                    if (!ContractDescription.IsOperationMethod(interfaceType, method))
+                    {
+                        Logger.LogDebug("Skip {0} method {1}.{2}: is not operation contract.", _serviceType.FullName, interfaceType.FullName, method.Name);
+                        continue;
+                    }
+
+                    if (ContractDescription.TryCreateMessage(method, out var message, out var error))
+                    {
+                        messages.Add(message);
+                    }
+                    else
+                    {
+                        Logger.LogError("Service {0}: {1}", _serviceType.FullName, error);
+                    }
                 }
 
-                foreach (var message in messages)
+                if (messages.Count > 0)
                 {
-                    var addMethod = (Action<string, string, MethodType, MethodInfo, GrpcServiceBuilder>)addMethodGeneric
-                        .MakeGenericMethod(message.RequestType, message.ResponseType)
-                        .CreateDelegate(typeof(Action<string, string, MethodType, MethodInfo, GrpcServiceBuilder>), this);
+                    Type serviceChannelType;
+                    lock (ProxyAssembly.SyncRoot)
+                    {
+                        serviceChannelType = BuildChannelService(interfaceType, messages);
+                    }
 
-                    var serviceMethod = ReflectionTools.ImplementationOfMethod(serviceType, serviceContract, message.Operation);
-
-                    addMethod(
-                        serviceName,
-                        ServiceContract.GetServiceOperationName(message.Operation),
-                        message.OperationType,
-                        serviceMethod,
-                        serviceBuilder);
+                    BindInterface(serviceChannelType, interfaceType, messages);
                 }
             }
         }
 
-        protected abstract void AddUnaryServerMethod<TRequest, TResponse>(
-            Method<TRequest, TResponse> method,
-            MethodInfo serviceMethod,
-            GrpcServiceBuilder serviceBuilder)
+        protected abstract void AddUnaryServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
             where TRequest : class
             where TResponse : class;
 
-        protected abstract void AddClientStreamingServerMethod<TRequest, TResponse>(
-            Method<TRequest, TResponse> method,
-            MethodInfo serviceMethod,
-            GrpcServiceBuilder serviceBuilder)
+        protected abstract void AddClientStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
             where TRequest : class
             where TResponse : class;
 
-        protected abstract void AddServerStreamingServerMethod<TRequest, TResponse>(
-            Method<TRequest, TResponse> method,
-            MethodInfo serviceMethod,
-            GrpcServiceBuilder serviceBuilder)
+        protected abstract void AddServerStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
             where TRequest : class
             where TResponse : class;
 
-        protected abstract void AddDuplexStreamingServerMethod<TRequest, TResponse>(
-            Method<TRequest, TResponse> method,
-            MethodInfo serviceMethod,
-            GrpcServiceBuilder serviceBuilder)
+        protected abstract void AddDuplexStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
             where TRequest : class
             where TResponse : class;
+
+        private Type BuildChannelService(Type interfaceType, IList<MessageAssembler> messages)
+        {
+            var serviceBuilder = new GrpcServiceBuilder(interfaceType);
+            foreach (var message in messages)
+            {
+                if (message.ContextInput.Any(i => ContractDescription.GetServiceContextOption(message.Parameters[i].ParameterType) == null))
+                {
+                    var error = "Context options in [{0}] are not supported.".FormatWith(ReflectionTools.GetSignature(message.Operation));
+
+                    Logger.LogError("Service {0}: {1}", _serviceType.FullName, error);
+                    serviceBuilder.BuildNotSupportedCall(message, error);
+                }
+                else
+                {
+                    serviceBuilder.BuildCall(message);
+                }
+            }
+
+            return serviceBuilder.BuildType();
+        }
+
+        private void BindInterface(Type serviceChannelType, Type interfaceType, IList<MessageAssembler> messages)
+        {
+            var serviceName = ContractDescription.GetServiceName(interfaceType);
+            var addMethodGeneric = typeof(GrpcServiceFactoryBase<TService>).InstanceMethod(nameof(AddMethod));
+            foreach (var message in messages)
+            {
+                var addMethod = addMethodGeneric
+                    .MakeGenericMethod(message.RequestType, message.ResponseType)
+                    .CreateDelegate<Action<string, string, MethodType, ServiceCallInfo>>(this);
+
+                var operationName = ContractDescription.GetOperationName(message.Operation);
+                var callInfo = new ServiceCallInfo(
+                    ReflectionTools.ImplementationOfMethod(_serviceType, interfaceType, message.Operation),
+                    serviceChannelType.StaticMethod(operationName));
+
+                addMethod(serviceName, operationName, message.OperationType, callInfo);
+            }
+        }
 
         private void AddMethod<TRequest, TResponse>(
             string serviceName,
             string operationName,
             MethodType operationType,
-            MethodInfo serviceMethod,
-            GrpcServiceBuilder serviceBuilder)
+            ServiceCallInfo callInfo)
             where TRequest : class
             where TResponse : class
         {
@@ -111,23 +131,23 @@ namespace ServiceModel.Grpc.Hosting
                 operationName,
                 _marshallerFactory.CreateMarshaller<TRequest>(),
                 _marshallerFactory.CreateMarshaller<TResponse>());
-
+            
             switch (operationType)
             {
                 case MethodType.Unary:
-                    AddUnaryServerMethod(method, serviceMethod, serviceBuilder);
+                    AddUnaryServerMethod(method, callInfo);
                     return;
 
                 case MethodType.ClientStreaming:
-                    AddClientStreamingServerMethod(method, serviceMethod, serviceBuilder);
+                    AddClientStreamingServerMethod(method, callInfo);
                     return;
 
                 case MethodType.ServerStreaming:
-                    AddServerStreamingServerMethod(method, serviceMethod, serviceBuilder);
+                    AddServerStreamingServerMethod(method, callInfo);
                     return;
 
                 case MethodType.DuplexStreaming:
-                    AddDuplexStreamingServerMethod(method, serviceMethod, serviceBuilder);
+                    AddDuplexStreamingServerMethod(method, callInfo);
                     return;
             }
 

@@ -16,6 +16,7 @@ namespace ServiceModel.Grpc.Internal.Emit
     public class GrpcServiceBuilderTest
     {
         private GrpcServiceBuilder _sut;
+        private Type _channelType;
         private Mock<IContract> _service;
         private CancellationTokenSource _tokenSource;
 
@@ -28,6 +29,8 @@ namespace ServiceModel.Grpc.Internal.Emit
             {
                 _sut.BuildCall(new MessageAssembler(method));
             }
+
+            _channelType = _sut.BuildType();
         }
 
         [SetUp]
@@ -40,7 +43,9 @@ namespace ServiceModel.Grpc.Internal.Emit
         [Test]
         public async Task Empty()
         {
-            var call = _sut.CreateCall<UnaryServerMethod<IContract, Message, Message>>(nameof(IContract.Empty));
+            var call = _channelType
+                .StaticMethod(nameof(IContract.Empty))
+                .CreateDelegate<UnaryServerMethod<IContract, Message, Message>>();
             Console.WriteLine(call.Method.Disassemble());
 
             _service
@@ -55,7 +60,9 @@ namespace ServiceModel.Grpc.Internal.Emit
         [Test]
         public async Task EmptyAsync()
         {
-            var call = _sut.CreateCall<UnaryServerMethod<IContract, Message, Message>>(nameof(IContract.EmptyAsync));
+            var call = _channelType
+                .StaticMethod(nameof(IContract.EmptyAsync))
+                .CreateDelegate<UnaryServerMethod<IContract, Message, Message>>();
             Console.WriteLine(call.Method.Disassemble());
 
             _service
@@ -71,7 +78,9 @@ namespace ServiceModel.Grpc.Internal.Emit
         [Test]
         public async Task EmptyContext()
         {
-            var call = _sut.CreateCall<UnaryServerMethod<IContract, Message, Message>>(nameof(IContract.EmptyContext));
+            var call = _channelType
+                .StaticMethod(nameof(IContract.EmptyContext))
+                .CreateDelegate<UnaryServerMethod<IContract, Message, Message>>();
             Console.WriteLine(call.Method.Disassemble());
 
             var serverContext = new Mock<ServerCallContext>(MockBehavior.Strict);
@@ -88,7 +97,9 @@ namespace ServiceModel.Grpc.Internal.Emit
         [Test]
         public async Task EmptyTokenAsync()
         {
-            var call = _sut.CreateCall<UnaryServerMethod<IContract, Message, Message>>(nameof(IContract.EmptyTokenAsync));
+            var call = _channelType
+                .StaticMethod(nameof(IContract.EmptyTokenAsync))
+                .CreateDelegate<UnaryServerMethod<IContract, Message, Message>>();
             Console.WriteLine(call.Method.Disassemble());
 
             var serverContext = new Mock<ServerCallContext>(MockBehavior.Strict);
@@ -110,7 +121,9 @@ namespace ServiceModel.Grpc.Internal.Emit
         [Test]
         public async Task ReturnString()
         {
-            var call = _sut.CreateCall<UnaryServerMethod<IContract, Message, Message<string>>>(nameof(IContract.ReturnString));
+            var call = _channelType
+                .StaticMethod(nameof(IContract.ReturnString))
+                .CreateDelegate<UnaryServerMethod<IContract, Message, Message<string>>>();
             Console.WriteLine(call.Method.Disassemble());
 
             _service
@@ -126,7 +139,9 @@ namespace ServiceModel.Grpc.Internal.Emit
         [Test]
         public async Task ReturnStringAsync()
         {
-            var call = _sut.CreateCall<UnaryServerMethod<IContract, Message, Message<string>>>(nameof(IContract.ReturnStringAsync));
+            var call = _channelType
+                .StaticMethod(nameof(IContract.ReturnStringAsync))
+                .CreateDelegate<UnaryServerMethod<IContract, Message, Message<string>>>();
             Console.WriteLine(call.Method.Disassemble());
 
             var serverContext = new Mock<ServerCallContext>(MockBehavior.Strict);
@@ -144,7 +159,9 @@ namespace ServiceModel.Grpc.Internal.Emit
         [Test]
         public async Task OneParameterContext()
         {
-            var call = _sut.CreateCall<UnaryServerMethod<IContract, Message<int>, Message>>(nameof(IContract.OneParameterContext));
+            var call = _channelType
+                .StaticMethod(nameof(IContract.OneParameterContext))
+                .CreateDelegate<UnaryServerMethod<IContract, Message<int>, Message>>();
             Console.WriteLine(call.Method.Disassemble());
 
             var serverContext = new Mock<ServerCallContext>(MockBehavior.Strict);
@@ -181,7 +198,9 @@ namespace ServiceModel.Grpc.Internal.Emit
         [Test]
         public async Task OneParameterAsync()
         {
-            var call = _sut.CreateCall<UnaryServerMethod<IContract, Message<double>, Message>>(nameof(IContract.OneParameterAsync));
+            var call = _channelType
+                .StaticMethod(nameof(IContract.OneParameterAsync))
+                .CreateDelegate<UnaryServerMethod<IContract, Message<double>, Message>>();
             Console.WriteLine(call.Method.Disassemble());
 
             _service
@@ -197,7 +216,9 @@ namespace ServiceModel.Grpc.Internal.Emit
         [Test]
         public async Task AddTwoValues()
         {
-            var call = _sut.CreateCall<UnaryServerMethod<IContract, Message<int, double>, Message<double>>>(nameof(IContract.AddTwoValues));
+            var call = _channelType
+                .StaticMethod(nameof(IContract.AddTwoValues))
+                .CreateDelegate<UnaryServerMethod<IContract, Message<int, double>, Message<double>>>();
             Console.WriteLine(call.Method.Disassemble());
 
             _service
@@ -213,7 +234,9 @@ namespace ServiceModel.Grpc.Internal.Emit
         [Test]
         public async Task ConcatThreeValueAsync()
         {
-            var call = _sut.CreateCall<UnaryServerMethod<IContract, Message<int, string, long>, Message<string>>>(nameof(IContract.ConcatThreeValueAsync));
+            var call = _channelType
+                .StaticMethod(nameof(IContract.ConcatThreeValueAsync))
+                .CreateDelegate<UnaryServerMethod<IContract, Message<int, string, long>, Message<string>>>();
             Console.WriteLine(call.Method.Disassemble());
 
             var serverContext = new Mock<ServerCallContext>(MockBehavior.Strict);
@@ -235,7 +258,9 @@ namespace ServiceModel.Grpc.Internal.Emit
         [Test]
         public async Task EmptyServerStreaming()
         {
-            var call = _sut.CreateCall<ServerStreamingServerMethod<IContract, Message, Message<int>>>(nameof(IContract.EmptyServerStreaming));
+            var call = _channelType
+                .StaticMethod(nameof(IContract.EmptyServerStreaming))
+                .CreateDelegate<ServerStreamingServerMethod<IContract, Message, Message<int>>>();
             Console.WriteLine(call.Method.Disassemble());
 
             var serverContext = new Mock<ServerCallContext>(MockBehavior.Strict);
@@ -270,7 +295,9 @@ namespace ServiceModel.Grpc.Internal.Emit
         [Test]
         public async Task ServerStreamingRepeatValue()
         {
-            var call = _sut.CreateCall<ServerStreamingServerMethod<IContract, Message<int, int>, Message<int>>>(nameof(IContract.ServerStreamingRepeatValue));
+            var call = _channelType
+                .StaticMethod(nameof(IContract.ServerStreamingRepeatValue))
+                .CreateDelegate<ServerStreamingServerMethod<IContract, Message<int, int>, Message<int>>>();
             Console.WriteLine(call.Method.Disassemble());
 
             var serverContext = new Mock<ServerCallContext>(MockBehavior.Strict);
@@ -304,7 +331,9 @@ namespace ServiceModel.Grpc.Internal.Emit
         [Test]
         public async Task ClientStreamingEmpty()
         {
-            var call = _sut.CreateCall<ClientStreamingServerMethod<IContract, Message<int>, Message>>(nameof(IContract.ClientStreamingEmpty));
+            var call = _channelType
+                .StaticMethod(nameof(IContract.ClientStreamingEmpty))
+                .CreateDelegate<ClientStreamingServerMethod<IContract, Message<int>, Message>>();
             Console.WriteLine(call.Method.Disassemble());
 
             var serverContext = new Mock<ServerCallContext>(MockBehavior.Strict);
@@ -341,7 +370,9 @@ namespace ServiceModel.Grpc.Internal.Emit
         [Test]
         public async Task ClientStreamingSumValues()
         {
-            var call = _sut.CreateCall<ClientStreamingServerMethod<IContract, Message<int>, Message<string>>>(nameof(IContract.ClientStreamingSumValues));
+            var call = _channelType
+                .StaticMethod(nameof(IContract.ClientStreamingSumValues))
+                .CreateDelegate<ClientStreamingServerMethod<IContract, Message<int>, Message<string>>>();
             Console.WriteLine(call.Method.Disassemble());
 
             var serverContext = new Mock<ServerCallContext>(MockBehavior.Strict);
@@ -379,7 +410,9 @@ namespace ServiceModel.Grpc.Internal.Emit
         [Test]
         public async Task DuplexStreamingConvert()
         {
-            var call = _sut.CreateCall<DuplexStreamingServerMethod<IContract, Message<int>, Message<string>>>(nameof(IContract.DuplexStreamingConvert));
+            var call = _channelType
+                .StaticMethod(nameof(IContract.DuplexStreamingConvert))
+                .CreateDelegate<DuplexStreamingServerMethod<IContract, Message<int>, Message<string>>>();
             Console.WriteLine(call.Method.Disassemble());
 
             var serverContext = new Mock<ServerCallContext>(MockBehavior.Strict);

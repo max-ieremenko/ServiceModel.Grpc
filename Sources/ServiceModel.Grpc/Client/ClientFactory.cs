@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Threading;
 using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.Internal.Emit;
 
 namespace ServiceModel.Grpc.Client
@@ -59,14 +60,38 @@ namespace ServiceModel.Grpc.Client
             return method(callInvoker);
         }
 
-        public Delegate RegisterClient<TContract>(Action<ServiceModelGrpcClientOptions> configure)
+        internal IServiceClientBuilder CreateClientBuilder(ServiceModelGrpcClientOptions clientOptions)
+        {
+            var builder = clientOptions.ClientBuilder?.Invoke() ?? new GrpcServiceClientBuilder();
+
+            builder.MarshallerFactory = clientOptions.MarshallerFactory ?? DataContractMarshallerFactory.Default;
+            builder.DefaultCallOptions = clientOptions.DefaultCallOptions;
+            builder.Logger = clientOptions.Logger;
+
+            return builder;
+        }
+
+        private Delegate RegisterClient<TContract>(Action<ServiceModelGrpcClientOptions> configure)
             where TContract : class
         {
-            var options = new ServiceModelGrpcClientOptions();
+            var contractType = typeof(TContract);
+
+            if (!ReflectionTools.IsPublicInterface(contractType))
+            {
+                throw new NotSupportedException("{0} is not supported. Client contract must be public interface.".FormatWith(contractType));
+            }
+
+            var options = new ServiceModelGrpcClientOptions
+            {
+                MarshallerFactory = _defaultOptions?.MarshallerFactory,
+                DefaultCallOptions = _defaultOptions?.DefaultCallOptions,
+                Logger = _defaultOptions?.Logger,
+                ClientBuilder = _defaultOptions?.ClientBuilder
+            };
+
             configure?.Invoke(options);
 
             var builder = CreateClientBuilder(options);
-            var contractType = typeof(TContract);
 
             Func<CallInvoker, TContract> factory;
             lock (_syncRoot)
@@ -81,18 +106,6 @@ namespace ServiceModel.Grpc.Client
             }
 
             return factory;
-        }
-
-        internal IServiceClientBuilder CreateClientBuilder(ServiceModelGrpcClientOptions clientOptions)
-        {
-            var builderFactory = clientOptions.ClientBuilder ?? _defaultOptions?.ClientBuilder;
-            var builder = builderFactory?.Invoke() ?? new GrpcServiceClientBuilder();
-
-            builder.MarshallerFactory = (clientOptions.MarshallerFactory ?? _defaultOptions?.MarshallerFactory) ?? DataContractMarshallerFactory.Default;
-            builder.DefaultCallOptions = clientOptions.DefaultCallOptions ?? _defaultOptions?.DefaultCallOptions;
-            builder.Logger = clientOptions.Logger ?? _defaultOptions?.Logger;
-
-            return builder;
         }
     }
 }

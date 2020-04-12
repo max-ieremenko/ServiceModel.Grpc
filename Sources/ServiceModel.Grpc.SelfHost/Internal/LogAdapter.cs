@@ -9,9 +9,10 @@
             _logger = logger;
         }
 
-        public void LogError(string message, params object[] args)
-        {
-            _logger?.Error(message, args);
-        }
+        public void LogError(string message, params object[] args) => _logger?.Error(message, args);
+
+        public void LogWarning(string message, params object[] args) => _logger?.Warning(message, args);
+
+        public void LogDebug(string message, params object[] args) => _logger?.Debug(message, args);
     }
 }

@@ -2,7 +2,7 @@
 using Grpc.Core;
 using Moq;
 using NUnit.Framework;
-using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Internal;
 using Shouldly;
 
 namespace ServiceModel.Grpc.Client
@@ -25,25 +25,6 @@ namespace ServiceModel.Grpc.Client
             _defaultOptions = new ServiceModelGrpcClientOptions { ClientBuilder = () => _clientBuilder.Object };
 
             _sut = new ClientFactory(_defaultOptions);
-        }
-
-        [Test]
-        public void CreateClientBuilder()
-        {
-            _defaultOptions.MarshallerFactory = new Mock<IMarshallerFactory>(MockBehavior.Strict).Object;
-            var clientOptions = new ServiceModelGrpcClientOptions
-            {
-                DefaultCallOptions = new CallOptions(new Metadata()),
-                Logger = new Mock<ILogger>(MockBehavior.Strict).Object
-            };
-
-            var actual = _sut.CreateClientBuilder(clientOptions);
-
-            actual.ShouldBe(_clientBuilder.Object);
-            actual.MarshallerFactory.ShouldBe(_defaultOptions.MarshallerFactory);
-            actual.DefaultCallOptions.ShouldNotBeNull();
-            actual.DefaultCallOptions.Value.Headers.ShouldBe(clientOptions.DefaultCallOptions.Value.Headers);
-            actual.Logger.ShouldBe(clientOptions.Logger);
         }
 
         [Test]
@@ -98,6 +79,22 @@ namespace ServiceModel.Grpc.Client
             _sut.AddClient<IDisposable>();
 
             Assert.Throws<InvalidOperationException>(() => _sut.AddClient<IDisposable>());
+        }
+
+        [Test]
+        [TestCase(typeof(object))] // class
+        [TestCase(typeof(IServiceClientBuilder))] // not public
+        public void InvalidContracts(Type contractType)
+        {
+            var addClient = (Action<Action<ServiceModelGrpcClientOptions>>)_sut
+                .GetType()
+                .InstanceMethod(nameof(_sut.AddClient))
+                .MakeGenericMethod(contractType)
+                .CreateDelegate(typeof(Action<Action<ServiceModelGrpcClientOptions>>), _sut);
+
+            var ex = Assert.Throws<NotSupportedException>(() => addClient(null));
+
+            Console.WriteLine(ex);
         }
     }
 }

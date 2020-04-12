@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.ServiceModel;
 
@@ -8,14 +6,6 @@ namespace ServiceModel.Grpc.Internal
 {
     internal static class ServiceContract
     {
-        public static ICollection<Type> GetServiceContractInterfaces(Type serviceType)
-        {
-            return ReflectionTools
-                .ExpandInterface(serviceType)
-                .Where(IsServiceContractInterface)
-                .ToArray();
-        }
-
         public static bool IsServiceContractInterface(Type type)
         {
             return (type.IsPublic || type.IsNestedPublic)
@@ -29,19 +19,6 @@ namespace ServiceModel.Grpc.Internal
                    && !method.IsGenericMethod
                    && !method.IsSpecialName
                    && method.GetCustomAttribute<OperationContractAttribute>() != null;
-        }
-
-        public static IList<MethodInfo> GetServiceOperations(Type serviceType)
-        {
-            if (!IsServiceContractInterface(serviceType))
-            {
-                throw new ArgumentOutOfRangeException(nameof(serviceType));
-            }
-
-            return ReflectionTools
-                .GetMethods(serviceType)
-                .Where(IsServiceOperation)
-                .ToList();
         }
 
         public static string GetServiceName(Type serviceType)

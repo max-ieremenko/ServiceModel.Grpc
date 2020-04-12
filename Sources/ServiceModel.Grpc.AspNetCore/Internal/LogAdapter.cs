@@ -12,5 +12,9 @@ namespace ServiceModel.Grpc.AspNetCore.Internal
         }
 
         public void LogError(string message, params object[] args) => _logger.LogError(message, args);
+
+        public void LogWarning(string message, params object[] args) => _logger.LogWarning(message, args);
+
+        public void LogDebug(string message, params object[] args) => _logger.LogDebug(message, args);
     }
 }

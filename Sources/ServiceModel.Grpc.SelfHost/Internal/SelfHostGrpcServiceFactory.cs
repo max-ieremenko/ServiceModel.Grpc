@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Reflection;
 using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Hosting;
-using ServiceModel.Grpc.Internal.Emit;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.SelfHost.Internal
 {
@@ -23,30 +22,30 @@ namespace ServiceModel.Grpc.SelfHost.Internal
             _builder = builder;
         }
 
-        protected override void AddUnaryServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, MethodInfo serviceMethod, GrpcServiceBuilder serviceBuilder)
+        protected override void AddUnaryServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
         {
-            var invoker = serviceBuilder.CreateCall<UnaryServerCallHandler<TService, TRequest, TResponse>.UnaryServerMethod>(method.Name);
+            var invoker = callInfo.ChannelMethod.CreateDelegate<UnaryServerCallHandler<TService, TRequest, TResponse>.UnaryServerMethod>();
             var handler = new UnaryServerCallHandler<TService, TRequest, TResponse>(_serviceFactory, invoker);
             _builder.AddMethod(method, handler.Handle);
         }
 
-        protected override void AddClientStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, MethodInfo serviceMethod, GrpcServiceBuilder serviceBuilder)
+        protected override void AddClientStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
         {
-            var invoker = serviceBuilder.CreateCall<ClientStreamingServerCallHandler<TService, TRequest, TResponse>.ClientStreamingServerMethod>(method.Name);
+            var invoker = callInfo.ChannelMethod.CreateDelegate<ClientStreamingServerCallHandler<TService, TRequest, TResponse>.ClientStreamingServerMethod>();
             var handler = new ClientStreamingServerCallHandler<TService, TRequest, TResponse>(_serviceFactory, invoker);
             _builder.AddMethod(method, handler.Handle);
         }
 
-        protected override void AddServerStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, MethodInfo serviceMethod, GrpcServiceBuilder serviceBuilder)
+        protected override void AddServerStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
         {
-            var invoker = serviceBuilder.CreateCall<ServerStreamingServerCallHandler<TService, TRequest, TResponse>.ServerStreamingServerMethod>(method.Name);
+            var invoker = callInfo.ChannelMethod.CreateDelegate<ServerStreamingServerCallHandler<TService, TRequest, TResponse>.ServerStreamingServerMethod>();
             var handler = new ServerStreamingServerCallHandler<TService, TRequest, TResponse>(_serviceFactory, invoker);
             _builder.AddMethod(method, handler.Handle);
         }
 
-        protected override void AddDuplexStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, MethodInfo serviceMethod, GrpcServiceBuilder serviceBuilder)
+        protected override void AddDuplexStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
         {
-            var invoker = serviceBuilder.CreateCall<DuplexStreamingServerCallHandler<TService, TRequest, TResponse>.DuplexStreamingServerMethod>(method.Name);
+            var invoker = callInfo.ChannelMethod.CreateDelegate<DuplexStreamingServerCallHandler<TService, TRequest, TResponse>.DuplexStreamingServerMethod>();
             var handler = new DuplexStreamingServerCallHandler<TService, TRequest, TResponse>(_serviceFactory, invoker);
             _builder.AddMethod(method, handler.Handle);
         }
