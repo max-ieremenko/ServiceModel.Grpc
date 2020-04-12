@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option csharp_namespace = "ServiceModel.Grpc.AspNetCore";
+
+message HelloRequest {
+	string name = 1;
+}
+
+message HelloResult {
+	string message = 1;
+}
+
+service Greeter {
+	rpc Hello (HelloRequest) returns (HelloResult);
+}

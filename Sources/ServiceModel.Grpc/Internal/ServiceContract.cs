@@ -1,11 +1,18 @@
 ﻿using System;
 using System.Reflection;
 using System.ServiceModel;
+using Grpc.Core;
 
 namespace ServiceModel.Grpc.Internal
 {
     internal static class ServiceContract
     {
+        public static bool IsNativeGrpcService(Type type)
+        {
+            return type.IsClass
+                   && type.GetCustomAttribute<BindServiceMethodAttribute>() != null;
+        }
+
         public static bool IsServiceContractInterface(Type type)
         {
             return (type.IsPublic || type.IsNestedPublic)

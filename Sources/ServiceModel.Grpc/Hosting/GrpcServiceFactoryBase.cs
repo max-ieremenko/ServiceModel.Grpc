@@ -26,6 +26,34 @@ namespace ServiceModel.Grpc.Hosting
 
         public void Bind()
         {
+            if (ContractDescription.IgnoreServiceBinding(_serviceType))
+            {
+                Logger.LogDebug("Ignore service {0} binding: native grpc service.", _serviceType.FullName);
+            }
+            else
+            {
+                BindCore();
+            }
+        }
+
+        protected abstract void AddUnaryServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
+            where TRequest : class
+            where TResponse : class;
+
+        protected abstract void AddClientStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
+            where TRequest : class
+            where TResponse : class;
+
+        protected abstract void AddServerStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
+            where TRequest : class
+            where TResponse : class;
+
+        protected abstract void AddDuplexStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
+            where TRequest : class
+            where TResponse : class;
+
+        private void BindCore()
+        {
             foreach (var interfaceType in ContractDescription.GetInterfacesImplementation(_serviceType))
             {
                 var messages = new List<MessageAssembler>();
@@ -60,22 +88,6 @@ namespace ServiceModel.Grpc.Hosting
                 }
             }
         }
-
-        protected abstract void AddUnaryServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
-            where TRequest : class
-            where TResponse : class;
-
-        protected abstract void AddClientStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
-            where TRequest : class
-            where TResponse : class;
-
-        protected abstract void AddServerStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
-            where TRequest : class
-            where TResponse : class;
-
-        protected abstract void AddDuplexStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
-            where TRequest : class
-            where TResponse : class;
 
         private Type BuildChannelService(Type interfaceType, IList<MessageAssembler> messages)
         {
@@ -113,6 +125,7 @@ namespace ServiceModel.Grpc.Hosting
                     ReflectionTools.ImplementationOfMethod(_serviceType, interfaceType, message.Operation),
                     serviceChannelType.StaticMethod(operationName));
 
+                Logger.LogDebug("Bind method {0}.{1}.", _serviceType.FullName, callInfo.ServiceInstanceMethod.Name);
                 addMethod(serviceName, operationName, message.OperationType, callInfo);
             }
         }

@@ -19,6 +19,7 @@ namespace ServiceModel.Grpc.AspNetCore
         private IHost _host;
         private GrpcChannel _channel;
         private IMultipurposeService _domainService;
+        private Greeter.GreeterClient _greeterService;
 
         [OneTimeSetUp]
         public async Task BeforeAll()
@@ -37,6 +38,8 @@ namespace ServiceModel.Grpc.AspNetCore
             GrpcChannelExtensions.Http2UnencryptedSupport = true;
             _channel = new GrpcChannel("localhost", Port, ChannelCredentials.Insecure);
             _domainService = new ClientFactory().CreateClient<IMultipurposeService>(_channel);
+
+            _greeterService = new Greeter.GreeterClient(_channel);
         }
 
         [OneTimeTearDown]
@@ -44,6 +47,14 @@ namespace ServiceModel.Grpc.AspNetCore
         {
             await _channel.ShutdownAsync();
             await _host.StopAsync();
+        }
+
+        [Test]
+        public async Task NativeGreet()
+        {
+            var actual = await _greeterService.HelloAsync(new HelloRequest { Name = "world" });
+
+            actual.Message.ShouldBe("Hello world!");
         }
 
         [Test]

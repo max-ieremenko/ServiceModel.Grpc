@@ -9,6 +9,14 @@ namespace ServiceModel.Grpc.Internal
     public partial class ServiceContractTest
     {
         [Test]
+        [TestCase(typeof(object), false)]
+        [TestCase(typeof(NativeGrpcService), true)]
+        public void IsNativeGrpcService(Type serviceType, bool expected)
+        {
+            ServiceContract.IsNativeGrpcService(serviceType).ShouldBe(expected);
+        }
+
+        [Test]
         [TestCase(typeof(IServiceProvider), false)]
         [TestCase(typeof(IServiceContract), true)]
         public void IsServiceContractInterface(Type serviceType, bool expected)

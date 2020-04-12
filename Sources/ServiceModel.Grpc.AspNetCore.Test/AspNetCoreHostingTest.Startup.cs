@@ -52,6 +52,7 @@ namespace ServiceModel.Grpc.AspNetCore
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();
+                    endpoints.MapGrpcService<GreeterService>();
                     endpoints.MapGrpcService<MultipurposeService>();
                 });
             }

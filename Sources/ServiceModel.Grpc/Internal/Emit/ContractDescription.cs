@@ -8,6 +8,8 @@ namespace ServiceModel.Grpc.Internal.Emit
 {
     internal static class ContractDescription
     {
+        public static bool IgnoreServiceBinding(Type serviceType) => ServiceContract.IsNativeGrpcService(serviceType);
+
         public static IEnumerable<Type> GetInterfacesImplementation(Type interfaceType)
         {
             return ReflectionTools.ExpandInterface(interfaceType);
