@@ -9,7 +9,7 @@ using ServiceModel.Grpc.Internal.Emit;
 
 namespace ServiceModel.Grpc.Client
 {
-    public sealed class ClientFactory
+    public sealed class ClientFactory : IClientFactory
     {
         private static int _instanceCounter;
 
