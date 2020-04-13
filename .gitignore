@@ -1,6 +1,7 @@
 obj/
 bin/
 .vs/
+build-out/
 
 launchSettings.json
 *.sln.DotSettings.user
