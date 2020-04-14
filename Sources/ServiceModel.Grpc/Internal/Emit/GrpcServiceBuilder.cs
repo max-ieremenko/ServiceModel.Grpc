@@ -106,16 +106,7 @@ namespace ServiceModel.Grpc.Internal.Emit
 
             if (message.IsAsync)
             {
-                if (message.ResponseType.IsGenericType)
-                {
-                    // ServerChannelAdapter.GetUnaryCallResult
-                    body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(nameof(ServerChannelAdapter.GetUnaryCallResult)).MakeGenericMethod(message.ResponseType.GenericTypeArguments[0]));
-                }
-                else
-                {
-                    // ServerChannelAdapter.UnaryCallWait
-                    body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(nameof(ServerChannelAdapter.UnaryCallWait)));
-                }
+                AdaptSyncUnaryCallResult(body, message);
             }
             else
             {
@@ -163,16 +154,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             // service.Method
             body.Emit(OpCodes.Callvirt, _contractType.InstanceMethod(message.Operation.Name));
 
-            if (message.ResponseType.IsGenericType)
-            {
-                // ServerChannelAdapter.GetUnaryCallResult
-                body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(nameof(ServerChannelAdapter.GetUnaryCallResult)).MakeGenericMethod(message.ResponseType.GenericTypeArguments[0]));
-            }
-            else
-            {
-                // ServerChannelAdapter.UnaryCallWait
-                body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(nameof(ServerChannelAdapter.UnaryCallWait)));
-            }
+            AdaptSyncUnaryCallResult(body, message);
 
             body.Emit(OpCodes.Ret);
         }
@@ -304,6 +286,27 @@ namespace ServiceModel.Grpc.Internal.Emit
             }
 
             throw new NotImplementedException("{0} operation is not implemented.".FormatWith(message.OperationType));
+        }
+
+        private void AdaptSyncUnaryCallResult(ILGenerator body, MessageAssembler message)
+        {
+            if (message.ResponseType.IsGenericType)
+            {
+                var adapter = typeof(ServerChannelAdapter)
+                    .StaticMethod(message.Operation.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.GetUnaryCallResultValueTask) : nameof(ServerChannelAdapter.GetUnaryCallResultTask))
+                    .MakeGenericMethod(message.ResponseType.GenericTypeArguments[0]);
+
+                // ServerChannelAdapter.GetUnaryCallResult
+                body.Emit(OpCodes.Call, adapter);
+            }
+            else
+            {
+                var adapter = typeof(ServerChannelAdapter)
+                    .StaticMethod(message.Operation.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.UnaryCallWaitValueTask) : nameof(ServerChannelAdapter.UnaryCallWaitTask));
+
+                // ServerChannelAdapter.UnaryCallWait
+                body.Emit(OpCodes.Call, adapter);
+            }
         }
     }
 }

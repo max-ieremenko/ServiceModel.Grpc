@@ -23,9 +23,9 @@ namespace ServiceModel.Grpc.TestApi.Domain
             return Task.FromResult(result);
         }
 
-        public Task<long> Sum5ValuesAsync(int x1, int x2, int x3, int x4, int x5, CancellationToken token)
+        public ValueTask<long> Sum5ValuesAsync(long x1, int x2, int x3, int x4, int x5, CancellationToken token)
         {
-            return Task.FromResult((long)x1 + x2 + x3 + x4 + x5);
+            return new ValueTask<long>(x1 + x2 + x3 + x4 + x5);
         }
 
         public async IAsyncEnumerable<string> RepeatValue(string value, int count, CallContext context)

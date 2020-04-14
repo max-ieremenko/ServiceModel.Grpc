@@ -19,13 +19,25 @@ namespace ServiceModel.Grpc.Internal.Emit
             return new CallOptions(context.RequestHeaders, context.Deadline, context.CancellationToken, context.WriteOptions);
         }
 
-        public static async Task<Message> UnaryCallWait(Task call)
+        public static async Task<Message> UnaryCallWaitTask(Task call)
         {
             await call;
             return new Message();
         }
 
-        public static async Task<Message<T>> GetUnaryCallResult<T>(Task<T> call)
+        public static async Task<Message> UnaryCallWaitValueTask(ValueTask call)
+        {
+            await call;
+            return new Message();
+        }
+
+        public static async Task<Message<T>> GetUnaryCallResultTask<T>(Task<T> call)
+        {
+            var result = await call.ConfigureAwait(false);
+            return new Message<T>(result);
+        }
+
+        public static async Task<Message<T>> GetUnaryCallResultValueTask<T>(ValueTask<T> call)
         {
             var result = await call.ConfigureAwait(false);
             return new Message<T>(result);

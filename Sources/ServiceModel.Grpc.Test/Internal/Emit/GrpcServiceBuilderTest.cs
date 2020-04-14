@@ -76,6 +76,24 @@ namespace ServiceModel.Grpc.Internal.Emit
         }
 
         [Test]
+        public async Task EmptyValueTaskAsync()
+        {
+            var call = _channelType
+                .StaticMethod(nameof(IContract.EmptyValueTaskAsync))
+                .CreateDelegate<UnaryServerMethod<IContract, Message, Message>>();
+            Console.WriteLine(call.Method.Disassemble());
+
+            _service
+                .Setup(s => s.EmptyValueTaskAsync())
+                .Returns(new ValueTask(Task.CompletedTask));
+
+            var actual = await call(_service.Object, new Message(), null);
+
+            actual.ShouldNotBeNull();
+            _service.VerifyAll();
+        }
+
+        [Test]
         public async Task EmptyContext()
         {
             var call = _channelType
@@ -153,6 +171,24 @@ namespace ServiceModel.Grpc.Internal.Emit
             var actual = await call(_service.Object, new Message(), serverContext.Object);
 
             actual.Value1.ShouldBe("a");
+            _service.VerifyAll();
+        }
+
+        [Test]
+        public async Task ReturnValueTaskBoolAsync()
+        {
+            var call = _channelType
+                .StaticMethod(nameof(IContract.ReturnValueTaskBoolAsync))
+                .CreateDelegate<UnaryServerMethod<IContract, Message, Message<bool>>>();
+            Console.WriteLine(call.Method.Disassemble());
+
+            _service
+                .Setup(s => s.ReturnValueTaskBoolAsync())
+                .Returns(new ValueTask<bool>(Task.FromResult(true)));
+
+            var actual = await call(_service.Object, new Message(), null);
+
+            actual.Value1.ShouldBeTrue();
             _service.VerifyAll();
         }
 

@@ -17,6 +17,9 @@ namespace ServiceModel.Grpc.Internal.Emit
         Task EmptyAsync();
 
         [OperationContract]
+        ValueTask EmptyValueTaskAsync();
+
+        [OperationContract]
         void EmptyContext(CallContext context);
 
         [OperationContract]
@@ -27,6 +30,9 @@ namespace ServiceModel.Grpc.Internal.Emit
 
         [OperationContract]
         Task<string> ReturnStringAsync(ServerCallContext context = default);
+
+        [OperationContract]
+        ValueTask<bool> ReturnValueTaskBoolAsync();
 
         [OperationContract]
         void OneParameterContext(CallOptions options, int value);

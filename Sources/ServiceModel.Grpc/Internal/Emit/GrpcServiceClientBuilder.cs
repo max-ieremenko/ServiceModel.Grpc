@@ -3,6 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.Configuration;
@@ -207,11 +208,27 @@ namespace ServiceModel.Grpc.Internal.Emit
                 body.Emit(OpCodes.Callvirt, typeof(CallInvoker).InstanceMethod(nameof(CallInvoker.AsyncUnaryCall)).MakeGenericMethod(message.RequestType, message.ResponseType));
                 if (message.ResponseType.IsGenericType)
                 {
-                    body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.GetAsyncUnaryCallResult)).MakeGenericMethod(message.ResponseType));
+                    var adapter = typeof(ClientChannelAdapter)
+                        .StaticMethod(nameof(ClientChannelAdapter.GetAsyncUnaryCallResult))
+                        .MakeGenericMethod(message.ResponseType.GenericTypeArguments[0]);
+                    body.Emit(OpCodes.Call, adapter);
+
+                    // Task<> => new ValueTask<>
+                    if (message.Operation.ReturnType.IsValueTask())
+                    {
+                        body.Emit(OpCodes.Newobj, typeof(ValueTask<>).MakeGenericType(message.ResponseType.GenericTypeArguments[0]).Constructor(adapter.ReturnType));
+                    }
                 }
                 else
                 {
-                    body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.AsyncUnaryCallWait)));
+                    var adapter = typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.AsyncUnaryCallWait));
+                    body.Emit(OpCodes.Call, adapter);
+
+                    // Task => new ValueTask
+                    if (message.Operation.ReturnType.IsValueTask())
+                    {
+                        body.Emit(OpCodes.Newobj, typeof(ValueTask).Constructor(adapter.ReturnType));
+                    }
                 }
             }
             else

@@ -64,6 +64,18 @@ namespace ServiceModel.Grpc.Internal.Emit
         }
 
         [Test]
+        public async Task EmptyValueTaskAsync()
+        {
+            Console.WriteLine(_factory().GetType().InstanceMethod(nameof(IContract.EmptyValueTaskAsync)).Disassemble());
+
+            _callInvoker.SetupAsyncUnaryCall();
+
+            await _factory().EmptyValueTaskAsync();
+
+            _callInvoker.VerifyAll();
+        }
+
+        [Test]
         public void EmptyContext()
         {
             Console.WriteLine(_factory().GetType().InstanceMethod(nameof(IContract.EmptyContext)).Disassemble());
@@ -125,6 +137,19 @@ namespace ServiceModel.Grpc.Internal.Emit
             _callInvoker.SetupAsyncUnaryCall(actual => actual.CancellationToken.ShouldBe(_tokenSource.Token));
 
             Assert.ThrowsAsync<NotSupportedException>(() => _factory().ReturnStringAsync(context.Object));
+        }
+
+        [Test]
+        public async Task ReturnValueTaskBoolAsync()
+        {
+            Console.WriteLine(_factory().GetType().InstanceMethod(nameof(IContract.ReturnValueTaskBoolAsync)).Disassemble());
+
+            _callInvoker.SetupAsyncUnaryCallOut(true);
+
+            var actual = await _factory().ReturnValueTaskBoolAsync();
+
+            actual.ShouldBeTrue();
+            _callInvoker.VerifyAll();
         }
 
         [Test]

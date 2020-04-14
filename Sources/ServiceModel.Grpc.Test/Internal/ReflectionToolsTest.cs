@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using Shouldly;
 using DescriptionAttribute = System.ComponentModel.DescriptionAttribute;
@@ -10,6 +11,17 @@ namespace ServiceModel.Grpc.Internal
     [TestFixture]
     public partial class ReflectionToolsTest
     {
+        [Test]
+        [TestCase(typeof(Task), true)]
+        [TestCase(typeof(Task<int>), true)]
+        [TestCase(typeof(ValueTask), true)]
+        [TestCase(typeof(ValueTask<bool>), true)]
+        [TestCase(typeof(IAsyncEnumerable<int>), false)]
+        public void IsTask(Type type, bool expected)
+        {
+            ReflectionTools.IsTask(type).ShouldBe(expected);
+        }
+
         [Test]
         [TestCaseSource(nameof(GetImplementationOfMethodCases))]
         public void ImplementationOfMethod(Type declaringType, MethodInfo method, string expected)

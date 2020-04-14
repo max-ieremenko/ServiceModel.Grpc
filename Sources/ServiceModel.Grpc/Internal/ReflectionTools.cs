@@ -46,13 +46,13 @@ namespace ServiceModel.Grpc.Internal
 
         public static bool IsTask(Type type)
         {
-            if (typeof(Task).IsAssignableFrom(type))
-            {
-                return true;
-            }
+            return typeof(Task).IsAssignableFrom(type) || IsValueTask(type);
+        }
 
-            return string.Equals(type.Namespace, typeof(Task).Namespace, StringComparison.Ordinal)
-                   && (type.Name.Equals("ValueTask", StringComparison.Ordinal) || type.Name.Equals("ValueTask`1", StringComparison.Ordinal));
+        public static bool IsValueTask(this Type type)
+        {
+            return typeof(ValueTask) == type
+                   || (type.FullName ?? string.Empty).StartsWith(typeof(ValueTask<>).FullName, StringComparison.Ordinal);
         }
 
         public static bool IsStream(Type type) => typeof(Stream).IsAssignableFrom(type);
