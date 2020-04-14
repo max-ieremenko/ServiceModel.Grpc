@@ -17,7 +17,7 @@ namespace ServiceModel.Grpc.Internal.Emit
 
         public IMarshallerFactory MarshallerFactory { get; set; }
 
-        public CallOptions? DefaultCallOptions { get; set; }
+        public Func<CallOptions> DefaultCallOptionsFactory { get; set; }
 
         public ILogger Logger { get; set; }
 
@@ -43,11 +43,11 @@ namespace ServiceModel.Grpc.Internal.Emit
                     TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit,
                     typeof(GrpcClientBase));
 
-            // private static CallOptions? DefaultCallOptions
+            // private static CallOptions? DefaultCallOptionsFactory
             _defaultCallOptions = _typeBuilder
                 .DefineField(
-                    nameof(DefaultCallOptions),
-                    typeof(CallOptions?),
+                    nameof(DefaultCallOptionsFactory),
+                    typeof(Func<CallOptions>),
                     FieldAttributes.Private | FieldAttributes.Static);
 
             _defineGrpcMethod = _typeBuilder
@@ -81,7 +81,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 .CreateDelegate(typeof(Action<IMarshallerFactory>));
             defineGrpcMethod(MarshallerFactory);
 
-            implementationType.StaticFiled(_defaultCallOptions.Name).SetValue(null, DefaultCallOptions);
+            implementationType.StaticFiled(_defaultCallOptions.Name).SetValue(null, DefaultCallOptionsFactory);
 
             var callInvoker = Expression.Parameter(typeof(CallInvoker), "callInvoker");
 
@@ -155,46 +155,33 @@ namespace ServiceModel.Grpc.Internal.Emit
                 return;
             }
 
-            var callOptionsCombine = ContractDescription.GetClientCallOptionsCombine(message);
-            if (callOptionsCombine == null)
-            {
-                var text = "Context options in [{0}] are not supported.".FormatWith(ReflectionTools.GetSignature(method));
-
-                // throw new NotSupportedException("...");
-                body.Emit(OpCodes.Ldstr, text);
-                body.Emit(OpCodes.Newobj, typeof(NotSupportedException).Constructor(typeof(string)));
-                body.Emit(OpCodes.Throw);
-
-                Logger?.LogError(text);
-                return;
-            }
-
             var grpcMethodFiled = InitializeGrpcMethod(interfaceType, message);
             switch (message.OperationType)
             {
                 case MethodType.Unary:
-                    BuildUnary(body, message, grpcMethodFiled, callOptionsCombine);
+                    BuildUnary(body, message, grpcMethodFiled);
                     break;
                 case MethodType.ClientStreaming:
-                    BuildClientStreaming(body, message, grpcMethodFiled, callOptionsCombine);
+                    BuildClientStreaming(body, message, grpcMethodFiled);
                     break;
                 case MethodType.ServerStreaming:
-                    BuildServerStreaming(body, message, grpcMethodFiled, callOptionsCombine);
+                    BuildServerStreaming(body, message, grpcMethodFiled);
                     break;
                 case MethodType.DuplexStreaming:
-                    BuildDuplexStreaming(body, message, grpcMethodFiled, callOptionsCombine);
+                    BuildDuplexStreaming(body, message, grpcMethodFiled);
                     break;
                 default:
                     throw new NotImplementedException("{0} operation is not implemented.".FormatWith(message.OperationType));
             }
         }
 
-        private void BuildUnary(ILGenerator body, MessageAssembler message, FieldBuilder grpcMethodFiled, MethodInfo callOptionsCombine)
+        private void BuildUnary(ILGenerator body, MessageAssembler message, FieldBuilder grpcMethodFiled)
         {
-            body.DeclareLocal(callOptionsCombine.ReturnType); // var options
+            body.DeclareLocal(typeof(CallOptions)); // var options
+            body.DeclareLocal(typeof(CallOptionsBuilder)); // var optionsBuilder
             body.DeclareLocal(message.RequestType); // var message
 
-            InitializeCallOptionsVariable(body, message, callOptionsCombine);
+            InitializeCallOptionsVariable(body, message);
 
             // message = new Message<string, string>(value12, value3);
             foreach (var i in message.RequestTypeInput)
@@ -203,7 +190,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             }
 
             body.Emit(OpCodes.Newobj, message.RequestType.Constructor(message.RequestType.GenericTypeArguments));
-            body.Emit(OpCodes.Stloc_1);
+            body.Emit(OpCodes.Stloc_2);
 
             // var invoker = base.CallInvoker
             body.Emit(OpCodes.Ldarg_0);
@@ -212,7 +199,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ldsfld, grpcMethodFiled); // var method = static Method
             body.Emit(OpCodes.Ldnull); // var host = null
             body.Emit(OpCodes.Ldloc_0); // options
-            body.Emit(OpCodes.Ldloc_1); // message
+            body.Emit(OpCodes.Ldloc_2); // message
             
             if (message.IsAsync)
             {
@@ -245,12 +232,13 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ret);
         }
 
-        private void BuildServerStreaming(ILGenerator body, MessageAssembler message, FieldBuilder grpcMethodFiled, MethodInfo callOptionsCombine)
+        private void BuildServerStreaming(ILGenerator body, MessageAssembler message, FieldBuilder grpcMethodFiled)
         {
-            body.DeclareLocal(callOptionsCombine.ReturnType); // var options
+            body.DeclareLocal(typeof(CallOptions)); // var options
+            body.DeclareLocal(typeof(CallOptionsBuilder)); // var optionsBuilder
             body.DeclareLocal(message.RequestType); // var message
 
-            InitializeCallOptionsVariable(body, message, callOptionsCombine);
+            InitializeCallOptionsVariable(body, message);
 
             // message = new Message<string, string>(value12, value3);
             foreach (var i in message.RequestTypeInput)
@@ -259,7 +247,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             }
 
             body.Emit(OpCodes.Newobj, message.RequestType.Constructor(message.RequestType.GenericTypeArguments));
-            body.Emit(OpCodes.Stloc_1);
+            body.Emit(OpCodes.Stloc_2);
 
             // var invoker = base.CallInvoker
             body.Emit(OpCodes.Ldarg_0);
@@ -268,7 +256,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ldsfld, grpcMethodFiled); // var method = static Method
             body.Emit(OpCodes.Ldnull); // var host = null
             body.Emit(OpCodes.Ldloc_0); // options
-            body.Emit(OpCodes.Ldloc_1); // message
+            body.Emit(OpCodes.Ldloc_2); // message
 
             // CallInvoker.AsyncServerStreamingCall(...Method, null, context, value);
             body.Emit(OpCodes.Callvirt, typeof(CallInvoker).InstanceMethod(nameof(CallInvoker.AsyncServerStreamingCall)).MakeGenericMethod(message.RequestType, message.ResponseType));
@@ -280,21 +268,12 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ret);
         }
 
-        private void BuildClientStreaming(ILGenerator body, MessageAssembler message, FieldBuilder grpcMethodFiled, MethodInfo callOptionsCombine)
+        private void BuildClientStreaming(ILGenerator body, MessageAssembler message, FieldBuilder grpcMethodFiled)
         {
-            body.DeclareLocal(callOptionsCombine.ReturnType); // var options
-            body.DeclareLocal(message.RequestType); // var message
+            body.DeclareLocal(typeof(CallOptions)); // var options
+            body.DeclareLocal(typeof(CallOptionsBuilder)); // var optionsBuilder
 
-            InitializeCallOptionsVariable(body, message, callOptionsCombine);
-
-            // message = new Message<string, string>(value12, value3);
-            foreach (var i in message.RequestTypeInput)
-            {
-                body.EmitLdarg(i + 1);
-            }
-
-            body.Emit(OpCodes.Newobj, message.RequestType.Constructor(message.RequestType.GenericTypeArguments));
-            body.Emit(OpCodes.Stloc_1);
+            InitializeCallOptionsVariable(body, message);
 
             // var invoker = base.CallInvoker
             body.Emit(OpCodes.Ldarg_0);
@@ -322,11 +301,12 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ret);
         }
 
-        private void BuildDuplexStreaming(ILGenerator body, MessageAssembler message, FieldBuilder grpcMethodFiled, MethodInfo callOptionsCombine)
+        private void BuildDuplexStreaming(ILGenerator body, MessageAssembler message, FieldBuilder grpcMethodFiled)
         {
-            body.DeclareLocal(callOptionsCombine.ReturnType); // var options
+            body.DeclareLocal(typeof(CallOptions)); // var options
+            body.DeclareLocal(typeof(CallOptionsBuilder)); // var optionsBuilder
 
-            InitializeCallOptionsVariable(body, message, callOptionsCombine);
+            InitializeCallOptionsVariable(body, message);
 
             // var invoker = base.CallInvoker
             body.Emit(OpCodes.Ldarg_0);
@@ -346,16 +326,27 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ret);
         }
 
-        private void InitializeCallOptionsVariable(ILGenerator body, MessageAssembler message, MethodInfo callOptionsCombine)
+        private void InitializeCallOptionsVariable(ILGenerator body, MessageAssembler message)
         {
-            // options = CallOptionsBuilder.Combine(context);
+            // optionsBuilder = new CallOptionsBuilder(DefaultOptions)
             body.Emit(OpCodes.Ldsfld, _defaultCallOptions); // DefaultOptions
+            body.Emit(OpCodes.Newobj, typeof(CallOptionsBuilder).Constructor(typeof(Func<CallOptions>)));
+            body.Emit(OpCodes.Stloc_1);
+
+            // optionsBuilder = optionsBuilder.With()
             foreach (var i in message.ContextInput)
             {
-                body.EmitLdarg(i + 1);
+                body.Emit(OpCodes.Ldloca_S, 1); // optionsBuilder
+                body.EmitLdarg(i + 1); // parameter
+                
+                var withMethodName = "With" + message.Parameters[i].ParameterType.Name;
+                body.Emit(OpCodes.Call, typeof(CallOptionsBuilder).InstanceMethod(withMethodName)); // .With
+                body.Emit(OpCodes.Stloc_1);
             }
 
-            body.Emit(OpCodes.Call, callOptionsCombine);
+            // options = optionsBuilder.Build()
+            body.Emit(OpCodes.Ldloca_S, 1); // optionsBuilder
+            body.Emit(OpCodes.Call, typeof(CallOptionsBuilder).InstanceMethod(nameof(CallOptionsBuilder.Build)));
             body.Emit(OpCodes.Stloc_0);
         }
 

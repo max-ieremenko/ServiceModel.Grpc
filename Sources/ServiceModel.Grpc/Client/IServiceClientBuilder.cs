@@ -8,7 +8,7 @@ namespace ServiceModel.Grpc.Client
     {
         IMarshallerFactory MarshallerFactory { get; set; }
 
-        CallOptions? DefaultCallOptions { get; set; }
+        Func<CallOptions> DefaultCallOptionsFactory { get; set; }
 
         ILogger Logger { get; set; }
 

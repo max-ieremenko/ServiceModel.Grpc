@@ -20,7 +20,7 @@ namespace ServiceModel.Grpc.Client
             _clientBuilder = new Mock<IServiceClientBuilder>(MockBehavior.Strict);
             _clientBuilder.SetupProperty(b => b.MarshallerFactory, null);
             _clientBuilder.SetupProperty(b => b.Logger, null);
-            _clientBuilder.SetupProperty(b => b.DefaultCallOptions, null);
+            _clientBuilder.SetupProperty(b => b.DefaultCallOptionsFactory, null);
 
             _defaultOptions = new ServiceModelGrpcClientOptions { ClientBuilder = () => _clientBuilder.Object };
 

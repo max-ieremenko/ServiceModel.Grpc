@@ -18,9 +18,9 @@ namespace ServiceModel.Grpc
 
         public ServerCallContext ServerCallContext { get; }
 
-        public CallOptions ClientCallContext { get; }
+        public CallOptions? ClientCallContext { get; }
 
-        public static implicit operator CallOptions(CallContext context) => context.ClientCallContext;
+        public static implicit operator CallOptions(CallContext context) => context.ClientCallContext.GetValueOrDefault();
 
         public static implicit operator CallContext(CallOptions clientCallContext) => new CallContext(clientCallContext);
 

@@ -75,17 +75,5 @@ namespace ServiceModel.Grpc.Internal.Emit
 
             ex.Message.ShouldBe(log);
         }
-
-        [Test]
-        public void InvalidContextOptions()
-        {
-            var log = _logger.Errors.Find(i => i.Contains(nameof(IInvalidContract.InvalidContextOptions)));
-            log.ShouldNotBeNull();
-
-            var ex = Assert.Throws<NotSupportedException>(() => _contract.InvalidContextOptions());
-            Console.WriteLine(ex.Message);
-
-            ex.Message.ShouldBe(log);
-        }
     }
 }

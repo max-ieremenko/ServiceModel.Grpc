@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
-using Grpc.Core;
 
 namespace ServiceModel.Grpc.Internal.Emit
 {
@@ -55,29 +54,6 @@ namespace ServiceModel.Grpc.Internal.Emit
             }
 
             return false;
-        }
-
-        public static MethodInfo GetClientCallOptionsCombine(MessageAssembler message)
-        {
-            var parameters = new Type[message.ContextInput.Length + 1];
-            for (var i = 0; i < message.ContextInput.Length; i++)
-            {
-                parameters[i + 1] = message.Parameters[message.ContextInput[i]].ParameterType;
-            }
-
-            parameters[0] = typeof(CallOptions?);
-
-            MethodInfo method = null;
-            try
-            {
-                method = typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.Combine), parameters);
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                // method not found
-            }
-
-            return method;
         }
 
         public static string GetServiceName(Type interfaceType) => ServiceContract.GetServiceName(interfaceType);

@@ -65,7 +65,7 @@ namespace ServiceModel.Grpc.Client
             var builder = clientOptions.ClientBuilder?.Invoke() ?? new GrpcServiceClientBuilder();
 
             builder.MarshallerFactory = clientOptions.MarshallerFactory ?? DataContractMarshallerFactory.Default;
-            builder.DefaultCallOptions = clientOptions.DefaultCallOptions;
+            builder.DefaultCallOptionsFactory = clientOptions.DefaultCallOptionsFactory;
             builder.Logger = clientOptions.Logger;
 
             return builder;
@@ -76,15 +76,15 @@ namespace ServiceModel.Grpc.Client
         {
             var contractType = typeof(TContract);
 
-            if (!ReflectionTools.IsPublicInterface(contractType))
+            if (!ReflectionTools.IsPublicInterface(contractType) || contractType.IsGenericType)
             {
-                throw new NotSupportedException("{0} is not supported. Client contract must be public interface.".FormatWith(contractType));
+                throw new NotSupportedException("{0} is not supported. Client contract must be public non-generic interface.".FormatWith(contractType));
             }
 
             var options = new ServiceModelGrpcClientOptions
             {
                 MarshallerFactory = _defaultOptions?.MarshallerFactory,
-                DefaultCallOptions = _defaultOptions?.DefaultCallOptions,
+                DefaultCallOptionsFactory = _defaultOptions?.DefaultCallOptionsFactory,
                 Logger = _defaultOptions?.Logger,
                 ClientBuilder = _defaultOptions?.ClientBuilder
             };

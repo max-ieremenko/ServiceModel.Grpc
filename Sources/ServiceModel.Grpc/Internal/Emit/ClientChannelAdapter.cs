@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -9,27 +8,6 @@ namespace ServiceModel.Grpc.Internal.Emit
 {
     internal static class ClientChannelAdapter
     {
-        public static CallOptions Combine(CallOptions? defaultOptions) => defaultOptions.GetValueOrDefault();
-
-        public static CallOptions Combine(CallOptions? defaultOptions, CallOptions callOptions) => callOptions;
-
-        public static CallOptions Combine(CallOptions? defaultOptions, CallContext callContext) => callContext.ClientCallContext;
-
-        public static CallOptions Combine(CallOptions? defaultOptions, ServerCallContext callContext)
-        {
-            if (callContext != null)
-            {
-                throw new NotSupportedException("ServerCallContext can be propagated from client call.");
-            }
-
-            return defaultOptions.GetValueOrDefault();
-        }
-
-        public static CallOptions Combine(CallOptions? defaultOptions, CancellationToken token)
-        {
-            return (defaultOptions ?? default).WithCancellationToken(token);
-        }
-
         public static async Task AsyncUnaryCallWait(AsyncUnaryCall<Message> call)
         {
             await call;
