@@ -49,6 +49,18 @@ namespace ServiceModel.Grpc.Client
         }
 
         [Test]
+        public void RegisterClientGenericInterface()
+        {
+            Func<CallInvoker, IComparable<int>> factory = _ => null;
+
+            _clientBuilder
+                .Setup(b => b.Build<IComparable<int>>(It.IsNotNull<string>()))
+                .Returns(factory);
+
+            _sut.AddClient<IComparable<int>>();
+        }
+
+        [Test]
         public void CreateClientWithoutRegistration()
         {
             var callInvoker = new Mock<CallInvoker>(MockBehavior.Strict);

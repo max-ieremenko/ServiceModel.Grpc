@@ -76,7 +76,7 @@ namespace ServiceModel.Grpc.Client
         {
             var contractType = typeof(TContract);
 
-            if (!ReflectionTools.IsPublicInterface(contractType) || contractType.IsGenericType)
+            if (!ReflectionTools.IsPublicInterface(contractType) || contractType.IsGenericTypeDefinition)
             {
                 throw new NotSupportedException("{0} is not supported. Client contract must be public non-generic interface.".FormatWith(contractType));
             }
