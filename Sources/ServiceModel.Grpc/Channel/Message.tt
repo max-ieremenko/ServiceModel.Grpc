@@ -17,20 +17,29 @@ using System.Runtime.Serialization;
 namespace ServiceModel.Grpc.Channel
 {
 <#
-for (var argsCount=0; argsCount<=10; argsCount++)
+for (var argsCount=0; argsCount<=3; argsCount++)
 {
     var genericArgs = string.Join(", ", Enumerable.Range(1, argsCount).Select(i => "T" + i));
     if (argsCount > 0)
     {
         genericArgs = "<" + genericArgs + ">";
     }
-
+    //         private T1 _value1;
     var ctorArgs = string.Join(", ", Enumerable.Range(1, argsCount).Select(i => "T" + i + " value" + i));
 #>
     [Serializable]
     [DataContract]
     internal sealed class Message<#= genericArgs #>
     {
+<#
+            for (var a=1; a<=argsCount; a++)
+            {
+#>
+        private T<#= a #> _value<#= a #>;
+
+<#
+            }
+#>
 <#
 if (argsCount > 0)
 {
@@ -48,7 +57,7 @@ if (argsCount > 0)
             for (var a=1; a<=argsCount; a++)
             {
 #>
-            Value<#= a #> = value<#= a #>;
+            _value<#= a #> = value<#= a #>;
 <#
             }
 #>
@@ -59,7 +68,7 @@ if (argsCount > 0)
             {
 #>
         [DataMember(Name = "Value<#= a #>", Order = <#= a #>)]
-        public T<#= a #> Value<#= a #> { get; set; }
+        public T<#= a #> Value<#= a #> { get => _value<#= a #>; set => _value<#= a #> = value; }
 
 <#
             }

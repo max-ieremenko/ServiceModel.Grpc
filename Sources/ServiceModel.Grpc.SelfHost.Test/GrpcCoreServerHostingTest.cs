@@ -71,6 +71,14 @@ namespace ServiceModel.Grpc.SelfHost
         }
 
         [Test]
+        public async Task Sum5ValuesAsync()
+        {
+            var actual = await _domainService.Sum5ValuesAsync(1, 2, 3, 4, 5, default);
+
+            actual.ShouldBe(15);
+        }
+
+        [Test]
         public async Task RepeatValue()
         {
             var actual = await _domainService.RepeatValue("a", 3).ToListAsync();

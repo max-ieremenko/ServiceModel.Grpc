@@ -128,19 +128,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 dataParameters[0] = dataParameters[0].GenericTypeArguments[0];
             }
 
-            // ServiceModel.Grpc.Channel.Message`2
-            Type requestType;
-            try
-            {
-                requestType = typeof(Message).Assembly.GetType(typeof(Message).FullName + "`" + dataParameters.Count, true, false);
-            }
-            catch (Exception ex)
-            {
-                ThrowInvalidSignature(ex);
-                throw;
-            }
-
-            requestType = requestType.MakeGenericType(dataParameters.ToArray());
+            var requestType = MessageBuilder.GetMessageType(dataParameters.ToArray());
             return (requestType, dataParameterIndexes.ToArray());
         }
 

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using KellermanSoftware.CompareNetObjects;
 using NUnit.Framework;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Internal;
+using ServiceModel.Grpc.Internal.Emit;
 using Shouldly;
 
 namespace ServiceModel.Grpc.Configuration
@@ -86,6 +88,12 @@ namespace ServiceModel.Grpc.Configuration
                 { "value1", new Knife { HitDamage = 1 } },
                 { "value2", new Sword { HitDamage = 3, Length = 5 } }
             });
+
+            var bigMessageType = MessageBuilder.GetMessageType(Enumerable.Range(0, 1000).Select(_ => typeof(Person)).ToArray());
+            var bigMessage = Activator.CreateInstance(
+                bigMessageType,
+                Enumerable.Range(0, 1000).Select(i => new Person { Name = "name " + i }).Cast<object>().ToArray());
+            yield return bigMessage;
         }
     }
 }

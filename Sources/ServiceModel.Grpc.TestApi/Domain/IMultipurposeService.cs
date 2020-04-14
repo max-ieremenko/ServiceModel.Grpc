@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ServiceModel;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ServiceModel.Grpc.TestApi.Domain
@@ -12,6 +13,9 @@ namespace ServiceModel.Grpc.TestApi.Domain
 
         [OperationContract]
         Task<string> ConcatAsync(string value, CallContext context = default);
+
+        [OperationContract]
+        Task<long> Sum5ValuesAsync(int x1, int x2, int x3, int x4, int x5, CancellationToken token);
 
         [OperationContract]
         IAsyncEnumerable<string> RepeatValue(string value, int count, CallContext context = default);

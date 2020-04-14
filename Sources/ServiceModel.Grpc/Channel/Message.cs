@@ -24,17 +24,19 @@ namespace ServiceModel.Grpc.Channel
     [DataContract]
     internal sealed class Message<T1>
     {
+        private T1 _value1;
+
         public Message()
         {
         }
 
         public Message(T1 value1)
         {
-            Value1 = value1;
+            _value1 = value1;
         }
 
         [DataMember(Name = "Value1", Order = 1)]
-        public T1 Value1 { get; set; }
+        public T1 Value1 { get => _value1; set => _value1 = value; }
 
     }
 
@@ -42,21 +44,25 @@ namespace ServiceModel.Grpc.Channel
     [DataContract]
     internal sealed class Message<T1, T2>
     {
+        private T1 _value1;
+
+        private T2 _value2;
+
         public Message()
         {
         }
 
         public Message(T1 value1, T2 value2)
         {
-            Value1 = value1;
-            Value2 = value2;
+            _value1 = value1;
+            _value2 = value2;
         }
 
         [DataMember(Name = "Value1", Order = 1)]
-        public T1 Value1 { get; set; }
+        public T1 Value1 { get => _value1; set => _value1 = value; }
 
         [DataMember(Name = "Value2", Order = 2)]
-        public T2 Value2 { get; set; }
+        public T2 Value2 { get => _value2; set => _value2 = value; }
 
     }
 
@@ -64,319 +70,31 @@ namespace ServiceModel.Grpc.Channel
     [DataContract]
     internal sealed class Message<T1, T2, T3>
     {
+        private T1 _value1;
+
+        private T2 _value2;
+
+        private T3 _value3;
+
         public Message()
         {
         }
 
         public Message(T1 value1, T2 value2, T3 value3)
         {
-            Value1 = value1;
-            Value2 = value2;
-            Value3 = value3;
+            _value1 = value1;
+            _value2 = value2;
+            _value3 = value3;
         }
 
         [DataMember(Name = "Value1", Order = 1)]
-        public T1 Value1 { get; set; }
+        public T1 Value1 { get => _value1; set => _value1 = value; }
 
         [DataMember(Name = "Value2", Order = 2)]
-        public T2 Value2 { get; set; }
+        public T2 Value2 { get => _value2; set => _value2 = value; }
 
         [DataMember(Name = "Value3", Order = 3)]
-        public T3 Value3 { get; set; }
-
-    }
-
-    [Serializable]
-    [DataContract]
-    internal sealed class Message<T1, T2, T3, T4>
-    {
-        public Message()
-        {
-        }
-
-        public Message(T1 value1, T2 value2, T3 value3, T4 value4)
-        {
-            Value1 = value1;
-            Value2 = value2;
-            Value3 = value3;
-            Value4 = value4;
-        }
-
-        [DataMember(Name = "Value1", Order = 1)]
-        public T1 Value1 { get; set; }
-
-        [DataMember(Name = "Value2", Order = 2)]
-        public T2 Value2 { get; set; }
-
-        [DataMember(Name = "Value3", Order = 3)]
-        public T3 Value3 { get; set; }
-
-        [DataMember(Name = "Value4", Order = 4)]
-        public T4 Value4 { get; set; }
-
-    }
-
-    [Serializable]
-    [DataContract]
-    internal sealed class Message<T1, T2, T3, T4, T5>
-    {
-        public Message()
-        {
-        }
-
-        public Message(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5)
-        {
-            Value1 = value1;
-            Value2 = value2;
-            Value3 = value3;
-            Value4 = value4;
-            Value5 = value5;
-        }
-
-        [DataMember(Name = "Value1", Order = 1)]
-        public T1 Value1 { get; set; }
-
-        [DataMember(Name = "Value2", Order = 2)]
-        public T2 Value2 { get; set; }
-
-        [DataMember(Name = "Value3", Order = 3)]
-        public T3 Value3 { get; set; }
-
-        [DataMember(Name = "Value4", Order = 4)]
-        public T4 Value4 { get; set; }
-
-        [DataMember(Name = "Value5", Order = 5)]
-        public T5 Value5 { get; set; }
-
-    }
-
-    [Serializable]
-    [DataContract]
-    internal sealed class Message<T1, T2, T3, T4, T5, T6>
-    {
-        public Message()
-        {
-        }
-
-        public Message(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5, T6 value6)
-        {
-            Value1 = value1;
-            Value2 = value2;
-            Value3 = value3;
-            Value4 = value4;
-            Value5 = value5;
-            Value6 = value6;
-        }
-
-        [DataMember(Name = "Value1", Order = 1)]
-        public T1 Value1 { get; set; }
-
-        [DataMember(Name = "Value2", Order = 2)]
-        public T2 Value2 { get; set; }
-
-        [DataMember(Name = "Value3", Order = 3)]
-        public T3 Value3 { get; set; }
-
-        [DataMember(Name = "Value4", Order = 4)]
-        public T4 Value4 { get; set; }
-
-        [DataMember(Name = "Value5", Order = 5)]
-        public T5 Value5 { get; set; }
-
-        [DataMember(Name = "Value6", Order = 6)]
-        public T6 Value6 { get; set; }
-
-    }
-
-    [Serializable]
-    [DataContract]
-    internal sealed class Message<T1, T2, T3, T4, T5, T6, T7>
-    {
-        public Message()
-        {
-        }
-
-        public Message(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5, T6 value6, T7 value7)
-        {
-            Value1 = value1;
-            Value2 = value2;
-            Value3 = value3;
-            Value4 = value4;
-            Value5 = value5;
-            Value6 = value6;
-            Value7 = value7;
-        }
-
-        [DataMember(Name = "Value1", Order = 1)]
-        public T1 Value1 { get; set; }
-
-        [DataMember(Name = "Value2", Order = 2)]
-        public T2 Value2 { get; set; }
-
-        [DataMember(Name = "Value3", Order = 3)]
-        public T3 Value3 { get; set; }
-
-        [DataMember(Name = "Value4", Order = 4)]
-        public T4 Value4 { get; set; }
-
-        [DataMember(Name = "Value5", Order = 5)]
-        public T5 Value5 { get; set; }
-
-        [DataMember(Name = "Value6", Order = 6)]
-        public T6 Value6 { get; set; }
-
-        [DataMember(Name = "Value7", Order = 7)]
-        public T7 Value7 { get; set; }
-
-    }
-
-    [Serializable]
-    [DataContract]
-    internal sealed class Message<T1, T2, T3, T4, T5, T6, T7, T8>
-    {
-        public Message()
-        {
-        }
-
-        public Message(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5, T6 value6, T7 value7, T8 value8)
-        {
-            Value1 = value1;
-            Value2 = value2;
-            Value3 = value3;
-            Value4 = value4;
-            Value5 = value5;
-            Value6 = value6;
-            Value7 = value7;
-            Value8 = value8;
-        }
-
-        [DataMember(Name = "Value1", Order = 1)]
-        public T1 Value1 { get; set; }
-
-        [DataMember(Name = "Value2", Order = 2)]
-        public T2 Value2 { get; set; }
-
-        [DataMember(Name = "Value3", Order = 3)]
-        public T3 Value3 { get; set; }
-
-        [DataMember(Name = "Value4", Order = 4)]
-        public T4 Value4 { get; set; }
-
-        [DataMember(Name = "Value5", Order = 5)]
-        public T5 Value5 { get; set; }
-
-        [DataMember(Name = "Value6", Order = 6)]
-        public T6 Value6 { get; set; }
-
-        [DataMember(Name = "Value7", Order = 7)]
-        public T7 Value7 { get; set; }
-
-        [DataMember(Name = "Value8", Order = 8)]
-        public T8 Value8 { get; set; }
-
-    }
-
-    [Serializable]
-    [DataContract]
-    internal sealed class Message<T1, T2, T3, T4, T5, T6, T7, T8, T9>
-    {
-        public Message()
-        {
-        }
-
-        public Message(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5, T6 value6, T7 value7, T8 value8, T9 value9)
-        {
-            Value1 = value1;
-            Value2 = value2;
-            Value3 = value3;
-            Value4 = value4;
-            Value5 = value5;
-            Value6 = value6;
-            Value7 = value7;
-            Value8 = value8;
-            Value9 = value9;
-        }
-
-        [DataMember(Name = "Value1", Order = 1)]
-        public T1 Value1 { get; set; }
-
-        [DataMember(Name = "Value2", Order = 2)]
-        public T2 Value2 { get; set; }
-
-        [DataMember(Name = "Value3", Order = 3)]
-        public T3 Value3 { get; set; }
-
-        [DataMember(Name = "Value4", Order = 4)]
-        public T4 Value4 { get; set; }
-
-        [DataMember(Name = "Value5", Order = 5)]
-        public T5 Value5 { get; set; }
-
-        [DataMember(Name = "Value6", Order = 6)]
-        public T6 Value6 { get; set; }
-
-        [DataMember(Name = "Value7", Order = 7)]
-        public T7 Value7 { get; set; }
-
-        [DataMember(Name = "Value8", Order = 8)]
-        public T8 Value8 { get; set; }
-
-        [DataMember(Name = "Value9", Order = 9)]
-        public T9 Value9 { get; set; }
-
-    }
-
-    [Serializable]
-    [DataContract]
-    internal sealed class Message<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>
-    {
-        public Message()
-        {
-        }
-
-        public Message(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5, T6 value6, T7 value7, T8 value8, T9 value9, T10 value10)
-        {
-            Value1 = value1;
-            Value2 = value2;
-            Value3 = value3;
-            Value4 = value4;
-            Value5 = value5;
-            Value6 = value6;
-            Value7 = value7;
-            Value8 = value8;
-            Value9 = value9;
-            Value10 = value10;
-        }
-
-        [DataMember(Name = "Value1", Order = 1)]
-        public T1 Value1 { get; set; }
-
-        [DataMember(Name = "Value2", Order = 2)]
-        public T2 Value2 { get; set; }
-
-        [DataMember(Name = "Value3", Order = 3)]
-        public T3 Value3 { get; set; }
-
-        [DataMember(Name = "Value4", Order = 4)]
-        public T4 Value4 { get; set; }
-
-        [DataMember(Name = "Value5", Order = 5)]
-        public T5 Value5 { get; set; }
-
-        [DataMember(Name = "Value6", Order = 6)]
-        public T6 Value6 { get; set; }
-
-        [DataMember(Name = "Value7", Order = 7)]
-        public T7 Value7 { get; set; }
-
-        [DataMember(Name = "Value8", Order = 8)]
-        public T8 Value8 { get; set; }
-
-        [DataMember(Name = "Value9", Order = 9)]
-        public T9 Value9 { get; set; }
-
-        [DataMember(Name = "Value10", Order = 10)]
-        public T10 Value10 { get; set; }
+        public T3 Value3 { get => _value3; set => _value3 = value; }
 
     }
 

@@ -50,7 +50,14 @@ namespace ServiceModel.Grpc.Internal.Emit
                     return;
             }
 
-            body.Emit(OpCodes.Ldarg_S, argumentIndex);
+            if (argumentIndex <= 255)
+            {
+                body.Emit(OpCodes.Ldarg_S, argumentIndex);
+            }
+            else
+            {
+                body.Emit(OpCodes.Ldarg, argumentIndex);
+            }
         }
     }
 }
