@@ -1,6 +1,6 @@
 # ServiceModel.Grpc service and operation bindings
 
-For service binding only interfaces are used.
+For service binding, only interfaces are used.
 
 ```C#
 [ServiceContract]

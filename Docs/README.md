@@ -1,5 +1,14 @@
 # ServiceModel.Grpc
 
+- getting started example [create a gRPC client and server](CreateClientAndServerASPNETCore.md)
+- [service and operation names](ServiceAndOperationName.md)
+- [service and operation bindings](ServiceAndOperationBinding.md)
+- [client configuration](ClientConfiguration.md)
+- [ASP.NET Core server configuration](ASPNETCoreServerConfiguration.md)
+- [Grpc.Core server configuration](GrpcCoreServerConfiguration.md)
+- [compatibility with native gRPC](CompatibilityWithNativegRPC.md)
+- example [protobuf marshaller](/Examples/ProtobufMarshaller)
+
 ## Data contracts
 
 By default the DataContractSerializer is used for marshalling data between server an client. This behavior is configurable, see [ProtobufMarshaller example](/Examples/ProtobufMarshaller).
@@ -29,63 +38,138 @@ public interface IPersonService
 {
     // gRPC call
     [OperationContract]
-    Task<Person> CreatePerson(string name, DateTime birthDay);
+    Task Ping();
 
     // method is not gRPC call
-    Task<Person> ChangeName(Person person, string newName);
+    Task Ping();
 }
 ```
 
-## gRPC calls
+## Operation contracts
 
-Depends on call type (Unary, ClientStreaming, ServerStreaming, DuplexStreaming),
-as input can be zero or more data parameters and optional context parameters. Response is optional.
+Any operation is defined in a service contract under the hood is one of gRPC method: Unary, ClientStreaming, ServerStreaming or DuplexStreaming.
 
-Context parameters are:
-- ServiceModel.Grpc.CallContext
-- Grpc.Core.CallOptions
-- Grpc.Core.ServerCallContext
-- System.Threading.CancellationToken
+#### Unary operation
 
-## Unary call examples
+Response is optional, any number of request parameters
 
 ``` c#
+// blocking unary client call
 [OperationContract]
-void Ping();
+int Sum(int x, int y);
 
+// async unary client call
 [OperationContract]
-Task PingAsync();
-
-[OperationContract]
-string StringConcat(string value1, int value2, ..., CallContext context = default);
-
-[OperationContract]
-Task<string> StringConcat(string value1, int value2, ..., ServerCallContext context = default);
+Task<string> SumAsync(int x, int y);
 ```
 
-## ClientStreaming call example
+#### ClientStreaming operation
+
+Response is optional, does not support extra request parameters
 
 ``` c#
 [OperationContract]
-Task<long> SumValues(IAsyncEnumerable<int> values, CancellationToken token = default);
+Task<long> SumValues(IAsyncEnumerable<int> values);
 ```
 
-## ServerStreaming call  example
+#### ServerStreaming operation
+
+Any number of request parameters
 
 ``` c#
 [OperationContract]
-IAsyncEnumerable<int> EnumerableRange(int start, int count, CancellationToken token = default);
+IAsyncEnumerable<int> EnumerableRange(int start, int count);
 ```
 
-## DuplexStreaming example
+#### DuplexStreaming operation
+
+Does not support extra request parameters
 
 ``` c#
 [OperationContract]
-IAsyncEnumerable<long> MultiplyBy(IAsyncEnumerable<int> values, int multiplier, CancellationToken token = default);
+IAsyncEnumerable<int> MultiplyBy2(IAsyncEnumerable<int> values);
+```
+
+#### Context parameters
+
+ServiceModel.Grpc.CallContext
+
+``` c#
+// contract
+[OperationContract]
+Task Ping(CallContext context = default);
+
+// client
+await client.Ping(new CallOptions(....));
+
+// server
+Task Ping(CallContext context)
+{
+    // take ServerCallContext
+    Grpc.Core.ServerCallContext serverContext = context;
+    var token = serverContext.CancellationToken;
+    var requestHeaders = serverContext.RequestHeaders;
+}
+```
+
+Grpc.Core.CallOptions
+
+``` c#
+// contract
+[OperationContract]
+Task Ping(CallOptions context = default);
+
+// client
+await client.Ping(new CallOptions(....));
+
+// server
+Task Ping(CallOptions context)
+{
+    // context is not available here (default)
+}
+```
+
+Grpc.Core.ServerCallContext
+
+``` c#
+// contract
+[OperationContract]
+Task Ping(ServerCallContext context = default);
+
+// client
+await client.Ping();
+
+// server
+Task Ping(ServerCallContext context)
+{
+    var token = context.CancellationToken;
+    var requestHeaders = context.RequestHeaders;
+}
+```
+
+System.Threading.CancellationToken
+
+``` c#
+// contract
+[OperationContract]
+Task Ping(CancellationToken token = default);
+
+// client
+var tokenSource = new CancellationTokenSource();
+await client.Ping(tokenSource.Token);
+
+// server
+Task Ping(CancellationToken token)
+{
+    if (!token.IsCancellationRequested)
+    {
+        // ...
+    }
+}
 ```
 
 ## Limitations
 
 - generic methods are not supported
 - ref and out parameters are not supported
-- ClientStreaming and DuplexStreaming do not support input data parameters
+- ClientStreaming and DuplexStreaming do not support extra parameters
