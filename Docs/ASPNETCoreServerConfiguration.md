@@ -25,7 +25,7 @@ public class Startup
 
         // optional configuration for a specific service
         services
-            .AddServiceModelGrpcServiceOptions<ICalculator>(options =>
+            .AddServiceModelGrpcServiceOptions<IMyService>(options =>
             {
                 options.MarshallerFactory = ...
             });
