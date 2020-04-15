@@ -2,7 +2,7 @@
 
 ## Data contracts
 
-By default the DataContractSerializer is used for marshalling data between server an client. This behavior is configurable, see [ProtobufMarshaller](/ProtobufMarshaller).
+By default the DataContractSerializer is used for marshalling data between server an client. This behavior is configurable, see [ProtobufMarshaller example](/Examples/ProtobufMarshaller).
 
 ``` c#
 [DataContract]
@@ -88,10 +88,4 @@ IAsyncEnumerable<long> MultiplyBy(IAsyncEnumerable<int> values, int multiplier, 
 
 - generic methods are not supported
 - ref and out parameters are not supported
-- maximum 10 input data parameters
 - ClientStreaming and DuplexStreaming do not support input data parameters
-
-## TODO
-
-- unlimited number of input data parameters
-- ClientStreaming and DuplexStreaming pass parameters in headers
