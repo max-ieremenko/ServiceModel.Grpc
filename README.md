@@ -6,13 +6,13 @@
 
 ``` proto
 message SumRequest {
-	int x = 1;
-	int y = 2;
-	int z = 3;
+	int64 x = 1;
+	int32 y = 2;
+	int32 z = 3;
 }
 
 message SumResponse {
-	long result = 1;
+	int64 result = 1;
 }
 
 service Calculator {
@@ -33,17 +33,19 @@ public SumResponse Sum(SumRequest request)
 public interface ICalculator
 {
     [OperationContract]
-    long Sum(int x, int y, int z);
+    long Sum(long x, int y, int z);
 }
 
-public class Calculator : ICalculator
+public sealed class Calculator : ICalculator
 {
-    public long Sum(int x, int y, int z)
+    public long Sum(long x, int y, int z)
     {
         return x + y + z;
     }
 }
 ```
+
+Is ServiceModel.Grpc compatible with standard gRPC? [Yes](/Docs/CompatibilityWithNativegRPC.md).
 
 ## To start using ServiceModel.Grpc
 
@@ -52,11 +54,11 @@ The first place to start using ServiceModel.Grpc is [getting started example](Do
 For additional examples refer to [docs](Docs).
 
 
-## Packages
+## NuGet feed
 
 -----
 Package | Supported platforms | Description
 ------- | :------------------ | :----------
-[![Version](https://img.shields.io/nuget/v/ServiceModel.Grpc.svg)](https://www.nuget.org/packages/ServiceModel.Grpc) | net461, netstandard2.0/2.1 | basic Grpc.Core.Api extensions, ClientFactory
+[![Version](https://img.shields.io/nuget/v/ServiceModel.Grpc.svg)](https://www.nuget.org/packages/ServiceModel.Grpc) | net461, netstandard2.0/2.1 | main internal functionality, basic Grpc.Core.Api extensions, ClientFactory
 [![Version](https://img.shields.io/nuget/v/ServiceModel.Grpc.AspNetCore.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.AspNetCore) | .net core 3.0 | Grpc.AspNetCore.Server extensions
 [![Version](https://img.shields.io/nuget/v/ServiceModel.Grpc.SelfHost.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.SelfHost) | net461, netstandard2.0/2.1 | Grpc.Core extensions for self-hosted Grpc.Core.Server

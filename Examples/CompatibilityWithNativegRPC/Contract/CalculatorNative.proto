@@ -1,0 +1,29 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Contract";
+
+message SumRequest {
+	int32 x = 1;
+	int32 y = 2;
+	int32 z = 3;
+}
+
+message SumResponse {
+	int64 result = 1;
+}
+
+message Int32Value {
+	int32 value = 1;
+}
+
+message RangeRequest {
+	int32 start = 1;
+	int32 count = 2;
+}
+
+service CalculatorNative {
+	rpc Sum (SumRequest) returns (SumResponse);
+	rpc SumValues (stream Int32Value) returns (SumResponse);
+	rpc Range (RangeRequest) returns (stream Int32Value);
+	rpc MultiplyBy2 (stream Int32Value) returns (stream Int32Value);
+}

@@ -1,0 +1,30 @@
+﻿using Contract;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace ServerAspNetHost
+{
+    internal sealed class Startup
+    {
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services
+                .AddServiceModelGrpc(options =>
+                {
+                    // set ProtobufMarshaller as default Marshaller
+                    options.DefaultMarshallerFactory = ProtobufMarshallerFactory.Default;
+                });
+        }
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<CalculatorService>();
+            });
+        }
+    }
+}

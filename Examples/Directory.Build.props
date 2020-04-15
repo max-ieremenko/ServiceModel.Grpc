@@ -1,0 +1,15 @@
+<Project>
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+	
+	<LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ServiceModelGrpcVersion>1.0.0-pre1</ServiceModelGrpcVersion>
+  </PropertyGroup>
+  
+</Project>
