@@ -35,7 +35,7 @@ namespace ServiceModel.Grpc.Internal
         }
 
         [Test]
-        [TestCase(typeof(IServiceContract), "ServiceModel.Grpc.Internal.ServiceContractTest.IServiceContract")]
+        [TestCase(typeof(IServiceContract), "IServiceContract")]
         public void GetServiceName(Type serviceType, string expected)
         {
             ServiceContract.GetServiceName(serviceType).ShouldBe(expected);
@@ -43,7 +43,7 @@ namespace ServiceModel.Grpc.Internal
 
         [Test]
         [TestCase("OverrideName", "OverrideNamespace", "OverrideNamespace.OverrideName")]
-        [TestCase("OverrideName", null, "ServiceModel.Grpc.Internal.ServiceContractTest.OverrideName")]
+        [TestCase("OverrideName", null, "OverrideName")]
         [TestCase(null, "OverrideNamespace", "OverrideNamespace.IServiceContract")]
         public void GetServiceNameByAttribute(string name, string @namespace, string expected)
         {

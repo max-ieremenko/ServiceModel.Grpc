@@ -27,7 +27,7 @@ namespace ServiceModel.Grpc.Internal.Emit
 
             foreach (var method in ReflectionTools.GetMethods(typeof(IContract)))
             {
-                _sut.BuildCall(new MessageAssembler(method));
+                _sut.BuildCall(new MessageAssembler(method), method.Name);
             }
 
             _channelType = _sut.BuildType();

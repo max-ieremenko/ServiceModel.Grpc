@@ -4,49 +4,66 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Grpc.Core;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using NUnit.Framework;
-using ServiceModel.Grpc.Client;
 using Shouldly;
-using GrpcChannel = Grpc.Core.Channel;
 
 namespace ServiceModel.Grpc.AspNetCore
 {
     [TestFixture]
     public partial class AspNetCoreAuthenticationTest
     {
-        private const int Port = 8080;
-        private IHost _host;
-        private GrpcChannel _channel;
+        private KestrelHost _host;
         private IService _domainService;
 
         [OneTimeSetUp]
         public async Task BeforeAll()
         {
-            _host = Host
-                .CreateDefaultBuilder()
-                .ConfigureWebHostDefaults(webBuilder =>
+            _host = new KestrelHost();
+
+            await _host.StartAsync(
+                services =>
                 {
-                    webBuilder.UseStartup<Startup>();
-                    webBuilder.UseKestrel(o => o.ListenLocalhost(Port, l => l.Protocols = HttpProtocols.Http2));
-                })
-                .Build();
+                    services.AddHttpContextAccessor();
+                    services.AddAuthorization();
 
-            await _host.StartAsync();
+                    services
+                        .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                        .AddJwtBearer(options =>
+                        {
+                            options.RequireHttpsMetadata = false;
+                            options.SaveToken = false;
+                            options.TokenValidationParameters = new TokenValidationParameters
+                            {
+                                ValidateLifetime = false,
+                                ValidateAudience = false,
+                                ValidateIssuer = false,
+                                ValidateIssuerSigningKey = false,
+                                ValidateTokenReplay = false,
+                                RequireAudience = false,
+                                RequireExpirationTime = false,
+                                IssuerSigningKey = new SymmetricSecurityKey(Guid.Empty.ToByteArray())
+                            };
+                        });
+                },
+                app =>
+                {
+                    app
+                        .UseAuthentication()
+                        .UseAuthorization();
+                },
+                endpoints => endpoints.MapGrpcService<Service>());
 
-            GrpcChannelExtensions.Http2UnencryptedSupport = true;
-            _channel = new GrpcChannel("localhost", Port, ChannelCredentials.Insecure);
-            _domainService = new ClientFactory().CreateClient<IService>(_channel);
+            _domainService = _host.ClientFactory.CreateClient<IService>(_host.Channel);
         }
 
         [OneTimeTearDown]
         public async Task AfterAll()
         {
-            await _channel.ShutdownAsync();
-            await _host.StopAsync();
+            await _host.DisposeAsync();
         }
 
         [Test]

@@ -23,9 +23,9 @@ namespace ServiceModel.Grpc.Internal.Emit
                     TypeAttributes.NotPublic | TypeAttributes.Abstract | TypeAttributes.Class | TypeAttributes.Sealed);
         }
 
-        public void BuildNotSupportedCall(MessageAssembler message, string error)
+        public void BuildNotSupportedCall(MessageAssembler message, string methodName, string error)
         {
-            var body = CreateMethodWithSignature(message);
+            var body = CreateMethodWithSignature(message, methodName);
 
             // throw new NotSupportedException("...");
             body.Emit(OpCodes.Ldstr, error);
@@ -33,9 +33,9 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Throw);
         }
 
-        public void BuildCall(MessageAssembler message)
+        public void BuildCall(MessageAssembler message, string methodName)
         {
-            var body = CreateMethodWithSignature(message);
+            var body = CreateMethodWithSignature(message, methodName);
 
             switch (message.OperationType)
             {
@@ -234,7 +234,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ret);
         }
 
-        private ILGenerator CreateMethodWithSignature(MessageAssembler message)
+        private ILGenerator CreateMethodWithSignature(MessageAssembler message, string methodName)
         {
             switch (message.OperationType)
             {
@@ -242,7 +242,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                     // Task<TResponse> Invoke(TService service, TRequest request, ServerCallContext context)
                     return _typeBuilder
                         .DefineMethod(
-                            message.Operation.Name,
+                            methodName,
                             MethodAttributes.Public | MethodAttributes.Static,
                             typeof(Task<>).MakeGenericType(message.ResponseType),
                             new[] { _contractType, message.RequestType, typeof(ServerCallContext) })
@@ -252,7 +252,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                     // Task<TResponse> Invoke(TService service, IAsyncStreamReader<TRequest> request, ServerCallContext context)
                     return _typeBuilder
                         .DefineMethod(
-                            message.Operation.Name,
+                            methodName,
                             MethodAttributes.Public | MethodAttributes.Static,
                             typeof(Task<>).MakeGenericType(message.ResponseType),
                             new[] { _contractType, typeof(IAsyncStreamReader<>).MakeGenericType(message.RequestType), typeof(ServerCallContext) })
@@ -262,7 +262,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                     // Task Invoke(TService service, TRequest request, IServerStreamWriter<TResponse> stream, ServerCallContext context)
                     return _typeBuilder
                         .DefineMethod(
-                            message.Operation.Name,
+                            methodName,
                             MethodAttributes.Public | MethodAttributes.Static,
                             typeof(Task),
                             new[] { _contractType, message.RequestType, typeof(IServerStreamWriter<>).MakeGenericType(message.ResponseType), typeof(ServerCallContext) })
@@ -272,7 +272,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                     // Task Invoke(TService service, IAsyncStreamReader<TRequest> request, IServerStreamWriter<TResponse> response, ServerCallContext context)
                     return _typeBuilder
                         .DefineMethod(
-                            message.Operation.Name,
+                            methodName,
                             MethodAttributes.Public | MethodAttributes.Static,
                             typeof(Task<>).MakeGenericType(message.ResponseType),
                             new[]

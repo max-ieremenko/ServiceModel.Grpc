@@ -90,11 +90,16 @@ namespace ServiceModel.Grpc.Internal
             return result;
         }
 
+        public static PropertyInfo TryInstanceProperty(this Type type, string name)
+        {
+            return type.GetProperty(
+                name,
+                BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+        }
+
         public static PropertyInfo InstanceProperty(this Type type, string name)
         {
-            var result = type.GetProperty(
-                name, 
-                BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var result = TryInstanceProperty(type, name);
 
             if (result == null)
             {

@@ -94,16 +94,18 @@ namespace ServiceModel.Grpc.Hosting
             var serviceBuilder = new GrpcServiceBuilder(interfaceType);
             foreach (var message in messages)
             {
+                var operationName = ContractDescription.GetOperationName(message.Operation);
+
                 if (message.ContextInput.Any(i => ContractDescription.GetServiceContextOption(message.Parameters[i].ParameterType) == null))
                 {
                     var error = "Context options in [{0}] are not supported.".FormatWith(ReflectionTools.GetSignature(message.Operation));
 
                     Logger.LogError("Service {0}: {1}", _serviceType.FullName, error);
-                    serviceBuilder.BuildNotSupportedCall(message, error);
+                    serviceBuilder.BuildNotSupportedCall(message, operationName, error);
                 }
                 else
                 {
-                    serviceBuilder.BuildCall(message);
+                    serviceBuilder.BuildCall(message, operationName);
                 }
             }
 

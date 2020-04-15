@@ -51,16 +51,17 @@ namespace ServiceModel.Grpc.Internal
         {
             var attributeType = serviceContractAttribute.GetType();
 
-            var @namespace = (string)attributeType.InstanceProperty("Namespace").GetValue(serviceContractAttribute);
-            if (string.IsNullOrWhiteSpace(@namespace))
-            {
-                @namespace = ReflectionTools.GetNamespace(serviceType);
-            }
+            var @namespace = (string)attributeType.TryInstanceProperty("Namespace")?.GetValue(serviceContractAttribute);
+            var name = (string)attributeType.TryInstanceProperty("Name")?.GetValue(serviceContractAttribute);
 
-            var name = (string)attributeType.InstanceProperty("Name").GetValue(serviceContractAttribute);
             if (string.IsNullOrWhiteSpace(name))
             {
                 name = serviceType.Name;
+            }
+
+            if (string.IsNullOrWhiteSpace(@namespace))
+            {
+                return name;
             }
 
             return @namespace + "." + name;
@@ -70,8 +71,8 @@ namespace ServiceModel.Grpc.Internal
         {
             var name = (string)operationContractAttribute
                 .GetType()
-                .InstanceProperty("Name")
-                .GetValue(operationContractAttribute);
+                .TryInstanceProperty("Name")
+                ?.GetValue(operationContractAttribute);
             return string.IsNullOrWhiteSpace(name) ? methodName : name;
         }
 

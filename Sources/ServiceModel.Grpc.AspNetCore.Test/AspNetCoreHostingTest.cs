@@ -1,52 +1,40 @@
 ﻿using System.Threading.Tasks;
 using Grpc.Core;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Builder;
 using NUnit.Framework;
-using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
-using GrpcChannel = Grpc.Core.Channel;
 
 namespace ServiceModel.Grpc.AspNetCore
 {
     [TestFixture]
-    public partial class AspNetCoreHostingTest
+    public class AspNetCoreHostingTest
     {
-        private const int Port = 8080;
-        private IHost _host;
-        private GrpcChannel _channel;
+        private KestrelHost _host;
         private IMultipurposeService _domainService;
         private Greeter.GreeterClient _greeterService;
 
         [OneTimeSetUp]
         public async Task BeforeAll()
         {
-            _host = Host
-                .CreateDefaultBuilder()
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                    webBuilder.UseKestrel(o => o.ListenLocalhost(Port, l => l.Protocols = HttpProtocols.Http2));
-                })
-                .Build();
+            _host = new KestrelHost();
 
-            await _host.StartAsync();
+            await _host.StartAsync(configureEndpoints: endpoints =>
+            {
+                endpoints.MapGrpcService<GreeterService>();
+                endpoints.MapGrpcService<MultipurposeService>();
+            });
 
-            GrpcChannelExtensions.Http2UnencryptedSupport = true;
-            _channel = new GrpcChannel("localhost", Port, ChannelCredentials.Insecure);
-            _domainService = new ClientFactory().CreateClient<IMultipurposeService>(_channel);
+            _domainService = _host.ClientFactory.CreateClient<IMultipurposeService>(_host.Channel);
 
-            _greeterService = new Greeter.GreeterClient(_channel);
+            _greeterService = new Greeter.GreeterClient(_host.Channel);
         }
 
         [OneTimeTearDown]
         public async Task AfterAll()
         {
-            await _channel.ShutdownAsync();
-            await _host.StopAsync();
+            await _host.DisposeAsync();
         }
 
         [Test]
