@@ -31,6 +31,8 @@ service Calculator {
 }
 ```
 
+ServiceModel.Grpc contract
+
 ```C#
 [ServiceContract(Name = "Calculator")] // service name: Calculator
 public interface ICalculator
@@ -40,7 +42,7 @@ public interface ICalculator
 }
 ```
 
-For additional information refer to [service and operation names](ServiceAndOperationName.md) and [service and operation bindings](ServiceAndOperationBinding).
+For additional information refer to [service and operation names](ServiceAndOperationName.md) and [service and operation bindings](ServiceAndOperationBinding.md).
 
 ## Serialization
 
