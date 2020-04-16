@@ -7,7 +7,7 @@ To make ServiceModel.Grpc compatible with native gRPC:
 
 ## Demo app
 
-Small app to demonstrate [compatibility withNative gRPC](/Examples/CompatibilityWithNativegRPC).
+Small app to demonstrate [compatibility with Native gRPC](/Examples/CompatibilityWithNativegRPC).
 The application is configured to use [protobuf-net](https://www.nuget.org/packages/protobuf-net/) for data serialization.
 
 ## Service and method names

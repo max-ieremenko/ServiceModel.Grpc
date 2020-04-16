@@ -47,7 +47,7 @@ public interface IPersonService
 
 ## Operation contracts
 
-Any operation is defined in a service contract under the hood is one of gRPC method: Unary, ClientStreaming, ServerStreaming or DuplexStreaming.
+Any operation in a service contract under the hood is one of gRPC method: Unary, ClientStreaming, ServerStreaming or DuplexStreaming.
 
 #### Unary operation
 

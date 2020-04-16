@@ -45,7 +45,7 @@ public sealed class Calculator : ICalculator
 }
 ```
 
-Is ServiceModel.Grpc compatible with standard gRPC? [Yes, it is](/Docs/CompatibilityWithNativegRPC.md).
+Is ServiceModel.Grpc compatible with standard gRPC? [Yes](/Docs/CompatibilityWithNativegRPC.md).
 
 ## To start using ServiceModel.Grpc
 

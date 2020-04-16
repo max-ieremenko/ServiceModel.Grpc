@@ -17,7 +17,7 @@ public interface ICalculator
 }
 ```
 
-in some cases it may lead to a naming conflicts, in this example there are 2 method with gRPC method name `/ICalculator/Sum`:
+in some cases it may lead to a naming conflicts, in the following example there are 2 method with gRPC method name `/ICalculator/Sum`:
 
 ```C#
 // service name: ICalculator
