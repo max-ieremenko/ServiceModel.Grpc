@@ -18,15 +18,21 @@ namespace ServiceModel.Grpc.AspNetCore
         private readonly int _port;
         private IHost _host;
 
-        public KestrelHost(IMarshallerFactory marshallerFactory = null, int port = 8080)
+        public KestrelHost(
+            IMarshallerFactory marshallerFactory = null,
+            int port = 8080,
+            CallOptions? defaultCallOptions = null)
         {
             _marshallerFactory = marshallerFactory;
             _port = port;
 
-            ClientFactory = new ClientFactory(new ServiceModelGrpcClientOptions
+            var factoryOptions = new ServiceModelGrpcClientOptions { MarshallerFactory = _marshallerFactory };
+            if (defaultCallOptions.HasValue)
             {
-                MarshallerFactory = _marshallerFactory
-            });
+                factoryOptions.DefaultCallOptionsFactory = () => defaultCallOptions.Value;
+            }
+
+            ClientFactory = new ClientFactory(factoryOptions);
         }
 
         public GrpcChannel Channel { get; private set; }

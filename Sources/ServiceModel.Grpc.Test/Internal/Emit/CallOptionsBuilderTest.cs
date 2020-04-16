@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Grpc.Core;
 using Moq;
@@ -80,7 +82,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 .WithCallContext(newOptions)
                 .Build();
 
-            actual.Headers.ShouldBe(newOptions.ClientCallContext.Value.Headers);
+            actual.Headers.ShouldBe(newOptions.CallOptions.Value.Headers);
         }
 
         [Test]
@@ -94,6 +96,104 @@ namespace ServiceModel.Grpc.Internal.Emit
                 .Build();
 
             actual.Headers.ShouldBe(newOptions.Headers);
+        }
+        
+        [Test]
+        [TestCaseSource(nameof(GetMergeMetadataTestCases))]
+        public void MergeMetadata(Metadata current, Metadata mergeWith, Metadata expected)
+        {
+            var actual = CallOptionsBuilder.MergeMetadata(current, mergeWith);
+
+            actual.Select(i => i.Key).ShouldBe(expected.Select(i => i.Key), Case.Sensitive);
+        }
+
+        private static IEnumerable<TestCaseData> GetMergeMetadataTestCases()
+        {
+            var current = new Metadata();
+            var mergeWith = new Metadata();
+
+            yield return new TestCaseData(null, mergeWith, mergeWith);
+            yield return new TestCaseData(current, null, current);
+
+            yield return new TestCaseData(
+                new Metadata
+                {
+                    { "x", "1" }
+                },
+                new Metadata(),
+                new Metadata
+                {
+                    { "x", "1" }
+                });
+
+            yield return new TestCaseData(
+                new Metadata(),
+                new Metadata
+                {
+                    { "x", "1" }
+                },
+                new Metadata
+                {
+                    { "x", "1" }
+                });
+
+            yield return new TestCaseData(
+                new Metadata
+                {
+                    { "x", "1" }
+                },
+                new Metadata
+                {
+                    { "x", "1" }
+                },
+                new Metadata
+                {
+                    { "x", "1" }
+                });
+
+            yield return new TestCaseData(
+                new Metadata
+                {
+                    { "x", "1" }
+                },
+                new Metadata
+                {
+                    { "x", "2" }
+                },
+                new Metadata
+                {
+                    { "x", "1" },
+                    { "x", "2" }
+                });
+
+            yield return new TestCaseData(
+                new Metadata
+                {
+                    { "x-bin", new byte[] { 1, 2 } }
+                },
+                new Metadata
+                {
+                    { "x-bin", new byte[] { 1, 2 } }
+                },
+                new Metadata
+                {
+                    { "x-bin", new byte[] { 1, 2 } }
+                });
+
+            yield return new TestCaseData(
+                new Metadata
+                {
+                    { "x-bin", new byte[] { 1, 2 } }
+                },
+                new Metadata
+                {
+                    { "x-bin", new byte[] { 1, 3 } }
+                },
+                new Metadata
+                {
+                    { "x-bin", new byte[] { 1, 2 } },
+                    { "x-bin", new byte[] { 1, 3 } }
+                });
         }
     }
 }

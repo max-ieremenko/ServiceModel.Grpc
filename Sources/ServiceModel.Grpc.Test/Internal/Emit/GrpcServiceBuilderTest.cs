@@ -104,7 +104,11 @@ namespace ServiceModel.Grpc.Internal.Emit
             var serverContext = new Mock<ServerCallContext>(MockBehavior.Strict);
 
             _service
-                .Setup(s => s.EmptyContext(serverContext.Object));
+                .Setup(s => s.EmptyContext(It.IsNotNull<CallContext>()))
+                .Callback<CallContext>(c =>
+                {
+                    c.ServerCallContext.ShouldBe(serverContext.Object);
+                });
 
             var actual = await call(_service.Object, new Message(), serverContext.Object);
 

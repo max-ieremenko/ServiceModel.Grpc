@@ -248,7 +248,7 @@ namespace ServiceModel.Grpc.Internal.Emit
 
             var responseStream = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
             responseStream
-                .Setup(r => r.MoveNext(default))
+                .Setup(r => r.MoveNext(_tokenSource.Token))
                 .Callback(() =>
                 {
                     responseStream
@@ -256,7 +256,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                         .Returns(new Message<int>(10));
 
                     responseStream
-                        .Setup(r => r.MoveNext(default))
+                        .Setup(r => r.MoveNext(_tokenSource.Token))
                         .Returns(Task.FromResult(false));
                 })
                 .Returns(Task.FromResult(true));

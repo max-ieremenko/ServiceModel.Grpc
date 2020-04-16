@@ -206,6 +206,9 @@ namespace ServiceModel.Grpc.Internal.Emit
             {
                 // CallInvoker.AsyncUnaryCall(...Method, null, context, value);
                 body.Emit(OpCodes.Callvirt, typeof(CallInvoker).InstanceMethod(nameof(CallInvoker.AsyncUnaryCall)).MakeGenericMethod(message.RequestType, message.ResponseType));
+                
+                PushCallContext(body, message);
+
                 if (message.ResponseType.IsGenericType)
                 {
                     var adapter = typeof(ClientChannelAdapter)
@@ -279,7 +282,8 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Callvirt, typeof(CallInvoker).InstanceMethod(nameof(CallInvoker.AsyncServerStreamingCall)).MakeGenericMethod(message.RequestType, message.ResponseType));
 
             // GetServerStreamingCallResult(call, options)
-            body.Emit(OpCodes.Ldloc_0); // options
+            PushCallContext(body, message);
+            PushToken(body);
             body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.GetServerStreamingCallResult)).MakeGenericMethod(message.ResponseType.GenericTypeArguments[0]));
 
             body.Emit(OpCodes.Ret);
@@ -303,9 +307,10 @@ namespace ServiceModel.Grpc.Internal.Emit
             // CallInvoker.AsyncClientStreamingCall()
             body.Emit(OpCodes.Callvirt, typeof(CallInvoker).InstanceMethod(nameof(CallInvoker.AsyncClientStreamingCall)).MakeGenericMethod(message.RequestType, message.ResponseType));
 
-            // WriteClientStreamingRequest(call, request, options)
+            // WriteClientStreamingRequest(call, request, context, token)
             body.EmitLdarg(message.RequestTypeInput[0] + 1);
-            body.Emit(OpCodes.Ldloc_0); // options
+            PushCallContext(body, message);
+            PushToken(body);
             if (message.ResponseType.IsGenericType)
             {
                 body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.WriteClientStreamingRequest)).MakeGenericMethod(message.RequestType.GenericTypeArguments[0], message.ResponseType.GenericTypeArguments[0]));
@@ -337,7 +342,8 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Callvirt, typeof(CallInvoker).InstanceMethod(nameof(CallInvoker.AsyncDuplexStreamingCall)).MakeGenericMethod(message.RequestType, message.ResponseType));
 
             body.EmitLdarg(1); // request
-            body.Emit(OpCodes.Ldloc_0); // options
+            PushCallContext(body, message);
+            PushToken(body);
             body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.GetDuplexCallResult)).MakeGenericMethod(message.RequestType.GenericTypeArguments[0], message.ResponseType.GenericTypeArguments[0]));
 
             body.Emit(OpCodes.Ret);
@@ -365,6 +371,34 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ldloca_S, 1); // optionsBuilder
             body.Emit(OpCodes.Call, typeof(CallOptionsBuilder).InstanceMethod(nameof(CallOptionsBuilder.Build)));
             body.Emit(OpCodes.Stloc_0);
+        }
+
+        private void PushToken(ILGenerator body)
+        {
+            body.Emit(OpCodes.Ldloca_S, 0); // options
+            body.Emit(OpCodes.Call, typeof(CallOptions).InstanceProperty(nameof(CallOptions.CancellationToken)).GetMethod); // options.CancellationToken
+        }
+
+        private void PushCallContext(ILGenerator body, MessageAssembler message)
+        {
+            int contextParameterIndex = -1;
+            foreach (var i in message.ContextInput)
+            {
+                if (message.Parameters[i].ParameterType == typeof(CallContext))
+                {
+                    contextParameterIndex = i;
+                    break;
+                }
+            }
+
+            if (contextParameterIndex < 0)
+            {
+                body.Emit(OpCodes.Ldnull); // context = null
+            }
+            else
+            {
+                body.EmitLdarg(contextParameterIndex + 1); // context parameter
+            }
         }
 
         private ILGenerator CreateMethodWithSignature(MethodInfo signature)
