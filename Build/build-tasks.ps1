@@ -8,9 +8,8 @@ Task Initialize {
     $script:binDir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\build-out"))
     $script:thirdPartyRepository = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\..\ServiceModel.Grpc.ThirdPartyLibraries"))
     $script:packageVersion = Get-PackageVersion (Join-Path $sourceDir "GlobalAssemblyInfo.cs")
-    #$script:repositoryCommitId = Get-RepositoryCommitId
-    $script:repositoryCommitId = "replace me"
-
+    $script:repositoryCommitId = Get-RepositoryCommitId
+    
     Write-Host "PackageVersion: $packageVersion"
     Write-Host "CommitId: $repositoryCommitId"
 }
