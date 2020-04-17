@@ -65,11 +65,20 @@ Task<string> SumAsync(int x, int y);
 
 #### ClientStreaming operation
 
-Response is optional, does not support extra request parameters
+Response is optional
 
 ``` c#
+// call is compatible with native gRPC
 [OperationContract]
 Task<long> SumValues(IAsyncEnumerable<int> values);
+```
+
+ServiceModel.Grpc supports any number of extra request parameters, but this call is not fully compatible with native gRPC call.
+
+``` c#
+// call is not fully compatible with native gRPC
+[OperationContract]
+Task<long> MultiplyByAndSumValues(IAsyncEnumerable<int> values, int multiplier);
 ```
 
 #### ServerStreaming operation
@@ -83,11 +92,18 @@ IAsyncEnumerable<int> EnumerableRange(int start, int count);
 
 #### DuplexStreaming operation
 
-Does not support extra request parameters
-
 ``` c#
+// call is compatible with native gRPC
 [OperationContract]
 IAsyncEnumerable<int> MultiplyBy2(IAsyncEnumerable<int> values);
+```
+
+ServiceModel.Grpc supports any number of extra request parameters, but this call is not fully compatible with native gRPC call.
+
+``` c#
+// call is not fully compatible with native gRPC
+[OperationContract]
+IAsyncEnumerable<int> MultiplyBy(IAsyncEnumerable<int> values, int multiplier);
 ```
 
 #### Context parameters
@@ -172,4 +188,3 @@ Task Ping(CancellationToken token)
 
 - generic methods are not supported
 - ref and out parameters are not supported
-- ClientStreaming and DuplexStreaming do not support extra parameters
