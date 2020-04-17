@@ -1,4 +1,5 @@
-﻿using System.ServiceModel;
+﻿using System.Collections.Generic;
+using System.ServiceModel;
 using System.Threading.Tasks;
 
 namespace ServiceModel.Grpc.AspNetCore
@@ -10,6 +11,9 @@ namespace ServiceModel.Grpc.AspNetCore
         {
             [OperationContract(Name = "Hello")]
             Task<string> HelloAsync(string name, CallContext context = default);
+
+            [OperationContract(Name = "HelloAll")]
+            IAsyncEnumerable<string> HelloAllAsync(IAsyncEnumerable<string> names, string greet, CallContext context = default);
         }
 
         private sealed class DomainGreeterService : IDomainGreeterService
@@ -18,6 +22,14 @@ namespace ServiceModel.Grpc.AspNetCore
             {
                 var response = await new GreeterService().Hello(new HelloRequest { Name = name }, context);
                 return response.Message;
+            }
+
+            public async IAsyncEnumerable<string> HelloAllAsync(IAsyncEnumerable<string> names, string greet, CallContext context = default)
+            {
+                await foreach (var i in names)
+                {
+                    yield return greet + " " + i + "!";
+                }
             }
         }
     }

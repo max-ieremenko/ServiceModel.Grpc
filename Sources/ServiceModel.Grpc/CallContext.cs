@@ -7,6 +7,8 @@ namespace ServiceModel.Grpc
 {
     public sealed class CallContext
     {
+        internal const string HeaderNameMethodInput = "smgrpc-method-input-bin";
+
         public CallContext(
             Metadata headers = null,
             DateTime? deadline = null,

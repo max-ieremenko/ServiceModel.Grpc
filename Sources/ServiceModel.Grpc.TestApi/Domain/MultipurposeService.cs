@@ -48,11 +48,31 @@ namespace ServiceModel.Grpc.TestApi.Domain
             return result;
         }
 
+        public async Task<long> MultiplyByAndSumValues(IAsyncEnumerable<int> values, int multiplier, CallContext context = default)
+        {
+            var result = 0;
+
+            await foreach (var i in values.WithCancellation(context.ServerCallContext.CancellationToken))
+            {
+                result += i * multiplier;
+            }
+
+            return result;
+        }
+
         public async IAsyncEnumerable<string> ConvertValues(IAsyncEnumerable<int> values, CallContext context)
         {
             await foreach (var i in values.WithCancellation(context.ServerCallContext.CancellationToken))
             {
                 yield return i.ToString();
+            }
+        }
+
+        public async IAsyncEnumerable<int> MultiplyBy(IAsyncEnumerable<int> values, int multiplier, CallContext context = default)
+        {
+            await foreach (var i in values.WithCancellation(context.ServerCallContext.CancellationToken))
+            {
+                yield return i * multiplier;
             }
         }
     }

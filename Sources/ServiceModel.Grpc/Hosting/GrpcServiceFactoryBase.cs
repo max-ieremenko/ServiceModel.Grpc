@@ -91,7 +91,7 @@ namespace ServiceModel.Grpc.Hosting
 
         private Type BuildChannelService(Type interfaceType, IList<MessageAssembler> messages)
         {
-            var serviceBuilder = new GrpcServiceBuilder(interfaceType);
+            var serviceBuilder = new GrpcServiceBuilder(interfaceType, _marshallerFactory);
             foreach (var message in messages)
             {
                 var operationName = ContractDescription.GetOperationName(message.Operation);

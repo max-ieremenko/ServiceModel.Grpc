@@ -97,7 +97,29 @@ namespace ServiceModel.Grpc.Internal.Emit
 
             actual.Headers.ShouldBe(newOptions.Headers);
         }
-        
+
+        [Test]
+        public void WithMethodInputHeader()
+        {
+            var marshaller = new Marshaller<string>(
+                value =>
+                {
+                    value.ShouldBe("some value");
+                    return Guid.Empty.ToByteArray();
+                },
+                _ => throw new NotSupportedException());
+
+            var actual = new CallOptionsBuilder()
+                .WithMethodInputHeader(marshaller, "some value")
+                .Build();
+
+            actual.Headers.ShouldNotBeNull();
+            actual.Headers.Count.ShouldBe(1);
+            actual.Headers[0].Key.ShouldBe(CallContext.HeaderNameMethodInput);
+            actual.Headers[0].IsBinary.ShouldBeTrue();
+            actual.Headers[0].ValueBytes.ShouldBe(Guid.Empty.ToByteArray());
+        }
+
         [Test]
         [TestCaseSource(nameof(GetMergeMetadataTestCases))]
         public void MergeMetadata(Metadata current, Metadata mergeWith, Metadata expected)

@@ -12,4 +12,5 @@ message HelloResult {
 
 service Greeter {
 	rpc Hello (HelloRequest) returns (HelloResult);
+	rpc HelloAll (stream HelloRequest) returns (stream HelloResult);
 }

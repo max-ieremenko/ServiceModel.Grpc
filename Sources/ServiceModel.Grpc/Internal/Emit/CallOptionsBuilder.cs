@@ -48,6 +48,14 @@ namespace ServiceModel.Grpc.Internal.Emit
             return this;
         }
 
+        public CallOptionsBuilder WithMethodInputHeader<T>(Marshaller<T> marshaller, T value)
+        {
+            return WithCallOptions(new CallOptions(new Metadata
+            {
+                { CallContext.HeaderNameMethodInput, marshaller.Serializer(value) }
+            }));
+        }
+
         public CallOptions Build() => _options;
 
         internal static Metadata MergeMetadata(Metadata current, Metadata mergeWith)

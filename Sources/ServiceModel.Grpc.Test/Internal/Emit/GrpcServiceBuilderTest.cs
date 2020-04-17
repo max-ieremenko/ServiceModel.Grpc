@@ -7,6 +7,7 @@ using Moq;
 using Moq.Protected;
 using NUnit.Framework;
 using ServiceModel.Grpc.Channel;
+using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.TestApi;
 using Shouldly;
 
@@ -23,7 +24,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         [OneTimeSetUp]
         public void BeforeAllTest()
         {
-            _sut = new GrpcServiceBuilder(typeof(IContract));
+            _sut = new GrpcServiceBuilder(typeof(IContract), DataContractMarshallerFactory.Default);
 
             foreach (var method in ReflectionTools.GetMethods(typeof(IContract)))
             {
@@ -448,6 +449,53 @@ namespace ServiceModel.Grpc.Internal.Emit
         }
 
         [Test]
+        public async Task ClientStreamingHeaderParameters()
+        {
+            var call = _channelType
+                .StaticMethod(nameof(IContract.ClientStreamingHeaderParameters))
+                .CreateDelegate<ClientStreamingServerMethod<IContract, Message<int>, Message<string>>>();
+            Console.WriteLine(call.Method.Disassemble());
+
+            var serverContext = new Mock<ServerCallContext>(MockBehavior.Strict);
+            serverContext
+                .Protected()
+                .SetupGet<CancellationToken>("CancellationTokenCore")
+                .Returns(default(CancellationToken));
+            serverContext
+                .Protected()
+                .SetupGet<Metadata>("RequestHeadersCore")
+                .Returns(new Metadata
+                {
+                    { CallContext.HeaderNameMethodInput, DataContractMarshaller<Message<int, string>>.Default.Serializer(new Message<int, string>(1, "prefix")) }
+                });
+
+            var stream = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
+            stream
+                .Setup(s => s.MoveNext(default))
+                .Callback(() =>
+                {
+                    stream.SetupGet(s => s.Current).Returns(new Message<int>(2));
+                    stream.Setup(s => s.MoveNext(default)).Returns(Task.FromResult(false));
+                })
+                .Returns(Task.FromResult(true));
+
+            _service
+                .Setup(s => s.ClientStreamingHeaderParameters(It.IsNotNull<IAsyncEnumerable<int>>(), 1, "prefix"))
+                .Returns<IAsyncEnumerable<int>, int, string>(async (values, m, p) =>
+                {
+                    var items = await values.ToListAsync();
+                    items.ShouldBe(new[] { 2 });
+                    return "2";
+                });
+
+            var actual = await call(_service.Object, stream.Object, serverContext.Object);
+
+            actual.Value1.ShouldBe("2");
+            stream.VerifyAll();
+            _service.VerifyAll();
+        }
+
+        [Test]
         public async Task DuplexStreamingConvert()
         {
             var call = _channelType
@@ -485,6 +533,65 @@ namespace ServiceModel.Grpc.Internal.Emit
             _service
                 .Setup(s => s.DuplexStreamingConvert(It.IsNotNull<IAsyncEnumerable<int>>(), _tokenSource.Token))
                 .Callback<IAsyncEnumerable<int>, CancellationToken>(async (values, _) =>
+                {
+                    var items = await values.ToListAsync();
+                    items.ShouldBe(new[] { 2 });
+                })
+                .Returns(new[] { "2" }.AsAsyncEnumerable());
+
+            await call(_service.Object, input.Object, output.Object, serverContext.Object);
+
+            outputValues.ShouldBe(new[] { "2" });
+            input.VerifyAll();
+            output.VerifyAll();
+            _service.VerifyAll();
+        }
+
+        [Test]
+        public async Task DuplexStreamingHeaderParameters()
+        {
+            var call = _channelType
+                .StaticMethod(nameof(IContract.DuplexStreamingHeaderParameters))
+                .CreateDelegate<DuplexStreamingServerMethod<IContract, Message<int>, Message<string>>>();
+            Console.WriteLine(call.Method.Disassemble());
+
+            var serverContext = new Mock<ServerCallContext>(MockBehavior.Strict);
+            serverContext
+                .Protected()
+                .SetupGet<CancellationToken>("CancellationTokenCore")
+                .Returns(default(CancellationToken));
+            serverContext
+                .Protected()
+                .SetupGet<Metadata>("RequestHeadersCore")
+                .Returns(new Metadata
+                {
+                    { CallContext.HeaderNameMethodInput, DataContractMarshaller<Message<int, string>>.Default.Serializer(new Message<int, string>(1, "prefix")) }
+                });
+
+            var input = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
+            input
+                .Setup(s => s.MoveNext(default))
+                .Callback(() =>
+                {
+                    input.SetupGet(s => s.Current).Returns(new Message<int>(2));
+                    input.Setup(s => s.MoveNext(default)).Returns(Task.FromResult(false));
+                })
+                .Returns(Task.FromResult(true));
+
+            var outputValues = new List<string>();
+
+            var output = new Mock<IServerStreamWriter<Message<string>>>(MockBehavior.Strict);
+            output
+                .Setup(s => s.WriteAsync(It.IsNotNull<Message<string>>()))
+                .Callback<Message<string>>(message =>
+                {
+                    outputValues.Add(message.Value1);
+                })
+                .Returns(Task.CompletedTask);
+
+            _service
+                .Setup(s => s.DuplexStreamingHeaderParameters(It.IsNotNull<IAsyncEnumerable<int>>(), 1, "prefix"))
+                .Callback<IAsyncEnumerable<int>, int, string>(async (values, m, p) =>
                 {
                     var items = await values.ToListAsync();
                     items.ShouldBe(new[] { 2 });

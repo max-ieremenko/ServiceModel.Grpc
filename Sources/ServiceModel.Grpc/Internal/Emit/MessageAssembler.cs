@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Grpc.Core;
@@ -17,7 +18,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             ValidateSignature();
 
             ResponseType = GetResponseType();
-            (RequestType, RequestTypeInput) = GetRequestType();
+            (RequestType, RequestTypeInput, HeaderRequestType, HeaderRequestTypeInput) = GetRequestType();
             ContextInput = GetContextInput();
             OperationType = GetOperationType();
             IsAsync = ReflectionTools.IsTask(Operation.ReturnType);
@@ -32,6 +33,10 @@ namespace ServiceModel.Grpc.Internal.Emit
         public Type RequestType { get; }
 
         public int[] RequestTypeInput { get; }
+
+        public Type HeaderRequestType { get; }
+
+        public int[] HeaderRequestTypeInput { get; }
 
         public MethodType OperationType { get; }
 
@@ -87,49 +92,48 @@ namespace ServiceModel.Grpc.Internal.Emit
             return typeof(Message<>).MakeGenericType(responseType);
         }
 
-        private (Type, int[]) GetRequestType()
+        private (Type, int[], Type, int[]) GetRequestType()
         {
             if (Parameters.Length == 0)
             {
-                return (typeof(Message), Array.Empty<int>());
+                return (typeof(Message), Array.Empty<int>(), null, Array.Empty<int>());
             }
 
             var dataParameters = new List<Type>();
             var dataParameterIndexes = new List<int>();
-            var hasStreaming = false;
+            var streamingIndex = -1;
 
             for (var i = 0; i < Parameters.Length; i++)
             {
                 var parameter = Parameters[i];
                 if (IsDataParameter(parameter.ParameterType))
                 {
-                    dataParameters.Add(parameter.ParameterType);
-                    dataParameterIndexes.Add(i);
-
-                    if (!hasStreaming && ReflectionTools.IsAsyncEnumerable(parameter.ParameterType))
+                    if (ReflectionTools.IsAsyncEnumerable(parameter.ParameterType))
                     {
-                        hasStreaming = true;
+                        streamingIndex = i;
+                    }
+                    else
+                    {
+                        dataParameters.Add(parameter.ParameterType);
+                        dataParameterIndexes.Add(i);
                     }
                 }
             }
 
-            if (dataParameters.Count == 0)
+            if (streamingIndex >= 0)
             {
-                return (typeof(Message), Array.Empty<int>());
+                return (
+                    MessageBuilder.GetMessageType(Parameters[streamingIndex].ParameterType.GenericTypeArguments[0]),
+                    new[] { streamingIndex },
+                    dataParameters.Count > 0 ? MessageBuilder.GetMessageType(dataParameters.ToArray()) : null,
+                    dataParameterIndexes.ToArray());
             }
 
-            if (hasStreaming)
-            {
-                if (dataParameters.Count != 1)
-                {
-                    ThrowInvalidSignature();
-                }
-
-                dataParameters[0] = dataParameters[0].GenericTypeArguments[0];
-            }
-
-            var requestType = MessageBuilder.GetMessageType(dataParameters.ToArray());
-            return (requestType, dataParameterIndexes.ToArray());
+            return (
+                MessageBuilder.GetMessageType(dataParameters.ToArray()),
+                dataParameterIndexes.ToArray(),
+                null,
+                Array.Empty<int>());
         }
 
         private int[] GetContextInput()
@@ -155,7 +159,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         private MethodType GetOperationType()
         {
             var responseIsStreaming = ReflectionTools.IsAsyncEnumerable(Operation.ReturnType);
-            var requestIsStreaming = RequestTypeInput.Length == 1 && ReflectionTools.IsAsyncEnumerable(Parameters[RequestTypeInput[0]].ParameterType);
+            var requestIsStreaming = Parameters.Select(i => i.ParameterType).Any(ReflectionTools.IsAsyncEnumerable);
 
             if (responseIsStreaming)
             {
@@ -172,6 +176,8 @@ namespace ServiceModel.Grpc.Internal.Emit
                 ThrowInvalidSignature();
             }
 
+            var hasInputStreaming = false;
+
             for (var i = 0; i < Parameters.Length; i++)
             {
                 var parameter = Parameters[i];
@@ -181,7 +187,19 @@ namespace ServiceModel.Grpc.Internal.Emit
                     ThrowInvalidSignature();
                 }
 
-                if (!IsDataParameter(parameter.ParameterType) && !IsContextParameter(parameter.ParameterType))
+                if (IsDataParameter(parameter.ParameterType))
+                {
+                    if (ReflectionTools.IsAsyncEnumerable(parameter.ParameterType))
+                    {
+                        if (hasInputStreaming)
+                        {
+                            ThrowInvalidSignature();
+                        }
+
+                        hasInputStreaming = true;
+                    }
+                }
+                else if (!IsContextParameter(parameter.ParameterType))
                 {
                     ThrowInvalidSignature();
                 }

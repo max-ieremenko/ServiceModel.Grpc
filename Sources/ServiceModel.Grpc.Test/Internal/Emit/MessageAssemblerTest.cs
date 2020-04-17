@@ -95,18 +95,23 @@ namespace ServiceModel.Grpc.Internal.Emit
         }
 
         [Test]
-        [TestCase(typeof(Message))]
-        [TestCase(typeof(Message<int>), typeof(int))]
-        [TestCase(typeof(Message<string, int?>), typeof(string), typeof(int?))]
-        [TestCase(typeof(Message<int>), typeof(IAsyncEnumerable<int>))]
-        public void TestRequestType(Type expected, params Type[] dataParameters)
+        [TestCase(typeof(Message), null, new int[0])]
+        [TestCase(typeof(Message<int>), null, new[] { 0 }, typeof(int))]
+        [TestCase(typeof(Message<string, int?>), null, new[] { 0, 1 }, typeof(string), typeof(int?))]
+        [TestCase(typeof(Message<int>), null, new[] { 0 }, typeof(IAsyncEnumerable<int>))]
+        [TestCase(typeof(Message<int>), typeof(Message<int, string>), new[] { 0 }, typeof(IAsyncEnumerable<int>), typeof(int), typeof(string))]
+        [TestCase(typeof(Message<int>), typeof(Message<string>), new[] { 1 }, typeof(string), typeof(IAsyncEnumerable<int>))]
+        public void TestRequestType(Type expectedRequestType, Type expectedHeaderRequestType, int[] expectedRequestTypeInput, params Type[] dataParameters)
         {
             MethodSetupParameters(dataParameters);
 
             var sut = new MessageAssembler(_method.Object);
             
-            sut.RequestType.ShouldBe(expected);
-            sut.RequestTypeInput.ShouldBe(Enumerable.Range(0, dataParameters.Length));
+            sut.RequestType.ShouldBe(expectedRequestType);
+            sut.RequestTypeInput.ShouldBe(expectedRequestTypeInput);
+
+            sut.HeaderRequestType.ShouldBe(expectedHeaderRequestType);
+            sut.HeaderRequestTypeInput.ShouldBe(dataParameters.Select((_, i) => i).Except(expectedRequestTypeInput).ToArray());
         }
 
         [Test]

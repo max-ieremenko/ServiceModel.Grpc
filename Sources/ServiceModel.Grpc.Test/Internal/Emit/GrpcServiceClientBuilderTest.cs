@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -327,6 +328,39 @@ namespace ServiceModel.Grpc.Internal.Emit
         }
 
         [Test]
+        public async Task ClientStreamingHeaderParameters()
+        {
+            Console.WriteLine(_factory().GetType().InstanceMethod(nameof(IContract.ClientStreamingHeaderParameters)).Disassemble());
+
+            var serverValues = new List<int>();
+
+            var requestStream = new Mock<IClientStreamWriter<Message<int>>>(MockBehavior.Strict);
+            requestStream
+                .Setup(s => s.WriteAsync(It.IsNotNull<Message<int>>()))
+                .Callback<Message<int>>(message => serverValues.Add(message.Value1))
+                .Returns(Task.CompletedTask);
+            requestStream
+                .Setup(s => s.CompleteAsync())
+                .Returns(Task.CompletedTask);
+
+            _callInvoker.SetupAsyncClientStreamingCall(
+                requestStream.Object,
+                "sum-6",
+                options =>
+                {
+                    var header = options.Headers.First(i => i.Key == CallContext.HeaderNameMethodInput);
+                    var values = DataContractMarshallerFactory.Default.CreateMarshaller<Message<int, string>>().Deserializer(header.ValueBytes);
+                    values.Value1.ShouldBe(2);
+                    values.Value2.ShouldBe("sum-");
+                });
+
+            await _factory().ClientStreamingHeaderParameters(new[] { 1, 2 }.AsAsyncEnumerable(), 2, "sum-");
+
+            serverValues.ShouldBe(new[] { 1, 2 });
+            requestStream.VerifyAll();
+        }
+
+        [Test]
         public async Task DuplexStreamingConvert()
         {
             Console.WriteLine(_factory().GetType().InstanceMethod(nameof(IContract.DuplexStreamingConvert)).Disassemble());
@@ -367,6 +401,56 @@ namespace ServiceModel.Grpc.Internal.Emit
 
             var values = await actual.ToListAsync();
             values.ShouldBe(new[] { "1", "2" });
+            requestStream.VerifyAll();
+        }
+
+        [Test]
+        public async Task DuplexStreamingHeaderParameters()
+        {
+            Console.WriteLine(_factory().GetType().InstanceMethod(nameof(IContract.DuplexStreamingHeaderParameters)).Disassemble());
+
+            var requestValues = new List<int>();
+
+            var responseStream = new Mock<IAsyncStreamReader<Message<string>>>(MockBehavior.Strict);
+            responseStream
+                .Setup(r => r.MoveNext(default))
+                .Returns(() =>
+                {
+                    if (requestValues.Count == 0)
+                    {
+                        responseStream.SetupGet(s => s.Current).Throws<NotSupportedException>();
+                        return Task.FromResult(false);
+                    }
+
+                    responseStream.SetupGet(s => s.Current).Returns(new Message<string>("prefix-" + requestValues[0]));
+                    requestValues.RemoveAt(0);
+                    return Task.FromResult(true);
+                });
+
+            var requestStream = new Mock<IClientStreamWriter<Message<int>>>(MockBehavior.Strict);
+            requestStream
+                .Setup(s => s.WriteAsync(It.IsNotNull<Message<int>>()))
+                .Callback<Message<int>>(message => requestValues.Add(message.Value1))
+                .Returns(Task.CompletedTask);
+            requestStream
+                .Setup(s => s.CompleteAsync())
+                .Returns(Task.CompletedTask);
+
+            _callInvoker.SetupAsyncDuplexStreamingCall(
+                requestStream.Object,
+                responseStream.Object,
+                options =>
+                {
+                    var header = options.Headers.First(i => i.Key == CallContext.HeaderNameMethodInput);
+                    var headerValues = DataContractMarshallerFactory.Default.CreateMarshaller<Message<int, string>>().Deserializer(header.ValueBytes);
+                    headerValues.Value1.ShouldBe(1);
+                    headerValues.Value2.ShouldBe("prefix-");
+                });
+
+            var actual = _factory().DuplexStreamingHeaderParameters(new[] { 1, 2 }.AsAsyncEnumerable(), 1, "prefix-");
+
+            var values = await actual.ToListAsync();
+            values.ShouldBe(new[] { "prefix-1", "prefix-2" });
             requestStream.VerifyAll();
         }
     }
