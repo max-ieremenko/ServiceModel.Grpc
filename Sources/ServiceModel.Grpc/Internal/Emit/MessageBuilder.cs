@@ -58,7 +58,19 @@ namespace ServiceModel.Grpc.Internal.Emit
 
             var genericArgs = typeBuilder.DefineGenericParameters(Enumerable.Range(1, propertiesCount).Select(i => "T" + i.ToString(CultureInfo.InvariantCulture)).ToArray());
             typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(typeof(SerializableAttribute).Constructor(), Array.Empty<object>()));
-            typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(typeof(DataContractAttribute).Constructor(), Array.Empty<object>()));
+            typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(
+                typeof(DataContractAttribute).Constructor(),
+                Array.Empty<object>(),
+                new[]
+                {
+                    typeof(DataContractAttribute).InstanceProperty(nameof(DataContractAttribute.Name)),
+                    typeof(DataContractAttribute).InstanceProperty(nameof(DataContractAttribute.Namespace))
+                },
+                new object[]
+                {
+                    "m",
+                    "s"
+                }));
 
             // new ()
             typeBuilder.DefineDefaultConstructor(MethodAttributes.Public);
@@ -91,8 +103,16 @@ namespace ServiceModel.Grpc.Internal.Emit
                 property.SetCustomAttribute(new CustomAttributeBuilder(
                     typeof(DataMemberAttribute).Constructor(),
                     Array.Empty<object>(),
-                    new[] { typeof(DataMemberAttribute).InstanceProperty(nameof(DataMemberAttribute.Name)), typeof(DataMemberAttribute).InstanceProperty(nameof(DataMemberAttribute.Order)) },
-                    new object[] { property.Name, i + 1 }));
+                    new[]
+                    {
+                        typeof(DataMemberAttribute).InstanceProperty(nameof(DataMemberAttribute.Name)),
+                        typeof(DataMemberAttribute).InstanceProperty(nameof(DataMemberAttribute.Order))
+                    },
+                    new object[]
+                    {
+                        "v" + (i + 1).ToString(CultureInfo.InvariantCulture),
+                        i + 1
+                    }));
 
                 // T1 get_Value1
                 var getter = typeBuilder.DefineMethod(
