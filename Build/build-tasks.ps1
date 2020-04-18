@@ -1,7 +1,7 @@
 Include ".\build-scripts.ps1"
 
 Task default -Depends Initialize, Clean, Build, CreateThirdPartyNotices, Pack
-Task Pack -Depends PackServiceModelGrpc, PackServiceModelGrpcAspNetCore, PackServiceModelGrpcSelfHost
+Task Pack -Depends PackServiceModelGrpc, PackServiceModelGrpcAspNetCore, PackServiceModelGrpcSelfHost, PackServiceModelGrpcProtoBufMarshaller
 
 Task Initialize {
     $script:sourceDir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\Sources"))
@@ -84,6 +84,20 @@ Task PackServiceModelGrpcAspNetCore {
 
 Task PackServiceModelGrpcSelfHost {
     $projectFile = Join-Path $sourceDir "ServiceModel.Grpc.SelfHost\ServiceModel.Grpc.SelfHost.csproj"
+
+    Exec {
+        dotnet pack `
+            -c Release `
+            --no-build `
+            -p:PackageVersion=$packageVersion `
+            -p:RepositoryCommit=$repositoryCommitId `
+            -o $binDir `
+            $projectFile
+    }
+}
+
+Task PackServiceModelGrpcProtoBufMarshaller {
+    $projectFile = Join-Path $sourceDir "ServiceModel.Grpc.ProtoBufMarshaller\ServiceModel.Grpc.ProtoBufMarshaller.csproj"
 
     Exec {
         dotnet pack `

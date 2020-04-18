@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.AspNetCore.Builder;
 using NUnit.Framework;
+using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.TestApi;
 using Shouldly;
 

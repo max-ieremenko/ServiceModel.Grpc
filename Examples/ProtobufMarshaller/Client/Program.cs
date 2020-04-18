@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Contract;
 using Grpc.Core;
 using ServiceModel.Grpc.Client;
+using ServiceModel.Grpc.Configuration;
 
 namespace Client
 {
@@ -18,7 +19,11 @@ namespace Client
         {
             try
             {
-                await Run();
+                Console.WriteLine("Call ServerAspNetCore");
+                await Run(new Channel("localhost", ServiceConfiguration.AspNetCorePort, ChannelCredentials.Insecure));
+
+                Console.WriteLine("Call ServerSelfHost");
+                await Run(new Channel("localhost", ServiceConfiguration.SelfHostPort, ChannelCredentials.Insecure));
             }
             catch (Exception ex)
             {
@@ -29,16 +34,14 @@ namespace Client
             Console.ReadLine();
         }
 
-        private static async Task Run()
+        private static async Task Run(ChannelBase channel)
         {
-            var channel = new Channel("localhost", ServiceConfiguration.Port, ChannelCredentials.Insecure);
-
             var personService = DefaultClientFactory.CreateClient<IPersonService>(channel);
             var person = await personService.CreatePerson("John X", DateTime.Today.AddYears(-20));
 
-            Console.WriteLine("Name: {0}", person.Name);
-            Console.WriteLine("BirthDay: {0}", person.BirthDay);
-            Console.WriteLine("CreatedBy: {0}", person.CreatedBy);
+            Console.WriteLine("  Name: {0}", person.Name);
+            Console.WriteLine("  BirthDay: {0}", person.BirthDay);
+            Console.WriteLine("  CreatedBy: {0}", person.CreatedBy);
         }
     }
 }

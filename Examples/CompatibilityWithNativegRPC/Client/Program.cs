@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Contract;
 using Grpc.Core;
 using ServiceModel.Grpc.Client;
+using ServiceModel.Grpc.Configuration;
 
 namespace Client
 {

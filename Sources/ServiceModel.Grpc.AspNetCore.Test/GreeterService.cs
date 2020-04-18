@@ -3,7 +3,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
-using ServiceModel.Grpc.TestApi;
 
 namespace ServiceModel.Grpc.AspNetCore
 {

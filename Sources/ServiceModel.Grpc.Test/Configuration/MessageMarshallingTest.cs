@@ -48,7 +48,7 @@ namespace ServiceModel.Grpc.Configuration
 
         private static T ProtobufClone<T>(T value)
         {
-            var marshaller = ProtobufMarshaller<T>.Default;
+            var marshaller = ProtobufMarshallerFactory.Default.CreateMarshaller<T>();
             var content = marshaller.Serializer(value);
             Console.WriteLine("Size: {0}", content.Length);
             return marshaller.Deserializer(content);
