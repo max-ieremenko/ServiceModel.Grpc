@@ -15,6 +15,9 @@
 
   <Target Name="AdditionalPackageContent">
     <ItemGroup>
+      <TfmSpecificPackageFile Include="..\..\LICENSE">
+        <PackagePath></PackagePath>
+      </TfmSpecificPackageFile>
       <TfmSpecificPackageFile Include="..\..\build-out\ProtoBufThirdPartyNotices.txt">
         <PackagePath>ThirdPartyNotices.txt</PackagePath>
       </TfmSpecificPackageFile>

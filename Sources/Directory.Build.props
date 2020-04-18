@@ -26,14 +26,6 @@
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);AdditionalPackageContent</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
 
-  <Target Name="AdditionalPackageContent">
-    <ItemGroup>
-      <TfmSpecificPackageFile Include="..\..\LICENSE">
-        <PackagePath></PackagePath>
-      </TfmSpecificPackageFile>
-    </ItemGroup>
-  </Target>
-
   <ItemGroup>
     <Compile Include="..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
   </ItemGroup>
