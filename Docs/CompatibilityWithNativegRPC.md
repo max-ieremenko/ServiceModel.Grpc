@@ -12,7 +12,7 @@ The application is configured to use [protobuf-net](https://www.nuget.org/packag
 
 ## Service and method names
 
-.proto Person
+.proto Calculator
 
 ``` proto
 message SumRequest {

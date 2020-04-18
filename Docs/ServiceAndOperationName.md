@@ -78,8 +78,10 @@ namespace Standard
 {
     // options 1: service name: Standard.Calculator
     [ServiceContract(Name = "Standard.Calculator")]
+
     // options 2: service name: Standard.Calculator
     [ServiceContract(Name = "Calculator", Namespace = "Standard")]
+
     // options 3: service name: Standard.ICalculator
     [ServiceContract(Namespace = "Standard")]
     public interface ICalculator { }
