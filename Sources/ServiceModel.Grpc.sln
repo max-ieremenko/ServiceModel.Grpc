@@ -13,11 +13,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.Test", "S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.TestApi", "ServiceModel.Grpc.TestApi\ServiceModel.Grpc.TestApi.csproj", "{14F92A48-DC42-4684-81B6-F41B6D3AE4BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceModel.Grpc.SelfHost", "ServiceModel.Grpc.SelfHost\ServiceModel.Grpc.SelfHost.csproj", "{51F1F50F-D026-49C9-AAE6-63B2B1E74C7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.SelfHost", "ServiceModel.Grpc.SelfHost\ServiceModel.Grpc.SelfHost.csproj", "{51F1F50F-D026-49C9-AAE6-63B2B1E74C7F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{2B957488-05AA-4B3F-B954-321B3ACE98B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceModel.Grpc.SelfHost.Test", "ServiceModel.Grpc.SelfHost.Test\ServiceModel.Grpc.SelfHost.Test.csproj", "{61DD6D19-EC9E-44C2-AB33-ACD1A3C73DD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.SelfHost.Test", "ServiceModel.Grpc.SelfHost.Test\ServiceModel.Grpc.SelfHost.Test.csproj", "{61DD6D19-EC9E-44C2-AB33-ACD1A3C73DD0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.ProtoBufMarshaller", "ServiceModel.Grpc.ProtoBufMarshaller\ServiceModel.Grpc.ProtoBufMarshaller.csproj", "{B8E1D1A9-01D5-4D6A-B672-C4C50DDD561E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +55,10 @@ Global
 		{61DD6D19-EC9E-44C2-AB33-ACD1A3C73DD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61DD6D19-EC9E-44C2-AB33-ACD1A3C73DD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61DD6D19-EC9E-44C2-AB33-ACD1A3C73DD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8E1D1A9-01D5-4D6A-B672-C4C50DDD561E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8E1D1A9-01D5-4D6A-B672-C4C50DDD561E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8E1D1A9-01D5-4D6A-B672-C4C50DDD561E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8E1D1A9-01D5-4D6A-B672-C4C50DDD561E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -31,9 +31,6 @@
       <TfmSpecificPackageFile Include="..\..\LICENSE">
         <PackagePath></PackagePath>
       </TfmSpecificPackageFile>
-      <TfmSpecificPackageFile Include="..\..\build-out\ThirdPartyNotices.txt">
-        <PackagePath></PackagePath>
-      </TfmSpecificPackageFile>
     </ItemGroup>
   </Target>
 

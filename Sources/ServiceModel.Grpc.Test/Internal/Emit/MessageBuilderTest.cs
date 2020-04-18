@@ -60,7 +60,7 @@ namespace ServiceModel.Grpc.Internal.Emit
 
                 var dataMember = property.GetCustomAttribute<DataMemberAttribute>();
                 dataMember.ShouldNotBeNull();
-                dataMember.Name.ShouldBe(property.Name);
+                dataMember.Name.ShouldBe("v" + (i + 1));
                 dataMember.Order.ShouldBe(i + 1);
             }
         }

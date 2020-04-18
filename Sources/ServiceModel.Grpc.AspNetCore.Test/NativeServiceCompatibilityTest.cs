@@ -1,6 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Grpc.Core;
 using Microsoft.AspNetCore.Builder;
 using NUnit.Framework;
+using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.TestApi;
 using Shouldly;
 
@@ -32,39 +36,77 @@ namespace ServiceModel.Grpc.AspNetCore
         }
 
         [Test]
-        public async Task NativeNativeCall()
+        [TestCase("Native")]
+        [TestCase("Domain")]
+        public async Task HelloNativeCall(string channelName)
         {
-            var client = new Greeter.GreeterClient(_grpcHost.Channel);
+            var client = new Greeter.GreeterClient(GetChannel(channelName));
             var response = await client.HelloAsync(new HelloRequest { Name = "world" });
 
             response.Message.ShouldBe("Hello world!");
         }
 
         [Test]
-        public async Task DomainDomainCall()
+        [TestCase("Native")]
+        [TestCase("Domain")]
+        public async Task HelloAllNativeCall(string channelName)
         {
-            var client = _serviceModelHost.ClientFactory.CreateClient<IDomainGreeterService>(_serviceModelHost.Channel);
+            var client = new Greeter.GreeterClient(GetChannel(channelName));
+            var response = new List<string>();
+
+            using (var call = client.HelloAll(GreeterService.CreateHelloAllHeader("Hello")))
+            {
+                foreach (var name in new[] { "person 1", "person 2" })
+                {
+                    await call.RequestStream.WriteAsync(new HelloRequest { Name = name });
+                }
+
+                await call.RequestStream.CompleteAsync();
+
+                while (await call.ResponseStream.MoveNext(default))
+                {
+                    response.Add(call.ResponseStream.Current.Message);
+                }
+            }
+
+            response.ShouldBe(new[] { "Hello person 1!", "Hello person 2!" });
+        }
+
+        [Test]
+        [TestCase("Native")]
+        [TestCase("Domain")]
+        public async Task HelloDomainCall(string channelName)
+        {
+            var client = _serviceModelHost.ClientFactory.CreateClient<IDomainGreeterService>(GetChannel(channelName));
             var response = await client.HelloAsync("world");
 
             response.ShouldBe("Hello world!");
         }
 
         [Test]
-        public async Task NativeDomainCall()
+        [TestCase("Native")]
+        [TestCase("Domain")]
+        public async Task HelloAllDomainCall(string channelName)
         {
-            var client = new Greeter.GreeterClient(_serviceModelHost.Channel);
-            var response = await client.HelloAsync(new HelloRequest { Name = "world" });
+            var client = _serviceModelHost.ClientFactory.CreateClient<IDomainGreeterService>(GetChannel(channelName));
+            var response = await client.HelloAllAsync(new[] { "person 1", "person 2" }.AsAsyncEnumerable(), "Hello").ToListAsync();
 
-            response.Message.ShouldBe("Hello world!");
+            response.ShouldBe(new[] { "Hello person 1!", "Hello person 2!" });
         }
 
-        [Test]
-        public async Task DomainNativeCall()
+        private ChannelBase GetChannel(string name)
         {
-            var client = _serviceModelHost.ClientFactory.CreateClient<IDomainGreeterService>(_grpcHost.Channel);
-            var response = await client.HelloAsync("world");
+            if (name == "Native")
+            {
+                return _grpcHost.Channel;
+            }
 
-            response.ShouldBe("Hello world!");
+            if (name == "Domain")
+            {
+                return _serviceModelHost.Channel;
+            }
+
+            throw new ArgumentOutOfRangeException();
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -17,6 +19,17 @@ namespace ServiceModel.Grpc.Internal.Emit
         public static CallOptions GetContextOptions(ServerCallContext context)
         {
             return new CallOptions(context.RequestHeaders, context.Deadline, context.CancellationToken, context.WriteOptions);
+        }
+
+        public static T GetMethodInputHeader<T>(Marshaller<T> marshaller, ServerCallContext context)
+        {
+            var header = context.RequestHeaders?.FirstOrDefault(i => i.IsBinary && CallContext.HeaderNameMethodInput.Equals(i.Key, StringComparison.OrdinalIgnoreCase));
+            if (header == null)
+            {
+                throw new InvalidOperationException("Fail to resolve header parameters, {0} header not found.".FormatWith(CallContext.HeaderNameMethodInput));
+            }
+
+            return marshaller.Deserializer(header.ValueBytes);
         }
 
         public static async Task<Message> UnaryCallWaitTask(Task call)

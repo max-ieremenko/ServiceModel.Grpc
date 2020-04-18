@@ -42,13 +42,15 @@ namespace ServiceModel.Grpc.Configuration
         {
             var marshaller = DataContractMarshaller<T>.Default;
             var content = marshaller.Serializer(value);
+            Console.WriteLine("Size: {0}", content.Length);
             return marshaller.Deserializer(content);
         }
 
         private static T ProtobufClone<T>(T value)
         {
-            var marshaller = ProtobufMarshaller<T>.Default;
+            var marshaller = ProtobufMarshallerFactory.Default.CreateMarshaller<T>();
             var content = marshaller.Serializer(value);
+            Console.WriteLine("Size: {0}", content.Length);
             return marshaller.Deserializer(content);
         }
 
@@ -56,6 +58,7 @@ namespace ServiceModel.Grpc.Configuration
         {
             var marshaller = JsonMarshaller<T>.Default;
             var content = marshaller.Serializer(value);
+            Console.WriteLine("Size: {0}", content.Length);
             return marshaller.Deserializer(content);
         }
 

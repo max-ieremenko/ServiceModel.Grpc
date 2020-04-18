@@ -97,6 +97,16 @@ namespace ServiceModel.Grpc.SelfHost
         }
 
         [Test]
+        public async Task MultiplyByAndSumValues()
+        {
+            var values = new[] { 1, 2, 3 }.AsAsyncEnumerable();
+
+            var actual = await _domainService.MultiplyByAndSumValues(values, 2);
+
+            actual.ShouldBe(12);
+        }
+
+        [Test]
         public async Task ConvertValues()
         {
             var values = new[] { 1, 2, 3 }.AsAsyncEnumerable();
@@ -104,6 +114,16 @@ namespace ServiceModel.Grpc.SelfHost
             var actual = await _domainService.ConvertValues(values).ToListAsync();
 
             actual.ShouldBe(new[] { "1", "2", "3" });
+        }
+
+        [Test]
+        public async Task MultiplyBy()
+        {
+            var values = new[] { 1, 2, 3 }.AsAsyncEnumerable();
+
+            var actual = await _domainService.MultiplyBy(values, 2).ToListAsync();
+
+            actual.ShouldBe(new[] { 2, 4, 6 });
         }
     }
 }

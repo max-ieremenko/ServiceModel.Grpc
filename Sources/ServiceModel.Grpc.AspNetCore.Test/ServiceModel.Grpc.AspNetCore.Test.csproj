@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ServiceModel.Grpc.AspNetCore\ServiceModel.Grpc.AspNetCore.csproj" />
+    <ProjectReference Include="..\ServiceModel.Grpc.ProtoBufMarshaller\ServiceModel.Grpc.ProtoBufMarshaller.csproj" />
     <ProjectReference Include="..\ServiceModel.Grpc.TestApi\ServiceModel.Grpc.TestApi.csproj" />
   </ItemGroup>
 

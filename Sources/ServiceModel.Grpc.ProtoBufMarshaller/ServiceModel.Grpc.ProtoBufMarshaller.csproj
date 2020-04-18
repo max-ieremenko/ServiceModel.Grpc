@@ -2,10 +2,11 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1;net461</TargetFrameworks>
+    <RootNamespace>ServiceModel.Grpc</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grpc.Core" Version="2.28.1" />
+    <PackageReference Include="protobuf-net" Version="2.4.6" />
   </ItemGroup>
 
   <ItemGroup>
@@ -14,7 +15,7 @@
 
   <Target Name="AdditionalPackageContent">
     <ItemGroup>
-      <TfmSpecificPackageFile Include="..\..\build-out\SelfHostThirdPartyNotices.txt">
+      <TfmSpecificPackageFile Include="..\..\build-out\ProtoBufThirdPartyNotices.txt">
         <PackagePath>ThirdPartyNotices.txt</PackagePath>
       </TfmSpecificPackageFile>
     </ItemGroup>

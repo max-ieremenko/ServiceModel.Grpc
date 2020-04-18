@@ -15,7 +15,7 @@ namespace ServerAspNetCore
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.UseKestrel(o => o.ListenLocalhost(ServiceConfiguration.Port, l => l.Protocols = HttpProtocols.Http2));
+                    webBuilder.UseKestrel(o => o.ListenLocalhost(ServiceConfiguration.AspNetCorePort, l => l.Protocols = HttpProtocols.Http2));
                 })
                 .Build()
                 .RunAsync();

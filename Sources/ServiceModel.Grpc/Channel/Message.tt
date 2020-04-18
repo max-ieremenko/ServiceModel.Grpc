@@ -28,7 +28,7 @@ for (var argsCount=0; argsCount<=3; argsCount++)
     var ctorArgs = string.Join(", ", Enumerable.Range(1, argsCount).Select(i => "T" + i + " value" + i));
 #>
     [Serializable]
-    [DataContract]
+    [DataContract(Name = "m", Namespace = "s")]
     internal sealed class Message<#= genericArgs #>
     {
 <#
@@ -67,7 +67,7 @@ if (argsCount > 0)
             for (var a=1; a<=argsCount; a++)
             {
 #>
-        [DataMember(Name = "Value<#= a #>", Order = <#= a #>)]
+        [DataMember(Name = "v<#= a #>", Order = <#= a #>)]
         public T<#= a #> Value<#= a #> { get => _value<#= a #>; set => _value<#= a #> = value; }
 
 <#

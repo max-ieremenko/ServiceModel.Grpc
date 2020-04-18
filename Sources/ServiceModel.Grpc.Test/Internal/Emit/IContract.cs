@@ -59,6 +59,12 @@ namespace ServiceModel.Grpc.Internal.Emit
         Task<string> ClientStreamingSumValues(IAsyncEnumerable<int> values, CancellationToken token);
 
         [OperationContract]
+        Task<string> ClientStreamingHeaderParameters(IAsyncEnumerable<int> values, int multiplier, string prefix);
+
+        [OperationContract]
         IAsyncEnumerable<string> DuplexStreamingConvert(IAsyncEnumerable<int> values, CancellationToken token);
+
+        [OperationContract]
+        IAsyncEnumerable<string> DuplexStreamingHeaderParameters(IAsyncEnumerable<int> values, int multiplier, string prefix);
     }
 }

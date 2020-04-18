@@ -1,6 +1,7 @@
 ﻿using System;
 using Contract;
 using Grpc.Core;
+using ServiceModel.Grpc.Configuration;
 
 namespace ServerSelfHost
 {
@@ -12,7 +13,7 @@ namespace ServerSelfHost
             {
                 Ports =
                 {
-                    new ServerPort("localhost", ServiceConfiguration.Port, ServerCredentials.Insecure)
+                    new ServerPort("localhost", ServiceConfiguration.SelfHostPort, ServerCredentials.Insecure)
                 }
             };
 

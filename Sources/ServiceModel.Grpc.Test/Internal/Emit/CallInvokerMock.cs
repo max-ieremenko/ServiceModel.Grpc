@@ -96,10 +96,12 @@ namespace ServiceModel.Grpc.Internal.Emit
                 })
                 .Returns(new AsyncUnaryCall<Message>(
                     Task.FromResult(new Message()),
-                    null,
-                    null,
-                    null,
-                    null,
+                    _ => Task.FromResult(default(Metadata)),
+                    _ => default,
+                    _ => default,
+                    _ =>
+                    {
+                    },
                     null));
         }
 
@@ -118,10 +120,12 @@ namespace ServiceModel.Grpc.Internal.Emit
                 })
                 .Returns(new AsyncUnaryCall<Message<TResponse>>(
                     Task.FromResult(new Message<TResponse>(response)),
-                    null,
-                    null,
-                    null,
-                    null,
+                    _ => Task.FromResult(default(Metadata)),
+                    _ => default,
+                    _ => default,
+                    _ =>
+                    {
+                    },
                     null));
         }
 
@@ -141,10 +145,12 @@ namespace ServiceModel.Grpc.Internal.Emit
                 })
                 .Returns(new AsyncUnaryCall<Message>(
                     Task.FromResult(new Message()),
-                    null,
-                    null,
-                    null,
-                    null,
+                    _ => Task.FromResult(default(Metadata)),
+                    _ => default,
+                    _ => default,
+                    _ =>
+                    {
+                    },
                     null));
         }
 
@@ -172,10 +178,12 @@ namespace ServiceModel.Grpc.Internal.Emit
                 })
                 .Returns(new AsyncUnaryCall<Message<TResponse>>(
                     Task.FromResult(new Message<TResponse>(response)),
-                    null,
-                    null,
-                    null,
-                    null,
+                    _ => Task.FromResult(default(Metadata)),
+                    _ => default,
+                    _ => default,
+                    _ =>
+                    {
+                    },
                     null));
         }
 

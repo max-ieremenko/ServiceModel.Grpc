@@ -40,4 +40,11 @@
     </Compile>
   </ItemGroup>
 
+  <Target Name="AdditionalPackageContent">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="..\..\build-out\CoreThirdPartyNotices.txt">
+        <PackagePath>ThirdPartyNotices.txt</PackagePath>
+      </TfmSpecificPackageFile>
+    </ItemGroup>
+  </Target>
 </Project>

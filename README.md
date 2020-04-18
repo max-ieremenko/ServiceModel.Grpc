@@ -57,8 +57,9 @@ For additional examples refer to [docs](Docs).
 ## NuGet feed
 
 -----
-Package | Supported platforms | Description
-------- | :------------------ | :----------
-[![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.svg)](https://www.nuget.org/packages/ServiceModel.Grpc) | net461, netstandard2.0/2.1 | main internal functionality, basic Grpc.Core.Api extensions, ClientFactory
-[![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.AspNetCore.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.AspNetCore) | .net core 3.0 | Grpc.AspNetCore.Server extensions
-[![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.SelfHost.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.SelfHost) | net461, netstandard2.0/2.1 | Grpc.Core extensions for self-hosted Grpc.Core.Server
+Name | Package | Supported platforms | Description
+-----| :------ |:------------------- | :----------
+ServiceModel.Grpc | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.svg)](https://www.nuget.org/packages/ServiceModel.Grpc) | net461, netstandard2.0/2.1 | main internal functionality, basic Grpc.Core.Api extensions, ClientFactory
+ServiceModel.Grpc.AspNetCore | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.AspNetCore.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.AspNetCore) | .net core 3.0 | Grpc.AspNetCore.Server extensions
+ServiceModel.Grpc.SelfHost | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.SelfHost.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.SelfHost) | net461, netstandard2.0/2.1 | Grpc.Core extensions for self-hosted Grpc.Core.Server
+ServiceModel.Grpc.ProtoBufMarshaller | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.ProtoBufMarshaller.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.ProtoBufMarshaller) | net461, netstandard2.0/2.1 | marshaller factory based on protobuf-net

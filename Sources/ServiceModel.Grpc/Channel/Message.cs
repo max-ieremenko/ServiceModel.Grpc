@@ -11,7 +11,7 @@ using System.Runtime.Serialization;
 namespace ServiceModel.Grpc.Channel
 {
     [Serializable]
-    [DataContract]
+    [DataContract(Name = "m", Namespace = "s")]
     internal sealed class Message
     {
         public Message()
@@ -21,7 +21,7 @@ namespace ServiceModel.Grpc.Channel
     }
 
     [Serializable]
-    [DataContract]
+    [DataContract(Name = "m", Namespace = "s")]
     internal sealed class Message<T1>
     {
         private T1 _value1;
@@ -35,13 +35,13 @@ namespace ServiceModel.Grpc.Channel
             _value1 = value1;
         }
 
-        [DataMember(Name = "Value1", Order = 1)]
+        [DataMember(Name = "v1", Order = 1)]
         public T1 Value1 { get => _value1; set => _value1 = value; }
 
     }
 
     [Serializable]
-    [DataContract]
+    [DataContract(Name = "m", Namespace = "s")]
     internal sealed class Message<T1, T2>
     {
         private T1 _value1;
@@ -58,16 +58,16 @@ namespace ServiceModel.Grpc.Channel
             _value2 = value2;
         }
 
-        [DataMember(Name = "Value1", Order = 1)]
+        [DataMember(Name = "v1", Order = 1)]
         public T1 Value1 { get => _value1; set => _value1 = value; }
 
-        [DataMember(Name = "Value2", Order = 2)]
+        [DataMember(Name = "v2", Order = 2)]
         public T2 Value2 { get => _value2; set => _value2 = value; }
 
     }
 
     [Serializable]
-    [DataContract]
+    [DataContract(Name = "m", Namespace = "s")]
     internal sealed class Message<T1, T2, T3>
     {
         private T1 _value1;
@@ -87,13 +87,13 @@ namespace ServiceModel.Grpc.Channel
             _value3 = value3;
         }
 
-        [DataMember(Name = "Value1", Order = 1)]
+        [DataMember(Name = "v1", Order = 1)]
         public T1 Value1 { get => _value1; set => _value1 = value; }
 
-        [DataMember(Name = "Value2", Order = 2)]
+        [DataMember(Name = "v2", Order = 2)]
         public T2 Value2 { get => _value2; set => _value2 = value; }
 
-        [DataMember(Name = "Value3", Order = 3)]
+        [DataMember(Name = "v3", Order = 3)]
         public T3 Value3 { get => _value3; set => _value3 = value; }
 
     }
