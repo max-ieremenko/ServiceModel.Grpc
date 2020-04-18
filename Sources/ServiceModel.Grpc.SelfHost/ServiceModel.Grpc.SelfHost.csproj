@@ -12,4 +12,11 @@
     <ProjectReference Include="..\ServiceModel.Grpc\ServiceModel.Grpc.csproj" />
   </ItemGroup>
 
+  <Target Name="AdditionalPackageContent">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="..\..\build-out\SelfHostThirdPartyNotices.txt">
+        <PackagePath>ThirdPartyNotices.txt</PackagePath>
+      </TfmSpecificPackageFile>
+    </ItemGroup>
+  </Target>
 </Project>

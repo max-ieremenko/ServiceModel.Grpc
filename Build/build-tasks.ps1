@@ -1,7 +1,8 @@
 Include ".\build-scripts.ps1"
 
-Task default -Depends Initialize, Clean, Build, CreateThirdPartyNotices, Pack
-Task Pack -Depends PackServiceModelGrpc, PackServiceModelGrpcAspNetCore, PackServiceModelGrpcSelfHost, PackServiceModelGrpcProtoBufMarshaller
+Task default -Depends Initialize, Clean, Build, ThirdPartyNotices, Pack
+Task ThirdPartyNotices -Depends ThirdPartyCore, ThirdPartyAspNetCore, ThirdPartySelfHost, ThirdPartyProtoBuf
+Task Pack -Depends PackCore, PackAspNetCore, PackSelfHost, PackProtoBuf
 
 Task Initialize {
     $script:sourceDir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\Sources"))
@@ -26,35 +27,47 @@ Task Build {
     Exec { dotnet build $solutionFile -t:Rebuild -p:Configuration=Release }
 }
 
-Task CreateThirdPartyNotices {
-    Exec {
-        ThirdPartyLibraries update `
-            -appName ServiceModel.Grpc `
-            -source $sourceDir `
-            -repository $thirdPartyRepository
-    }
-  
-    Exec {
-        ThirdPartyLibraries validate `
-            -appName ServiceModel.Grpc `
-            -source $sourceDir `
-            -repository $thirdPartyRepository
-    }
+Task ThirdPartyCore {
+    $appNames = @("Core")
+    $sources = @(
+        (Join-Path $script:sourceDir "ServiceModel.Grpc"),
+        (Join-Path $script:sourceDir "ServiceModel.Grpc.Test"),
+        (Join-Path $script:sourceDir "ServiceModel.Grpc.TestApi")
+    )
 
-    Exec {
-        ThirdPartyLibraries generate `
-            -appName ServiceModel.Grpc `
-            -repository $thirdPartyRepository `
-            -to $binDir
-    }
-
-    $licenseFiles = Join-Path $binDir "Licenses"
-    if (Test-Path $licenseFiles) {
-        Remove-Item -Path $licenseFiles -Recurse -Force
-    }
+    Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
 }
 
-Task PackServiceModelGrpc {
+Task ThirdPartyAspNetCore {
+    $appNames = @("AspNetCore", "Core")
+    $sources = @(
+        (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore"),
+        (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.Test")
+    )
+
+    Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
+}
+
+Task ThirdPartySelfHost {
+    $appNames = @("SelfHost", "Core")
+    $sources = @(
+        (Join-Path $script:sourceDir "ServiceModel.Grpc.SelfHost"),
+        (Join-Path $script:sourceDir "ServiceModel.Grpc.SelfHost.Test")
+    )
+
+    Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
+}
+
+Task ThirdPartyProtoBuf {
+    $appNames = @("ProtoBuf", "Core")
+    $sources = @(
+        (Join-Path $script:sourceDir "ServiceModel.Grpc.ProtoBufMarshaller")
+    )
+
+    Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
+}
+
+Task PackCore {
     $projectFile = Join-Path $sourceDir "ServiceModel.Grpc\ServiceModel.Grpc.csproj"
 
     Exec {
@@ -68,7 +81,7 @@ Task PackServiceModelGrpc {
     }
 }
 
-Task PackServiceModelGrpcAspNetCore {
+Task PackAspNetCore {
     $projectFile = Join-Path $sourceDir "ServiceModel.Grpc.AspNetCore\ServiceModel.Grpc.AspNetCore.csproj"
 
     Exec {
@@ -82,7 +95,7 @@ Task PackServiceModelGrpcAspNetCore {
     }
 }
 
-Task PackServiceModelGrpcSelfHost {
+Task PackSelfHost {
     $projectFile = Join-Path $sourceDir "ServiceModel.Grpc.SelfHost\ServiceModel.Grpc.SelfHost.csproj"
 
     Exec {
@@ -96,7 +109,7 @@ Task PackServiceModelGrpcSelfHost {
     }
 }
 
-Task PackServiceModelGrpcProtoBufMarshaller {
+Task PackProtoBuf {
     $projectFile = Join-Path $sourceDir "ServiceModel.Grpc.ProtoBufMarshaller\ServiceModel.Grpc.ProtoBufMarshaller.csproj"
 
     Exec {
