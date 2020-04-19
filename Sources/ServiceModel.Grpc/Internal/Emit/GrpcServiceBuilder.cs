@@ -324,7 +324,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         {
             // ServerChannelAdapter.GetContext(context)
             body.EmitLdarg(serverContextParameterIndex);
-            body.Emit(OpCodes.Call, ContractDescription.GetServiceContextOption(contextType));
+            body.Emit(OpCodes.Call, ServerChannelAdapter.GetServiceContextOptionMethod(contextType));
         }
 
         private void PushHeaderProperty(ILGenerator body, MessageAssembler message, int parameterIndex)

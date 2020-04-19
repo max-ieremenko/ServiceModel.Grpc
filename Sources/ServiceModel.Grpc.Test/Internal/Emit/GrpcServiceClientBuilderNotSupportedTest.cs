@@ -65,9 +65,9 @@ namespace ServiceModel.Grpc.Internal.Emit
         }
 
         [Test]
-        public void DisposeIsNotOperation()
+        public void DisposableIsNotServiceContract()
         {
-            var log = _logger.Errors.Find(i => i.Contains(nameof(IInvalidContract.Dispose)));
+            var log = _logger.Debug.Find(i => i.Contains(typeof(IDisposable).FullName));
             log.ShouldNotBeNull();
 
             var ex = Assert.Throws<NotSupportedException>(() => _contract.Dispose());

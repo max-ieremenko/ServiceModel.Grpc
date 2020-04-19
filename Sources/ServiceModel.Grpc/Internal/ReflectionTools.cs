@@ -196,7 +196,7 @@ namespace ServiceModel.Grpc.Internal
             var result = new StringBuilder()
                 .Append(typeof(void) == method.ReturnType ? "void" : method.ReturnType.Name)
                 .Append(" ")
-                .Append(method.DeclaringType?.FullName)
+                .Append(GetNamespace(method.DeclaringType))
                 .Append(".")
                 .Append(method.Name)
                 .Append("(");

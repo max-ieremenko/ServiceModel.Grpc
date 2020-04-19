@@ -1,6 +1,6 @@
 ﻿using System;
 using ServiceModel.Grpc;
-using ServiceModel.Grpc.Internal.Emit;
+using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.SelfHost.Internal;
 
 //// ReSharper disable CheckNamespace
@@ -17,7 +17,7 @@ namespace Grpc.Core
             services.AssertNotNull(nameof(services));
             serviceFactory.AssertNotNull(nameof(serviceFactory));
 
-            if (ContractDescription.IgnoreServiceBinding(typeof(TService)))
+            if (ServiceContract.IsNativeGrpcService(typeof(TService)))
             {
                 throw new InvalidOperationException("{0} is native grpc service.".FormatWith(typeof(TService).FullName));
             }

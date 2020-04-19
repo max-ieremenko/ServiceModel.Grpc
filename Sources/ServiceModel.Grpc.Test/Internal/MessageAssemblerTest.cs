@@ -11,7 +11,7 @@ using NUnit.Framework;
 using ServiceModel.Grpc.Channel;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Internal.Emit
+namespace ServiceModel.Grpc.Internal
 {
     [TestFixture]
     public class MessageAssemblerTest

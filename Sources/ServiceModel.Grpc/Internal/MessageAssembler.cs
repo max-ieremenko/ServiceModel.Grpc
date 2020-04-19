@@ -5,8 +5,9 @@ using System.Reflection;
 using System.Threading;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
+using ServiceModel.Grpc.Internal.Emit;
 
-namespace ServiceModel.Grpc.Internal.Emit
+namespace ServiceModel.Grpc.Internal
 {
     internal sealed class MessageAssembler
     {
@@ -208,7 +209,7 @@ namespace ServiceModel.Grpc.Internal.Emit
 
         private void ThrowInvalidSignature(Exception ex = default)
         {
-            var message = "Method signature [{0}] is not supported.".FormatWith(Operation);
+            var message = "Method signature [{0}] is not supported.".FormatWith(ReflectionTools.GetSignature(Operation));
 
             if (ex == null)
             {

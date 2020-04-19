@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -10,6 +11,26 @@ namespace ServiceModel.Grpc.Internal.Emit
 {
     internal static class ServerChannelAdapter
     {
+        public static MethodInfo GetServiceContextOptionMethod(Type optionType)
+        {
+            return typeof(ServerChannelAdapter).StaticMethodByReturnType(nameof(GetContext), optionType);
+        }
+
+        public static bool TryGetServiceContextOptionMethod(Type optionType)
+        {
+            try
+            {
+                GetServiceContextOptionMethod(optionType);
+                return true;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                // method not found
+            }
+
+            return false;
+        }
+
         public static ServerCallContext GetContext(ServerCallContext context) => context;
 
         public static CancellationToken GetContextToken(ServerCallContext context) => context.CancellationToken;
