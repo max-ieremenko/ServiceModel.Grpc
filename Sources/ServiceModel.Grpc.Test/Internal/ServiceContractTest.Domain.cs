@@ -15,6 +15,13 @@ namespace ServiceModel.Grpc.Internal
             void Ignore();
         }
 
+        [ServiceContract]
+        public interface IGenericServiceContract<T>
+        {
+            [OperationContract]
+            void Invoke(T value);
+        }
+
         [BindServiceMethod(typeof(NativeGrpcService), nameof(BindService))]
         public abstract class NativeGrpcService
         {

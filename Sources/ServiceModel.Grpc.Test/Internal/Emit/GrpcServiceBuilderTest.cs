@@ -16,7 +16,6 @@ namespace ServiceModel.Grpc.Internal.Emit
     [TestFixture]
     public class GrpcServiceBuilderTest
     {
-        private GrpcServiceBuilder _sut;
         private Type _channelType;
         private Mock<IContract> _service;
         private CancellationTokenSource _tokenSource;
@@ -24,14 +23,14 @@ namespace ServiceModel.Grpc.Internal.Emit
         [OneTimeSetUp]
         public void BeforeAllTest()
         {
-            _sut = new GrpcServiceBuilder(typeof(IContract), DataContractMarshallerFactory.Default);
+            var sut = new GrpcServiceBuilder(typeof(IContract), DataContractMarshallerFactory.Default);
 
             foreach (var method in ReflectionTools.GetMethods(typeof(IContract)))
             {
-                _sut.BuildCall(new MessageAssembler(method), method.Name);
+                sut.BuildCall(new MessageAssembler(method), method.Name);
             }
 
-            _channelType = _sut.BuildType();
+            _channelType = sut.BuildType();
         }
 
         [SetUp]

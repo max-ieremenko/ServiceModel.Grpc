@@ -19,6 +19,8 @@ namespace ServiceModel.Grpc.Internal
         [Test]
         [TestCase(typeof(IServiceProvider), false)]
         [TestCase(typeof(IServiceContract), true)]
+        [TestCase(typeof(IGenericServiceContract<>), false)]
+        [TestCase(typeof(IGenericServiceContract<int>), true)]
         public void IsServiceContractInterface(Type serviceType, bool expected)
         {
             ServiceContract.IsServiceContractInterface(serviceType).ShouldBe(expected);
@@ -27,6 +29,7 @@ namespace ServiceModel.Grpc.Internal
         [Test]
         [TestCase(typeof(IServiceContract), nameof(IServiceContract.Empty), true)]
         [TestCase(typeof(IServiceContract), nameof(IServiceContract.Ignore), false)]
+        [TestCase(typeof(IGenericServiceContract<int>), nameof(IGenericServiceContract<int>.Invoke), true)]
         public void IsServiceOperation(Type serviceType, string methodName, bool expected)
         {
             var method = serviceType.InstanceMethod(methodName);

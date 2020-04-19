@@ -14,8 +14,8 @@ namespace ServiceModel.Grpc.Internal
 
         public static bool IsServiceContractInterface(Type type)
         {
-            return (type.IsPublic || type.IsNestedPublic)
-                   && !type.IsGenericType
+            return ReflectionTools.IsPublicInterface(type)
+                   && !type.IsGenericTypeDefinition
                    && GetServiceContractAttribute(type) != null;
         }
 
