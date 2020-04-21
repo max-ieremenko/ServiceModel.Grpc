@@ -9,6 +9,9 @@ using ServiceModel.Grpc.Internal.Emit;
 
 namespace ServiceModel.Grpc.Client
 {
+    /// <summary>
+    /// Serves to configure and create instances of gRPC service clients.
+    /// </summary>
     public sealed class ClientFactory : IClientFactory
     {
         private static int _instanceCounter;
@@ -18,6 +21,10 @@ namespace ServiceModel.Grpc.Client
         private readonly IDictionary<Type, Delegate> _factoryByContract;
         private readonly string _factoryId;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ClientFactory"/> class.
+        /// </summary>
+        /// <param name="defaultOptions">Default configuration for all clients, created by this instance.</param>
         public ClientFactory(ServiceModelGrpcClientOptions defaultOptions = null)
         {
             _defaultOptions = defaultOptions;
@@ -28,12 +35,23 @@ namespace ServiceModel.Grpc.Client
             _factoryId = instanceNumber.ToString(CultureInfo.InvariantCulture);
         }
 
+        /// <summary>
+        /// Configures a proxy for gRPC service contract <typeparamref name="TContract"/>.
+        /// </summary>
+        /// <typeparam name="TContract">The service contract type.</typeparam>
+        /// <param name="configure">The configuration action.</param>
         public void AddClient<TContract>(Action<ServiceModelGrpcClientOptions> configure = null)
             where TContract : class
         {
             RegisterClient<TContract>(configure);
         }
 
+        /// <summary>
+        /// Creates a new proxy instance for gRPC service contract <typeparamref name="TContract"/>.
+        /// </summary>
+        /// <typeparam name="TContract">The service contract type.</typeparam>
+        /// <param name="channel">The gRPC channel.</param>
+        /// <returns>The proxy for <typeparamref name="TContract"/>.</returns>
         public TContract CreateClient<TContract>(ChannelBase channel)
             where TContract : class
         {
@@ -42,6 +60,12 @@ namespace ServiceModel.Grpc.Client
             return CreateClient<TContract>(channel.CreateCallInvoker());
         }
 
+        /// <summary>
+        /// Creates a new proxy instance for gRPC service contract <typeparamref name="TContract"/>.
+        /// </summary>
+        /// <typeparam name="TContract">The service contract type.</typeparam>
+        /// <param name="callInvoker">The client-side RPC invocation.</param>
+        /// <returns>The proxy for <typeparamref name="TContract"/>.</returns>
         public TContract CreateClient<TContract>(CallInvoker callInvoker)
             where TContract : class
         {

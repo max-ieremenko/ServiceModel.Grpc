@@ -7,8 +7,18 @@ using ServiceModel.Grpc.SelfHost.Internal;
 namespace Grpc.Core
 //// ReSharper restore CheckNamespace
 {
+    /// <summary>
+    /// Provides a set of methods to simplify ServiceModel.Grpc services registration.
+    /// </summary>
     public static class ServiceDefinitionCollectionExtensions
     {
+        /// <summary>
+        /// Registers a ServiceModel.Grpc service (one instance per-call) in the <see cref="Server.ServiceDefinitionCollection"/>.
+        /// </summary>
+        /// <typeparam name="TService">The implementation type of ServiceModel.Grpc service.</typeparam>
+        /// <param name="services">The <see cref="Server.ServiceDefinitionCollection"/>.</param>
+        /// <param name="serviceFactory">Method which creates a service instance.</param>
+        /// <param name="configure">The optional configuration action to provide a configuration the service.</param>
         public static void AddServiceModelTransient<TService>(
             this Server.ServiceDefinitionCollection services,
             Func<TService> serviceFactory,
@@ -48,6 +58,13 @@ namespace Grpc.Core
             services.Add(definition);
         }
 
+        /// <summary>
+        /// Registers a ServiceModel.Grpc service (one instance for all calls) in the <see cref="Server.ServiceDefinitionCollection"/>.
+        /// </summary>
+        /// <typeparam name="TService">The implementation type of ServiceModel.Grpc service.</typeparam>
+        /// <param name="services">The <see cref="Server.ServiceDefinitionCollection"/>.</param>
+        /// <param name="service">The service instance.</param>
+        /// <param name="configure">The optional configuration action to provide a configuration the service.</param>
         public static void AddServiceModelSingleton<TService>(
             this Server.ServiceDefinitionCollection services,
             TService service,
