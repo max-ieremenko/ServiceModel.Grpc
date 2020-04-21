@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <ServiceModelGrpcVersion>1.0.0-pre2</ServiceModelGrpcVersion>
+    <ServiceModelGrpcVersion>1.0.0</ServiceModelGrpcVersion>
   </PropertyGroup>
   
 </Project>
