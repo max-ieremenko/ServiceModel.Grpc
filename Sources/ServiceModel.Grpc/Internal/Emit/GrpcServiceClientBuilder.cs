@@ -1,4 +1,20 @@
-﻿using System;
+﻿// <copyright>
+// Copyright 2020 Max Ieremenko
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// </copyright>
+
+using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -62,13 +78,38 @@ namespace ServiceModel.Grpc.Internal.Emit
             // ctor(CallInvoker callInvoker)
             BuildCtor();
 
-            foreach (var interfaceType in ContractDescription.GetInterfacesImplementation(contractType))
-            {
-                _typeBuilder.AddInterfaceImplementation(interfaceType);
+            var contractDescription = new ContractDescription(contractType);
 
-                foreach (var method in ContractDescription.GetMethodsForImplementation(interfaceType))
+            foreach (var interfaceDescription in contractDescription.Interfaces)
+            {
+                _typeBuilder.AddInterfaceImplementation(interfaceDescription.InterfaceType);
+
+                foreach (var method in interfaceDescription.Methods)
                 {
-                    ImplementMethod(interfaceType, method);
+                    ImplementNotSupportedMethod(method.Method, method.Error);
+                    Logger?.LogDebug(method.Error);
+                }
+            }
+
+            foreach (var interfaceDescription in contractDescription.Services)
+            {
+                _typeBuilder.AddInterfaceImplementation(interfaceDescription.InterfaceType);
+
+                foreach (var method in interfaceDescription.Methods)
+                {
+                    ImplementNotSupportedMethod(method.Method, method.Error);
+                    Logger?.LogDebug(method.Error);
+                }
+
+                foreach (var method in interfaceDescription.NotSupportedOperations)
+                {
+                    ImplementNotSupportedMethod(method.Method, method.Error);
+                    Logger?.LogError(method.Error);
+                }
+
+                foreach (var operation in interfaceDescription.Operations)
+                {
+                    ImplementMethod(interfaceDescription.InterfaceType, operation);
                 }
             }
 
@@ -116,7 +157,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             return field;
         }
 
-        private FieldBuilder InitializeGrpcMethod(Type interfaceType, MessageAssembler message)
+        private FieldBuilder InitializeGrpcMethod(Type interfaceType, MessageAssembler message, string serviceName, string operationName)
         {
             var filedType = typeof(Method<,>).MakeGenericType(message.RequestType, message.ResponseType);
 
@@ -130,8 +171,8 @@ namespace ServiceModel.Grpc.Internal.Emit
             var createMarshaller = typeof(IMarshallerFactory).InstanceMethod(nameof(IMarshallerFactory.CreateMarshaller));
 
             _defineGrpcMethod.EmitLdcI4((int)message.OperationType); // MethodType
-            _defineGrpcMethod.Emit(OpCodes.Ldstr, ServiceContract.GetServiceName(interfaceType));
-            _defineGrpcMethod.Emit(OpCodes.Ldstr, ServiceContract.GetServiceOperationName(message.Operation));
+            _defineGrpcMethod.Emit(OpCodes.Ldstr, serviceName);
+            _defineGrpcMethod.Emit(OpCodes.Ldstr, operationName);
             _defineGrpcMethod.Emit(OpCodes.Ldarg_0);
             _defineGrpcMethod.Emit(OpCodes.Callvirt, createMarshaller.MakeGenericMethod(message.RequestType));
             _defineGrpcMethod.Emit(OpCodes.Ldarg_0);
@@ -150,38 +191,22 @@ namespace ServiceModel.Grpc.Internal.Emit
             return field;
         }
 
-        private void ImplementMethod(Type interfaceType, MethodInfo method)
+        private void ImplementNotSupportedMethod(MethodInfo method, string error)
         {
             var body = CreateMethodWithSignature(method);
 
-            if (!ContractDescription.IsOperationMethod(interfaceType, method))
-            {
-                var text = "Method {0}.{1}.{2} is not service operation.".FormatWith(
-                    ReflectionTools.GetNamespace(interfaceType),
-                    interfaceType.Name,
-                    method.Name);
+            // throw new NotSupportedException("...");
+            body.Emit(OpCodes.Ldstr, error);
+            body.Emit(OpCodes.Newobj, typeof(NotSupportedException).Constructor(typeof(string)));
+            body.Emit(OpCodes.Throw);
+        }
 
-                // throw new NotSupportedException("...");
-                body.Emit(OpCodes.Ldstr, text);
-                body.Emit(OpCodes.Newobj, typeof(NotSupportedException).Constructor(typeof(string)));
-                body.Emit(OpCodes.Throw);
+        private void ImplementMethod(Type interfaceType, OperationDescription operation)
+        {
+            var message = operation.Message;
+            var body = CreateMethodWithSignature(message.Operation);
 
-                Logger?.LogError(text);
-                return;
-            }
-
-            if (!ContractDescription.TryCreateMessage(method, out var message, out var error))
-            {
-                // throw new NotSupportedException("...");
-                body.Emit(OpCodes.Ldstr, error);
-                body.Emit(OpCodes.Newobj, typeof(NotSupportedException).Constructor(typeof(string)));
-                body.Emit(OpCodes.Throw);
-
-                Logger?.LogError(error);
-                return;
-            }
-
-            var grpcMethodFiled = InitializeGrpcMethod(interfaceType, message);
+            var grpcMethodFiled = InitializeGrpcMethod(interfaceType, message, operation.ServiceName, operation.OperationName);
             var headersMarshallerFiled = InitializeHeadersMarshaller(interfaceType, message);
             switch (message.OperationType)
             {
@@ -227,12 +252,12 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ldnull); // var host = null
             body.Emit(OpCodes.Ldloc_0); // options
             body.Emit(OpCodes.Ldloc_2); // message
-            
+
             if (message.IsAsync)
             {
                 // CallInvoker.AsyncUnaryCall(...Method, null, context, value);
                 body.Emit(OpCodes.Callvirt, typeof(CallInvoker).InstanceMethod(nameof(CallInvoker.AsyncUnaryCall)).MakeGenericMethod(message.RequestType, message.ResponseType));
-                
+
                 PushCallContext(body, message);
 
                 if (message.ResponseType.IsGenericType)
@@ -387,7 +412,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             {
                 body.Emit(OpCodes.Ldloca_S, 1); // optionsBuilder
                 body.EmitLdarg(i + 1); // parameter
-                
+
                 var withMethodName = "With" + message.Parameters[i].ParameterType.Name;
                 body.Emit(OpCodes.Call, typeof(CallOptionsBuilder).InstanceMethod(withMethodName)); // .With
                 body.Emit(OpCodes.Stloc_1);

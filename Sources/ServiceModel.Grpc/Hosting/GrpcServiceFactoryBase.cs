@@ -1,4 +1,20 @@
-﻿using System;
+﻿// <copyright>
+// Copyright 2020 Max Ieremenko
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// </copyright>
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Grpc.Core;
@@ -26,7 +42,7 @@ namespace ServiceModel.Grpc.Hosting
 
         public void Bind()
         {
-            if (ContractDescription.IgnoreServiceBinding(_serviceType))
+            if (ServiceContract.IsNativeGrpcService(_serviceType))
             {
                 Logger.LogDebug("Ignore service {0} binding: native grpc service.", _serviceType.FullName);
             }
@@ -54,81 +70,78 @@ namespace ServiceModel.Grpc.Hosting
 
         private void BindCore()
         {
-            foreach (var interfaceType in ContractDescription.GetInterfacesImplementation(_serviceType))
+            var contractDescription = new ContractDescription(_serviceType);
+
+            foreach (var interfaceDescription in contractDescription.Interfaces)
             {
-                var messages = new List<MessageAssembler>();
+                Logger.LogDebug("{0}: {1} is not service contract.", _serviceType.FullName, interfaceDescription.InterfaceType.FullName);
+            }
 
-                foreach (var method in ContractDescription.GetMethodsForImplementation(interfaceType))
+            foreach (var interfaceDescription in contractDescription.Services)
+            {
+                foreach (var method in interfaceDescription.Methods)
                 {
-                    if (!ContractDescription.IsOperationMethod(interfaceType, method))
-                    {
-                        Logger.LogDebug("Skip {0} method {1}.{2}: is not operation contract.", _serviceType.FullName, interfaceType.FullName, method.Name);
-                        continue;
-                    }
-
-                    if (ContractDescription.TryCreateMessage(method, out var message, out var error))
-                    {
-                        messages.Add(message);
-                    }
-                    else
-                    {
-                        Logger.LogError("Service {0}: {1}", _serviceType.FullName, error);
-                    }
+                    Logger.LogDebug("{0}: {1}", _serviceType.FullName, method.Error);
                 }
 
-                if (messages.Count > 0)
+                foreach (var method in interfaceDescription.NotSupportedOperations)
+                {
+                    Logger.LogError("{0}: {1}", _serviceType.FullName, method.Error);
+                }
+
+                if (interfaceDescription.Operations.Count > 0)
                 {
                     Type serviceChannelType;
                     lock (ProxyAssembly.SyncRoot)
                     {
-                        serviceChannelType = BuildChannelService(interfaceType, messages);
+                        serviceChannelType = BuildChannelService(interfaceDescription.InterfaceType, interfaceDescription.Operations);
                     }
 
-                    BindInterface(serviceChannelType, interfaceType, messages);
+                    BindInterface(serviceChannelType, interfaceDescription.InterfaceType, interfaceDescription.Operations);
                 }
             }
         }
 
-        private Type BuildChannelService(Type interfaceType, IList<MessageAssembler> messages)
+        private Type BuildChannelService(Type interfaceType, IList<OperationDescription> operations)
         {
             var serviceBuilder = new GrpcServiceBuilder(interfaceType, _marshallerFactory);
-            foreach (var message in messages)
+            foreach (var operation in operations)
             {
-                var operationName = ContractDescription.GetOperationName(message.Operation);
+                var message = operation.Message;
 
-                if (message.ContextInput.Any(i => ContractDescription.GetServiceContextOption(message.Parameters[i].ParameterType) == null))
+                if (message.ContextInput.Any(i => !ServerChannelAdapter.TryGetServiceContextOptionMethod(message.Parameters[i].ParameterType)))
                 {
                     var error = "Context options in [{0}] are not supported.".FormatWith(ReflectionTools.GetSignature(message.Operation));
 
                     Logger.LogError("Service {0}: {1}", _serviceType.FullName, error);
-                    serviceBuilder.BuildNotSupportedCall(message, operationName, error);
+                    serviceBuilder.BuildNotSupportedCall(message, operation.OperationName, error);
                 }
                 else
                 {
-                    serviceBuilder.BuildCall(message, operationName);
+                    serviceBuilder.BuildCall(message, operation.OperationName);
                 }
             }
 
             return serviceBuilder.BuildType();
         }
 
-        private void BindInterface(Type serviceChannelType, Type interfaceType, IList<MessageAssembler> messages)
+        private void BindInterface(Type serviceChannelType, Type interfaceType, IList<OperationDescription> operations)
         {
-            var serviceName = ContractDescription.GetServiceName(interfaceType);
             var addMethodGeneric = typeof(GrpcServiceFactoryBase<TService>).InstanceMethod(nameof(AddMethod));
-            foreach (var message in messages)
+            foreach (var operation in operations)
             {
+                var message = operation.Message;
+
                 var addMethod = addMethodGeneric
                     .MakeGenericMethod(message.RequestType, message.ResponseType)
                     .CreateDelegate<Action<string, string, MethodType, ServiceCallInfo>>(this);
 
-                var operationName = ContractDescription.GetOperationName(message.Operation);
                 var callInfo = new ServiceCallInfo(
                     ReflectionTools.ImplementationOfMethod(_serviceType, interfaceType, message.Operation),
-                    serviceChannelType.StaticMethod(operationName));
+                    serviceChannelType.StaticMethod(operation.OperationName));
 
                 Logger.LogDebug("Bind method {0}.{1}.", _serviceType.FullName, callInfo.ServiceInstanceMethod.Name);
-                addMethod(serviceName, operationName, message.OperationType, callInfo);
+                addMethod(operation.ServiceName, operation.OperationName, message.OperationType, callInfo);
             }
         }
 
@@ -146,7 +159,7 @@ namespace ServiceModel.Grpc.Hosting
                 operationName,
                 _marshallerFactory.CreateMarshaller<TRequest>(),
                 _marshallerFactory.CreateMarshaller<TResponse>());
-            
+
             switch (operationType)
             {
                 case MethodType.Unary:

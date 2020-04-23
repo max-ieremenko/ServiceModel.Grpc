@@ -14,16 +14,24 @@
 // limitations under the License.
 // </copyright>
 
-using System.Threading.Tasks;
-using Grpc.Core;
+using System.Diagnostics;
 
-namespace ServiceModel.Grpc.Internal.Emit
+namespace ServiceModel.Grpc.Internal
 {
-    public delegate Task DuplexStreamingServerMethod<in TService, in TRequest, out TResponse>(
-        TService service,
-        IAsyncStreamReader<TRequest> requestStream,
-        IServerStreamWriter<TResponse> responseStream,
-        ServerCallContext context)
-        where TRequest : class
-        where TResponse : class;
+    [DebuggerDisplay("{ServiceName}/{OperationName}")]
+    internal sealed class OperationDescription
+    {
+        public OperationDescription(string serviceName, string operationName, MessageAssembler message)
+        {
+            ServiceName = serviceName;
+            OperationName = operationName;
+            Message = message;
+        }
+
+        public string ServiceName { get; }
+
+        public string OperationName { get; }
+
+        public MessageAssembler Message { get; }
+    }
 }

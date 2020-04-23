@@ -25,10 +25,10 @@ using Shouldly;
 namespace ServiceModel.Grpc.Internal.Emit
 {
     [TestFixture]
-    public class GrpcServiceClientBuilderNotSupportedTest
+    public class GrpcServiceClientBuilderGenericTest
     {
-        private Func<IInvalidContract> _factory;
-        private IInvalidContract _contract;
+        private Func<IGenericContract<int, string>> _factory;
+        private IGenericContract<int, string> _contract;
         private Mock<CallInvoker> _callInvoker;
         private LoggerMock _logger;
 
@@ -43,7 +43,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 Logger = _logger.Logger
             };
 
-            var factory = builder.Build<IInvalidContract>(nameof(GrpcServiceClientBuilderNotSupportedTest));
+            var factory = builder.Build<IGenericContract<int, string>>(nameof(GrpcServiceClientBuilderGenericTest));
 
             _factory = () => factory(_callInvoker.Object);
         }
@@ -56,40 +56,15 @@ namespace ServiceModel.Grpc.Internal.Emit
         }
 
         [Test]
-        public void InvalidSignature()
+        public void Invoke()
         {
-            var log = _logger.Errors.Find(i => i.Contains(nameof(IInvalidContract.InvalidSignature)));
-            log.ShouldNotBeNull();
+            Console.WriteLine(_contract.GetType().InstanceMethod(nameof(IGenericContract<int, string>.Invoke)).Disassemble());
 
-            var x = 0;
-            var ex = Assert.Throws<NotSupportedException>(() => _contract.InvalidSignature(ref x, out _));
-            Console.WriteLine(ex.Message);
+            _callInvoker.SetupBlockingUnaryCallInOut(3, "4", "34");
 
-            ex.Message.ShouldBe(log);
-        }
+            _contract.Invoke(3, "4").ShouldBe("34");
 
-        [Test]
-        public void GenericMethod()
-        {
-            var log = _logger.Errors.Find(i => i.Contains(nameof(IInvalidContract.Generic)));
-            log.ShouldNotBeNull();
-
-            var ex = Assert.Throws<NotSupportedException>(() => _contract.Generic<int, string>(2));
-            Console.WriteLine(ex.Message);
-
-            ex.Message.ShouldBe(log);
-        }
-
-        [Test]
-        public void DisposableIsNotServiceContract()
-        {
-            var log = _logger.Debug.Find(i => i.Contains(typeof(IDisposable).FullName));
-            log.ShouldNotBeNull();
-
-            var ex = Assert.Throws<NotSupportedException>(() => _contract.Dispose());
-            Console.WriteLine(ex.Message);
-
-            ex.Message.ShouldBe(log);
+            _callInvoker.VerifyAll();
         }
     }
 }

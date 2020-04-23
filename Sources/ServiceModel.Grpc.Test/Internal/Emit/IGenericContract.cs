@@ -14,16 +14,14 @@
 // limitations under the License.
 // </copyright>
 
-using System.Threading.Tasks;
-using Grpc.Core;
+using System.ServiceModel;
 
 namespace ServiceModel.Grpc.Internal.Emit
 {
-    public delegate Task DuplexStreamingServerMethod<in TService, in TRequest, out TResponse>(
-        TService service,
-        IAsyncStreamReader<TRequest> requestStream,
-        IServerStreamWriter<TResponse> responseStream,
-        ServerCallContext context)
-        where TRequest : class
-        where TResponse : class;
+    [ServiceContract]
+    public interface IGenericContract<in T1, T2>
+    {
+        [OperationContract]
+        T2 Invoke(T1 value, T2 value2);
+    }
 }

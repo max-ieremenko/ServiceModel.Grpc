@@ -14,18 +14,34 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using System.ServiceModel;
 
-namespace ServiceModel.Grpc.Internal.Emit
+namespace ServiceModel.Grpc.Internal
 {
-    [ServiceContract]
-    public interface IInvalidContract : IDisposable
+    public partial class ContractDescriptionTest
     {
-        [OperationContract]
-        void InvalidSignature(ref int value1, out int value2);
+        [ServiceContract]
+        public interface IDuplicateOperationName
+        {
+            [OperationContract]
+            void Ping();
 
-        [OperationContract]
-        T2 Generic<T1, T2>(T1 value);
+            [OperationContract]
+            void Ping(int x);
+        }
+
+        [ServiceContract(Name = "Service")]
+        public interface IServiceBase
+        {
+            [OperationContract]
+            void Ping();
+        }
+
+        [ServiceContract(Name = "Service")]
+        public interface IService : IServiceBase
+        {
+            [OperationContract]
+            void Ping(int x);
+        }
     }
 }

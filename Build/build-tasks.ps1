@@ -1,6 +1,6 @@
 Include ".\build-scripts.ps1"
 
-Task default -Depends Initialize, Clean, Build, ThirdPartyNotices, Pack
+Task default -Depends Initialize, Clean, Build, Test, ThirdPartyNotices, Pack
 Task ThirdPartyNotices -Depends ThirdPartyCore, ThirdPartyAspNetCore, ThirdPartySelfHost, ThirdPartyProtoBuf
 Task Pack -Depends PackCore, PackAspNetCore, PackSelfHost, PackProtoBuf
 
@@ -25,6 +25,24 @@ Task Build {
     $solutionFile = Join-Path $sourceDir "ServiceModel.Grpc.sln"
     Exec { dotnet restore $solutionFile }
     Exec { dotnet build $solutionFile -t:Rebuild -p:Configuration=Release }
+}
+
+Task Test {
+    $app = $script:sourceDir + ":/app"
+
+    $testList = @(
+        "ServiceModel.Grpc.AspNetCore.Test/bin/Release/netcoreapp3.1/ServiceModel.Grpc.AspNetCore.Test.dll",
+        "ServiceModel.Grpc.SelfHost.Test/bin/Release/netcoreapp3.1/ServiceModel.Grpc.SelfHost.Test.dll",
+        "ServiceModel.Grpc.Test/bin/Release/netcoreapp3.1/ServiceModel.Grpc.Test.dll"
+    )
+    $testList = $testList | ForEach-Object {"/app/" + $_}
+
+    Exec {
+        docker run --rm `
+            -v $app `
+            mcr.microsoft.com/dotnet/core/sdk:3.1 `
+            dotnet vstest $testList
+    }    
 }
 
 Task ThirdPartyCore {
