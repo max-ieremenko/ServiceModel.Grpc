@@ -51,7 +51,7 @@ Is ServiceModel.Grpc compatible with standard gRPC? [Yes](https://max-ieremenko.
 
 The first place to start using ServiceModel.Grpc is [create a gRPC client and server tutorial](https://max-ieremenko.github.io/ServiceModel.Grpc/CreateClientAndServerASPNETCore.html).
 
-To migrate an existing WCF solution to a gRPC with ServiceModel.Grpc [tutorial](https://max-ieremenko.github.io/ServiceModel.Grpc/MigrateWCFServiceTogRPC.html)
+To migrate an existing WCF solution to a gRPC with ServiceModel.Grpc [tutorial](https://max-ieremenko.github.io/ServiceModel.Grpc/MigrateWCFServiceTogRPC.html).
 
 For additional examples refer to [docs](https://max-ieremenko.github.io/ServiceModel.Grpc/).
 
