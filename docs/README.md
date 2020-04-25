@@ -1,6 +1,7 @@
 # ServiceModel.Grpc
 
-- getting started example [create a gRPC client and server](CreateClientAndServerASPNETCore.md)
+- getting started tutorial [create a gRPC client and server](CreateClientAndServerASPNETCore.md)
+- [migrate from WCF to a gRPC tutorial](MigrateWCFServiceTogRPC.md)
 - [service and operation names](ServiceAndOperationName.md)
 - [service and operation bindings](ServiceAndOperationBinding.md)
 - [client configuration](ClientConfiguration.md)
