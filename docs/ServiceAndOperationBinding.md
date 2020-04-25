@@ -2,7 +2,7 @@
 
 For service binding, only interfaces are used.
 
-```C#
+``` c#
 [ServiceContract]
 public interface IStandardCalculator
 {
@@ -23,7 +23,7 @@ public interface IScientificCalculator
 In the following example on a server start-up there will be 2 gRPC services available `IStandardCalculator` and `IScientificCalculator`.
 `IDisposable` is ignored - it is not service contract.
 
-```C#
+``` c#
 internal sealed class CalculatorService : IStandardCalculator, IScientificCalculator, IDisposable
 {
     // accept POST /IStandardCalculator/Sum
@@ -54,7 +54,7 @@ internal sealed class Startup
 
 ## call from client-side
 
-```C#
+``` c#
 static readonly IClientFactory MyDefaultClientFactory = new ClientFactory(...);
 
 static void Call()

@@ -2,7 +2,7 @@
 
 ## AddService...
 
-```C#
+``` c#
 var server = new Grpc.Core.Server();
 
 server.Services.AddServiceModelSingleton(

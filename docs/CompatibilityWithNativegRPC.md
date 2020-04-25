@@ -33,7 +33,7 @@ service Calculator {
 
 ServiceModel.Grpc contract
 
-```C#
+``` c#
 [ServiceContract(Name = "Calculator")] // service name: Calculator
 public interface ICalculator
 {
@@ -58,7 +58,7 @@ message Person {
 
 c# Person decorated with data contract
 
-```C#
+``` c#
 [DataContract]
 public class Person
 {
@@ -75,7 +75,7 @@ public class Person
 
 c# Person decorated with proto contract
 
-```C#
+``` c#
 [ProtoContract]
 public class Person
 {

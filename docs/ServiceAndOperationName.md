@@ -2,7 +2,7 @@
 
 By default a contract interface name is a gRPC service name and contract method name is gRPC method name, namespace and assembly name of interface do not matter:
 
-```C#
+``` c#
 // service name: ICalculator
 [ServiceContract]
 public interface ICalculator
@@ -19,7 +19,7 @@ public interface ICalculator
 
 in some cases it may lead to a naming conflicts, in the following example there are 2 method with gRPC method name `/ICalculator/Sum`:
 
-```C#
+``` c#
 // service name: ICalculator
 [ServiceContract]
 public interface ICalculator
@@ -36,7 +36,7 @@ public interface ICalculator
 
 To resolve the conflict use `OperationContractAttribute.Name`:
 
-```C#
+``` c#
 // service name: ICalculator
 [ServiceContract]
 public interface ICalculator
@@ -53,7 +53,7 @@ public interface ICalculator
 
 in the following example there is a conflict of service names `ICalculator`:
 
-```C#
+``` c#
 namespace Standard
 {
     // service name: ICalculator
@@ -73,7 +73,7 @@ namespace Scientific
 
 To resolve the conflict use `ServiceContractAttribute.Name` and/or `ServiceContractAttribute.Namespace`:
 
-```C#
+``` c#
 namespace Standard
 {
     // options 1: service name: Standard.Calculator
