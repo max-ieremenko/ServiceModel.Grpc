@@ -45,13 +45,13 @@ public sealed class Calculator : ICalculator
 }
 ```
 
-Is ServiceModel.Grpc compatible with standard gRPC? [Yes](/Docs/CompatibilityWithNativegRPC.md).
+Is ServiceModel.Grpc compatible with standard gRPC? [Yes](/docs/CompatibilityWithNativegRPC.md).
 
 ## To start using ServiceModel.Grpc
 
-The first place to start using ServiceModel.Grpc is [create a gRPC client and server example](Docs/CreateClientAndServerASPNETCore.md).
+The first place to start using ServiceModel.Grpc is [create a gRPC client and server example](docs/CreateClientAndServerASPNETCore.md).
 
-For additional examples refer to [docs](Docs).
+For additional examples refer to [docs](docs).
 
 
 ## NuGet feed
