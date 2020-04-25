@@ -6,7 +6,7 @@ This tutorial shows how to migrate existing WCF service and client to gRPC with 
 
 ## The existing WCF solution
 
-The [MigrateWCFTogRpc.sln](https://github.com/max-ieremenko/ServiceModel.Grpc/blob/master/Examples/MigrateWCFTogRpc/MigrateWCFTogRpc.sln) includes a simple request-response Person service. The service is defined in the interface IPersonService as WCF service contract:
+The [MigrateWCFTogRpc.sln](https://github.com/max-ieremenko/ServiceModel.Grpc/blob/master/Examples/MigrateWCFTogRpc) includes a simple request-response Person service. The service is defined in the interface IPersonService as WCF service contract:
 
 ``` c#
 [ServiceContract]

@@ -13,7 +13,7 @@ Helps to migrate existing WCF solution to gRPC with minimum effort.
 - [ASP.NET Core server configuration](ASPNETCoreServerConfiguration.md)
 - [Grpc.Core server configuration](GrpcCoreServerConfiguration.md)
 - [compatibility with native gRPC](CompatibilityWithNativegRPC.md)
-- example [protobuf marshaller](/https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/ProtobufMarshaller)
+- example [protobuf marshaller](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/ProtobufMarshaller)
 
 ### standard gRPC approach
 
