@@ -1,5 +1,10 @@
 # ServiceModel.Grpc
 
+`ServiceModel.Grpc` enables applications to communicate with gRPC services using code-first approach, helps to get around some limitations of gRPC protocol like "only reference types", "exact one input", "no nulls".
+Helps to migrate existing WCF solution to gRPC with minimum effort.
+
+## Links
+
 - getting started tutorial [create a gRPC client and server](CreateClientAndServerASPNETCore.md)
 - [migrate from WCF to a gRPC tutorial](MigrateWCFServiceTogRPC.md)
 - [service and operation names](ServiceAndOperationName.md)
@@ -9,6 +14,49 @@
 - [Grpc.Core server configuration](GrpcCoreServerConfiguration.md)
 - [compatibility with native gRPC](CompatibilityWithNativegRPC.md)
 - example [protobuf marshaller](/Examples/ProtobufMarshaller)
+
+### standard gRPC approach
+
+``` proto
+message SumRequest {
+	int64 x = 1;
+	int32 y = 2;
+	int32 z = 3;
+}
+
+message SumResponse {
+	int64 result = 1;
+}
+
+service Calculator {
+    rpc Sum (SumRequest) returns (SumResponse);
+```
+
+``` c#
+public SumResponse Sum(SumRequest request)
+{
+    return new SumResponse { Result = request.X + request.Y + request.Z };
+}
+```
+
+### ServiceModel.Grpc code-first approach
+
+``` c#
+[ServiceContract]
+public interface ICalculator
+{
+    [OperationContract]
+    long Sum(long x, int y, int z);
+}
+
+public sealed class Calculator : ICalculator
+{
+    public long Sum(long x, int y, int z)
+    {
+        return x + y + z;
+    }
+}
+```
 
 ## Data contracts
 

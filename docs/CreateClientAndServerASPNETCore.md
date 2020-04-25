@@ -17,7 +17,7 @@ Create a blank solution. Add new "Class Library (.NET standard)" project with na
 
 Person is decorated for data contract [serialization](https://docs.microsoft.com/en-us/dotnet/framework/wcf/samples/datacontractserializer-sample).
 
-```C#
+``` c#
 using System.Runtime.Serialization;
 
 namespace Contract
@@ -38,7 +38,7 @@ namespace Contract
 
 Contract is decorated with ServiceContractAttribute and OperationContractAttribute.
 
-```C#
+``` c#
 using System.ServiceModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -69,7 +69,7 @@ In the wizard select "Empty (an empty project template...)" and un-check "Config
 
 #### Add Greeter service
 
-```C#
+``` c#
 using System.Threading;
 using System.Threading.Tasks;
 using Contract;
@@ -94,7 +94,8 @@ namespace Service
 #### Configure ServiceModel.Grpc
 
 In the Startup.cs, ConfigureServices method register ServiceModel.Grpc
-```C#
+
+``` c#
 public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
@@ -111,7 +112,7 @@ public class Startup
 
 In the Startup.cs, Configure method bind Greeter service
 
-```C#
+``` c#
 public class Startup
 {
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -132,7 +133,8 @@ public class Startup
 http2 is a precondition for gRPC commination [protocol](https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md).
 
 In the Program.cs, method CreateHostBuilder add kestrel configuration
-```C#
+
+``` c#
 public static IHostBuilder CreateHostBuilder(string[] args) =>
     Host.CreateDefaultBuilder(args)
         .ConfigureWebHostDefaults(webBuilder =>
@@ -161,7 +163,7 @@ Add new "Console App (.NET Core)" project with name "Client".
 
 #### Make application entry point async
 
-```C#
+``` c#
 public static class Program
 {
     public static async Task Main(string[] args)
@@ -174,7 +176,7 @@ public static class Program
 
 In the Program.cs, create static link to ServiceModel.Grpc.Client.ClientFactory
 
-```C#
+``` c#
 public static class Program
 {
     private static readonly IClientFactory DefaultClientFactory = new ClientFactory();
@@ -189,13 +191,13 @@ You can find or change it in the Service\Properties\launchSettings.json.
 By default when you run Service application the url from "Service" is used.
 In this example the port is 5000.
 
-```C#
+``` c#
 var channel = new Channel("localhost", 5000, ChannelCredentials.Insecure);
 ```
 
 #### Create client calls
 
-```C#
+``` c#
 public static class Program
 {
     private static readonly IClientFactory DefaultClientFactory = new ClientFactory();
