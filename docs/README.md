@@ -13,7 +13,7 @@ Helps to migrate existing WCF solution to gRPC with minimum effort.
 - [ASP.NET Core server configuration](ASPNETCoreServerConfiguration.md)
 - [Grpc.Core server configuration](GrpcCoreServerConfiguration.md)
 - [compatibility with native gRPC](CompatibilityWithNativegRPC.md)
-- example [protobuf marshaller](/Examples/ProtobufMarshaller)
+- example [protobuf marshaller](/https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/ProtobufMarshaller)
 
 ### standard gRPC approach
 
@@ -60,7 +60,7 @@ public sealed class Calculator : ICalculator
 
 ## Data contracts
 
-By default the DataContractSerializer is used for marshalling data between server an client. This behavior is configurable, see [ProtobufMarshaller example](/Examples/ProtobufMarshaller).
+By default the DataContractSerializer is used for marshalling data between server an client. This behavior is configurable, see [ProtobufMarshaller example](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/ProtobufMarshaller).
 
 ``` c#
 [DataContract]

@@ -3,7 +3,7 @@
 This tutorial shows how to create a .NET client and an ASP.NET Core Server.
 At the end, you'll have a gRPC client that communicates with the gRPC Greeter service.
 
-[View sample code](/Examples/CreateClientAndServerASPNETCore).
+[View sample code](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/CreateClientAndServerASPNETCore).
 
 ## Create contract first
 

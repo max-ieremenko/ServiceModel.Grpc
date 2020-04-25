@@ -45,13 +45,15 @@ public sealed class Calculator : ICalculator
 }
 ```
 
-Is ServiceModel.Grpc compatible with standard gRPC? [Yes](/docs/CompatibilityWithNativegRPC.md).
+Is ServiceModel.Grpc compatible with standard gRPC? [Yes](https://max-ieremenko.github.io/ServiceModel.Grpc/CompatibilityWithNativegRPC.html).
 
 ## To start using ServiceModel.Grpc
 
-The first place to start using ServiceModel.Grpc is [create a gRPC client and server example](docs/CreateClientAndServerASPNETCore.md).
+The first place to start using ServiceModel.Grpc is [create a gRPC client and server tutorial](https://max-ieremenko.github.io/ServiceModel.Grpc/CreateClientAndServerASPNETCore.html).
 
-For additional examples refer to [docs](docs).
+To migrate an existing WCF solution to a gRPC with ServiceModel.Grpc [tutorial](https://max-ieremenko.github.io/ServiceModel.Grpc/MigrateWCFServiceTogRPC.html)
+
+For additional examples refer to [docs](https://max-ieremenko.github.io/ServiceModel.Grpc/).
 
 ## NuGet feed
 

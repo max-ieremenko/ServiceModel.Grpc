@@ -2,11 +2,11 @@
 
 This tutorial shows how to migrate existing WCF service and client to gRPC with minimum effort.
 
-[View sample code](/Examples/MigrateWCFTogRpc).
+[View sample code](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc).
 
 ## The existing WCF solution
 
-The [MigrateWCFTogRpc.sln](/Examples/MigrateWCFTogRpc) includes a simple request-response Person service. The service is defined in the interface IPersonService as WCF service contract:
+The [MigrateWCFTogRpc.sln](https://github.com/max-ieremenko/ServiceModel.Grpc/blob/master/Examples/MigrateWCFTogRpc/MigrateWCFTogRpc.sln) includes a simple request-response Person service. The service is defined in the interface IPersonService as WCF service contract:
 
 ``` c#
 [ServiceContract]
@@ -39,10 +39,10 @@ public class Person
 
 Projects
 
-* [Contract](/Examples/MigrateWCFTogRpc/Contract) - netstandard2.0, contains the service contract and data contract
-* [Service](/Examples/MigrateWCFTogRpc/Service) - netstandard2.0, contains the person service implementation (business logic)
-* [WCFServiceHost](/Examples/MigrateWCFTogRpc/WCFServiceHost) - net461, hosts WCF endpoint "http://localhost:8000/PersonService.svc"
-* [WCFClient](/Examples/MigrateWCFTogRpc/WCFClient) - net461, makes WCF calls to endpoint "http://localhost:8000/PersonService.svc"
+* [Contract](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/Contract) - netstandard2.0, contains the service contract and data contract
+* [Service](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/Service) - netstandard2.0, contains the person service implementation (business logic)
+* [WCFServiceHost](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/WCFServiceHost) - net461, hosts WCF endpoint "http://localhost:8000/PersonService.svc"
+* [WCFClient](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/WCFClient) - net461, makes WCF calls to endpoint "http://localhost:8000/PersonService.svc"
 
 The PersonService implementation uses a repository class provided via unity dependency injection.
 
@@ -61,7 +61,7 @@ ASP.NET Core server hosting requires netcoreapp3.0 or higher.
 
 Tutorial how to create and configure ASP.NET Core server project is [here](CreateClientAndServerASPNETCore.md).
 
-Project [AspNetServiceHost](/Examples/MigrateWCFTogRpc/AspNetServiceHost) is already configured and has reference to nuget package [ServiceModel.Grpc.AspNetCore](https://www.nuget.org/packages/ServiceModel.Grpc.AspNetCore/) which provides code-first approach for Grpc.AspNetCore.Server.
+Project [AspNetServiceHost](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/AspNetServiceHost) is already configured and has reference to nuget package [ServiceModel.Grpc.AspNetCore](https://www.nuget.org/packages/ServiceModel.Grpc.AspNetCore/) which provides code-first approach for Grpc.AspNetCore.Server.
 
 All required configuration to host PersonService is done in the Startup.cs:
 
@@ -99,7 +99,7 @@ Grpc.Core server hosting is available for net461 and netcoreapp.
 
 Tutorial how to create and configure Grpc.Core server project is [here](GrpcCoreServerConfiguration.md).
 
-Project [NativeServiceHost](/Examples/MigrateWCFTogRpc/NativeServiceHost) is already configured and has reference to nuget package [ServiceModel.Grpc.SelfHost](https://www.nuget.org/packages/ServiceModel.Grpc.SelfHost/) which provides code-first approach for Grpc.Core.Server.
+Project [NativeServiceHost](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/NativeServiceHost) is already configured and has reference to nuget package [ServiceModel.Grpc.SelfHost](https://www.nuget.org/packages/ServiceModel.Grpc.SelfHost/) which provides code-first approach for Grpc.Core.Server.
 
 All required configuration to host PersonService is done in the Program.cs:
 
@@ -117,7 +117,7 @@ server.Services.AddServiceModelTransient(container.Resolve<Func<PersonService>>(
 
 ## Migrate client
 
-Project [gRPCClient](/Examples/MigrateWCFTogRpc/gRPCClient) has reference to nuget package [ServiceModel.Grpc](https://www.nuget.org/packages/ServiceModel.Grpc/) which provides code-first approach for [Grpc.Core](https://www.nuget.org/packages/Grpc.Core).
+Project [gRPCClient](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/gRPCClient) has reference to nuget package [ServiceModel.Grpc](https://www.nuget.org/packages/ServiceModel.Grpc/) which provides code-first approach for [Grpc.Core](https://www.nuget.org/packages/Grpc.Core).
 
 ``` c#
 // create ClientFactory
