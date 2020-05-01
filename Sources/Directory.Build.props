@@ -15,14 +15,14 @@
 
   <PropertyGroup>
     <Authors>Max Ieremenko</Authors>
-    <Description>Library that enable applications to comminicate with gRPC services using code-first approach.</Description>
+    <Description>Library that enables applications to communicate with gRPC services using code-first approach, helps to get around some limitations of gRPC protocol. Helps to migrate existing WCF solution to gRPC with minimum effort.</Description>
     <PackageReleaseNotes>https://github.com/max-ieremenko/ServiceModel.Grpc/releases</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/max-ieremenko/ServiceModel.Grpc</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/max-ieremenko/ServiceModel.Grpc</PackageProjectUrl>
+    <PackageProjectUrl>https://max-ieremenko.github.io/ServiceModel.Grpc/</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Copyright>(C) 2020 Max Ieremenko.</Copyright>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>gRPC WCF ServiceModel grpc-dotnet</PackageTags>
+    <PackageTags>gRPC grpc-dotnet servicemodel wcf code-first</PackageTags>
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);AdditionalPackageContent</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
 
