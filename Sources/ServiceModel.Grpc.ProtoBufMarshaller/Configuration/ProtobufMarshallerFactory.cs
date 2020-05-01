@@ -15,10 +15,10 @@
 // </copyright>
 
 using System;
-using System.IO;
 using Grpc.Core;
 using ProtoBuf;
 using ProtoBuf.Meta;
+using SerializationContext = Grpc.Core.SerializationContext;
 
 namespace ServiceModel.Grpc.Configuration
 {
@@ -70,30 +70,26 @@ namespace ServiceModel.Grpc.Configuration
             return new Marshaller<T>(Serialize, Deserialize<T>);
         }
 
-        internal static byte[] Serialize<T>(T value, RuntimeTypeModel runtimeTypeModel)
+        internal static void Serialize<T>(T value, SerializationContext context, RuntimeTypeModel runtimeTypeModel)
         {
-            using (var buffer = new MemoryStream())
+            using (var buffer = context.AsStream())
             {
                 runtimeTypeModel.Serialize(buffer, value);
-                return buffer.ToArray();
             }
+
+            context.Complete();
         }
 
-        internal static T Deserialize<T>(byte[] value, RuntimeTypeModel runtimeTypeModel)
+        internal static T Deserialize<T>(DeserializationContext context, RuntimeTypeModel runtimeTypeModel)
         {
-            if (value == null)
-            {
-                return default;
-            }
-
-            using (var buffer = new MemoryStream(value))
+            using (var buffer = context.AsStream())
             {
                 return (T)runtimeTypeModel.Deserialize(buffer, null, typeof(T));
             }
         }
 
-        private byte[] Serialize<T>(T value) => Serialize(value, _runtimeTypeModel);
+        private void Serialize<T>(T value, SerializationContext context) => Serialize(value, context, _runtimeTypeModel);
 
-        private T Deserialize<T>(byte[] value) => Deserialize<T>(value, _runtimeTypeModel);
+        private T Deserialize<T>(DeserializationContext context) => Deserialize<T>(context, _runtimeTypeModel);
     }
 }

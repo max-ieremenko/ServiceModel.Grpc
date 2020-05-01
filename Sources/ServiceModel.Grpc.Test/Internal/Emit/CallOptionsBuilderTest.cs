@@ -118,10 +118,10 @@ namespace ServiceModel.Grpc.Internal.Emit
         public void WithMethodInputHeader()
         {
             var marshaller = new Marshaller<string>(
-                value =>
+                (value, context) =>
                 {
                     value.ShouldBe("some value");
-                    return Guid.Empty.ToByteArray();
+                    context.Complete(Guid.Empty.ToByteArray());
                 },
                 _ => throw new NotSupportedException());
 

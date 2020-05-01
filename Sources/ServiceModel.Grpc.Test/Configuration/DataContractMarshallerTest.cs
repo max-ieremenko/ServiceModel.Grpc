@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using ServiceModel.Grpc.Internal;
+using ServiceModel.Grpc.Internal.IO;
 using Shouldly;
 
 namespace ServiceModel.Grpc.Configuration
@@ -30,27 +31,25 @@ namespace ServiceModel.Grpc.Configuration
         public void Marshall(object value)
         {
             var marshaller = GetType()
-                .StaticMethod(nameof(MarshallTest))
+                .InstanceMethod(nameof(MarshallTest))
                 .MakeGenericMethod(value.GetType());
 
-            marshaller.Invoke(null, new[] { value });
+            marshaller.Invoke(this, new[] { value });
         }
 
         [Test]
         public void MarshallNull()
         {
-            var content = DataContractMarshaller<string>.Default.Serializer(null);
-            var actual = DataContractMarshaller<string>.Default.Deserializer(content);
+            byte[] content;
+            using (var serializationContext = new DefaultSerializationContext())
+            {
+                DataContractMarshaller<string>.Default.ContextualSerializer(null, serializationContext);
+                content = serializationContext.GetContent();
+            }
+
+            var actual = DataContractMarshaller<string>.Default.ContextualDeserializer(new DefaultDeserializationContext(content));
 
             actual.ShouldBeNull();
-        }
-
-        private static void MarshallTest<T>(T value)
-        {
-            var content = DataContractMarshaller<T>.Default.Serializer(value);
-            var actual = DataContractMarshaller<T>.Default.Deserializer(content);
-
-            actual.ShouldBe(value);
         }
 
         private static IEnumerable<TestCaseData> GetMarshallTestCases()
@@ -59,6 +58,20 @@ namespace ServiceModel.Grpc.Configuration
             yield return new TestCaseData(1);
             yield return new TestCaseData(1.1);
             yield return new TestCaseData(new Tuple<Tuple<string>>(new Tuple<string>("data")));
+        }
+
+        private void MarshallTest<T>(T value)
+        {
+            byte[] content;
+            using (var serializationContext = new DefaultSerializationContext(10 * 1024))
+            {
+                DataContractMarshaller<T>.Default.ContextualSerializer(value, serializationContext);
+                content = serializationContext.GetContent();
+            }
+
+            var actual = DataContractMarshaller<T>.Default.ContextualDeserializer(new DefaultDeserializationContext(content));
+
+            actual.ShouldBe(value);
         }
     }
 }

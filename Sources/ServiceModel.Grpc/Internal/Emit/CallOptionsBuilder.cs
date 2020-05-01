@@ -19,6 +19,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Grpc.Core;
+using ServiceModel.Grpc.Internal.IO;
 
 namespace ServiceModel.Grpc.Internal.Emit
 {
@@ -66,13 +67,26 @@ namespace ServiceModel.Grpc.Internal.Emit
 
         public CallOptionsBuilder WithMethodInputHeader<T>(Marshaller<T> marshaller, T value)
         {
-            return WithCallOptions(new CallOptions(new Metadata
-            {
-                { CallContext.HeaderNameMethodInput, marshaller.Serializer(value) }
-            }));
+            var metadata = GetMethodInputHeader(marshaller, value);
+            return WithCallOptions(new CallOptions(metadata));
         }
 
         public CallOptions Build() => _options;
+
+        internal static Metadata GetMethodInputHeader<T>(Marshaller<T> marshaller, T value)
+        {
+            byte[] headerValue;
+            using (var serializationContext = new DefaultSerializationContext())
+            {
+                marshaller.ContextualSerializer(value, serializationContext);
+                headerValue = serializationContext.GetContent();
+            }
+
+            return new Metadata
+            {
+                { CallContext.HeaderNameMethodInput, headerValue }
+            };
+        }
 
         internal static Metadata MergeMetadata(Metadata current, Metadata mergeWith)
         {

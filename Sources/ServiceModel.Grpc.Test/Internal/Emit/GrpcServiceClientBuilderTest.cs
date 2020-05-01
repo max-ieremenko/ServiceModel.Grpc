@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -364,10 +363,9 @@ namespace ServiceModel.Grpc.Internal.Emit
                 "sum-6",
                 options =>
                 {
-                    var header = options.Headers.First(i => i.Key == CallContext.HeaderNameMethodInput);
-                    var values = DataContractMarshallerFactory.Default.CreateMarshaller<Message<int, string>>().Deserializer(header.ValueBytes);
-                    values.Value1.ShouldBe(2);
-                    values.Value2.ShouldBe("sum-");
+                    var values = CompatibilityTools.GetMethodInputFromHeader<int, string>(DataContractMarshallerFactory.Default, options.Headers);
+                    values.Item1.ShouldBe(2);
+                    values.Item2.ShouldBe("sum-");
                 });
 
             await _factory().ClientStreamingHeaderParameters(new[] { 1, 2 }.AsAsyncEnumerable(), 2, "sum-");
@@ -457,10 +455,9 @@ namespace ServiceModel.Grpc.Internal.Emit
                 responseStream.Object,
                 options =>
                 {
-                    var header = options.Headers.First(i => i.Key == CallContext.HeaderNameMethodInput);
-                    var headerValues = DataContractMarshallerFactory.Default.CreateMarshaller<Message<int, string>>().Deserializer(header.ValueBytes);
-                    headerValues.Value1.ShouldBe(1);
-                    headerValues.Value2.ShouldBe("prefix-");
+                    var values = CompatibilityTools.GetMethodInputFromHeader<int, string>(DataContractMarshallerFactory.Default, options.Headers);
+                    values.Item1.ShouldBe(1);
+                    values.Item2.ShouldBe("prefix-");
                 });
 
             var actual = _factory().DuplexStreamingHeaderParameters(new[] { 1, 2 }.AsAsyncEnumerable(), 1, "prefix-");
