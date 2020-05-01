@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System.IO;
 using System.Runtime.Serialization;
 using Grpc.Core;
 
@@ -24,30 +23,20 @@ namespace ServiceModel.Grpc.Configuration
     {
         public static readonly Marshaller<T> Default = new Marshaller<T>(Serialize, Deserialize);
 
-        private static byte[] Serialize(T value)
+        private static void Serialize(T value, SerializationContext context)
         {
-            if (value == null)
-            {
-                return null;
-            }
-
-            using (var buffer = new MemoryStream())
+            using (var buffer = context.AsStream())
             {
                 var serializer = new DataContractSerializer(typeof(T));
                 serializer.WriteObject(buffer, value);
-
-                return buffer.ToArray();
             }
+
+            context.Complete();
         }
 
-        private static T Deserialize(byte[] value)
+        private static T Deserialize(DeserializationContext context)
         {
-            if (value == null || value.Length == 0)
-            {
-                return default;
-            }
-
-            using (var buffer = new MemoryStream(value))
+            using (var buffer = context.AsStream())
             {
                 var serializer = new DataContractSerializer(typeof(T));
                 return (T)serializer.ReadObject(buffer);

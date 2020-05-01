@@ -15,6 +15,7 @@
 // </copyright>
 
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -48,59 +49,30 @@ namespace ServiceModel.Grpc.AspNetCore
 
         internal static Metadata CreateHelloAllHeader(string value)
         {
-            var messageType = typeof(CallContext)
+            var methodInputAsHeader = (Func<IMarshallerFactory, string, Metadata>)typeof(CallContext)
                 .Assembly
-                .GetType("ServiceModel.Grpc.Channel.Message`1", true, false)
-                .MakeGenericType(typeof(string));
+                .GetType("ServiceModel.Grpc.Channel.CompatibilityTools", true, false)
+                .GetMethods(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static)
+                .Where(i => i.Name == "MethodInputAsHeader")
+                .First(i => i.GetParameters().Length == 2)
+                .MakeGenericMethod(typeof(string))
+                .CreateDelegate(typeof(Func<IMarshallerFactory, string, Metadata>));
 
-            var message = messageType
-                .GetConstructor(new[] { typeof(string) })
-                .Invoke(new object[] { value });
-
-            var marshaller = typeof(IMarshallerFactory)
-                .GetMethod(nameof(IMarshallerFactory.CreateMarshaller), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
-                .MakeGenericMethod(messageType)
-                .Invoke(ProtobufMarshallerFactory.Default, Array.Empty<object>());
-
-            var serializer = (Delegate)marshaller
-                .GetType()
-                .GetProperty("Serializer", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
-                .GetMethod
-                .Invoke(marshaller, Array.Empty<object>());
-
-            var headerValue = (byte[])serializer.DynamicInvoke(message);
-
-            return new Metadata
-            {
-                { "smgrpc-method-input-bin", headerValue }
-            };
+            return methodInputAsHeader(ProtobufMarshallerFactory.Default, value);
         }
 
         private static string GetHelloAllHeader(ServerCallContext context)
         {
-            var messageType = typeof(CallContext)
+            var methodInputFromHeader = (Func<IMarshallerFactory, Metadata, string>)typeof(CallContext)
                 .Assembly
-                .GetType("ServiceModel.Grpc.Channel.Message`1", true, false)
-                .MakeGenericType(typeof(string));
+                .GetType("ServiceModel.Grpc.Channel.CompatibilityTools", true, false)
+                .GetMethods(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static)
+                .Where(i => i.Name == "GetMethodInputFromHeader")
+                .First(i => i.GetGenericArguments().Length == 1)
+                .MakeGenericMethod(typeof(string))
+                .CreateDelegate(typeof(Func<IMarshallerFactory, Metadata, string>));
 
-            var marshaller = typeof(IMarshallerFactory)
-                .GetMethod(nameof(IMarshallerFactory.CreateMarshaller), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
-                .MakeGenericMethod(messageType)
-                .Invoke(ProtobufMarshallerFactory.Default, Array.Empty<object>());
-
-            var message = typeof(CallContext)
-                .Assembly
-                .GetType("ServiceModel.Grpc.Internal.Emit.ServerChannelAdapter", true, false)
-                .GetMethod("GetMethodInputHeader", BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
-                .MakeGenericMethod(messageType)
-                .Invoke(null, new[] { marshaller, context });
-
-            var value1 = messageType
-                .GetProperty("Value1", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
-                .GetMethod
-                .Invoke(message, Array.Empty<object>());
-
-            return (string)value1;
+            return methodInputFromHeader(ProtobufMarshallerFactory.Default, context.RequestHeaders);
         }
     }
 }

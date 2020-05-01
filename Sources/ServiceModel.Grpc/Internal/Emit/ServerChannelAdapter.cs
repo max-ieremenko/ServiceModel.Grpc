@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,13 +59,7 @@ namespace ServiceModel.Grpc.Internal.Emit
 
         public static T GetMethodInputHeader<T>(Marshaller<T> marshaller, ServerCallContext context)
         {
-            var header = context.RequestHeaders?.FirstOrDefault(i => i.IsBinary && CallContext.HeaderNameMethodInput.Equals(i.Key, StringComparison.OrdinalIgnoreCase));
-            if (header == null)
-            {
-                throw new InvalidOperationException("Fail to resolve header parameters, {0} header not found.".FormatWith(CallContext.HeaderNameMethodInput));
-            }
-
-            return marshaller.Deserializer(header.ValueBytes);
+            return CompatibilityTools.GetMethodInputFromHeader(marshaller, context.RequestHeaders);
         }
 
         public static async Task<Message> UnaryCallWaitTask(Task call)

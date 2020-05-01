@@ -17,11 +17,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Grpc.Core;
 using KellermanSoftware.CompareNetObjects;
 using NUnit.Framework;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.Internal.Emit;
+using ServiceModel.Grpc.Internal.IO;
 using Shouldly;
 
 namespace ServiceModel.Grpc.Configuration
@@ -57,17 +59,13 @@ namespace ServiceModel.Grpc.Configuration
         private static T DataContractClone<T>(T value)
         {
             var marshaller = DataContractMarshaller<T>.Default;
-            var content = marshaller.Serializer(value);
-            Console.WriteLine("Size: {0}", content.Length);
-            return marshaller.Deserializer(content);
+            return ContextualClone(value, marshaller);
         }
 
         private static T ProtobufClone<T>(T value)
         {
             var marshaller = ProtobufMarshallerFactory.Default.CreateMarshaller<T>();
-            var content = marshaller.Serializer(value);
-            Console.WriteLine("Size: {0}", content.Length);
-            return marshaller.Deserializer(content);
+            return ContextualClone(value, marshaller);
         }
 
         private static T JsonClone<T>(T value)
@@ -76,6 +74,19 @@ namespace ServiceModel.Grpc.Configuration
             var content = marshaller.Serializer(value);
             Console.WriteLine("Size: {0}", content.Length);
             return marshaller.Deserializer(content);
+        }
+
+        private static T ContextualClone<T>(T value, Marshaller<T> marshaller)
+        {
+            byte[] content;
+            using (var serializationContext = new DefaultSerializationContext())
+            {
+                marshaller.ContextualSerializer(value, serializationContext);
+                content = serializationContext.GetContent();
+            }
+
+            Console.WriteLine("Size: {0}", content.Length);
+            return marshaller.ContextualDeserializer(new DefaultDeserializationContext(content));
         }
 
         private static IEnumerable<object> GetMessages()

@@ -479,10 +479,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             serverContext
                 .Protected()
                 .SetupGet<Metadata>("RequestHeadersCore")
-                .Returns(new Metadata
-                {
-                    { CallContext.HeaderNameMethodInput, DataContractMarshaller<Message<int, string>>.Default.Serializer(new Message<int, string>(1, "prefix")) }
-                });
+                .Returns(CompatibilityTools.MethodInputAsHeader(DataContractMarshallerFactory.Default, 1, "prefix"));
 
             var stream = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
             stream
@@ -578,10 +575,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             serverContext
                 .Protected()
                 .SetupGet<Metadata>("RequestHeadersCore")
-                .Returns(new Metadata
-                {
-                    { CallContext.HeaderNameMethodInput, DataContractMarshaller<Message<int, string>>.Default.Serializer(new Message<int, string>(1, "prefix")) }
-                });
+                .Returns(CompatibilityTools.MethodInputAsHeader(DataContractMarshallerFactory.Default, 1, "prefix"));
 
             var input = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
             input
