@@ -39,7 +39,7 @@ namespace ServiceModel.Grpc.AspNetCore
             {
                 { "defaultHeader", "defaultHeader value" }
             };
-            _host = new KestrelHost(defaultCallOptions: new CallOptions(_defaultMetadata));
+            _host = new KestrelHost(configure: options => options.DefaultCallOptionsFactory = () => new CallOptions(_defaultMetadata));
 
             await _host.StartAsync(configureEndpoints: endpoints =>
             {

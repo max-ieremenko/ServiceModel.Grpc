@@ -16,8 +16,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Grpc.Core.Interceptors;
 using NUnit.Framework;
 using Shouldly;
 using DescriptionAttribute = System.ComponentModel.DescriptionAttribute;
@@ -49,6 +51,18 @@ namespace ServiceModel.Grpc.Internal
             actual.GetCustomAttribute<DescriptionAttribute>().Description.ShouldBe(expected);
         }
 
+        [Test]
+        [TestCaseSource(nameof(GetShortAssemblyQualifiedNameTestCases))]
+        public void GetShortAssemblyQualifiedName(Type type)
+        {
+            var name = type.GetShortAssemblyQualifiedName();
+            Console.WriteLine();
+            Console.WriteLine(name);
+
+            var actual = Type.GetType(name, true, false);
+            actual.ShouldBe(type);
+        }
+
         private static IEnumerable<TestCaseData> GetImplementationOfMethodCases()
         {
             var i1 = typeof(I1);
@@ -67,6 +81,31 @@ namespace ServiceModel.Grpc.Internal
                 i2,
                 i2.GetMethod(nameof(I2.Overload), new[] { typeof(int) }),
                 "I2.Overload(int)");
+        }
+
+        private static IEnumerable<TestCaseData> GetShortAssemblyQualifiedNameTestCases()
+        {
+            var cases = new[]
+            {
+                typeof(int),
+                typeof(int[]),
+                typeof(string),
+                typeof(string[]),
+                typeof(byte[]),
+                typeof(Guid),
+                typeof(ReflectionToolsTest),
+                typeof(ReflectionToolsTest[]),
+                typeof(Tuple<int>),
+                typeof(Tuple<int>[]),
+                typeof(Tuple<Tuple<int, long>, string>),
+                typeof(Tuple<Tuple<int, long>, string>[]),
+                typeof(ValueTuple<int>),
+                typeof(ValueTuple<Tuple<int, long>, string>),
+                typeof(Interceptor.AsyncClientStreamingCallContinuation<Tuple<object>, string>),
+                typeof(Interceptor.AsyncClientStreamingCallContinuation<Tuple<object>, string>[])
+            };
+
+            return cases.Select(i => new TestCaseData(i));
         }
     }
 }

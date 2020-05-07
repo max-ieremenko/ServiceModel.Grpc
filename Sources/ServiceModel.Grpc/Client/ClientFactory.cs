@@ -19,7 +19,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using Grpc.Core;
+using Grpc.Core.Interceptors;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Interceptors.Internal;
 using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.Internal.Emit;
 
@@ -35,6 +37,7 @@ namespace ServiceModel.Grpc.Client
         private readonly object _syncRoot;
         private readonly ServiceModelGrpcClientOptions _defaultOptions;
         private readonly IDictionary<Type, Delegate> _factoryByContract;
+        private readonly IDictionary<Type, Interceptor> _interceptorByContract;
         private readonly string _factoryId;
 
         /// <summary>
@@ -45,6 +48,7 @@ namespace ServiceModel.Grpc.Client
         {
             _defaultOptions = defaultOptions;
             _factoryByContract = new Dictionary<Type, Delegate>();
+            _interceptorByContract = new Dictionary<Type, Interceptor>();
             _syncRoot = new object();
 
             var instanceNumber = Interlocked.Increment(ref _instanceCounter);
@@ -88,15 +92,24 @@ namespace ServiceModel.Grpc.Client
             callInvoker.AssertNotNull(nameof(callInvoker));
 
             Delegate factory;
+            Interceptor interceptor;
             lock (_syncRoot)
             {
-                if (!_factoryByContract.TryGetValue(typeof(TContract), out factory))
+                var contractType = typeof(TContract);
+                if (!_factoryByContract.TryGetValue(contractType, out factory))
                 {
                     factory = RegisterClient<TContract>(null);
                 }
+
+                _interceptorByContract.TryGetValue(contractType, out interceptor);
             }
 
             var method = (Func<CallInvoker, TContract>)factory;
+            if (interceptor != null)
+            {
+                callInvoker = callInvoker.Intercept(interceptor);
+            }
+
             return method(callInvoker);
         }
 
@@ -104,7 +117,7 @@ namespace ServiceModel.Grpc.Client
         {
             var builder = clientOptions.ClientBuilder?.Invoke() ?? new GrpcServiceClientBuilder();
 
-            builder.MarshallerFactory = clientOptions.MarshallerFactory ?? DataContractMarshallerFactory.Default;
+            builder.MarshallerFactory = clientOptions.MarshallerFactory.ThisOrDefault();
             builder.DefaultCallOptionsFactory = clientOptions.DefaultCallOptionsFactory;
             builder.Logger = clientOptions.Logger;
 
@@ -126,6 +139,7 @@ namespace ServiceModel.Grpc.Client
                 MarshallerFactory = _defaultOptions?.MarshallerFactory,
                 DefaultCallOptionsFactory = _defaultOptions?.DefaultCallOptionsFactory,
                 Logger = _defaultOptions?.Logger,
+                ErrorHandler = _defaultOptions?.ErrorHandler,
                 ClientBuilder = _defaultOptions?.ClientBuilder
             };
 
@@ -143,6 +157,14 @@ namespace ServiceModel.Grpc.Client
 
                 factory = builder.Build<TContract>(_factoryId);
                 _factoryByContract.Add(contractType, factory);
+
+                if (options.ErrorHandler != null)
+                {
+                    _interceptorByContract.Add(contractType, new ClientNativeInterceptor(new ClientCallErrorInterceptor(
+                        options.ErrorHandler,
+                        options.MarshallerFactory.ThisOrDefault(),
+                        options.Logger)));
+                }
             }
 
             return factory;

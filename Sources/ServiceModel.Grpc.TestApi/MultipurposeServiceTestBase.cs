@@ -16,50 +16,15 @@
 
 using System.Threading.Tasks;
 using Grpc.Core;
-using Microsoft.AspNetCore.Builder;
 using NUnit.Framework;
-using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
 
-namespace ServiceModel.Grpc.AspNetCore
+namespace ServiceModel.Grpc.TestApi
 {
-    [TestFixture]
-    public class AspNetCoreHostingTest
+    public abstract class MultipurposeServiceTestBase
     {
-        private KestrelHost _host;
-        private IMultipurposeService _domainService;
-        private Greeter.GreeterClient _greeterService;
-
-        [OneTimeSetUp]
-        public async Task BeforeAll()
-        {
-            _host = new KestrelHost();
-
-            await _host.StartAsync(configureEndpoints: endpoints =>
-            {
-                endpoints.MapGrpcService<GreeterService>();
-                endpoints.MapGrpcService<MultipurposeService>();
-            });
-
-            _domainService = _host.ClientFactory.CreateClient<IMultipurposeService>(_host.Channel);
-
-            _greeterService = new Greeter.GreeterClient(_host.Channel);
-        }
-
-        [OneTimeTearDown]
-        public async Task AfterAll()
-        {
-            await _host.DisposeAsync();
-        }
-
-        [Test]
-        public async Task NativeGreet()
-        {
-            var actual = await _greeterService.HelloAsync(new HelloRequest { Name = "world" });
-
-            actual.Message.ShouldBe("Hello world!");
-        }
+        protected IMultipurposeService DomainService { get; set; }
 
         [Test]
         public void ConcatB()
@@ -69,7 +34,7 @@ namespace ServiceModel.Grpc.AspNetCore
                 { "value", "b" }
             });
 
-            var actual = _domainService.Concat("a", context);
+            var actual = DomainService.Concat("a", context);
 
             actual.ShouldBe("ab");
         }
@@ -82,7 +47,7 @@ namespace ServiceModel.Grpc.AspNetCore
                 { "value", "b" }
             });
 
-            var actual = await _domainService.ConcatAsync("a", context);
+            var actual = await DomainService.ConcatAsync("a", context);
 
             actual.ShouldBe("ab");
         }
@@ -90,7 +55,7 @@ namespace ServiceModel.Grpc.AspNetCore
         [Test]
         public async Task Sum5ValuesAsync()
         {
-            var actual = await _domainService.Sum5ValuesAsync(1, 2, 3, 4, 5, default);
+            var actual = await DomainService.Sum5ValuesAsync(1, 2, 3, 4, 5, default);
 
             actual.ShouldBe(15);
         }
@@ -98,7 +63,7 @@ namespace ServiceModel.Grpc.AspNetCore
         [Test]
         public async Task RepeatValue()
         {
-            var actual = await _domainService.RepeatValue("a", 3).ToListAsync();
+            var actual = await DomainService.RepeatValue("a", 3).ToListAsync();
 
             actual.ShouldBe(new[] { "a", "a", "a" });
         }
@@ -108,7 +73,7 @@ namespace ServiceModel.Grpc.AspNetCore
         {
             var values = new[] { 1, 2, 3 }.AsAsyncEnumerable();
 
-            var actual = await _domainService.SumValues(values);
+            var actual = await DomainService.SumValues(values);
 
             actual.ShouldBe(6);
         }
@@ -118,7 +83,7 @@ namespace ServiceModel.Grpc.AspNetCore
         {
             var values = new[] { 1, 2, 3 }.AsAsyncEnumerable();
 
-            var actual = await _domainService.MultiplyByAndSumValues(values, 2);
+            var actual = await DomainService.MultiplyByAndSumValues(values, 2);
 
             actual.ShouldBe(12);
         }
@@ -128,7 +93,7 @@ namespace ServiceModel.Grpc.AspNetCore
         {
             var values = new[] { 1, 2, 3 }.AsAsyncEnumerable();
 
-            var actual = await _domainService.ConvertValues(values).ToListAsync();
+            var actual = await DomainService.ConvertValues(values).ToListAsync();
 
             actual.ShouldBe(new[] { "1", "2", "3" });
         }
@@ -138,7 +103,7 @@ namespace ServiceModel.Grpc.AspNetCore
         {
             var values = new[] { 1, 2, 3 }.AsAsyncEnumerable();
 
-            var actual = await _domainService.MultiplyBy(values, 2).ToListAsync();
+            var actual = await DomainService.MultiplyBy(values, 2).ToListAsync();
 
             actual.ShouldBe(new[] { 2, 4, 6 });
         }

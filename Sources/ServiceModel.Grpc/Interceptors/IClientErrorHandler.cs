@@ -14,26 +14,20 @@
 // limitations under the License.
 // </copyright>
 
-using ServiceModel.Grpc.Configuration;
-using ServiceModel.Grpc.Interceptors;
+using Grpc.Core;
 
-//// ReSharper disable CheckNamespace
-namespace Microsoft.Extensions.DependencyInjection
-//// ReSharper restore CheckNamespace
+namespace ServiceModel.Grpc.Interceptors
 {
     /// <summary>
-    /// Provides a default configuration for all ServiceModel.Grpc services.
+    /// Allows an implementer to perform custom error processing on client call.
     /// </summary>
-    public sealed class ServiceModelGrpcServiceOptions
+    public interface IClientErrorHandler
     {
         /// <summary>
-        /// Gets or sets default factory for serializing and deserializing messages.
+        /// Handle the exception that was raised by by <see cref="CallInvoker"/>.
         /// </summary>
-        public IMarshallerFactory DefaultMarshallerFactory { get; set; }
-
-        /// <summary>
-        /// Gets or sets default server call error handler.
-        /// </summary>
-        public IServerErrorHandler DefaultErrorHandler { get; set; }
+        /// <param name="context">The current call context.</param>
+        /// <param name="detail">The exception details.</param>
+        void ThrowOrIgnore(ClientCallInterceptorContext context, ClientFaultDetail detail);
     }
 }

@@ -15,7 +15,10 @@
 // </copyright>
 
 using System;
+using Grpc.Core.Interceptors;
 using ServiceModel.Grpc;
+using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Interceptors.Internal;
 using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.SelfHost.Internal;
 
@@ -56,9 +59,10 @@ namespace Grpc.Core
             }
 
             var builder = ServerServiceDefinition.CreateBuilder();
+            var logger = new LogAdapter(options?.Logger);
 
             var factory = new SelfHostGrpcServiceFactory<TService>(
-                new LogAdapter(options?.Logger),
+                logger,
                 options?.MarshallerFactory,
                 serviceFactory,
                 builder);
@@ -69,6 +73,13 @@ namespace Grpc.Core
             if (options?.ConfigureServiceDefinition != null)
             {
                 definition = options.ConfigureServiceDefinition(definition);
+            }
+
+            if (options?.ErrorHandler != null)
+            {
+                definition = definition.Intercept(new ServerNativeInterceptor(new ServerCallErrorInterceptor(
+                    options.ErrorHandler,
+                    options.MarshallerFactory.ThisOrDefault())));
             }
 
             services.Add(definition);
