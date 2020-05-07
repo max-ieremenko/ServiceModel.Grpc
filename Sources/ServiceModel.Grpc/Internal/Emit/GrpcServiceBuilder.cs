@@ -31,7 +31,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         private readonly IMarshallerFactory _marshallerFactory;
         private readonly ILGenerator _initializeHeadersMarshallerMethod;
 
-        public GrpcServiceBuilder(Type contractType, IMarshallerFactory marshallerFactory)
+        public GrpcServiceBuilder(Type contractType, IMarshallerFactory marshallerFactory, string factoryId)
         {
             _contractType = contractType;
             _marshallerFactory = marshallerFactory;
@@ -39,7 +39,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             _typeBuilder = ProxyAssembly
                 .DefaultModule
                 .DefineType(
-                    "{0}.{1}Service".FormatWith(ReflectionTools.GetNamespace(contractType), contractType.Name),
+                    "{0}.{1}Service{2}".FormatWith(ReflectionTools.GetNamespace(contractType), contractType.Name, factoryId),
                     TypeAttributes.NotPublic | TypeAttributes.Abstract | TypeAttributes.Class | TypeAttributes.Sealed);
 
             _initializeHeadersMarshallerMethod = _typeBuilder
