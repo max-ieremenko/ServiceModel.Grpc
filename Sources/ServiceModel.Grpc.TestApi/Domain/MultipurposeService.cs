@@ -53,6 +53,12 @@ namespace ServiceModel.Grpc.TestApi.Domain
             }
         }
 
+        public async Task<IAsyncEnumerable<string>> RepeatValueAsync(string value, int count, CallContext context)
+        {
+            await Task.Delay(100);
+            return RepeatValue(value, count, context);
+        }
+
         public async Task<long> SumValues(IAsyncEnumerable<int> values, CallContext context)
         {
             var result = 0;
@@ -64,7 +70,7 @@ namespace ServiceModel.Grpc.TestApi.Domain
             return result;
         }
 
-        public async Task<long> MultiplyByAndSumValues(IAsyncEnumerable<int> values, int multiplier, CallContext context = default)
+        public async Task<long> MultiplyByAndSumValues(IAsyncEnumerable<int> values, int multiplier, CallContext context)
         {
             var result = 0;
 
@@ -84,12 +90,18 @@ namespace ServiceModel.Grpc.TestApi.Domain
             }
         }
 
-        public async IAsyncEnumerable<int> MultiplyBy(IAsyncEnumerable<int> values, int multiplier, CallContext context = default)
+        public async IAsyncEnumerable<int> MultiplyBy(IAsyncEnumerable<int> values, int multiplier, CallContext context)
         {
             await foreach (var i in values.WithCancellation(context.ServerCallContext.CancellationToken))
             {
                 yield return i * multiplier;
             }
+        }
+
+        public async ValueTask<IAsyncEnumerable<int>> MultiplyByAsync(IAsyncEnumerable<int> values, int multiplier, CallContext context)
+        {
+            await Task.Delay(100);
+            return MultiplyBy(values, multiplier, context);
         }
     }
 }

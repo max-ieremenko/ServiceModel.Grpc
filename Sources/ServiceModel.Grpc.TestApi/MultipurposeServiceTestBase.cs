@@ -69,6 +69,15 @@ namespace ServiceModel.Grpc.TestApi
         }
 
         [Test]
+        public async Task RepeatValueAsync()
+        {
+            var source = await DomainService.RepeatValueAsync("a", 3);
+            var actual = await source.ToListAsync();
+
+            actual.ShouldBe(new[] { "a", "a", "a" });
+        }
+
+        [Test]
         public async Task SumValues()
         {
             var values = new[] { 1, 2, 3 }.AsAsyncEnumerable();
@@ -104,6 +113,17 @@ namespace ServiceModel.Grpc.TestApi
             var values = new[] { 1, 2, 3 }.AsAsyncEnumerable();
 
             var actual = await DomainService.MultiplyBy(values, 2).ToListAsync();
+
+            actual.ShouldBe(new[] { 2, 4, 6 });
+        }
+
+        [Test]
+        public async Task MultiplyByAsync()
+        {
+            var values = new[] { 1, 2, 3 }.AsAsyncEnumerable();
+
+            var source = await DomainService.MultiplyByAsync(values, 2);
+            var actual = await source.ToListAsync();
 
             actual.ShouldBe(new[] { 2, 4, 6 });
         }

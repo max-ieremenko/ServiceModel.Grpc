@@ -69,6 +69,12 @@ namespace ServiceModel.Grpc.Internal.Emit
         IAsyncEnumerable<int> ServerStreamingRepeatValue(int value, int count, CancellationToken token);
 
         [OperationContract]
+        Task<IAsyncEnumerable<int>> ServerStreamingRepeatValueAsync(int value, int count, CancellationToken token);
+
+        [OperationContract]
+        ValueTask<IAsyncEnumerable<int>> ServerStreamingRepeatValueValueTaskAsync(int value, int count, CancellationToken token);
+
+        [OperationContract]
         Task ClientStreamingEmpty(IAsyncEnumerable<int> values);
 
         [OperationContract]
@@ -79,6 +85,12 @@ namespace ServiceModel.Grpc.Internal.Emit
 
         [OperationContract]
         IAsyncEnumerable<string> DuplexStreamingConvert(IAsyncEnumerable<int> values, CancellationToken token);
+
+        [OperationContract]
+        Task<IAsyncEnumerable<string>> DuplexStreamingConvertAsync(IAsyncEnumerable<int> values, CancellationToken token);
+
+        [OperationContract]
+        ValueTask<IAsyncEnumerable<string>> DuplexStreamingConvertValueTaskAsync(IAsyncEnumerable<int> values, CancellationToken token);
 
         [OperationContract]
         IAsyncEnumerable<string> DuplexStreamingHeaderParameters(IAsyncEnumerable<int> values, int multiplier, string prefix);

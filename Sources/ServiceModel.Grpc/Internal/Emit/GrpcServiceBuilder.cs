@@ -212,13 +212,24 @@ namespace ServiceModel.Grpc.Internal.Emit
             // ServerChannelAdapter.WriteServerStreamingResult(result, stream, serverCallContext);
             body.Emit(OpCodes.Ldarg_2); // stream
             body.Emit(OpCodes.Ldarg_3); // serverCallContext
-            if (message.ResponseType.IsGenericType)
+
+            string adapterName;
+            if (message.IsAsync)
             {
-                body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(nameof(ServerChannelAdapter.WriteServerStreamingResult)).MakeGenericMethod(message.ResponseType.GenericTypeArguments[0]));
+                adapterName = message.Operation.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.WriteServerStreamingResultValueTask) : nameof(ServerChannelAdapter.WriteServerStreamingResultTask);
             }
             else
             {
-                body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(nameof(ServerChannelAdapter.WriteServerStreamingResult)).MakeGenericMethod(message.ResponseType));
+                adapterName = nameof(ServerChannelAdapter.WriteServerStreamingResult);
+            }
+
+            if (message.ResponseType.IsGenericType)
+            {
+                body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(adapterName).MakeGenericMethod(message.ResponseType.GenericTypeArguments));
+            }
+            else
+            {
+                body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(adapterName).MakeGenericMethod(message.ResponseType));
             }
 
             body.Emit(OpCodes.Ret);
@@ -256,7 +267,18 @@ namespace ServiceModel.Grpc.Internal.Emit
             // ServerChannelAdapter.WriteServerStreamingResult
             body.Emit(OpCodes.Ldarg_2); // output
             body.Emit(OpCodes.Ldarg_3); // context
-            body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(nameof(ServerChannelAdapter.WriteServerStreamingResult)).MakeGenericMethod(message.ResponseType.GenericTypeArguments));
+
+            string adapterName;
+            if (message.IsAsync)
+            {
+                adapterName = message.Operation.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.WriteServerStreamingResultValueTask) : nameof(ServerChannelAdapter.WriteServerStreamingResultTask);
+            }
+            else
+            {
+                adapterName = nameof(ServerChannelAdapter.WriteServerStreamingResult);
+            }
+
+            body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(adapterName).MakeGenericMethod(message.ResponseType.GenericTypeArguments));
 
             body.Emit(OpCodes.Ret);
         }

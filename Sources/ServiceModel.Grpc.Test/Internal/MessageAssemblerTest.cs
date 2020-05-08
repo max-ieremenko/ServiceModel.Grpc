@@ -67,6 +67,7 @@ namespace ServiceModel.Grpc.Internal
         [TestCase(typeof(Task<int>), typeof(Message<int>))]
         [TestCase(typeof(ValueTask<int?>), typeof(Message<int?>))]
         [TestCase(typeof(IAsyncEnumerable<int>), typeof(Message<int>))]
+        [TestCase(typeof(Task<IAsyncEnumerable<int>>), typeof(Message<int>))]
         public void TestResponseType(Type returnType, Type expected)
         {
             _method
@@ -83,6 +84,7 @@ namespace ServiceModel.Grpc.Internal
         [TestCase(MethodType.Unary, typeof(Task<int>), typeof(string))]
         [TestCase(MethodType.ClientStreaming, typeof(void), typeof(IAsyncEnumerable<string>))]
         [TestCase(MethodType.ServerStreaming, typeof(IAsyncEnumerable<string>))]
+        [TestCase(MethodType.ServerStreaming, typeof(Task<IAsyncEnumerable<string>>))]
         [TestCase(MethodType.DuplexStreaming, typeof(IAsyncEnumerable<string>), typeof(IAsyncEnumerable<int>))]
         public void TestOperationType(MethodType expected, Type returnType, params Type[] dataParameters)
         {

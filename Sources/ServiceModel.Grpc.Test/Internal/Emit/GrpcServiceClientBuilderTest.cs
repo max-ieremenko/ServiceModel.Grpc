@@ -258,6 +258,80 @@ namespace ServiceModel.Grpc.Internal.Emit
         }
 
         [Test]
+        public async Task ServerStreamingRepeatValueAsync()
+        {
+            Console.WriteLine(_factory().GetType().InstanceMethod(nameof(IContract.ServerStreamingRepeatValueAsync)).Disassemble());
+
+            var responseStream = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
+            responseStream
+                .Setup(r => r.MoveNext(_tokenSource.Token))
+                .Callback(() =>
+                {
+                    responseStream
+                        .SetupGet(r => r.Current)
+                        .Returns(new Message<int>(10));
+
+                    responseStream
+                        .Setup(r => r.MoveNext(_tokenSource.Token))
+                        .Returns(Task.FromResult(false));
+                })
+                .Returns(Task.FromResult(true));
+
+            _callInvoker.SetupAsyncServerStreamingCall(
+                1,
+                2,
+                responseStream.Object,
+                o => o.CancellationToken.ShouldBe(_tokenSource.Token));
+
+            var actual = await _factory().ServerStreamingRepeatValueAsync(1, 2, _tokenSource.Token);
+
+            var content = new List<int>();
+            await foreach (var i in actual.WithCancellation(_tokenSource.Token))
+            {
+                content.Add(i);
+            }
+
+            content.ShouldBe(new[] { 10 });
+        }
+
+        [Test]
+        public async Task ServerStreamingRepeatValueValueTaskAsync()
+        {
+            Console.WriteLine(_factory().GetType().InstanceMethod(nameof(IContract.ServerStreamingRepeatValueValueTaskAsync)).Disassemble());
+
+            var responseStream = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
+            responseStream
+                .Setup(r => r.MoveNext(_tokenSource.Token))
+                .Callback(() =>
+                {
+                    responseStream
+                        .SetupGet(r => r.Current)
+                        .Returns(new Message<int>(10));
+
+                    responseStream
+                        .Setup(r => r.MoveNext(_tokenSource.Token))
+                        .Returns(Task.FromResult(false));
+                })
+                .Returns(Task.FromResult(true));
+
+            _callInvoker.SetupAsyncServerStreamingCall(
+                1,
+                2,
+                responseStream.Object,
+                o => o.CancellationToken.ShouldBe(_tokenSource.Token));
+
+            var actual = await _factory().ServerStreamingRepeatValueValueTaskAsync(1, 2, _tokenSource.Token);
+
+            var content = new List<int>();
+            await foreach (var i in actual.WithCancellation(_tokenSource.Token))
+            {
+                content.Add(i);
+            }
+
+            content.ShouldBe(new[] { 10 });
+        }
+
+        [Test]
         public async Task EmptyServerStreaming()
         {
             Console.WriteLine(_factory().GetType().InstanceMethod(nameof(IContract.EmptyServerStreaming)).Disassemble());
@@ -412,6 +486,94 @@ namespace ServiceModel.Grpc.Internal.Emit
                 o => o.CancellationToken.ShouldBe(_tokenSource.Token));
 
             var actual = _factory().DuplexStreamingConvert(new[] { 1, 2 }.AsAsyncEnumerable(), _tokenSource.Token);
+
+            var values = await actual.ToListAsync();
+            values.ShouldBe(new[] { "1", "2" });
+            requestStream.VerifyAll();
+        }
+
+        [Test]
+        public async Task DuplexStreamingConvertAsync()
+        {
+            Console.WriteLine(_factory().GetType().InstanceMethod(nameof(IContract.DuplexStreamingConvertAsync)).Disassemble());
+
+            var requestValues = new List<int>();
+
+            var responseStream = new Mock<IAsyncStreamReader<Message<string>>>(MockBehavior.Strict);
+            responseStream
+                .Setup(r => r.MoveNext(_tokenSource.Token))
+                .Returns(() =>
+                {
+                    if (requestValues.Count == 0)
+                    {
+                        responseStream.SetupGet(s => s.Current).Throws<NotSupportedException>();
+                        return Task.FromResult(false);
+                    }
+
+                    responseStream.SetupGet(s => s.Current).Returns(new Message<string>(requestValues[0].ToString()));
+                    requestValues.RemoveAt(0);
+                    return Task.FromResult(true);
+                });
+
+            var requestStream = new Mock<IClientStreamWriter<Message<int>>>(MockBehavior.Strict);
+            requestStream
+                .Setup(s => s.WriteAsync(It.IsNotNull<Message<int>>()))
+                .Callback<Message<int>>(message => requestValues.Add(message.Value1))
+                .Returns(Task.CompletedTask);
+            requestStream
+                .Setup(s => s.CompleteAsync())
+                .Returns(Task.CompletedTask);
+
+            _callInvoker.SetupAsyncDuplexStreamingCall(
+                requestStream.Object,
+                responseStream.Object,
+                o => o.CancellationToken.ShouldBe(_tokenSource.Token));
+
+            var actual = await _factory().DuplexStreamingConvertAsync(new[] { 1, 2 }.AsAsyncEnumerable(), _tokenSource.Token);
+
+            var values = await actual.ToListAsync();
+            values.ShouldBe(new[] { "1", "2" });
+            requestStream.VerifyAll();
+        }
+
+        [Test]
+        public async Task DuplexStreamingConvertValueTaskAsync()
+        {
+            Console.WriteLine(_factory().GetType().InstanceMethod(nameof(IContract.DuplexStreamingConvertValueTaskAsync)).Disassemble());
+
+            var requestValues = new List<int>();
+
+            var responseStream = new Mock<IAsyncStreamReader<Message<string>>>(MockBehavior.Strict);
+            responseStream
+                .Setup(r => r.MoveNext(_tokenSource.Token))
+                .Returns(() =>
+                {
+                    if (requestValues.Count == 0)
+                    {
+                        responseStream.SetupGet(s => s.Current).Throws<NotSupportedException>();
+                        return Task.FromResult(false);
+                    }
+
+                    responseStream.SetupGet(s => s.Current).Returns(new Message<string>(requestValues[0].ToString()));
+                    requestValues.RemoveAt(0);
+                    return Task.FromResult(true);
+                });
+
+            var requestStream = new Mock<IClientStreamWriter<Message<int>>>(MockBehavior.Strict);
+            requestStream
+                .Setup(s => s.WriteAsync(It.IsNotNull<Message<int>>()))
+                .Callback<Message<int>>(message => requestValues.Add(message.Value1))
+                .Returns(Task.CompletedTask);
+            requestStream
+                .Setup(s => s.CompleteAsync())
+                .Returns(Task.CompletedTask);
+
+            _callInvoker.SetupAsyncDuplexStreamingCall(
+                requestStream.Object,
+                responseStream.Object,
+                o => o.CancellationToken.ShouldBe(_tokenSource.Token));
+
+            var actual = await _factory().DuplexStreamingConvertValueTaskAsync(new[] { 1, 2 }.AsAsyncEnumerable(), _tokenSource.Token);
 
             var values = await actual.ToListAsync();
             values.ShouldBe(new[] { "1", "2" });
