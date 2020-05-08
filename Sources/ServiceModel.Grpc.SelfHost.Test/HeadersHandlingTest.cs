@@ -24,7 +24,7 @@ using ServiceModel.Grpc.TestApi.Domain;
 namespace ServiceModel.Grpc.SelfHost
 {
     [TestFixture]
-    public class ExceptionHandlingTest : ExceptionHandlingTestBase
+    public class HeadersHandlingTest : HeadersHandlingTestBase
     {
         private ServerHost _host;
 
@@ -33,15 +33,10 @@ namespace ServiceModel.Grpc.SelfHost
         {
             _host = new ServerHost();
 
-            _host.Services.AddServiceModelSingleton(
-                new ErrorService(),
-                options =>
-                {
-                    options.ErrorHandler = new ServerErrorHandler();
-                });
+            _host.Services.AddServiceModelSingleton(new HeadersService());
 
-            DomainService = new ClientFactory(new ServiceModelGrpcClientOptions { ErrorHandler = new ClientErrorHandler() })
-                .CreateClient<IErrorService>(_host.Channel.CreateCallInvoker());
+            var options = new ServiceModelGrpcClientOptions { DefaultCallOptionsFactory = () => new CallOptions(DefaultMetadata) };
+            DomainService = new ClientFactory(options).CreateClient<IHeadersService>(_host.Channel);
 
             _host.Start();
         }

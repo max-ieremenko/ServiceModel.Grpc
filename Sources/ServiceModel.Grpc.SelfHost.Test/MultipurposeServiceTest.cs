@@ -20,42 +20,29 @@ using NUnit.Framework;
 using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
-using GrpcChannel = Grpc.Core.Channel;
 
 namespace ServiceModel.Grpc.SelfHost
 {
     [TestFixture]
     public class MultipurposeServiceTest : MultipurposeServiceTestBase
     {
-        private const int Port = 8080;
-        private GrpcChannel _channel;
-        private Server _server;
+        private ServerHost _host;
 
         [OneTimeSetUp]
         public void BeforeAll()
         {
-            _server = new Server
-            {
-                Ports =
-                {
-                    new ServerPort("localhost", Port, ServerCredentials.Insecure)
-                }
-            };
+            _host = new ServerHost();
 
-            _channel = new GrpcChannel("localhost", Port, ChannelCredentials.Insecure);
+            _host.Services.AddServiceModelSingleton(new MultipurposeService());
+            DomainService = new ClientFactory().CreateClient<IMultipurposeService>(_host.Channel);
 
-            _server.Services.AddServiceModelSingleton(new MultipurposeService());
-
-            DomainService = new ClientFactory().CreateClient<IMultipurposeService>(_channel);
-
-            _server.Start();
+            _host.Start();
         }
 
         [OneTimeTearDown]
         public async Task AfterAll()
         {
-            await _channel.ShutdownAsync();
-            await _server.ShutdownAsync();
+            await _host.DisposeAsync();
         }
     }
 }
