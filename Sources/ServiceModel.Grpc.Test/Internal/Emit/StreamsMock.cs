@@ -28,7 +28,16 @@ namespace ServiceModel.Grpc.Internal.Emit
     {
         public static void Setup<T>(this Mock<IAsyncStreamReader<Message<T>>> reader, CancellationToken token, params T[] source)
         {
-            SetupMoveNext(reader, token, source, 0);
+            SetupMoveNext(reader, token, source, 0, i => i);
+        }
+
+        public static void Setup<TInput, TOutput>(
+            this Mock<IAsyncStreamReader<Message<TOutput>>> reader,
+            CancellationToken token,
+            IList<TInput> source,
+            Func<TInput, TOutput> converter)
+        {
+            SetupMoveNext(reader, token, source, 0, converter);
         }
 
         public static IList<T> Setup<T>(this Mock<IServerStreamWriter<Message<T>>> writer)
@@ -46,39 +55,50 @@ namespace ServiceModel.Grpc.Internal.Emit
             return values;
         }
 
-        private static void SetupMoveNext<T>(
-            Mock<IAsyncStreamReader<Message<T>>> reader,
-            CancellationToken token,
-            IReadOnlyList<T> source,
-            int sourceIndex)
+        public static void Setup<T>(this Mock<IClientStreamWriter<Message<T>>> writer, IList<T> output)
         {
-            if (sourceIndex < source.Count)
-            {
-                reader
-                    .Setup(s => s.MoveNext(token))
-                    .Callback(() =>
+            writer
+                .Setup(s => s.WriteAsync(It.IsNotNull<Message<T>>()))
+                .Callback<Message<T>>(message =>
+                {
+                    output.Add(message.Value1);
+                })
+                .Returns(Task.CompletedTask);
+
+            writer
+                .Setup(s => s.CompleteAsync())
+                .Returns(Task.CompletedTask);
+        }
+
+        private static void SetupMoveNext<TInput, TOutput>(
+            Mock<IAsyncStreamReader<Message<TOutput>>> reader,
+            CancellationToken token,
+            IList<TInput> source,
+            int sourceIndex,
+            Func<TInput, TOutput> converter)
+        {
+            reader
+                .Setup(s => s.MoveNext(token))
+                .Callback(() =>
+                {
+                    if (sourceIndex < source.Count)
                     {
                         reader
                             .SetupGet(s => s.Current)
-                            .Returns(new Message<T>(source[sourceIndex]))
+                            .Returns(new Message<TOutput>(converter(source[sourceIndex])))
                             .Verifiable();
 
-                        SetupMoveNext(reader, token, source, sourceIndex + 1);
-                    })
-                    .Returns(Task.FromResult(true))
-                    .Verifiable();
-            }
-            else
-            {
-                reader
-                    .Setup(s => s.MoveNext(token))
-                    .Callback(() =>
+                        SetupMoveNext(reader, token, source, sourceIndex + 1, converter);
+                    }
+                    else
                     {
-                        reader.SetupGet(s => s.Current).Throws<NotSupportedException>();
-                    })
-                    .Returns(Task.FromResult(false))
-                    .Verifiable();
-            }
+                        reader
+                            .SetupGet(s => s.Current)
+                            .Throws<NotSupportedException>();
+                    }
+                })
+                .Returns(() => Task.FromResult(sourceIndex < source.Count))
+                .Verifiable();
         }
     }
 }

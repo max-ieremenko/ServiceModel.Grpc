@@ -74,6 +74,27 @@ namespace ServiceModel.Grpc.Internal.Emit
                 .Returns(new Message());
         }
 
+        public static void SetupBlockingUnaryCallInOut<TRequest, TResponse>(
+            this Mock<CallInvoker> invoker,
+            TRequest request,
+            TResponse response,
+            Action<CallOptions> callOptions = null)
+        {
+            invoker
+                .Setup(i => i.BlockingUnaryCall(
+                    It.IsNotNull<Method<Message<TRequest>, Message<TResponse>>>(),
+                    null,
+                    It.IsAny<CallOptions>(),
+                    It.IsNotNull<Message<TRequest>>()))
+                .Callback<Method<Message<TRequest>, Message<TResponse>>, string, CallOptions, Message<TRequest>>((method, _, options, message) =>
+                {
+                    method.Type.ShouldBe(MethodType.Unary);
+                    callOptions?.Invoke(options);
+                    message.Value1.ShouldBe(request);
+                })
+                .Returns(new Message<TResponse>(response));
+        }
+
         public static void SetupBlockingUnaryCallInOut<TRequest1, TRequest2, TResponse>(
             this Mock<CallInvoker> invoker,
             TRequest1 request1,
@@ -218,6 +239,35 @@ namespace ServiceModel.Grpc.Internal.Emit
                 {
                     method.Type.ShouldBe(MethodType.ServerStreaming);
                     callOptions?.Invoke(options);
+                })
+                .Returns(new AsyncServerStreamingCall<Message<TResponse>>(
+                    responseStream,
+                    _ => Task.FromResult(default(Metadata)),
+                    _ => default,
+                    _ => default,
+                    _ =>
+                    {
+                    },
+                    null));
+        }
+
+        public static void SetupAsyncServerStreamingCall<TRequest, TResponse>(
+            this Mock<CallInvoker> invoker,
+            TRequest request,
+            IAsyncStreamReader<Message<TResponse>> responseStream,
+            Action<CallOptions> callOptions = null)
+        {
+            invoker
+                .Setup(i => i.AsyncServerStreamingCall(
+                    It.IsNotNull<Method<Message<TRequest>, Message<TResponse>>>(),
+                    null,
+                    It.IsAny<CallOptions>(),
+                    It.IsNotNull<Message<TRequest>>()))
+                .Callback<Method<Message<TRequest>, Message<TResponse>>, string, CallOptions, Message<TRequest>>((method, _, options, r) =>
+                {
+                    method.Type.ShouldBe(MethodType.ServerStreaming);
+                    callOptions?.Invoke(options);
+                    r.Value1.ShouldBe(request);
                 })
                 .Returns(new AsyncServerStreamingCall<Message<TResponse>>(
                     responseStream,
