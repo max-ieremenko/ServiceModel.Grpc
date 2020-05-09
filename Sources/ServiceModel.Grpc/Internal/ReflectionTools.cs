@@ -137,6 +137,23 @@ namespace ServiceModel.Grpc.Internal
             return result;
         }
 
+        public static MethodInfo InstanceMethod(this Type type, string name, params Type[] parameters)
+        {
+            var result = type.GetMethod(
+                name,
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly,
+                null,
+                parameters,
+                null);
+
+            if (result == null)
+            {
+                throw new ArgumentOutOfRangeException("{0} does not implement method {1}.".FormatWith(type.Name, name));
+            }
+
+            return result;
+        }
+
         public static FieldInfo StaticFiled(this Type type, string name)
         {
             var result = type.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly);

@@ -123,7 +123,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             }
 
             // service.Method
-            body.Emit(OpCodes.Callvirt, _contractType.InstanceMethod(message.Operation.Name));
+            CallContractMethod(body, message);
 
             if (message.IsAsync)
             {
@@ -177,7 +177,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             }
 
             // service.Method
-            body.Emit(OpCodes.Callvirt, _contractType.InstanceMethod(message.Operation.Name));
+            CallContractMethod(body, message);
 
             AdaptSyncUnaryCallResult(body, message);
 
@@ -207,7 +207,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             }
 
             // service.Method
-            body.Emit(OpCodes.Callvirt, _contractType.InstanceMethod(message.Operation.Name));
+            CallContractMethod(body, message);
 
             // ServerChannelAdapter.WriteServerStreamingResult(result, stream, serverCallContext);
             body.Emit(OpCodes.Ldarg_2); // stream
@@ -262,7 +262,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             }
 
             // service.Method
-            body.Emit(OpCodes.Callvirt, _contractType.InstanceMethod(message.Operation.Name));
+            CallContractMethod(body, message);
 
             // ServerChannelAdapter.WriteServerStreamingResult
             body.Emit(OpCodes.Ldarg_2); // output
@@ -383,6 +383,17 @@ namespace ServiceModel.Grpc.Internal.Emit
                 body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(nameof(ServerChannelAdapter.GetMethodInputHeader)).MakeGenericMethod(message.HeaderRequestType));
                 body.Emit(OpCodes.Stloc_0);
             }
+        }
+
+        private void CallContractMethod(ILGenerator body, MessageAssembler message)
+        {
+            var parameters = new Type[message.Parameters.Length];
+            for (var i = 0; i < parameters.Length; i++)
+            {
+                parameters[i] = message.Parameters[i].ParameterType;
+            }
+
+            body.Emit(OpCodes.Callvirt, _contractType.InstanceMethod(message.Operation.Name, parameters));
         }
 
         private FieldBuilder InitializeHeadersMarshaller(MessageAssembler message)

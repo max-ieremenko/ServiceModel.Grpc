@@ -312,6 +312,42 @@ namespace ServiceModel.Grpc.Internal.Emit
         }
 
         [Test]
+        public async Task DuplicateUnary1()
+        {
+            var call = _channelType
+                .StaticMethod(nameof(IContract.DuplicateUnary), typeof(IContract), typeof(Message), typeof(ServerCallContext))
+                .CreateDelegate<UnaryServerMethod<IContract, Message, Message<string>>>();
+            Console.WriteLine(call.Method.Disassemble());
+
+            _service
+                .Setup(s => s.DuplicateUnary())
+                .Returns("a");
+
+            var actual = await call(_service.Object, new Message(), null);
+
+            actual.Value1.ShouldBe("a");
+            _service.VerifyAll();
+        }
+
+        [Test]
+        public async Task DuplicateUnary2()
+        {
+            var call = _channelType
+                .StaticMethod(nameof(IContract.DuplicateUnary), typeof(IContract), typeof(Message<string>), typeof(ServerCallContext))
+                .CreateDelegate<UnaryServerMethod<IContract, Message<string>, Message<string>>>();
+            Console.WriteLine(call.Method.Disassemble());
+
+            _service
+                .Setup(s => s.DuplicateUnary("a"))
+                .Returns("b");
+
+            var actual = await call(_service.Object, new Message<string>("a"), null);
+
+            actual.Value1.ShouldBe("b");
+            _service.VerifyAll();
+        }
+
+        [Test]
         public async Task EmptyServerStreaming()
         {
             var call = _channelType
@@ -457,6 +493,78 @@ namespace ServiceModel.Grpc.Internal.Emit
         }
 
         [Test]
+        public async Task DuplicateServerStreaming1()
+        {
+            var call = _channelType
+                .StaticMethod(nameof(IContract.DuplicateServerStreaming), typeof(IContract), typeof(Message), typeof(IServerStreamWriter<Message<string>>), typeof(ServerCallContext))
+                .CreateDelegate<ServerStreamingServerMethod<IContract, Message, Message<string>>>();
+            Console.WriteLine(call.Method.Disassemble());
+
+            var serverContext = new Mock<ServerCallContext>(MockBehavior.Strict);
+            serverContext
+                .Protected()
+                .SetupGet<CancellationToken>("CancellationTokenCore")
+                .Returns(_tokenSource.Token);
+
+            var actual = new List<string>();
+
+            var stream = new Mock<IServerStreamWriter<Message<string>>>(MockBehavior.Strict);
+            stream
+                .Setup(s => s.WriteAsync(It.IsNotNull<Message<string>>()))
+                .Callback<Message<string>>(message =>
+                {
+                    actual.Add(message.Value1);
+                })
+                .Returns(Task.CompletedTask);
+
+            _service
+                .Setup(s => s.DuplicateServerStreaming())
+                .Returns(new[] { "a" }.AsAsyncEnumerable());
+
+            await call(_service.Object, new Message(), stream.Object, serverContext.Object);
+
+            actual.ShouldBe(new[] { "a" });
+            stream.VerifyAll();
+            _service.VerifyAll();
+        }
+
+        [Test]
+        public async Task DuplicateServerStreaming2()
+        {
+            var call = _channelType
+                .StaticMethod(nameof(IContract.DuplicateServerStreaming), typeof(IContract), typeof(Message<string>), typeof(IServerStreamWriter<Message<string>>), typeof(ServerCallContext))
+                .CreateDelegate<ServerStreamingServerMethod<IContract, Message<string>, Message<string>>>();
+            Console.WriteLine(call.Method.Disassemble());
+
+            var serverContext = new Mock<ServerCallContext>(MockBehavior.Strict);
+            serverContext
+                .Protected()
+                .SetupGet<CancellationToken>("CancellationTokenCore")
+                .Returns(_tokenSource.Token);
+
+            var actual = new List<string>();
+
+            var stream = new Mock<IServerStreamWriter<Message<string>>>(MockBehavior.Strict);
+            stream
+                .Setup(s => s.WriteAsync(It.IsNotNull<Message<string>>()))
+                .Callback<Message<string>>(message =>
+                {
+                    actual.Add(message.Value1);
+                })
+                .Returns(Task.CompletedTask);
+
+            _service
+                .Setup(s => s.DuplicateServerStreaming("b"))
+                .Returns(new[] { "a" }.AsAsyncEnumerable());
+
+            await call(_service.Object, new Message<string>("b"), stream.Object, serverContext.Object);
+
+            actual.ShouldBe(new[] { "a" });
+            stream.VerifyAll();
+            _service.VerifyAll();
+        }
+
+        [Test]
         public async Task ClientStreamingEmpty()
         {
             var call = _channelType
@@ -575,6 +683,86 @@ namespace ServiceModel.Grpc.Internal.Emit
             var actual = await call(_service.Object, stream.Object, serverContext.Object);
 
             actual.Value1.ShouldBe("2");
+            stream.VerifyAll();
+            _service.VerifyAll();
+        }
+
+        [Test]
+        public async Task DuplicateClientStreaming1()
+        {
+            var call = _channelType
+                .StaticMethod(nameof(IContract.DuplicateClientStreaming), typeof(IContract), typeof(IAsyncStreamReader<Message<string>>), typeof(ServerCallContext))
+                .CreateDelegate<ClientStreamingServerMethod<IContract, Message<string>, Message<string>>>();
+            Console.WriteLine(call.Method.Disassemble());
+
+            var serverContext = new Mock<ServerCallContext>(MockBehavior.Strict);
+            serverContext
+                .Protected()
+                .SetupGet<CancellationToken>("CancellationTokenCore")
+                .Returns(_tokenSource.Token);
+
+            var stream = new Mock<IAsyncStreamReader<Message<string>>>(MockBehavior.Strict);
+            stream
+                .Setup(s => s.MoveNext(_tokenSource.Token))
+                .Callback(() =>
+                {
+                    stream.SetupGet(s => s.Current).Returns(new Message<string>("a"));
+                    stream.Setup(s => s.MoveNext(_tokenSource.Token)).Returns(Task.FromResult(false));
+                })
+                .Returns(Task.FromResult(true));
+
+            _service
+                .Setup(s => s.DuplicateClientStreaming(It.IsNotNull<IAsyncEnumerable<string>>()))
+                .Returns<IAsyncEnumerable<string>>(async values =>
+                {
+                    var items = await values.ToListAsync();
+                    items.ShouldBe(new[] { "a" });
+                    return "b";
+                });
+
+            var actual = await call(_service.Object, stream.Object, serverContext.Object);
+
+            actual.Value1.ShouldBe("b");
+            stream.VerifyAll();
+            _service.VerifyAll();
+        }
+
+        [Test]
+        public async Task DuplicateClientStreaming2()
+        {
+            var call = _channelType
+                .StaticMethod(nameof(IContract.DuplicateClientStreaming), typeof(IContract), typeof(IAsyncStreamReader<Message<int>>), typeof(ServerCallContext))
+                .CreateDelegate<ClientStreamingServerMethod<IContract, Message<int>, Message<string>>>();
+            Console.WriteLine(call.Method.Disassemble());
+
+            var serverContext = new Mock<ServerCallContext>(MockBehavior.Strict);
+            serverContext
+                .Protected()
+                .SetupGet<CancellationToken>("CancellationTokenCore")
+                .Returns(_tokenSource.Token);
+
+            var stream = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
+            stream
+                .Setup(s => s.MoveNext(_tokenSource.Token))
+                .Callback(() =>
+                {
+                    stream.SetupGet(s => s.Current).Returns(new Message<int>(1));
+                    stream.Setup(s => s.MoveNext(_tokenSource.Token)).Returns(Task.FromResult(false));
+                })
+                .Returns(Task.FromResult(true));
+
+            _service
+                .Setup(s => s.DuplicateClientStreaming(It.IsNotNull<IAsyncEnumerable<int>>()))
+                .Returns<IAsyncEnumerable<int>>(async values =>
+                {
+                    var items = await values.ToListAsync();
+                    items.ShouldBe(new[] { 1 });
+                    return "b";
+                });
+
+            var actual = await call(_service.Object, stream.Object, serverContext.Object);
+
+            actual.Value1.ShouldBe("b");
             stream.VerifyAll();
             _service.VerifyAll();
         }
@@ -786,6 +974,110 @@ namespace ServiceModel.Grpc.Internal.Emit
             await call(_service.Object, input.Object, output.Object, serverContext.Object);
 
             outputValues.ShouldBe(new[] { "2" });
+            input.VerifyAll();
+            output.VerifyAll();
+            _service.VerifyAll();
+        }
+
+        [Test]
+        public async Task DuplicateDuplexStreaming1()
+        {
+            var call = _channelType
+                .StaticMethod(nameof(IContract.DuplicateDuplexStreaming), typeof(IContract), typeof(IAsyncStreamReader<Message<string>>), typeof(IServerStreamWriter<Message<string>>), typeof(ServerCallContext))
+                .CreateDelegate<DuplexStreamingServerMethod<IContract, Message<string>, Message<string>>>();
+            Console.WriteLine(call.Method.Disassemble());
+
+            var serverContext = new Mock<ServerCallContext>(MockBehavior.Strict);
+            serverContext
+                .Protected()
+                .SetupGet<CancellationToken>("CancellationTokenCore")
+                .Returns(_tokenSource.Token);
+
+            var input = new Mock<IAsyncStreamReader<Message<string>>>(MockBehavior.Strict);
+            input
+                .Setup(s => s.MoveNext(_tokenSource.Token))
+                .Callback(() =>
+                {
+                    input.SetupGet(s => s.Current).Returns(new Message<string>("a"));
+                    input.Setup(s => s.MoveNext(_tokenSource.Token)).Returns(Task.FromResult(false));
+                })
+                .Returns(Task.FromResult(true));
+
+            var outputValues = new List<string>();
+
+            var output = new Mock<IServerStreamWriter<Message<string>>>(MockBehavior.Strict);
+            output
+                .Setup(s => s.WriteAsync(It.IsNotNull<Message<string>>()))
+                .Callback<Message<string>>(message =>
+                {
+                    outputValues.Add(message.Value1);
+                })
+                .Returns(Task.CompletedTask);
+
+            _service
+                .Setup(s => s.DuplicateDuplexStreaming(It.IsNotNull<IAsyncEnumerable<string>>()))
+                .Callback<IAsyncEnumerable<string>>(async values =>
+                {
+                    var items = await values.ToListAsync();
+                    items.ShouldBe(new[] { "a" });
+                })
+                .Returns(new[] { "b" }.AsAsyncEnumerable());
+
+            await call(_service.Object, input.Object, output.Object, serverContext.Object);
+
+            outputValues.ShouldBe(new[] { "b" });
+            input.VerifyAll();
+            output.VerifyAll();
+            _service.VerifyAll();
+        }
+
+        [Test]
+        public async Task DuplicateDuplexStreaming2()
+        {
+            var call = _channelType
+                .StaticMethod(nameof(IContract.DuplicateDuplexStreaming), typeof(IContract), typeof(IAsyncStreamReader<Message<int>>), typeof(IServerStreamWriter<Message<int>>), typeof(ServerCallContext))
+                .CreateDelegate<DuplexStreamingServerMethod<IContract, Message<int>, Message<int>>>();
+            Console.WriteLine(call.Method.Disassemble());
+
+            var serverContext = new Mock<ServerCallContext>(MockBehavior.Strict);
+            serverContext
+                .Protected()
+                .SetupGet<CancellationToken>("CancellationTokenCore")
+                .Returns(_tokenSource.Token);
+
+            var input = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
+            input
+                .Setup(s => s.MoveNext(_tokenSource.Token))
+                .Callback(() =>
+                {
+                    input.SetupGet(s => s.Current).Returns(new Message<int>(1));
+                    input.Setup(s => s.MoveNext(_tokenSource.Token)).Returns(Task.FromResult(false));
+                })
+                .Returns(Task.FromResult(true));
+
+            var outputValues = new List<int>();
+
+            var output = new Mock<IServerStreamWriter<Message<int>>>(MockBehavior.Strict);
+            output
+                .Setup(s => s.WriteAsync(It.IsNotNull<Message<int>>()))
+                .Callback<Message<int>>(message =>
+                {
+                    outputValues.Add(message.Value1);
+                })
+                .Returns(Task.CompletedTask);
+
+            _service
+                .Setup(s => s.DuplicateDuplexStreaming(It.IsNotNull<IAsyncEnumerable<int>>()))
+                .Callback<IAsyncEnumerable<int>>(async values =>
+                {
+                    var items = await values.ToListAsync();
+                    items.ShouldBe(new[] { 1 });
+                })
+                .Returns(new[] { 2 }.AsAsyncEnumerable());
+
+            await call(_service.Object, input.Object, output.Object, serverContext.Object);
+
+            outputValues.ShouldBe(new[] { 2 });
             input.VerifyAll();
             output.VerifyAll();
             _service.VerifyAll();
