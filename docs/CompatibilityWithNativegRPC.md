@@ -1,6 +1,7 @@
 # ServiceModel.Grpc compatibility with native gRPC
 
 To make ServiceModel.Grpc compatible with native gRPC:
+
 - configure to use protobuf serialization for data marshalling
 - service and method names must match
 - serialization contracts of .net objects must be compatible with .proto contract
