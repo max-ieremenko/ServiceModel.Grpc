@@ -14,6 +14,7 @@
 // limitations under the License.
 // </copyright>
 
+using System;
 using Grpc.AspNetCore.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -38,20 +39,22 @@ namespace ServiceModel.Grpc.AspNetCore.Internal
         {
             AddErrorHandler(
                 options.Interceptors,
-                _serviceModelOptions.Value.DefaultErrorHandler,
+                _serviceModelOptions.Value.DefaultErrorHandlerFactory,
                 _serviceModelOptions.Value.DefaultMarshallerFactory);
         }
 
         internal static void AddErrorHandler(
             InterceptorCollection interceptors,
-            IServerErrorHandler errorHandler,
+            Func<IServiceProvider, IServerErrorHandler> errorHandlerFactory,
             IMarshallerFactory marshallerFactory)
         {
-            if (errorHandler != null)
+            if (errorHandlerFactory != null)
             {
-                interceptors.Add<ServerNativeInterceptor>(new ServerCallErrorInterceptor(
-                    errorHandler,
-                    marshallerFactory.ThisOrDefault()));
+                var factory = new ErrorHandlerServerCallInterceptorFactory(
+                    marshallerFactory.ThisOrDefault(),
+                    errorHandlerFactory);
+
+                interceptors.Add<ServerNativeInterceptor>(factory);
             }
         }
     }

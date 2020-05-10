@@ -36,7 +36,12 @@ namespace ServiceModel.Grpc.AspNetCore
             await _host.StartAsync(
                 services =>
                 {
-                    services.AddServiceModelGrpc(options => options.DefaultErrorHandler = new ServerErrorHandler());
+                    services.AddScoped<ServerErrorHandler>();
+
+                    services.AddServiceModelGrpc(options =>
+                    {
+                        options.DefaultErrorHandlerFactory = p => p.GetService<ServerErrorHandler>();
+                    });
                 },
                 configureEndpoints: endpoints =>
                 {

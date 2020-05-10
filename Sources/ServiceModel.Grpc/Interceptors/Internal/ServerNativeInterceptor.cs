@@ -25,7 +25,15 @@ namespace ServiceModel.Grpc.Interceptors.Internal
     {
         private readonly IServerCallInterceptor _interceptor;
 
-        public ServerNativeInterceptor(IServerCallInterceptor interceptor)
+        public ServerNativeInterceptor(IServiceProvider serviceProvider, IServerCallInterceptorFactory callInterceptorFactory)
+        {
+            serviceProvider.AssertNotNull(nameof(serviceProvider));
+            callInterceptorFactory.AssertNotNull(nameof(callInterceptorFactory));
+
+            _interceptor = callInterceptorFactory.CreateInterceptor(serviceProvider);
+        }
+
+        internal ServerNativeInterceptor(IServerCallInterceptor interceptor)
         {
             interceptor.AssertNotNull(nameof(interceptor));
 

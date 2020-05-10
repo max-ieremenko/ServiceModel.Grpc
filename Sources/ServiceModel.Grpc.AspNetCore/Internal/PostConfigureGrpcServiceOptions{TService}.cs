@@ -43,7 +43,7 @@ namespace ServiceModel.Grpc.AspNetCore.Internal
 
             PostConfigureGrpcServiceOptions.AddErrorHandler(
                 options.Interceptors,
-                _serviceConfiguration.Value.ErrorHandler,
+                _serviceConfiguration.Value.ErrorHandlerFactory,
                 marshallerFactory);
         }
     }

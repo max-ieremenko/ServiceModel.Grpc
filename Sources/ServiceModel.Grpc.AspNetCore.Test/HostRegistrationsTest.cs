@@ -93,7 +93,7 @@ namespace ServiceModel.Grpc.AspNetCore
             await _host.StartAsync(
                 services =>
                 {
-                    services.AddServiceModelGrpc(options => options.DefaultErrorHandler = _globalErrorHandler);
+                    services.AddServiceModelGrpc(options => options.DefaultErrorHandlerFactory = _ => _globalErrorHandler);
                 },
                 configureEndpoints: endpoints =>
                 {
@@ -112,7 +112,7 @@ namespace ServiceModel.Grpc.AspNetCore
             await _host.StartAsync(
                 services =>
                 {
-                    services.AddServiceModelGrpcServiceOptions<ErrorService>(options => options.ErrorHandler = _localErrorHandler);
+                    services.AddServiceModelGrpcServiceOptions<ErrorService>(options => options.ErrorHandlerFactory = _ => _localErrorHandler);
                 },
                 configureEndpoints: endpoints =>
                 {
@@ -131,8 +131,8 @@ namespace ServiceModel.Grpc.AspNetCore
             await _host.StartAsync(
                 services =>
                 {
-                    services.AddServiceModelGrpc(options => options.DefaultErrorHandler = _globalErrorHandler);
-                    services.AddServiceModelGrpcServiceOptions<ErrorService>(options => options.ErrorHandler = _localErrorHandler);
+                    services.AddServiceModelGrpc(options => options.DefaultErrorHandlerFactory = _ => _globalErrorHandler);
+                    services.AddServiceModelGrpcServiceOptions<ErrorService>(options => options.ErrorHandlerFactory = _ => _localErrorHandler);
                 },
                 configureEndpoints: endpoints =>
                 {

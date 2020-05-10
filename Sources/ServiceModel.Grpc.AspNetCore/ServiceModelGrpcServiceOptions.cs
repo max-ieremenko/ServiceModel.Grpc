@@ -14,6 +14,7 @@
 // limitations under the License.
 // </copyright>
 
+using System;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Interceptors;
 
@@ -32,8 +33,8 @@ namespace Microsoft.Extensions.DependencyInjection
         public IMarshallerFactory DefaultMarshallerFactory { get; set; }
 
         /// <summary>
-        /// Gets or sets default server call error handler.
+        /// Gets or sets default factory for server call error handler.
         /// </summary>
-        public IServerErrorHandler DefaultErrorHandler { get; set; }
+        public Func<IServiceProvider, IServerErrorHandler> DefaultErrorHandlerFactory { get; set; }
     }
 }
