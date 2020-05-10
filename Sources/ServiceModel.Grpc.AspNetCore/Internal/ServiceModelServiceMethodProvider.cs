@@ -27,19 +27,23 @@ namespace ServiceModel.Grpc.AspNetCore.Internal
         private readonly ServiceModelGrpcServiceOptions _rootConfiguration;
         private readonly ServiceModelGrpcServiceOptions<TService> _serviceConfiguration;
         private readonly ILogger<ServiceModelServiceMethodProvider<TService>> _logger;
+        private readonly string _hostId;
 
         public ServiceModelServiceMethodProvider(
             IOptions<ServiceModelGrpcServiceOptions> rootConfiguration,
             IOptions<ServiceModelGrpcServiceOptions<TService>> serviceConfiguration,
-            ILogger<ServiceModelServiceMethodProvider<TService>> logger)
+            ILogger<ServiceModelServiceMethodProvider<TService>> logger,
+            HostMarkerService marker)
         {
             rootConfiguration.AssertNotNull(nameof(rootConfiguration));
             serviceConfiguration.AssertNotNull(nameof(serviceConfiguration));
             logger.AssertNotNull(nameof(logger));
+            marker.AssertNotNull(nameof(marker));
 
             _rootConfiguration = rootConfiguration.Value;
             _serviceConfiguration = serviceConfiguration.Value;
             _logger = logger;
+            _hostId = marker.HostId;
         }
 
         public void OnServiceMethodDiscovery(ServiceMethodProviderContext<TService> context)
@@ -47,7 +51,7 @@ namespace ServiceModel.Grpc.AspNetCore.Internal
             var marshallerFactory = _serviceConfiguration.MarshallerFactory ?? _rootConfiguration.DefaultMarshallerFactory;
             var log = new LogAdapter(_logger);
 
-            var factory = new AspNetCoreGrpcServiceFactory<TService>(log, context, marshallerFactory);
+            var factory = new AspNetCoreGrpcServiceFactory<TService>(log, context, marshallerFactory, _hostId);
             factory.Bind();
         }
     }

@@ -17,6 +17,7 @@
 using System;
 using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Interceptors;
 
 namespace ServiceModel.Grpc.Client
 {
@@ -34,6 +35,11 @@ namespace ServiceModel.Grpc.Client
         /// Gets or sets a methods which provides <see cref="CallOptions"/> for all calls made by all clients created by <see cref="IClientFactory"/>.
         /// </summary>
         public Func<CallOptions> DefaultCallOptionsFactory { get; set; }
+
+        /// <summary>
+        /// Gets or sets a client call error handler.
+        /// </summary>
+        public IClientErrorHandler ErrorHandler { get; set; }
 
         /// <summary>
         /// Gets or sets logger to handle possible output from <see cref="IClientFactory"/>.

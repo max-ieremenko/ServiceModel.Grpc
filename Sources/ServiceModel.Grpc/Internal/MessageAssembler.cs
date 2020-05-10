@@ -98,7 +98,7 @@ namespace ServiceModel.Grpc.Internal
 
             if (ReflectionTools.IsAsyncEnumerable(responseType))
             {
-                responseType = returnType.GenericTypeArguments[0];
+                responseType = responseType.GenericTypeArguments[0];
             }
 
             if (IsContextParameter(responseType) || !IsDataParameter(responseType))
@@ -175,7 +175,8 @@ namespace ServiceModel.Grpc.Internal
 
         private MethodType GetOperationType()
         {
-            var responseIsStreaming = ReflectionTools.IsAsyncEnumerable(Operation.ReturnType);
+            var responseIsStreaming = ReflectionTools.IsAsyncEnumerable(Operation.ReturnType)
+                || (Operation.ReturnType.IsGenericType && ReflectionTools.IsTask(Operation.ReturnType) && ReflectionTools.IsAsyncEnumerable(Operation.ReturnType.GetGenericArguments()[0]));
             var requestIsStreaming = Parameters.Select(i => i.ParameterType).Any(ReflectionTools.IsAsyncEnumerable);
 
             if (responseIsStreaming)

@@ -26,15 +26,17 @@ namespace ServiceModel.Grpc.Hosting
 {
     internal abstract class GrpcServiceFactoryBase<TService>
     {
+        private readonly string _hostId;
         private readonly IMarshallerFactory _marshallerFactory;
         private readonly Type _serviceType;
 
-        protected GrpcServiceFactoryBase(ILogger logger, IMarshallerFactory marshallerFactory)
+        protected GrpcServiceFactoryBase(ILogger logger, IMarshallerFactory marshallerFactory, string hostId)
         {
             logger.AssertNotNull(nameof(logger));
 
             Logger = logger;
-            _marshallerFactory = marshallerFactory ?? DataContractMarshallerFactory.Default;
+            _marshallerFactory = marshallerFactory.ThisOrDefault();
+            _hostId = hostId;
             _serviceType = typeof(TService);
         }
 
@@ -104,7 +106,7 @@ namespace ServiceModel.Grpc.Hosting
 
         private Type BuildChannelService(Type interfaceType, IList<OperationDescription> operations)
         {
-            var serviceBuilder = new GrpcServiceBuilder(interfaceType, _marshallerFactory);
+            var serviceBuilder = new GrpcServiceBuilder(interfaceType, _marshallerFactory, _hostId);
             foreach (var operation in operations)
             {
                 var message = operation.Message;

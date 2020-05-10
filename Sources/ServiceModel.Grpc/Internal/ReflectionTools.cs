@@ -137,6 +137,23 @@ namespace ServiceModel.Grpc.Internal
             return result;
         }
 
+        public static MethodInfo InstanceMethod(this Type type, string name, params Type[] parameters)
+        {
+            var result = type.GetMethod(
+                name,
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly,
+                null,
+                parameters,
+                null);
+
+            if (result == null)
+            {
+                throw new ArgumentOutOfRangeException("{0} does not implement method {1}.".FormatWith(type.Name, name));
+            }
+
+            return result;
+        }
+
         public static FieldInfo StaticFiled(this Type type, string name)
         {
             var result = type.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly);
@@ -261,6 +278,94 @@ namespace ServiceModel.Grpc.Internal
         {
             var result = target == null ? method.CreateDelegate(typeof(TDelegate)) : method.CreateDelegate(typeof(TDelegate), target);
             return (TDelegate)result;
+        }
+
+        public static string GetShortAssemblyQualifiedName(this Type type)
+        {
+            var result = new StringBuilder();
+            WriteShortAssemblyQualifiedName(type, result);
+            return result.ToString();
+        }
+
+        private static void WriteShortAssemblyQualifiedName(Type type, StringBuilder result)
+        {
+            var isArray = type.IsArray;
+            if (isArray)
+            {
+                type = type.GetElementType();
+            }
+
+            WriteTypeFullName(type, result);
+
+            // System.Tuple`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib
+            if (type.IsGenericType)
+            {
+                result.Append("[");
+
+                var args = type.GetGenericArguments();
+                for (var i = 0; i < args.Length; i++)
+                {
+                    if (i > 0)
+                    {
+                        result.Append(", ");
+                    }
+
+                    result.Append("[");
+                    WriteShortAssemblyQualifiedName(args[i], result);
+                    result.Append("]");
+                }
+
+                result.Append("]");
+            }
+
+            // System.Private.CoreLib, mscorlib
+            if (isArray)
+            {
+                result.Append("[]");
+            }
+
+            WriteAssemblyName(type, result);
+        }
+
+        private static void WriteTypeFullName(Type type, StringBuilder result)
+        {
+            if (type.IsNested)
+            {
+                WriteTypeFullName(type.DeclaringType, result);
+                result
+                    .Append("+")
+                    .Append(type.Name);
+            }
+            else
+            {
+                result
+                    .Append(type.Namespace)
+                    .Append(".")
+                    .Append(type.Name);
+            }
+        }
+
+        private static void WriteAssemblyName(Type type, StringBuilder result)
+        {
+            if (type.IsPrimitive)
+            {
+                return;
+            }
+
+            var assemblyName = type.Assembly.GetName().Name;
+            if ("System.Private.CoreLib".Equals(assemblyName, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            if ("mscorlib".Equals(assemblyName, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            result
+                .Append(", ")
+                .Append(assemblyName);
         }
     }
 }

@@ -62,11 +62,29 @@ namespace ServiceModel.Grpc.Internal.Emit
         [OperationContract]
         Task<string> ConcatThreeValueAsync(int x, string y, CancellationToken token, long z);
 
+        [OperationContract(Name = "DuplicateUnary1")]
+        string DuplicateUnary();
+
+        [OperationContract(Name = "DuplicateUnary2")]
+        string DuplicateUnary(string value);
+
         [OperationContract]
         IAsyncEnumerable<int> EmptyServerStreaming();
 
         [OperationContract]
         IAsyncEnumerable<int> ServerStreamingRepeatValue(int value, int count, CancellationToken token);
+
+        [OperationContract]
+        Task<IAsyncEnumerable<int>> ServerStreamingRepeatValueAsync(int value, int count, CancellationToken token);
+
+        [OperationContract]
+        ValueTask<IAsyncEnumerable<int>> ServerStreamingRepeatValueValueTaskAsync(int value, int count, CancellationToken token);
+
+        [OperationContract(Name = "DuplicateServerStreaming1")]
+        IAsyncEnumerable<string> DuplicateServerStreaming();
+
+        [OperationContract(Name = "DuplicateServerStreaming2")]
+        IAsyncEnumerable<string> DuplicateServerStreaming(string value);
 
         [OperationContract]
         Task ClientStreamingEmpty(IAsyncEnumerable<int> values);
@@ -77,10 +95,28 @@ namespace ServiceModel.Grpc.Internal.Emit
         [OperationContract]
         Task<string> ClientStreamingHeaderParameters(IAsyncEnumerable<int> values, int multiplier, string prefix);
 
+        [OperationContract(Name = "DuplicateClientStreaming1")]
+        Task<string> DuplicateClientStreaming(IAsyncEnumerable<string> values);
+
+        [OperationContract(Name = "DuplicateClientStreaming2")]
+        Task<string> DuplicateClientStreaming(IAsyncEnumerable<int> values);
+
         [OperationContract]
         IAsyncEnumerable<string> DuplexStreamingConvert(IAsyncEnumerable<int> values, CancellationToken token);
 
         [OperationContract]
+        Task<IAsyncEnumerable<string>> DuplexStreamingConvertAsync(IAsyncEnumerable<int> values, CancellationToken token);
+
+        [OperationContract]
+        ValueTask<IAsyncEnumerable<string>> DuplexStreamingConvertValueTaskAsync(IAsyncEnumerable<int> values, CancellationToken token);
+
+        [OperationContract]
         IAsyncEnumerable<string> DuplexStreamingHeaderParameters(IAsyncEnumerable<int> values, int multiplier, string prefix);
+
+        [OperationContract(Name = "DuplicateDuplexStreaming1")]
+        IAsyncEnumerable<string> DuplicateDuplexStreaming(IAsyncEnumerable<string> values);
+
+        [OperationContract(Name = "DuplicateDuplexStreaming2")]
+        IAsyncEnumerable<int> DuplicateDuplexStreaming(IAsyncEnumerable<int> values);
     }
 }

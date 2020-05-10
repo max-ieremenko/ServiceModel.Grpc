@@ -12,6 +12,7 @@ public static class Program
         {
             MarshallerFactory = ...
             DefaultCallOptionsFactory = () => ...
+            ErrorHandler = ...
         });
 
     public static async Task Main(string[] args) { }
@@ -22,6 +23,7 @@ public static class Program
 
 - IMarshallerFactory MarshallerFactory: by default is null, it means DataContractMarshallerFactory.Default
 - Func\<CallOptions\> DefaultCallOptionsFactory: by default is null. To setup default CallOptions for all calls by all clients created by this ClientFactory
+- IClientErrorHandler ErrorHandler: by default is null, it means error handling by gRPC API
 - ILogger Logger: by default is null. To setup possible output provided by this ClientFactory
 
 #### IClientFactory.AddClient\<TContract\>()

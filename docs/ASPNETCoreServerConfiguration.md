@@ -3,7 +3,7 @@
 ## Startup.cs
 
 To configure services use ConfigureServices method.
-To bind service, use Grpc.AspNetCore.Server binding in Configure method.
+To bind service use Grpc.AspNetCore.Server binding in Configure method.
 
 ``` c#
 public class Startup
@@ -21,6 +21,7 @@ public class Startup
             .AddServiceModelGrpc(options =>
             {
                 options.DefaultMarshallerFactory = ...
+                options.DefaultErrorHandlerFactory = ...
             });
 
         // optional configuration for a specific service
@@ -28,6 +29,7 @@ public class Startup
             .AddServiceModelGrpcServiceOptions<IMyService>(options =>
             {
                 options.MarshallerFactory = ...
+                options.ErrorHandlerFactory = ...
             });
     }
 
@@ -45,7 +47,9 @@ public class Startup
 ```
 
 #### ServiceModelGrpcServiceOptions
+
 - IMarshallerFactory DefaultMarshallerFactory: by default is null, it means DataContractMarshallerFactory.Default
+- Func<IServiceProvider, IServerErrorHandler> DefaultErrorHandlerFactory: by default is null, it means error handling by gRPC API
 
 ## Silent proxy generation
 

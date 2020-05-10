@@ -40,7 +40,7 @@ namespace ServiceModel.Grpc.Hosting
             var sutType = typeof(GrpcServiceFactoryBase<>).MakeGenericType(service.Object.GetType());
             var sutMockType = typeof(Mock<>).MakeGenericType(sutType);
 
-            var sutMock = (Mock)Activator.CreateInstance(sutMockType, _logger.Logger, DataContractMarshallerFactory.Default);
+            var sutMock = (Mock)Activator.CreateInstance(sutMockType, _logger.Logger, DataContractMarshallerFactory.Default, nameof(GrpcServiceFactoryBaseTest));
 
             sutType.InstanceMethod("Bind").Invoke(sutMock.Object, Array.Empty<object>());
         }

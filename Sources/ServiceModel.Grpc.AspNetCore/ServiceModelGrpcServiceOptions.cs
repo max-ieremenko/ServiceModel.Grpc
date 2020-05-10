@@ -14,7 +14,9 @@
 // limitations under the License.
 // </copyright>
 
+using System;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Interceptors;
 
 //// ReSharper disable CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
@@ -29,5 +31,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Gets or sets default factory for serializing and deserializing messages.
         /// </summary>
         public IMarshallerFactory DefaultMarshallerFactory { get; set; }
+
+        /// <summary>
+        /// Gets or sets default factory for server call error handler.
+        /// </summary>
+        public Func<IServiceProvider, IServerErrorHandler> DefaultErrorHandlerFactory { get; set; }
     }
 }

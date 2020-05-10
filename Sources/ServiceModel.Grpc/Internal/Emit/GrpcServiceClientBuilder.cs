@@ -15,6 +15,7 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -337,6 +338,23 @@ namespace ServiceModel.Grpc.Internal.Emit
             PushToken(body);
             body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.GetServerStreamingCallResult)).MakeGenericMethod(message.ResponseType.GenericTypeArguments[0]));
 
+            if (message.IsAsync)
+            {
+                // IAsyncEnumerable<T>
+                var adapterReturnType = message.Operation.ReturnType.GetGenericArguments()[0];
+
+                if (message.Operation.ReturnType.IsValueTask())
+                {
+                    // new ValueTask(IAsyncEnumerable<T>)
+                    body.Emit(OpCodes.Newobj, typeof(ValueTask<>).MakeGenericType(adapterReturnType).Constructor(adapterReturnType));
+                }
+                else
+                {
+                    // Task.FromResult
+                    body.Emit(OpCodes.Call, typeof(Task).StaticMethod(nameof(Task.FromResult)).MakeGenericMethod(adapterReturnType));
+                }
+            }
+
             body.Emit(OpCodes.Ret);
         }
 
@@ -396,6 +414,23 @@ namespace ServiceModel.Grpc.Internal.Emit
             PushCallContext(body, message);
             PushToken(body);
             body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.GetDuplexCallResult)).MakeGenericMethod(message.RequestType.GenericTypeArguments[0], message.ResponseType.GenericTypeArguments[0]));
+
+            if (message.IsAsync)
+            {
+                // IAsyncEnumerable<T>
+                var adapterReturnType = message.Operation.ReturnType.GetGenericArguments()[0];
+
+                if (message.Operation.ReturnType.IsValueTask())
+                {
+                    // new ValueTask(IAsyncEnumerable<T>)
+                    body.Emit(OpCodes.Newobj, typeof(ValueTask<>).MakeGenericType(adapterReturnType).Constructor(adapterReturnType));
+                }
+                else
+                {
+                    // Task.FromResult
+                    body.Emit(OpCodes.Call, typeof(Task).StaticMethod(nameof(Task.FromResult)).MakeGenericMethod(adapterReturnType));
+                }
+            }
 
             body.Emit(OpCodes.Ret);
         }

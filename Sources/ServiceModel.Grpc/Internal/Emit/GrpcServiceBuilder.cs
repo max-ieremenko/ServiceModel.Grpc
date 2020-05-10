@@ -31,7 +31,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         private readonly IMarshallerFactory _marshallerFactory;
         private readonly ILGenerator _initializeHeadersMarshallerMethod;
 
-        public GrpcServiceBuilder(Type contractType, IMarshallerFactory marshallerFactory)
+        public GrpcServiceBuilder(Type contractType, IMarshallerFactory marshallerFactory, string factoryId)
         {
             _contractType = contractType;
             _marshallerFactory = marshallerFactory;
@@ -39,7 +39,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             _typeBuilder = ProxyAssembly
                 .DefaultModule
                 .DefineType(
-                    "{0}.{1}Service".FormatWith(ReflectionTools.GetNamespace(contractType), contractType.Name),
+                    "{0}.{1}Service{2}".FormatWith(ReflectionTools.GetNamespace(contractType), contractType.Name, factoryId),
                     TypeAttributes.NotPublic | TypeAttributes.Abstract | TypeAttributes.Class | TypeAttributes.Sealed);
 
             _initializeHeadersMarshallerMethod = _typeBuilder
@@ -123,7 +123,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             }
 
             // service.Method
-            body.Emit(OpCodes.Callvirt, _contractType.InstanceMethod(message.Operation.Name));
+            CallContractMethod(body, message);
 
             if (message.IsAsync)
             {
@@ -177,7 +177,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             }
 
             // service.Method
-            body.Emit(OpCodes.Callvirt, _contractType.InstanceMethod(message.Operation.Name));
+            CallContractMethod(body, message);
 
             AdaptSyncUnaryCallResult(body, message);
 
@@ -207,18 +207,29 @@ namespace ServiceModel.Grpc.Internal.Emit
             }
 
             // service.Method
-            body.Emit(OpCodes.Callvirt, _contractType.InstanceMethod(message.Operation.Name));
+            CallContractMethod(body, message);
 
             // ServerChannelAdapter.WriteServerStreamingResult(result, stream, serverCallContext);
             body.Emit(OpCodes.Ldarg_2); // stream
             body.Emit(OpCodes.Ldarg_3); // serverCallContext
-            if (message.ResponseType.IsGenericType)
+
+            string adapterName;
+            if (message.IsAsync)
             {
-                body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(nameof(ServerChannelAdapter.WriteServerStreamingResult)).MakeGenericMethod(message.ResponseType.GenericTypeArguments[0]));
+                adapterName = message.Operation.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.WriteServerStreamingResultValueTask) : nameof(ServerChannelAdapter.WriteServerStreamingResultTask);
             }
             else
             {
-                body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(nameof(ServerChannelAdapter.WriteServerStreamingResult)).MakeGenericMethod(message.ResponseType));
+                adapterName = nameof(ServerChannelAdapter.WriteServerStreamingResult);
+            }
+
+            if (message.ResponseType.IsGenericType)
+            {
+                body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(adapterName).MakeGenericMethod(message.ResponseType.GenericTypeArguments));
+            }
+            else
+            {
+                body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(adapterName).MakeGenericMethod(message.ResponseType));
             }
 
             body.Emit(OpCodes.Ret);
@@ -251,12 +262,23 @@ namespace ServiceModel.Grpc.Internal.Emit
             }
 
             // service.Method
-            body.Emit(OpCodes.Callvirt, _contractType.InstanceMethod(message.Operation.Name));
+            CallContractMethod(body, message);
 
             // ServerChannelAdapter.WriteServerStreamingResult
             body.Emit(OpCodes.Ldarg_2); // output
             body.Emit(OpCodes.Ldarg_3); // context
-            body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(nameof(ServerChannelAdapter.WriteServerStreamingResult)).MakeGenericMethod(message.ResponseType.GenericTypeArguments));
+
+            string adapterName;
+            if (message.IsAsync)
+            {
+                adapterName = message.Operation.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.WriteServerStreamingResultValueTask) : nameof(ServerChannelAdapter.WriteServerStreamingResultTask);
+            }
+            else
+            {
+                adapterName = nameof(ServerChannelAdapter.WriteServerStreamingResult);
+            }
+
+            body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(adapterName).MakeGenericMethod(message.ResponseType.GenericTypeArguments));
 
             body.Emit(OpCodes.Ret);
         }
@@ -361,6 +383,17 @@ namespace ServiceModel.Grpc.Internal.Emit
                 body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(nameof(ServerChannelAdapter.GetMethodInputHeader)).MakeGenericMethod(message.HeaderRequestType));
                 body.Emit(OpCodes.Stloc_0);
             }
+        }
+
+        private void CallContractMethod(ILGenerator body, MessageAssembler message)
+        {
+            var parameters = new Type[message.Parameters.Length];
+            for (var i = 0; i < parameters.Length; i++)
+            {
+                parameters[i] = message.Parameters[i].ParameterType;
+            }
+
+            body.Emit(OpCodes.Callvirt, _contractType.InstanceMethod(message.Operation.Name, parameters));
         }
 
         private FieldBuilder InitializeHeadersMarshaller(MessageAssembler message)

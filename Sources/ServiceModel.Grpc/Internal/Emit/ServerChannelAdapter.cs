@@ -86,6 +86,18 @@ namespace ServiceModel.Grpc.Internal.Emit
             return new Message<T>(result);
         }
 
+        public static async Task WriteServerStreamingResultTask<T>(Task<IAsyncEnumerable<T>> result, IServerStreamWriter<Message<T>> stream, ServerCallContext context)
+        {
+            var source = await result.ConfigureAwait(false);
+            await WriteServerStreamingResult<T>(source, stream, context);
+        }
+
+        public static async Task WriteServerStreamingResultValueTask<T>(ValueTask<IAsyncEnumerable<T>> result, IServerStreamWriter<Message<T>> stream, ServerCallContext context)
+        {
+            var source = await result.ConfigureAwait(false);
+            await WriteServerStreamingResult<T>(source, stream, context);
+        }
+
         public static async Task WriteServerStreamingResult<T>(IAsyncEnumerable<T> result, IServerStreamWriter<Message<T>> stream, ServerCallContext context)
         {
             await foreach (var i in result.WithCancellation(context.CancellationToken))

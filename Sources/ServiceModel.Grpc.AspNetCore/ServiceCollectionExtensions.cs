@@ -18,6 +18,7 @@ using System;
 using Grpc.AspNetCore.Server;
 using Grpc.AspNetCore.Server.Model;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using ServiceModel.Grpc;
 using ServiceModel.Grpc.AspNetCore.Internal;
 
@@ -45,9 +46,11 @@ namespace Microsoft.Extensions.DependencyInjection
             if (configure != null)
             {
                 services.Configure(configure);
+                services.TryAddTransient<IPostConfigureOptions<GrpcServiceOptions>, PostConfigureGrpcServiceOptions>();
             }
 
             var builder = services.AddGrpc();
+            services.TryAddSingleton<HostMarkerService>();
             services.TryAddEnumerable(ServiceDescriptor.Transient(typeof(IServiceMethodProvider<>), typeof(ServiceModelServiceMethodProvider<>)));
             return builder;
         }
@@ -86,6 +89,8 @@ namespace Microsoft.Extensions.DependencyInjection
             configure.AssertNotNull(nameof(configure));
 
             services.Configure(configure);
+            services.TryAddTransient<IPostConfigureOptions<GrpcServiceOptions<TService>>, PostConfigureGrpcServiceOptions<TService>>();
+
             return services;
         }
     }

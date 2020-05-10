@@ -32,7 +32,7 @@ namespace ServiceModel.Grpc.SelfHost.Internal
             IMarshallerFactory marshallerFactory,
             Func<TService> serviceFactory,
             ServerServiceDefinition.Builder builder)
-            : base(logger, marshallerFactory)
+            : base(logger, marshallerFactory, string.Empty)
         {
             _serviceFactory = serviceFactory;
             _builder = builder;

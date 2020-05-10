@@ -5,15 +5,17 @@ Helps to migrate existing WCF solution to gRPC with minimum effort.
 
 ## Links
 
-- getting started tutorial [create a gRPC client and server](CreateClientAndServerASPNETCore.md)
-- [migrate from WCF to a gRPC tutorial](MigrateWCFServiceTogRPC.md)
+- getting started [tutorial](CreateClientAndServerASPNETCore.md) create a gRPC client and server
 - [service and operation names](ServiceAndOperationName.md)
 - [service and operation bindings](ServiceAndOperationBinding.md)
 - [client configuration](ClientConfiguration.md)
 - [ASP.NET Core server configuration](ASPNETCoreServerConfiguration.md)
 - [Grpc.Core server configuration](GrpcCoreServerConfiguration.md)
+- error handler general [information](error-handling-general.md)
+- global error handling in gRPC [tutorial](global-error-handling.md)
 - [compatibility with native gRPC](CompatibilityWithNativegRPC.md)
-- example [protobuf marshaller](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/ProtobufMarshaller)
+- migrate from WCF to a gRPC [tutorial](MigrateWCFServiceTogRPC.md)
+- [example](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/ProtobufMarshaller) protobuf marshaller
 
 ### standard gRPC approach
 

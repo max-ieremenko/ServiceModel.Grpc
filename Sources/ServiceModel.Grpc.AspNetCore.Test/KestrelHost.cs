@@ -37,21 +37,19 @@ namespace ServiceModel.Grpc.AspNetCore
         public KestrelHost(
             IMarshallerFactory marshallerFactory = null,
             int port = 8080,
-            CallOptions? defaultCallOptions = null)
+            Action<ServiceModelGrpcClientOptions> configure = null)
         {
             _marshallerFactory = marshallerFactory;
             _port = port;
 
             var factoryOptions = new ServiceModelGrpcClientOptions { MarshallerFactory = _marshallerFactory };
-            if (defaultCallOptions.HasValue)
-            {
-                factoryOptions.DefaultCallOptionsFactory = () => defaultCallOptions.Value;
-            }
+            configure?.Invoke(factoryOptions);
 
             ClientFactory = new ClientFactory(factoryOptions);
+            Channel = new GrpcChannel("localhost", _port, ChannelCredentials.Insecure);
         }
 
-        public GrpcChannel Channel { get; private set; }
+        public GrpcChannel Channel { get; }
 
         public IClientFactory ClientFactory { get; }
 
@@ -74,7 +72,6 @@ namespace ServiceModel.Grpc.AspNetCore
                 })
                 .Build();
 
-            Channel = new GrpcChannel("localhost", _port, ChannelCredentials.Insecure);
             await _host.StartAsync();
         }
 

@@ -35,7 +35,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         [OneTimeSetUp]
         public void BeforeAllTest()
         {
-            var sut = new GrpcServiceBuilder(typeof(IGenericContract<int, string>), DataContractMarshallerFactory.Default);
+            var sut = new GrpcServiceBuilder(typeof(IGenericContract<int, string>), DataContractMarshallerFactory.Default, nameof(GrpcServiceBuilderGenericTest));
 
             foreach (var method in ReflectionTools.GetMethods(typeof(IGenericContract<int, string>)))
             {

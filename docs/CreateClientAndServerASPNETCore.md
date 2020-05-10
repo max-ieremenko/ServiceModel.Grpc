@@ -224,3 +224,7 @@ public static class Program
 ## Run application
 
 Run "Service" and then "Client"
+
+## What is next
+
+Configure custom [error handling](global-error-handling.md).
