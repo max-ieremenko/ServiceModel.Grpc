@@ -139,6 +139,9 @@ Any number of request parameters
 ``` c#
 [OperationContract]
 IAsyncEnumerable<int> EnumerableRange(int start, int count);
+
+[OperationContract]
+Task<IAsyncEnumerable<int>> EnumerableRange(int start, int count);
 ```
 
 #### DuplexStreaming operation
@@ -147,6 +150,10 @@ IAsyncEnumerable<int> EnumerableRange(int start, int count);
 // call is compatible with native gRPC
 [OperationContract]
 IAsyncEnumerable<int> MultiplyBy2(IAsyncEnumerable<int> values);
+
+// call is compatible with native gRPC
+[OperationContract]
+Task<IAsyncEnumerable<int>> MultiplyBy2(IAsyncEnumerable<int> values);
 ```
 
 ServiceModel.Grpc supports any number of extra request parameters, but this call is not fully compatible with native gRPC call.
@@ -155,6 +162,10 @@ ServiceModel.Grpc supports any number of extra request parameters, but this call
 // call is not fully compatible with native gRPC
 [OperationContract]
 IAsyncEnumerable<int> MultiplyBy(IAsyncEnumerable<int> values, int multiplier);
+
+// call is not fully compatible with native gRPC
+[OperationContract]
+Task<IAsyncEnumerable<int>> MultiplyBy(IAsyncEnumerable<int> values, int multiplier);
 ```
 
 #### Context parameters
