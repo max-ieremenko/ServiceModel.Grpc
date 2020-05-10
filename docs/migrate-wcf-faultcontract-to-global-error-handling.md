@@ -4,7 +4,7 @@ This tutorial proposes a solution how to migrate an existing WCF FaultContract e
 
 How to migrate an existing WCF service and client is described [here](MigrateWCFServiceTogRPC.md).
 
-How to activate and configure custom error handling in gRPC is described in this [here](global-error-handling.md).
+How to activate and configure custom error handling in gRPC is described [here](global-error-handling.md).
 
 [View sample code](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFFaultContractTogRpc).
 
