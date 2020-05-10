@@ -133,3 +133,7 @@ var proxy = DefaultClientFactory.CreateClient<IPersonService>(aspNetCoreChannel)
 ## Summary
 
 In order to migrate WCF service and client to gRPC with ServiceModel.Grpc only the service hosting has to changed and the way how to create a proxy.
+
+## What is next
+
+Migrate FaultContract exception handling to a gRPC global [error handling](migrate-wcf-faultcontract-to-global-error-handling.md).

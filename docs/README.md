@@ -15,6 +15,7 @@ Helps to migrate existing WCF solution to gRPC with minimum effort.
 - global error handling in gRPC [tutorial](global-error-handling.md)
 - [compatibility with native gRPC](CompatibilityWithNativegRPC.md)
 - migrate from WCF to a gRPC [tutorial](MigrateWCFServiceTogRPC.md)
+- migrate from WCF FaultContract to a gRPC global error handling [tutorial](migrate-wcf-faultcontract-to-global-error-handling.md)
 - [example](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/ProtobufMarshaller) protobuf marshaller
 
 ### standard gRPC approach
