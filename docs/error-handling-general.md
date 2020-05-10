@@ -101,7 +101,7 @@ public void ThrowOrIgnore(ClientCallInterceptorContext context, ClientFaultDetai
 
 ## Operation cancelled
 
-There are few corner case with custom exception handling when a call is cancelled.
+There are few corner cases with custom exception handling when a call is cancelled.
 
 The following code asks gRPC API to cancel call after 1 second.
 

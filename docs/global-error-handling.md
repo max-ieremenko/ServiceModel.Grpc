@@ -107,7 +107,7 @@ catch (UnexpectedErrorException ex)
 ## Create server error handlers
 
 A server-side error handler is an implementation of interface `IServerErrorHandler` with one method `ProvideFaultOrIgnore`.
-If the method returns `null`, the exception is processed by gRPC API, otherwise ServiceModel.Grpc throws an `RpcException` bases on `ServerFaultDetail`.
+If the method returns `null`, the exception is processed by gRPC API, otherwise ServiceModel.Grpc throws an `RpcException` based on `ServerFaultDetail`.
 
 To meet the requirements we implement two error handlers. The first one `ApplicationExceptionServerHandler` is responsible to process `ApplicationException`.
 
