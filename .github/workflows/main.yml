@@ -53,8 +53,14 @@ jobs:
       shell: pwsh
       run: .\Build\step-pack-test.ps1
 
-    - name: Publish artifacts
+    - name: Artifact nuget packages
       uses: actions/upload-artifact@v2
       with:
-        name: NuGet packages
+        name: nuget-packages
         path: .\build-out\*.nupkg
+
+    - name: Artifact nuget package symbols
+      uses: actions/upload-artifact@v2
+      with:
+        name: nuget-package-symbols
+        path: .\build-out\*.snupkg

@@ -33,6 +33,11 @@ function Test-Package {
     }
 
     Test-NuGetSpec $nuspecFile.FullName
+
+    $symbolFileName = [System.IO.Path]::ChangeExtension($PackageFileName, ".snupkg")
+    if (-not (Test-Path $symbolFileName)) {
+        throw ("Symbol package " + $symbolFileName + " not found")
+    }
 }
 
 function Test-FileExists {
