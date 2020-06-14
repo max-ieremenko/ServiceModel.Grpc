@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore:
+      - 'docs/**'
+      - 'Examples/**'
+      - '**.md'
+  pull_request:
+    branches: [ master ]
+    paths-ignore:
+      - 'docs/**'
+      - 'Examples/**'
+      - '**.md'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install ThirdPartyLibraries
+      shell: cmd
+      run: dotnet tool install --global ThirdPartyLibraries.GlobalTool
+
+    - name: Build
+      shell: pwsh
+      run: .\Build\step-build.ps1
+
+    - name: ThirdPartyNotices
+      shell: pwsh
+      run: .\Build\step-third-party-notices.ps1
+
+    - name: Unit test net461
+      shell: pwsh
+      run: .\Build\step-unit-test.ps1 net461
+
+    - name: Unit test netcoreapp2.1
+      shell: pwsh
+      run: .\Build\step-unit-test.ps1 netcoreapp2.1
+
+    - name: Unit test netcoreapp3.1
+      shell: pwsh
+      run: .\Build\step-unit-test.ps1 netcoreapp3.1
+
+    - name: Pack
+      shell: pwsh
+      run: .\Build\step-pack.ps1
+
+    - name: Pack test
+      shell: pwsh
+      run: .\Build\step-pack-test.ps1
+
+    - name: Publish artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: NuGet packages
+        path: .\build-out\*.nupkg

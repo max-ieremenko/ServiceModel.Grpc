@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Grpc.Net.Common</id>
+    <version>2.28.0</version>
+    <authors>The gRPC Authors</authors>
+    <owners>The gRPC Authors</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>packageIcon.png</icon>
+    <projectUrl>https://github.com/grpc/grpc-dotnet</projectUrl>
+    <description>Infrastructure for common functionality in gRPC</description>
+    <copyright>Copyright 2019 The gRPC Authors</copyright>
+    <tags>gRPC RPC HTTP/2</tags>
+    <repository type="git" url="https://github.com/grpc/grpc-dotnet.git" commit="e226869d01a2f66d37242cbf16cf72353a1dc941" />
+    <dependencies>
+      <group targetFramework=".NETStandard2.1">
+        <dependency id="Grpc.Core.Api" version="2.27.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

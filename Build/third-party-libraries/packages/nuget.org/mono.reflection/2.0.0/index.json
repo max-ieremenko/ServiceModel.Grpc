@@ -1,0 +1,31 @@
+{
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "Core",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp2.1",
+        "netcoreapp3.1",
+        "net461"
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": null,
+      "HRef": "http://opensource.org/licenses/mit-license.php",
+      "Description": "License should be verified on http://opensource.org/licenses/mit-license.php"
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "http://github.com/jbevain/mono.reflection/",
+      "Description": "License should be verified on http://github.com/jbevain/mono.reflection/"
+    }
+  ]
+}

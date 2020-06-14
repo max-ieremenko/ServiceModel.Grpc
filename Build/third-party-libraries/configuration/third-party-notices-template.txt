@@ -1,0 +1,20 @@
+﻿ServiceModel.Grpc
+*****************
+
+THIRD-PARTY SOFTWARE NOTICES AND INFORMATION
+
+{% for package in Packages -%}
+{{package.Name}} ({{package.HRef}})
+{%- if package.Author -%}
+    Authors: {{package.Author}}
+{%- endif -%}
+{%- if package.Copyright -%}
+	Copyright: {{package.Copyright}}
+{%- endif -%}
+	License: {{package.License.FullName}}, full text can be found at{% for i in package.License.HRefs %} {{i}}{% endfor %}
+{%- if package.ThirdPartyNotices -%}
+
+{{package.ThirdPartyNotices}}
+{%- endif -%}
+
+{% endfor -%}

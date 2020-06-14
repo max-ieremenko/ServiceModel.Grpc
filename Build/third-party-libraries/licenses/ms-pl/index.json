@@ -1,0 +1,9 @@
+{
+  "Code": "MS-PL",
+  "FullName": "Microsoft Public License",
+  "RequiresApproval": false,
+  "RequiresThirdPartyNotices": false,
+  "HRef": "https://spdx.org/licenses/MS-PL",
+  "FileName": "license.txt",
+  "Dependencies": []
+}

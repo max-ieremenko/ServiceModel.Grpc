@@ -1,0 +1,35 @@
+{
+  "License": {
+    "Code": "Google.Protobuf",
+    "Status": "Approved"
+  },
+  "UsedBy": [
+    {
+      "Name": "AspNetCore",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1"
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": null,
+      "HRef": "https://github.com/protocolbuffers/protobuf/blob/master/LICENSE",
+      "Description": "License should be verified on https://github.com/protocolbuffers/protobuf/blob/master/LICENSE"
+    },
+    {
+      "Subject": "repository",
+      "Code": null,
+      "HRef": "https://github.com/protocolbuffers/protobuf.git",
+      "Description": "License should be verified on https://github.com/protocolbuffers/protobuf.git"
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "https://github.com/protocolbuffers/protobuf",
+      "Description": "License should be verified on https://github.com/protocolbuffers/protobuf"
+    }
+  ]
+}

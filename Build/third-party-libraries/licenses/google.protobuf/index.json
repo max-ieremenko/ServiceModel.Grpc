@@ -1,0 +1,9 @@
+{
+  "Code": "Google.Protobuf",
+  "FullName": "Google Protobuf License",
+  "RequiresApproval": true,
+  "RequiresThirdPartyNotices": false,
+  "HRef": "https://github.com/protocolbuffers/protobuf/blob/master/LICENSE",
+  "FileName": "license.txt",
+  "Dependencies": []
+}

@@ -1,0 +1,37 @@
+{
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "Core",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net461",
+        "netstandard2.0",
+        "netstandard2.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Threading.Tasks.Extensions",
+          "Version": "4.5.2"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT",
+      "Description": null
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "https://github.com/dotnet/corefx",
+      "Description": "License should be verified on https://github.com/dotnet/corefx"
+    }
+  ]
+}

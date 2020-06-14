@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.IdentityModel.Protocols</id>
+    <version>5.5.0</version>
+    <authors>Microsoft</authors>
+    <owners>Microsoft</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <projectUrl>https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet</projectUrl>
+    <description>Provides base protocol support for OpenIdConnect and WsFederation.</description>
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <tags>.NET Windows Authentication Identity OpenIdConnect WsFederation</tags>
+    <serviceable>true</serviceable>
+    <repository type="git" url="https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet" commit="5810cd81dd3d7a802f111005f42990dc8ebb0aa7" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.5">
+        <dependency id="Microsoft.IdentityModel.Logging" version="5.5.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.IdentityModel.Tokens" version="5.5.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETFramework4.5.1">
+        <dependency id="Microsoft.IdentityModel.Logging" version="5.5.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.IdentityModel.Tokens" version="5.5.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETFramework4.6.1">
+        <dependency id="Microsoft.IdentityModel.Logging" version="5.5.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.IdentityModel.Tokens" version="5.5.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard1.4">
+        <dependency id="Microsoft.IdentityModel.Logging" version="5.5.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.IdentityModel.Tokens" version="5.5.0" exclude="Build,Analyzers" />
+        <dependency id="NETStandard.Library" version="2.0.3" exclude="Build,Analyzers" />
+        <dependency id="System.Collections.Specialized" version="4.3.0" exclude="Build,Analyzers" />
+        <dependency id="System.Diagnostics.Contracts" version="4.3.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Microsoft.IdentityModel.Logging" version="5.5.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.IdentityModel.Tokens" version="5.5.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="Microsoft.CSharp" targetFramework=".NETFramework4.5, .NETFramework4.5.1, .NETFramework4.6.1" />
+      <frameworkAssembly assemblyName="System.Net.Http" targetFramework=".NETFramework4.5, .NETFramework4.5.1, .NETFramework4.6.1" />
+    </frameworkAssemblies>
+  </metadata>
+</package>

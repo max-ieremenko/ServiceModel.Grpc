@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Google.Protobuf</id>
+    <version>3.11.4</version>
+    <authors>Google Inc.</authors>
+    <owners>Google Inc.</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://github.com/protocolbuffers/protobuf/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/protocolbuffers/protobuf</projectUrl>
+    <description>C# runtime library for Protocol Buffers - Google's data interchange format.</description>
+    <releaseNotes>C# proto3 support</releaseNotes>
+    <copyright>Copyright 2015, Google Inc.</copyright>
+    <tags>Protocol Buffers Binary Serialization Format Google proto proto3</tags>
+    <repository type="git" url="https://github.com/protocolbuffers/protobuf.git" commit="1f2d6bf4b5f6e7cada0c3598a3c64b2966ebb28e" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.5">
+        <dependency id="System.Memory" version="4.5.2" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard1.0">
+        <dependency id="NETStandard.Library" version="1.6.1" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="System.Memory" version="4.5.2" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

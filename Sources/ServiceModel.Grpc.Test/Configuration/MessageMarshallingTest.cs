@@ -39,9 +39,11 @@ namespace ServiceModel.Grpc.Configuration
         [TestCaseSource(nameof(GetMessages))]
         public void ProtobufTest(object value) => RunTest(value, nameof(ProtobufClone));
 
+#if !NETCOREAPP2_1
         [Test]
         [TestCaseSource(nameof(GetMessages))]
         public void JsonTest(object value) => RunTest(value, nameof(JsonClone));
+#endif
 
         private static void RunTest(object value, string cloneMethodName)
         {

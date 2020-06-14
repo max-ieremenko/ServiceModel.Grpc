@@ -1,0 +1,45 @@
+{
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "AspNetCore",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.IdentityModel.Logging",
+          "Version": "5.5.0"
+        },
+        {
+          "Name": "Microsoft.IdentityModel.Tokens",
+          "Version": "5.5.0"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT",
+      "Description": null
+    },
+    {
+      "Subject": "repository",
+      "Code": null,
+      "HRef": "https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet",
+      "Description": "License should be verified on https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet"
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet",
+      "Description": "License should be verified on https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet"
+    }
+  ]
+}

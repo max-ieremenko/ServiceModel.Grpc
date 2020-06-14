@@ -1,0 +1,37 @@
+{
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "Core",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp2.1",
+        "netcoreapp3.1",
+        "net461"
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": null,
+      "HRef": null,
+      "Description": null
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/nunit/nunit",
+      "Description": null
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "https://nunit.org/",
+      "Description": "License should be verified on https://nunit.org/"
+    }
+  ]
+}

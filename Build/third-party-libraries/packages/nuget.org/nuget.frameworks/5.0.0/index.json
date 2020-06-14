@@ -1,0 +1,53 @@
+{
+  "License": {
+    "Code": "Apache-2.0",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "Core",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp2.1",
+        "netcoreapp3.1",
+        "net461"
+      ]
+    },
+    {
+      "Name": "AspNetCore",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1"
+      ]
+    },
+    {
+      "Name": "SelfHost",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp2.1",
+        "netcoreapp3.1",
+        "net461"
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "Apache-2.0",
+      "HRef": "https://licenses.nuget.org/Apache-2.0",
+      "Description": null
+    },
+    {
+      "Subject": "repository",
+      "Code": null,
+      "HRef": "https://github.com/NuGet/NuGet.Client",
+      "Description": "License should be verified on https://github.com/NuGet/NuGet.Client"
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "https://aka.ms/nugetprj",
+      "Description": "License should be verified on https://aka.ms/nugetprj"
+    }
+  ]
+}
