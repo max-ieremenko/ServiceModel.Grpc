@@ -4,12 +4,12 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
-	
-	<LangVersion>8.0</LangVersion>
+    
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup>
-    <ServiceModelGrpcVersion>1.1.0</ServiceModelGrpcVersion>
+    <ServiceModelGrpcVersion>1.1.1</ServiceModelGrpcVersion>
   </PropertyGroup>
   
 </Project>
