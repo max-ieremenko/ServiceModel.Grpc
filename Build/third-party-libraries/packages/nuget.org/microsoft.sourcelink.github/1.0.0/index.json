@@ -6,37 +6,32 @@
   "UsedBy": [
     {
       "Name": "Core",
-      "InternalOnly": true,
+      "InternalOnly": false,
       "TargetFrameworks": [
         "net461",
         "netstandard2.0",
-        "netstandard2.1",
-        "netcoreapp2.1",
-        "netcoreapp3.1"
+        "netstandard2.1"
       ]
     },
     {
       "Name": "AspNetCore",
-      "InternalOnly": true,
+      "InternalOnly": false,
       "TargetFrameworks": [
-        "netcoreapp3.0",
-        "netcoreapp3.1"
+        "netcoreapp3.0"
       ]
     },
     {
       "Name": "SelfHost",
-      "InternalOnly": true,
+      "InternalOnly": false,
       "TargetFrameworks": [
         "net461",
         "netstandard2.0",
-        "netstandard2.1",
-        "netcoreapp2.1",
-        "netcoreapp3.1"
+        "netstandard2.1"
       ]
     },
     {
       "Name": "ProtoBuf",
-      "InternalOnly": true,
+      "InternalOnly": false,
       "TargetFrameworks": [
         "net461",
         "netstandard2.0",
@@ -52,10 +47,16 @@
       "Description": null
     },
     {
+      "Subject": "repository",
+      "Code": "Apache-2.0",
+      "HRef": "https://github.com/dotnet/sourcelink",
+      "Description": null
+    },
+    {
       "Subject": "project",
-      "Code": null,
-      "HRef": "https://github.com/DotNetAnalyzers/StyleCopAnalyzers",
-      "Description": "License should be verified on https://github.com/DotNetAnalyzers/StyleCopAnalyzers"
+      "Code": "Apache-2.0",
+      "HRef": "https://github.com/dotnet/sourcelink",
+      "Description": null
     }
   ]
 }

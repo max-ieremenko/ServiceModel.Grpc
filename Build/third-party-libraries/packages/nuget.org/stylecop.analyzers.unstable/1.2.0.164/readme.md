@@ -1,4 +1,4 @@
-StyleCop.Analyzers [1.1.118](https://www.nuget.org/packages/StyleCop.Analyzers/1.1.118)
+StyleCop.Analyzers.Unstable [1.2.0.164](https://www.nuget.org/packages/StyleCop.Analyzers.Unstable/1.2.0.164)
 --------------------
 
 Used by: AspNetCore internal, Core internal, ProtoBuf internal, SelfHost internal
@@ -8,7 +8,7 @@ Target frameworks: net461, netcoreapp2.1, netcoreapp3.0, netcoreapp3.1, netstand
 License: [Apache-2.0](../../../../licenses/apache-2.0) 
 
 - package license: [Apache-2.0](https://licenses.nuget.org/Apache-2.0) 
-- project license: [Unknown](https://github.com/DotNetAnalyzers/StyleCopAnalyzers) , License should be verified on https://github.com/DotNetAnalyzers/StyleCopAnalyzers
+- project license: [MIT](https://github.com/DotNetAnalyzers/StyleCopAnalyzers) , License should be verified on https://github.com/DotNetAnalyzers/StyleCopAnalyzers
 
 Description
 -----------
