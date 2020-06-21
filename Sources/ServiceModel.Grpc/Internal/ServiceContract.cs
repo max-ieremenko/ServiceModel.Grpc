@@ -67,8 +67,8 @@ namespace ServiceModel.Grpc.Internal
         {
             var attributeType = serviceContractAttribute.GetType();
 
-            var @namespace = (string)attributeType.TryInstanceProperty("Namespace")?.GetValue(serviceContractAttribute);
-            var name = (string)attributeType.TryInstanceProperty("Name")?.GetValue(serviceContractAttribute);
+            var @namespace = (string?)attributeType.TryInstanceProperty("Namespace")?.GetValue(serviceContractAttribute);
+            var name = (string?)attributeType.TryInstanceProperty("Name")?.GetValue(serviceContractAttribute);
 
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -77,7 +77,7 @@ namespace ServiceModel.Grpc.Internal
 
             if (string.IsNullOrWhiteSpace(@namespace))
             {
-                return name;
+                return name!;
             }
 
             return @namespace + "." + name;
@@ -85,11 +85,11 @@ namespace ServiceModel.Grpc.Internal
 
         internal static string GetServiceOperationName(string methodName, Attribute operationContractAttribute)
         {
-            var name = (string)operationContractAttribute
+            var name = (string?)operationContractAttribute
                 .GetType()
                 .TryInstanceProperty("Name")
                 ?.GetValue(operationContractAttribute);
-            return string.IsNullOrWhiteSpace(name) ? methodName : name;
+            return string.IsNullOrWhiteSpace(name) ? methodName : name!;
         }
 
         private static Attribute GetServiceContractAttribute(Type type)

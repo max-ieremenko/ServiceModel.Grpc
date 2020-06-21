@@ -32,7 +32,7 @@ namespace ServiceModel.Grpc.Internal
     [TestFixture]
     public class MessageAssemblerTest
     {
-        private Mock<MethodInfo> _method;
+        private Mock<MethodInfo> _method = null!;
 
         [SetUp]
         public void BeforeEachTest()

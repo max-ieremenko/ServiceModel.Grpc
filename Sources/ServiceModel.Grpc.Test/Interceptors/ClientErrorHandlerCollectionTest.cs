@@ -26,12 +26,12 @@ namespace ServiceModel.Grpc.Interceptors
     [TestFixture]
     public class ClientErrorHandlerCollectionTest
     {
-        private ClientErrorHandlerCollection _sut;
-        private CancellationTokenSource _tokenSource;
+        private ClientErrorHandlerCollection _sut = null!;
+        private CancellationTokenSource _tokenSource = null!;
         private ClientFaultDetail _faultDetail;
         private ClientCallInterceptorContext _callContext;
-        private Mock<IClientErrorHandler> _errorHandler1;
-        private Mock<IClientErrorHandler> _errorHandler2;
+        private Mock<IClientErrorHandler> _errorHandler1 = null!;
+        private Mock<IClientErrorHandler> _errorHandler2 = null!;
 
         [SetUp]
         public void BeforeEachTest()

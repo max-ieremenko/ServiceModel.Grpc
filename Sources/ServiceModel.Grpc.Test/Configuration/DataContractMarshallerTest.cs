@@ -43,7 +43,7 @@ namespace ServiceModel.Grpc.Configuration
             byte[] content;
             using (var serializationContext = new DefaultSerializationContext())
             {
-                DataContractMarshaller<string>.Default.ContextualSerializer(null, serializationContext);
+                DataContractMarshaller<string>.Default.ContextualSerializer(null!, serializationContext);
                 content = serializationContext.GetContent();
             }
 

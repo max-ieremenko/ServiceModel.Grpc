@@ -31,9 +31,9 @@ namespace ServiceModel.Grpc.Internal.Emit
     [TestFixture]
     public class GrpcServiceClientBuilderTest
     {
-        private Func<IContract> _factory;
-        private Mock<CallInvoker> _callInvoker;
-        private CancellationTokenSource _tokenSource;
+        private Func<IContract> _factory = null!;
+        private Mock<CallInvoker> _callInvoker = null!;
+        private CancellationTokenSource _tokenSource = null!;
 
         [OneTimeSetUp]
         public void BeforeAllTests()

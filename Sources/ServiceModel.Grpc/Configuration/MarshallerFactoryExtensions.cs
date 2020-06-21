@@ -24,7 +24,7 @@ namespace ServiceModel.Grpc.Configuration
     internal static class MarshallerFactoryExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IMarshallerFactory ThisOrDefault(this IMarshallerFactory factory)
+        public static IMarshallerFactory ThisOrDefault(this IMarshallerFactory? factory)
         {
             return factory ?? DataContractMarshallerFactory.Default;
         }
@@ -73,7 +73,8 @@ namespace ServiceModel.Grpc.Configuration
 
         private static object DeserializeInternal<T>(IMarshallerFactory factory, byte[] content)
         {
-            return factory.CreateMarshaller<T>().ContextualDeserializer(new DefaultDeserializationContext(content));
+            var result = factory.CreateMarshaller<T>().ContextualDeserializer(new DefaultDeserializationContext(content));
+            return result!;
         }
     }
 }

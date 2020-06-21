@@ -15,7 +15,6 @@
 // </copyright>
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -29,15 +28,15 @@ namespace ServiceModel.Grpc.Internal.Emit
 {
     internal sealed class GrpcServiceClientBuilder : IServiceClientBuilder
     {
-        private TypeBuilder _typeBuilder;
-        private FieldBuilder _defaultCallOptions;
-        private ILGenerator _defineGrpcMethod;
+        private TypeBuilder _typeBuilder = null!;
+        private FieldBuilder _defaultCallOptions = null!;
+        private ILGenerator _defineGrpcMethod = null!;
 
-        public IMarshallerFactory MarshallerFactory { get; set; }
+        public IMarshallerFactory MarshallerFactory { get; set; } = null!;
 
-        public Func<CallOptions> DefaultCallOptionsFactory { get; set; }
+        public Func<CallOptions>? DefaultCallOptionsFactory { get; set; }
 
-        public ILogger Logger { get; set; }
+        public ILogger? Logger { get; set; }
 
         public Func<CallInvoker, TContract> Build<TContract>(string factoryId)
         {
@@ -46,7 +45,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             lock (ProxyAssembly.SyncRoot)
             {
                 BuildCore(typeof(TContract), factoryId);
-                implementationType = _typeBuilder.CreateTypeInfo();
+                implementationType = _typeBuilder.CreateTypeInfo()!;
             }
 
             return CreateFactory<TContract>(implementationType);
@@ -133,7 +132,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             return Expression.Lambda<Func<CallInvoker, TContract>>(ctor, callInvoker).Compile();
         }
 
-        private FieldBuilder InitializeHeadersMarshaller(Type interfaceType, MessageAssembler message)
+        private FieldBuilder? InitializeHeadersMarshaller(Type interfaceType, MessageAssembler message)
         {
             if (message.HeaderRequestType == null)
             {
@@ -358,7 +357,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ret);
         }
 
-        private void BuildClientStreaming(ILGenerator body, MessageAssembler message, FieldBuilder grpcMethodFiled, FieldBuilder headersMarshallerFiled)
+        private void BuildClientStreaming(ILGenerator body, MessageAssembler message, FieldBuilder grpcMethodFiled, FieldBuilder? headersMarshallerFiled)
         {
             body.DeclareLocal(typeof(CallOptions)); // var options
             body.DeclareLocal(typeof(CallOptionsBuilder)); // var optionsBuilder
@@ -392,7 +391,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ret);
         }
 
-        private void BuildDuplexStreaming(ILGenerator body, MessageAssembler message, FieldBuilder grpcMethodFiled, FieldBuilder headersMarshallerFiled)
+        private void BuildDuplexStreaming(ILGenerator body, MessageAssembler message, FieldBuilder grpcMethodFiled, FieldBuilder? headersMarshallerFiled)
         {
             body.DeclareLocal(typeof(CallOptions)); // var options
             body.DeclareLocal(typeof(CallOptionsBuilder)); // var optionsBuilder
@@ -435,7 +434,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ret);
         }
 
-        private void InitializeCallOptionsVariable(ILGenerator body, MessageAssembler message, FieldBuilder headersMarshallerFiled)
+        private void InitializeCallOptionsVariable(ILGenerator body, MessageAssembler message, FieldBuilder? headersMarshallerFiled)
         {
             // optionsBuilder = new CallOptionsBuilder(DefaultOptions)
             body.Emit(OpCodes.Ldsfld, _defaultCallOptions); // DefaultOptions
@@ -462,7 +461,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                     body.EmitLdarg(i + 1); // parameter
                 }
 
-                body.Emit(OpCodes.Newobj, message.HeaderRequestType.Constructor(message.HeaderRequestType.GenericTypeArguments)); // new Message<>
+                body.Emit(OpCodes.Newobj, message.HeaderRequestType!.Constructor(message.HeaderRequestType!.GenericTypeArguments)); // new Message<>
                 body.Emit(OpCodes.Call, typeof(CallOptionsBuilder).InstanceMethod(nameof(CallOptionsBuilder.WithMethodInputHeader)).MakeGenericMethod(message.HeaderRequestType)); // .With
                 body.Emit(OpCodes.Stloc_1);
             }

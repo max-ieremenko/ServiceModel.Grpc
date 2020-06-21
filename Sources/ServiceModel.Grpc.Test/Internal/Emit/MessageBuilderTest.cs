@@ -61,9 +61,9 @@ namespace ServiceModel.Grpc.Internal.Emit
                 property.PropertyType.ShouldBe(typeArguments[i]);
 
                 property.GetMethod.ShouldNotBeNull();
-                property.GetMethod.IsPublic.ShouldBeTrue();
+                property.GetMethod!.IsPublic.ShouldBeTrue();
                 property.SetMethod.ShouldNotBeNull();
-                property.SetMethod.IsPublic.ShouldBeTrue();
+                property.SetMethod!.IsPublic.ShouldBeTrue();
 
                 if (i == 255)
                 {
@@ -76,7 +76,7 @@ namespace ServiceModel.Grpc.Internal.Emit
 
                 var dataMember = property.GetCustomAttribute<DataMemberAttribute>();
                 dataMember.ShouldNotBeNull();
-                dataMember.Name.ShouldBe("v" + (i + 1));
+                dataMember!.Name.ShouldBe("v" + (i + 1));
                 dataMember.Order.ShouldBe(i + 1);
             }
         }

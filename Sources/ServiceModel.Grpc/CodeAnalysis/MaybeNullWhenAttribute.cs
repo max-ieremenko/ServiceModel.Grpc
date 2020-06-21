@@ -14,24 +14,15 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-
-namespace ServiceModel.Grpc.Internal
+#if !NETSTANDARD2_1
+namespace System.Diagnostics.CodeAnalysis
 {
-    internal sealed class InterfaceDescription
+    [AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
+    internal sealed class MaybeNullWhenAttribute : Attribute
     {
-        public InterfaceDescription(Type interfaceType)
-        {
-            InterfaceType = interfaceType;
-        }
+        public MaybeNullWhenAttribute(bool returnValue) => ReturnValue = returnValue;
 
-        public Type InterfaceType { get; }
-
-        public IList<MethodDescription> Methods { get; } = new List<MethodDescription>();
-
-        public IList<OperationDescription> Operations { get; } = new List<OperationDescription>();
-
-        public IList<MethodDescription> NotSupportedOperations { get; } = new List<MethodDescription>();
+        public bool ReturnValue { get; }
     }
 }
+#endif

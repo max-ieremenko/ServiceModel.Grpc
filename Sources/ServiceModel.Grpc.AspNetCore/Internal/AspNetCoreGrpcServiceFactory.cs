@@ -32,7 +32,7 @@ namespace ServiceModel.Grpc.AspNetCore.Internal
         public AspNetCoreGrpcServiceFactory(
             ILogger logger,
             ServiceMethodProviderContext<TService> context,
-            IMarshallerFactory marshallerFactory,
+            IMarshallerFactory? marshallerFactory,
             string hostId)
             : base(logger, marshallerFactory, hostId)
         {

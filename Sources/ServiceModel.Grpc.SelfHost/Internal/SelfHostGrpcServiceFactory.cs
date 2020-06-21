@@ -29,7 +29,7 @@ namespace ServiceModel.Grpc.SelfHost.Internal
 
         public SelfHostGrpcServiceFactory(
             ILogger logger,
-            IMarshallerFactory marshallerFactory,
+            IMarshallerFactory? marshallerFactory,
             Func<TService> serviceFactory,
             ServerServiceDefinition.Builder builder)
             : base(logger, marshallerFactory, string.Empty)

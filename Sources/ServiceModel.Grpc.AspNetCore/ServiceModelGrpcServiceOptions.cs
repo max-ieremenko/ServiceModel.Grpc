@@ -30,11 +30,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Gets or sets default factory for serializing and deserializing messages.
         /// </summary>
-        public IMarshallerFactory DefaultMarshallerFactory { get; set; }
+        public IMarshallerFactory? DefaultMarshallerFactory { get; set; }
 
         /// <summary>
         /// Gets or sets default factory for server call error handler.
         /// </summary>
-        public Func<IServiceProvider, IServerErrorHandler> DefaultErrorHandlerFactory { get; set; }
+        public Func<IServiceProvider, IServerErrorHandler>? DefaultErrorHandlerFactory { get; set; }
     }
 }

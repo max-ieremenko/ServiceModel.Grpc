@@ -18,9 +18,9 @@ namespace ServiceModel.Grpc.SelfHost.Internal
 {
     internal sealed class LogAdapter : ILogger
     {
-        private readonly global::Grpc.Core.Logging.ILogger _logger;
+        private readonly global::Grpc.Core.Logging.ILogger? _logger;
 
-        public LogAdapter(global::Grpc.Core.Logging.ILogger logger)
+        public LogAdapter(global::Grpc.Core.Logging.ILogger? logger)
         {
             _logger = logger;
         }

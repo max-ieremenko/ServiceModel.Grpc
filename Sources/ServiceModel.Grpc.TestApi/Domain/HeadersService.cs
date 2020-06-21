@@ -23,23 +23,23 @@ namespace ServiceModel.Grpc.TestApi.Domain
 {
     public sealed class HeadersService : IHeadersService
     {
-        public string GetRequestHeader(string headerName, CallContext context)
+        public string? GetRequestHeader(string headerName, CallContext? context)
         {
-            var header = context.ServerCallContext.RequestHeaders.FirstOrDefault(i => i.Key == headerName);
+            var header = context!.ServerCallContext!.RequestHeaders.FirstOrDefault(i => i.Key == headerName);
             return header?.Value;
         }
 
-        public async Task WriteResponseHeader(string headerName, string headerValue, CallContext context)
+        public async Task WriteResponseHeader(string headerName, string headerValue, CallContext? context)
         {
-            await context.ServerCallContext.WriteResponseHeadersAsync(new Metadata
+            await context!.ServerCallContext!.WriteResponseHeadersAsync(new Metadata
                 {
                     { headerName, headerValue }
                 });
         }
 
-        public async IAsyncEnumerable<int> ServerStreamingWriteResponseHeader(string headerName, string headerValue, CallContext context = default)
+        public async IAsyncEnumerable<int> ServerStreamingWriteResponseHeader(string headerName, string headerValue, CallContext? context)
         {
-            ServerCallContext serverContext = context;
+            ServerCallContext serverContext = context!;
             await serverContext.WriteResponseHeadersAsync(new Metadata
                 {
                     { headerName, headerValue }
@@ -52,9 +52,9 @@ namespace ServiceModel.Grpc.TestApi.Domain
             }
         }
 
-        public async Task<string> ClientStreaming(IAsyncEnumerable<int> values, CallContext context = default)
+        public async Task<string> ClientStreaming(IAsyncEnumerable<int> values, CallContext? context)
         {
-            var header = context.ServerCallContext.RequestHeaders.FirstOrDefault(i => i.Key == "h1");
+            var header = context!.ServerCallContext!.RequestHeaders.FirstOrDefault(i => i.Key == "h1");
 
             var list = await values.ToListAsync();
 
@@ -66,9 +66,9 @@ namespace ServiceModel.Grpc.TestApi.Domain
             return header.Value;
         }
 
-        public async IAsyncEnumerable<string> DuplexStreaming(IAsyncEnumerable<int> values, CallContext context = default)
+        public async IAsyncEnumerable<string> DuplexStreaming(IAsyncEnumerable<int> values, CallContext? context)
         {
-            var header = context.ServerCallContext.RequestHeaders.FirstOrDefault(i => i.Key == "h1");
+            var header = context!.ServerCallContext!.RequestHeaders.FirstOrDefault(i => i.Key == "h1");
 
             var list = await values.ToListAsync();
 

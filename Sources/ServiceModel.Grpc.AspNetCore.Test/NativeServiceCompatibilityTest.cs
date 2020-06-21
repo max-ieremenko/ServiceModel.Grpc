@@ -29,8 +29,8 @@ namespace ServiceModel.Grpc.AspNetCore
     [TestFixture]
     public partial class NativeServiceCompatibilityTest
     {
-        private KestrelHost _grpcHost;
-        private KestrelHost _serviceModelHost;
+        private KestrelHost _grpcHost = null!;
+        private KestrelHost _serviceModelHost = null!;
 
         [OneTimeSetUp]
         public async Task BeforeAll()

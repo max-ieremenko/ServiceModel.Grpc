@@ -24,11 +24,11 @@ namespace ServiceModel.Grpc.TestApi
 {
     public static class CallInvokerTestExtensions
     {
-        public static (Interceptor interceptor, CallInvoker callInvoker) ShouldBeIntercepted(this CallInvoker callInvoker)
+        public static (Interceptor Interceptor, CallInvoker CallInvoker) ShouldBeIntercepted(this CallInvoker callInvoker)
         {
             callInvoker.ShouldNotBeNull();
 
-            var interceptingCallInvokerType = Type.GetType("Grpc.Core.Interceptors.InterceptingCallInvoker, Grpc.Core.Api", true, false);
+            Type interceptingCallInvokerType = Type.GetType("Grpc.Core.Interceptors.InterceptingCallInvoker, Grpc.Core.Api", true, false)!;
             callInvoker.ShouldBeOfType(interceptingCallInvokerType);
 
             var interceptorField = interceptingCallInvokerType
@@ -39,8 +39,8 @@ namespace ServiceModel.Grpc.TestApi
                 .GetField("invoker", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
             invokerField.ShouldNotBeNull();
 
-            var interceptor = (Interceptor)interceptorField.GetValue(callInvoker);
-            var invoker = (CallInvoker)invokerField.GetValue(callInvoker);
+            var interceptor = (Interceptor)interceptorField!.GetValue(callInvoker)!;
+            var invoker = (CallInvoker)invokerField!.GetValue(callInvoker)!;
 
             return (interceptor, invoker);
         }

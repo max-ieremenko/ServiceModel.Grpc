@@ -26,8 +26,8 @@ namespace ServiceModel.Grpc.AspNetCore
     [TestFixture]
     public class MultipurposeServiceTest : MultipurposeServiceTestBase
     {
-        private KestrelHost _host;
-        private Greeter.GreeterClient _greeterService;
+        private KestrelHost _host = null!;
+        private Greeter.GreeterClient _greeterService = null!;
 
         [OneTimeSetUp]
         public async Task BeforeAll()

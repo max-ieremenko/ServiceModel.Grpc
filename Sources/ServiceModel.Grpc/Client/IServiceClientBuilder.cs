@@ -24,9 +24,9 @@ namespace ServiceModel.Grpc.Client
     {
         IMarshallerFactory MarshallerFactory { get; set; }
 
-        Func<CallOptions> DefaultCallOptionsFactory { get; set; }
+        Func<CallOptions>? DefaultCallOptionsFactory { get; set; }
 
-        ILogger Logger { get; set; }
+        ILogger? Logger { get; set; }
 
         Func<CallInvoker, TContract> Build<TContract>(string factoryId);
     }

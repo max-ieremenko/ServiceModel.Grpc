@@ -50,7 +50,7 @@ namespace ServiceModel.Grpc.Internal.Emit
 
         private static Type ResolveMessageType(int propertiesCount, string typeName)
         {
-            Type result;
+            Type? result;
             lock (ProxyAssembly.SyncRoot)
             {
                 result = ProxyAssembly.DefaultModule.GetType(typeName, false, false);
@@ -165,7 +165,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             }
 
             ctorBody.Emit(OpCodes.Ret);
-            return typeBuilder.CreateTypeInfo();
+            return typeBuilder.CreateTypeInfo()!;
         }
     }
 }

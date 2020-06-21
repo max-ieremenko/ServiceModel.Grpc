@@ -23,7 +23,7 @@ namespace ServiceModel.Grpc.Internal.IO
     [TestFixture]
     public class DefaultSerializationContextTest
     {
-        private DefaultSerializationContext _sut;
+        private DefaultSerializationContext _sut = null!;
 
         [SetUp]
         public void BeforeEachTest()

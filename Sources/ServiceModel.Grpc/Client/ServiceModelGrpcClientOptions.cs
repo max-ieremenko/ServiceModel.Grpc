@@ -29,23 +29,23 @@ namespace ServiceModel.Grpc.Client
         /// <summary>
         /// Gets or sets a factory for serializing and deserializing messages.
         /// </summary>
-        public IMarshallerFactory MarshallerFactory { get; set; }
+        public IMarshallerFactory? MarshallerFactory { get; set; }
 
         /// <summary>
         /// Gets or sets a methods which provides <see cref="CallOptions"/> for all calls made by all clients created by <see cref="IClientFactory"/>.
         /// </summary>
-        public Func<CallOptions> DefaultCallOptionsFactory { get; set; }
+        public Func<CallOptions>? DefaultCallOptionsFactory { get; set; }
 
         /// <summary>
         /// Gets or sets a client call error handler.
         /// </summary>
-        public IClientErrorHandler ErrorHandler { get; set; }
+        public IClientErrorHandler? ErrorHandler { get; set; }
 
         /// <summary>
         /// Gets or sets logger to handle possible output from <see cref="IClientFactory"/>.
         /// </summary>
-        public ILogger Logger { get; set; }
+        public ILogger? Logger { get; set; }
 
-        internal Func<IServiceClientBuilder> ClientBuilder { get; set; }
+        internal Func<IServiceClientBuilder>? ClientBuilder { get; set; }
     }
 }

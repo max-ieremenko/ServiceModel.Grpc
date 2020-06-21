@@ -98,7 +98,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 .WithCallContext(newOptions)
                 .Build();
 
-            actual.Headers.ShouldBe(newOptions.CallOptions.Value.Headers);
+            actual.Headers.ShouldBe(newOptions.CallOptions!.Value.Headers);
         }
 
         [Test]

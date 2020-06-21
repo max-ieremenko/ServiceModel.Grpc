@@ -27,10 +27,10 @@ namespace ServiceModel.Grpc.Internal.Emit
     [TestFixture]
     public class GrpcServiceClientBuilderGenericTest
     {
-        private Func<IGenericContract<int, string>> _factory;
-        private IGenericContract<int, string> _contract;
-        private Mock<CallInvoker> _callInvoker;
-        private LoggerMock _logger;
+        private Func<IGenericContract<int, string>> _factory = null!;
+        private IGenericContract<int, string> _contract = null!;
+        private Mock<CallInvoker> _callInvoker = null!;
+        private LoggerMock _logger = null!;
 
         [OneTimeSetUp]
         public void BeforeAllTests()

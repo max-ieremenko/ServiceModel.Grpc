@@ -27,11 +27,11 @@ namespace ServiceModel.Grpc.Interceptors.Internal
     [TestFixture]
     public class ClientCallErrorInterceptorTest
     {
-        private ClientCallErrorInterceptor _sut;
-        private Mock<IClientErrorHandler> _errorHandler;
-        private LoggerMock _logger;
+        private ClientCallErrorInterceptor _sut = null!;
+        private Mock<IClientErrorHandler> _errorHandler = null!;
+        private LoggerMock _logger = null!;
         private ClientCallInterceptorContext _context;
-        private RpcException _error;
+        private RpcException _error = null!;
 
         [SetUp]
         public void BeforeEachTest()
@@ -91,6 +91,9 @@ namespace ServiceModel.Grpc.Interceptors.Internal
             _error.Trailers.Add(
                 CallContext.HeaderNameErrorDetailType,
                 "invalid type");
+            _error.Trailers.Add(
+                CallContext.HeaderNameErrorDetail,
+                _sut.MarshallerFactory.SerializeHeader("dummy"));
 
             _errorHandler
                 .Setup(h => h.ThrowOrIgnore(_context, It.IsAny<ClientFaultDetail>()))

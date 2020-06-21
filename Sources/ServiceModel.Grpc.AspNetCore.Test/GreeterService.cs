@@ -52,7 +52,7 @@ namespace ServiceModel.Grpc.AspNetCore
             var methodInputAsHeader = (Func<IMarshallerFactory, string, Metadata>)typeof(CallContext)
                 .Assembly
                 .GetType("ServiceModel.Grpc.Channel.CompatibilityTools", true, false)
-                .GetMethods(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static)
+                !.GetMethods(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static)
                 .Where(i => i.Name == "MethodInputAsHeader")
                 .First(i => i.GetParameters().Length == 2)
                 .MakeGenericMethod(typeof(string))
@@ -66,7 +66,7 @@ namespace ServiceModel.Grpc.AspNetCore
             var methodInputFromHeader = (Func<IMarshallerFactory, Metadata, string>)typeof(CallContext)
                 .Assembly
                 .GetType("ServiceModel.Grpc.Channel.CompatibilityTools", true, false)
-                .GetMethods(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static)
+                !.GetMethods(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static)
                 .Where(i => i.Name == "GetMethodInputFromHeader")
                 .First(i => i.GetGenericArguments().Length == 1)
                 .MakeGenericMethod(typeof(string))

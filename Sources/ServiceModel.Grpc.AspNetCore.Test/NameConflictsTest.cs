@@ -24,8 +24,8 @@ namespace ServiceModel.Grpc.AspNetCore
     [TestFixture]
     public partial class NameConflictsTest
     {
-        private KestrelHost _host;
-        private ICalculator _calculator;
+        private KestrelHost _host = null!;
+        private ICalculator _calculator = null!;
 
         [OneTimeSetUp]
         public async Task BeforeAll()

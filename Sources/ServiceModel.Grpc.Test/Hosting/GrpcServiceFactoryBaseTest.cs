@@ -28,7 +28,7 @@ namespace ServiceModel.Grpc.Hosting
     [TestFixture]
     public class GrpcServiceFactoryBaseTest
     {
-        private LoggerMock _logger;
+        private LoggerMock _logger = null!;
 
         [OneTimeSetUp]
         public void BeforeAll()
@@ -40,9 +40,9 @@ namespace ServiceModel.Grpc.Hosting
             var sutType = typeof(GrpcServiceFactoryBase<>).MakeGenericType(service.Object.GetType());
             var sutMockType = typeof(Mock<>).MakeGenericType(sutType);
 
-            var sutMock = (Mock)Activator.CreateInstance(sutMockType, _logger.Logger, DataContractMarshallerFactory.Default, nameof(GrpcServiceFactoryBaseTest));
+            var sutMock = (Mock)Activator.CreateInstance(sutMockType, _logger.Logger, DataContractMarshallerFactory.Default, nameof(GrpcServiceFactoryBaseTest))!;
 
-            sutType.InstanceMethod("Bind").Invoke(sutMock.Object, Array.Empty<object>());
+            sutType.InstanceMethod("Bind").Invoke(sutMock!.Object, Array.Empty<object>());
         }
 
         [Test]
@@ -56,7 +56,7 @@ namespace ServiceModel.Grpc.Hosting
         [Test]
         public void DisposableIsNotServiceContract()
         {
-            var log = _logger.Debug.Find(i => i.Contains(typeof(IDisposable).FullName));
+            var log = _logger.Debug.Find(i => i.Contains(typeof(IDisposable).FullName!));
             log.ShouldNotBeNull();
         }
     }

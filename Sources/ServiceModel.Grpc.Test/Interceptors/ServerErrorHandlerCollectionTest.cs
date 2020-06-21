@@ -27,11 +27,11 @@ namespace ServiceModel.Grpc.Interceptors
     [TestFixture]
     public class ServerErrorHandlerCollectionTest
     {
-        private ServerErrorHandlerCollection _sut;
-        private Mock<IServerErrorHandler> _errorHandler1;
-        private Mock<IServerErrorHandler> _errorHandler2;
-        private Mock<ServerCallContext> _rpcContext;
-        private CancellationTokenSource _tokenSource;
+        private ServerErrorHandlerCollection _sut = null!;
+        private Mock<IServerErrorHandler> _errorHandler1 = null!;
+        private Mock<IServerErrorHandler> _errorHandler2 = null!;
+        private Mock<ServerCallContext> _rpcContext = null!;
+        private CancellationTokenSource _tokenSource = null!;
         private ServerCallInterceptorContext _errorContext;
 
         [SetUp]
@@ -94,7 +94,7 @@ namespace ServiceModel.Grpc.Interceptors
             var actual = _sut.ProvideFaultOrIgnore(_errorContext, error);
 
             actual.ShouldNotBeNull();
-            actual.Value.ShouldBe(expected);
+            actual!.Value.ShouldBe(expected);
         }
 
         [Test]
@@ -120,7 +120,7 @@ namespace ServiceModel.Grpc.Interceptors
             var actual = _sut.ProvideFaultOrIgnore(_errorContext, error);
 
             actual.ShouldNotBeNull();
-            actual.Value.ShouldBe(expected);
+            actual!.Value.ShouldBe(expected);
             _errorHandler1.VerifyAll();
         }
     }

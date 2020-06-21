@@ -29,18 +29,18 @@ namespace ServiceModel.Grpc.Client
     [TestFixture]
     public class ClientFactoryTest
     {
-        private Mock<IServiceClientBuilder> _clientBuilder;
-        private ServiceModelGrpcClientOptions _defaultOptions;
-        private Mock<CallInvoker> _callInvoker;
-        private IClientErrorHandler _globalErrorHandler;
-        private IClientErrorHandler _localErrorHandler;
-        private ClientFactory _sut;
+        private Mock<IServiceClientBuilder> _clientBuilder = null!;
+        private ServiceModelGrpcClientOptions _defaultOptions = null!;
+        private Mock<CallInvoker> _callInvoker = null!;
+        private IClientErrorHandler _globalErrorHandler = null!;
+        private IClientErrorHandler _localErrorHandler = null!;
+        private ClientFactory _sut = null!;
 
         [SetUp]
         public void BeforeEachTest()
         {
             _clientBuilder = new Mock<IServiceClientBuilder>(MockBehavior.Strict);
-            _clientBuilder.SetupProperty(b => b.MarshallerFactory, null);
+            _clientBuilder.SetupProperty(b => b.MarshallerFactory, null!);
             _clientBuilder.SetupProperty(b => b.Logger, null);
             _clientBuilder.SetupProperty(b => b.DefaultCallOptionsFactory, null);
 
@@ -77,7 +77,7 @@ namespace ServiceModel.Grpc.Client
         [Test]
         public void RegisterClientGenericInterface()
         {
-            Func<CallInvoker, IComparable<int>> factory = _ => null;
+            Func<CallInvoker, IComparable<int>> factory = _ => throw new NotSupportedException();
 
             _clientBuilder
                 .Setup(b => b.Build<IComparable<int>>(It.IsNotNull<string>()))
@@ -107,7 +107,7 @@ namespace ServiceModel.Grpc.Client
         [Test]
         public void DoubleClientRegistration()
         {
-            Func<CallInvoker, IDisposable> factory = _ => null;
+            Func<CallInvoker, IDisposable> factory = _ => throw new NotSupportedException();
 
             _clientBuilder
                 .Setup(b => b.Build<IDisposable>(It.IsNotNull<string>()))
@@ -123,11 +123,11 @@ namespace ServiceModel.Grpc.Client
         [TestCase(typeof(IServiceClientBuilder))] // not public
         public void InvalidContracts(Type contractType)
         {
-            var addClient = (Action<Action<ServiceModelGrpcClientOptions>>)_sut
+            var addClient = (Action<Action<ServiceModelGrpcClientOptions>?>)_sut
                 .GetType()
                 .InstanceMethod(nameof(_sut.AddClient))
                 .MakeGenericMethod(contractType)
-                .CreateDelegate(typeof(Action<Action<ServiceModelGrpcClientOptions>>), _sut);
+                .CreateDelegate(typeof(Action<Action<ServiceModelGrpcClientOptions>?>), _sut);
 
             var ex = Assert.Throws<NotSupportedException>(() => addClient(null));
 

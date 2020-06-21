@@ -25,9 +25,9 @@ namespace ServiceModel.Grpc.TestApi
 {
     public abstract class ExceptionHandlingTestBase
     {
-        private CancellationTokenSource _cancellationSource;
+        private CancellationTokenSource _cancellationSource = null!;
 
-        protected IErrorService DomainService { get; set; }
+        protected IErrorService DomainService { get; set; } = null!;
 
         [SetUp]
         public void BeforeEachTest()

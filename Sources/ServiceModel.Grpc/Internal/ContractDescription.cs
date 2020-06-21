@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -37,7 +38,7 @@ namespace ServiceModel.Grpc.Internal
 
         public IList<InterfaceDescription> Services { get; }
 
-        private static bool TryCreateMessage(MethodInfo method, out MessageAssembler message, out string error)
+        private static bool TryCreateMessage(MethodInfo method, [MaybeNullWhen(false)] out MessageAssembler message, [MaybeNullWhen(true)] out string error)
         {
             message = default;
             error = default;
@@ -72,9 +73,9 @@ namespace ServiceModel.Grpc.Internal
         {
             foreach (var interfaceType in ReflectionTools.ExpandInterface(serviceType))
             {
-                var interfaceDescription = new InterfaceDescription { InterfaceType = interfaceType };
+                var interfaceDescription = new InterfaceDescription(interfaceType);
 
-                string serviceName = null;
+                string? serviceName = null;
                 if (ServiceContract.IsServiceContractInterface(interfaceType))
                 {
                     serviceName = ServiceContract.GetServiceName(interfaceType);
@@ -87,7 +88,7 @@ namespace ServiceModel.Grpc.Internal
 
                 foreach (var method in ReflectionTools.GetMethods(interfaceType))
                 {
-                    string error;
+                    string? error;
 
                     if (serviceName == null || !ServiceContract.IsServiceOperation(method))
                     {
@@ -126,7 +127,7 @@ namespace ServiceModel.Grpc.Internal
             {
                 var text = new StringBuilder();
 
-                foreach (var (service, operation) in entries)
+                foreach (var (_, operation) in entries)
                 {
                     if (text.Length == 0)
                     {

@@ -29,7 +29,7 @@ namespace ServiceModel.Grpc.Interceptors
         /// <param name="callOptions">A <see cref="CallOptions"/> instance containing the call options of the current call.</param>
         /// <param name="host">The host to dispatch the current call to.</param>
         /// <param name="method">A <see cref="IMethod"/> object representing the method to be invoked.</param>
-        public ClientCallInterceptorContext(CallOptions callOptions, string host, IMethod method)
+        public ClientCallInterceptorContext(CallOptions callOptions, string? host, IMethod method)
         {
             CallOptions = callOptions;
             Host = host;
@@ -44,7 +44,7 @@ namespace ServiceModel.Grpc.Interceptors
         /// <summary>
         /// Gets the host to dispatch the current call to.
         /// </summary>
-        public string Host { get; }
+        public string? Host { get; }
 
         /// <summary>
         /// Gets the <see cref="IMethod"/> instance representing the method to be invoked.

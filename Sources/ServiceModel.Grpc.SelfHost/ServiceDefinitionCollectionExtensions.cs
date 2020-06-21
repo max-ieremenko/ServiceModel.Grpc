@@ -41,7 +41,7 @@ namespace Grpc.Core
         public static void AddServiceModelTransient<TService>(
             this Server.ServiceDefinitionCollection services,
             Func<TService> serviceFactory,
-            Action<ServiceModelGrpcServiceOptions> configure = null)
+            Action<ServiceModelGrpcServiceOptions>? configure = default)
         {
             services.AssertNotNull(nameof(services));
             serviceFactory.AssertNotNull(nameof(serviceFactory));
@@ -51,7 +51,7 @@ namespace Grpc.Core
                 throw new InvalidOperationException("{0} is native grpc service.".FormatWith(typeof(TService).FullName));
             }
 
-            ServiceModelGrpcServiceOptions options = null;
+            ServiceModelGrpcServiceOptions? options = null;
             if (configure != null)
             {
                 options = new ServiceModelGrpcServiceOptions();
@@ -95,7 +95,7 @@ namespace Grpc.Core
         public static void AddServiceModelSingleton<TService>(
             this Server.ServiceDefinitionCollection services,
             TService service,
-            Action<ServiceModelGrpcServiceOptions> configure = null)
+            Action<ServiceModelGrpcServiceOptions>? configure = default)
         {
             AddServiceModelTransient(services, () => service, configure);
         }

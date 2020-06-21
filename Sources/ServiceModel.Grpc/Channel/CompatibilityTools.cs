@@ -45,7 +45,7 @@ namespace ServiceModel.Grpc.Channel
             return input.Value1;
         }
 
-        public static (T1, T2) GetMethodInputFromHeader<T1, T2>(IMarshallerFactory marshallerFactory, Metadata requestHeaders)
+        public static (T1 Value1, T2 Value2) GetMethodInputFromHeader<T1, T2>(IMarshallerFactory marshallerFactory, Metadata requestHeaders)
         {
             var input = GetMethodInputFromHeader(marshallerFactory.CreateMarshaller<Message<T1, T2>>(), requestHeaders);
             return (input.Value1, input.Value2);

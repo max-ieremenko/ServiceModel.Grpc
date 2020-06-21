@@ -15,6 +15,7 @@
 // </copyright>
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
 
@@ -22,12 +23,12 @@ namespace ServiceModel.Grpc.Interceptors.Internal
 {
     internal sealed class ClientCallErrorInterceptor : IClientCallInterceptor
     {
-        private readonly ILogger _logger;
+        private readonly ILogger? _logger;
 
         public ClientCallErrorInterceptor(
             IClientErrorHandler errorHandler,
             IMarshallerFactory marshallerFactory,
-            ILogger logger)
+            ILogger? logger)
         {
             errorHandler.AssertNotNull(nameof(errorHandler));
             marshallerFactory.AssertNotNull(nameof(marshallerFactory));
@@ -43,19 +44,20 @@ namespace ServiceModel.Grpc.Interceptors.Internal
 
         public void OnError(ClientCallInterceptorContext context, RpcException error)
         {
-            FindHeaders(error.Trailers, out var detailTypeName, out var detailContent);
-            var detailType = ResolveDetailType(detailTypeName);
-
-            object detail = null;
-            if (detailType != null)
+            object? detail = null;
+            if (TryFindHeaders(error.Trailers, out var detailTypeName, out var detailContent))
             {
-                detail = MarshallerFactory.DeserializeHeader(detailType, detailContent);
+                var detailType = ResolveDetailType(detailTypeName);
+                if (detailType != null)
+                {
+                    detail = MarshallerFactory.DeserializeHeader(detailType, detailContent);
+                }
             }
 
             ErrorHandler.ThrowOrIgnore(context, new ClientFaultDetail(error, detail));
         }
 
-        private static void FindHeaders(Metadata metadata, out string detailTypeName, out byte[] detailContent)
+        private static bool TryFindHeaders(Metadata metadata, [NotNullWhen(true)] out string? detailTypeName, [NotNullWhen(true)] out byte[]? detailContent)
         {
             detailTypeName = null;
             detailContent = null;
@@ -71,20 +73,18 @@ namespace ServiceModel.Grpc.Interceptors.Internal
                     detailContent = entry.ValueBytes;
                 }
 
+                // empty byte[] headers are ignored by server-side
                 if (detailTypeName != null && detailContent != null)
                 {
-                    break;
+                    return true;
                 }
             }
+
+            return false;
         }
 
-        private Type ResolveDetailType(string typeName)
+        private Type? ResolveDetailType(string typeName)
         {
-            if (string.IsNullOrEmpty(typeName))
-            {
-                return null;
-            }
-
             try
             {
                 return Type.GetType(typeName, true, false);
