@@ -1,7 +1,6 @@
 <Project>
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
 	
@@ -15,10 +14,14 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Product>ServiceModel.Grpc</Product>
     <Authors>Max Ieremenko</Authors>
     <Description>Library that enables applications to communicate with gRPC services using code-first approach, helps to get around some limitations of gRPC protocol. Helps to migrate existing WCF solution to gRPC with minimum effort.</Description>
     <PackageReleaseNotes>https://github.com/max-ieremenko/ServiceModel.Grpc/releases</PackageReleaseNotes>
-    <RepositoryUrl>https://github.com/max-ieremenko/ServiceModel.Grpc</RepositoryUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageProjectUrl>https://max-ieremenko.github.io/ServiceModel.Grpc/</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Copyright>(C) 2020 Max Ieremenko.</Copyright>
@@ -29,10 +32,6 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Include="..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
-  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers.Unstable" Version="1.2.0.164">

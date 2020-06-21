@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net461;netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>ServiceModel.Grpc</RootNamespace>
+    <AssemblyTitle>ServiceModel.Grpc.Test</AssemblyTitle>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
