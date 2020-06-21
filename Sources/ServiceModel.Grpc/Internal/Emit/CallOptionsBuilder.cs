@@ -27,7 +27,7 @@ namespace ServiceModel.Grpc.Internal.Emit
     {
         private CallOptions _options;
 
-        public CallOptionsBuilder(Func<CallOptions> defaultOptionsFactory)
+        public CallOptionsBuilder(Func<CallOptions>? defaultOptionsFactory)
         {
             _options = defaultOptionsFactory?.Invoke() ?? default;
         }
@@ -44,7 +44,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             return this;
         }
 
-        public CallOptionsBuilder WithCallContext(CallContext context)
+        public CallOptionsBuilder WithCallContext(CallContext? context)
         {
             var options = context?.CallOptions;
             if (options.HasValue)
@@ -55,7 +55,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             return this;
         }
 
-        public CallOptionsBuilder WithServerCallContext(ServerCallContext context)
+        public CallOptionsBuilder WithServerCallContext(ServerCallContext? context)
         {
             if (context != null)
             {

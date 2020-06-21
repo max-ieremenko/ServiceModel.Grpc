@@ -35,7 +35,7 @@ namespace ServiceModel.Grpc.Client
         private static int _instanceCounter;
 
         private readonly object _syncRoot;
-        private readonly ServiceModelGrpcClientOptions _defaultOptions;
+        private readonly ServiceModelGrpcClientOptions? _defaultOptions;
         private readonly IDictionary<Type, Delegate> _factoryByContract;
         private readonly IDictionary<Type, Interceptor> _interceptorByContract;
         private readonly string _factoryId;
@@ -44,7 +44,7 @@ namespace ServiceModel.Grpc.Client
         /// Initializes a new instance of the <see cref="ClientFactory"/> class.
         /// </summary>
         /// <param name="defaultOptions">Default configuration for all clients, created by this instance.</param>
-        public ClientFactory(ServiceModelGrpcClientOptions defaultOptions = null)
+        public ClientFactory(ServiceModelGrpcClientOptions? defaultOptions = null)
         {
             _defaultOptions = defaultOptions;
             _factoryByContract = new Dictionary<Type, Delegate>();
@@ -60,7 +60,7 @@ namespace ServiceModel.Grpc.Client
         /// </summary>
         /// <typeparam name="TContract">The service contract type.</typeparam>
         /// <param name="configure">The configuration action.</param>
-        public void AddClient<TContract>(Action<ServiceModelGrpcClientOptions> configure = null)
+        public void AddClient<TContract>(Action<ServiceModelGrpcClientOptions>? configure = null)
             where TContract : class
         {
             RegisterClient<TContract>(configure);
@@ -124,7 +124,7 @@ namespace ServiceModel.Grpc.Client
             return builder;
         }
 
-        private Delegate RegisterClient<TContract>(Action<ServiceModelGrpcClientOptions> configure)
+        private Delegate RegisterClient<TContract>(Action<ServiceModelGrpcClientOptions>? configure)
             where TContract : class
         {
             var contractType = typeof(TContract);

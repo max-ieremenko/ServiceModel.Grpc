@@ -57,10 +57,6 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: nuget-packages
-        path: .\build-out\*.nupkg
-
-    - name: Artifact nuget package symbols
-      uses: actions/upload-artifact@v2
-      with:
-        name: nuget-package-symbols
-        path: .\build-out\*.snupkg
+        path: |
+          .\build-out\*.nupkg
+          .\build-out\*.snupkg

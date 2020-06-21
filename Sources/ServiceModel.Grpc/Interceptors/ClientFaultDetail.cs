@@ -28,7 +28,7 @@ namespace ServiceModel.Grpc.Interceptors
         /// </summary>
         /// <param name="originalError">The original <see cref="RpcException"/> raised by <see cref="CallInvoker"/>.</param>
         /// <param name="detail">The error detail provided by <see cref="IServerErrorHandler"/>.</param>
-        public ClientFaultDetail(RpcException originalError, object detail)
+        public ClientFaultDetail(RpcException originalError, object? detail)
         {
             OriginalError = originalError;
             Detail = detail;
@@ -42,6 +42,6 @@ namespace ServiceModel.Grpc.Interceptors
         /// <summary>
         /// Gets the error detail provided by <see cref="IServerErrorHandler"/>.
         /// </summary>
-        public object Detail { get; }
+        public object? Detail { get; }
     }
 }

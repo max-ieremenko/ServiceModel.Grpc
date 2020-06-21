@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>ServiceModel.Grpc.AspNetCore</RootNamespace>
+    <AssemblyTitle>ServiceModel.Grpc.AspNetCore.Test</AssemblyTitle>
   </PropertyGroup>
 
   <ItemGroup>

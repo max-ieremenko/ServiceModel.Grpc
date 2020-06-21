@@ -14,6 +14,7 @@
 // limitations under the License.
 // </copyright>
 
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
@@ -29,17 +30,17 @@ namespace ServiceModel.Grpc.Configuration
         public class Person
         {
             [DataMember(Order = 1)]
-            public string Name { get; set; }
+            public string? Name { get; set; }
 
             [DataMember(Order = 2)]
-            public PersonAddress Address { get; set; }
+            public PersonAddress? Address { get; set; }
         }
 
         [DataContract]
         public class PersonAddress
         {
             [DataMember(Order = 1)]
-            public string Street { get; set; }
+            public string? Street { get; set; }
         }
 
         [DataContract]
@@ -69,7 +70,7 @@ namespace ServiceModel.Grpc.Configuration
         {
             public static readonly Marshaller<T> Default = new Marshaller<T>(Serialize, Deserialize);
 
-            private static byte[] Serialize(T value)
+            private static byte[]? Serialize(T value)
             {
                 if (value == null)
                 {
@@ -88,6 +89,7 @@ namespace ServiceModel.Grpc.Configuration
                 }
             }
 
+            [return: MaybeNull]
             private static T Deserialize(byte[] value)
             {
                 if (value == null)

@@ -37,7 +37,7 @@ namespace ServiceModel.Grpc
         /// <param name="deadline">Deadline for the call to finish. null means no deadline.</param>
         /// <param name="cancellationToken">Can be used to request cancellation of the call.</param>
         public CallContext(
-            Metadata headers = null,
+            Metadata? headers = null,
             DateTime? deadline = null,
             CancellationToken cancellationToken = default)
             : this(new CallOptions(headers: headers, deadline: deadline, cancellationToken: cancellationToken))
@@ -59,13 +59,15 @@ namespace ServiceModel.Grpc
         /// <param name="serverCallContext">The context for a server-side call.</param>
         public CallContext(ServerCallContext serverCallContext)
         {
+            serverCallContext.AssertNotNull(nameof(serverCallContext));
+
             ServerCallContext = serverCallContext;
         }
 
         /// <summary>
         /// Gets the context for a server-side call. Always null for client-side.
         /// </summary>
-        public ServerCallContext ServerCallContext { get; }
+        public ServerCallContext? ServerCallContext { get; }
 
         /// <summary>
         /// Gets the context for a client-side call. Always null for server-side.
@@ -80,12 +82,12 @@ namespace ServiceModel.Grpc
         /// <summary>
         /// Gets access to server response headers. Available only for a client call.
         /// </summary>
-        public Metadata ResponseHeaders => ServerResponse?.ResponseHeaders;
+        public Metadata? ResponseHeaders => ServerResponse?.ResponseHeaders;
 
         /// <summary>
         /// Gets the client call trailing metadata if the call has already finished. Available only for a client call.
         /// </summary>
-        public Metadata ResponseTrailers => ServerResponse?.ResponseTrailers;
+        public Metadata? ResponseTrailers => ServerResponse?.ResponseTrailers;
 
         internal ServerResponse? ServerResponse { get; set; }
 
@@ -111,6 +113,6 @@ namespace ServiceModel.Grpc
         /// Crates <see cref="ServerCallContext"/> based on <see cref="CallContext"/>.ServerCallContext.
         /// </summary>
         /// <param name="context">The context.</param>
-        public static implicit operator ServerCallContext(CallContext context) => context.ServerCallContext;
+        public static implicit operator ServerCallContext?(CallContext context) => context.ServerCallContext;
     }
 }

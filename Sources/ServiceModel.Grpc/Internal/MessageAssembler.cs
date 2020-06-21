@@ -51,7 +51,7 @@ namespace ServiceModel.Grpc.Internal
 
         public int[] RequestTypeInput { get; }
 
-        public Type HeaderRequestType { get; }
+        public Type? HeaderRequestType { get; }
 
         public int[] HeaderRequestTypeInput { get; }
 
@@ -109,7 +109,7 @@ namespace ServiceModel.Grpc.Internal
             return typeof(Message<>).MakeGenericType(responseType);
         }
 
-        private (Type, int[], Type, int[]) GetRequestType()
+        private (Type MessageType, int[] DataIndexes, Type? HeaderType, int[] HeaderIndexes) GetRequestType()
         {
             if (Parameters.Length == 0)
             {
@@ -224,7 +224,7 @@ namespace ServiceModel.Grpc.Internal
             }
         }
 
-        private void ThrowInvalidSignature(Exception ex = default)
+        private void ThrowInvalidSignature(Exception? ex = default)
         {
             var message = "Method signature [{0}] is not supported.".FormatWith(ReflectionTools.GetSignature(Operation));
 

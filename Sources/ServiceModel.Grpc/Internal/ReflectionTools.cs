@@ -273,7 +273,7 @@ namespace ServiceModel.Grpc.Internal
                 .FirstOrDefault(i => string.Equals(attributeTypeFullName, i.GetType().FullName, StringComparison.Ordinal));
         }
 
-        public static TDelegate CreateDelegate<TDelegate>(this MethodInfo method, object target = null)
+        public static TDelegate CreateDelegate<TDelegate>(this MethodInfo method, object? target = default)
             where TDelegate : Delegate
         {
             var result = target == null ? method.CreateDelegate(typeof(TDelegate)) : method.CreateDelegate(typeof(TDelegate), target);

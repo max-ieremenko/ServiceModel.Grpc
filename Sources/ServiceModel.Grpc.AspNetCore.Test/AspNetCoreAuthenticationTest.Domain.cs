@@ -26,10 +26,10 @@ namespace ServiceModel.Grpc.AspNetCore
         public interface IService
         {
             [OperationContract]
-            string GetCurrentUserName(CallContext context = default);
+            string? GetCurrentUserName(CallContext? context = default);
 
             [OperationContract]
-            string TryGetCurrentUserName(CallContext context = default);
+            string? TryGetCurrentUserName(CallContext? context = default);
         }
 
         [Authorize]
@@ -42,13 +42,13 @@ namespace ServiceModel.Grpc.AspNetCore
                 _contextAccessor = contextAccessor;
             }
 
-            public string GetCurrentUserName(CallContext context)
+            public string? GetCurrentUserName(CallContext? context)
             {
                 return _contextAccessor.HttpContext.User.Identity.Name;
             }
 
             [AllowAnonymous]
-            public string TryGetCurrentUserName(CallContext context)
+            public string? TryGetCurrentUserName(CallContext? context)
             {
                 return _contextAccessor.HttpContext.User?.Identity?.Name;
             }

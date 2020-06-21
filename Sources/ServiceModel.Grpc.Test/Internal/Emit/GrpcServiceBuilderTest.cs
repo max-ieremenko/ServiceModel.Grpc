@@ -32,10 +32,10 @@ namespace ServiceModel.Grpc.Internal.Emit
     [TestFixture]
     public class GrpcServiceBuilderTest
     {
-        private Type _channelType;
-        private Mock<IContract> _service;
-        private CancellationTokenSource _tokenSource;
-        private Mock<ServerCallContext> _serverCallContext;
+        private Type _channelType = null!;
+        private Mock<IContract> _service = null!;
+        private CancellationTokenSource _tokenSource = null!;
+        private Mock<ServerCallContext> _serverCallContext = null!;
 
         [OneTimeSetUp]
         public void BeforeAllTest()
@@ -74,7 +74,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             _service
                 .Setup(s => s.Empty());
 
-            var actual = await call(_service.Object, new Message(), null);
+            var actual = await call(_service.Object, new Message(), null!);
 
             actual.ShouldNotBeNull();
             _service.VerifyAll();
@@ -92,7 +92,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 .Setup(s => s.EmptyAsync())
                 .Returns(Task.CompletedTask);
 
-            var actual = await call(_service.Object, new Message(), null);
+            var actual = await call(_service.Object, new Message(), null!);
 
             actual.ShouldNotBeNull();
             _service.VerifyAll();
@@ -110,7 +110,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 .Setup(s => s.EmptyValueTaskAsync())
                 .Returns(new ValueTask(Task.CompletedTask));
 
-            var actual = await call(_service.Object, new Message(), null);
+            var actual = await call(_service.Object, new Message(), null!);
 
             actual.ShouldNotBeNull();
             _service.VerifyAll();
@@ -167,7 +167,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 .Setup(s => s.ReturnString())
                 .Returns("a");
 
-            var actual = await call(_service.Object, new Message(), null);
+            var actual = await call(_service.Object, new Message(), null!);
 
             actual.Value1.ShouldBe("a");
             _service.VerifyAll();
@@ -203,7 +203,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 .Setup(s => s.ReturnValueTaskBoolAsync())
                 .Returns(new ValueTask<bool>(Task.FromResult(true)));
 
-            var actual = await call(_service.Object, new Message(), null);
+            var actual = await call(_service.Object, new Message(), null!);
 
             actual.Value1.ShouldBeTrue();
             _service.VerifyAll();
@@ -255,7 +255,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 .Setup(s => s.OneParameterAsync(3.5))
                 .Returns(Task.CompletedTask);
 
-            var actual = await call(_service.Object, new Message<double>(3.5), null);
+            var actual = await call(_service.Object, new Message<double>(3.5), null!);
 
             actual.ShouldNotBeNull();
             _service.VerifyAll();
@@ -273,7 +273,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 .Setup(s => s.AddTwoValues(1, 3.5))
                 .Returns(4.5);
 
-            var actual = await call(_service.Object, new Message<int, double>(1, 3.5), null);
+            var actual = await call(_service.Object, new Message<int, double>(1, 3.5), null!);
 
             actual.Value1.ShouldBe(4.5);
             _service.VerifyAll();
@@ -309,7 +309,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 .Setup(s => s.DuplicateUnary())
                 .Returns("a");
 
-            var actual = await call(_service.Object, new Message(), null);
+            var actual = await call(_service.Object, new Message(), null!);
 
             actual.Value1.ShouldBe("a");
             _service.VerifyAll();
@@ -327,7 +327,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 .Setup(s => s.DuplicateUnary("a"))
                 .Returns("b");
 
-            var actual = await call(_service.Object, new Message<string>("a"), null);
+            var actual = await call(_service.Object, new Message<string>("a"), null!);
 
             actual.Value1.ShouldBe("b");
             _service.VerifyAll();

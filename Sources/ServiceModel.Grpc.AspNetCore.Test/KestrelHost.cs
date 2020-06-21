@@ -32,12 +32,12 @@ namespace ServiceModel.Grpc.AspNetCore
     internal sealed partial class KestrelHost : IAsyncDisposable
     {
         private readonly int _port;
-        private IHost _host;
+        private IHost _host = null!;
 
         public KestrelHost(
-            IMarshallerFactory marshallerFactory = null,
+            IMarshallerFactory? marshallerFactory = null,
             int port = 8080,
-            Action<ServiceModelGrpcClientOptions> configure = null)
+            Action<ServiceModelGrpcClientOptions>? configure = null)
         {
             _marshallerFactory = marshallerFactory;
             _port = port;
@@ -54,9 +54,9 @@ namespace ServiceModel.Grpc.AspNetCore
         public IClientFactory ClientFactory { get; }
 
         public async Task StartAsync(
-            Action<IServiceCollection> configureServices = null,
-            Action<IApplicationBuilder> configureApp = null,
-            Action<IEndpointRouteBuilder> configureEndpoints = null)
+            Action<IServiceCollection>? configureServices = null,
+            Action<IApplicationBuilder>? configureApp = null,
+            Action<IEndpointRouteBuilder>? configureEndpoints = null)
         {
             GrpcChannelExtensions.Http2UnencryptedSupport = true;
             _configureServices = configureServices;

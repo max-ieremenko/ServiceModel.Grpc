@@ -32,8 +32,8 @@ namespace ServiceModel.Grpc.AspNetCore
     [TestFixture]
     public partial class AspNetCoreAuthenticationTest
     {
-        private KestrelHost _host;
-        private IService _domainService;
+        private KestrelHost _host = null!;
+        private IService _domainService = null!;
 
         [OneTimeSetUp]
         public async Task BeforeAll()

@@ -30,7 +30,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         {
             using (call)
             {
-                Metadata headers = default;
+                Metadata? headers = default;
                 if (context != null)
                 {
                     headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
@@ -41,7 +41,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 if (context != null)
                 {
                     context.ServerResponse = new ServerResponse(
-                        headers,
+                        headers!,
                         call.GetStatus(),
                         call.GetTrailers());
                 }
@@ -53,7 +53,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             Message<T> result;
             using (call)
             {
-                Metadata headers = default;
+                Metadata? headers = default;
                 if (context != null)
                 {
                     headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
@@ -64,7 +64,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 if (context != null)
                 {
                     context.ServerResponse = new ServerResponse(
-                        headers,
+                        headers!,
                         call.GetStatus(),
                         call.GetTrailers());
                 }
@@ -97,7 +97,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 if (context != null && !token.IsCancellationRequested)
                 {
                     context.ServerResponse = new ServerResponse(
-                        context.ResponseHeaders,
+                        context.ResponseHeaders!,
                         call.GetStatus(),
                         call.GetTrailers());
                 }
@@ -122,7 +122,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                     await call.RequestStream.CompleteAsync().ConfigureAwait(false);
                 }
 
-                Metadata headers = null;
+                Metadata? headers = null;
                 if (!token.IsCancellationRequested && context != null)
                 {
                     headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
@@ -133,7 +133,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 if (!token.IsCancellationRequested && context != null)
                 {
                     context.ServerResponse = new ServerResponse(
-                        headers,
+                        headers!,
                         call.GetStatus(),
                         call.GetTrailers());
                 }
@@ -159,7 +159,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                     await call.RequestStream.CompleteAsync().ConfigureAwait(false);
                 }
 
-                Metadata headers = null;
+                Metadata? headers = null;
                 if (!token.IsCancellationRequested && context != null)
                 {
                     headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
@@ -170,7 +170,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 if (!token.IsCancellationRequested && context != null)
                 {
                     context.ServerResponse = new ServerResponse(
-                        headers,
+                        headers!,
                         call.GetStatus(),
                         call.GetTrailers());
                 }
@@ -208,7 +208,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 if (context != null && !token.IsCancellationRequested)
                 {
                     context.ServerResponse = new ServerResponse(
-                        context.ResponseHeaders,
+                        context.ResponseHeaders!,
                         call.GetStatus(),
                         call.GetTrailers());
                 }

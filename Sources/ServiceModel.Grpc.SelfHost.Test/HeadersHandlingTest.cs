@@ -26,7 +26,7 @@ namespace ServiceModel.Grpc.SelfHost
     [TestFixture]
     public class HeadersHandlingTest : HeadersHandlingTestBase
     {
-        private ServerHost _host;
+        private ServerHost _host = null!;
 
         [OneTimeSetUp]
         public void BeforeAll()

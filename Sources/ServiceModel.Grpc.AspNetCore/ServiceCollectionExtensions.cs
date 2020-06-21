@@ -39,7 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>The <see cref="IGrpcServerBuilder"/>.</returns>
         public static IGrpcServerBuilder AddServiceModelGrpc(
             this IServiceCollection services,
-            Action<ServiceModelGrpcServiceOptions> configure = null)
+            Action<ServiceModelGrpcServiceOptions>? configure = default)
         {
             services.AssertNotNull(nameof(services));
 

@@ -26,7 +26,7 @@ namespace ServiceModel.Grpc.AspNetCore
     [TestFixture]
     public class HeadersHandlingTest : HeadersHandlingTestBase
     {
-        private KestrelHost _host;
+        private KestrelHost _host = null!;
 
         [OneTimeSetUp]
         public async Task BeforeAll()

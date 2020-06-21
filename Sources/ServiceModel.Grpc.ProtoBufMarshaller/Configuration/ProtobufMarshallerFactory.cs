@@ -32,7 +32,7 @@ namespace ServiceModel.Grpc.Configuration
         /// </summary>
         public static readonly IMarshallerFactory Default = new ProtobufMarshallerFactory();
 
-        private readonly RuntimeTypeModel _runtimeTypeModel;
+        private readonly RuntimeTypeModel? _runtimeTypeModel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProtobufMarshallerFactory"/> class.
@@ -88,8 +88,8 @@ namespace ServiceModel.Grpc.Configuration
             }
         }
 
-        private void Serialize<T>(T value, SerializationContext context) => Serialize(value, context, _runtimeTypeModel);
+        private void Serialize<T>(T value, SerializationContext context) => Serialize(value, context, _runtimeTypeModel!);
 
-        private T Deserialize<T>(DeserializationContext context) => Deserialize<T>(context, _runtimeTypeModel);
+        private T Deserialize<T>(DeserializationContext context) => Deserialize<T>(context, _runtimeTypeModel!);
     }
 }

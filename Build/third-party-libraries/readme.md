@@ -3,7 +3,7 @@ Licenses
 	
 |Code|Requires approval|Requires third party notices|Packages count|
 |----------|:----|:----|:----|
-|[Apache-2.0](licenses/apache-2.0)|no|no|10|
+|[Apache-2.0](licenses/apache-2.0)|no|no|11|
 |[BSD-2-Clause](licenses/bsd-2-clause)|no|no|1|
 |[BSD-3-Clause](licenses/bsd-3-clause)|no|no|1|
 |[Google.Protobuf](licenses/google.protobuf)|yes|no|1|
@@ -13,7 +13,7 @@ Licenses
 
 
 
-Packages 76
+Packages 77
 --------
 
 |Name|Version|Source|License|Used by|
@@ -38,6 +38,7 @@ Packages 76
 |[Microsoft.IdentityModel.Tokens](packages/nuget.org/microsoft.identitymodel.tokens/5.5.0)|5.5.0|[nuget.org](https://www.nuget.org/packages/Microsoft.IdentityModel.Tokens/5.5.0)|[MIT](licenses/mit)|AspNetCore internal|
 |[Microsoft.NET.Test.Sdk](packages/nuget.org/microsoft.net.test.sdk/16.5.0)|16.5.0|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.Test.Sdk/16.5.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, SelfHost internal|
 |[Microsoft.NETCore.App](packages/nuget.org/microsoft.netcore.app/2.1.0)|2.1.0|[nuget.org](https://www.nuget.org/packages/Microsoft.NETCore.App/2.1.0)|[MIT](licenses/mit)|Core internal, SelfHost internal|
+|[Microsoft.SourceLink.GitHub](packages/nuget.org/microsoft.sourcelink.github/1.0.0)|1.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub/1.0.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore, Core, ProtoBuf, SelfHost|
 |[Microsoft.TestPlatform.ObjectModel](packages/nuget.org/microsoft.testplatform.objectmodel/16.5.0)|16.5.0|[nuget.org](https://www.nuget.org/packages/Microsoft.TestPlatform.ObjectModel/16.5.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, SelfHost internal|
 |[Microsoft.TestPlatform.TestHost](packages/nuget.org/microsoft.testplatform.testhost/16.5.0)|16.5.0|[nuget.org](https://www.nuget.org/packages/Microsoft.TestPlatform.TestHost/16.5.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, SelfHost internal|
 |[Mono.Reflection](packages/nuget.org/mono.reflection/2.0.0)|2.0.0|[nuget.org](https://www.nuget.org/packages/Mono.Reflection/2.0.0)|[MIT](licenses/mit)|Core internal|
@@ -49,7 +50,7 @@ Packages 76
 |[NUnit3TestAdapter](packages/nuget.org/nunit3testadapter/3.16.1)|3.16.1|[nuget.org](https://www.nuget.org/packages/NUnit3TestAdapter/3.16.1)|[MIT](licenses/mit)|AspNetCore internal, Core internal, SelfHost internal|
 |[protobuf-net](packages/nuget.org/protobuf-net/2.4.6)|2.4.6|[nuget.org](https://www.nuget.org/packages/protobuf-net/2.4.6)|[Apache-2.0](licenses/apache-2.0)|ProtoBuf|
 |[Shouldly](packages/nuget.org/shouldly/3.0.2)|3.0.2|[nuget.org](https://www.nuget.org/packages/Shouldly/3.0.2)|[BSD-2-Clause](licenses/bsd-2-clause)|Core internal|
-|[StyleCop.Analyzers](packages/nuget.org/stylecop.analyzers/1.1.118)|1.1.118|[nuget.org](https://www.nuget.org/packages/StyleCop.Analyzers/1.1.118)|[Apache-2.0](licenses/apache-2.0)|AspNetCore internal, Core internal, ProtoBuf internal, SelfHost internal|
+|[StyleCop.Analyzers.Unstable](packages/nuget.org/stylecop.analyzers.unstable/1.2.0.164)|1.2.0.164|[nuget.org](https://www.nuget.org/packages/StyleCop.Analyzers.Unstable/1.2.0.164)|[Apache-2.0](licenses/apache-2.0)|AspNetCore internal, Core internal, ProtoBuf internal, SelfHost internal|
 |[System.AppContext](packages/nuget.org/system.appcontext/4.1.0)|4.1.0|[nuget.org](https://www.nuget.org/packages/System.AppContext/4.1.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, SelfHost internal|
 |[System.Buffers](packages/nuget.org/system.buffers/4.4.0)|4.4.0|[nuget.org](https://www.nuget.org/packages/System.Buffers/4.4.0)|[MIT](licenses/mit)|Core, SelfHost|
 |[System.Collections.NonGeneric](packages/nuget.org/system.collections.nongeneric/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Collections.NonGeneric/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, SelfHost internal|

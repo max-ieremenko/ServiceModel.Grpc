@@ -21,7 +21,12 @@ namespace ServiceModel.Grpc.Internal
 {
     internal sealed class InterfaceDescription
     {
-        public Type InterfaceType { get; set; }
+        public InterfaceDescription(Type interfaceType)
+        {
+            InterfaceType = interfaceType;
+        }
+
+        public Type InterfaceType { get; }
 
         public IList<MethodDescription> Methods { get; } = new List<MethodDescription>();
 

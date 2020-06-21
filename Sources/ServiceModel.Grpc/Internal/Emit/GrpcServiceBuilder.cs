@@ -90,7 +90,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         {
             _initializeHeadersMarshallerMethod.Emit(OpCodes.Ret);
 
-            var type = _typeBuilder.CreateTypeInfo();
+            var type = _typeBuilder.CreateTypeInfo()!;
 
             var defineGrpcMethod = (Action<IMarshallerFactory>)type
                 .StaticMethod("InitializeHeadersMarshaller")
@@ -149,7 +149,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ret);
         }
 
-        private void BuildClientStreaming(ILGenerator body, MessageAssembler message, FieldBuilder headersMarshallerFiled)
+        private void BuildClientStreaming(ILGenerator body, MessageAssembler message, FieldBuilder? headersMarshallerFiled)
         {
             DeclareHeaderValues(body, message, headersMarshallerFiled, 2);
 
@@ -235,7 +235,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ret);
         }
 
-        private void BuildDuplexStreaming(ILGenerator body, MessageAssembler message, FieldBuilder headersMarshallerFiled)
+        private void BuildDuplexStreaming(ILGenerator body, MessageAssembler message, FieldBuilder? headersMarshallerFiled)
         {
             DeclareHeaderValues(body, message, headersMarshallerFiled, 3);
 
@@ -369,14 +369,14 @@ namespace ServiceModel.Grpc.Internal.Emit
         {
             var propertyName = "Value" + (Array.IndexOf(message.HeaderRequestTypeInput, parameterIndex) + 1);
             body.Emit(OpCodes.Ldloc_0); // headers
-            body.Emit(OpCodes.Callvirt, message.HeaderRequestType.InstanceProperty(propertyName).GetMethod); // headers.Value1
+            body.Emit(OpCodes.Callvirt, message.HeaderRequestType!.InstanceProperty(propertyName).GetMethod); // headers.Value1
         }
 
-        private void DeclareHeaderValues(ILGenerator body, MessageAssembler message, FieldBuilder headersMarshallerFiled, int contextParameterIndex)
+        private void DeclareHeaderValues(ILGenerator body, MessageAssembler message, FieldBuilder? headersMarshallerFiled, int contextParameterIndex)
         {
             if (headersMarshallerFiled != null)
             {
-                body.DeclareLocal(message.HeaderRequestType); // var headers
+                body.DeclareLocal(message.HeaderRequestType!); // var headers
 
                 body.Emit(OpCodes.Ldsfld, headersMarshallerFiled); // static Marshaller<>
                 body.EmitLdarg(contextParameterIndex); // context
@@ -396,7 +396,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Callvirt, _contractType.InstanceMethod(message.Operation.Name, parameters));
         }
 
-        private FieldBuilder InitializeHeadersMarshaller(MessageAssembler message)
+        private FieldBuilder? InitializeHeadersMarshaller(MessageAssembler message)
         {
             if (message.HeaderRequestType == null)
             {

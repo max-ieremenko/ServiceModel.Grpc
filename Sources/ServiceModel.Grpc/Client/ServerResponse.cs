@@ -22,9 +22,9 @@ namespace ServiceModel.Grpc.Client
     internal readonly struct ServerResponse
     {
         private readonly Status _responseStatus;
-        private readonly Metadata _responseTrailers;
-        private readonly Func<Status> _getResponseStatus;
-        private readonly Func<Metadata> _getResponseTrailers;
+        private readonly Metadata? _responseTrailers;
+        private readonly Func<Status>? _getResponseStatus;
+        private readonly Func<Metadata>? _getResponseTrailers;
 
         public ServerResponse(Metadata responseHeaders, Status responseStatus, Metadata responseTrailers)
         {
@@ -54,7 +54,7 @@ namespace ServiceModel.Grpc.Client
 
         public Metadata ResponseHeaders { get; }
 
-        public Status ResponseStatus
+        public Status? ResponseStatus
         {
             get
             {
@@ -67,7 +67,7 @@ namespace ServiceModel.Grpc.Client
             }
         }
 
-        public Metadata ResponseTrailers
+        public Metadata? ResponseTrailers
         {
             get
             {

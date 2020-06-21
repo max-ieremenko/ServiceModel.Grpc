@@ -27,12 +27,8 @@ namespace ServiceModel.Grpc.TestApi.Domain
         public ExceptionDetail(Exception error)
         {
             Messages = Expand(error).Select(i => i.Message).ToArray();
-            ErrorType = error.GetType().FullName;
-            Stack = error.StackTrace;
-        }
-
-        public ExceptionDetail()
-        {
+            ErrorType = error.GetType().FullName!;
+            Stack = error.StackTrace!;
         }
 
         [DataMember]

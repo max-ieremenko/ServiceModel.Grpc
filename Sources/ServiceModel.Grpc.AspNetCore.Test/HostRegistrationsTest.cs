@@ -32,11 +32,11 @@ namespace ServiceModel.Grpc.AspNetCore
     [TestFixture]
     public class HostRegistrationsTest
     {
-        private KestrelHost _host;
-        private List<Metadata.Entry> _clientMetadata;
-        private IServerErrorHandler _globalErrorHandler;
-        private IServerErrorHandler _localErrorHandler;
-        private IErrorService _domainService;
+        private KestrelHost _host = null!;
+        private List<Metadata.Entry> _clientMetadata = null!;
+        private IServerErrorHandler _globalErrorHandler = null!;
+        private IServerErrorHandler _localErrorHandler = null!;
+        private IErrorService _domainService = null!;
 
         [SetUp]
         public void BeforeEachTest()

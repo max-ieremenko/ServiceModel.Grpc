@@ -125,7 +125,7 @@ namespace ServiceModel.Grpc.Configuration
             var bigMessage = Activator.CreateInstance(
                 bigMessageType,
                 Enumerable.Range(0, 1000).Select(i => new Person { Name = "name " + i }).Cast<object>().ToArray());
-            yield return bigMessage;
+            yield return bigMessage!;
         }
     }
 }

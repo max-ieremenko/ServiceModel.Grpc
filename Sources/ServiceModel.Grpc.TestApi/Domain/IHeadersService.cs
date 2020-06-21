@@ -24,18 +24,18 @@ namespace ServiceModel.Grpc.TestApi.Domain
     public interface IHeadersService
     {
         [OperationContract]
-        string GetRequestHeader(string headerName, CallContext context = default);
+        string? GetRequestHeader(string headerName, CallContext? context = default);
 
         [OperationContract]
-        Task WriteResponseHeader(string headerName, string headerValue, CallContext context = default);
+        Task WriteResponseHeader(string headerName, string headerValue, CallContext? context = default);
 
         [OperationContract]
-        IAsyncEnumerable<int> ServerStreamingWriteResponseHeader(string headerName, string headerValue, CallContext context = default);
+        IAsyncEnumerable<int> ServerStreamingWriteResponseHeader(string headerName, string headerValue, CallContext? context = default);
 
         [OperationContract]
-        Task<string> ClientStreaming(IAsyncEnumerable<int> values, CallContext context = default);
+        Task<string> ClientStreaming(IAsyncEnumerable<int> values, CallContext? context = default);
 
         [OperationContract]
-        IAsyncEnumerable<string> DuplexStreaming(IAsyncEnumerable<int> values, CallContext context = default);
+        IAsyncEnumerable<string> DuplexStreaming(IAsyncEnumerable<int> values, CallContext? context = default);
     }
 }

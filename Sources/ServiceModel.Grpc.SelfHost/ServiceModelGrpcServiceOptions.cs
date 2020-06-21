@@ -31,21 +31,21 @@ namespace Grpc.Core
         /// <summary>
         /// Gets or sets a factory for serializing and deserializing messages.
         /// </summary>
-        public IMarshallerFactory MarshallerFactory { get; set; }
+        public IMarshallerFactory? MarshallerFactory { get; set; }
 
         /// <summary>
         /// Gets or sets a server call error handler.
         /// </summary>
-        public IServerErrorHandler ErrorHandler { get; set; }
+        public IServerErrorHandler? ErrorHandler { get; set; }
 
         /// <summary>
         /// Gets or sets logger to handle possible output from service binding process.
         /// </summary>
-        public ILogger Logger { get; set; }
+        public ILogger? Logger { get; set; }
 
         /// <summary>
         /// Gets or sets a method for additional <see cref="ServerServiceDefinition"/> configuration.
         /// </summary>
-        public Func<ServerServiceDefinition, ServerServiceDefinition> ConfigureServiceDefinition { get; set; }
+        public Func<ServerServiceDefinition, ServerServiceDefinition>? ConfigureServiceDefinition { get; set; }
     }
 }

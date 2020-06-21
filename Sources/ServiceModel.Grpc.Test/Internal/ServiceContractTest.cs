@@ -86,7 +86,7 @@ namespace ServiceModel.Grpc.Internal
         {
             var method = typeof(IServiceContract).GetMethod(methodName);
 
-            ServiceContract.GetServiceOperationName(method).ShouldBe(expected);
+            ServiceContract.GetServiceOperationName(method!).ShouldBe(expected);
         }
 
         [Test]

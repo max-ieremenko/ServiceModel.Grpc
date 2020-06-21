@@ -27,8 +27,8 @@ namespace ServiceModel.Grpc.Interceptors.Internal
     [TestFixture]
     public class ServerCallErrorInterceptorTest
     {
-        private ServerCallErrorInterceptor _sut;
-        private Mock<IServerErrorHandler> _errorHandler;
+        private ServerCallErrorInterceptor _sut = null!;
+        private Mock<IServerErrorHandler> _errorHandler = null!;
         private ServerCallInterceptorContext _context;
 
         [SetUp]

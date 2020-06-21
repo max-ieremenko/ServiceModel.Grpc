@@ -24,18 +24,18 @@ namespace ServiceModel.Grpc.TestApi.Domain
 {
     public sealed class MultipurposeService : IMultipurposeService
     {
-        public string Concat(string value, CallContext context)
+        public string Concat(string value, CallContext? context)
         {
-            context.ServerCallContext.ShouldNotBeNull();
+            context?.ServerCallContext.ShouldNotBeNull();
 
-            return value + context.ServerCallContext.RequestHeaders.First(i => i.Key == "value").Value;
+            return value + context!.ServerCallContext!.RequestHeaders.First(i => i.Key == "value").Value;
         }
 
-        public Task<string> ConcatAsync(string value, CallContext context)
+        public Task<string> ConcatAsync(string value, CallContext? context)
         {
-            context.ServerCallContext.ShouldNotBeNull();
+            context?.ServerCallContext.ShouldNotBeNull();
 
-            var result = value + context.ServerCallContext.RequestHeaders.First(i => i.Key == "value").Value;
+            var result = value + context!.ServerCallContext!.RequestHeaders.First(i => i.Key == "value").Value;
             return Task.FromResult(result);
         }
 
@@ -44,7 +44,7 @@ namespace ServiceModel.Grpc.TestApi.Domain
             return new ValueTask<long>(x1 + x2 + x3 + x4 + x5);
         }
 
-        public async IAsyncEnumerable<string> RepeatValue(string value, int count, CallContext context)
+        public async IAsyncEnumerable<string> RepeatValue(string value, int count, CallContext? context)
         {
             for (var i = 0; i < count; i++)
             {
@@ -53,16 +53,16 @@ namespace ServiceModel.Grpc.TestApi.Domain
             }
         }
 
-        public async Task<IAsyncEnumerable<string>> RepeatValueAsync(string value, int count, CallContext context)
+        public async Task<IAsyncEnumerable<string>> RepeatValueAsync(string value, int count, CallContext? context)
         {
             await Task.Delay(100);
             return RepeatValue(value, count, context);
         }
 
-        public async Task<long> SumValues(IAsyncEnumerable<int> values, CallContext context)
+        public async Task<long> SumValues(IAsyncEnumerable<int> values, CallContext? context)
         {
             var result = 0;
-            await foreach (var i in values.WithCancellation(context.ServerCallContext.CancellationToken))
+            await foreach (var i in values.WithCancellation(context!.ServerCallContext!.CancellationToken))
             {
                 result += i;
             }
@@ -70,11 +70,11 @@ namespace ServiceModel.Grpc.TestApi.Domain
             return result;
         }
 
-        public async Task<long> MultiplyByAndSumValues(IAsyncEnumerable<int> values, int multiplier, CallContext context)
+        public async Task<long> MultiplyByAndSumValues(IAsyncEnumerable<int> values, int multiplier, CallContext? context)
         {
             var result = 0;
 
-            await foreach (var i in values.WithCancellation(context.ServerCallContext.CancellationToken))
+            await foreach (var i in values.WithCancellation(context!.ServerCallContext!.CancellationToken))
             {
                 result += i * multiplier;
             }
@@ -82,23 +82,23 @@ namespace ServiceModel.Grpc.TestApi.Domain
             return result;
         }
 
-        public async IAsyncEnumerable<string> ConvertValues(IAsyncEnumerable<int> values, CallContext context)
+        public async IAsyncEnumerable<string> ConvertValues(IAsyncEnumerable<int> values, CallContext? context)
         {
-            await foreach (var i in values.WithCancellation(context.ServerCallContext.CancellationToken))
+            await foreach (var i in values.WithCancellation(context!.ServerCallContext!.CancellationToken))
             {
                 yield return i.ToString();
             }
         }
 
-        public async IAsyncEnumerable<int> MultiplyBy(IAsyncEnumerable<int> values, int multiplier, CallContext context)
+        public async IAsyncEnumerable<int> MultiplyBy(IAsyncEnumerable<int> values, int multiplier, CallContext? context)
         {
-            await foreach (var i in values.WithCancellation(context.ServerCallContext.CancellationToken))
+            await foreach (var i in values.WithCancellation(context!.ServerCallContext!.CancellationToken))
             {
                 yield return i * multiplier;
             }
         }
 
-        public async ValueTask<IAsyncEnumerable<int>> MultiplyByAsync(IAsyncEnumerable<int> values, int multiplier, CallContext context)
+        public async ValueTask<IAsyncEnumerable<int>> MultiplyByAsync(IAsyncEnumerable<int> values, int multiplier, CallContext? context)
         {
             await Task.Delay(100);
             return MultiplyBy(values, multiplier, context);

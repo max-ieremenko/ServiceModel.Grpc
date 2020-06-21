@@ -24,7 +24,7 @@ namespace ServiceModel.Grpc.Internal.IO
     public class BufferReaderStreamTest
     {
         private readonly byte[] _sequence = { 1, 2, 3 };
-        private BufferReaderStream _sut;
+        private BufferReaderStream _sut = null!;
 
         [SetUp]
         public void BeforeEachTest()

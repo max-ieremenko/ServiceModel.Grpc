@@ -26,7 +26,7 @@ namespace ServiceModel.Grpc.SelfHost
     [TestFixture]
     public class ExceptionHandlingTest : ExceptionHandlingTestBase
     {
-        private ServerHost _host;
+        private ServerHost _host = null!;
 
         [OneTimeSetUp]
         public void BeforeAll()

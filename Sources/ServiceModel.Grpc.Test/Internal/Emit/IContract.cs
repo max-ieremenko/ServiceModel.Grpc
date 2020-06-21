@@ -45,7 +45,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         string ReturnString();
 
         [OperationContract]
-        Task<string> ReturnStringAsync(ServerCallContext context = default);
+        Task<string> ReturnStringAsync(ServerCallContext? context = default);
 
         [OperationContract]
         ValueTask<bool> ReturnValueTaskBoolAsync();

@@ -29,8 +29,8 @@ namespace ServiceModel.Grpc.Internal.Emit
     [TestFixture]
     public class GrpcServiceBuilderGenericTest
     {
-        private Type _channelType;
-        private Mock<IGenericContract<int, string>> _service;
+        private Type _channelType = null!;
+        private Mock<IGenericContract<int, string>> _service = null!;
 
         [OneTimeSetUp]
         public void BeforeAllTest()

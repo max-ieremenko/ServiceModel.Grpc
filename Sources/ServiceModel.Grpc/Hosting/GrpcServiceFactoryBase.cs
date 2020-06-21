@@ -30,7 +30,7 @@ namespace ServiceModel.Grpc.Hosting
         private readonly IMarshallerFactory _marshallerFactory;
         private readonly Type _serviceType;
 
-        protected GrpcServiceFactoryBase(ILogger logger, IMarshallerFactory marshallerFactory, string hostId)
+        protected GrpcServiceFactoryBase(ILogger logger, IMarshallerFactory? marshallerFactory, string hostId)
         {
             logger.AssertNotNull(nameof(logger));
 

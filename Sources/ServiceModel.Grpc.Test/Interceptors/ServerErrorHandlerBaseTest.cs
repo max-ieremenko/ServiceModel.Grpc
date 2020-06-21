@@ -27,9 +27,9 @@ namespace ServiceModel.Grpc.Interceptors
     [TestFixture]
     public class ServerErrorHandlerBaseTest
     {
-        private Mock<ServerErrorHandlerBase> _sut;
-        private Mock<ServerCallContext> _rpcContext;
-        private CancellationTokenSource _tokenSource;
+        private Mock<ServerErrorHandlerBase> _sut = null!;
+        private Mock<ServerCallContext> _rpcContext = null!;
+        private CancellationTokenSource _tokenSource = null!;
         private ServerCallInterceptorContext _errorContext;
 
         [SetUp]

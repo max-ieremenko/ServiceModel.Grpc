@@ -14,15 +14,15 @@
 // limitations under the License.
 // </copyright>
 
-using System.Reflection;
+#if !NETSTANDARD2_1
+namespace System.Diagnostics.CodeAnalysis
+{
+    [AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
+    internal sealed class MaybeNullWhenAttribute : Attribute
+    {
+        public MaybeNullWhenAttribute(bool returnValue) => ReturnValue = returnValue;
 
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("ServiceModel.Grpc")]
-[assembly: AssemblyProduct("ServiceModel.Grpc")]
-[assembly: AssemblyCopyright("Copyright © 2020 Maksym Ieremenko")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-
-[assembly: AssemblyVersion("1.1.0.0")]
-[assembly: AssemblyFileVersion("1.1.0.0")]
-[assembly: AssemblyInformationalVersion("1.1.0")]
+        public bool ReturnValue { get; }
+    }
+}
+#endif

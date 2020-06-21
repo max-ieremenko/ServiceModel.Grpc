@@ -24,7 +24,7 @@ namespace ServiceModel.Grpc.TestApi
 {
     public abstract class MultipurposeServiceTestBase
     {
-        protected IMultipurposeService DomainService { get; set; }
+        protected IMultipurposeService DomainService { get; set; } = null!;
 
         [Test]
         public void ConcatB()

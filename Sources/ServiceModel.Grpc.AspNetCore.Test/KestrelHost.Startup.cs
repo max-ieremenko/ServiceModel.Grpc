@@ -26,10 +26,10 @@ namespace ServiceModel.Grpc.AspNetCore
 {
     internal partial class KestrelHost
     {
-        private static IMarshallerFactory _marshallerFactory;
-        private static Action<IServiceCollection> _configureServices;
-        private static Action<IApplicationBuilder> _configureApp;
-        private static Action<IEndpointRouteBuilder> _configureEndpoints;
+        private static IMarshallerFactory? _marshallerFactory;
+        private static Action<IServiceCollection>? _configureServices;
+        private static Action<IApplicationBuilder>? _configureApp;
+        private static Action<IEndpointRouteBuilder>? _configureEndpoints;
 
         private sealed class Startup
         {

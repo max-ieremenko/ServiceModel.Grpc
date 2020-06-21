@@ -22,7 +22,7 @@ namespace ServiceModel.Grpc.Internal.IO
     [TestFixture]
     public class BufferWriterTest
     {
-        private BufferWriter<int> _sut;
+        private BufferWriter<int> _sut = null!;
 
         [SetUp]
         public void BeforeEachTest()

@@ -29,7 +29,7 @@ namespace ServiceModel.Grpc.Client
         /// </summary>
         /// <typeparam name="TContract">The service contract type.</typeparam>
         /// <param name="configure">The configuration action.</param>
-        void AddClient<TContract>(Action<ServiceModelGrpcClientOptions> configure = null)
+        void AddClient<TContract>(Action<ServiceModelGrpcClientOptions>? configure = null)
             where TContract : class;
 
         /// <summary>

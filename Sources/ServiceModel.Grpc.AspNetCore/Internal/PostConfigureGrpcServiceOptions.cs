@@ -45,8 +45,8 @@ namespace ServiceModel.Grpc.AspNetCore.Internal
 
         internal static void AddErrorHandler(
             InterceptorCollection interceptors,
-            Func<IServiceProvider, IServerErrorHandler> errorHandlerFactory,
-            IMarshallerFactory marshallerFactory)
+            Func<IServiceProvider, IServerErrorHandler>? errorHandlerFactory,
+            IMarshallerFactory? marshallerFactory)
         {
             if (errorHandlerFactory != null)
             {

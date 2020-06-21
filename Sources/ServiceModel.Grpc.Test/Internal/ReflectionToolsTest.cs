@@ -48,7 +48,7 @@ namespace ServiceModel.Grpc.Internal
 
             actual.ShouldNotBeNull();
 
-            actual.GetCustomAttribute<DescriptionAttribute>().Description.ShouldBe(expected);
+            actual.GetCustomAttribute<DescriptionAttribute>()!.Description.ShouldBe(expected);
         }
 
         [Test]

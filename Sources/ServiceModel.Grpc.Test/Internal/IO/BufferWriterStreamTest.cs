@@ -22,8 +22,8 @@ namespace ServiceModel.Grpc.Internal.IO
     [TestFixture]
     public class BufferWriterStreamTest
     {
-        private BufferWriter<byte> _writer;
-        private BufferWriterStream _sut;
+        private BufferWriter<byte> _writer = null!;
+        private BufferWriterStream _sut = null!;
 
         [SetUp]
         public void BeforeEachTest()

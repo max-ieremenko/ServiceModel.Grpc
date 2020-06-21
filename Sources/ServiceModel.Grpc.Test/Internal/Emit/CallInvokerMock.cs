@@ -25,7 +25,7 @@ namespace ServiceModel.Grpc.Internal.Emit
 {
     internal static class CallInvokerMock
     {
-        public static void SetupBlockingUnaryCall(this Mock<CallInvoker> invoker, Action<CallOptions> callOptions = null)
+        public static void SetupBlockingUnaryCall(this Mock<CallInvoker> invoker, Action<CallOptions>? callOptions = null)
         {
             invoker
                 .Setup(i => i.BlockingUnaryCall(
@@ -41,7 +41,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 .Returns(new Message());
         }
 
-        public static void SetupBlockingUnaryCallOut<TResponse>(this Mock<CallInvoker> invoker, TResponse response, Action<CallOptions> callOptions = null)
+        public static void SetupBlockingUnaryCallOut<TResponse>(this Mock<CallInvoker> invoker, TResponse response, Action<CallOptions>? callOptions = null)
         {
             invoker
                 .Setup(i => i.BlockingUnaryCall(
@@ -57,7 +57,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 .Returns(new Message<TResponse>(response));
         }
 
-        public static void SetupBlockingUnaryCallIn<TRequest>(this Mock<CallInvoker> invoker, TRequest request, Action<CallOptions> callOptions = null)
+        public static void SetupBlockingUnaryCallIn<TRequest>(this Mock<CallInvoker> invoker, TRequest request, Action<CallOptions>? callOptions = null)
         {
             invoker
                 .Setup(i => i.BlockingUnaryCall(
@@ -78,7 +78,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             this Mock<CallInvoker> invoker,
             TRequest request,
             TResponse response,
-            Action<CallOptions> callOptions = null)
+            Action<CallOptions>? callOptions = null)
         {
             invoker
                 .Setup(i => i.BlockingUnaryCall(
@@ -100,7 +100,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             TRequest1 request1,
             TRequest2 request2,
             TResponse response,
-            Action<CallOptions> callOptions = null)
+            Action<CallOptions>? callOptions = null)
         {
             invoker
                 .Setup(i => i.BlockingUnaryCall(
@@ -118,7 +118,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 .Returns(new Message<TResponse>(response));
         }
 
-        public static void SetupAsyncUnaryCall(this Mock<CallInvoker> invoker, Action<CallOptions> callOptions = null)
+        public static void SetupAsyncUnaryCall(this Mock<CallInvoker> invoker, Action<CallOptions>? callOptions = null)
         {
             invoker
                 .Setup(i => i.AsyncUnaryCall(
@@ -142,7 +142,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                     null));
         }
 
-        public static void SetupAsyncUnaryCallOut<TResponse>(this Mock<CallInvoker> invoker, TResponse response, Action<CallOptions> callOptions = null)
+        public static void SetupAsyncUnaryCallOut<TResponse>(this Mock<CallInvoker> invoker, TResponse response, Action<CallOptions>? callOptions = null)
         {
             invoker
                 .Setup(i => i.AsyncUnaryCall(
@@ -166,7 +166,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                     null));
         }
 
-        public static void SetupAsyncUnaryCallIn<TRequest>(this Mock<CallInvoker> invoker, TRequest request, Action<CallOptions> callOptions = null)
+        public static void SetupAsyncUnaryCallIn<TRequest>(this Mock<CallInvoker> invoker, TRequest request, Action<CallOptions>? callOptions = null)
         {
             invoker
                 .Setup(i => i.AsyncUnaryCall(
@@ -197,7 +197,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             TRequest2 request2,
             TRequest3 request3,
             TResponse response,
-            Action<CallOptions> callOptions = null)
+            Action<CallOptions>? callOptions = null)
         {
             invoker
                 .Setup(i => i.AsyncUnaryCall(
@@ -227,7 +227,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         public static void SetupAsyncServerStreamingCall<TResponse>(
             this Mock<CallInvoker> invoker,
             IAsyncStreamReader<Message<TResponse>> responseStream,
-            Action<CallOptions> callOptions = null)
+            Action<CallOptions>? callOptions = null)
         {
             invoker
                 .Setup(i => i.AsyncServerStreamingCall(
@@ -255,7 +255,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             this Mock<CallInvoker> invoker,
             TRequest request,
             IAsyncStreamReader<Message<TResponse>> responseStream,
-            Action<CallOptions> callOptions = null)
+            Action<CallOptions>? callOptions = null)
         {
             invoker
                 .Setup(i => i.AsyncServerStreamingCall(
@@ -285,7 +285,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             TRequest1 request1,
             TRequest2 request2,
             IAsyncStreamReader<Message<TResponse>> responseStream,
-            Action<CallOptions> callOptions = null)
+            Action<CallOptions>? callOptions = null)
         {
             invoker
                 .Setup(i => i.AsyncServerStreamingCall(
@@ -314,7 +314,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         public static void SetupAsyncClientStreamingCall<TRequest>(
             this Mock<CallInvoker> invoker,
             IClientStreamWriter<Message<TRequest>> requestStream,
-            Action<CallOptions> callOptions = null)
+            Action<CallOptions>? callOptions = null)
         {
             invoker
                 .Setup(i => i.AsyncClientStreamingCall(
@@ -342,7 +342,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             this Mock<CallInvoker> invoker,
             IClientStreamWriter<Message<TRequest>> requestStream,
             TResponse response,
-            Action<CallOptions> callOptions = null)
+            Action<CallOptions>? callOptions = null)
         {
             invoker
                 .Setup(i => i.AsyncClientStreamingCall(
@@ -370,7 +370,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             this Mock<CallInvoker> invoker,
             IClientStreamWriter<Message<TRequest>> requestStream,
             IAsyncStreamReader<Message<TResponse>> responseStream,
-            Action<CallOptions> callOptions = null)
+            Action<CallOptions>? callOptions = null)
         {
             invoker
                 .Setup(i => i.AsyncDuplexStreamingCall(

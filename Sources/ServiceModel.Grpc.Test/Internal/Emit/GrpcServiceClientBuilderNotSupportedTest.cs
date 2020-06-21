@@ -27,10 +27,10 @@ namespace ServiceModel.Grpc.Internal.Emit
     [TestFixture]
     public class GrpcServiceClientBuilderNotSupportedTest
     {
-        private Func<IInvalidContract> _factory;
-        private IInvalidContract _contract;
-        private Mock<CallInvoker> _callInvoker;
-        private LoggerMock _logger;
+        private Func<IInvalidContract> _factory = null!;
+        private IInvalidContract _contract = null!;
+        private Mock<CallInvoker> _callInvoker = null!;
+        private LoggerMock _logger = null!;
 
         [OneTimeSetUp]
         public void BeforeAllTests()
@@ -83,7 +83,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         [Test]
         public void DisposableIsNotServiceContract()
         {
-            var log = _logger.Debug.Find(i => i.Contains(typeof(IDisposable).FullName));
+            var log = _logger.Debug.Find(i => i.Contains(typeof(IDisposable).FullName!));
             log.ShouldNotBeNull();
 
             var ex = Assert.Throws<NotSupportedException>(() => _contract.Dispose());

@@ -31,7 +31,7 @@ namespace ServiceModel.Grpc.TestApi
             { "defaultHeader", "defaultHeader value" }
         };
 
-        protected IHeadersService DomainService { get; set; }
+        protected IHeadersService DomainService { get; set; } = null!;
 
         [Test]
         public void GetDefaultRequestHeader()
