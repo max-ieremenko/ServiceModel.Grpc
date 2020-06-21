@@ -25,6 +25,9 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>gRPC grpc-dotnet servicemodel wcf code-first</PackageTags>
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);AdditionalPackageContent</TargetsForTfmSpecificContentInPackage>
+
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
