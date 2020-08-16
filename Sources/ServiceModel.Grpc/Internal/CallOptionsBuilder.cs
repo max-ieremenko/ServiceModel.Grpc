@@ -22,6 +22,13 @@ using System.Threading;
 using Grpc.Core;
 using ServiceModel.Grpc.Internal.IO;
 
+#pragma warning disable SA1642 // Constructor summary documentation should begin with standard text
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable SA1611 // Element parameters should be documented
+#pragma warning disable SA1604 // Element documentation should have summary
+#pragma warning disable SA1615 // Element return value should be documented
+#pragma warning disable SA1618 // Generic type parameters should be documented
+
 namespace ServiceModel.Grpc.Internal
 {
     /// <summary>
@@ -34,23 +41,27 @@ namespace ServiceModel.Grpc.Internal
     {
         private CallOptions _options;
 
+        /// <exclude />
         public CallOptionsBuilder(Func<CallOptions>? defaultOptionsFactory)
         {
             _options = defaultOptionsFactory?.Invoke() ?? default;
         }
 
+        /// <exclude />
         public CallOptionsBuilder WithCallOptions(CallOptions options)
         {
             _options = MergeCallOptions(_options, options);
             return this;
         }
 
+        /// <exclude />
         public CallOptionsBuilder WithCancellationToken(CancellationToken token)
         {
             _options = MergeCallOptions(_options, new CallOptions(cancellationToken: token));
             return this;
         }
 
+        /// <exclude />
         public CallOptionsBuilder WithCallContext(CallContext? context)
         {
             var options = context?.CallOptions;
@@ -62,6 +73,7 @@ namespace ServiceModel.Grpc.Internal
             return this;
         }
 
+        /// <exclude />
         public CallOptionsBuilder WithServerCallContext(ServerCallContext? context)
         {
             if (context != null)
@@ -72,12 +84,14 @@ namespace ServiceModel.Grpc.Internal
             return this;
         }
 
+        /// <exclude />
         public CallOptionsBuilder WithMethodInputHeader<T>(Marshaller<T> marshaller, T value)
         {
             var metadata = GetMethodInputHeader(marshaller, value);
             return WithCallOptions(new CallOptions(metadata));
         }
 
+        /// <exclude />
         public CallOptions Build() => _options;
 
         internal static Metadata GetMethodInputHeader<T>(Marshaller<T> marshaller, T value)

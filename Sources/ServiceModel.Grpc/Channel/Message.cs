@@ -11,18 +11,27 @@ using System.Runtime.Serialization;
 
 namespace ServiceModel.Grpc.Channel
 {
+    /// <summary>
+    /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+    /// This API may change or be removed in future releases.
+    /// </summary>
     [Serializable]
     [DataContract(Name = "m", Namespace = "s")]
     [Browsable(false)]
     [EditorBrowsable(EditorBrowsableState.Never)]
     public sealed class Message
     {
+        /// <exclude />
         public Message()
         {
         }
 
     }
 
+    /// <summary>
+    /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+    /// This API may change or be removed in future releases.
+    /// </summary>
     [Serializable]
     [DataContract(Name = "m", Namespace = "s")]
     [Browsable(false)]
@@ -31,20 +40,27 @@ namespace ServiceModel.Grpc.Channel
     {
         private T1 _value1;
 
+        /// <exclude />
         public Message()
         {
         }
 
+        /// <exclude />
         public Message(T1 value1)
         {
             _value1 = value1;
         }
 
+        /// <exclude />
         [DataMember(Name = "v1", Order = 1)]
         public T1 Value1 { get => _value1; set => _value1 = value; }
 
     }
 
+    /// <summary>
+    /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+    /// This API may change or be removed in future releases.
+    /// </summary>
     [Serializable]
     [DataContract(Name = "m", Namespace = "s")]
     [Browsable(false)]
@@ -55,24 +71,32 @@ namespace ServiceModel.Grpc.Channel
 
         private T2 _value2;
 
+        /// <exclude />
         public Message()
         {
         }
 
+        /// <exclude />
         public Message(T1 value1, T2 value2)
         {
             _value1 = value1;
             _value2 = value2;
         }
 
+        /// <exclude />
         [DataMember(Name = "v1", Order = 1)]
         public T1 Value1 { get => _value1; set => _value1 = value; }
 
+        /// <exclude />
         [DataMember(Name = "v2", Order = 2)]
         public T2 Value2 { get => _value2; set => _value2 = value; }
 
     }
 
+    /// <summary>
+    /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+    /// This API may change or be removed in future releases.
+    /// </summary>
     [Serializable]
     [DataContract(Name = "m", Namespace = "s")]
     [Browsable(false)]
@@ -85,10 +109,12 @@ namespace ServiceModel.Grpc.Channel
 
         private T3 _value3;
 
+        /// <exclude />
         public Message()
         {
         }
 
+        /// <exclude />
         public Message(T1 value1, T2 value2, T3 value3)
         {
             _value1 = value1;
@@ -96,12 +122,15 @@ namespace ServiceModel.Grpc.Channel
             _value3 = value3;
         }
 
+        /// <exclude />
         [DataMember(Name = "v1", Order = 1)]
         public T1 Value1 { get => _value1; set => _value1 = value; }
 
+        /// <exclude />
         [DataMember(Name = "v2", Order = 2)]
         public T2 Value2 { get => _value2; set => _value2 = value; }
 
+        /// <exclude />
         [DataMember(Name = "v3", Order = 3)]
         public T3 Value3 { get => _value3; set => _value3 = value; }
 

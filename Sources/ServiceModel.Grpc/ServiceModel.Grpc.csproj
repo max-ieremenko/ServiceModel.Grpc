@@ -49,14 +49,8 @@
     </Compile>
   </ItemGroup>
 
-  <Target Name="AdditionalPackageContent">
-    <ItemGroup>
-      <TfmSpecificPackageFile Include="..\..\LICENSE">
-        <PackagePath></PackagePath>
-      </TfmSpecificPackageFile>
-      <TfmSpecificPackageFile Include="..\..\build-out\CoreThirdPartyNotices.txt">
-        <PackagePath>ThirdPartyNotices.txt</PackagePath>
-      </TfmSpecificPackageFile>
-    </ItemGroup>
-  </Target>
+  <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">
+    <Content Include="..\..\LICENSE" PackagePath="" />
+    <Content Include="..\..\build-out\CoreThirdPartyNotices.txt" PackagePath="ThirdPartyNotices.txt" />
+  </ItemGroup>
 </Project>

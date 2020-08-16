@@ -24,8 +24,18 @@ using ServiceModel.Grpc.Client;
 
 namespace ServiceModel.Grpc.Internal
 {
+    /// <summary>
+    /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+    /// This API may change or be removed in future releases.
+    /// </summary>
     public static class ClientChannelAdapter
     {
+        /// <summary>
+        /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+        /// </summary>
+        /// <param name="call">Single request-response call.</param>
+        /// <param name="context">Optional call context.</param>
+        /// <returns>Call result.</returns>
         public static async Task AsyncUnaryCallWait(AsyncUnaryCall<Message> call, CallContext? context)
         {
             using (call)
@@ -48,6 +58,13 @@ namespace ServiceModel.Grpc.Internal
             }
         }
 
+        /// <summary>
+        /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+        /// </summary>
+        /// <typeparam name="T">Result type.</typeparam>
+        /// <param name="call">Single request-response call.</param>
+        /// <param name="context">Optional call context.</param>
+        /// <returns>Call result.</returns>
         public static async Task<T> GetAsyncUnaryCallResult<T>(AsyncUnaryCall<Message<T>> call, CallContext? context)
         {
             Message<T> result;
@@ -73,6 +90,14 @@ namespace ServiceModel.Grpc.Internal
             return result.Value1;
         }
 
+        /// <summary>
+        /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+        /// </summary>
+        /// <typeparam name="T">Result type.</typeparam>
+        /// <param name="call">Single request-response call.</param>
+        /// <param name="context">Optional call context.</param>
+        /// <param name="token">Cancellation token.</param>
+        /// <returns>Call result.</returns>
         public static async IAsyncEnumerable<T> GetServerStreamingCallResult<T>(
             AsyncServerStreamingCall<Message<T>> call,
             CallContext? context,
@@ -104,6 +129,15 @@ namespace ServiceModel.Grpc.Internal
             }
         }
 
+        /// <summary>
+        /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+        /// </summary>
+        /// <typeparam name="TRequest">Request type.</typeparam>
+        /// <param name="call">Single request-response call.</param>
+        /// <param name="request">The call request.</param>
+        /// <param name="context">Optional call context.</param>
+        /// <param name="token">Cancellation token.</param>
+        /// <returns>Call result.</returns>
         public static async Task WriteClientStreamingRequestWait<TRequest>(
             AsyncClientStreamingCall<Message<TRequest>, Message> call,
             IAsyncEnumerable<TRequest> request,
@@ -140,6 +174,16 @@ namespace ServiceModel.Grpc.Internal
             }
         }
 
+        /// <summary>
+        /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+        /// </summary>
+        /// <typeparam name="TRequest">Request type.</typeparam>
+        /// <typeparam name="TResponse">Response type.</typeparam>
+        /// <param name="call">Single request-response call.</param>
+        /// <param name="request">The call request.</param>
+        /// <param name="context">Optional call context.</param>
+        /// <param name="token">Cancellation token.</param>
+        /// <returns>Call result.</returns>
         public static async Task<TResponse> WriteClientStreamingRequest<TRequest, TResponse>(
             AsyncClientStreamingCall<Message<TRequest>, Message<TResponse>> call,
             IAsyncEnumerable<TRequest> request,
@@ -179,6 +223,16 @@ namespace ServiceModel.Grpc.Internal
             return result.Value1;
         }
 
+        /// <summary>
+        /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+        /// </summary>
+        /// <typeparam name="TRequest">Request type.</typeparam>
+        /// <typeparam name="TResponse">Response type.</typeparam>
+        /// <param name="call">Single request-response call.</param>
+        /// <param name="request">The call request.</param>
+        /// <param name="context">Optional call context.</param>
+        /// <param name="token">Cancellation token.</param>
+        /// <returns>Call result.</returns>
         public static async IAsyncEnumerable<TResponse> GetDuplexCallResult<TRequest, TResponse>(
             AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>> call,
             IAsyncEnumerable<TRequest> request,

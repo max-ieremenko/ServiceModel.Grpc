@@ -28,6 +28,10 @@ for (var argsCount=0; argsCount<=3; argsCount++)
     //         private T1 _value1;
     var ctorArgs = string.Join(", ", Enumerable.Range(1, argsCount).Select(i => "T" + i + " value" + i));
 #>
+    /// <summary>
+    /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+    /// This API may change or be removed in future releases.
+    /// </summary>
     [Serializable]
     [DataContract(Name = "m", Namespace = "s")]
     [Browsable(false)]
@@ -47,6 +51,7 @@ for (var argsCount=0; argsCount<=3; argsCount++)
 if (argsCount > 0)
 {
 #>
+        /// <exclude />
         public Message()
         {
         }
@@ -54,6 +59,7 @@ if (argsCount > 0)
 <#
 }
 #>
+        /// <exclude />
         public Message(<#= ctorArgs #>)
         {
 <#
@@ -70,6 +76,7 @@ if (argsCount > 0)
             for (var a=1; a<=argsCount; a++)
             {
 #>
+        /// <exclude />
         [DataMember(Name = "v<#= a #>", Order = <#= a #>)]
         public T<#= a #> Value<#= a #> { get => _value<#= a #>; set => _value<#= a #> = value; }
 
