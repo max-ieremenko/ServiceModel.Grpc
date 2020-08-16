@@ -70,6 +70,27 @@
           "Version": "4.3.0"
         }
       ]
+    },
+    {
+      "Name": "DesignTime",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp2.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.AppContext",
+          "Version": "4.1.0"
+        },
+        {
+          "Name": "System.Reflection.TypeExtensions",
+          "Version": "4.3.0"
+        },
+        {
+          "Name": "System.Runtime.InteropServices.RuntimeInformation",
+          "Version": "4.3.0"
+        }
+      ]
     }
   ],
   "Licenses": [

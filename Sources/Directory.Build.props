@@ -14,9 +14,9 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>1.1.1</Version>
-    <AssemblyVersion>1.1.1.0</AssemblyVersion>
-    <FileVersion>1.1.1.0</FileVersion>
+    <Version>1.1.2</Version>
+    <AssemblyVersion>1.1.2.0</AssemblyVersion>
+    <FileVersion>1.1.2.0</FileVersion>
     <Product>ServiceModel.Grpc</Product>
     <Authors>Max Ieremenko</Authors>
     <Description>Library that enables applications to communicate with gRPC services using code-first approach, helps to get around some limitations of gRPC protocol. Helps to migrate existing WCF solution to gRPC with minimum effort.</Description>
@@ -27,7 +27,6 @@
     <Copyright>(C) 2020 Max Ieremenko.</Copyright>
     <RepositoryType>git</RepositoryType>
     <PackageTags>gRPC grpc-dotnet servicemodel wcf code-first</PackageTags>
-    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);AdditionalPackageContent</TargetsForTfmSpecificContentInPackage>
 
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>

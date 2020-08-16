@@ -60,12 +60,10 @@
       ]
     },
     {
-      "Name": "ProtoBuf",
-      "InternalOnly": false,
+      "Name": "DesignTime",
+      "InternalOnly": true,
       "TargetFrameworks": [
-        "net461",
-        "netstandard2.0",
-        "netstandard2.1"
+        "netcoreapp2.1"
       ],
       "Dependencies": [
         {
@@ -75,10 +73,6 @@
         {
           "Name": "System.Text.RegularExpressions",
           "Version": "4.3.0"
-        },
-        {
-          "Name": "System.Threading.Tasks.Extensions",
-          "Version": "4.5.2"
         }
       ]
     }

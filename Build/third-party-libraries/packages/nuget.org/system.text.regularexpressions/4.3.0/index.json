@@ -30,18 +30,10 @@
       ]
     },
     {
-      "Name": "ProtoBuf",
-      "InternalOnly": false,
+      "Name": "DesignTime",
+      "InternalOnly": true,
       "TargetFrameworks": [
-        "net461",
-        "netstandard2.0",
-        "netstandard2.1"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Threading",
-          "Version": "4.3.0"
-        }
+        "netcoreapp2.1"
       ]
     }
   ],

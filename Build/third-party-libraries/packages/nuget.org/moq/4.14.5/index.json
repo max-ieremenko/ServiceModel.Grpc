@@ -1,0 +1,43 @@
+{
+  "License": {
+    "Code": "BSD-3-Clause",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "Core",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp2.1",
+        "netcoreapp3.1",
+        "net461"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Castle.Core",
+          "Version": "4.4.0"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": null,
+      "HRef": "https://raw.githubusercontent.com/moq/moq4/master/License.txt",
+      "Description": "License should be verified on https://raw.githubusercontent.com/moq/moq4/master/License.txt"
+    },
+    {
+      "Subject": "repository",
+      "Code": null,
+      "HRef": "https://github.com/moq/moq4",
+      "Description": "License should be verified on https://github.com/moq/moq4"
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "https://github.com/moq/moq4",
+      "Description": "License should be verified on https://github.com/moq/moq4"
+    }
+  ]
+}

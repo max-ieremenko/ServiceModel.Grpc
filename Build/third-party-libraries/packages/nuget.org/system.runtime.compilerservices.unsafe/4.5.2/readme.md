@@ -1,7 +1,7 @@
 System.Runtime.CompilerServices.Unsafe [4.5.2](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/4.5.2)
 --------------------
 
-Used by: Core, ProtoBuf, SelfHost
+Used by: AspNetCore internal, Core, DesignTime internal, SelfHost
 
 Target frameworks: net461, netcoreapp2.1, netcoreapp3.1, netstandard2.0, netstandard2.1
 
