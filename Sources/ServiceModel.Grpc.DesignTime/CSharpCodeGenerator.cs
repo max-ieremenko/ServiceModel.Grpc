@@ -26,11 +26,10 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
-using ServiceModel.Grpc.DesignTime.Internal;
 using ServiceModel.Grpc.DesignTime.Internal.CSharp;
 using ServiceModel.Grpc.Internal;
-using ServiceModel.Grpc.Internal.Emit;
 using ContractDescription = ServiceModel.Grpc.DesignTime.Internal.ContractDescription;
+using Logger = ServiceModel.Grpc.DesignTime.Internal.Logger;
 using ServiceContract = ServiceModel.Grpc.DesignTime.Internal.ServiceContract;
 
 namespace ServiceModel.Grpc.DesignTime
@@ -58,14 +57,17 @@ namespace ServiceModel.Grpc.DesignTime
         public Task<RichGenerationResult> GenerateRichAsync(TransformationContext context, IProgress<Diagnostic> progress, CancellationToken cancellationToken)
         {
             var node = (ClassDeclarationSyntax)context.ProcessingNode;
+            var logger = new Logger(progress, node, _interfaceType);
 
             if (!ServiceContract.IsServiceContractInterface(_interfaceType))
             {
-                progress.Error(node, "{0} is not service contract.".FormatWith(_interfaceType.Name));
+                logger.ErrorFormat("{0} is not service contract.", _interfaceType.Name);
                 return Task.FromResult(default(RichGenerationResult));
             }
 
             var contract = new ContractDescription(_interfaceType);
+
+            ShowWarnings(logger, contract);
 
             var owner = SyntaxFactory
                 .ClassDeclaration(node.Identifier.WithoutTrivia())
@@ -158,6 +160,27 @@ namespace ServiceModel.Grpc.DesignTime
                 if (distinct.Add(description.Properties.Length))
                 {
                     yield return new CSharpMessageBuilder(description).AsMemberDeclaration();
+                }
+            }
+        }
+
+        private void ShowWarnings(Logger logger, ContractDescription contract)
+        {
+            foreach (var interfaceDescription in contract.Interfaces)
+            {
+                logger.WarnFormat("{0}: {1} is not service contract.", _interfaceType.Name, interfaceDescription.InterfaceTypeName);
+            }
+
+            foreach (var interfaceDescription in contract.Services)
+            {
+                foreach (var method in interfaceDescription.Methods)
+                {
+                    logger.WarnFormat("{0}: {1}", _interfaceType.Name, method.Error);
+                }
+
+                foreach (var method in interfaceDescription.NotSupportedOperations)
+                {
+                    logger.WarnFormat("{0}: {1}", _interfaceType.Name, method.Error);
                 }
             }
         }
