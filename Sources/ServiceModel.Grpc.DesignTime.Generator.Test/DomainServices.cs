@@ -22,7 +22,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Test
     [ImportGrpcService(typeof(IContract))]
     [ImportGrpcService(typeof(IGenericContract<int, string>))]
     [ImportGrpcService(typeof(IInvalidContract))]
-    ////[ImportGrpcService(typeof(ISomeService))]
+    [ImportGrpcService(typeof(ISomeService))]
     ////[ImportGrpcService(typeof(IHeadersService))]
     public static partial class DomainServices
     {

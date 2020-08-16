@@ -20,7 +20,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
-using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.DesignTime.Internal
 {
@@ -32,6 +31,8 @@ namespace ServiceModel.Grpc.DesignTime.Internal
             Services = new List<InterfaceDescription>();
 
             AnalyzeServiceAndInterfaces(serviceType);
+            FindDuplicates();
+
             BaseClassName = GetBaseName(serviceType.Name);
             ContractInterfaceName = SyntaxTools.GetFullName(serviceType);
             SortAll();
@@ -150,6 +151,68 @@ namespace ServiceModel.Grpc.DesignTime.Internal
                 description.Methods.Sort((x, y) => StringComparer.Ordinal.Compare(x.Method.Name, y.Method.Name));
                 description.NotSupportedOperations.Sort((x, y) => StringComparer.Ordinal.Compare(x.Method.Name, y.Method.Name));
                 description.Operations.Sort((x, y) => StringComparer.Ordinal.Compare(x.Method.Name, y.Method.Name));
+            }
+        }
+
+        private void FindDuplicates()
+        {
+            var duplicates = Services
+                .SelectMany(s => s.Operations.Select(m => (s, m)))
+                .GroupBy(i => new OperationKey(i.m.ServiceName, i.m.OperationName))
+                .Where(i => i.Count() > 1);
+
+            foreach (var entries in duplicates)
+            {
+                var text = new StringBuilder();
+
+                foreach (var (_, operation) in entries)
+                {
+                    if (text.Length == 0)
+                    {
+                        text.AppendFormat("Operations have naming conflict [{0}/{1}]: ", operation.ServiceName, operation.OperationName);
+                    }
+                    else
+                    {
+                        text.Append(" and ");
+                    }
+
+                    text.AppendFormat(SyntaxTools.GetSignature(operation.Method.Source));
+                }
+
+                var error = text.Append(".").ToString();
+
+                foreach (var (service, operation) in entries)
+                {
+                    service.Operations.Remove(operation);
+                    service.NotSupportedOperations.Add(new NotSupportedMethodDescription(operation.Method.Source, error));
+                }
+            }
+        }
+
+        private readonly struct OperationKey : IEquatable<OperationKey>
+        {
+            private readonly string _serviceName;
+            private readonly string _operationName;
+
+            public OperationKey(string serviceName, string operationName)
+            {
+                _serviceName = serviceName;
+                _operationName = operationName;
+            }
+
+            public bool Equals(OperationKey other)
+            {
+                return StringComparer.OrdinalIgnoreCase.Equals(_serviceName, _serviceName)
+                    && StringComparer.OrdinalIgnoreCase.Equals(_operationName, _operationName);
+            }
+
+            public override bool Equals(object obj) => throw new NotSupportedException();
+
+            public override int GetHashCode()
+            {
+                var h1 = StringComparer.OrdinalIgnoreCase.GetHashCode(_serviceName);
+                var h2 = StringComparer.OrdinalIgnoreCase.GetHashCode(_operationName);
+                return ((h1 << 5) + h1) ^ h2;
             }
         }
     }

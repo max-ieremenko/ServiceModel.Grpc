@@ -20,10 +20,16 @@ using System.Threading.Tasks;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Test
 {
-    [ServiceContract]
+    [ServiceContract(Name = "Abc")]
     public interface ISomeService
     {
+        ////[OperationContract]
+        ////ValueTask<long> Sum5ValuesAsync(long x1, int x2, int x3, int x4, int x5, CancellationToken token);
+
+        [OperationContract(Name = "Sum1")]
+        ValueTask<long> Sum(long x1, int x2, CancellationToken token);
+
         [OperationContract]
-        ValueTask<long> Sum5ValuesAsync(long x1, int x2, int x3, int x4, int x5, CancellationToken token);
+        ValueTask<long> Sum(long x1, long x2, CancellationToken token);
     }
 }
