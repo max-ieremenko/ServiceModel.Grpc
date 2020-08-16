@@ -17,7 +17,6 @@
 using System;
 using Grpc.Core;
 using ServiceModel.Grpc.Internal;
-using ServiceModel.Grpc.Internal.Emit;
 
 namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
 {
@@ -401,12 +400,19 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
                 .AppendLine(".CancellationToken);");
 
             Output.Append("return ");
-            if (operation.Method.ReturnTypeSymbol.IsValueTask())
+            if (operation.IsAsync)
             {
-                Output
-                    .Append("new ")
-                    .Append(operation.Method.ReturnType)
-                    .Append("(__response)");
+                if (operation.Method.ReturnTypeSymbol.IsValueTask())
+                {
+                    Output
+                        .Append("new ")
+                        .Append(operation.Method.ReturnType)
+                        .Append("(__response)");
+                }
+                else
+                {
+                    Output.Append("Task.FromResult(__response)");
+                }
             }
             else
             {
@@ -453,6 +459,8 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
 
                     Output.Append(method.TypeArguments[i]);
                 }
+
+                Output.Append(">");
             }
 
             Output.Append("(");
@@ -463,10 +471,20 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
                     Output.Append(", ");
                 }
 
+                var p = method.Parameters[i];
+                if (p.IsOut)
+                {
+                    Output.Append("out ");
+                }
+                else if (p.IsRef)
+                {
+                    Output.Append("ref ");
+                }
+
                 Output
-                    .Append(method.Parameters[i].Type)
+                    .Append(p.Type)
                     .Append(" ")
-                    .Append(method.Parameters[i].Name);
+                    .Append(p.Name);
             }
 
             Output.AppendLine(")");

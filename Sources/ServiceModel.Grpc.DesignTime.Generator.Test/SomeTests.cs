@@ -14,17 +14,26 @@
 // limitations under the License.
 // </copyright>
 
-using ServiceModel.Grpc.TestApi.Domain;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Text;
+using NUnit.Framework;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Test
 {
-    [ImportGrpcService(typeof(IMultipurposeService))]
-    [ImportGrpcService(typeof(IContract))]
-    [ImportGrpcService(typeof(IGenericContract<int, string>))]
-    [ImportGrpcService(typeof(IInvalidContract))]
-    ////[ImportGrpcService(typeof(ISomeService))]
-    ////[ImportGrpcService(typeof(IHeadersService))]
-    public static partial class DomainServices
+    [TestFixture]
+    public class SomeTests
     {
+        [Test]
+        public void Test()
+        {
+            var type = typeof(DomainServices.GenericContractClient);
+            var methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+            foreach (var m in methods)
+            {
+                Console.WriteLine(m.Name);
+            }
+        }
     }
 }

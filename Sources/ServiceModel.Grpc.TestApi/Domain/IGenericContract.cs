@@ -16,7 +16,7 @@
 
 using System.ServiceModel;
 
-namespace ServiceModel.Grpc.Internal.Emit
+namespace ServiceModel.Grpc.TestApi.Domain
 {
     [ServiceContract]
     public interface IGenericContract<in T1, T2>

@@ -14,18 +14,22 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.ServiceModel;
+using NUnit.Framework;
+using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.TestApi;
 
-namespace ServiceModel.Grpc.Internal.Emit
+namespace ServiceModel.Grpc.DesignTime.Generator.Test
 {
-    [ServiceContract]
-    public interface IInvalidContract : IDisposable
+    [TestFixture]
+    public class CSharpClientBuilderNotSupportedTest : ClientBuilderNotSupportedTestBase
     {
-        [OperationContract]
-        void InvalidSignature(ref int value1, out int value2);
+        [OneTimeSetUp]
+        public void BeforeAllTests()
+        {
+            var builder = new DomainServices.InvalidContractClientBuilder();
+            builder.Initialize(DataContractMarshallerFactory.Default, null);
 
-        [OperationContract]
-        T2 Generic<T1, T2>(T1 value);
+            Factory = () => builder.Build(CallInvoker.Object);
+        }
     }
 }

@@ -57,6 +57,9 @@ namespace ServiceModel.Grpc.DesignTime.Internal
 
             [DisplayName("void")]
             public void C8() => throw new NotImplementedException();
+
+            [DisplayName("T2")]
+            public T2 Generic<T1, T2>(T1 value) => throw new NotImplementedException();
         }
     }
 }

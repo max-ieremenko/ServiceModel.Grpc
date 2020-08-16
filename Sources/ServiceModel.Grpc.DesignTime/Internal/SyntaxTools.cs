@@ -18,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -77,6 +76,11 @@ namespace ServiceModel.Grpc.DesignTime.Internal
 
         public static string GetFullName(ITypeSymbol type)
         {
+            if (type.Kind == SymbolKind.TypeParameter)
+            {
+                return type.Name;
+            }
+
             var result = new StringBuilder();
             WriteTypeFullName(type, result);
 
@@ -122,9 +126,25 @@ namespace ServiceModel.Grpc.DesignTime.Internal
             var result = new StringBuilder()
                 .Append(GetFullName(method.ReturnType))
                 .Append(" ")
-                .Append(method.Name)
-                .Append("(");
+                .Append(method.Name);
 
+            if (method.TypeArguments.Length != 0)
+            {
+                result.Append("<");
+                for (var i = 0; i < method.TypeArguments.Length; i++)
+                {
+                    if (i > 0)
+                    {
+                        result.Append(", ");
+                    }
+
+                    result.Append(method.TypeArguments[i]);
+                }
+
+                result.Append(">");
+            }
+
+            result.Append("(");
             for (var i = 0; i < method.Parameters.Length; i++)
             {
                 if (i > 0)
@@ -288,7 +308,8 @@ namespace ServiceModel.Grpc.DesignTime.Internal
                 || "System.Collections.Generic".Equals(ns, StringComparison.Ordinal)
                 || "System.Threading.Tasks".Equals(ns, StringComparison.Ordinal)
                 || "System.Threading".Equals(ns, StringComparison.Ordinal)
-                || "ServiceModel.Grpc".Equals(ns, StringComparison.Ordinal))
+                || "ServiceModel.Grpc".Equals(ns, StringComparison.Ordinal)
+                || "Grpc.Core".Equals(ns, StringComparison.Ordinal))
             {
                 result.Append(SimplifyTypeName(name));
                 return;

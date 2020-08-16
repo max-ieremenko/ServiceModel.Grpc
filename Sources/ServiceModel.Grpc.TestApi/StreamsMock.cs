@@ -22,9 +22,9 @@ using Grpc.Core;
 using Moq;
 using ServiceModel.Grpc.Channel;
 
-namespace ServiceModel.Grpc.Internal.Emit
+namespace ServiceModel.Grpc.TestApi
 {
-    internal static class StreamsMock
+    public static class StreamsMock
     {
         public static void Setup<T>(this Mock<IAsyncStreamReader<Message<T>>> reader, CancellationToken token, params T[] source)
         {

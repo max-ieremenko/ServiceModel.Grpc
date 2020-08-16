@@ -14,17 +14,18 @@
 // limitations under the License.
 // </copyright>
 
-using ServiceModel.Grpc.TestApi.Domain;
+using System;
+using System.ServiceModel;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Test
+namespace ServiceModel.Grpc.TestApi.Domain
 {
-    [ImportGrpcService(typeof(IMultipurposeService))]
-    [ImportGrpcService(typeof(IContract))]
-    [ImportGrpcService(typeof(IGenericContract<int, string>))]
-    [ImportGrpcService(typeof(IInvalidContract))]
-    ////[ImportGrpcService(typeof(ISomeService))]
-    ////[ImportGrpcService(typeof(IHeadersService))]
-    public static partial class DomainServices
+    [ServiceContract]
+    public interface IInvalidContract : IDisposable
     {
+        [OperationContract]
+        void InvalidSignature(ref int value1, out int value2);
+
+        [OperationContract]
+        T2 Generic<T1, T2>(T1 value);
     }
 }

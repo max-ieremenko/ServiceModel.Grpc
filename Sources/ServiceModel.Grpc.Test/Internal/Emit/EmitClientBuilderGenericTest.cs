@@ -14,23 +14,16 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using Grpc.Core;
-using Moq;
 using NUnit.Framework;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.TestApi;
-using Shouldly;
+using ServiceModel.Grpc.TestApi.Domain;
 
 namespace ServiceModel.Grpc.Internal.Emit
 {
     [TestFixture]
-    public class EmitClientBuilderGenericTest
+    public class EmitClientBuilderGenericTest : ClientBuilderGenericTestBase
     {
-        private Func<IGenericContract<int, string>> _factory = null!;
-        private IGenericContract<int, string> _contract = null!;
-        private Mock<CallInvoker> _callInvoker = null!;
-
         [OneTimeSetUp]
         public void BeforeAllTests()
         {
@@ -46,26 +39,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             var clientType = sut.Build(moduleBuilder);
             var clientFactory = sut.CreateFactory<IGenericContract<int, string>>(clientType);
 
-            _factory = () => clientFactory(_callInvoker.Object, contractFactory(DataContractMarshallerFactory.Default), null);
-        }
-
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            _callInvoker = new Mock<CallInvoker>(MockBehavior.Strict);
-            _contract = _factory();
-        }
-
-        [Test]
-        public void Invoke()
-        {
-            Console.WriteLine(_contract.GetType().InstanceMethod(nameof(IGenericContract<int, string>.Invoke)).Disassemble());
-
-            _callInvoker.SetupBlockingUnaryCallInOut(3, "4", "34");
-
-            _contract.Invoke(3, "4").ShouldBe("34");
-
-            _callInvoker.VerifyAll();
+            Factory = () => clientFactory(CallInvoker.Object, contractFactory(DataContractMarshallerFactory.Default), null);
         }
     }
 }

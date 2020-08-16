@@ -20,6 +20,7 @@ using System.Reflection;
 using NUnit.Framework;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.TestApi;
+using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
 using Shouldly.ShouldlyExtensionMethods;
 

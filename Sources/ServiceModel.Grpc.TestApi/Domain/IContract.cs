@@ -21,7 +21,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Internal.Emit
+namespace ServiceModel.Grpc.TestApi.Domain
 {
     [ServiceContract]
     public interface IContract : IDisposable

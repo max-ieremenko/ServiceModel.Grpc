@@ -37,8 +37,8 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
 
             using (Output.Indent())
             {
-                BuildCtor();
                 BuildFields();
+                BuildCtor();
                 BuildMethodInitialize();
                 BuildMethodBuild();
             }

@@ -14,32 +14,35 @@
 // limitations under the License.
 // </copyright>
 
+using System;
+using System.Reflection;
 using NUnit.Framework;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 
-namespace ServiceModel.Grpc.Internal.Emit
+namespace ServiceModel.Grpc.DesignTime.Generator.Test
 {
     [TestFixture]
-    public class EmitClientBuilderNotSupportedTest : ClientBuilderNotSupportedTestBase
+    public class CSharpClientBuilderTest : ClientBuilderTestBase
     {
         [OneTimeSetUp]
         public void BeforeAllTests()
         {
-            var description = new ContractDescription(typeof(IInvalidContract));
+            var builder = new DomainServices.ContractClientBuilder();
+            builder.Initialize(DataContractMarshallerFactory.Default, null);
 
-            var moduleBuilder = ProxyAssembly.CreateModule(nameof(EmitClientBuilderNotSupportedTest));
+            Factory = () => builder.Build(CallInvoker.Object);
+        }
 
-            var contractBuilder = new EmitContractBuilder(description);
-            var contractType = contractBuilder.Build(moduleBuilder);
-            var contractFactory = EmitContractBuilder.CreateFactory(contractType);
+        protected override MethodInfo GetClientInstanceMethod(string name)
+        {
+            return base.GetClientInstanceMethod(typeof(IContract).FullName + "." + name);
+        }
 
-            var sut = new EmitClientBuilder(description, contractType);
-            var clientType = sut.Build(moduleBuilder);
-            var clientFactory = sut.CreateFactory<IInvalidContract>(clientType);
-
-            Factory = () => clientFactory(CallInvoker.Object, contractFactory(DataContractMarshallerFactory.Default), null);
+        protected override MethodInfo GetClientInstanceMethod(string name, params Type[] parameters)
+        {
+            return base.GetClientInstanceMethod(typeof(IContract).FullName + "." + name, parameters);
         }
     }
 }

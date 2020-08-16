@@ -23,7 +23,7 @@ using Moq;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Internal.Emit
+namespace ServiceModel.Grpc.Internal
 {
     [TestFixture]
     public class CallOptionsBuilderTest

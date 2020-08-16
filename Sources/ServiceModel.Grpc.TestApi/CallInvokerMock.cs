@@ -21,9 +21,9 @@ using Moq;
 using ServiceModel.Grpc.Channel;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Internal.Emit
+namespace ServiceModel.Grpc.TestApi
 {
-    internal static class CallInvokerMock
+    public static class CallInvokerMock
     {
         public static void SetupBlockingUnaryCall(this Mock<CallInvoker> invoker, Action<CallOptions>? callOptions = null)
         {
