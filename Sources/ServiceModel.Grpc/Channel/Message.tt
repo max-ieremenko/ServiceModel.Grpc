@@ -12,6 +12,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.ComponentModel;
 using System.Runtime.Serialization;
 
 namespace ServiceModel.Grpc.Channel
@@ -29,7 +30,9 @@ for (var argsCount=0; argsCount<=3; argsCount++)
 #>
     [Serializable]
     [DataContract(Name = "m", Namespace = "s")]
-    internal sealed class Message<#= genericArgs #>
+    [Browsable(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Message<#= genericArgs #>
     {
 <#
             for (var a=1; a<=argsCount; a++)

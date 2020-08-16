@@ -18,16 +18,12 @@ using System;
 using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
 
-namespace ServiceModel.Grpc.Client
+namespace ServiceModel.Grpc.Internal
 {
-    internal interface IServiceClientBuilder
+    public interface IClientBuilder<TContract>
     {
-        IMarshallerFactory MarshallerFactory { get; set; }
+        void Initialize(IMarshallerFactory marshallerFactory, Func<CallOptions>? defaultCallOptionsFactory);
 
-        Func<CallOptions>? DefaultCallOptionsFactory { get; set; }
-
-        ILogger? Logger { get; set; }
-
-        Func<CallInvoker, TContract> Build<TContract>(string factoryId);
+        TContract Build(CallInvoker callInvoker);
     }
 }

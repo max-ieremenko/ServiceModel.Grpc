@@ -14,23 +14,20 @@
 // limitations under the License.
 // </copyright>
 
-using System.Reflection;
+using Microsoft.CodeAnalysis;
 
-namespace ServiceModel.Grpc.Hosting
+namespace ServiceModel.Grpc.DesignTime.Internal
 {
-    internal readonly struct ServiceCallInfo
+    internal sealed class NotSupportedMethodDescription
     {
-        public ServiceCallInfo(MethodInfo serviceInstanceMethod, MethodInfo channelMethod, object channel)
+        public NotSupportedMethodDescription(IMethodSymbol method, string error)
         {
-            ServiceInstanceMethod = serviceInstanceMethod;
-            ChannelMethod = channelMethod;
-            Channel = channel;
+            Method = new MethodDescription(method);
+            Error = error;
         }
 
-        public MethodInfo ServiceInstanceMethod { get; }
+        public MethodDescription Method { get; }
 
-        public MethodInfo ChannelMethod { get; }
-
-        public object Channel { get; }
+        public string Error { get; }
     }
 }

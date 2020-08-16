@@ -16,44 +16,67 @@
 
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
 using Grpc.Core;
-using ServiceModel.Grpc.Configuration;
 
 namespace ServiceModel.Grpc.Internal.Emit
 {
-    internal sealed class GrpcServiceBuilder
+    internal sealed class EmitServiceBuilder
     {
         private readonly TypeBuilder _typeBuilder;
+        private readonly ILGenerator _ctor;
         private readonly Type _contractType;
-        private readonly IMarshallerFactory _marshallerFactory;
-        private readonly ILGenerator _initializeHeadersMarshallerMethod;
 
-        public GrpcServiceBuilder(Type contractType, IMarshallerFactory marshallerFactory, string factoryId)
+        public EmitServiceBuilder(ModuleBuilder moduleBuilder, string className, Type contractType)
         {
             _contractType = contractType;
-            _marshallerFactory = marshallerFactory;
 
-            _typeBuilder = ProxyAssembly
-                .DefaultModule
-                .DefineType(
-                    "{0}.{1}Service{2}".FormatWith(ReflectionTools.GetNamespace(contractType), contractType.Name, factoryId),
-                    TypeAttributes.NotPublic | TypeAttributes.Abstract | TypeAttributes.Class | TypeAttributes.Sealed);
+            _typeBuilder = moduleBuilder.DefineType(
+                className,
+                TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit);
 
-            _initializeHeadersMarshallerMethod = _typeBuilder
-                .DefineMethod(
-                    "InitializeHeadersMarshaller",
-                    MethodAttributes.Static | MethodAttributes.HideBySig | MethodAttributes.Public,
-                    typeof(void),
-                    new[] { typeof(IMarshallerFactory) })
+            _ctor = _typeBuilder
+                .DefineConstructor(
+                    MethodAttributes.Public,
+                    CallingConventions.HasThis,
+                    new[] { contractType })
                 .GetILGenerator();
+            _ctor.Emit(OpCodes.Ldarg_0);
+            _ctor.Emit(OpCodes.Call, typeof(object).Constructor());
         }
 
-        public void BuildNotSupportedCall(MessageAssembler message, string methodName, string error)
+        public static bool IsSupportedContextInput(MessageAssembler message)
         {
-            var body = CreateMethodWithSignature(message, methodName);
+            for (var i = 0; i < message.ContextInput.Length; i++)
+            {
+                var input = message.ContextInput[i];
+                if (!ServerChannelAdapter.TryGetServiceContextOptionMethod(message.Parameters[input].ParameterType))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public static Func<object, object> CreateFactory(Type implementationType, Type contractType)
+        {
+            var contract = Expression.Parameter(typeof(object), "contract");
+
+            var ctor = implementationType.Constructor(contractType);
+            var factory = Expression.New(
+                ctor,
+                Expression.Convert(contract, contractType));
+
+            return Expression.Lambda<Func<object, object>>(factory, contract).Compile();
+        }
+
+        public void BuildNotSupportedOperation(OperationDescription operation, Type serviceType, string error)
+        {
+            var body = CreateMethodWithSignature(operation.Message, serviceType, operation.OperationName);
 
             // throw new NotSupportedException("...");
             body.Emit(OpCodes.Ldstr, error);
@@ -61,69 +84,62 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Throw);
         }
 
-        public void BuildCall(MessageAssembler message, string methodName)
+        public void BuildOperation(OperationDescription operation, Type serviceType)
         {
-            var body = CreateMethodWithSignature(message, methodName);
-            var headersMarshallerFiled = InitializeHeadersMarshaller(message);
+            var body = CreateMethodWithSignature(operation.Message, serviceType, operation.OperationName);
+            var headersMarshallerFiled = InitializeHeadersMarshaller(operation);
 
-            switch (message.OperationType)
+            switch (operation.Message.OperationType)
             {
                 case MethodType.Unary:
-                    BuildUnary(body, message);
+                    BuildUnary(body, operation.Message, serviceType);
                     break;
 
                 case MethodType.ClientStreaming:
-                    BuildClientStreaming(body, message, headersMarshallerFiled);
+                    BuildClientStreaming(body, operation.Message, serviceType, headersMarshallerFiled);
                     break;
 
                 case MethodType.ServerStreaming:
-                    BuildServerStreaming(body, message);
+                    BuildServerStreaming(body, operation.Message, serviceType);
                     break;
 
                 case MethodType.DuplexStreaming:
-                    BuildDuplexStreaming(body, message, headersMarshallerFiled);
+                    BuildDuplexStreaming(body, operation.Message, serviceType, headersMarshallerFiled);
                     break;
             }
         }
 
         public Type BuildType()
         {
-            _initializeHeadersMarshallerMethod.Emit(OpCodes.Ret);
+            _ctor.Emit(OpCodes.Ret);
 
-            var type = _typeBuilder.CreateTypeInfo()!;
-
-            var defineGrpcMethod = (Action<IMarshallerFactory>)type
-                .StaticMethod("InitializeHeadersMarshaller")
-                .CreateDelegate(typeof(Action<IMarshallerFactory>));
-            defineGrpcMethod(_marshallerFactory);
-
-            return type;
+            return _typeBuilder.CreateTypeInfo()!;
         }
 
-        private void BuildUnary(ILGenerator body, MessageAssembler message)
+        private void BuildUnary(ILGenerator body, MessageAssembler message, Type serviceType)
         {
             // service
-            body.Emit(OpCodes.Ldarg_0);
+            body.Emit(OpCodes.Ldarg_1);
 
             for (var i = 0; i < message.Parameters.Length; i++)
             {
                 var parameter = message.Parameters[i];
                 if (message.ContextInput.Contains(i))
                 {
-                    PushContext(body, 2, parameter.ParameterType);
+                    PushContext(body, 3, parameter.ParameterType);
                 }
                 else
                 {
                     var propertyName = "Value" + (Array.IndexOf(message.RequestTypeInput, i) + 1);
 
                     // request.Value1
-                    body.Emit(OpCodes.Ldarg_1);
+                    body.Emit(OpCodes.Ldarg_2);
                     body.Emit(OpCodes.Callvirt, message.RequestType.InstanceProperty(propertyName).GetMethod);
                 }
             }
 
             // service.Method
-            CallContractMethod(body, message);
+            CallContractMethod(body, message, serviceType);
 
             if (message.IsAsync)
             {
@@ -149,45 +165,12 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ret);
         }
 
-        private void BuildClientStreaming(ILGenerator body, MessageAssembler message, FieldBuilder? headersMarshallerFiled)
+        private void BuildClientStreaming(ILGenerator body, MessageAssembler message, Type serviceType, FieldBuilder? headersMarshallerFiled)
         {
-            DeclareHeaderValues(body, message, headersMarshallerFiled, 2);
+            DeclareHeaderValues(body, message, headersMarshallerFiled, 3);
 
             // service
-            body.Emit(OpCodes.Ldarg_0);
-
-            for (var i = 0; i < message.Parameters.Length; i++)
-            {
-                var parameter = message.Parameters[i];
-                if (message.ContextInput.Contains(i))
-                {
-                    PushContext(body, 2, parameter.ParameterType);
-                }
-                else if (message.HeaderRequestTypeInput.Contains(i))
-                {
-                    PushHeaderProperty(body, message, i);
-                }
-                else
-                {
-                    // ReadClientStream()
-                    body.Emit(OpCodes.Ldarg_1); // stream
-                    body.Emit(OpCodes.Ldarg_2); // context
-                    body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(nameof(ServerChannelAdapter.ReadClientStream)).MakeGenericMethod(message.RequestType.GenericTypeArguments));
-                }
-            }
-
-            // service.Method
-            CallContractMethod(body, message);
-
-            AdaptSyncUnaryCallResult(body, message);
-
-            body.Emit(OpCodes.Ret);
-        }
-
-        private void BuildServerStreaming(ILGenerator body, MessageAssembler message)
-        {
-            // service
-            body.Emit(OpCodes.Ldarg_0);
+            body.Emit(OpCodes.Ldarg_1);
 
             for (var i = 0; i < message.Parameters.Length; i++)
             {
@@ -196,22 +179,55 @@ namespace ServiceModel.Grpc.Internal.Emit
                 {
                     PushContext(body, 3, parameter.ParameterType);
                 }
+                else if (message.HeaderRequestTypeInput.Contains(i))
+                {
+                    PushHeaderProperty(body, message, i);
+                }
+                else
+                {
+                    // ReadClientStream()
+                    body.Emit(OpCodes.Ldarg_2); // stream
+                    body.Emit(OpCodes.Ldarg_3); // context
+                    body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(nameof(ServerChannelAdapter.ReadClientStream)).MakeGenericMethod(message.RequestType.GenericTypeArguments));
+                }
+            }
+
+            // service.Method
+            CallContractMethod(body, message, serviceType);
+
+            AdaptSyncUnaryCallResult(body, message);
+
+            body.Emit(OpCodes.Ret);
+        }
+
+        private void BuildServerStreaming(ILGenerator body, MessageAssembler message, Type serviceType)
+        {
+            // service
+            body.Emit(OpCodes.Ldarg_1);
+
+            for (var i = 0; i < message.Parameters.Length; i++)
+            {
+                var parameter = message.Parameters[i];
+                if (message.ContextInput.Contains(i))
+                {
+                    PushContext(body, 4, parameter.ParameterType);
+                }
                 else
                 {
                     var propertyName = "Value" + (Array.IndexOf(message.RequestTypeInput, i) + 1);
 
                     // request.Value1
-                    body.Emit(OpCodes.Ldarg_1);
+                    body.Emit(OpCodes.Ldarg_2);
                     body.Emit(OpCodes.Callvirt, message.RequestType.InstanceProperty(propertyName).GetMethod);
                 }
             }
 
             // service.Method
-            CallContractMethod(body, message);
+            CallContractMethod(body, message, serviceType);
 
             // ServerChannelAdapter.WriteServerStreamingResult(result, stream, serverCallContext);
-            body.Emit(OpCodes.Ldarg_2); // stream
-            body.Emit(OpCodes.Ldarg_3); // serverCallContext
+            body.Emit(OpCodes.Ldarg_3); // stream
+            body.EmitLdarg(4); // serverCallContext
 
             string adapterName;
             if (message.IsAsync)
@@ -235,18 +251,18 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ret);
         }
 
-        private void BuildDuplexStreaming(ILGenerator body, MessageAssembler message, FieldBuilder? headersMarshallerFiled)
+        private void BuildDuplexStreaming(ILGenerator body, MessageAssembler message, Type serviceType, FieldBuilder? headersMarshallerFiled)
         {
-            DeclareHeaderValues(body, message, headersMarshallerFiled, 3);
+            DeclareHeaderValues(body, message, headersMarshallerFiled, 4);
 
-            body.Emit(OpCodes.Ldarg_0); // service
+            body.Emit(OpCodes.Ldarg_1); // service
 
             for (var i = 0; i < message.Parameters.Length; i++)
             {
                 var parameter = message.Parameters[i];
                 if (message.ContextInput.Contains(i))
                 {
-                    PushContext(body, 3, parameter.ParameterType);
+                    PushContext(body, 4, parameter.ParameterType);
                 }
                 else if (message.HeaderRequestTypeInput.Contains(i))
                 {
@@ -255,18 +271,18 @@ namespace ServiceModel.Grpc.Internal.Emit
                 else
                 {
                     // ReadClientStream()
-                    body.Emit(OpCodes.Ldarg_1); // input
-                    body.Emit(OpCodes.Ldarg_3); // context
+                    body.Emit(OpCodes.Ldarg_2); // input
+                    body.EmitLdarg(4); // context
                     body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(nameof(ServerChannelAdapter.ReadClientStream)).MakeGenericMethod(message.RequestType.GenericTypeArguments));
                 }
             }
 
             // service.Method
-            CallContractMethod(body, message);
+            CallContractMethod(body, message, serviceType);
 
             // ServerChannelAdapter.WriteServerStreamingResult
-            body.Emit(OpCodes.Ldarg_2); // output
-            body.Emit(OpCodes.Ldarg_3); // context
+            body.Emit(OpCodes.Ldarg_3); // output
+            body.EmitLdarg(4); // context
 
             string adapterName;
             if (message.IsAsync)
@@ -283,7 +299,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ret);
         }
 
-        private ILGenerator CreateMethodWithSignature(MessageAssembler message, string methodName)
+        private ILGenerator CreateMethodWithSignature(MessageAssembler message, Type serviceType, string methodName)
         {
             switch (message.OperationType)
             {
@@ -292,9 +308,9 @@ namespace ServiceModel.Grpc.Internal.Emit
                     return _typeBuilder
                         .DefineMethod(
                             methodName,
-                            MethodAttributes.Public | MethodAttributes.Static,
+                            MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
                             typeof(Task<>).MakeGenericType(message.ResponseType),
-                            new[] { _contractType, message.RequestType, typeof(ServerCallContext) })
+                            new[] { serviceType, message.RequestType, typeof(ServerCallContext) })
                         .GetILGenerator();
 
                 case MethodType.ClientStreaming:
@@ -302,9 +318,9 @@ namespace ServiceModel.Grpc.Internal.Emit
                     return _typeBuilder
                         .DefineMethod(
                             methodName,
-                            MethodAttributes.Public | MethodAttributes.Static,
+                            MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
                             typeof(Task<>).MakeGenericType(message.ResponseType),
-                            new[] { _contractType, typeof(IAsyncStreamReader<>).MakeGenericType(message.RequestType), typeof(ServerCallContext) })
+                            new[] { serviceType, typeof(IAsyncStreamReader<>).MakeGenericType(message.RequestType), typeof(ServerCallContext) })
                         .GetILGenerator();
 
                 case MethodType.ServerStreaming:
@@ -312,9 +328,9 @@ namespace ServiceModel.Grpc.Internal.Emit
                     return _typeBuilder
                         .DefineMethod(
                             methodName,
-                            MethodAttributes.Public | MethodAttributes.Static,
+                            MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
                             typeof(Task),
-                            new[] { _contractType, message.RequestType, typeof(IServerStreamWriter<>).MakeGenericType(message.ResponseType), typeof(ServerCallContext) })
+                            new[] { serviceType, message.RequestType, typeof(IServerStreamWriter<>).MakeGenericType(message.ResponseType), typeof(ServerCallContext) })
                         .GetILGenerator();
 
                 case MethodType.DuplexStreaming:
@@ -322,11 +338,11 @@ namespace ServiceModel.Grpc.Internal.Emit
                     return _typeBuilder
                         .DefineMethod(
                             methodName,
-                            MethodAttributes.Public | MethodAttributes.Static,
+                            MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
                             typeof(Task<>).MakeGenericType(message.ResponseType),
                             new[]
                             {
-                                _contractType,
+                                serviceType,
                                 typeof(IAsyncStreamReader<>).MakeGenericType(message.RequestType),
                                 typeof(IServerStreamWriter<>).MakeGenericType(message.ResponseType),
                                 typeof(ServerCallContext)
@@ -378,14 +394,15 @@ namespace ServiceModel.Grpc.Internal.Emit
             {
                 body.DeclareLocal(message.HeaderRequestType!); // var headers
 
-                body.Emit(OpCodes.Ldsfld, headersMarshallerFiled); // static Marshaller<>
+                body.Emit(OpCodes.Ldarg_0);
+                body.Emit(OpCodes.Ldfld, headersMarshallerFiled); // static Marshaller<>
                 body.EmitLdarg(contextParameterIndex); // context
                 body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(nameof(ServerChannelAdapter.GetMethodInputHeader)).MakeGenericMethod(message.HeaderRequestType));
                 body.Emit(OpCodes.Stloc_0);
             }
         }
 
-        private void CallContractMethod(ILGenerator body, MessageAssembler message)
+        private void CallContractMethod(ILGenerator body, MessageAssembler message, Type serviceType)
         {
             var parameters = new Type[message.Parameters.Length];
             for (var i = 0; i < parameters.Length; i++)
@@ -393,30 +410,30 @@ namespace ServiceModel.Grpc.Internal.Emit
                 parameters[i] = message.Parameters[i].ParameterType;
             }
 
-            body.Emit(OpCodes.Callvirt, _contractType.InstanceMethod(message.Operation.Name, parameters));
+            body.Emit(OpCodes.Callvirt, serviceType.InstanceMethod(message.Operation.Name, parameters));
         }
 
-        private FieldBuilder? InitializeHeadersMarshaller(MessageAssembler message)
+        private FieldBuilder? InitializeHeadersMarshaller(OperationDescription operation)
         {
-            if (message.HeaderRequestType == null)
+            if (operation.Message.HeaderRequestType == null)
             {
                 return null;
             }
 
-            var filedType = typeof(Marshaller<>).MakeGenericType(message.HeaderRequestType);
+            var contractField = _contractType.InstanceFiled(operation.GrpcMethodHeaderName);
 
-            // private static Marshaller<Message<string, string>> ConcatBHeadersMarshaller;
+            // private Marshaller<Message<string, string>> _MethodMarshaller;
             var field = _typeBuilder
                 .DefineField(
-                    "{0}-{1}-HeadersMarshaller".FormatWith(_contractType.Name, message.Operation.Name),
-                    filedType,
-                    FieldAttributes.Private | FieldAttributes.Static);
+                    "_{0}".FormatWith(operation.GrpcMethodHeaderName),
+                    contractField.FieldType,
+                    FieldAttributes.Private | FieldAttributes.InitOnly);
 
-            var createMarshaller = typeof(IMarshallerFactory).InstanceMethod(nameof(IMarshallerFactory.CreateMarshaller));
-
-            _initializeHeadersMarshallerMethod.Emit(OpCodes.Ldarg_0);
-            _initializeHeadersMarshallerMethod.Emit(OpCodes.Callvirt, createMarshaller.MakeGenericMethod(message.HeaderRequestType));
-            _initializeHeadersMarshallerMethod.Emit(OpCodes.Stsfld, field);
+            // _MethodMarshaller = contract.MethodMarshaller
+            _ctor.Emit(OpCodes.Ldarg_0);
+            _ctor.Emit(OpCodes.Ldarg_1);
+            _ctor.Emit(OpCodes.Ldfld, contractField);
+            _ctor.Emit(OpCodes.Stfld, field);
 
             return field;
         }

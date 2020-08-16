@@ -14,23 +14,31 @@
 // limitations under the License.
 // </copyright>
 
-using System.Reflection;
+using System.ServiceModel;
 
-namespace ServiceModel.Grpc.Hosting
+namespace ServiceModel.Grpc.DesignTime.Internal
 {
-    internal readonly struct ServiceCallInfo
+    public partial class ServiceContractTest
     {
-        public ServiceCallInfo(MethodInfo serviceInstanceMethod, MethodInfo channelMethod, object channel)
+        [ServiceContract]
+        private interface I1
         {
-            ServiceInstanceMethod = serviceInstanceMethod;
-            ChannelMethod = channelMethod;
-            Channel = channel;
+            [OperationContract]
+            string Operation();
         }
 
-        public MethodInfo ServiceInstanceMethod { get; }
+        [ServiceContract(Name = "Service2")]
+        private interface I2
+        {
+            [OperationContract(Name = "Method")]
+            string Operation();
+        }
 
-        public MethodInfo ChannelMethod { get; }
-
-        public object Channel { get; }
+        [ServiceContract(Name = "Service2", Namespace = "Test")]
+        private interface I3
+        {
+            [OperationContract]
+            string Operation();
+        }
     }
 }

@@ -25,27 +25,28 @@ using Shouldly;
 namespace ServiceModel.Grpc.Internal.Emit
 {
     [TestFixture]
-    public class GrpcServiceClientBuilderGenericTest
+    public class EmitClientBuilderGenericTest
     {
         private Func<IGenericContract<int, string>> _factory = null!;
         private IGenericContract<int, string> _contract = null!;
         private Mock<CallInvoker> _callInvoker = null!;
-        private LoggerMock _logger = null!;
 
         [OneTimeSetUp]
         public void BeforeAllTests()
         {
-            _logger = new LoggerMock();
+            var description = new ContractDescription(typeof(IGenericContract<int, string>));
 
-            var builder = new GrpcServiceClientBuilder
-            {
-                MarshallerFactory = DataContractMarshallerFactory.Default,
-                Logger = _logger.Logger
-            };
+            var moduleBuilder = ProxyAssembly.CreateModule(nameof(EmitClientBuilderGenericTest));
 
-            var factory = builder.Build<IGenericContract<int, string>>(nameof(GrpcServiceClientBuilderGenericTest));
+            var contractBuilder = new EmitContractBuilder(description);
+            var contractType = contractBuilder.Build(moduleBuilder);
+            var contractFactory = EmitContractBuilder.CreateFactory(contractType);
 
-            _factory = () => factory(_callInvoker.Object);
+            var sut = new EmitClientBuilder(description, contractType);
+            var clientType = sut.Build(moduleBuilder);
+            var clientFactory = sut.CreateFactory<IGenericContract<int, string>>(clientType);
+
+            _factory = () => clientFactory(_callInvoker.Object, contractFactory(DataContractMarshallerFactory.Default), null);
         }
 
         [SetUp]

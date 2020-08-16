@@ -15,15 +15,22 @@
 // </copyright>
 
 using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Grpc.Core;
 using ServiceModel.Grpc.Internal.IO;
 
-namespace ServiceModel.Grpc.Internal.Emit
+namespace ServiceModel.Grpc.Internal
 {
-    internal ref struct CallOptionsBuilder
+    /// <summary>
+    /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+    /// This API may change or be removed in future releases.
+    /// </summary>
+    [Browsable(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public ref struct CallOptionsBuilder
     {
         private CallOptions _options;
 

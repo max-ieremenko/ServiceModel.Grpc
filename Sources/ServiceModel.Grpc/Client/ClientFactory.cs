@@ -16,8 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Threading;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 using ServiceModel.Grpc.Configuration;
@@ -32,38 +30,53 @@ namespace ServiceModel.Grpc.Client
     /// </summary>
     public sealed class ClientFactory : IClientFactory
     {
-        private static int _instanceCounter;
-
         private readonly object _syncRoot;
+        private readonly IGenerator? _generator;
         private readonly ServiceModelGrpcClientOptions? _defaultOptions;
-        private readonly IDictionary<Type, Delegate> _factoryByContract;
+        private readonly IDictionary<Type, object> _builderByContract;
         private readonly IDictionary<Type, Interceptor> _interceptorByContract;
-        private readonly string _factoryId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientFactory"/> class.
         /// </summary>
         /// <param name="defaultOptions">Default configuration for all clients, created by this instance.</param>
         public ClientFactory(ServiceModelGrpcClientOptions? defaultOptions = null)
+            : this(null, defaultOptions)
         {
+        }
+
+        internal ClientFactory(IGenerator? generator, ServiceModelGrpcClientOptions? defaultOptions)
+        {
+            _generator = generator;
             _defaultOptions = defaultOptions;
-            _factoryByContract = new Dictionary<Type, Delegate>();
+            _builderByContract = new Dictionary<Type, object>();
             _interceptorByContract = new Dictionary<Type, Interceptor>();
             _syncRoot = new object();
-
-            var instanceNumber = Interlocked.Increment(ref _instanceCounter);
-            _factoryId = instanceNumber.ToString(CultureInfo.InvariantCulture);
         }
 
         /// <summary>
-        /// Configures a proxy for gRPC service contract <typeparamref name="TContract"/>.
+        /// Configures the factory to generate a proxy automatically for gRPC service contract <typeparamref name="TContract"/> with the specific options.
         /// </summary>
         /// <typeparam name="TContract">The service contract type.</typeparam>
-        /// <param name="configure">The configuration action.</param>
+        /// <param name="configure">The action to configure options.</param>
         public void AddClient<TContract>(Action<ServiceModelGrpcClientOptions>? configure = null)
             where TContract : class
         {
-            RegisterClient<TContract>(configure);
+            RegisterClient<TContract>(null, configure);
+        }
+
+        /// <summary>
+        /// Configures the factory to use a builder for proxy creation with specific options.
+        /// </summary>
+        /// <typeparam name="TContract">The service contract type.</typeparam>
+        /// <param name="builder">The proxy builder.</param>
+        /// <param name="configure">The action to configure options.</param>
+        public void AddClientBuilder<TContract>(IClientBuilder<TContract> builder, Action<ServiceModelGrpcClientOptions>? configure = null)
+            where TContract : class
+        {
+            builder.AssertNotNull(nameof(builder));
+
+            RegisterClient(builder, configure);
         }
 
         /// <summary>
@@ -91,45 +104,42 @@ namespace ServiceModel.Grpc.Client
         {
             callInvoker.AssertNotNull(nameof(callInvoker));
 
-            Delegate factory;
+            object factory;
             Interceptor interceptor;
             lock (_syncRoot)
             {
                 var contractType = typeof(TContract);
-                if (!_factoryByContract.TryGetValue(contractType, out factory))
+                if (!_builderByContract.TryGetValue(contractType, out factory))
                 {
-                    factory = RegisterClient<TContract>(null);
+                    factory = RegisterClient<TContract>(null, null);
                 }
 
                 _interceptorByContract.TryGetValue(contractType, out interceptor);
             }
 
-            var method = (Func<CallInvoker, TContract>)factory;
+            var builder = (IClientBuilder<TContract>)factory;
             if (interceptor != null)
             {
                 callInvoker = callInvoker.Intercept(interceptor);
             }
 
-            return method(callInvoker);
+            return builder.Build(callInvoker);
         }
 
-        internal IServiceClientBuilder CreateClientBuilder(ServiceModelGrpcClientOptions clientOptions)
+        private IGenerator CreateGenerator(ServiceModelGrpcClientOptions clientOptions)
         {
-            var builder = clientOptions.ClientBuilder?.Invoke() ?? new GrpcServiceClientBuilder();
+            var generator = _generator ?? new EmitGenerator();
+            generator.Logger = clientOptions.Logger;
 
-            builder.MarshallerFactory = clientOptions.MarshallerFactory.ThisOrDefault();
-            builder.DefaultCallOptionsFactory = clientOptions.DefaultCallOptionsFactory;
-            builder.Logger = clientOptions.Logger;
-
-            return builder;
+            return generator;
         }
 
-        private Delegate RegisterClient<TContract>(Action<ServiceModelGrpcClientOptions>? configure)
+        private object RegisterClient<TContract>(IClientBuilder<TContract>? userBuilder, Action<ServiceModelGrpcClientOptions>? configure)
             where TContract : class
         {
             var contractType = typeof(TContract);
 
-            if (!ReflectionTools.IsPublicInterface(contractType) || contractType.IsGenericTypeDefinition)
+            if (userBuilder == null && (!ReflectionTools.IsPublicInterface(contractType) || contractType.IsGenericTypeDefinition))
             {
                 throw new NotSupportedException("{0} is not supported. Client contract must be public non-generic interface.".FormatWith(contractType));
             }
@@ -139,24 +149,25 @@ namespace ServiceModel.Grpc.Client
                 MarshallerFactory = _defaultOptions?.MarshallerFactory,
                 DefaultCallOptionsFactory = _defaultOptions?.DefaultCallOptionsFactory,
                 Logger = _defaultOptions?.Logger,
-                ErrorHandler = _defaultOptions?.ErrorHandler,
-                ClientBuilder = _defaultOptions?.ClientBuilder
+                ErrorHandler = _defaultOptions?.ErrorHandler
             };
 
             configure?.Invoke(options);
 
-            var builder = CreateClientBuilder(options);
+            var generator = userBuilder == null ? CreateGenerator(options) : null;
 
-            Func<CallInvoker, TContract> factory;
+            IClientBuilder<TContract> builder;
             lock (_syncRoot)
             {
-                if (_factoryByContract.ContainsKey(contractType))
+                if (_builderByContract.ContainsKey(contractType))
                 {
                     throw new InvalidOperationException("Client for contract {0} is already initialized and cannot be changed.".FormatWith(contractType.FullName));
                 }
 
-                factory = builder.Build<TContract>(_factoryId);
-                _factoryByContract.Add(contractType, factory);
+                builder = userBuilder ?? generator!.GenerateClientBuilder<TContract>();
+                builder.Initialize(options.MarshallerFactory ?? DataContractMarshallerFactory.Default, options.DefaultCallOptionsFactory);
+
+                _builderByContract.Add(contractType, builder);
 
                 if (options.ErrorHandler != null)
                 {
@@ -167,7 +178,7 @@ namespace ServiceModel.Grpc.Client
                 }
             }
 
-            return factory;
+            return builder;
         }
     }
 }

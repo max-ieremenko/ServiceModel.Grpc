@@ -14,17 +14,12 @@
 // limitations under the License.
 // </copyright>
 
-using Grpc.Core;
-
-namespace ServiceModel.Grpc.Client
+namespace ServiceModel.Grpc.Internal
 {
-    internal abstract class GrpcClientBase
+    internal interface IGenerator
     {
-        protected GrpcClientBase(CallInvoker callInvoker)
-        {
-            CallInvoker = callInvoker;
-        }
+        ILogger? Logger { get; set; }
 
-        public CallInvoker CallInvoker { get; }
+        IClientBuilder<TContract> GenerateClientBuilder<TContract>();
     }
 }

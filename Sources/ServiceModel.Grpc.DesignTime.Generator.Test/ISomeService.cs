@@ -14,23 +14,16 @@
 // limitations under the License.
 // </copyright>
 
-using System.Reflection;
+using System.ServiceModel;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace ServiceModel.Grpc.Hosting
+namespace ServiceModel.Grpc.DesignTime.Generator.Test
 {
-    internal readonly struct ServiceCallInfo
+    [ServiceContract]
+    public interface ISomeService
     {
-        public ServiceCallInfo(MethodInfo serviceInstanceMethod, MethodInfo channelMethod, object channel)
-        {
-            ServiceInstanceMethod = serviceInstanceMethod;
-            ChannelMethod = channelMethod;
-            Channel = channel;
-        }
-
-        public MethodInfo ServiceInstanceMethod { get; }
-
-        public MethodInfo ChannelMethod { get; }
-
-        public object Channel { get; }
+        [OperationContract]
+        ValueTask<long> Sum5ValuesAsync(long x1, int x2, int x3, int x4, int x5, CancellationToken token);
     }
 }

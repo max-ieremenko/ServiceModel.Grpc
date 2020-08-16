@@ -14,21 +14,24 @@
 // limitations under the License.
 // </copyright>
 
-using System.Globalization;
-using System.Threading;
+using System;
+using System.Diagnostics;
+using CodeGeneration.Roslyn;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal
+namespace ServiceModel.Grpc.DesignTime
 {
-    internal sealed class HostMarkerService
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+    [CodeGenerationAttribute(typeof(CSharpCodeGenerator))]
+    [Conditional("CodeGeneration")]
+    public sealed class ImportGrpcServiceAttribute : Attribute
     {
-        private static int _instanceCounter;
-
-        public HostMarkerService()
+        public ImportGrpcServiceAttribute(Type serviceContract)
         {
-            var instanceNumber = Interlocked.Increment(ref _instanceCounter);
-            HostId = instanceNumber.ToString(CultureInfo.InvariantCulture);
+            serviceContract.AssertNotNull(nameof(serviceContract));
+
+            ServiceContract = serviceContract;
         }
 
-        public string HostId { get; }
+        public Type ServiceContract { get; }
     }
 }

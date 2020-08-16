@@ -224,16 +224,10 @@ namespace ServiceModel.Grpc.Internal
             }
         }
 
-        private void ThrowInvalidSignature(Exception? ex = default)
+        private void ThrowInvalidSignature()
         {
             var message = "Method signature [{0}] is not supported.".FormatWith(ReflectionTools.GetSignature(Operation));
-
-            if (ex == null)
-            {
-                throw new NotSupportedException(message);
-            }
-
-            throw new NotSupportedException(message, ex);
+            throw new NotSupportedException(message);
         }
     }
 }

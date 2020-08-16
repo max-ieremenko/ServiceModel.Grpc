@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CodeGeneration.Roslyn.Tool" Version="0.7.63" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ServiceModel.Grpc.DesignTime\ServiceModel.Grpc.DesignTime.csproj" OutputItemType="CodeGenerationRoslynPlugin" />
+    <ProjectReference Include="..\ServiceModel.Grpc.TestApi\ServiceModel.Grpc.TestApi.csproj" />
+  </ItemGroup>
+
+</Project>

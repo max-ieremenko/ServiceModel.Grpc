@@ -19,11 +19,14 @@ using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Hosting;
 using ServiceModel.Grpc.Internal;
+using ServiceModel.Grpc.Internal.Emit;
 
 namespace ServiceModel.Grpc.SelfHost.Internal
 {
-    internal sealed class SelfHostGrpcServiceFactory<TService> : GrpcServiceFactoryBase<TService>
+    internal sealed class SelfHostGrpcServiceFactory<TService> : IServiceBinder
     {
+        private readonly ILogger _logger;
+        private readonly IMarshallerFactory? _marshallerFactory;
         private readonly Func<TService> _serviceFactory;
         private readonly ServerServiceDefinition.Builder _builder;
 
@@ -32,36 +35,51 @@ namespace ServiceModel.Grpc.SelfHost.Internal
             IMarshallerFactory? marshallerFactory,
             Func<TService> serviceFactory,
             ServerServiceDefinition.Builder builder)
-            : base(logger, marshallerFactory, string.Empty)
         {
+            _logger = logger;
+            _marshallerFactory = marshallerFactory;
             _serviceFactory = serviceFactory;
             _builder = builder;
         }
 
-        protected override void AddUnaryServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
+        public void Bind()
         {
-            var invoker = callInfo.ChannelMethod.CreateDelegate<UnaryServerCallHandler<TService, TRequest, TResponse>.UnaryServerMethod>();
+            var generator = new EmitGenerator { Logger = _logger };
+            generator.BindService<TService>(this, _marshallerFactory ?? DataContractMarshallerFactory.Default);
+        }
+
+        public void AddUnaryServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
+            where TRequest : class
+            where TResponse : class
+        {
+            var invoker = callInfo.ChannelMethod.CreateDelegate<UnaryServerCallHandler<TService, TRequest, TResponse>.UnaryServerMethod>(callInfo.Channel);
             var handler = new UnaryServerCallHandler<TService, TRequest, TResponse>(_serviceFactory, invoker);
             _builder.AddMethod(method, handler.Handle);
         }
 
-        protected override void AddClientStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
+        public void AddClientStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
+            where TRequest : class
+            where TResponse : class
         {
-            var invoker = callInfo.ChannelMethod.CreateDelegate<ClientStreamingServerCallHandler<TService, TRequest, TResponse>.ClientStreamingServerMethod>();
+            var invoker = callInfo.ChannelMethod.CreateDelegate<ClientStreamingServerCallHandler<TService, TRequest, TResponse>.ClientStreamingServerMethod>(callInfo.Channel);
             var handler = new ClientStreamingServerCallHandler<TService, TRequest, TResponse>(_serviceFactory, invoker);
             _builder.AddMethod(method, handler.Handle);
         }
 
-        protected override void AddServerStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
+        public void AddServerStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
+            where TRequest : class
+            where TResponse : class
         {
-            var invoker = callInfo.ChannelMethod.CreateDelegate<ServerStreamingServerCallHandler<TService, TRequest, TResponse>.ServerStreamingServerMethod>();
+            var invoker = callInfo.ChannelMethod.CreateDelegate<ServerStreamingServerCallHandler<TService, TRequest, TResponse>.ServerStreamingServerMethod>(callInfo.Channel);
             var handler = new ServerStreamingServerCallHandler<TService, TRequest, TResponse>(_serviceFactory, invoker);
             _builder.AddMethod(method, handler.Handle);
         }
 
-        protected override void AddDuplexStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
+        public void AddDuplexStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
+            where TRequest : class
+            where TResponse : class
         {
-            var invoker = callInfo.ChannelMethod.CreateDelegate<DuplexStreamingServerCallHandler<TService, TRequest, TResponse>.DuplexStreamingServerMethod>();
+            var invoker = callInfo.ChannelMethod.CreateDelegate<DuplexStreamingServerCallHandler<TService, TRequest, TResponse>.DuplexStreamingServerMethod>(callInfo.Channel);
             var handler = new DuplexStreamingServerCallHandler<TService, TRequest, TResponse>(_serviceFactory, invoker);
             _builder.AddMethod(method, handler.Handle);
         }

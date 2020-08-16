@@ -154,13 +154,13 @@ namespace ServiceModel.Grpc.Internal
             return result;
         }
 
-        public static FieldInfo StaticFiled(this Type type, string name)
+        public static FieldInfo InstanceFiled(this Type type, string name)
         {
-            var result = type.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly);
+            var result = type.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
             if (result == null)
             {
-                throw new ArgumentOutOfRangeException("{0} does not have static field {1}.".FormatWith(type.Name, name));
+                throw new ArgumentOutOfRangeException("{0} does not have instance field {1}.".FormatWith(type.Name, name));
             }
 
             return result;

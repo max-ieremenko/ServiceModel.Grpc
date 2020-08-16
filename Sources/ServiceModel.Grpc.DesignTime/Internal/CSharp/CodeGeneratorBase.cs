@@ -14,23 +14,21 @@
 // limitations under the License.
 // </copyright>
 
-using System.Reflection;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace ServiceModel.Grpc.Hosting
+namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
 {
-    internal readonly struct ServiceCallInfo
+    internal abstract class CodeGeneratorBase
     {
-        public ServiceCallInfo(MethodInfo serviceInstanceMethod, MethodInfo channelMethod, object channel)
+        public CodeStringBuilder Output { get; } = new CodeStringBuilder();
+
+        public MemberDeclarationSyntax AsMemberDeclaration()
         {
-            ServiceInstanceMethod = serviceInstanceMethod;
-            ChannelMethod = channelMethod;
-            Channel = channel;
+            Generate();
+            return SyntaxFactory.ParseMemberDeclaration(Output.ToString());
         }
 
-        public MethodInfo ServiceInstanceMethod { get; }
-
-        public MethodInfo ChannelMethod { get; }
-
-        public object Channel { get; }
+        protected abstract void Generate();
     }
 }

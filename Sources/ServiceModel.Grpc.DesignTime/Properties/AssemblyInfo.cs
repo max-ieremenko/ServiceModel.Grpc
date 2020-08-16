@@ -14,23 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System.Reflection;
+using System.Runtime.CompilerServices;
 
-namespace ServiceModel.Grpc.Hosting
-{
-    internal readonly struct ServiceCallInfo
-    {
-        public ServiceCallInfo(MethodInfo serviceInstanceMethod, MethodInfo channelMethod, object channel)
-        {
-            ServiceInstanceMethod = serviceInstanceMethod;
-            ChannelMethod = channelMethod;
-            Channel = channel;
-        }
-
-        public MethodInfo ServiceInstanceMethod { get; }
-
-        public MethodInfo ChannelMethod { get; }
-
-        public object Channel { get; }
-    }
-}
+[assembly: InternalsVisibleTo("ServiceModel.Grpc.DesignTime.Test, PublicKey=002400000480000094000000060200000024000052534131000400000100010005107E9E9B4ABFDFB22683816FDC822296C459777826693B762EA2498056643DF0BC9F79B4ED62350FD685A8C58EB21AAA5616C273231A82AF86737AFEEFE172CE659012C6DC6183A29CFE0F13C0F35308660AF594C3AADABB3408BCF37838F1A604B38FC5EDAF73903D0FECEDB45A809C0DE33221D2BC6B81060114E294C9CE")]

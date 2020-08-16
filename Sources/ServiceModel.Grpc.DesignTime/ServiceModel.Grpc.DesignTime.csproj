@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Sdk Name="CodeGeneration.Roslyn.Plugin.Sdk" Version="0.7.63" />
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <IsTool>true</IsTool>
+    <DevelopmentDependency>True</DevelopmentDependency>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ServiceModel.Grpc\ServiceModel.Grpc.csproj" />
+  </ItemGroup>
+
+</Project>

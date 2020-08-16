@@ -22,11 +22,11 @@ using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Client;
 
-namespace ServiceModel.Grpc.Internal.Emit
+namespace ServiceModel.Grpc.Internal
 {
-    internal static class ClientChannelAdapter
+    public static class ClientChannelAdapter
     {
-        public static async Task AsyncUnaryCallWait(AsyncUnaryCall<Message> call, CallContext context)
+        public static async Task AsyncUnaryCallWait(AsyncUnaryCall<Message> call, CallContext? context)
         {
             using (call)
             {
@@ -48,7 +48,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             }
         }
 
-        public static async Task<T> GetAsyncUnaryCallResult<T>(AsyncUnaryCall<Message<T>> call, CallContext context)
+        public static async Task<T> GetAsyncUnaryCallResult<T>(AsyncUnaryCall<Message<T>> call, CallContext? context)
         {
             Message<T> result;
             using (call)
@@ -75,7 +75,7 @@ namespace ServiceModel.Grpc.Internal.Emit
 
         public static async IAsyncEnumerable<T> GetServerStreamingCallResult<T>(
             AsyncServerStreamingCall<Message<T>> call,
-            CallContext context,
+            CallContext? context,
             [EnumeratorCancellation] CancellationToken token)
         {
             using (call)
@@ -107,7 +107,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         public static async Task WriteClientStreamingRequestWait<TRequest>(
             AsyncClientStreamingCall<Message<TRequest>, Message> call,
             IAsyncEnumerable<TRequest> request,
-            CallContext context,
+            CallContext? context,
             CancellationToken token)
         {
             using (call)
@@ -143,7 +143,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         public static async Task<TResponse> WriteClientStreamingRequest<TRequest, TResponse>(
             AsyncClientStreamingCall<Message<TRequest>, Message<TResponse>> call,
             IAsyncEnumerable<TRequest> request,
-            CallContext context,
+            CallContext? context,
             CancellationToken token)
         {
             Message<TResponse> result;
@@ -182,7 +182,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         public static async IAsyncEnumerable<TResponse> GetDuplexCallResult<TRequest, TResponse>(
             AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>> call,
             IAsyncEnumerable<TRequest> request,
-            CallContext context,
+            CallContext? context,
             [EnumeratorCancellation] CancellationToken token)
         {
             using (call)

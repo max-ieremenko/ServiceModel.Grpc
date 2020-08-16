@@ -45,7 +45,5 @@ namespace ServiceModel.Grpc.Client
         /// Gets or sets logger to handle possible output from <see cref="IClientFactory"/>.
         /// </summary>
         public ILogger? Logger { get; set; }
-
-        internal Func<IServiceClientBuilder>? ClientBuilder { get; set; }
     }
 }

@@ -14,23 +14,15 @@
 // limitations under the License.
 // </copyright>
 
-using System.Reflection;
+using ServiceModel.Grpc.TestApi.Domain;
 
-namespace ServiceModel.Grpc.Hosting
+namespace ServiceModel.Grpc.DesignTime.Generator.Test
 {
-    internal readonly struct ServiceCallInfo
+    [ImportGrpcService(typeof(IMultipurposeService))]
+    ////[ImportGrpcService(typeof(ISomeService))]
+    ////[ImportGrpcService(typeof(IErrorService))]
+    ////[ImportGrpcService(typeof(IHeadersService))]
+    public static partial class DomainServices
     {
-        public ServiceCallInfo(MethodInfo serviceInstanceMethod, MethodInfo channelMethod, object channel)
-        {
-            ServiceInstanceMethod = serviceInstanceMethod;
-            ChannelMethod = channelMethod;
-            Channel = channel;
-        }
-
-        public MethodInfo ServiceInstanceMethod { get; }
-
-        public MethodInfo ChannelMethod { get; }
-
-        public object Channel { get; }
     }
 }

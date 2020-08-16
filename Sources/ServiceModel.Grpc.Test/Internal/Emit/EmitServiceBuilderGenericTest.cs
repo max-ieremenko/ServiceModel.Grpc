@@ -27,22 +27,30 @@ using Shouldly;
 namespace ServiceModel.Grpc.Internal.Emit
 {
     [TestFixture]
-    public class GrpcServiceBuilderGenericTest
+    public class EmitServiceBuilderGenericTest
     {
         private Type _channelType = null!;
+        private object _channel = null!;
         private Mock<IGenericContract<int, string>> _service = null!;
 
         [OneTimeSetUp]
         public void BeforeAllTest()
         {
-            var sut = new GrpcServiceBuilder(typeof(IGenericContract<int, string>), DataContractMarshallerFactory.Default, nameof(GrpcServiceBuilderGenericTest));
+            var description = new ContractDescription(typeof(IGenericContract<int, string>));
+            var contractType = new EmitContractBuilder(description).Build(ProxyAssembly.DefaultModule, nameof(EmitServiceBuilderGenericTest) + "Contract");
 
-            foreach (var method in ReflectionTools.GetMethods(typeof(IGenericContract<int, string>)))
+            var sut = new EmitServiceBuilder(ProxyAssembly.DefaultModule, nameof(EmitServiceBuilderGenericTest) + "Service", contractType);
+            foreach (var interfaceDescription in description.Services)
             {
-                sut.BuildCall(new MessageAssembler(method), method.Name);
+                foreach (var operation in interfaceDescription.Operations)
+                {
+                    sut.BuildOperation(operation, interfaceDescription.InterfaceType);
+                }
             }
 
             _channelType = sut.BuildType();
+            var contract = EmitContractBuilder.CreateFactory(contractType)(DataContractMarshallerFactory.Default);
+            _channel = EmitServiceBuilder.CreateFactory(_channelType, contractType)(contract);
         }
 
         [SetUp]
@@ -55,8 +63,8 @@ namespace ServiceModel.Grpc.Internal.Emit
         public async Task Invoke()
         {
             var call = _channelType
-                .StaticMethod(nameof(IGenericContract<int, string>.Invoke))
-                .CreateDelegate<UnaryServerMethod<IGenericContract<int, string>, Message<int, string>, Message<string>>>();
+                .InstanceMethod(nameof(IGenericContract<int, string>.Invoke))
+                .CreateDelegate<UnaryServerMethod<IGenericContract<int, string>, Message<int, string>, Message<string>>>(_channel);
             Console.WriteLine(call.Method.Disassemble());
 
             var serverContext = new Mock<ServerCallContext>(MockBehavior.Strict);

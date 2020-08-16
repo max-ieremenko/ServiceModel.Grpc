@@ -68,7 +68,7 @@ namespace ServiceModel.Grpc.Internal
         [TestCase(typeof(ValueTask<int?>), typeof(Message<int?>))]
         [TestCase(typeof(IAsyncEnumerable<int>), typeof(Message<int>))]
         [TestCase(typeof(Task<IAsyncEnumerable<int>>), typeof(Message<int>))]
-        public void TestResponseType(Type returnType, Type expected)
+        public void ResponseType(Type returnType, Type expected)
         {
             _method
                 .SetupGet(m => m.ReturnType)
@@ -86,7 +86,7 @@ namespace ServiceModel.Grpc.Internal
         [TestCase(MethodType.ServerStreaming, typeof(IAsyncEnumerable<string>))]
         [TestCase(MethodType.ServerStreaming, typeof(Task<IAsyncEnumerable<string>>))]
         [TestCase(MethodType.DuplexStreaming, typeof(IAsyncEnumerable<string>), typeof(IAsyncEnumerable<int>))]
-        public void TestOperationType(MethodType expected, Type returnType, params Type[] dataParameters)
+        public void OperationType(MethodType expected, Type returnType, params Type[] dataParameters)
         {
             _method
                 .SetupGet(m => m.ReturnType)
@@ -119,7 +119,7 @@ namespace ServiceModel.Grpc.Internal
         [TestCase(typeof(Message<int>), null, new[] { 0 }, typeof(IAsyncEnumerable<int>))]
         [TestCase(typeof(Message<int>), typeof(Message<int, string>), new[] { 0 }, typeof(IAsyncEnumerable<int>), typeof(int), typeof(string))]
         [TestCase(typeof(Message<int>), typeof(Message<string>), new[] { 1 }, typeof(string), typeof(IAsyncEnumerable<int>))]
-        public void TestRequestType(Type expectedRequestType, Type expectedHeaderRequestType, int[] expectedRequestTypeInput, params Type[] dataParameters)
+        public void RequestType(Type expectedRequestType, Type expectedHeaderRequestType, int[] expectedRequestTypeInput, params Type[] dataParameters)
         {
             MethodSetupParameters(dataParameters);
 
@@ -138,7 +138,7 @@ namespace ServiceModel.Grpc.Internal
         [TestCase(typeof(CallContext))]
         [TestCase(typeof(ServerCallContext))]
         [TestCase(typeof(CancellationToken))]
-        public void TestContextInput(Type contextParameter)
+        public void ContextInput(Type contextParameter)
         {
             MethodSetupParameters(contextParameter == null ? Array.Empty<Type>() : new[] { contextParameter });
 

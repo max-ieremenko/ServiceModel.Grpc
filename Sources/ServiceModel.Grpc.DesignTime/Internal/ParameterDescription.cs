@@ -14,23 +14,29 @@
 // limitations under the License.
 // </copyright>
 
-using System.Reflection;
+using Microsoft.CodeAnalysis;
 
-namespace ServiceModel.Grpc.Hosting
+namespace ServiceModel.Grpc.DesignTime.Internal
 {
-    internal readonly struct ServiceCallInfo
+    internal sealed class ParameterDescription
     {
-        public ServiceCallInfo(MethodInfo serviceInstanceMethod, MethodInfo channelMethod, object channel)
+        public ParameterDescription(IParameterSymbol parameter)
         {
-            ServiceInstanceMethod = serviceInstanceMethod;
-            ChannelMethod = channelMethod;
-            Channel = channel;
+            Name = parameter.Name;
+            Type = SyntaxTools.GetFullName(parameter.Type);
+            TypeSymbol = parameter.Type;
+            IsOut = parameter.IsOut();
+            IsRef = parameter.IsRef();
         }
 
-        public MethodInfo ServiceInstanceMethod { get; }
+        public string Name { get; }
 
-        public MethodInfo ChannelMethod { get; }
+        public string Type { get; }
 
-        public object Channel { get; }
+        public ITypeSymbol TypeSymbol { get; }
+
+        public bool IsOut { get; }
+
+        public bool IsRef { get; }
     }
 }

@@ -6,13 +6,16 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.ComponentModel;
 using System.Runtime.Serialization;
 
 namespace ServiceModel.Grpc.Channel
 {
     [Serializable]
     [DataContract(Name = "m", Namespace = "s")]
-    internal sealed class Message
+    [Browsable(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Message
     {
         public Message()
         {
@@ -22,7 +25,9 @@ namespace ServiceModel.Grpc.Channel
 
     [Serializable]
     [DataContract(Name = "m", Namespace = "s")]
-    internal sealed class Message<T1>
+    [Browsable(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Message<T1>
     {
         private T1 _value1;
 
@@ -42,7 +47,9 @@ namespace ServiceModel.Grpc.Channel
 
     [Serializable]
     [DataContract(Name = "m", Namespace = "s")]
-    internal sealed class Message<T1, T2>
+    [Browsable(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Message<T1, T2>
     {
         private T1 _value1;
 
@@ -68,7 +75,9 @@ namespace ServiceModel.Grpc.Channel
 
     [Serializable]
     [DataContract(Name = "m", Namespace = "s")]
-    internal sealed class Message<T1, T2, T3>
+    [Browsable(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Message<T1, T2, T3>
     {
         private T1 _value1;
 

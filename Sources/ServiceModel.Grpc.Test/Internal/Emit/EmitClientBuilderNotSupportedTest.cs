@@ -19,33 +19,33 @@ using Grpc.Core;
 using Moq;
 using NUnit.Framework;
 using ServiceModel.Grpc.Configuration;
-using ServiceModel.Grpc.TestApi;
 using Shouldly;
 
 namespace ServiceModel.Grpc.Internal.Emit
 {
     [TestFixture]
-    public class GrpcServiceClientBuilderNotSupportedTest
+    public class EmitClientBuilderNotSupportedTest
     {
         private Func<IInvalidContract> _factory = null!;
         private IInvalidContract _contract = null!;
         private Mock<CallInvoker> _callInvoker = null!;
-        private LoggerMock _logger = null!;
 
         [OneTimeSetUp]
         public void BeforeAllTests()
         {
-            _logger = new LoggerMock();
+            var description = new ContractDescription(typeof(IInvalidContract));
 
-            var builder = new GrpcServiceClientBuilder
-            {
-                MarshallerFactory = DataContractMarshallerFactory.Default,
-                Logger = _logger.Logger
-            };
+            var moduleBuilder = ProxyAssembly.CreateModule(nameof(EmitClientBuilderNotSupportedTest));
 
-            var factory = builder.Build<IInvalidContract>(nameof(GrpcServiceClientBuilderNotSupportedTest));
+            var contractBuilder = new EmitContractBuilder(description);
+            var contractType = contractBuilder.Build(moduleBuilder);
+            var contractFactory = EmitContractBuilder.CreateFactory(contractType);
 
-            _factory = () => factory(_callInvoker.Object);
+            var sut = new EmitClientBuilder(description, contractType);
+            var clientType = sut.Build(moduleBuilder);
+            var clientFactory = sut.CreateFactory<IInvalidContract>(clientType);
+
+            _factory = () => clientFactory(_callInvoker.Object, contractFactory(DataContractMarshallerFactory.Default), null);
         }
 
         [SetUp]
@@ -58,38 +58,29 @@ namespace ServiceModel.Grpc.Internal.Emit
         [Test]
         public void InvalidSignature()
         {
-            var log = _logger.Errors.Find(i => i.Contains(nameof(IInvalidContract.InvalidSignature)));
-            log.ShouldNotBeNull();
-
             var x = 0;
             var ex = Assert.Throws<NotSupportedException>(() => _contract.InvalidSignature(ref x, out _));
             Console.WriteLine(ex.Message);
 
-            ex.Message.ShouldBe(log);
+            ex.Message.ShouldContain(nameof(IInvalidContract.InvalidSignature));
         }
 
         [Test]
         public void GenericMethod()
         {
-            var log = _logger.Errors.Find(i => i.Contains(nameof(IInvalidContract.Generic)));
-            log.ShouldNotBeNull();
-
             var ex = Assert.Throws<NotSupportedException>(() => _contract.Generic<int, string>(2));
             Console.WriteLine(ex.Message);
 
-            ex.Message.ShouldBe(log);
+            ex.Message.ShouldContain(nameof(IInvalidContract.Generic));
         }
 
         [Test]
         public void DisposableIsNotServiceContract()
         {
-            var log = _logger.Debug.Find(i => i.Contains(typeof(IDisposable).FullName!));
-            log.ShouldNotBeNull();
-
             var ex = Assert.Throws<NotSupportedException>(() => _contract.Dispose());
             Console.WriteLine(ex.Message);
 
-            ex.Message.ShouldBe(log);
+            ex.Message.ShouldContain(typeof(IDisposable).FullName);
         }
     }
 }
