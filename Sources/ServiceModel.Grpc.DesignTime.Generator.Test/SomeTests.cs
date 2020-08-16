@@ -28,7 +28,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Test
         [Test]
         public void Test()
         {
-            var type = typeof(DomainServices.GenericContractClient);
+            var type = typeof(GrpcServices.GenericContractClient);
             var methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
             foreach (var m in methods)
             {

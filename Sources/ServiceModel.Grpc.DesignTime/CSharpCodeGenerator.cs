@@ -73,18 +73,24 @@ namespace ServiceModel.Grpc.DesignTime
                 .ClassDeclaration(node.Identifier.WithoutTrivia())
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
 
-            var members = owner
-                .AddMembers(
-                    new CSharpClientBuilderBuilder(contract).AsMemberDeclaration(),
-                    new CSharpContractBuilder(contract).AsMemberDeclaration(),
-                    new CSharpClientBuilder(contract).AsMemberDeclaration())
-                .AddMembers(GenerateMessages(contract).ToArray());
+            var members = owner.AddMembers(
+                new CSharpClientBuilderBuilder(contract).AsMemberDeclaration(),
+                new CSharpContractBuilder(contract).AsMemberDeclaration(),
+                new CSharpClientBuilder(contract).AsMemberDeclaration());
+
+            var messageFlags = new List<UsingDirectiveSyntax>();
+            foreach (var entry in GenerateMessages(contract, context.CompilationUnitUsings, node.GetFullName()))
+            {
+                members = members.AddMembers(entry.Member);
+                messageFlags.Add(entry.Flag);
+            }
 
             return Task.FromResult(new RichGenerationResult
             {
-                Members = CopyParent(members, node),
+                Members = members.CopyParent(node),
                 Usings = BuildUsing(
-                    context.CompilationUnitUsings.Select(i => i.Name.ToString()),
+                    context.CompilationUnitUsings,
+                    messageFlags,
                     typeof(Func<>).Namespace,
                     typeof(IEnumerable<>).Namespace,
                     typeof(CancellationToken).Namespace,
@@ -97,32 +103,18 @@ namespace ServiceModel.Grpc.DesignTime
             });
         }
 
-        private static SyntaxList<MemberDeclarationSyntax> CopyParent(MemberDeclarationSyntax target, SyntaxNode source)
+        private static SyntaxList<UsingDirectiveSyntax> BuildUsing(
+            IEnumerable<UsingDirectiveSyntax> existing,
+            IList<UsingDirectiveSyntax> messageFlags,
+            params string[] ns)
         {
-            var result = SyntaxFactory.SingletonList<MemberDeclarationSyntax>(target);
-            foreach (var ancestor in source.Ancestors())
-            {
-                switch (ancestor)
-                {
-                    case NamespaceDeclarationSyntax ns:
-                        result = SyntaxFactory.SingletonList<MemberDeclarationSyntax>(SyntaxFactory.NamespaceDeclaration(ns.Name.WithoutTrivia()).WithMembers(result));
-                        break;
+            var existingNames = existing
+                .Where(i => i.Alias == null && i.StaticKeyword.Value == null)
+                .Select(i => i.Name.ToString());
 
-                    case ClassDeclarationSyntax c:
-                        result = SyntaxFactory.SingletonList<MemberDeclarationSyntax>(SyntaxFactory.ClassDeclaration(c.Identifier.WithoutTrivia()).WithMembers(result));
-                        break;
-                }
-            }
-
-            return result;
-        }
-
-        private static SyntaxList<UsingDirectiveSyntax> BuildUsing(IEnumerable<string> existing, params string[] ns)
-        {
-            var distinct = new HashSet<string>(existing, StringComparer.Ordinal);
+            var distinct = new HashSet<string>(existingNames, StringComparer.Ordinal);
 
             var result = default(SyntaxList<UsingDirectiveSyntax>);
-            var isInitialized = false;
             foreach (var name in ns.OrderBy(i => i, StringComparer.Ordinal))
             {
                 if (!distinct.Add(name))
@@ -131,27 +123,25 @@ namespace ServiceModel.Grpc.DesignTime
                 }
 
                 var directive = SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(name));
-                if (isInitialized)
-                {
-                    result = result.Add(directive);
-                }
-                else
-                {
-                    isInitialized = true;
-                    result = SyntaxFactory.SingletonList(directive);
-                }
+                result = result.Add(directive);
             }
+
+            result = result.AddRange(messageFlags);
 
             return result;
         }
 
-        private static IEnumerable<MemberDeclarationSyntax> GenerateMessages(ContractDescription contract)
+        private static IEnumerable<(MemberDeclarationSyntax Member, UsingDirectiveSyntax Flag)> GenerateMessages(
+            ContractDescription contract,
+            IEnumerable<UsingDirectiveSyntax> directives,
+            string ownerFullName)
         {
             var descriptions = contract
                 .Services
                 .SelectMany(i => i.Operations)
                 .SelectMany(i => new[] { i.RequestType, i.ResponseType })
                 .Where(i => !i.IsBuildIn)
+                .Where(i => !CSharpMessageBuilder.ContainsFlag(ownerFullName, directives, i))
                 .OrderBy(i => i.Properties.Length);
 
             var distinct = new HashSet<int>();
@@ -159,7 +149,8 @@ namespace ServiceModel.Grpc.DesignTime
             {
                 if (distinct.Add(description.Properties.Length))
                 {
-                    yield return new CSharpMessageBuilder(description).AsMemberDeclaration();
+                    var builder = new CSharpMessageBuilder(description);
+                    yield return (builder.AsMemberDeclaration(), builder.CreateFlag(ownerFullName));
                 }
             }
         }

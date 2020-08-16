@@ -27,7 +27,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Test
         [OneTimeSetUp]
         public void BeforeAllTests()
         {
-            var builder = new DomainServices.GenericContractClientBuilder();
+            var builder = new GrpcServices.GenericContractClientBuilder();
             builder.Initialize(DataContractMarshallerFactory.Default, null);
 
             Factory = () => builder.Build(CallInvoker.Object);

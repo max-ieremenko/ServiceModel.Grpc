@@ -14,6 +14,12 @@
 // limitations under the License.
 // </copyright>
 
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ServiceModel.Grpc.Channel;
 
 namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
@@ -25,6 +31,33 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
         public CSharpMessageBuilder(MessageDescription description)
         {
             _description = description;
+        }
+
+        public static bool ContainsFlag(string ownerFullName, IEnumerable<UsingDirectiveSyntax> directives, MessageDescription description)
+        {
+            var (aliasName, typeName) = CreateFlag(ownerFullName, description);
+
+            foreach (var directive in directives)
+            {
+                // [__message5=] [ServiceModel.Grpc.DesignTime.Generator.Test.DomainServices.Message
+                if (directive.Alias != null
+                    && directive.Alias.WithoutTrivia().ToString().StartsWith(aliasName, StringComparison.Ordinal)
+                    && typeName.Equals(directive.Name.WithoutTrivia().ToString(), StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public UsingDirectiveSyntax CreateFlag(string ownerFullName)
+        {
+            var (aliasName, typeName) = CreateFlag(ownerFullName, _description);
+
+            return SyntaxFactory.UsingDirective(
+                SyntaxFactory.NameEquals(aliasName),
+                SyntaxFactory.ParseName(typeName));
         }
 
         protected override void Generate()
@@ -54,6 +87,30 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
             }
 
             Output.AppendLine("}");
+        }
+
+        private static (string Alias, string Name) CreateFlag(string ownerFullName, MessageDescription description)
+        {
+            var aliasName = "__message{0}".FormatWith(description.Properties.Length);
+
+            var typeName = new StringBuilder(ownerFullName)
+                .Append(".")
+                .Append(nameof(Message))
+                .Append("<");
+
+            for (var i = 0; i < description.Properties.Length; i++)
+            {
+                if (i != 0)
+                {
+                    typeName.Append(", ");
+                }
+
+                typeName.Append("object");
+            }
+
+            typeName.Append(">");
+
+            return (aliasName, typeName.ToString());
         }
 
         private void BuildCtorDefault()
@@ -97,7 +154,6 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
         {
             for (var i = 0; i < _description.Properties.Length; i++)
             {
-                var property = _description.Properties[i];
                 Output
                     .AppendFormat("[DataMember(Name = \"v{0}\", Order = {0})]", i + 1)
                     .AppendLine()
