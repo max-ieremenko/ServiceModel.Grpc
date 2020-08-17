@@ -27,6 +27,7 @@
       "Name": "DesignTime",
       "InternalOnly": true,
       "TargetFrameworks": [
+        "netstandard2.0",
         "netcoreapp2.1"
       ]
     },

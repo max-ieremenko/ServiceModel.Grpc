@@ -1,7 +1,7 @@
 NETStandard.Library [2.0.3](https://www.nuget.org/packages/NETStandard.Library/2.0.3)
 --------------------
 
-Used by: Core, ProtoBuf, SelfHost
+Used by: Core, DesignTime, ProtoBuf, SelfHost
 
 Target frameworks: net461, netstandard2.0, netstandard2.1
 

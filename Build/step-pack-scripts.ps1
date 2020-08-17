@@ -35,8 +35,6 @@ function Update-DesignTimePackage($binDir) {
 
     $spec.Save($specFileName)
 
-    Get-Content $specFileName
-
     Compress-Archive -Path (Join-Path $tempPath "*")  -DestinationPath ($packageFile + ".zip")
     Remove-Item $packageFile
     Rename-Item ($packageFile + ".zip") $packageFile

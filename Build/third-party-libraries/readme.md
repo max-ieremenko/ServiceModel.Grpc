@@ -9,17 +9,18 @@ Licenses
 |[Google.Protobuf](licenses/google.protobuf)|yes|no|1|
 |[MIT](licenses/mit)|no|no|41|
 |[ms-net-library](licenses/ms-net-library)|no|no|29|
-|[MS-PL](licenses/ms-pl)|no|no|3|
+|[MS-PL](licenses/ms-pl)|no|no|4|
 
 
 
-Packages 89
+Packages 90
 --------
 
 |Name|Version|Source|License|Used by|
 |----------|:----|:----|:----|:----|
 |[Castle.Core](packages/nuget.org/castle.core/4.4.0)|4.4.0|[nuget.org](https://www.nuget.org/packages/Castle.Core/4.4.0)|[Apache-2.0](licenses/apache-2.0)|Core internal|
 |[CodeGeneration.Roslyn](packages/nuget.org/codegeneration.roslyn/0.7.63)|0.7.63|[nuget.org](https://www.nuget.org/packages/CodeGeneration.Roslyn/0.7.63)|[MS-PL](licenses/ms-pl)|DesignTime|
+|[CodeGeneration.Roslyn.Attributes](packages/nuget.org/codegeneration.roslyn.attributes/0.7.63)|0.7.63|[nuget.org](https://www.nuget.org/packages/CodeGeneration.Roslyn.Attributes/0.7.63)|[MS-PL](licenses/ms-pl)|DesignTime|
 |[CodeGeneration.Roslyn.Tool](packages/nuget.org/codegeneration.roslyn.tool/0.7.63)|0.7.63|[nuget.org](https://www.nuget.org/packages/CodeGeneration.Roslyn.Tool/0.7.63)|[MS-PL](licenses/ms-pl)|DesignTime internal|
 |[CompareNETObjects](packages/nuget.org/comparenetobjects/4.66.0)|4.66.0|[nuget.org](https://www.nuget.org/packages/CompareNETObjects/4.66.0)|[MS-PL](licenses/ms-pl)|Core internal|
 |[Google.Protobuf](packages/nuget.org/google.protobuf/3.13.0)|3.13.0|[nuget.org](https://www.nuget.org/packages/Google.Protobuf/3.13.0)|[Google.Protobuf](licenses/google.protobuf)|AspNetCore internal|
@@ -47,7 +48,7 @@ Packages 89
 |[Microsoft.TestPlatform.TestHost](packages/nuget.org/microsoft.testplatform.testhost/16.7.0)|16.7.0|[nuget.org](https://www.nuget.org/packages/Microsoft.TestPlatform.TestHost/16.7.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, SelfHost internal|
 |[Mono.Reflection](packages/nuget.org/mono.reflection/2.0.0)|2.0.0|[nuget.org](https://www.nuget.org/packages/Mono.Reflection/2.0.0)|[MIT](licenses/mit)|Core internal|
 |[Moq](packages/nuget.org/moq/4.14.5)|4.14.5|[nuget.org](https://www.nuget.org/packages/Moq/4.14.5)|[BSD-3-Clause](licenses/bsd-3-clause)|Core internal|
-|[NETStandard.Library](packages/nuget.org/netstandard.library/2.0.3)|2.0.3|[nuget.org](https://www.nuget.org/packages/NETStandard.Library/2.0.3)|[MIT](licenses/mit)|Core, ProtoBuf, SelfHost|
+|[NETStandard.Library](packages/nuget.org/netstandard.library/2.0.3)|2.0.3|[nuget.org](https://www.nuget.org/packages/NETStandard.Library/2.0.3)|[MIT](licenses/mit)|Core, DesignTime, ProtoBuf, SelfHost|
 |[Newtonsoft.Json](packages/nuget.org/newtonsoft.json/12.0.3)|12.0.3|[nuget.org](https://www.nuget.org/packages/Newtonsoft.Json/12.0.3)|[MIT](licenses/mit)|AspNetCore internal, Core internal, DesignTime internal, SelfHost internal|
 |[NuGet.Frameworks](packages/nuget.org/nuget.frameworks/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/NuGet.Frameworks/5.0.0%2b42a8779499c1d1ed2488c2e6b9e2ee6ff6107766)|[Apache-2.0](licenses/apache-2.0)|AspNetCore internal, Core internal, DesignTime internal, SelfHost internal|
 |[NUnit](packages/nuget.org/nunit/3.12.0)|3.12.0|[nuget.org](https://www.nuget.org/packages/NUnit/3.12.0)|[MIT](licenses/mit)|Core internal|
