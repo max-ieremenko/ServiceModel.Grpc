@@ -1,13 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyTitle>ServiceModel.Grpc.DesignTime</AssemblyTitle>
-  </PropertyGroup>
+  <Sdk Name="CodeGeneration.Roslyn.Plugin.Sdk" Version="0.7.63" />
 
-  <ItemGroup>
-    <PackageReference Include="CodeGeneration.Roslyn.Attributes" Version="0.7.63" />
-  </ItemGroup>
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <RootNamespace>ServiceModel.Grpc.DesignTime</RootNamespace>
+    <IsTool>true</IsTool>
+    <DevelopmentDependency>True</DevelopmentDependency>
+    <AssemblyTitle>ServiceModel.Grpc.DesignTime.Generator</AssemblyTitle>
+  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ServiceModel.Grpc\ServiceModel.Grpc.csproj" />

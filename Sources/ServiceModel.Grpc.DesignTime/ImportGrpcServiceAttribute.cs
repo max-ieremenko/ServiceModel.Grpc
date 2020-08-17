@@ -21,13 +21,16 @@ using CodeGeneration.Roslyn;
 namespace ServiceModel.Grpc.DesignTime
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    [CodeGenerationAttribute(typeof(CSharpCodeGenerator))]
+    [CodeGenerationAttribute("ServiceModel.Grpc.DesignTime.CSharpCodeGenerator, ServiceModel.Grpc.DesignTime.Generator")]
     [Conditional("CodeGeneration")]
     public sealed class ImportGrpcServiceAttribute : Attribute
     {
         public ImportGrpcServiceAttribute(Type serviceContract)
         {
-            serviceContract.AssertNotNull(nameof(serviceContract));
+            if (serviceContract == null)
+            {
+                throw new ArgumentNullException(nameof(serviceContract));
+            }
 
             ServiceContract = serviceContract;
         }

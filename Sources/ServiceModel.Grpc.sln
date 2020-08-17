@@ -21,11 +21,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.SelfHost.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.ProtoBufMarshaller", "ServiceModel.Grpc.ProtoBufMarshaller\ServiceModel.Grpc.ProtoBufMarshaller.csproj", "{B8E1D1A9-01D5-4D6A-B672-C4C50DDD561E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceModel.Grpc.DesignTime.Test", "ServiceModel.Grpc.DesignTime.Test\ServiceModel.Grpc.DesignTime.Test.csproj", "{5A15F328-AB5F-4FAA-B606-0700E2A72B38}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.DesignTime.Test", "ServiceModel.Grpc.DesignTime.Test\ServiceModel.Grpc.DesignTime.Test.csproj", "{5A15F328-AB5F-4FAA-B606-0700E2A72B38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceModel.Grpc.DesignTime", "ServiceModel.Grpc.DesignTime\ServiceModel.Grpc.DesignTime.csproj", "{0BC916FA-6C07-4D5B-B3E8-4DDF1903FD22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.DesignTime", "ServiceModel.Grpc.DesignTime\ServiceModel.Grpc.DesignTime.csproj", "{0BC916FA-6C07-4D5B-B3E8-4DDF1903FD22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceModel.Grpc.DesignTime.Generator.Test", "ServiceModel.Grpc.DesignTime.Generator.Test\ServiceModel.Grpc.DesignTime.Generator.Test.csproj", "{3828170C-4688-4B97-9596-7961679C5E45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.DesignTime.Generator.Test", "ServiceModel.Grpc.DesignTime.Generator.Test\ServiceModel.Grpc.DesignTime.Generator.Test.csproj", "{3828170C-4688-4B97-9596-7961679C5E45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceModel.Grpc.DesignTime.Generator", "ServiceModel.Grpc.DesignTime.Generator\ServiceModel.Grpc.DesignTime.Generator.csproj", "{691B6AB3-E1AC-4B46-B4F5-40AFDC1CC951}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,6 +79,10 @@ Global
 		{3828170C-4688-4B97-9596-7961679C5E45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3828170C-4688-4B97-9596-7961679C5E45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3828170C-4688-4B97-9596-7961679C5E45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{691B6AB3-E1AC-4B46-B4F5-40AFDC1CC951}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{691B6AB3-E1AC-4B46-B4F5-40AFDC1CC951}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{691B6AB3-E1AC-4B46-B4F5-40AFDC1CC951}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{691B6AB3-E1AC-4B46-B4F5-40AFDC1CC951}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
