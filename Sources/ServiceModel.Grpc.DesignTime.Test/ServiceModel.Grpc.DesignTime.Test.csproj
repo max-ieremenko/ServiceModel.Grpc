@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ServiceModel.Grpc.DesignTime\ServiceModel.Grpc.DesignTime.csproj" />
+    <ProjectReference Include="..\ServiceModel.Grpc.DesignTime.Generator\ServiceModel.Grpc.DesignTime.Generator.csproj" />
     <ProjectReference Include="..\ServiceModel.Grpc.TestApi\ServiceModel.Grpc.TestApi.csproj" />
   </ItemGroup>
 

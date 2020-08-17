@@ -16,10 +16,9 @@
 
 using System;
 using NUnit.Framework;
-using ServiceModel.Grpc.DesignTime.Internal.CSharp;
 using Shouldly;
 
-namespace ServiceModel.Grpc.DesignTime.Internal
+namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
 {
     [TestFixture]
     public class CodeStringBuilderTest
