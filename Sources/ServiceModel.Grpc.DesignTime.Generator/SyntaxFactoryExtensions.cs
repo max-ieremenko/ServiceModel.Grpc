@@ -14,6 +14,8 @@
 // limitations under the License.
 // </copyright>
 
+using System;
+using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -68,6 +70,11 @@ namespace ServiceModel.Grpc.DesignTime
             }
 
             return result.ToString();
+        }
+
+        public static bool IsStatic(this ClassDeclarationSyntax node)
+        {
+            return node.Modifiers.Any(i => "static".Equals(i.ToString(), StringComparison.Ordinal));
         }
     }
 }

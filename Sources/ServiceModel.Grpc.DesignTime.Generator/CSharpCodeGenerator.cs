@@ -25,6 +25,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ServiceModel.Grpc.Channel;
+using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.DesignTime.Internal.CSharp;
 using ServiceModel.Grpc.Internal;
@@ -74,6 +75,7 @@ namespace ServiceModel.Grpc.DesignTime
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
 
             var members = owner.AddMembers(
+                new CSharpClientFactoryExtensionBuilder(contract, node.IsStatic()).AsMemberDeclaration(),
                 new CSharpClientBuilderBuilder(contract).AsMemberDeclaration(),
                 new CSharpContractBuilder(contract).AsMemberDeclaration(),
                 new CSharpClientBuilder(contract).AsMemberDeclaration());
@@ -96,6 +98,7 @@ namespace ServiceModel.Grpc.DesignTime
                     typeof(CancellationToken).Namespace,
                     typeof(Task).Namespace,
                     "Grpc.Core",
+                    typeof(IClientFactory).Namespace,
                     typeof(IMarshallerFactory).Namespace,
                     typeof(CallOptionsBuilder).Namespace,
                     typeof(DataContractAttribute).Namespace,
