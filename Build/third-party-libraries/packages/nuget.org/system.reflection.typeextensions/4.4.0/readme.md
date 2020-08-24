@@ -1,4 +1,4 @@
-System.Security.Cryptography.Cng [4.4.0](https://www.nuget.org/packages/System.Security.Cryptography.Cng/4.4.0)
+System.Reflection.TypeExtensions [4.4.0](https://www.nuget.org/packages/System.Reflection.TypeExtensions/4.4.0)
 --------------------
 
 Used by: ProtoBuf
@@ -12,12 +12,11 @@ License: [MIT](../../../../licenses/mit)
 
 Description
 -----------
-Provides cryptographic algorithm implementations and key management with Windows Cryptographic Next Generation API (CNG).
+Provides extensions methods for System.Type that are designed to be source-compatible with older framework reflection-based APIs.
 
 Commonly Used Types:
-System.Security.Cryptography.RSACng
-System.Security.Cryptography.ECDsaCng
-System.Security.Cryptography.CngKey
+System.Reflection.TypeExtensions
+System.Reflection.BindingFlags
  
 8321c729934c0f8be754953439b88e6e1c120c24 
 When using NuGet 3.x this package requires at least version 3.4.

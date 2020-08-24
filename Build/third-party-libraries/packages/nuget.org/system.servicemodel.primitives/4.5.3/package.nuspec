@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata minClientVersion="2.12">
+    <id>System.ServiceModel.Primitives</id>
+    <version>4.5.3</version>
+    <title>System.ServiceModel.Primitives</title>
+    <authors>Microsoft</authors>
+    <owners>microsoft,dotnetframework</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://github.com/dotnet/corefx/blob/master/LICENSE.TXT</licenseUrl>
+    <projectUrl>https://dot.net/</projectUrl>
+    <iconUrl>http://go.microsoft.com/fwlink/?LinkID=288859</iconUrl>
+    <description>Provides common Windows Communication Foundation (WCF) types for consuming and communicating with services.
+
+Commonly Used Types:
+System.ServiceModel.ClientBase&lt;TChannel&gt;
+System.ServiceModel.IClientChannel
+System.ServiceModel.ICommunicationObject
+System.ServiceModel.Channels.IChannel
+System.ServiceModel.IContextChannel
+System.ServiceModel.IExtensibleObject&lt;T&gt;
+System.ServiceModel.DataContractFormatAttribute
+System.ServiceModel.Description.IOperationBehavior
+System.ServiceModel.Channels.Message
+System.ServiceModel.FaultException&lt;TDetail&gt;
+ 
+8ee6d65a6da34d4d37ce1d00d87febfeed0561a9 
+When using NuGet 3.x this package requires at least version 3.4.</description>
+    <releaseNotes>https://go.microsoft.com/fwlink/?LinkID=799421</releaseNotes>
+    <copyright>© Microsoft Corporation.  All rights reserved.</copyright>
+    <serviceable>true</serviceable>
+    <dependencies>
+      <group targetFramework="MonoAndroid1.0" />
+      <group targetFramework="MonoTouch1.0" />
+      <group targetFramework=".NETFramework4.5" />
+      <group targetFramework=".NETFramework4.6">
+        <dependency id="NETStandard.Library" version="1.6.1" />
+      </group>
+      <group targetFramework=".NETFramework4.6.1" />
+      <group targetFramework=".NETCore5.0">
+        <dependency id="NETStandard.Library" version="1.6.1" />
+        <dependency id="System.ComponentModel.EventBasedAsync" version="4.3.0" />
+        <dependency id="System.Private.ServiceModel" version="4.5.3" exclude="Compile" />
+        <dependency id="System.Runtime.Serialization.Primitives" version="4.3.0" />
+        <dependency id="System.Runtime.Serialization.Xml" version="4.3.0" />
+        <dependency id="System.Security.Principal" version="4.3.0" />
+      </group>
+      <group targetFramework=".NETStandard1.0">
+        <dependency id="NETStandard.Library" version="1.6.1" />
+        <dependency id="System.ComponentModel.EventBasedAsync" version="4.3.0" />
+        <dependency id="System.Runtime.Serialization.Primitives" version="4.3.0" />
+        <dependency id="System.Runtime.Serialization.Xml" version="4.3.0" />
+      </group>
+      <group targetFramework=".NETStandard1.1">
+        <dependency id="NETStandard.Library" version="1.6.1" />
+        <dependency id="System.ComponentModel.EventBasedAsync" version="4.3.0" />
+        <dependency id="System.Runtime.Serialization.Primitives" version="4.3.0" />
+        <dependency id="System.Runtime.Serialization.Xml" version="4.3.0" />
+        <dependency id="System.Security.Principal" version="4.3.0" />
+      </group>
+      <group targetFramework=".NETStandard1.3">
+        <dependency id="NETStandard.Library" version="1.6.1" />
+        <dependency id="System.ComponentModel.EventBasedAsync" version="4.3.0" />
+        <dependency id="System.Private.ServiceModel" version="4.5.3" exclude="Compile" />
+        <dependency id="System.Runtime.Serialization.Primitives" version="4.3.0" />
+        <dependency id="System.Runtime.Serialization.Xml" version="4.3.0" />
+        <dependency id="System.Security.Principal" version="4.3.0" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="System.Private.ServiceModel" version="4.5.3" exclude="Compile" />
+      </group>
+      <group targetFramework=".NETPortable0.0-Profile78" />
+      <group targetFramework="UAP10.0.16299">
+        <dependency id="System.Private.ServiceModel" version="4.5.3" exclude="Compile" />
+      </group>
+      <group targetFramework="UAP10.0.16300">
+        <dependency id="System.Private.ServiceModel" version="4.5.3" exclude="Compile" />
+      </group>
+      <group targetFramework="Windows8.0" />
+      <group targetFramework="WindowsPhone8.0" />
+      <group targetFramework="Xamarin.iOS1.0" />
+      <group targetFramework="Xamarin.Mac2.0" />
+      <group targetFramework="Xamarin.TVOS1.0" />
+      <group targetFramework="Xamarin.WatchOS1.0" />
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="mscorlib" targetFramework=".NETFramework4.6.1" />
+      <frameworkAssembly assemblyName="mscorlib" targetFramework=".NETFramework4.6" />
+      <frameworkAssembly assemblyName="System" targetFramework=".NETFramework4.6.1" />
+      <frameworkAssembly assemblyName="System.IdentityModel" targetFramework=".NETFramework4.6.1" />
+      <frameworkAssembly assemblyName="System.IdentityModel" targetFramework=".NETFramework4.6" />
+      <frameworkAssembly assemblyName="System.Runtime.Serialization" targetFramework=".NETFramework4.6.1" />
+      <frameworkAssembly assemblyName="System.ServiceModel" targetFramework=".NETFramework4.5" />
+      <frameworkAssembly assemblyName="System.ServiceModel" targetFramework=".NETFramework4.6.1" />
+      <frameworkAssembly assemblyName="System.ServiceModel" targetFramework=".NETFramework4.6" />
+      <frameworkAssembly assemblyName="System.Xml" targetFramework=".NETFramework4.6.1" />
+    </frameworkAssemblies>
+  </metadata>
+</package>

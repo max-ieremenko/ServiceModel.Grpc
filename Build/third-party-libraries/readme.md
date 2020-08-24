@@ -3,17 +3,17 @@ Licenses
 	
 |Code|Requires approval|Requires third party notices|Packages count|
 |----------|:----|:----|:----|
-|[Apache-2.0](licenses/apache-2.0)|no|no|13|
+|[Apache-2.0](licenses/apache-2.0)|no|no|12|
 |[BSD-2-Clause](licenses/bsd-2-clause)|no|no|1|
 |[BSD-3-Clause](licenses/bsd-3-clause)|no|no|1|
 |[Google.Protobuf](licenses/google.protobuf)|yes|no|1|
-|[MIT](licenses/mit)|no|no|41|
-|[ms-net-library](licenses/ms-net-library)|no|no|29|
+|[MIT](licenses/mit)|no|no|37|
+|[ms-net-library](licenses/ms-net-library)|no|no|31|
 |[MS-PL](licenses/ms-pl)|no|no|4|
 
 
 
-Packages 90
+Packages 87
 --------
 
 |Name|Version|Source|License|Used by|
@@ -53,15 +53,12 @@ Packages 90
 |[NuGet.Frameworks](packages/nuget.org/nuget.frameworks/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/NuGet.Frameworks/5.0.0%2b42a8779499c1d1ed2488c2e6b9e2ee6ff6107766)|[Apache-2.0](licenses/apache-2.0)|AspNetCore internal, Core internal, DesignTime internal, SelfHost internal|
 |[NUnit](packages/nuget.org/nunit/3.12.0)|3.12.0|[nuget.org](https://www.nuget.org/packages/NUnit/3.12.0)|[MIT](licenses/mit)|Core internal|
 |[NUnit3TestAdapter](packages/nuget.org/nunit3testadapter/3.17.0)|3.17.0|[nuget.org](https://www.nuget.org/packages/NUnit3TestAdapter/3.17.0)|[MIT](licenses/mit)|AspNetCore internal, Core internal, DesignTime internal, SelfHost internal|
-|[protobuf-net](packages/nuget.org/protobuf-net/3.0.29)|3.0.29|[nuget.org](https://www.nuget.org/packages/protobuf-net/3.0.29)|[Apache-2.0](licenses/apache-2.0)|ProtoBuf|
-|[protobuf-net.Core](packages/nuget.org/protobuf-net.core/3.0.29)|3.0.29|[nuget.org](https://www.nuget.org/packages/protobuf-net.Core/3.0.29)|[Apache-2.0](licenses/apache-2.0)|ProtoBuf|
+|[protobuf-net](packages/nuget.org/protobuf-net/2.4.6)|2.4.6|[nuget.org](https://www.nuget.org/packages/protobuf-net/2.4.6)|[Apache-2.0](licenses/apache-2.0)|ProtoBuf|
 |[Shouldly](packages/nuget.org/shouldly/3.0.2)|3.0.2|[nuget.org](https://www.nuget.org/packages/Shouldly/3.0.2)|[BSD-2-Clause](licenses/bsd-2-clause)|Core internal|
 |[StyleCop.Analyzers.Unstable](packages/nuget.org/stylecop.analyzers.unstable/1.2.0.205)|1.2.0.205|[nuget.org](https://www.nuget.org/packages/StyleCop.Analyzers.Unstable/1.2.0.205)|[MIT](licenses/mit)|AspNetCore internal, Core internal, DesignTime internal, ProtoBuf internal, SelfHost internal|
 |[System.AppContext](packages/nuget.org/system.appcontext/4.1.0)|4.1.0|[nuget.org](https://www.nuget.org/packages/System.AppContext/4.1.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, SelfHost internal|
 |[System.Buffers](packages/nuget.org/system.buffers/4.4.0)|4.4.0|[nuget.org](https://www.nuget.org/packages/System.Buffers/4.4.0)|[MIT](licenses/mit)|Core, SelfHost|
-|[System.Buffers](packages/nuget.org/system.buffers/4.5.1)|4.5.1|[nuget.org](https://www.nuget.org/packages/System.Buffers/4.5.1)|[MIT](licenses/mit)|ProtoBuf|
 |[System.Collections.Immutable](packages/nuget.org/system.collections.immutable/1.5.0)|1.5.0|[nuget.org](https://www.nuget.org/packages/System.Collections.Immutable/1.5.0)|[MIT](licenses/mit)|DesignTime internal|
-|[System.Collections.Immutable](packages/nuget.org/system.collections.immutable/1.7.1)|1.7.1|[nuget.org](https://www.nuget.org/packages/System.Collections.Immutable/1.7.1)|[MIT](licenses/mit)|ProtoBuf|
 |[System.Collections.NonGeneric](packages/nuget.org/system.collections.nongeneric/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Collections.NonGeneric/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, SelfHost internal|
 |[System.Collections.Specialized](packages/nuget.org/system.collections.specialized/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Collections.Specialized/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, SelfHost internal|
 |[System.ComponentModel](packages/nuget.org/system.componentmodel/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.ComponentModel/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, SelfHost internal|
@@ -70,42 +67,42 @@ Packages 90
 |[System.ComponentModel.TypeConverter](packages/nuget.org/system.componentmodel.typeconverter/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.ComponentModel.TypeConverter/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, SelfHost internal|
 |[System.Dynamic.Runtime](packages/nuget.org/system.dynamic.runtime/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Dynamic.Runtime/4.3.0)|[ms-net-library](licenses/ms-net-library)|Core internal|
 |[System.IdentityModel.Tokens.Jwt](packages/nuget.org/system.identitymodel.tokens.jwt/5.5.0)|5.5.0|[nuget.org](https://www.nuget.org/packages/System.IdentityModel.Tokens.Jwt/5.5.0)|[MIT](licenses/mit)|AspNetCore internal|
-|[System.IO.FileSystem.Primitives](packages/nuget.org/system.io.filesystem.primitives/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.IO.FileSystem.Primitives/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, SelfHost internal|
-|[System.Linq](packages/nuget.org/system.linq/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Linq/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, SelfHost internal|
+|[System.IO.FileSystem.Primitives](packages/nuget.org/system.io.filesystem.primitives/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.IO.FileSystem.Primitives/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, ProtoBuf, SelfHost internal|
+|[System.Linq](packages/nuget.org/system.linq/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Linq/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, ProtoBuf, SelfHost internal|
 |[System.Linq.Expressions](packages/nuget.org/system.linq.expressions/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Linq.Expressions/4.3.0)|[ms-net-library](licenses/ms-net-library)|Core internal|
 |[System.Memory](packages/nuget.org/system.memory/4.5.3)|4.5.3|[nuget.org](https://www.nuget.org/packages/System.Memory/4.5.3)|[MIT](licenses/mit)|Core, SelfHost|
-|[System.Memory](packages/nuget.org/system.memory/4.5.4)|4.5.4|[nuget.org](https://www.nuget.org/packages/System.Memory/4.5.4)|[MIT](licenses/mit)|ProtoBuf|
-|[System.Numerics.Vectors](packages/nuget.org/system.numerics.vectors/4.4.0)|4.4.0|[nuget.org](https://www.nuget.org/packages/System.Numerics.Vectors/4.4.0)|[MIT](licenses/mit)|Core, ProtoBuf, SelfHost|
-|[System.Numerics.Vectors](packages/nuget.org/system.numerics.vectors/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Numerics.Vectors/4.5.0)|[MIT](licenses/mit)|ProtoBuf|
+|[System.Numerics.Vectors](packages/nuget.org/system.numerics.vectors/4.4.0)|4.4.0|[nuget.org](https://www.nuget.org/packages/System.Numerics.Vectors/4.4.0)|[MIT](licenses/mit)|Core, SelfHost|
 |[System.ObjectModel](packages/nuget.org/system.objectmodel/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.ObjectModel/4.3.0)|[ms-net-library](licenses/ms-net-library)|Core internal|
-|[System.Private.ServiceModel](packages/nuget.org/system.private.servicemodel/4.7.0)|4.7.0|[nuget.org](https://www.nuget.org/packages/System.Private.ServiceModel/4.7.0)|[MIT](licenses/mit)|Core internal, ProtoBuf|
-|[System.Reflection.DispatchProxy](packages/nuget.org/system.reflection.dispatchproxy/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Reflection.DispatchProxy/4.5.0)|[MIT](licenses/mit)|Core internal, ProtoBuf|
+|[System.Private.ServiceModel](packages/nuget.org/system.private.servicemodel/4.7.0)|4.7.0|[nuget.org](https://www.nuget.org/packages/System.Private.ServiceModel/4.7.0)|[MIT](licenses/mit)|Core internal|
+|[System.Reflection.DispatchProxy](packages/nuget.org/system.reflection.dispatchproxy/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Reflection.DispatchProxy/4.5.0)|[MIT](licenses/mit)|Core internal|
 |[System.Reflection.Emit](packages/nuget.org/system.reflection.emit/4.7.0)|4.7.0|[nuget.org](https://www.nuget.org/packages/System.Reflection.Emit/4.7.0)|[MIT](licenses/mit)|Core, ProtoBuf|
-|[System.Reflection.Emit.ILGeneration](packages/nuget.org/system.reflection.emit.ilgeneration/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Reflection.Emit.ILGeneration/4.3.0)|[ms-net-library](licenses/ms-net-library)|Core internal|
+|[System.Reflection.Emit.ILGeneration](packages/nuget.org/system.reflection.emit.ilgeneration/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Reflection.Emit.ILGeneration/4.3.0)|[ms-net-library](licenses/ms-net-library)|Core internal, ProtoBuf|
 |[System.Reflection.Emit.ILGeneration](packages/nuget.org/system.reflection.emit.ilgeneration/4.7.0)|4.7.0|[nuget.org](https://www.nuget.org/packages/System.Reflection.Emit.ILGeneration/4.7.0)|[MIT](licenses/mit)|Core, ProtoBuf|
-|[System.Reflection.Emit.Lightweight](packages/nuget.org/system.reflection.emit.lightweight/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Reflection.Emit.Lightweight/4.3.0)|[ms-net-library](licenses/ms-net-library)|Core internal|
-|[System.Reflection.Emit.Lightweight](packages/nuget.org/system.reflection.emit.lightweight/4.7.0)|4.7.0|[nuget.org](https://www.nuget.org/packages/System.Reflection.Emit.Lightweight/4.7.0)|[MIT](licenses/mit)|ProtoBuf|
+|[System.Reflection.Emit.Lightweight](packages/nuget.org/system.reflection.emit.lightweight/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Reflection.Emit.Lightweight/4.3.0)|[ms-net-library](licenses/ms-net-library)|Core internal, ProtoBuf|
 |[System.Reflection.Metadata](packages/nuget.org/system.reflection.metadata/1.6.0)|1.6.0|[nuget.org](https://www.nuget.org/packages/System.Reflection.Metadata/1.6.0)|[MIT](licenses/mit)|DesignTime internal|
 |[System.Reflection.TypeExtensions](packages/nuget.org/system.reflection.typeextensions/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Reflection.TypeExtensions/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, SelfHost internal|
+|[System.Reflection.TypeExtensions](packages/nuget.org/system.reflection.typeextensions/4.4.0)|4.4.0|[nuget.org](https://www.nuget.org/packages/System.Reflection.TypeExtensions/4.4.0)|[MIT](licenses/mit)|ProtoBuf|
 |[System.Runtime.CompilerServices.Unsafe](packages/nuget.org/system.runtime.compilerservices.unsafe/4.5.2)|4.5.2|[nuget.org](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/4.5.2)|[MIT](licenses/mit)|AspNetCore internal, Core, DesignTime internal, SelfHost|
 |[System.Runtime.CompilerServices.Unsafe](packages/nuget.org/system.runtime.compilerservices.unsafe/4.5.3)|4.5.3|[nuget.org](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/4.5.3)|[MIT](licenses/mit)|Core, ProtoBuf, SelfHost|
 |[System.Runtime.InteropServices.RuntimeInformation](packages/nuget.org/system.runtime.interopservices.runtimeinformation/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Runtime.InteropServices.RuntimeInformation/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, SelfHost internal|
-|[System.Security.AccessControl](packages/nuget.org/system.security.accesscontrol/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Security.AccessControl/4.5.0)|[MIT](licenses/mit)|Core internal, ProtoBuf|
-|[System.Security.Cryptography.Cng](packages/nuget.org/system.security.cryptography.cng/4.4.0)|4.4.0|[nuget.org](https://www.nuget.org/packages/System.Security.Cryptography.Cng/4.4.0)|[MIT](licenses/mit)|ProtoBuf|
+|[System.Security.AccessControl](packages/nuget.org/system.security.accesscontrol/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Security.AccessControl/4.5.0)|[MIT](licenses/mit)|Core internal|
 |[System.Security.Cryptography.Cng](packages/nuget.org/system.security.cryptography.cng/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Security.Cryptography.Cng/4.5.0)|[MIT](licenses/mit)|AspNetCore internal, Core internal|
-|[System.Security.Cryptography.Pkcs](packages/nuget.org/system.security.cryptography.pkcs/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Security.Cryptography.Pkcs/4.5.0)|[MIT](licenses/mit)|Core internal, ProtoBuf|
-|[System.Security.Cryptography.Xml](packages/nuget.org/system.security.cryptography.xml/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Security.Cryptography.Xml/4.5.0)|[MIT](licenses/mit)|Core internal, ProtoBuf|
-|[System.Security.Permissions](packages/nuget.org/system.security.permissions/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Security.Permissions/4.5.0)|[MIT](licenses/mit)|Core internal, ProtoBuf|
-|[System.Security.Principal.Windows](packages/nuget.org/system.security.principal.windows/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Security.Principal.Windows/4.5.0)|[MIT](licenses/mit)|Core internal, ProtoBuf|
-|[System.ServiceModel.Primitives](packages/nuget.org/system.servicemodel.primitives/4.7.0)|4.7.0|[nuget.org](https://www.nuget.org/packages/System.ServiceModel.Primitives/4.7.0)|[MIT](licenses/mit)|Core internal, ProtoBuf|
+|[System.Security.Cryptography.Pkcs](packages/nuget.org/system.security.cryptography.pkcs/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Security.Cryptography.Pkcs/4.5.0)|[MIT](licenses/mit)|Core internal|
+|[System.Security.Cryptography.Xml](packages/nuget.org/system.security.cryptography.xml/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Security.Cryptography.Xml/4.5.0)|[MIT](licenses/mit)|Core internal|
+|[System.Security.Permissions](packages/nuget.org/system.security.permissions/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Security.Permissions/4.5.0)|[MIT](licenses/mit)|Core internal|
+|[System.Security.Principal.Windows](packages/nuget.org/system.security.principal.windows/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Security.Principal.Windows/4.5.0)|[MIT](licenses/mit)|Core internal|
+|[System.ServiceModel.Primitives](packages/nuget.org/system.servicemodel.primitives/4.5.3)|4.5.3|[nuget.org](https://www.nuget.org/packages/System.ServiceModel.Primitives/4.5.3)|[MIT](licenses/mit)|ProtoBuf|
+|[System.ServiceModel.Primitives](packages/nuget.org/system.servicemodel.primitives/4.7.0)|4.7.0|[nuget.org](https://www.nuget.org/packages/System.ServiceModel.Primitives/4.7.0)|[MIT](licenses/mit)|Core internal|
 |[System.Text.Encoding.CodePages](packages/nuget.org/system.text.encoding.codepages/4.5.1)|4.5.1|[nuget.org](https://www.nuget.org/packages/System.Text.Encoding.CodePages/4.5.1)|[MIT](licenses/mit)|DesignTime internal|
-|[System.Text.RegularExpressions](packages/nuget.org/system.text.regularexpressions/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Text.RegularExpressions/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, SelfHost internal|
-|[System.Threading](packages/nuget.org/system.threading/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Threading/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, SelfHost internal|
-|[System.Threading.Tasks.Extensions](packages/nuget.org/system.threading.tasks.extensions/4.5.4)|4.5.4|[nuget.org](https://www.nuget.org/packages/System.Threading.Tasks.Extensions/4.5.4)|[MIT](licenses/mit)|Core|
+|[System.Text.RegularExpressions](packages/nuget.org/system.text.regularexpressions/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Text.RegularExpressions/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, ProtoBuf, SelfHost internal|
+|[System.Threading](packages/nuget.org/system.threading/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Threading/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, ProtoBuf, SelfHost internal|
+|[System.Threading.Tasks.Extensions](packages/nuget.org/system.threading.tasks.extensions/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Threading.Tasks.Extensions/4.3.0)|[ms-net-library](licenses/ms-net-library)|ProtoBuf|
+|[System.Threading.Tasks.Extensions](packages/nuget.org/system.threading.tasks.extensions/4.5.4)|4.5.4|[nuget.org](https://www.nuget.org/packages/System.Threading.Tasks.Extensions/4.5.4)|[MIT](licenses/mit)|Core, ProtoBuf|
 |[System.Threading.Thread](packages/nuget.org/system.threading.thread/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Threading.Thread/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, SelfHost internal|
 |[System.ValueTuple](packages/nuget.org/system.valuetuple/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.ValueTuple/4.5.0)|[MIT](licenses/mit)|Core internal|
-|[System.Xml.ReaderWriter](packages/nuget.org/system.xml.readerwriter/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Xml.ReaderWriter/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, SelfHost internal|
-|[System.Xml.XmlDocument](packages/nuget.org/system.xml.xmldocument/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Xml.XmlDocument/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, SelfHost internal|
+|[System.Xml.ReaderWriter](packages/nuget.org/system.xml.readerwriter/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Xml.ReaderWriter/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, ProtoBuf, SelfHost internal|
+|[System.Xml.XmlDocument](packages/nuget.org/system.xml.xmldocument/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Xml.XmlDocument/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, ProtoBuf, SelfHost internal|
+|[System.Xml.XmlSerializer](packages/nuget.org/system.xml.xmlserializer/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Xml.XmlSerializer/4.3.0)|[ms-net-library](licenses/ms-net-library)|ProtoBuf|
 |[System.Xml.XPath](packages/nuget.org/system.xml.xpath/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Xml.XPath/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, SelfHost internal|
 |[System.Xml.XPath.XmlDocument](packages/nuget.org/system.xml.xpath.xmldocument/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Xml.XPath.XmlDocument/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCore internal, Core internal, DesignTime internal, SelfHost internal|
 

@@ -1,7 +1,7 @@
 System.Threading.Tasks.Extensions [4.5.4](https://www.nuget.org/packages/System.Threading.Tasks.Extensions/4.5.4)
 --------------------
 
-Used by: Core
+Used by: Core, ProtoBuf
 
 Target frameworks: net461, netcoreapp2.1, netcoreapp3.1, netstandard2.0, netstandard2.1
 

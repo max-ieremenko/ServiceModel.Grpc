@@ -26,29 +26,6 @@
           "Version": "4.5.0"
         }
       ]
-    },
-    {
-      "Name": "ProtoBuf",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "net461",
-        "netstandard2.0",
-        "netstandard2.1"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Reflection.DispatchProxy",
-          "Version": "4.5.0"
-        },
-        {
-          "Name": "System.Security.Cryptography.Xml",
-          "Version": "4.5.0"
-        },
-        {
-          "Name": "System.Security.Principal.Windows",
-          "Version": "4.5.0"
-        }
-      ]
     }
   ],
   "Licenses": [
