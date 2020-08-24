@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerAspNetHost", "ServerA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerNativeHost", "ServerNativeHost\ServerNativeHost.csproj", "{F731009A-35A5-4338-983A-4D1E2D87E24E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{93B619D7-78ED-403B-9884-B861BE56BFB8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{93B619D7-78ED-403B-9884-B861BE56BFB8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientDesignTime", "ClientDesignTime\ClientDesignTime.csproj", "{5C2168AF-0151-4A6D-A5DC-8D061E77723D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{93B619D7-78ED-403B-9884-B861BE56BFB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93B619D7-78ED-403B-9884-B861BE56BFB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93B619D7-78ED-403B-9884-B861BE56BFB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C2168AF-0151-4A6D-A5DC-8D061E77723D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C2168AF-0151-4A6D-A5DC-8D061E77723D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C2168AF-0151-4A6D-A5DC-8D061E77723D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C2168AF-0151-4A6D-A5DC-8D061E77723D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
