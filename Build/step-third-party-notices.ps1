@@ -24,7 +24,7 @@ $sources = @(
 Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
 
 # ServiceModel.Grpc.DesignTime
-$appNames = @("DesignTime", "Core")
+$appNames = @("DesignTime")
 $sources = @(
     (Join-Path $script:sourceDir "ServiceModel.Grpc.DesignTime"),
     (Join-Path $script:sourceDir "ServiceModel.Grpc.DesignTime.Generator"),

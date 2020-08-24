@@ -26,7 +26,7 @@ namespace ServiceModel.Grpc.Client
     public interface IClientFactory
     {
         /// <summary>
-        /// Configures the factory to generate a proxy automatically for gRPC service contract <typeparamref name="TContract"/> with specific options.
+        /// Configures the factory to generate a proxy automatically (Reflection.Emit) for gRPC service contract <typeparamref name="TContract"/> with specific options.
         /// </summary>
         /// <typeparam name="TContract">The service contract type.</typeparam>
         /// <param name="configure">The action to configure options.</param>
@@ -34,7 +34,7 @@ namespace ServiceModel.Grpc.Client
             where TContract : class;
 
         /// <summary>
-        /// Configures the factory to use a builder for proxy creation with specific options.
+        /// Configures the factory to use a proxy builder for gRPC service contract <typeparamref name="TContract"/> with specific options.
         /// </summary>
         /// <typeparam name="TContract">The service contract type.</typeparam>
         /// <param name="builder">The proxy builder.</param>

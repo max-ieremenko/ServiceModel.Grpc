@@ -1,7 +1,7 @@
 function Update-DesignTimePackage($binDir) {
-    $packageFile = Get-ChildItem -Path $binDir -Filter ServiceModel.Grpc.DesignTime.?.?.?.nupkg | ForEach-Object {$_.FullName}
+    $packageFile = Get-ChildItem -Path $binDir -Filter ServiceModel.Grpc.DesignTime.?.?.*.nupkg | ForEach-Object {$_.FullName}
     if ($packageFile.Count -ne 1) {
-        throw "ServiceModel.Grpc.DesignTime.nuspec not found."
+        throw "ServiceModel.Grpc.DesignTime.*.nupkg not found."
     }
 
     $tempPath = Join-Path ([System.IO.Path]::GetTempPath()) "step-pack"
@@ -25,8 +25,9 @@ function Update-DesignTimePackage($binDir) {
         throw "ServiceModel.Grpc.DesignTime.nuspec does not contain any dependencies."
     }
 
+    $serviceModelVersion = $spec.SelectNodes("s:package/s:metadata/s:version", $ns).InnerText
     foreach ($dependency in $dependencies) {
-        $serviceModelVersion = Get-Version $dependency $ns "ServiceModel.Grpc"
+        Get-Version $dependency $ns "ServiceModel.Grpc" | Out-Null # assert
         $roslynVersion = Get-Version $dependency $ns "CodeGeneration.Roslyn.Attributes"
 
         Add-Dependency $dependency "CodeGeneration.Roslyn.Tool" $roslynVersion

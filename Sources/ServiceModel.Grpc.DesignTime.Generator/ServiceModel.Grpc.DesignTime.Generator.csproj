@@ -8,6 +8,8 @@
     <IsTool>true</IsTool>
     <DevelopmentDependency>True</DevelopmentDependency>
     <AssemblyTitle>ServiceModel.Grpc.DesignTime.Generator</AssemblyTitle>
+
+    <Version>$(DesignTimePackageVersion)</Version>
   </PropertyGroup>
 
   <ItemGroup>
