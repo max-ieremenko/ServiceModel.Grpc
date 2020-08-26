@@ -23,7 +23,7 @@
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "4.5.2"
+          "Version": "4.5.3"
         }
       ]
     },
@@ -46,7 +46,7 @@
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "4.5.2"
+          "Version": "4.5.3"
         }
       ]
     }

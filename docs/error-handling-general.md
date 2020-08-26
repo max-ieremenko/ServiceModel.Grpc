@@ -70,7 +70,7 @@ public ServerFaultDetail? ProvideFaultOrIgnore(ServerCallInterceptorContext cont
 
 ## Client-side error model
 
-`IClientErrorHandler.ThrowOrIgnore` can decide what to throw to user code.
+`IClientErrorHandler.ThrowOrIgnore` must decide what to throw to a user code.
 
 ``` c#
 public readonly struct ClientFaultDetail

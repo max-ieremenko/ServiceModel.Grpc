@@ -50,7 +50,6 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             var builder = services.AddGrpc();
-            services.TryAddSingleton<HostMarkerService>();
             services.TryAddEnumerable(ServiceDescriptor.Transient(typeof(IServiceMethodProvider<>), typeof(ServiceModelServiceMethodProvider<>)));
             return builder;
         }

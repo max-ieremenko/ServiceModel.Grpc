@@ -23,6 +23,17 @@ $sources = @(
 
 Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
 
+# ServiceModel.Grpc.DesignTime
+$appNames = @("DesignTime")
+$sources = @(
+    (Join-Path $script:sourceDir "ServiceModel.Grpc.DesignTime"),
+    (Join-Path $script:sourceDir "ServiceModel.Grpc.DesignTime.Generator"),
+    (Join-Path $script:sourceDir "ServiceModel.Grpc.DesignTime.Test"),
+    (Join-Path $script:sourceDir "ServiceModel.Grpc.DesignTime.Generator.Test")
+)
+
+Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
+
 # ServiceModel.Grpc.SelfHost
 $appNames = @("SelfHost", "Core")
 $sources = @(

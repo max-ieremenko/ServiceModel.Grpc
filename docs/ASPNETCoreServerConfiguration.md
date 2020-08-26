@@ -26,7 +26,7 @@ public class Startup
 
         // optional configuration for a specific service
         services
-            .AddServiceModelGrpcServiceOptions<IMyService>(options =>
+            .AddServiceModelGrpcServiceOptions<MyService>(options =>
             {
                 options.MarshallerFactory = ...
                 options.ErrorHandlerFactory = ...

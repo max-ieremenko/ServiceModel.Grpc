@@ -5,7 +5,7 @@ At the end, you'll have a gRPC client that communicates with the gRPC Greeter se
 
 [View sample code](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/CreateClientAndServerASPNETCore).
 
-## Create contract first
+## Create a contract first
 
 Create a blank solution. Add new "Class Library (.NET standard)" project with name "Contract".
 

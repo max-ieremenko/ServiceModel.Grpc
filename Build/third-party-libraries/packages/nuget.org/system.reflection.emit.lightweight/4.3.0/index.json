@@ -5,21 +5,6 @@
   },
   "UsedBy": [
     {
-      "Name": "ProtoBuf",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "net461",
-        "netstandard2.0",
-        "netstandard2.1"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Reflection.Emit.ILGeneration",
-          "Version": "4.7.0"
-        }
-      ]
-    },
-    {
       "Name": "Core",
       "InternalOnly": true,
       "TargetFrameworks": [
@@ -31,6 +16,21 @@
         {
           "Name": "System.Reflection.Emit.ILGeneration",
           "Version": "4.3.0"
+        }
+      ]
+    },
+    {
+      "Name": "ProtoBuf",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net461",
+        "netstandard2.0",
+        "netstandard2.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Reflection.Emit.ILGeneration",
+          "Version": "4.7.0"
         }
       ]
     }

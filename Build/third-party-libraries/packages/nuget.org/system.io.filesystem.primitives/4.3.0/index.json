@@ -30,6 +30,13 @@
       ]
     },
     {
+      "Name": "DesignTime",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp2.1"
+      ]
+    },
+    {
       "Name": "ProtoBuf",
       "InternalOnly": false,
       "TargetFrameworks": [

@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grpc.AspNetCore.Server" Version="2.28.0" />
+    <PackageReference Include="Grpc.AspNetCore.Server" Version="2.31.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -21,14 +21,8 @@
     <ProjectReference Include="..\ServiceModel.Grpc\ServiceModel.Grpc.csproj" />
   </ItemGroup>
 
-  <Target Name="AdditionalPackageContent">
-    <ItemGroup>
-      <TfmSpecificPackageFile Include="..\..\LICENSE">
-        <PackagePath></PackagePath>
-      </TfmSpecificPackageFile>
-      <TfmSpecificPackageFile Include="..\..\build-out\AspNetCoreThirdPartyNotices.txt">
-        <PackagePath>ThirdPartyNotices.txt</PackagePath>
-      </TfmSpecificPackageFile>
-    </ItemGroup>
-  </Target>
+  <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">
+    <Content Include="..\..\LICENSE" PackagePath="" />
+    <Content Include="..\..\build-out\AspNetCoreThirdPartyNotices.txt" PackagePath="ThirdPartyNotices.txt" />
+  </ItemGroup>
 </Project>

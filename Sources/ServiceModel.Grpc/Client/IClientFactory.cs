@@ -16,6 +16,7 @@
 
 using System;
 using Grpc.Core;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Client
 {
@@ -25,11 +26,20 @@ namespace ServiceModel.Grpc.Client
     public interface IClientFactory
     {
         /// <summary>
-        /// Configures a proxy for gRPC service contract <typeparamref name="TContract"/>.
+        /// Configures the factory to generate a proxy automatically (Reflection.Emit) for gRPC service contract <typeparamref name="TContract"/> with specific options.
         /// </summary>
         /// <typeparam name="TContract">The service contract type.</typeparam>
-        /// <param name="configure">The configuration action.</param>
+        /// <param name="configure">The action to configure options.</param>
         void AddClient<TContract>(Action<ServiceModelGrpcClientOptions>? configure = null)
+            where TContract : class;
+
+        /// <summary>
+        /// Configures the factory to use a proxy builder for gRPC service contract <typeparamref name="TContract"/> with specific options.
+        /// </summary>
+        /// <typeparam name="TContract">The service contract type.</typeparam>
+        /// <param name="builder">The proxy builder.</param>
+        /// <param name="configure">The action to configure options.</param>
+        void AddClient<TContract>(IClientBuilder<TContract> builder, Action<ServiceModelGrpcClientOptions>? configure = null)
             where TContract : class;
 
         /// <summary>

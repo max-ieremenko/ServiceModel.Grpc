@@ -21,49 +21,66 @@ using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Hosting;
 using ServiceModel.Grpc.Internal;
+using ServiceModel.Grpc.Internal.Emit;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal
 {
-    internal sealed class AspNetCoreGrpcServiceFactory<TService> : GrpcServiceFactoryBase<TService>
+    internal sealed class AspNetCoreGrpcServiceFactory<TService> : IServiceBinder
         where TService : class
     {
+        private readonly ILogger _logger;
         private readonly ServiceMethodProviderContext<TService> _context;
+        private readonly IMarshallerFactory? _marshallerFactory;
 
         public AspNetCoreGrpcServiceFactory(
             ILogger logger,
             ServiceMethodProviderContext<TService> context,
-            IMarshallerFactory? marshallerFactory,
-            string hostId)
-            : base(logger, marshallerFactory, hostId)
+            IMarshallerFactory? marshallerFactory)
         {
+            _logger = logger;
             _context = context;
+            _marshallerFactory = marshallerFactory;
         }
 
-        protected override void AddUnaryServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
+        public void Bind()
+        {
+            var generator = new EmitGenerator { Logger = _logger };
+            generator.BindService<TService>(this, _marshallerFactory ?? DataContractMarshallerFactory.Default);
+        }
+
+        public void AddUnaryServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
+            where TRequest : class
+            where TResponse : class
         {
             var metadata = GetMethodMetadata(callInfo.ServiceInstanceMethod);
-            var invoker = callInfo.ChannelMethod.CreateDelegate<UnaryServerMethod<TService, TRequest, TResponse>>();
+            var invoker = callInfo.ChannelMethod.CreateDelegate<UnaryServerMethod<TService, TRequest, TResponse>>(callInfo.Channel);
             _context.AddUnaryMethod(method, metadata, invoker);
         }
 
-        protected override void AddClientStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
+        public void AddClientStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
+            where TRequest : class
+            where TResponse : class
         {
             var metadata = GetMethodMetadata(callInfo.ServiceInstanceMethod);
-            var invoker = callInfo.ChannelMethod.CreateDelegate<ClientStreamingServerMethod<TService, TRequest, TResponse>>();
+            var invoker = callInfo.ChannelMethod.CreateDelegate<ClientStreamingServerMethod<TService, TRequest, TResponse>>(callInfo.Channel);
             _context.AddClientStreamingMethod(method, metadata, invoker);
         }
 
-        protected override void AddServerStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
+        public void AddServerStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
+            where TRequest : class
+            where TResponse : class
         {
             var metadata = GetMethodMetadata(callInfo.ServiceInstanceMethod);
-            var invoker = callInfo.ChannelMethod.CreateDelegate<ServerStreamingServerMethod<TService, TRequest, TResponse>>();
+            var invoker = callInfo.ChannelMethod.CreateDelegate<ServerStreamingServerMethod<TService, TRequest, TResponse>>(callInfo.Channel);
             _context.AddServerStreamingMethod(method, metadata, invoker);
         }
 
-        protected override void AddDuplexStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
+        public void AddDuplexStreamingServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
+            where TRequest : class
+            where TResponse : class
         {
             var metadata = GetMethodMetadata(callInfo.ServiceInstanceMethod);
-            var invoker = callInfo.ChannelMethod.CreateDelegate<DuplexStreamingServerMethod<TService, TRequest, TResponse>>();
+            var invoker = callInfo.ChannelMethod.CreateDelegate<DuplexStreamingServerMethod<TService, TRequest, TResponse>>(callInfo.Channel);
             _context.AddDuplexStreamingMethod(method, metadata, invoker);
         }
 

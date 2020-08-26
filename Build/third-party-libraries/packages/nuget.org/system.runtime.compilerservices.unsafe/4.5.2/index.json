@@ -10,9 +10,7 @@
       "TargetFrameworks": [
         "net461",
         "netstandard2.0",
-        "netstandard2.1",
-        "netcoreapp2.1",
-        "netcoreapp3.1"
+        "netstandard2.1"
       ]
     },
     {
@@ -25,12 +23,17 @@
       ]
     },
     {
-      "Name": "ProtoBuf",
-      "InternalOnly": false,
+      "Name": "AspNetCore",
+      "InternalOnly": true,
       "TargetFrameworks": [
-        "net461",
-        "netstandard2.0",
-        "netstandard2.1"
+        "netcoreapp3.1"
+      ]
+    },
+    {
+      "Name": "DesignTime",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp2.1"
       ]
     }
   ],

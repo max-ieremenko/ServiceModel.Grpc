@@ -1,7 +1,7 @@
 System.AppContext [4.1.0](https://www.nuget.org/packages/System.AppContext/4.1.0)
 --------------------
 
-Used by: AspNetCore internal, Core internal, SelfHost internal
+Used by: AspNetCore internal, Core internal, DesignTime internal, SelfHost internal
 
 Target frameworks: net461, netcoreapp2.1, netcoreapp3.1
 

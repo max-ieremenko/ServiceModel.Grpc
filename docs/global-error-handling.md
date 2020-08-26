@@ -11,7 +11,7 @@ This tutorial shows how to implement custom gRPC exception handling with the fol
 
 [View sample code](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/ErrorHandling).
 
-## Create contracts
+## Create a contract
 
 The service contract:
 
@@ -160,7 +160,7 @@ All other exceptions are handled by gRPC.
 ## Create client error handlers
 
 A client-side error handler is an implementation of interface `IClientErrorHandler` with one method `ThrowOrIgnore`.
-The method can ignore original `RpcException`, provided by gRPC API or throws a custom exception to pass it to the caller.
+The method can ignore original `RpcException`, provided by gRPC API, or throws a custom exception to pass it to the caller.
 
 To meet the requirements we implement two error handlers. The first one `ApplicationExceptionClientHandler` is responsible to process marker `ApplicationException` provided by the server error handler.
 

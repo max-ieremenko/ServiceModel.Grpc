@@ -22,13 +22,13 @@ public static class Program
 #### ServiceModelGrpcClientOptions:
 
 - IMarshallerFactory MarshallerFactory: by default is null, it means DataContractMarshallerFactory.Default
-- Func\<CallOptions\> DefaultCallOptionsFactory: by default is null. To setup default CallOptions for all calls by all clients created by this ClientFactory
+- Func\<CallOptions\> DefaultCallOptionsFactory: by default is null. Allows to setup default CallOptions for all calls by all clients created by this ClientFactory
 - IClientErrorHandler ErrorHandler: by default is null, it means error handling by gRPC API
-- ILogger Logger: by default is null. To setup possible output provided by this ClientFactory
+- ILogger Logger: by default is null. Allows to catch possible output provided by this ClientFactory
 
-#### IClientFactory.AddClient\<TContract\>()
+#### IClientFactory.AddClient\<TContract\>(Action\<ServiceModelGrpcClientOptions\>?)
 
-`AddClient` allows to change the configuration for a specific client in this factory.
+The method generates a proxy for `IMyContract` via Reflection.Emit and applies the configuration for this proxy.
 
 ``` c#
 DefaultClientFactory.AddClient<IMyContract>(options =>
@@ -38,7 +38,32 @@ DefaultClientFactory.AddClient<IMyContract>(options =>
 });
 ```
 
-#### IClientFactory.CreateClient<TContract>()
+#### IClientFactory.AddClient\<TContract\>(IClientBuilder\<TContract\>, Action\<ServiceModelGrpcClientOptions\>?)
+
+The method registers a specific proxy builder for `IMyContract` and applies the configuration for this proxy. The method is used by source code generator.
+
+Configure ServiceModel.Grpc.DesignTime to generate a source code of `IMyContract` proxy:
+
+``` c#
+[ImportGrpcService(typeof(IMyContract))]
+internal static partial class MyGrpcServices
+{
+    // generated code ...
+    public static IClientFactory AddMyContractClient(this IClientFactory clientFactory, Action<ServiceModelGrpcClientOptions> configure = null) {}
+}
+```
+
+register generated proxy `IMyContract`:
+
+``` c#
+DefaultClientFactory.AddMyContractClient(options =>
+{
+    // setup ServiceModelGrpcClientOptions for this client
+    // by default options contain values from default factory configuration
+});
+```
+
+#### IClientFactory.CreateClient\<TContract\>()
 
 `CreateClient` creates an new instance of a specific client with previously assigned configuration.
 
@@ -88,20 +113,7 @@ var client2 = factory2.CreateClient<IContract>();
 
 ## Make your ClientFactory instance singleton
 
-The following code will create 10 different implementations of IContract under the hood.
-
 ``` c#
-// bad example
-for (var i=0; i<10; i++)
-{
-    new ClientFactory().CreateClient<IContract>()
-}
-```
-
-make ClientFactory singleton
-
-``` c#
-// good example
 var factory = new ClientFactory();
 for (var i=0; i<10; i++)
 {

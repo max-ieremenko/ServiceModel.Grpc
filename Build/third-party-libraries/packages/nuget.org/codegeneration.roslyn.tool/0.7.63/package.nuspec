@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/01/nuspec.xsd">
+  <metadata minClientVersion="2.5">
+    <id>CodeGeneration.Roslyn.Tool</id>
+    <version>0.7.63</version>
+    <authors>Andrew Arnott</authors>
+    <owners>Andrew Arnott</owners>
+    <developmentDependency>true</developmentDependency>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MS-PL</license>
+    <licenseUrl>https://licenses.nuget.org/MS-PL</licenseUrl>
+    <projectUrl>https://github.com/aarnott/CodeGeneration.Roslyn</projectUrl>
+    <description>Source code generation tool that hosts custom generators (AKA Plugins). This package contains MSBuild targets that run the tool during a build, before compilation. See project site for details.</description>
+    <releaseNotes>https://github.com/AArnott/CodeGeneration.Roslyn/blob/master/CHANGELOG.md</releaseNotes>
+    <copyright>Copyright © Andrew Arnott</copyright>
+    <tags>codegen codegeneration roslyn sourcegen sourcegeneration source generation</tags>
+    <repository type="git" url="https://github.com/aarnott/CodeGeneration.Roslyn" commit="b6779bd802bfc0b3eda3a8f3d4838d85d7e4a065" />
+  </metadata>
+</package>

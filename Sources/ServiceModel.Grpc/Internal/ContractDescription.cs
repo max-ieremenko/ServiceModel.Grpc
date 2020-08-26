@@ -27,16 +27,49 @@ namespace ServiceModel.Grpc.Internal
     {
         public ContractDescription(Type serviceType)
         {
+            ServiceType = serviceType;
             Interfaces = new List<InterfaceDescription>();
             Services = new List<InterfaceDescription>();
 
             AnalyzeServiceAndInterfaces(serviceType);
             FindDuplicates();
+
+            ClientClassName = GetClientClassName(serviceType);
+            ContractClassName = GetContractClassName(serviceType);
+            ClientBuilderClassName = GetClientBuilderClassName(serviceType);
+            ServiceClassName = GetServiceClassName(serviceType);
         }
+
+        public string ClientClassName { get; }
+
+        public string ContractClassName { get; }
+
+        public string ClientBuilderClassName { get; }
+
+        public string ServiceClassName { get; }
+
+        public Type ServiceType { get; }
 
         public IList<InterfaceDescription> Interfaces { get; }
 
         public IList<InterfaceDescription> Services { get; }
+
+        public static string GetClientClassName(Type serviceType) => GetClassName(serviceType, "Client");
+
+        public static string GetContractClassName(Type serviceType) => GetClassName(serviceType, "Contract");
+
+        public static string GetClientBuilderClassName(Type serviceType) => GetClassName(serviceType, "ClientBuilder");
+
+        public static string GetServiceClassName(Type serviceType) => GetClassName(serviceType, "Service");
+
+        private static string GetClassName(Type serviceType, string suffix)
+        {
+            return "{0}.{1}.{2}{3}".FormatWith(
+                serviceType.Assembly.GetName().Name,
+                ReflectionTools.GetNamespace(serviceType),
+                serviceType.Name,
+                suffix);
+        }
 
         private static bool TryCreateMessage(MethodInfo method, [MaybeNullWhen(false)] out MessageAssembler message, [MaybeNullWhen(true)] out string error)
         {
@@ -64,9 +97,8 @@ namespace ServiceModel.Grpc.Internal
                 }
 
                 error = text.ToString();
+                return false;
             }
-
-            return false;
         }
 
         private void AnalyzeServiceAndInterfaces(Type serviceType)

@@ -1,7 +1,7 @@
 Microsoft.NETCore.App [2.1.0](https://www.nuget.org/packages/Microsoft.NETCore.App/2.1.0)
 --------------------
 
-Used by: Core internal, SelfHost internal
+Used by: Core internal, DesignTime, SelfHost internal
 
 Target frameworks: net461, netcoreapp2.1, netcoreapp3.1
 

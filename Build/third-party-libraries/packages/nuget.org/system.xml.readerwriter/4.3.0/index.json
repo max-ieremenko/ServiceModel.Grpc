@@ -60,6 +60,23 @@
       ]
     },
     {
+      "Name": "DesignTime",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp2.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.IO.FileSystem.Primitives",
+          "Version": "4.3.0"
+        },
+        {
+          "Name": "System.Text.RegularExpressions",
+          "Version": "4.3.0"
+        }
+      ]
+    },
+    {
       "Name": "ProtoBuf",
       "InternalOnly": false,
       "TargetFrameworks": [
@@ -78,7 +95,7 @@
         },
         {
           "Name": "System.Threading.Tasks.Extensions",
-          "Version": "4.5.2"
+          "Version": "4.5.4"
         }
       ]
     }

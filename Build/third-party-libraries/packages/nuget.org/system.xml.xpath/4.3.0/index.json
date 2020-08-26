@@ -58,6 +58,23 @@
           "Version": "4.3.0"
         }
       ]
+    },
+    {
+      "Name": "DesignTime",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp2.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Threading",
+          "Version": "4.3.0"
+        },
+        {
+          "Name": "System.Xml.ReaderWriter",
+          "Version": "4.3.0"
+        }
+      ]
     }
   ],
   "Licenses": [

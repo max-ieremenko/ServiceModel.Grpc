@@ -20,14 +20,17 @@ namespace ServiceModel.Grpc.Hosting
 {
     internal readonly struct ServiceCallInfo
     {
-        public ServiceCallInfo(MethodInfo serviceInstanceMethod, MethodInfo channelMethod)
+        public ServiceCallInfo(MethodInfo serviceInstanceMethod, MethodInfo channelMethod, object channel)
         {
             ServiceInstanceMethod = serviceInstanceMethod;
             ChannelMethod = channelMethod;
+            Channel = channel;
         }
 
         public MethodInfo ServiceInstanceMethod { get; }
 
         public MethodInfo ChannelMethod { get; }
+
+        public object Channel { get; }
     }
 }
