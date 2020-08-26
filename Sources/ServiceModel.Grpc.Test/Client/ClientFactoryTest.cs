@@ -89,7 +89,7 @@ namespace ServiceModel.Grpc.Client
         }
 
         [Test]
-        public void AddClientBuilder()
+        public void AddClientWithBuilder()
         {
             var instance = new Mock<ISomeContract>(MockBehavior.Strict);
 
@@ -102,7 +102,7 @@ namespace ServiceModel.Grpc.Client
                 }
             };
 
-            _sut.AddClientBuilder(builder);
+            _sut.AddClient(builder);
             _sut.CreateClient<ISomeContract>(_callInvoker.Object).ShouldBe(instance.Object);
 
             builder.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
@@ -160,7 +160,7 @@ namespace ServiceModel.Grpc.Client
         {
             var addClient = (Action<Action<ServiceModelGrpcClientOptions>?>)_sut
                 .GetType()
-                .InstanceMethod(nameof(_sut.AddClient))
+                .InstanceMethod(nameof(_sut.AddClient), typeof(Action<ServiceModelGrpcClientOptions>))
                 .MakeGenericMethod(contractType)
                 .CreateDelegate(typeof(Action<Action<ServiceModelGrpcClientOptions>?>), _sut);
 

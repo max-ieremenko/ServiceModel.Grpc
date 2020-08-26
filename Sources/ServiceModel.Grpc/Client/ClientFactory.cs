@@ -55,7 +55,7 @@ namespace ServiceModel.Grpc.Client
         }
 
         /// <summary>
-        /// Configures the factory to generate a proxy automatically for gRPC service contract <typeparamref name="TContract"/> with the specific options.
+        /// Configures the factory to generate a proxy automatically for gRPC service contract <typeparamref name="TContract"/> with specific options.
         /// </summary>
         /// <typeparam name="TContract">The service contract type.</typeparam>
         /// <param name="configure">The action to configure options.</param>
@@ -71,7 +71,7 @@ namespace ServiceModel.Grpc.Client
         /// <typeparam name="TContract">The service contract type.</typeparam>
         /// <param name="builder">The proxy builder.</param>
         /// <param name="configure">The action to configure options.</param>
-        public void AddClientBuilder<TContract>(IClientBuilder<TContract> builder, Action<ServiceModelGrpcClientOptions>? configure = null)
+        public void AddClient<TContract>(IClientBuilder<TContract> builder, Action<ServiceModelGrpcClientOptions>? configure = null)
             where TContract : class
         {
             builder.AssertNotNull(nameof(builder));

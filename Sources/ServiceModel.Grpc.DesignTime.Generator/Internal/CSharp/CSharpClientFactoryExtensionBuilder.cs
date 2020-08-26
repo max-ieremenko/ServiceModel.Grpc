@@ -33,7 +33,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
         {
             Output
                 .Append("public static IClientFactory Add")
-                .Append(_contract.ClientBuilderClassName)
+                .Append(_contract.ClientClassName)
                 .Append("(");
 
             if (_isStaticClass)
@@ -42,7 +42,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
             }
 
             Output
-                .AppendLine("IClientFactory clientFactory)")
+                .AppendLine("IClientFactory clientFactory,  Action<ServiceModelGrpcClientOptions> configure = null)")
                 .AppendLine("{");
 
             using (Output.Indent())
@@ -51,10 +51,10 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
 
                 Output
                     .Append("clientFactory.")
-                    .Append(nameof(IClientFactory.AddClientBuilder))
+                    .Append(nameof(IClientFactory.AddClient))
                     .Append("(new ")
                     .Append(_contract.ClientBuilderClassName)
-                    .AppendLine("());");
+                    .AppendLine("(), configure);");
 
                 Output.AppendLine("return clientFactory;");
             }

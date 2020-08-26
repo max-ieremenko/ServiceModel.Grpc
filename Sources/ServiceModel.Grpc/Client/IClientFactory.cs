@@ -39,7 +39,7 @@ namespace ServiceModel.Grpc.Client
         /// <typeparam name="TContract">The service contract type.</typeparam>
         /// <param name="builder">The proxy builder.</param>
         /// <param name="configure">The action to configure options.</param>
-        void AddClientBuilder<TContract>(IClientBuilder<TContract> builder, Action<ServiceModelGrpcClientOptions>? configure = null)
+        void AddClient<TContract>(IClientBuilder<TContract> builder, Action<ServiceModelGrpcClientOptions>? configure = null)
             where TContract : class;
 
         /// <summary>
