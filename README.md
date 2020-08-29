@@ -97,7 +97,7 @@ var result = await calculator.Sum(1, 2, 3);
 ``` c#
 internal sealed class Calculator : ICalculator
 {
-    public Task<long> Sum(long x, int y, int z, CancellationToken token) => x + y + x;
+    public Task<long> Sum(long x, int y, int z, CancellationToken token) => x + y + z;
 }
 ```
 
