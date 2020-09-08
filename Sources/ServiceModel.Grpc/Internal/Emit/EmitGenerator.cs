@@ -44,9 +44,12 @@ namespace ServiceModel.Grpc.Internal.Emit
             return (IClientBuilder<TContract>)Activator.CreateInstance(clientBuilderType);
         }
 
-        public void BindService<TContract>(IServiceBinder binder, IMarshallerFactory marshallerFactory)
+        public void BindService(IServiceBinder binder, Type serviceType, IMarshallerFactory marshallerFactory)
         {
-            var serviceType = typeof(TContract);
+            if (!ServiceContract.IsServiceInstanceType(serviceType))
+            {
+                throw new ArgumentOutOfRangeException(nameof(serviceType));
+            }
 
             if (ServiceContract.IsNativeGrpcService(serviceType))
             {

@@ -33,7 +33,7 @@ namespace ServiceModel.Grpc.SelfHost
         {
             _host = new ServerHost();
 
-            _host.Services.AddServiceModelSingleton(new MultipurposeService());
+            _host.Services.AddServiceModelSingleton<IMultipurposeService>(new MultipurposeService());
             DomainService = new ClientFactory().CreateClient<IMultipurposeService>(_host.Channel);
 
             _host.Start();

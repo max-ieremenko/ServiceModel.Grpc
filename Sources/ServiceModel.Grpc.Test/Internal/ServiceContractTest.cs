@@ -102,5 +102,15 @@ namespace ServiceModel.Grpc.Internal
 
             ServiceContract.GetServiceOperationName("Empty", attribute).ShouldBe(expected);
         }
+
+        [Test]
+        [TestCase(typeof(IServiceContract), false)]
+        [TestCase(typeof(IGenericServiceContract<int>), false)]
+        [TestCase(typeof(NativeGrpcService), false)]
+        [TestCase(typeof(object), true)]
+        public void IsServiceInstanceType(Type type, bool expected)
+        {
+            ServiceContract.IsServiceInstanceType(type).ShouldBe(expected);
+        }
     }
 }

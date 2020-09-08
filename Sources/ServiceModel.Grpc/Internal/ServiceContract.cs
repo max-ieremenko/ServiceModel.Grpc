@@ -28,6 +28,11 @@ namespace ServiceModel.Grpc.Internal
                    && type.GetCustomAttribute<BindServiceMethodAttribute>() != null;
         }
 
+        public static bool IsServiceInstanceType(Type type)
+        {
+            return !type.IsInterface && !type.IsAbstract;
+        }
+
         public static bool IsServiceContractInterface(Type type)
         {
             return ReflectionTools.IsPublicInterface(type)

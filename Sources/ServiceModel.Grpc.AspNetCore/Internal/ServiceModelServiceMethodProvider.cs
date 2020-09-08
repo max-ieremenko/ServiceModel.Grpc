@@ -14,10 +14,12 @@
 // limitations under the License.
 // </copyright>
 
+using System;
 using Grpc.AspNetCore.Server.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal
 {
@@ -27,28 +29,54 @@ namespace ServiceModel.Grpc.AspNetCore.Internal
         private readonly ServiceModelGrpcServiceOptions _rootConfiguration;
         private readonly ServiceModelGrpcServiceOptions<TService> _serviceConfiguration;
         private readonly ILogger<ServiceModelServiceMethodProvider<TService>> _logger;
+        private readonly IServiceProvider _serviceProvider;
 
         public ServiceModelServiceMethodProvider(
             IOptions<ServiceModelGrpcServiceOptions> rootConfiguration,
             IOptions<ServiceModelGrpcServiceOptions<TService>> serviceConfiguration,
-            ILogger<ServiceModelServiceMethodProvider<TService>> logger)
+            ILogger<ServiceModelServiceMethodProvider<TService>> logger,
+            IServiceProvider serviceProvider)
         {
             rootConfiguration.AssertNotNull(nameof(rootConfiguration));
             serviceConfiguration.AssertNotNull(nameof(serviceConfiguration));
             logger.AssertNotNull(nameof(logger));
+            serviceProvider.AssertNotNull(nameof(serviceProvider));
 
             _rootConfiguration = rootConfiguration.Value;
             _serviceConfiguration = serviceConfiguration.Value;
             _logger = logger;
+            _serviceProvider = serviceProvider;
         }
 
         public void OnServiceMethodDiscovery(ServiceMethodProviderContext<TService> context)
         {
+            var serviceInstanceType = GetServiceInstanceType();
+
             var marshallerFactory = _serviceConfiguration.MarshallerFactory ?? _rootConfiguration.DefaultMarshallerFactory;
             var log = new LogAdapter(_logger);
 
-            var factory = new AspNetCoreGrpcServiceFactory<TService>(log, context, marshallerFactory);
+            var factory = new AspNetCoreGrpcServiceFactory<TService>(log, context, serviceInstanceType, marshallerFactory);
             factory.Bind();
+        }
+
+        internal Type GetServiceInstanceType()
+        {
+            var serviceInstanceType = typeof(TService);
+            if (ServiceContract.IsServiceInstanceType(serviceInstanceType))
+            {
+                return serviceInstanceType;
+            }
+
+            try
+            {
+                return _serviceProvider.GetRequiredService<TService>().GetType();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException(
+                    "A gRPC service binding is registered via {0}. Failed to resolve the implementation: {1}.".FormatWith(serviceInstanceType.GetShortAssemblyQualifiedName(), ex.Message),
+                    ex);
+            }
         }
     }
 }
