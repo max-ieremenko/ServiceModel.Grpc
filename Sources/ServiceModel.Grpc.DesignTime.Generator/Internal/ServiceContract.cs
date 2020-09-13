@@ -15,7 +15,10 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.CodeAnalysis;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.DesignTime.Internal
 {
@@ -35,38 +38,18 @@ namespace ServiceModel.Grpc.DesignTime.Internal
 
         public static string GetServiceName(INamedTypeSymbol serviceType)
         {
-            var attribute = GetServiceContractAttribute(serviceType);
-            if (attribute == null)
-            {
-                throw new ArgumentOutOfRangeException(nameof(serviceType));
-            }
+            var (typeName, attributeNamespace, attributeName) = GetServiceNonGenericName(serviceType);
+            var genericEnding = GetServiceGenericEnding(serviceType);
 
-            string? name = null;
-            string? @namespace = null;
+            return NamingContract.GetServiceName(typeName, attributeNamespace, attributeName, genericEnding);
+        }
 
-            foreach (var pair in attribute.NamedArguments)
-            {
-                if ("Namespace".Equals(pair.Key, StringComparison.Ordinal))
-                {
-                    @namespace = (string?)pair.Value.Value;
-                }
-                else if ("Name".Equals(pair.Key, StringComparison.Ordinal))
-                {
-                    name = (string?)pair.Value.Value;
-                }
-            }
+        public static IList<string> GetServiceGenericEnding(INamedTypeSymbol serviceType)
+        {
+            var result = new List<string>();
+            GetServiceGenericEnding(serviceType, result);
 
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                name = serviceType.Name;
-            }
-
-            if (string.IsNullOrWhiteSpace(@namespace))
-            {
-                return name!;
-            }
-
-            return @namespace + "." + name;
+            return result;
         }
 
         public static string GetServiceOperationName(IMethodSymbol method)
@@ -91,7 +74,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal
             return string.IsNullOrWhiteSpace(name) ? method.Name : name!;
         }
 
-        private static AttributeData? GetServiceContractAttribute(INamedTypeSymbol type)
+        private static AttributeData? GetServiceContractAttribute(ITypeSymbol type)
         {
             return SyntaxTools.GetCustomAttribute(type, "System.ServiceModel.ServiceContractAttribute");
         }
@@ -99,6 +82,92 @@ namespace ServiceModel.Grpc.DesignTime.Internal
         private static AttributeData? GetOperationContractAttribute(IMethodSymbol method)
         {
             return SyntaxTools.GetCustomAttribute(method, "System.ServiceModel.OperationContractAttribute");
+        }
+
+        private static void GetServiceGenericEnding(ITypeSymbol serviceType, IList<string> result)
+        {
+            var args = serviceType.GenericTypeArguments();
+            for (var i = 0; i < args.Length; i++)
+            {
+                var type = args[i];
+
+                if (type is IArrayTypeSymbol array)
+                {
+                    var (elementType, prefix) = ExpandArray(array);
+                    type = elementType;
+                    if (array.Rank > 1)
+                    {
+                        prefix += array.Rank.ToString(CultureInfo.InvariantCulture);
+                    }
+
+                    result.Add(prefix + GetDataContainerName(type));
+                }
+                else
+                {
+                    result.Add(GetDataContainerName(type));
+                }
+
+                GetServiceGenericEnding(type, result);
+            }
+        }
+
+        private static (string TypeName, string? AttributeNamespace, string? AttributeName) GetServiceNonGenericName(ITypeSymbol serviceType)
+        {
+            var attribute = GetServiceContractAttribute(serviceType);
+            if (attribute == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(serviceType));
+            }
+
+            string? name = null;
+            string? @namespace = null;
+
+            foreach (var pair in attribute.NamedArguments)
+            {
+                if ("Namespace".Equals(pair.Key, StringComparison.Ordinal))
+                {
+                    @namespace = (string?)pair.Value.Value;
+                }
+                else if ("Name".Equals(pair.Key, StringComparison.Ordinal))
+                {
+                    name = (string?)pair.Value.Value;
+                }
+            }
+
+            return (serviceType.Name, @namespace, name);
+        }
+
+        private static string GetDataContainerName(ITypeSymbol type)
+        {
+            var attribute = SyntaxTools.GetCustomAttribute(type, "System.Runtime.Serialization.DataContractAttribute");
+            string? attributeName = null;
+
+            if (attribute != null)
+            {
+                for (var i = 0; i < attribute.NamedArguments.Length; i++)
+                {
+                    var pair = attribute.NamedArguments[i];
+                    if ("Name".Equals(pair.Key))
+                    {
+                        attributeName = (string?)pair.Value.Value;
+                        break;
+                    }
+                }
+            }
+
+            return string.IsNullOrWhiteSpace(attributeName) ? type.Name : attributeName!;
+        }
+
+        private static (ITypeSymbol ElementType, string Prefix) ExpandArray(IArrayTypeSymbol array)
+        {
+            var prefix = "Array";
+            while (array.ElementType is IArrayTypeSymbol subArray)
+            {
+                prefix += "Array";
+                array = subArray;
+            }
+
+            return (array.ElementType, prefix);
         }
     }
 }

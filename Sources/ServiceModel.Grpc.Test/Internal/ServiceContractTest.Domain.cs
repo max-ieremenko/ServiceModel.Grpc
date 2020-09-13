@@ -15,6 +15,7 @@
 // </copyright>
 
 using System;
+using System.Runtime.Serialization;
 using System.ServiceModel;
 using Grpc.Core;
 
@@ -42,6 +43,11 @@ namespace ServiceModel.Grpc.Internal
         public abstract class NativeGrpcService
         {
             public static void BindService() => throw new NotImplementedException();
+        }
+
+        [DataContract(Name = "Some-Data")]
+        public sealed class SomeData
+        {
         }
     }
 }

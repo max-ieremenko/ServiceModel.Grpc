@@ -34,10 +34,11 @@ namespace ServiceModel.Grpc.Internal
             AnalyzeServiceAndInterfaces(serviceType);
             FindDuplicates();
 
-            ClientClassName = GetClientClassName(serviceType);
-            ContractClassName = GetContractClassName(serviceType);
-            ClientBuilderClassName = GetClientBuilderClassName(serviceType);
-            ServiceClassName = GetServiceClassName(serviceType);
+            var baseClassName = GetClassName(serviceType);
+            ClientClassName = baseClassName + "Client";
+            ContractClassName = baseClassName + "Contract";
+            ClientBuilderClassName = baseClassName + "ClientBuilder";
+            ServiceClassName = baseClassName + "Service";
         }
 
         public string ClientClassName { get; }
@@ -54,21 +55,31 @@ namespace ServiceModel.Grpc.Internal
 
         public IList<InterfaceDescription> Services { get; }
 
-        public static string GetClientClassName(Type serviceType) => GetClassName(serviceType, "Client");
-
         public static string GetContractClassName(Type serviceType) => GetClassName(serviceType, "Contract");
 
         public static string GetClientBuilderClassName(Type serviceType) => GetClassName(serviceType, "ClientBuilder");
 
         public static string GetServiceClassName(Type serviceType) => GetClassName(serviceType, "Service");
 
-        private static string GetClassName(Type serviceType, string suffix)
+        private static string GetClassName(Type serviceType, string? suffix = null)
         {
-            return "{0}.{1}.{2}{3}".FormatWith(
-                serviceType.Assembly.GetName().Name,
-                ReflectionTools.GetNamespace(serviceType),
-                serviceType.Name,
-                suffix);
+            var result = new StringBuilder()
+                .Append(serviceType.Assembly.GetName().Name)
+                .Append('.')
+                .Append(ReflectionTools.GetNamespace(serviceType))
+                .Append('.')
+                .Append(ReflectionTools.GetNonGenericName(serviceType));
+
+            var serviceGenericEnding = ServiceContract.GetServiceGenericEnding(serviceType);
+            for (var i = 0; i < serviceGenericEnding.Count; i++)
+            {
+                result
+                    .Append('-')
+                    .Append(serviceGenericEnding[i]);
+            }
+
+            result.Append(suffix);
+            return result.ToString();
         }
 
         private static bool TryCreateMessage(MethodInfo method, [MaybeNullWhen(false)] out MessageAssembler message, [MaybeNullWhen(true)] out string error)

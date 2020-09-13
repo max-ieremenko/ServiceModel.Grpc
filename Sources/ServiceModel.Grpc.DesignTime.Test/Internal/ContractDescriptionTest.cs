@@ -16,20 +16,40 @@
 
 using System;
 using System.Linq;
+using System.ServiceModel;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Internal
+namespace ServiceModel.Grpc.DesignTime.Internal
 {
     [TestFixture]
     public partial class ContractDescriptionTest
     {
+        private CSharpCompilation _compilation = null!;
+
+        [OneTimeSetUp]
+        public void BeforeAllTest()
+        {
+            _compilation = CSharpCompilation
+                .Create(
+                    nameof(SyntaxToolsTest),
+                    references: new[]
+                    {
+                        MetadataReference.CreateFromFile(typeof(string).Assembly.Location),
+                        MetadataReference.CreateFromFile(GetType().Assembly.Location),
+                        MetadataReference.CreateFromFile(typeof(ServiceContractAttribute).Assembly.Location)
+                    });
+        }
+
         [Test]
         [TestCase(typeof(IDuplicateOperationName))]
         [TestCase(typeof(IDuplicateServiceName))]
         public void DuplicateOperationName(Type serviceType)
         {
-            var sut = new ContractDescription(serviceType);
+            var symbol = _compilation.GetTypeByMetadataName(serviceType);
+            var sut = new ContractDescription(symbol);
 
             sut.Interfaces.Count.ShouldBe(0);
             sut.Services.Count.ShouldNotBe(0);
@@ -48,16 +68,17 @@ namespace ServiceModel.Grpc.Internal
         [Test]
         public void GenericContractTest()
         {
-            var sut = new ContractDescription(typeof(ICalculator<TheValue>));
+            var symbol = _compilation.GetTypeByMetadataName(typeof(ICalculator<TheValue>));
+            var sut = new ContractDescription(symbol);
 
-            sut.ClientClassName.ShouldEndWith(".ICalculator-Some-ValueClient");
-            sut.ClientBuilderClassName.ShouldEndWith(".ICalculator-Some-ValueClientBuilder");
-            sut.ContractClassName.ShouldEndWith(".ICalculator-Some-ValueContract");
+            sut.ClientClassName.ShouldBe("CalculatorSome_ValueClient");
+            sut.ClientBuilderClassName.ShouldBe("CalculatorSome_ValueClientBuilder");
+            sut.ContractClassName.ShouldBe("CalculatorSome_ValueContract");
 
             sut.Interfaces.Count.ShouldBe(0);
             sut.Services.Count.ShouldBe(2);
 
-            var calculator = sut.Services.First(i => i.InterfaceType == typeof(ICalculator<TheValue>));
+            var calculator = sut.Services.First(i => i.InterfaceType.Name == "ICalculator");
             calculator.Methods.Count.ShouldBe(0);
             calculator.NotSupportedOperations.Count.ShouldBe(0);
             calculator.Operations.Count.ShouldBe(1);
@@ -66,7 +87,7 @@ namespace ServiceModel.Grpc.Internal
             sum.OperationName.ShouldBe("Sum");
             sum.ServiceName.ShouldBe("ICalculator-Some-Value");
 
-            var service = sut.Services.First(i => i.InterfaceType == typeof(IGenericService<TheValue>));
+            var service = sut.Services.First(i => i.InterfaceType.Name == "IGenericService");
             service.Methods.Count.ShouldBe(0);
             service.NotSupportedOperations.Count.ShouldBe(0);
             service.Operations.Count.ShouldBe(1);

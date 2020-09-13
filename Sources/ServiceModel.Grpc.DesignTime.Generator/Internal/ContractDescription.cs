@@ -33,33 +33,51 @@ namespace ServiceModel.Grpc.DesignTime.Internal
             AnalyzeServiceAndInterfaces(serviceType);
             FindDuplicates();
 
-            BaseClassName = GetBaseName(serviceType.Name);
+            var baseClassName = GetBaseClassName(serviceType);
+            ClientClassName = baseClassName + "Client";
+            ClientBuilderClassName = baseClassName + "ClientBuilder";
+            ContractClassName = baseClassName + "Contract";
+
             ContractInterfaceName = SyntaxTools.GetFullName(serviceType);
             SortAll();
         }
 
         public string ContractInterfaceName { get; }
 
-        public string BaseClassName { get; }
+        public string ClientClassName { get; }
 
-        public string ClientClassName => BaseClassName + "Client";
+        public string ClientBuilderClassName { get; }
 
-        public string ClientBuilderClassName => BaseClassName + "ClientBuilder";
-
-        public string ContractClassName => BaseClassName + "Contract";
+        public string ContractClassName { get; }
 
         public List<InterfaceDescription> Interfaces { get; }
 
         public List<InterfaceDescription> Services { get; }
 
-        private static string GetBaseName(string name)
+        private static string GetBaseClassName(INamedTypeSymbol serviceType)
         {
-            if (name.StartsWith('I') && name.Length > 1)
+            var result = new StringBuilder(serviceType.Name);
+            if (result.Length > 0 && result[0] == 'I')
             {
-                return name.Substring(1);
+                result.Remove(0, 1);
             }
 
-            return name;
+            var serviceGenericEnding = ServiceContract.GetServiceGenericEnding(serviceType);
+            for (var i = 0; i < serviceGenericEnding.Count; i++)
+            {
+                result.Append(serviceGenericEnding[i]);
+            }
+
+            for (var i = 0; i < result.Length; i++)
+            {
+                var c = result[i];
+                if (c == '-' || c == '.' || c == '/' || c == '\\' || c == '`')
+                {
+                    result[i] = '_';
+                }
+            }
+
+            return result.ToString();
         }
 
         private static bool TryCreateOperation(

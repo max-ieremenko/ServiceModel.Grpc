@@ -325,24 +325,34 @@ namespace ServiceModel.Grpc.DesignTime.Internal
 
         private static string SimplifyTypeName(string name)
         {
-            if (typeof(string).Name.Equals(name, StringComparison.Ordinal))
+            if (nameof(String).Equals(name, StringComparison.Ordinal))
             {
                 return "string";
             }
 
-            if (typeof(short).Name.Equals(name, StringComparison.Ordinal))
+            if (nameof(Int16).Equals(name, StringComparison.Ordinal))
             {
                 return "short";
             }
 
-            if (typeof(int).Name.Equals(name, StringComparison.Ordinal))
+            if (nameof(Int32).Equals(name, StringComparison.Ordinal))
             {
                 return "int";
             }
 
-            if (typeof(long).Name.Equals(name, StringComparison.Ordinal))
+            if (nameof(Int64).Equals(name, StringComparison.Ordinal))
             {
                 return "long";
+            }
+
+            if (nameof(Double).Equals(name, StringComparison.Ordinal))
+            {
+                return "double";
+            }
+
+            if (nameof(Decimal).Equals(name, StringComparison.Ordinal))
+            {
+                return "decimal";
             }
 
             if (typeof(void).Name.Equals(name, StringComparison.Ordinal))

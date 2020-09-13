@@ -15,6 +15,7 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
 using Microsoft.CodeAnalysis;
@@ -29,8 +30,8 @@ namespace ServiceModel.Grpc.DesignTime.Internal
     {
         private Compilation _compilation = null!;
 
-        [SetUp]
-        public void BeforeEachTest()
+        [OneTimeSetUp]
+        public void BeforeAllTest()
         {
             _compilation = CSharpCompilation
                 .Create(
@@ -47,10 +48,21 @@ namespace ServiceModel.Grpc.DesignTime.Internal
         [TestCase(typeof(I1), "I1")]
         [TestCase(typeof(I2), "Service2")]
         [TestCase(typeof(I3), "Test.Service2")]
+        [TestCase(typeof(IGeneric1<double>), "IGeneric1-Double")]
+        [TestCase(typeof(IGeneric2<double, int>), "Service2-Double-Int32")]
+        [TestCase(typeof(IGeneric1<IGeneric2<double, int>>), "IGeneric1-IGeneric2-Double-Int32")]
+        [TestCase(typeof(IGeneric1<SomeData>), "IGeneric1-Some-Data")]
+        [TestCase(typeof(IGeneric1<int?>), "IGeneric1-Nullable-Int32")]
+        [TestCase(typeof(IGeneric1<int?[][]>), "IGeneric1-ArrayArrayNullable-Int32")]
+        [TestCase(typeof(IGeneric1<string?>), "IGeneric1-String")]
+        [TestCase(typeof(IGeneric1<string[]>), "IGeneric1-ArrayString")]
+        [TestCase(typeof(IGeneric1<string[][]>), "IGeneric1-ArrayArrayString")]
+        [TestCase(typeof(IGeneric1<string[,]>), "IGeneric1-Array2String")]
+        [TestCase(typeof(IGeneric1<IList<string>?>), "IGeneric1-IList-String")]
+        [TestCase(typeof(IGeneric1<IList<int?>>), "IGeneric1-IList-Nullable-Int32")]
         public void GetServiceName(Type type, string expected)
         {
-            var symbol = _compilation.GetTypeByMetadataName(type.FullName);
-            symbol.ShouldNotBeNull();
+            var symbol = _compilation.GetTypeByMetadataName(type);
 
             ServiceContract.GetServiceName(symbol).ShouldBe(expected);
         }

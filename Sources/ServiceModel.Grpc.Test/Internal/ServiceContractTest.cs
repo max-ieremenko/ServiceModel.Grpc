@@ -15,6 +15,7 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.ServiceModel;
 using NUnit.Framework;
 using Shouldly;
@@ -55,6 +56,15 @@ namespace ServiceModel.Grpc.Internal
 
         [Test]
         [TestCase(typeof(IServiceContract), "IServiceContract")]
+        [TestCase(typeof(IGenericServiceContract<int>), "IGenericServiceContract-Int32")]
+        [TestCase(typeof(IGenericServiceContract<SomeData>), "IGenericServiceContract-Some-Data")]
+        [TestCase(typeof(IGenericServiceContract<int?>), "IGenericServiceContract-Nullable-Int32")]
+        [TestCase(typeof(IGenericServiceContract<int?[][]>), "IGenericServiceContract-ArrayArrayNullable-Int32")]
+        [TestCase(typeof(IGenericServiceContract<string?>), "IGenericServiceContract-String")]
+        [TestCase(typeof(IGenericServiceContract<string[]>), "IGenericServiceContract-ArrayString")]
+        [TestCase(typeof(IGenericServiceContract<string[,]>), "IGenericServiceContract-Array2String")]
+        [TestCase(typeof(IGenericServiceContract<IList<string>?>), "IGenericServiceContract-IList-String")]
+        [TestCase(typeof(IGenericServiceContract<IList<int?>>), "IGenericServiceContract-IList-Nullable-Int32")]
         public void GetServiceName(Type serviceType, string expected)
         {
             ServiceContract.GetServiceName(serviceType).ShouldBe(expected);
@@ -64,7 +74,7 @@ namespace ServiceModel.Grpc.Internal
         [TestCase("OverrideName", "OverrideNamespace", "OverrideNamespace.OverrideName")]
         [TestCase("OverrideName", null, "OverrideName")]
         [TestCase(null, "OverrideNamespace", "OverrideNamespace.IServiceContract")]
-        public void GetServiceNameByAttribute(string name, string @namespace, string expected)
+        public void GetServiceNameByAttribute(string? name, string? @namespace, string expected)
         {
             var attribute = new ServiceContractAttribute();
             if (name != null)
@@ -77,7 +87,11 @@ namespace ServiceModel.Grpc.Internal
                 attribute.Namespace = @namespace;
             }
 
-            ServiceContract.GetServiceName(typeof(IServiceContract), attribute).ShouldBe(expected);
+            var (typeName, attributeNamespace, attributeName) = ServiceContract.GetServiceNonGenericName(typeof(IServiceContract), attribute);
+
+            typeName.ShouldBe(nameof(IServiceContract));
+            attributeNamespace.ShouldBe(@namespace);
+            attributeName.ShouldBe(name);
         }
 
         [Test]
@@ -92,7 +106,7 @@ namespace ServiceModel.Grpc.Internal
         [Test]
         [TestCase("OverrideName", "OverrideName")]
         [TestCase(null, "Empty")]
-        public void GetServiceOperationNameByAttribute(string name, string expected)
+        public void GetServiceOperationNameByAttribute(string? name, string expected)
         {
             var attribute = new OperationContractAttribute();
             if (name != null)

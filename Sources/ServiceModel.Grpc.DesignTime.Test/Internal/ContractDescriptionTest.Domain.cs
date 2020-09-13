@@ -17,7 +17,7 @@
 using System.Runtime.Serialization;
 using System.ServiceModel;
 
-namespace ServiceModel.Grpc.Internal
+namespace ServiceModel.Grpc.DesignTime.Internal
 {
     public partial class ContractDescriptionTest
     {
