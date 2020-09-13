@@ -131,7 +131,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal
 
         private static IEnumerable<TestCaseData> GetFullNameCases()
         {
-            var type = Compilation.GetTypeByMetadataName(typeof(FullNameCases).FullName);
+            var type = Compilation.GetTypeByMetadataName(typeof(FullNameCases));
             type.ShouldNotBeNull();
 
             foreach (var method in SyntaxTools.GetInstanceMethods(type))

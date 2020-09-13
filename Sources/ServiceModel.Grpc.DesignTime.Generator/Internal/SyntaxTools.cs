@@ -266,10 +266,30 @@ namespace ServiceModel.Grpc.DesignTime.Internal
 
         private static void WriteTypeFullName(ITypeSymbol type, StringBuilder result)
         {
-            if (type.TypeKind == TypeKind.Array)
+            if (type is IArrayTypeSymbol array)
             {
-                WriteTypeFullName(((IArrayTypeSymbol)type).ElementType, result);
-                result.Append("[]");
+                var stack = ImmutableArray.Create(array.Rank);
+
+                var currentArray = array;
+                while (currentArray.ElementType is IArrayTypeSymbol subArray)
+                {
+                    stack = stack.Add(subArray.Rank);
+                    currentArray = subArray;
+                }
+
+                WriteTypeFullName(currentArray.ElementType, result);
+                for (var i = 0; i < stack.Length; i++)
+                {
+                    var rank = stack[i];
+                    result.Append('[');
+                    for (var r = 1; r < rank; r++)
+                    {
+                        result.Append(',');
+                    }
+
+                    result.Append(']');
+                }
+
                 return;
             }
 
@@ -304,14 +324,19 @@ namespace ServiceModel.Grpc.DesignTime.Internal
 
         private static void WriteTypeFullName(string? ns, string name, StringBuilder result)
         {
-            if ("System".Equals(ns, StringComparison.Ordinal)
-                || "System.Collections.Generic".Equals(ns, StringComparison.Ordinal)
+            if ("System".Equals(ns, StringComparison.Ordinal))
+            {
+                result.Append(SimplifyTypeName(name));
+                return;
+            }
+
+            if ("System.Collections.Generic".Equals(ns, StringComparison.Ordinal)
                 || "System.Threading.Tasks".Equals(ns, StringComparison.Ordinal)
                 || "System.Threading".Equals(ns, StringComparison.Ordinal)
                 || "ServiceModel.Grpc".Equals(ns, StringComparison.Ordinal)
                 || "Grpc.Core".Equals(ns, StringComparison.Ordinal))
             {
-                result.Append(SimplifyTypeName(name));
+                result.Append(name);
                 return;
             }
 
@@ -335,14 +360,29 @@ namespace ServiceModel.Grpc.DesignTime.Internal
                 return "short";
             }
 
+            if (nameof(UInt16).Equals(name, StringComparison.Ordinal))
+            {
+                return "ushort";
+            }
+
             if (nameof(Int32).Equals(name, StringComparison.Ordinal))
             {
                 return "int";
             }
 
+            if (nameof(UInt32).Equals(name, StringComparison.Ordinal))
+            {
+                return "uint";
+            }
+
             if (nameof(Int64).Equals(name, StringComparison.Ordinal))
             {
                 return "long";
+            }
+
+            if (nameof(UInt64).Equals(name, StringComparison.Ordinal))
+            {
+                return "ulong";
             }
 
             if (nameof(Double).Equals(name, StringComparison.Ordinal))
@@ -353,6 +393,31 @@ namespace ServiceModel.Grpc.DesignTime.Internal
             if (nameof(Decimal).Equals(name, StringComparison.Ordinal))
             {
                 return "decimal";
+            }
+
+            if (nameof(Single).Equals(name, StringComparison.Ordinal))
+            {
+                return "float";
+            }
+
+            if (nameof(Byte).Equals(name, StringComparison.Ordinal))
+            {
+                return "byte";
+            }
+
+            if (nameof(SByte).Equals(name, StringComparison.Ordinal))
+            {
+                return "sbyte";
+            }
+
+            if (nameof(Char).Equals(name, StringComparison.Ordinal))
+            {
+                return "char";
+            }
+
+            if (nameof(Boolean).Equals(name, StringComparison.Ordinal))
+            {
+                return "bool";
             }
 
             if (typeof(void).Name.Equals(name, StringComparison.Ordinal))
