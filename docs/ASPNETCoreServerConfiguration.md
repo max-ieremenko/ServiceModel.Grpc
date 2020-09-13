@@ -51,6 +51,71 @@ public class Startup
 - IMarshallerFactory DefaultMarshallerFactory: by default is null, it means DataContractMarshallerFactory.Default
 - Func<IServiceProvider, IServerErrorHandler> DefaultErrorHandlerFactory: by default is null, it means error handling by gRPC API
 
+## Bind a service via contract or abstract class
+
+``` c#
+// contract
+[ServiceContract]
+public interface IMyService { }
+
+// implementation 1
+[Authorize]
+internal sealed class MyService1 : IMyService {}
+
+// implementation 2
+[AllowAnonymous]
+internal sealed class MyService2 : IMyService {}
+```
+
+To bind and configure the service:
+
+- register `IMyService` implementation in your current dependency injection framework
+- to register a configuration use the interface `IMyService`
+- to bind the service use the interface `IMyService`
+
+``` c#
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        // dependency injection registration
+        if (...)
+        {
+            services.AddTransient<IMyService, MyService1>();
+        }
+        else
+        {
+            services.AddTransient<IMyService, MyService2>();
+        }
+
+        // optional configuration, use interface
+        services
+            .AddServiceModelGrpcServiceOptions<IMyService>(options =>
+            {
+                // ...
+            });
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        app.UseEndpoints(endpoints =>
+        {
+            // bind the service, use interface
+            endpoints.MapGrpcService<IMyService>();
+        });
+    }
+}
+```
+
+At runtime, on gRPC service binding, ServiceModel.Grpc resolves the implementation of `IMyService` via current `IServiceProvider` in order to get the implementation type:
+
+``` c#
+IServiceProvider currentProvider;
+Type implementationType = currentProvider.GetRequiredService<IMyService>().GetType();
+```
+
+The implementation type is used for service binding.
+
 ## Silent proxy generation
 
 In this example

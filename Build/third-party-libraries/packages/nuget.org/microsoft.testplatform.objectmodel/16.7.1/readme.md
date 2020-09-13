@@ -1,4 +1,4 @@
-Microsoft.TestPlatform.ObjectModel [16.7.0](https://www.nuget.org/packages/Microsoft.TestPlatform.ObjectModel/16.7.0)
+Microsoft.TestPlatform.ObjectModel [16.7.1](https://www.nuget.org/packages/Microsoft.TestPlatform.ObjectModel/16.7.1)
 --------------------
 
 Used by: AspNetCore internal, Core internal, DesignTime internal, SelfHost internal

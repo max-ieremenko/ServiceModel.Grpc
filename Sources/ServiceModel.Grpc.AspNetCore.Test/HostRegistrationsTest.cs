@@ -126,6 +126,26 @@ namespace ServiceModel.Grpc.AspNetCore
         }
 
         [Test]
+        public async Task ServiceErrorHandlerViaInterface()
+        {
+            await _host.StartAsync(
+                services =>
+                {
+                    services.AddTransient<IErrorService, ErrorService>();
+                    services.AddServiceModelGrpcServiceOptions<IErrorService>(options => options.ErrorHandlerFactory = _ => _localErrorHandler);
+                },
+                configureEndpoints: endpoints =>
+                {
+                    endpoints.MapGrpcService<IErrorService>();
+                });
+
+            Assert.Throws<RpcException>(() => _domainService.ThrowApplicationException("some message"));
+
+            _clientMetadata.Count.ShouldBe(1);
+            _clientMetadata[0].Key.ShouldBe("LocalErrorHandler", StringCompareShould.IgnoreCase);
+        }
+
+        [Test]
         public async Task ServiceErrorHandlerOverrideGlobal()
         {
             await _host.StartAsync(

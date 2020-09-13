@@ -15,7 +15,7 @@
       "Dependencies": [
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "16.7.0"
+          "Version": "16.7.1"
         },
         {
           "Name": "Newtonsoft.Json",
@@ -32,7 +32,7 @@
       "Dependencies": [
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "16.7.0"
+          "Version": "16.7.1"
         },
         {
           "Name": "Newtonsoft.Json",
@@ -49,7 +49,7 @@
       "Dependencies": [
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "16.7.0"
+          "Version": "16.7.1"
         },
         {
           "Name": "Newtonsoft.Json",
@@ -68,7 +68,7 @@
       "Dependencies": [
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "16.7.0"
+          "Version": "16.7.1"
         },
         {
           "Name": "Newtonsoft.Json",

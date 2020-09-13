@@ -90,6 +90,7 @@ namespace ServiceModel.Grpc.AspNetCore
             if (_host != null)
             {
                 await _host.StopAsync();
+                _host.Dispose();
             }
         }
     }

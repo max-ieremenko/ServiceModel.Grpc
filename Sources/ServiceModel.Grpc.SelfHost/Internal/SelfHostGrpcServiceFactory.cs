@@ -44,8 +44,14 @@ namespace ServiceModel.Grpc.SelfHost.Internal
 
         public void Bind()
         {
+            var serviceInstanceType = typeof(TService);
+            if (!ServiceContract.IsServiceInstanceType(serviceInstanceType))
+            {
+                serviceInstanceType = _serviceFactory()!.GetType();
+            }
+
             var generator = new EmitGenerator { Logger = _logger };
-            generator.BindService<TService>(this, _marshallerFactory ?? DataContractMarshallerFactory.Default);
+            generator.BindService(this, serviceInstanceType, _marshallerFactory ?? DataContractMarshallerFactory.Default);
         }
 
         public void AddUnaryServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
@@ -82,6 +88,26 @@ namespace ServiceModel.Grpc.SelfHost.Internal
             var invoker = callInfo.ChannelMethod.CreateDelegate<DuplexStreamingServerCallHandler<TService, TRequest, TResponse>.DuplexStreamingServerMethod>(callInfo.Channel);
             var handler = new DuplexStreamingServerCallHandler<TService, TRequest, TResponse>(_serviceFactory, invoker);
             _builder.AddMethod(method, handler.Handle);
+        }
+
+        internal Type GetServiceInstanceType()
+        {
+            var serviceInstanceType = typeof(TService);
+            if (ServiceContract.IsServiceInstanceType(serviceInstanceType))
+            {
+                return serviceInstanceType;
+            }
+
+            try
+            {
+                return _serviceFactory()!.GetType();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException(
+                    "A gRPC service binding is registered via {0}. Failed to resolve the implementation: {1}.".FormatWith(serviceInstanceType.GetShortAssemblyQualifiedName(), ex.Message),
+                    ex);
+            }
         }
     }
 }

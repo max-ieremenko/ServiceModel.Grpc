@@ -21,6 +21,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Test
     [ImportGrpcService(typeof(IMultipurposeService))]
     [ImportGrpcService(typeof(IContract))]
     [ImportGrpcService(typeof(IGenericContract<int, string>))]
+    [ImportGrpcService(typeof(IGenericContract<string, int>))]
     [ImportGrpcService(typeof(IInvalidContract))]
     [ImportGrpcService(typeof(ISomeService))]
     public static partial class GrpcServices

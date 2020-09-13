@@ -58,8 +58,26 @@ namespace ServiceModel.Grpc.DesignTime.Internal
             [DisplayName("void")]
             public void C8() => throw new NotImplementedException();
 
+            [DisplayName("int[][]")]
+            public int[][] C9() => throw new NotImplementedException();
+
+            [DisplayName("int[,]")]
+            public int[,] C10() => throw new NotImplementedException();
+
+            [DisplayName("int[,][,,,]")]
+            public int[,][,,,] C11() => throw new NotImplementedException();
+
+            [DisplayName("IList<int?[]>")]
+            public IList<int?[]> C12() => throw new NotImplementedException();
+
+            [DisplayName("IList<int?[,]>")]
+            public IList<int?[,]> C13() => throw new NotImplementedException();
+
+            [DisplayName("IList<int?[,,][]>")]
+            public IList<int?[,,][]> C14() => throw new NotImplementedException();
+
             [DisplayName("T2")]
-            public T2 Generic<T1, T2>(T1 value) => throw new NotImplementedException();
+            public T2 Generic1<T1, T2>(T1 value) => throw new NotImplementedException();
         }
     }
 }

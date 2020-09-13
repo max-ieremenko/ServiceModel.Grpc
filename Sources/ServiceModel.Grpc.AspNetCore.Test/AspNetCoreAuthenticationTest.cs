@@ -46,6 +46,8 @@ namespace ServiceModel.Grpc.AspNetCore
                     services.AddHttpContextAccessor();
                     services.AddAuthorization();
 
+                    services.AddTransient<IService, Service>();
+
                     services
                         .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                         .AddJwtBearer(options =>
@@ -71,7 +73,7 @@ namespace ServiceModel.Grpc.AspNetCore
                         .UseAuthentication()
                         .UseAuthorization();
                 },
-                endpoints => endpoints.MapGrpcService<Service>());
+                endpoints => endpoints.MapGrpcService<IService>());
 
             _domainService = _host.ClientFactory.CreateClient<IService>(_host.Channel);
         }

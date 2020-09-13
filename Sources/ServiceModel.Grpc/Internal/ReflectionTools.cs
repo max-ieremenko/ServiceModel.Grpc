@@ -43,6 +43,18 @@ namespace ServiceModel.Grpc.Internal
             return result;
         }
 
+        public static string GetNonGenericName(Type type)
+        {
+            var name = type.Name;
+            if (!type.IsGenericType)
+            {
+                return name;
+            }
+
+            var index = name.IndexOf('`');
+            return name.Substring(0, index);
+        }
+
         public static string GetNamespace(Type type)
         {
             var @namespace = type.Namespace;
@@ -106,7 +118,7 @@ namespace ServiceModel.Grpc.Internal
             return result;
         }
 
-        public static PropertyInfo TryInstanceProperty(this Type type, string name)
+        public static PropertyInfo? TryInstanceProperty(this Type type, string name)
         {
             return type.GetProperty(
                 name,
@@ -266,7 +278,7 @@ namespace ServiceModel.Grpc.Internal
                    && (type.IsPublic || type.IsNestedPublic);
         }
 
-        public static Attribute GetCustomAttribute(MemberInfo owner, string attributeTypeFullName)
+        public static Attribute? GetCustomAttribute(MemberInfo owner, string attributeTypeFullName)
         {
             return owner
                 .GetCustomAttributes()
@@ -292,7 +304,7 @@ namespace ServiceModel.Grpc.Internal
             var isArray = type.IsArray;
             if (isArray)
             {
-                type = type.GetElementType();
+                type = type.GetElementType()!;
             }
 
             WriteTypeFullName(type, result);

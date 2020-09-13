@@ -14,6 +14,7 @@
 // limitations under the License.
 // </copyright>
 
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Grpc.AspNetCore.Server.Model;
@@ -30,22 +31,25 @@ namespace ServiceModel.Grpc.AspNetCore.Internal
     {
         private readonly ILogger _logger;
         private readonly ServiceMethodProviderContext<TService> _context;
+        private readonly Type _serviceInstanceType;
         private readonly IMarshallerFactory? _marshallerFactory;
 
         public AspNetCoreGrpcServiceFactory(
             ILogger logger,
             ServiceMethodProviderContext<TService> context,
+            Type serviceInstanceType,
             IMarshallerFactory? marshallerFactory)
         {
             _logger = logger;
             _context = context;
+            _serviceInstanceType = serviceInstanceType;
             _marshallerFactory = marshallerFactory;
         }
 
         public void Bind()
         {
             var generator = new EmitGenerator { Logger = _logger };
-            generator.BindService<TService>(this, _marshallerFactory ?? DataContractMarshallerFactory.Default);
+            generator.BindService(this, _serviceInstanceType, _marshallerFactory ?? DataContractMarshallerFactory.Default);
         }
 
         public void AddUnaryServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
@@ -84,13 +88,13 @@ namespace ServiceModel.Grpc.AspNetCore.Internal
             _context.AddDuplexStreamingMethod(method, metadata, invoker);
         }
 
-        private static IList<object> GetMethodMetadata(MethodInfo serviceInstanceMethod)
+        private IList<object> GetMethodMetadata(MethodInfo serviceInstanceMethod)
         {
             // https://github.com/grpc/grpc-dotnet/blob/master/src/Grpc.AspNetCore.Server/Model/Internal/ProviderServiceBinder.cs
             var metadata = new List<object>();
 
             // Add type metadata first so it has a lower priority
-            metadata.AddRange(typeof(TService).GetCustomAttributes(inherit: true));
+            metadata.AddRange(_serviceInstanceType.GetCustomAttributes(inherit: true));
 
             // Add method metadata last so it has a higher priority
             metadata.AddRange(serviceInstanceMethod.GetCustomAttributes(inherit: true));

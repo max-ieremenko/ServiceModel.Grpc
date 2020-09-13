@@ -87,3 +87,48 @@ namespace Standard
     public interface ICalculator { }
 }
 ```
+
+## Generic interface as a service contract
+
+If a service contract interface is generic, generic arguments become a part of a gRPC service name.
+The final name is a concatenation of the service name and generic argument type names, separated by `-` symbol:
+
+``` c#
+[ServiceContract]
+public interface ICalculator<TValue>
+{
+    [OperationContract]
+    Task<TValue> Sum(TValue x, TValue y);
+}
+
+internal sealed class CalculatorDouble : ICalculator<double>
+{
+    // POST: /ICalculator-Double/Sum
+    public Task<double> Sum(double x, double y) => x + y;
+}
+
+internal sealed class CalculatorNullableInt32 : ICalculator<int?>
+{
+    // POST: /ICalculator-Nullable-Int32/Sum
+    public Task<int?> Sum(int? x, int? y) => x + y;
+}
+```
+
+`ICalculator<double>` interface has gRPC service name `ICalculator-Double`.
+
+`ICalculator<int?>` interface has gRPC service name `ICalculator-Nullable-Int32`.
+
+The name of generic argument is 'DataContractAttribute.Name', if is defined, or type name:
+
+``` c#
+[DataContract(Name = "MyValue")]
+public class Value
+{
+}
+
+internal sealed class CalculatorValue : ICalculator<Value>
+{
+    // POST: /ICalculator-MyValue/Sum
+    public Task<Value> Sum(Value x, Value y) => x + y;
+}
+```

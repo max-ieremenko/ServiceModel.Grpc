@@ -14,6 +14,7 @@
 // limitations under the License.
 // </copyright>
 
+using System.Runtime.Serialization;
 using System.ServiceModel;
 
 namespace ServiceModel.Grpc.DesignTime.Internal
@@ -39,6 +40,21 @@ namespace ServiceModel.Grpc.DesignTime.Internal
         {
             [OperationContract]
             string Operation();
+        }
+
+        [ServiceContract]
+        private interface IGeneric1<TValue>
+        {
+        }
+
+        [ServiceContract(Name = "Service2")]
+        private interface IGeneric2<TValue1, TValue2>
+        {
+        }
+
+        [DataContract(Name = "Some-Data")]
+        private sealed class SomeData
+        {
         }
     }
 }
