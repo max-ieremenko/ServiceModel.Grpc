@@ -107,7 +107,7 @@ public class Startup
 }
 ```
 
-At runtime, on gRPC service binding, ServiceModel.Grpc resolves the instance of `IMyService` via current `IServiceProvider` in order to get the implementation type:
+At runtime, on gRPC service binding, ServiceModel.Grpc resolves the implementation of `IMyService` via current `IServiceProvider` in order to get the implementation type:
 
 ``` c#
 IServiceProvider currentProvider;
