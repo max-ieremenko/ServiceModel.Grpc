@@ -1,4 +1,4 @@
-CompareNETObjects [4.66.0](https://www.nuget.org/packages/CompareNETObjects/4.66.0)
+CompareNETObjects [4.67.0](https://www.nuget.org/packages/CompareNETObjects/4.67.0)
 --------------------
 
 Used by: Core internal

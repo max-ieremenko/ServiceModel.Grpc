@@ -15,11 +15,11 @@
       "Dependencies": [
         {
           "Name": "Microsoft.CodeCoverage",
-          "Version": "16.7.0"
+          "Version": "16.7.1"
         },
         {
           "Name": "Microsoft.TestPlatform.TestHost",
-          "Version": "16.7.0"
+          "Version": "16.7.1"
         }
       ]
     },
@@ -32,11 +32,11 @@
       "Dependencies": [
         {
           "Name": "Microsoft.CodeCoverage",
-          "Version": "16.7.0"
+          "Version": "16.7.1"
         },
         {
           "Name": "Microsoft.TestPlatform.TestHost",
-          "Version": "16.7.0"
+          "Version": "16.7.1"
         }
       ]
     },
@@ -49,11 +49,11 @@
       "Dependencies": [
         {
           "Name": "Microsoft.CodeCoverage",
-          "Version": "16.7.0"
+          "Version": "16.7.1"
         },
         {
           "Name": "Microsoft.TestPlatform.TestHost",
-          "Version": "16.7.0"
+          "Version": "16.7.1"
         }
       ]
     },
@@ -68,11 +68,11 @@
       "Dependencies": [
         {
           "Name": "Microsoft.CodeCoverage",
-          "Version": "16.7.0"
+          "Version": "16.7.1"
         },
         {
           "Name": "Microsoft.TestPlatform.TestHost",
-          "Version": "16.7.0"
+          "Version": "16.7.1"
         }
       ]
     }
