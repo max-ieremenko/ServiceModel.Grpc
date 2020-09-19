@@ -1,6 +1,6 @@
 # ServiceModel.Grpc service and operation names
 
-By default a contract interface name is a gRPC service name and contract method name is gRPC method name, namespace and assembly name of interface does not not matter:
+By default a contract interface name is a gRPC service name and contract method name is gRPC method name, namespace and assembly name of interface does not matter:
 
 ``` c#
 // service name: ICalculator
@@ -17,7 +17,7 @@ public interface ICalculator
 }
 ```
 
-in some cases it may lead to a naming conflicts, in the following example there are 2 methods with gRPC method name `/ICalculator/Sum`:
+in some cases it may lead to a naming conflicts. In the following example there are 2 methods with gRPC method name `/ICalculator/Sum`:
 
 ``` c#
 // service name: ICalculator

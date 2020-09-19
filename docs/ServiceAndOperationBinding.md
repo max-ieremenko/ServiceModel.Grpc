@@ -1,6 +1,6 @@
 # ServiceModel.Grpc service and operation bindings
 
-For service binding, only interface implementations are used to bind a list of gRPC operations.
+Only interface implementations are used to bind a list of gRPC operations.
 
 ``` c#
 [ServiceContract]
@@ -21,7 +21,7 @@ public interface IScientificCalculator
 ## hosting on server-side
 
 In the following example on a server start-up there will be 2 gRPC services available `IStandardCalculator` and `IScientificCalculator`.
-`IDisposable` is ignored - it is not service contract.
+`IDisposable` is ignored as it is not a service contract.
 
 ``` c#
 internal sealed class CalculatorService : IStandardCalculator, IScientificCalculator, IDisposable

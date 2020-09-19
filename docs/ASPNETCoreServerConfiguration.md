@@ -48,8 +48,8 @@ public class Startup
 
 #### ServiceModelGrpcServiceOptions
 
-- IMarshallerFactory DefaultMarshallerFactory: by default is null, it means DataContractMarshallerFactory.Default
-- Func<IServiceProvider, IServerErrorHandler> DefaultErrorHandlerFactory: by default is null, it means error handling by gRPC API
+- IMarshallerFactory DefaultMarshallerFactory: by default is null (DataContractMarshallerFactory.Default)
+- Func<IServiceProvider, IServerErrorHandler> DefaultErrorHandlerFactory: by default is null (error handling by gRPC API)
 
 ## Bind a service via contract or abstract class
 
@@ -118,7 +118,7 @@ The implementation type is used for service binding.
 
 ## Silent proxy generation
 
-In this example
+In this example SumAsync and Dispose will be ignored during the service binding, use log output to see warnings:
 
 ``` c#
 [ServiceContract]
@@ -132,5 +132,3 @@ public interface IContract
 
 internal sealed class Service : IContract { }
 ```
-
-SumAsync and Dispose will be ignored during the service binding, use log output to see warnings.

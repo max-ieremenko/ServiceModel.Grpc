@@ -1,6 +1,6 @@
 # ServiceModel.Grpc
 
-`ServiceModel.Grpc` enables applications to communicate with gRPC services using code-first approach (no .proto files), helps to get around some limitations of gRPC protocol like "only reference types", "exact one input", "no nulls". Helps to migrate existing WCF solution to gRPC with minimum effort.
+`ServiceModel.Grpc` enables applications to communicate with gRPC services using code-first approach (no .proto files), helps to get around some limitations of gRPC protocol like "only reference types", "exact one input", "no nulls". Helps to migrate existing WCF solution to gRPC with minimum efforts.
 
 ## Links
 
@@ -190,7 +190,7 @@ public interface IPersonService
 
 ## Operation contracts
 
-Any operation in a service contract under the hood is one of gRPC method: Unary, ClientStreaming, ServerStreaming or DuplexStreaming.
+Any operation in a service contract is one of gRPC method: Unary, ClientStreaming, ServerStreaming or DuplexStreaming.
 
 #### Unary operation
 

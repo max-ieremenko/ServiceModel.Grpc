@@ -26,8 +26,8 @@ server.Services.AddServiceModelTransient(
 
 #### ServiceModelGrpcServiceOptions
 
-- IMarshallerFactory MarshallerFactory: by default is null, it means DataContractMarshallerFactory.Default
-- IServerErrorHandler ErrorHandler; by default is null, it means error handling by gRPC API
+- IMarshallerFactory MarshallerFactory: by default is null (DataContractMarshallerFactory.Default)
+- IServerErrorHandler ErrorHandler; by default is null (error handling by gRPC API)
 - ILogger Logger: by default is null. To setup possible output provided by service binding
 
 ## Silent proxy generation

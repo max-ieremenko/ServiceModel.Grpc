@@ -2,7 +2,7 @@
 
 ## ClientFactory
 
-ClientFactory does not have any static methods, because usually default configuration is good only for "hello world" project.
+ClientFactory does not have any static methods as usually default configuration is good only for "hello world" project.
 
 ``` c#
 public static class Program
@@ -21,14 +21,14 @@ public static class Program
 
 #### ServiceModelGrpcClientOptions:
 
-- IMarshallerFactory MarshallerFactory: by default is null, it means DataContractMarshallerFactory.Default
+- IMarshallerFactory MarshallerFactory: by default is null (DataContractMarshallerFactory.Default will be used)
 - Func\<CallOptions\> DefaultCallOptionsFactory: by default is null. Allows to setup default CallOptions for all calls by all clients created by this ClientFactory
-- IClientErrorHandler ErrorHandler: by default is null, it means error handling by gRPC API
+- IClientErrorHandler ErrorHandler: by default is null (error handling by gRPC API)
 - ILogger Logger: by default is null. Allows to catch possible output provided by this ClientFactory
 
 #### IClientFactory.AddClient\<TContract\>(Action\<ServiceModelGrpcClientOptions\>?)
 
-The method generates a proxy for `IMyContract` via Reflection.Emit and applies the configuration for this proxy.
+The method generates a proxy for `IMyContract` via Reflection.Emit and applies the configuration for proxy.
 
 ``` c#
 DefaultClientFactory.AddClient<IMyContract>(options =>
@@ -40,7 +40,7 @@ DefaultClientFactory.AddClient<IMyContract>(options =>
 
 #### IClientFactory.AddClient\<TContract\>(IClientBuilder\<TContract\>, Action\<ServiceModelGrpcClientOptions\>?)
 
-The method registers a specific proxy builder for `IMyContract` and applies the configuration for this proxy. The method is used by source code generator.
+The method registers a specific proxy builder for `IMyContract` and applies the configuration for proxy. The method is used by source code generator.
 
 Configure ServiceModel.Grpc.DesignTime to generate a source code of `IMyContract` proxy:
 
@@ -84,7 +84,7 @@ public interface IContract
 var client = DefaultClientFactory.CreateClient<IContract>()
 ```
 
-the proxy will be created by the factory without any errors, but at runtime
+the proxy will be created by the factory without any errors, but at runtime a method invocation will throw NotSupportedException:
 
 ``` c#
 // throw NotSupportedException("... generic methods are not supported ...")
