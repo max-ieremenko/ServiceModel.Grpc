@@ -24,6 +24,10 @@ Task UnitTestCore31 {
     Exec { .\step-unit-test.ps1 -Framework netcoreapp3.1 }
 }
 
+Task UnitTestNet50 {
+    Exec { .\step-unit-test.ps1 -Framework net5.0 }
+}
+
 Task ThirdPartyNotices {
     Exec { .\step-third-party-notices.ps1 }
 }
