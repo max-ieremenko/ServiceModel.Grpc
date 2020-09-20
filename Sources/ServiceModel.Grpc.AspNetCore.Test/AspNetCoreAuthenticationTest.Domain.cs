@@ -44,13 +44,13 @@ namespace ServiceModel.Grpc.AspNetCore
 
             public string? GetCurrentUserName(CallContext? context)
             {
-                return _contextAccessor.HttpContext.User.Identity.Name;
+                return _contextAccessor.HttpContext?.User.Identity?.Name;
             }
 
             [AllowAnonymous]
             public string? TryGetCurrentUserName(CallContext? context)
             {
-                return _contextAccessor.HttpContext.User?.Identity?.Name;
+                return _contextAccessor.HttpContext?.User.Identity?.Name;
             }
         }
     }

@@ -70,13 +70,8 @@ namespace ServiceModel.Grpc.Configuration
         {
             public static readonly Marshaller<T> Default = new Marshaller<T>(Serialize, Deserialize);
 
-            private static byte[]? Serialize(T value)
+            private static byte[] Serialize(T value)
             {
-                if (value == null)
-                {
-                    return null;
-                }
-
                 using (var buffer = new MemoryStream())
                 {
                     using (var writer = new StreamWriter(buffer, Encoding.Unicode, 1024, true))
@@ -89,19 +84,13 @@ namespace ServiceModel.Grpc.Configuration
                 }
             }
 
-            [return: MaybeNull]
             private static T Deserialize(byte[] value)
             {
-                if (value == null)
-                {
-                    return default;
-                }
-
                 using (var buffer = new MemoryStream(value))
                 using (var reader = new JsonTextReader(new StreamReader(buffer)))
                 {
                     var serializer = JsonSerializer.CreateDefault(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
-                    return serializer.Deserialize<T>(reader);
+                    return serializer.Deserialize<T>(reader)!;
                 }
             }
         }
