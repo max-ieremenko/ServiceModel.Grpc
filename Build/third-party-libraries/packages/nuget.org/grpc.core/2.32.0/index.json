@@ -5,26 +5,17 @@
   },
   "UsedBy": [
     {
-      "Name": "Core",
-      "InternalOnly": false,
+      "Name": "AspNetCore",
+      "InternalOnly": true,
       "TargetFrameworks": [
-        "net461",
-        "netstandard2.0",
-        "netstandard2.1"
+        "netcoreapp3.1",
+        "net5.0"
       ],
       "Dependencies": [
         {
-          "Name": "System.Memory",
-          "Version": "4.5.3"
+          "Name": "Grpc.Core.Api",
+          "Version": "2.32.0"
         }
-      ]
-    },
-    {
-      "Name": "AspNetCore",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "netcoreapp3.0",
-        "netcoreapp3.1"
       ]
     },
     {
@@ -36,6 +27,10 @@
         "netstandard2.1"
       ],
       "Dependencies": [
+        {
+          "Name": "Grpc.Core.Api",
+          "Version": "2.32.0"
+        },
         {
           "Name": "System.Memory",
           "Version": "4.5.3"

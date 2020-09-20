@@ -3,7 +3,7 @@ NuGet.Frameworks [5.0.0](https://www.nuget.org/packages/NuGet.Frameworks/5.0.0%2
 
 Used by: AspNetCore internal, Core internal, DesignTime internal, SelfHost internal
 
-Target frameworks: net461, netcoreapp2.1, netcoreapp3.1
+Target frameworks: net461, net5.0, netcoreapp2.1, netcoreapp3.1
 
 License: [Apache-2.0](../../../../licenses/apache-2.0) 
 

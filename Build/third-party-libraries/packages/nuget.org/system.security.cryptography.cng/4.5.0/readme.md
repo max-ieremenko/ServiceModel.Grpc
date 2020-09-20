@@ -3,7 +3,7 @@ System.Security.Cryptography.Cng [4.5.0](https://www.nuget.org/packages/System.S
 
 Used by: AspNetCore internal, Core internal
 
-Target frameworks: net461, netcoreapp2.1, netcoreapp3.1
+Target frameworks: net461, net5.0, netcoreapp2.1, netcoreapp3.1
 
 License: [MIT](../../../../licenses/mit) 
 

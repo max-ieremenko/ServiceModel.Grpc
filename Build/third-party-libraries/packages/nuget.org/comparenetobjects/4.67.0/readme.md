@@ -3,7 +3,7 @@ CompareNETObjects [4.67.0](https://www.nuget.org/packages/CompareNETObjects/4.67
 
 Used by: Core internal
 
-Target frameworks: net461, netcoreapp2.1, netcoreapp3.1
+Target frameworks: net461, net5.0, netcoreapp2.1, netcoreapp3.1
 
 License: [MS-PL](../../../../licenses/ms-pl) 
 

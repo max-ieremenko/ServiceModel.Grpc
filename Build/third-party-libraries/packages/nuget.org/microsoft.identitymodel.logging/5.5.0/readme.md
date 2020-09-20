@@ -3,7 +3,7 @@ Microsoft.IdentityModel.Logging [5.5.0](https://www.nuget.org/packages/Microsoft
 
 Used by: AspNetCore internal
 
-Target frameworks: netcoreapp3.1
+Target frameworks: net5.0, netcoreapp3.1
 
 License: [MIT](../../../../licenses/mit) 
 

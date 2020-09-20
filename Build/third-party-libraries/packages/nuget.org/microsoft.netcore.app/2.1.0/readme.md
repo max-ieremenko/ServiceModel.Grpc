@@ -3,7 +3,7 @@ Microsoft.NETCore.App [2.1.0](https://www.nuget.org/packages/Microsoft.NETCore.A
 
 Used by: Core internal, DesignTime, SelfHost internal
 
-Target frameworks: net461, netcoreapp2.1, netcoreapp3.1
+Target frameworks: net461, net5.0, netcoreapp2.1, netcoreapp3.1
 
 License: [MIT](../../../../licenses/mit) 
 
