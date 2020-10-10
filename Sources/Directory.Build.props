@@ -15,11 +15,11 @@
 
   <PropertyGroup>
     <DefaultPackageVersion>1.1.4</DefaultPackageVersion>
-    <DesignTimePackageVersion>1.0.1-pre1</DesignTimePackageVersion>
+    <DesignTimePackageVersion>1.0.1</DesignTimePackageVersion>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>$(DefaultPackageVersion)-pre1</Version>
+    <Version>$(DefaultPackageVersion)</Version>
     <AssemblyVersion>$(DefaultPackageVersion).0</AssemblyVersion>
     <FileVersion>$(DefaultPackageVersion).0</FileVersion>
     <Product>ServiceModel.Grpc</Product>
