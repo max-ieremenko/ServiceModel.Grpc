@@ -73,7 +73,7 @@ namespace ServiceModel.Grpc.Interceptors.Internal
             var call = base.AsyncClientStreamingCall(context, continuation);
 
             return new AsyncClientStreamingCall<TRequest, TResponse>(
-                call.RequestStream,
+                new ClientStreamWriterInterceptor<TRequest>(call.RequestStream, callContext, CallInterceptor),
                 WaitAsyncUnaryCall(callContext, call.ResponseAsync),
                 call.ResponseHeadersAsync,
                 call.GetStatus,
