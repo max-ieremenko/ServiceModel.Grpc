@@ -25,10 +25,17 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Dotnet info
+      shell: pwsh
+      run: dotnet --info
+
     - name: Install net5.0
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '5.0.100-rc.2.20464.8'
+      shell: pwsh
+      run: .\Build\step-install-dotnet.ps1
+
+    - name: Dotnet info
+      shell: pwsh
+      run: dotnet --info
 
     - name: Install ThirdPartyLibraries
       shell: cmd
