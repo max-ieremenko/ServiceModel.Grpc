@@ -1,4 +1,4 @@
-Moq [4.14.5](https://www.nuget.org/packages/Moq/4.14.5)
+Moq [4.14.6](https://www.nuget.org/packages/Moq/4.14.6)
 --------------------
 
 Used by: Core internal

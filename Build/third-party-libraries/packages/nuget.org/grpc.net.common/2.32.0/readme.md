@@ -1,4 +1,4 @@
-Grpc.Net.Common [2.32.0-pre1](https://www.nuget.org/packages/Grpc.Net.Common/2.32.0-pre1)
+Grpc.Net.Common [2.32.0](https://www.nuget.org/packages/Grpc.Net.Common/2.32.0)
 --------------------
 
 Used by: AspNetCore

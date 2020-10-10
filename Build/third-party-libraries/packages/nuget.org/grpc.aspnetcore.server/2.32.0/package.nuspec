@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>Grpc.AspNetCore.Server</id>
-    <version>2.32.0-pre1</version>
+    <version>2.32.0</version>
     <authors>The gRPC Authors</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">Apache-2.0</license>
@@ -12,13 +12,13 @@
     <description>gRPC support for ASP.NET Core</description>
     <copyright>Copyright 2019 The gRPC Authors</copyright>
     <tags>gRPC RPC HTTP/2 aspnetcore</tags>
-    <repository type="git" url="https://github.com/grpc/grpc-dotnet.git" commit="c9095cfcf73202494ea3e3d290d14a211e9f96e5" />
+    <repository type="git" url="https://github.com/grpc/grpc-dotnet.git" commit="d8e7e78d72b8d58756ca066132ec15011bc72288" />
     <dependencies>
       <group targetFramework=".NETCoreApp3.0">
-        <dependency id="Grpc.Net.Common" version="2.32.0-pre1" exclude="Build,Analyzers" />
+        <dependency id="Grpc.Net.Common" version="2.32.0" exclude="Build,Analyzers" />
       </group>
       <group targetFramework="net5.0">
-        <dependency id="Grpc.Net.Common" version="2.32.0-pre1" exclude="Build,Analyzers" />
+        <dependency id="Grpc.Net.Common" version="2.32.0" exclude="Build,Analyzers" />
       </group>
     </dependencies>
     <frameworkReferences>
