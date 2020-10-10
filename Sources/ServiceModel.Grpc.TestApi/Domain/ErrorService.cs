@@ -39,6 +39,19 @@ namespace ServiceModel.Grpc.TestApi.Domain
             throw new OperationCanceledException();
         }
 
+        public void PassSerializationFail(DomainObjectSerializationFail fail)
+        {
+        }
+
+        public DomainObjectSerializationFail ReturnSerializationFail(string? onDeserializedError, string? onSerializedError)
+        {
+            return new DomainObjectSerializationFail
+            {
+                OnDeserializedError = onDeserializedError,
+                OnSerializedError = onSerializedError
+            };
+        }
+
         public void CancelOperation(CancellationToken token)
         {
             WaitForCancel(token);

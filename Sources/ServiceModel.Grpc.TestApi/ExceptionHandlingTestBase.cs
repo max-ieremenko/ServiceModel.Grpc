@@ -145,5 +145,42 @@ namespace ServiceModel.Grpc.TestApi
             ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
             ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
         }
+
+        [Test]
+        public void ExceptionOnClientSerialize()
+        {
+            var ex = Assert.Throws<ApplicationException>(() => DomainService.PassSerializationFail(new DomainObjectSerializationFail { OnSerializedError = "On serialized error" }));
+            Console.WriteLine(ex);
+
+            ex.Message.ShouldBe("On serialized error");
+        }
+
+        [Test]
+        public void ExceptionOnClientDeserialize()
+        {
+            var ex = Assert.Throws<RpcException>(() => DomainService.ReturnSerializationFail(onDeserializedError: "On deserialized error"));
+            Console.WriteLine(ex);
+
+            ex.StatusCode.ShouldBe(StatusCode.Internal);
+            ex.Message.ShouldContain("Failed to deserialize response message");
+        }
+
+        [Test]
+        public void ExceptionOnServerDeserialize()
+        {
+            var ex = Assert.Throws<RpcException>(() => DomainService.PassSerializationFail(new DomainObjectSerializationFail { OnDeserializedError = "On deserialized error" }));
+            Console.WriteLine(ex);
+
+            ex.StatusCode.ShouldBe(StatusCode.Unknown);
+        }
+
+        [Test]
+        public void ExceptionOnServerSerialize()
+        {
+            var ex = Assert.Throws<RpcException>(() => DomainService.ReturnSerializationFail(onSerializedError: "On serialized error"));
+            Console.WriteLine(ex);
+
+            ex.StatusCode.ShouldBeOneOf(StatusCode.Unknown, StatusCode.Cancelled);
+        }
     }
 }
