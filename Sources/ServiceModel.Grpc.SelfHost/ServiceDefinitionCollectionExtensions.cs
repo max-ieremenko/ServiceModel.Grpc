@@ -63,7 +63,7 @@ namespace Grpc.Core
 
             var factory = new SelfHostGrpcServiceFactory<TService>(
                 logger,
-                options?.MarshallerFactory,
+                (options?.MarshallerFactory).ThisOrDefault(),
                 serviceFactory,
                 builder);
 

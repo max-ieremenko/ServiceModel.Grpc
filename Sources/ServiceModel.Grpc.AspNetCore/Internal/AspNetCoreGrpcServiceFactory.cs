@@ -32,13 +32,13 @@ namespace ServiceModel.Grpc.AspNetCore.Internal
         private readonly ILogger _logger;
         private readonly ServiceMethodProviderContext<TService> _context;
         private readonly Type _serviceInstanceType;
-        private readonly IMarshallerFactory? _marshallerFactory;
+        private readonly IMarshallerFactory _marshallerFactory;
 
         public AspNetCoreGrpcServiceFactory(
             ILogger logger,
             ServiceMethodProviderContext<TService> context,
             Type serviceInstanceType,
-            IMarshallerFactory? marshallerFactory)
+            IMarshallerFactory marshallerFactory)
         {
             _logger = logger;
             _context = context;
@@ -49,7 +49,7 @@ namespace ServiceModel.Grpc.AspNetCore.Internal
         public void Bind()
         {
             var generator = new EmitGenerator { Logger = _logger };
-            generator.BindService(this, _serviceInstanceType, _marshallerFactory ?? DataContractMarshallerFactory.Default);
+            generator.BindService(this, _serviceInstanceType, _marshallerFactory);
         }
 
         public void AddUnaryServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)
