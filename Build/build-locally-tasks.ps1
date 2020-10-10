@@ -1,5 +1,5 @@
 Task default -Depends Clean, Build, ThirdPartyNotices, UnitTest, Pack, PackTest
-Task UnitTest -Depends UnitTest461, UnitTestCore21, UnitTestCore31
+Task UnitTest -Depends UnitTest461, UnitTestCore21, UnitTestCore31, UnitTestNet50
 
 Task Clean {
     $binDir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\build-out"))

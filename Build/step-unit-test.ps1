@@ -11,6 +11,7 @@ $sourceDir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\Sources"
 $testList = Get-ChildItem -Path $sourceDir -Recurse -Filter *.Test.dll `
     | Where-Object FullName -Match \\$Framework\\ `
     | Where-Object FullName -Match \\bin\\Release\\ `
+    | Where-Object FullName -NotMatch \\$Framework\\ref\\ `
     | ForEach-Object {$_.FullName}
 
 if (-not $testList.Count) {

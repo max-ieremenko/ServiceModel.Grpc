@@ -21,6 +21,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Install net5.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '5.0.100-rc.2.20464.8'
+
     - name: Install ThirdPartyLibraries
       shell: cmd
       run: dotnet tool install --global ThirdPartyLibraries.GlobalTool
@@ -44,6 +49,10 @@ jobs:
     - name: Unit test netcoreapp3.1
       shell: pwsh
       run: .\Build\step-unit-test.ps1 netcoreapp3.1
+
+    - name: Unit test net5.0
+      shell: pwsh
+      run: .\Build\step-unit-test.ps1 net5.0
 
     - name: Pack
       shell: pwsh
