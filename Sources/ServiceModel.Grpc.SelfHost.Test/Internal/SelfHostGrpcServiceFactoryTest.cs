@@ -18,6 +18,7 @@ using System;
 using Grpc.Core;
 using Moq;
 using NUnit.Framework;
+using ServiceModel.Grpc.Configuration;
 using Shouldly;
 
 namespace ServiceModel.Grpc.SelfHost.Internal
@@ -64,7 +65,7 @@ namespace ServiceModel.Grpc.SelfHost.Internal
 
             return new SelfHostGrpcServiceFactory<TService>(
                 logger.Object,
-                null,
+                DataContractMarshallerFactory.Default,
                 serviceFactory,
                 builder.Object);
         }

@@ -31,16 +31,16 @@ namespace ServiceModel.Grpc.Interceptors
         /// <summary>
         /// Gets or sets the the optional gRPC error message, <see cref="Status"/>.
         /// </summary>
-        public string Message { get; set; }
+        public string? Message { get; set; }
 
         /// <summary>
         /// Gets or sets the the optional detail of error to pass for a client call.
         /// </summary>
-        public object Detail { get; set; }
+        public object? Detail { get; set; }
 
         /// <summary>
         /// Gets or sets the optional call trailing metadata, <see cref="RpcException"/>.
         /// </summary>
-        public Metadata Trailers { get; set; }
+        public Metadata? Trailers { get; set; }
     }
 }

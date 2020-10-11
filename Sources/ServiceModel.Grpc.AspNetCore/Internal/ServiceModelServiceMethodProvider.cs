@@ -19,6 +19,7 @@ using Grpc.AspNetCore.Server.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal
@@ -52,7 +53,8 @@ namespace ServiceModel.Grpc.AspNetCore.Internal
         {
             var serviceInstanceType = GetServiceInstanceType();
 
-            var marshallerFactory = _serviceConfiguration.MarshallerFactory ?? _rootConfiguration.DefaultMarshallerFactory;
+            var marshallerFactory = (_serviceConfiguration.MarshallerFactory ?? _rootConfiguration.DefaultMarshallerFactory).ThisOrDefault();
+
             var log = new LogAdapter(_logger);
 
             var factory = new AspNetCoreGrpcServiceFactory<TService>(log, context, serviceInstanceType, marshallerFactory);

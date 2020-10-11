@@ -40,7 +40,7 @@ namespace ServiceModel.Grpc.AspNetCore
 
                     services.AddServiceModelGrpc(options =>
                     {
-                        options.DefaultErrorHandlerFactory = p => p.GetService<ServerErrorHandler>();
+                        options.DefaultErrorHandlerFactory = p => p.GetRequiredService<ServerErrorHandler>();
                     });
                 },
                 configureEndpoints: endpoints =>

@@ -1,5 +1,5 @@
 Task default -Depends Clean, Build, ThirdPartyNotices, UnitTest, Pack, PackTest
-Task UnitTest -Depends UnitTest461, UnitTestCore21, UnitTestCore31
+Task UnitTest -Depends UnitTest461, UnitTestCore21, UnitTestCore31, UnitTestNet50
 
 Task Clean {
     $binDir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\build-out"))
@@ -22,6 +22,10 @@ Task UnitTestCore21 {
 
 Task UnitTestCore31 {
     Exec { .\step-unit-test.ps1 -Framework netcoreapp3.1 }
+}
+
+Task UnitTestNet50 {
+    Exec { .\step-unit-test.ps1 -Framework net5.0 }
 }
 
 Task ThirdPartyNotices {

@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>Grpc.Core.Api</id>
-    <version>2.31.0</version>
+    <version>2.32.0</version>
     <authors>The gRPC Authors</authors>
     <owners>The gRPC Authors</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -13,7 +13,7 @@
     <description>gRPC C# Surface API</description>
     <copyright>Copyright 2019 The gRPC Authors</copyright>
     <tags>gRPC RPC HTTP/2</tags>
-    <repository type="git" url="https://github.com/grpc/grpc.git" commit="56ad644c329d90c0742a02462b2bd365ff759158" />
+    <repository type="git" url="https://github.com/grpc/grpc.git" commit="414bb8322de2411eee1f4e841ff29d887bec7884" />
     <dependencies>
       <group targetFramework=".NETFramework4.5">
         <dependency id="System.Memory" version="4.5.3" exclude="Build,Analyzers" />

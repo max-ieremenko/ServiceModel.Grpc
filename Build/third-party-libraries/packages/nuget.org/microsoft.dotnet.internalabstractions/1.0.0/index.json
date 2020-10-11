@@ -10,6 +10,7 @@
       "TargetFrameworks": [
         "netcoreapp2.1",
         "netcoreapp3.1",
+        "net5.0",
         "net461"
       ],
       "Dependencies": [
@@ -31,7 +32,8 @@
       "Name": "AspNetCore",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp3.1"
+        "netcoreapp3.1",
+        "net5.0"
       ],
       "Dependencies": [
         {
@@ -54,6 +56,7 @@
       "TargetFrameworks": [
         "netcoreapp2.1",
         "netcoreapp3.1",
+        "net5.0",
         "net461"
       ],
       "Dependencies": [

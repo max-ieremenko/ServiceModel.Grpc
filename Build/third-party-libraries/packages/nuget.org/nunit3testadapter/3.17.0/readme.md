@@ -3,7 +3,7 @@ NUnit3TestAdapter [3.17.0](https://www.nuget.org/packages/NUnit3TestAdapter/3.17
 
 Used by: AspNetCore internal, Core internal, DesignTime internal, SelfHost internal
 
-Target frameworks: net461, netcoreapp2.1, netcoreapp3.1
+Target frameworks: net461, net5.0, netcoreapp2.1, netcoreapp3.1
 
 License: [MIT](../../../../licenses/mit) 
 

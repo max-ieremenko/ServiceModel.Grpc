@@ -14,8 +14,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DefaultPackageVersion>1.1.3</DefaultPackageVersion>
-    <DesignTimePackageVersion>1.0.0</DesignTimePackageVersion>
+    <DefaultPackageVersion>1.1.4</DefaultPackageVersion>
+    <DesignTimePackageVersion>1.0.1</DesignTimePackageVersion>
   </PropertyGroup>
 
   <PropertyGroup>

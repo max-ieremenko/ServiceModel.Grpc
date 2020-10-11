@@ -25,6 +25,18 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Dotnet info
+      shell: pwsh
+      run: dotnet --info
+
+    - name: Install net5.0
+      shell: pwsh
+      run: .\Build\step-install-dotnet.ps1
+
+    - name: Dotnet info
+      shell: pwsh
+      run: dotnet --info
+
     - name: Install ThirdPartyLibraries
       shell: cmd
       run: dotnet tool install --global ThirdPartyLibraries.GlobalTool
@@ -48,6 +60,10 @@ jobs:
     - name: Unit test netcoreapp3.1
       shell: pwsh
       run: .\Build\step-unit-test.ps1 netcoreapp3.1
+
+    - name: Unit test net5.0
+      shell: pwsh
+      run: .\Build\step-unit-test.ps1 net5.0
 
     - name: Pack
       shell: pwsh

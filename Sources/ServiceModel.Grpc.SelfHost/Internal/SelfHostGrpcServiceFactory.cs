@@ -26,13 +26,13 @@ namespace ServiceModel.Grpc.SelfHost.Internal
     internal sealed class SelfHostGrpcServiceFactory<TService> : IServiceBinder
     {
         private readonly ILogger _logger;
-        private readonly IMarshallerFactory? _marshallerFactory;
+        private readonly IMarshallerFactory _marshallerFactory;
         private readonly Func<TService> _serviceFactory;
         private readonly ServerServiceDefinition.Builder _builder;
 
         public SelfHostGrpcServiceFactory(
             ILogger logger,
-            IMarshallerFactory? marshallerFactory,
+            IMarshallerFactory marshallerFactory,
             Func<TService> serviceFactory,
             ServerServiceDefinition.Builder builder)
         {
@@ -51,7 +51,7 @@ namespace ServiceModel.Grpc.SelfHost.Internal
             }
 
             var generator = new EmitGenerator { Logger = _logger };
-            generator.BindService(this, serviceInstanceType, _marshallerFactory ?? DataContractMarshallerFactory.Default);
+            generator.BindService(this, serviceInstanceType, _marshallerFactory);
         }
 
         public void AddUnaryServerMethod<TRequest, TResponse>(Method<TRequest, TResponse> method, ServiceCallInfo callInfo)

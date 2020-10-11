@@ -3,7 +3,7 @@ Microsoft.NET.Test.Sdk [16.7.1](https://www.nuget.org/packages/Microsoft.NET.Tes
 
 Used by: AspNetCore internal, Core internal, DesignTime internal, SelfHost internal
 
-Target frameworks: net461, netcoreapp2.1, netcoreapp3.1
+Target frameworks: net461, net5.0, netcoreapp2.1, netcoreapp3.1
 
 License: [ms-net-library](../../../../licenses/ms-net-library) 
 

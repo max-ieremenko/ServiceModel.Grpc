@@ -9,6 +9,9 @@
     <DevelopmentDependency>True</DevelopmentDependency>
     <AssemblyTitle>ServiceModel.Grpc.DesignTime.Generator</AssemblyTitle>
 
+    <!-- error NU5118: File .deps.json' is not added because the package already contains file '.deps.json' -->
+    <NoWarn>NU5118</NoWarn>
+
     <Version>$(DesignTimePackageVersion)</Version>
   </PropertyGroup>
 
