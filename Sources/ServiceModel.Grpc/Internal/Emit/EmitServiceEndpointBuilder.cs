@@ -360,7 +360,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                         .DefineMethod(
                             methodName,
                             MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
-                            typeof(Task<>).MakeGenericType(message.ResponseType),
+                            typeof(Task),
                             new[]
                             {
                                 serviceType,

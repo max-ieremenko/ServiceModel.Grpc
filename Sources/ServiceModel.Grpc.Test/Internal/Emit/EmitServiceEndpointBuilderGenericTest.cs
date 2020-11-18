@@ -58,7 +58,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         {
             var call = _channelType
                 .InstanceMethod(nameof(IGenericContract<int, string>.Invoke))
-                .CreateDelegate<UnaryServerMethod<IGenericContract<int, string>, Message<int, string>, Message<string>>>(_channel);
+                .CreateDelegate<Func<IGenericContract<int, string>, Message<int, string>, ServerCallContext, Task<Message<string>>>>(_channel);
             Console.WriteLine(call.Method.Disassemble());
 
             var serverContext = new Mock<ServerCallContext>(MockBehavior.Strict);
