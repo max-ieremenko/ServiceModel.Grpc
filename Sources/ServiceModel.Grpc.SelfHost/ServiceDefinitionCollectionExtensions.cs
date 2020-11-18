@@ -15,10 +15,8 @@
 // </copyright>
 
 using System;
-using Grpc.Core.Interceptors;
 using ServiceModel.Grpc;
-using ServiceModel.Grpc.Configuration;
-using ServiceModel.Grpc.Interceptors.Internal;
+using ServiceModel.Grpc.Hosting;
 using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.SelfHost.Internal;
 
@@ -38,7 +36,8 @@ namespace Grpc.Core
         /// <param name="services">The <see cref="Server.ServiceDefinitionCollection"/>.</param>
         /// <param name="serviceFactory">Method which creates a service instance.</param>
         /// <param name="configure">The optional configuration action to provide a configuration the service.</param>
-        public static void AddServiceModelTransient<TService>(
+        /// <returns><see cref="Server.ServiceDefinitionCollection"/>.</returns>
+        public static Server.ServiceDefinitionCollection AddServiceModelTransient<TService>(
             this Server.ServiceDefinitionCollection services,
             Func<TService> serviceFactory,
             Action<ServiceModelGrpcServiceOptions>? configure = default)
@@ -46,43 +45,32 @@ namespace Grpc.Core
             services.AssertNotNull(nameof(services));
             serviceFactory.AssertNotNull(nameof(serviceFactory));
 
-            if (ServiceContract.IsNativeGrpcService(typeof(TService)))
-            {
-                throw new InvalidOperationException("{0} is native grpc service.".FormatWith(typeof(TService).FullName));
-            }
+            BindService(services, serviceFactory, null, configure);
+            return services;
+        }
 
-            ServiceModelGrpcServiceOptions? options = null;
-            if (configure != null)
-            {
-                options = new ServiceModelGrpcServiceOptions();
-                configure(options);
-            }
+        /// <summary>
+        /// Registers a ServiceModel.Grpc service (one instance per-call) in the <see cref="Server.ServiceDefinitionCollection"/>.
+        /// This method used by generated source code.
+        /// </summary>
+        /// <typeparam name="TService">The implementation type of ServiceModel.Grpc service.</typeparam>
+        /// <param name="services">The <see cref="Server.ServiceDefinitionCollection"/>.</param>
+        /// <param name="serviceFactory">Method which creates a service instance.</param>
+        /// <param name="endpointBinder">The generated service endpoint binder.</param>
+        /// <param name="configure">The optional configuration action to provide a configuration the service.</param>
+        /// <returns><see cref="Server.ServiceDefinitionCollection"/>.</returns>
+        public static Server.ServiceDefinitionCollection AddServiceModelTransient<TService>(
+            this Server.ServiceDefinitionCollection services,
+            Func<TService> serviceFactory,
+            IServiceEndpointBinder<TService> endpointBinder,
+            Action<ServiceModelGrpcServiceOptions>? configure = default)
+        {
+            services.AssertNotNull(nameof(services));
+            serviceFactory.AssertNotNull(nameof(serviceFactory));
+            services.AssertNotNull(nameof(endpointBinder));
 
-            var builder = ServerServiceDefinition.CreateBuilder();
-            var logger = new LogAdapter(options?.Logger);
-
-            var factory = new SelfHostGrpcServiceFactory<TService>(
-                logger,
-                (options?.MarshallerFactory).ThisOrDefault(),
-                serviceFactory,
-                builder);
-
-            factory.Bind();
-
-            var definition = builder.Build();
-            if (options?.ConfigureServiceDefinition != null)
-            {
-                definition = options.ConfigureServiceDefinition(definition);
-            }
-
-            if (options?.ErrorHandler != null)
-            {
-                definition = definition.Intercept(new ServerNativeInterceptor(new ServerCallErrorInterceptor(
-                    options.ErrorHandler,
-                    options.MarshallerFactory.ThisOrDefault())));
-            }
-
-            services.Add(definition);
+            BindService(services, serviceFactory, endpointBinder, configure);
+            return services;
         }
 
         /// <summary>
@@ -92,12 +80,66 @@ namespace Grpc.Core
         /// <param name="services">The <see cref="Server.ServiceDefinitionCollection"/>.</param>
         /// <param name="service">The service instance.</param>
         /// <param name="configure">The optional configuration action to provide a configuration the service.</param>
-        public static void AddServiceModelSingleton<TService>(
+        /// <returns><see cref="Server.ServiceDefinitionCollection"/>.</returns>
+        public static Server.ServiceDefinitionCollection AddServiceModelSingleton<TService>(
             this Server.ServiceDefinitionCollection services,
             TService service,
             Action<ServiceModelGrpcServiceOptions>? configure = default)
         {
-            AddServiceModelTransient(services, () => service, configure);
+            services.AssertNotNull(nameof(services));
+
+            BindService(services, () => service, null, configure);
+            return services;
+        }
+
+        /// <summary>
+        /// Registers a ServiceModel.Grpc service (one instance for all calls) in the <see cref="Server.ServiceDefinitionCollection"/>.
+        /// This method used by generated source code.
+        /// </summary>
+        /// <typeparam name="TService">The implementation type of ServiceModel.Grpc service.</typeparam>
+        /// <param name="services">The <see cref="Server.ServiceDefinitionCollection"/>.</param>
+        /// <param name="service">The service instance.</param>
+        /// <param name="endpointBinder">The generated service endpoint binder.</param>
+        /// <param name="configure">The optional configuration action to provide a configuration the service.</param>
+        /// <returns><see cref="Server.ServiceDefinitionCollection"/>.</returns>
+        public static Server.ServiceDefinitionCollection AddServiceModelSingleton<TService>(
+            this Server.ServiceDefinitionCollection services,
+            TService service,
+            IServiceEndpointBinder<TService> endpointBinder,
+            Action<ServiceModelGrpcServiceOptions>? configure = default)
+        {
+            services.AssertNotNull(nameof(services));
+            services.AssertNotNull(nameof(endpointBinder));
+
+            BindService(services, () => service, endpointBinder, configure);
+            return services;
+        }
+
+        private static void BindService<TService>(
+            Server.ServiceDefinitionCollection services,
+            Func<TService> serviceFactory,
+            IServiceEndpointBinder<TService>? endpointBinder,
+            Action<ServiceModelGrpcServiceOptions>? configure)
+        {
+            ValidateServiceType(typeof(TService));
+
+            ServiceModelGrpcServiceOptions? options = null;
+            if (configure != null)
+            {
+                options = new ServiceModelGrpcServiceOptions();
+                configure(options);
+            }
+
+            var definition = new ServerServiceDefinitionProvider<TService>(serviceFactory, endpointBinder, options).CreateDefinition();
+            services.Add(definition);
+        }
+
+        private static void ValidateServiceType(Type serviceType)
+        {
+            if (ServiceContract.IsNativeGrpcService(serviceType))
+            {
+                throw new InvalidOperationException("{0} is native grpc service.".FormatWith(serviceType.FullName));
+            }
         }
     }
 }

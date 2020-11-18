@@ -28,7 +28,7 @@ using Shouldly;
 namespace ServiceModel.Grpc.Internal.Emit
 {
     [TestFixture]
-    public class EmitServiceBuilderGenericTest
+    public class EmitServiceEndpointBuilderGenericTest
     {
         private Type _channelType = null!;
         private object _channel = null!;
@@ -38,20 +38,13 @@ namespace ServiceModel.Grpc.Internal.Emit
         public void BeforeAllTest()
         {
             var description = new ContractDescription(typeof(IGenericContract<int, string>));
-            var contractType = new EmitContractBuilder(description).Build(ProxyAssembly.DefaultModule, nameof(EmitServiceBuilderGenericTest) + "Contract");
+            var contractType = new EmitContractBuilder(description).Build(ProxyAssembly.DefaultModule, nameof(EmitServiceEndpointBuilderGenericTest) + "Contract");
 
-            var sut = new EmitServiceBuilder(ProxyAssembly.DefaultModule, nameof(EmitServiceBuilderGenericTest) + "Service", contractType);
-            foreach (var interfaceDescription in description.Services)
-            {
-                foreach (var operation in interfaceDescription.Operations)
-                {
-                    sut.BuildOperation(operation, interfaceDescription.InterfaceType);
-                }
-            }
+            var sut = new EmitServiceEndpointBuilder(description, contractType);
+            _channelType = sut.Build(ProxyAssembly.DefaultModule, className: nameof(EmitServiceEndpointBuilderGenericTest) + "Channel");
 
-            _channelType = sut.BuildType();
             var contract = EmitContractBuilder.CreateFactory(contractType)(DataContractMarshallerFactory.Default);
-            _channel = EmitServiceBuilder.CreateFactory(_channelType, contractType)(contract);
+            _channel = EmitServiceEndpointBuilder.CreateFactory(_channelType, contractType)(contract);
         }
 
         [SetUp]

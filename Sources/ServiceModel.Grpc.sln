@@ -27,7 +27,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.DesignTim
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.DesignTime.Generator.Test", "ServiceModel.Grpc.DesignTime.Generator.Test\ServiceModel.Grpc.DesignTime.Generator.Test.csproj", "{3828170C-4688-4B97-9596-7961679C5E45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceModel.Grpc.DesignTime.Generator", "ServiceModel.Grpc.DesignTime.Generator\ServiceModel.Grpc.DesignTime.Generator.csproj", "{691B6AB3-E1AC-4B46-B4F5-40AFDC1CC951}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.DesignTime.Generator", "ServiceModel.Grpc.DesignTime.Generator\ServiceModel.Grpc.DesignTime.Generator.csproj", "{691B6AB3-E1AC-4B46-B4F5-40AFDC1CC951}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceModel.Grpc.AspNetCore.TestApi", "ServiceModel.Grpc.AspNetCore.TestApi\ServiceModel.Grpc.AspNetCore.TestApi.csproj", "{D9B1C523-9684-45C2-90B1-140BE909C03B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +85,10 @@ Global
 		{691B6AB3-E1AC-4B46-B4F5-40AFDC1CC951}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{691B6AB3-E1AC-4B46-B4F5-40AFDC1CC951}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{691B6AB3-E1AC-4B46-B4F5-40AFDC1CC951}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9B1C523-9684-45C2-90B1-140BE909C03B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9B1C523-9684-45C2-90B1-140BE909C03B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9B1C523-9684-45C2-90B1-140BE909C03B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9B1C523-9684-45C2-90B1-140BE909C03B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -94,6 +100,7 @@ Global
 		{61DD6D19-EC9E-44C2-AB33-ACD1A3C73DD0} = {2B957488-05AA-4B3F-B954-321B3ACE98B7}
 		{5A15F328-AB5F-4FAA-B606-0700E2A72B38} = {2B957488-05AA-4B3F-B954-321B3ACE98B7}
 		{3828170C-4688-4B97-9596-7961679C5E45} = {2B957488-05AA-4B3F-B954-321B3ACE98B7}
+		{D9B1C523-9684-45C2-90B1-140BE909C03B} = {2B957488-05AA-4B3F-B954-321B3ACE98B7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A48B878D-6D95-484D-9585-1BD5C3A3610B}

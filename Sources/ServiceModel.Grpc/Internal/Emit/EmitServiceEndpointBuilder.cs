@@ -21,31 +21,22 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
 using Grpc.Core;
+using ServiceModel.Grpc.Hosting;
 
 namespace ServiceModel.Grpc.Internal.Emit
 {
-    internal sealed class EmitServiceBuilder
+    internal sealed class EmitServiceEndpointBuilder
     {
-        private readonly TypeBuilder _typeBuilder;
-        private readonly ILGenerator _ctor;
+        private readonly ContractDescription _description;
         private readonly Type _contractType;
 
-        public EmitServiceBuilder(ModuleBuilder moduleBuilder, string className, Type contractType)
+        private TypeBuilder _typeBuilder = null!;
+        private ILGenerator _ctor = null!;
+
+        public EmitServiceEndpointBuilder(ContractDescription description, Type contractType)
         {
+            _description = description;
             _contractType = contractType;
-
-            _typeBuilder = moduleBuilder.DefineType(
-                className,
-                TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit);
-
-            _ctor = _typeBuilder
-                .DefineConstructor(
-                    MethodAttributes.Public,
-                    CallingConventions.HasThis,
-                    new[] { contractType })
-                .GetILGenerator();
-            _ctor.Emit(OpCodes.Ldarg_0);
-            _ctor.Emit(OpCodes.Call, typeof(object).Constructor());
         }
 
         public static bool IsSupportedContextInput(MessageAssembler message)
@@ -74,7 +65,44 @@ namespace ServiceModel.Grpc.Internal.Emit
             return Expression.Lambda<Func<object, object>>(factory, contract).Compile();
         }
 
-        public void BuildNotSupportedOperation(OperationDescription operation, Type serviceType, string error)
+        public TypeInfo Build(ModuleBuilder moduleBuilder, ILogger? logger = default, string? className = default)
+        {
+            _typeBuilder = moduleBuilder.DefineType(
+                className ?? _description.EndpointClassName,
+                TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit);
+
+            _ctor = _typeBuilder
+                .DefineConstructor(
+                    MethodAttributes.Public,
+                    CallingConventions.HasThis,
+                    new[] { _contractType })
+                .GetILGenerator();
+            _ctor.Emit(OpCodes.Ldarg_0);
+            _ctor.Emit(OpCodes.Call, typeof(object).Constructor());
+
+            foreach (var interfaceDescription in _description.Services)
+            {
+                foreach (var operation in interfaceDescription.Operations)
+                {
+                    if (IsSupportedContextInput(operation.Message))
+                    {
+                        BuildOperation(operation, interfaceDescription.InterfaceType);
+                    }
+                    else
+                    {
+                        var error = "Context options in [{0}] are not supported.".FormatWith(ReflectionTools.GetSignature(operation.Message.Operation));
+                        logger?.LogError("Service {0}: {1}", _description.ServiceType.FullName, error);
+                        BuildNotSupportedOperation(operation, interfaceDescription.InterfaceType, error);
+                    }
+                }
+            }
+
+            _ctor.Emit(OpCodes.Ret);
+
+            return _typeBuilder.CreateTypeInfo()!;
+        }
+
+        private void BuildNotSupportedOperation(OperationDescription operation, Type serviceType, string error)
         {
             var body = CreateMethodWithSignature(operation.Message, serviceType, operation.OperationName);
 
@@ -84,7 +112,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Throw);
         }
 
-        public void BuildOperation(OperationDescription operation, Type serviceType)
+        private void BuildOperation(OperationDescription operation, Type serviceType)
         {
             var body = CreateMethodWithSignature(operation.Message, serviceType, operation.OperationName);
             var headersMarshallerFiled = InitializeHeadersMarshaller(operation);
@@ -107,13 +135,6 @@ namespace ServiceModel.Grpc.Internal.Emit
                     BuildDuplexStreaming(body, operation.Message, serviceType, headersMarshallerFiled);
                     break;
             }
-        }
-
-        public Type BuildType()
-        {
-            _ctor.Emit(OpCodes.Ret);
-
-            return _typeBuilder.CreateTypeInfo()!;
         }
 
         private void BuildUnary(ILGenerator body, MessageAssembler message, Type serviceType)

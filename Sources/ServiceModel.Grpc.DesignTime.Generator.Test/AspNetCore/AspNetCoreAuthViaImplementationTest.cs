@@ -14,23 +14,19 @@
 // limitations under the License.
 // </copyright>
 
-using System.Reflection;
+using NUnit.Framework;
+using ServiceModel.Grpc.AspNetCore.TestApi;
+using ServiceModel.Grpc.AspNetCore.TestApi.Domain;
 
-namespace ServiceModel.Grpc.Hosting
+namespace ServiceModel.Grpc.DesignTime.Generator.Test.AspNetCore
 {
-    internal readonly struct ServiceCallInfo
+    [TestFixture]
+    [ExportGrpcService(typeof(ServiceWithAuthentication), GenerateAspNetExtensions = true)]
+    public partial class AspNetCoreAuthViaImplementationTest : AspNetCoreAuthenticationTestBase
     {
-        public ServiceCallInfo(MethodInfo serviceInstanceMethod, MethodInfo channelMethod, object channel)
+        protected override void ConfigureKestrelHost(KestrelHost host)
         {
-            ServiceInstanceMethod = serviceInstanceMethod;
-            ChannelMethod = channelMethod;
-            Channel = channel;
+            host.ConfigureEndpoints(endpoints => MapServiceWithAuthentication(endpoints));
         }
-
-        public MethodInfo ServiceInstanceMethod { get; }
-
-        public MethodInfo ChannelMethod { get; }
-
-        public object Channel { get; }
     }
 }

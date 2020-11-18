@@ -25,7 +25,7 @@ using ServiceModel.Grpc.Configuration;
 #pragma warning disable SA1615 // Element return value should be documented
 #pragma warning disable SA1618 // Generic type parameters should be documented
 
-namespace ServiceModel.Grpc.Internal
+namespace ServiceModel.Grpc.Client
 {
     /// <summary>
     /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.

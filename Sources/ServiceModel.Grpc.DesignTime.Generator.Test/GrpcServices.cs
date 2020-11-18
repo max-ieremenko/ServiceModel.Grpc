@@ -19,6 +19,7 @@ using ServiceModel.Grpc.TestApi.Domain;
 namespace ServiceModel.Grpc.DesignTime.Generator.Test
 {
     [ImportGrpcService(typeof(IMultipurposeService))]
+    [ExportGrpcService(typeof(IMultipurposeService))]
     [ImportGrpcService(typeof(IContract))]
     [ImportGrpcService(typeof(IGenericContract<int, string>))]
     [ImportGrpcService(typeof(IGenericContract<string, int>))]

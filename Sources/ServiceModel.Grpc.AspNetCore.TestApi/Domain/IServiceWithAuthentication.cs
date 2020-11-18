@@ -14,12 +14,17 @@
 // limitations under the License.
 // </copyright>
 
-namespace ServiceModel.Grpc.Internal
-{
-    internal interface IGenerator
-    {
-        ILogger? Logger { get; set; }
+using System.ServiceModel;
 
-        IClientBuilder<TContract> GenerateClientBuilder<TContract>();
+namespace ServiceModel.Grpc.AspNetCore.TestApi.Domain
+{
+    [ServiceContract]
+    public interface IServiceWithAuthentication
+    {
+        [OperationContract]
+        string? GetCurrentUserName(CallContext? context = default);
+
+        [OperationContract]
+        string? TryGetCurrentUserName(CallContext? context = default);
     }
 }

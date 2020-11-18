@@ -20,11 +20,18 @@ using CodeGeneration.Roslyn;
 
 namespace ServiceModel.Grpc.DesignTime
 {
+    /// <summary>
+    /// A marker to generate the source code for client service proxy.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    [CodeGenerationAttribute("ServiceModel.Grpc.DesignTime.CSharpCodeGenerator, ServiceModel.Grpc.DesignTime.Generator")]
+    [CodeGenerationAttribute("ServiceModel.Grpc.DesignTime.CSharpClientCodeGenerator, ServiceModel.Grpc.DesignTime.Generator")]
     [Conditional("CodeGeneration")]
     public sealed class ImportGrpcServiceAttribute : Attribute
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImportGrpcServiceAttribute"/> class.
+        /// </summary>
+        /// <param name="serviceContract">The service contract type to map requests to.</param>
         public ImportGrpcServiceAttribute(Type serviceContract)
         {
             if (serviceContract == null)
@@ -35,6 +42,9 @@ namespace ServiceModel.Grpc.DesignTime
             ServiceContract = serviceContract;
         }
 
+        /// <summary>
+        /// Gets a service contract type to map requests to.
+        /// </summary>
         public Type ServiceContract { get; }
     }
 }

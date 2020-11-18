@@ -29,6 +29,8 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
             _contract = contract;
         }
 
+        public override string GetGeneratedMemberName() => _contract.ContractClassName;
+
         protected override void Generate()
         {
             Output.AppendLine($"internal sealed class {_contract.ContractClassName}");

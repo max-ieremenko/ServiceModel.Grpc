@@ -17,8 +17,8 @@
 using System;
 using System.Linq;
 using Grpc.Core;
+using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.Configuration;
-using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.Internal.IO;
 
 namespace ServiceModel.Grpc.Channel

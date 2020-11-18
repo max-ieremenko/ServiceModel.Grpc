@@ -32,6 +32,15 @@ namespace ServiceModel.Grpc.DesignTime.Internal
             string Overload(int x);
         }
 
+        private sealed class S1 : I1
+        {
+            public void Dispose() => throw new NotImplementedException();
+
+            string I1.Overload() => throw new NotImplementedException();
+
+            public string Overload(int x) => throw new NotImplementedException();
+        }
+
         private sealed class FullNameCases
         {
             [DisplayName("int")]

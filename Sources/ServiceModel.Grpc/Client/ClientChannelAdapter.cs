@@ -15,6 +15,7 @@
 // </copyright>
 
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,12 +23,14 @@ using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Client;
 
-namespace ServiceModel.Grpc.Internal
+namespace ServiceModel.Grpc.Client
 {
     /// <summary>
     /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
     /// This API may change or be removed in future releases.
     /// </summary>
+    [Browsable(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public static class ClientChannelAdapter
     {
         /// <summary>

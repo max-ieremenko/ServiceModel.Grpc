@@ -14,12 +14,8 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ServiceModel.Grpc.Channel;
 
 namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
@@ -33,32 +29,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
             _description = description;
         }
 
-        public static bool ContainsFlag(string ownerFullName, IEnumerable<UsingDirectiveSyntax> directives, MessageDescription description)
-        {
-            var (aliasName, typeName) = CreateFlag(ownerFullName, description);
-
-            foreach (var directive in directives)
-            {
-                // [__message5=] [ServiceModel.Grpc.DesignTime.Generator.Test.DomainServices.Message
-                if (directive.Alias != null
-                    && directive.Alias.WithoutTrivia().ToString().StartsWith(aliasName, StringComparison.Ordinal)
-                    && typeName.Equals(directive.Name.WithoutTrivia().ToString(), StringComparison.Ordinal))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public UsingDirectiveSyntax CreateFlag(string ownerFullName)
-        {
-            var (aliasName, typeName) = CreateFlag(ownerFullName, _description);
-
-            return SyntaxFactory.UsingDirective(
-                SyntaxFactory.NameEquals(aliasName),
-                SyntaxFactory.ParseName(typeName));
-        }
+        public override string GetGeneratedMemberName() => "Message_" + _description.Properties.Length.ToString(CultureInfo.InvariantCulture);
 
         protected override void Generate()
         {

@@ -14,6 +14,8 @@
 // limitations under the License.
 // </copyright>
 
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -28,6 +30,10 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
             Generate();
             return SyntaxFactory.ParseMemberDeclaration(Output.ToString());
         }
+
+        public abstract string GetGeneratedMemberName();
+
+        public virtual IEnumerable<string> GetUsing() => Enumerable.Empty<string>();
 
         protected abstract void Generate();
     }

@@ -33,22 +33,33 @@ namespace ServiceModel.Grpc.DesignTime.Internal
             AnalyzeServiceAndInterfaces(serviceType);
             FindDuplicates();
 
-            var baseClassName = GetBaseClassName(serviceType);
-            ClientClassName = baseClassName + "Client";
-            ClientBuilderClassName = baseClassName + "ClientBuilder";
-            ContractClassName = baseClassName + "Contract";
+            BaseClassName = GetBaseClassName(serviceType);
+            ClientClassName = BaseClassName + "Client";
+            ClientBuilderClassName = BaseClassName + "ClientBuilder";
+            ContractClassName = BaseClassName + "Contract";
+            EndpointClassName = BaseClassName + "Endpoint";
+            EndpointBinderClassName = BaseClassName + "EndpointBinder";
 
             ContractInterfaceName = SyntaxTools.GetFullName(serviceType);
+            ContractInterface = serviceType;
             SortAll();
         }
 
+        public string BaseClassName { get; }
+
         public string ContractInterfaceName { get; }
+
+        public INamedTypeSymbol ContractInterface { get; }
 
         public string ClientClassName { get; }
 
         public string ClientBuilderClassName { get; }
 
         public string ContractClassName { get; }
+
+        public string EndpointClassName { get; }
+
+        public string EndpointBinderClassName { get; }
 
         public List<InterfaceDescription> Interfaces { get; }
 

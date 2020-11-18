@@ -18,6 +18,7 @@ using System;
 using Grpc.Core;
 using Moq;
 using NUnit.Framework;
+using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.Configuration;
 using Shouldly;
 

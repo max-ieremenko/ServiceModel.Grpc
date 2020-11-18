@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using ServiceModel.Grpc.AspNetCore.TestApi;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 
@@ -31,10 +32,9 @@ namespace ServiceModel.Grpc.AspNetCore
         [OneTimeSetUp]
         public async Task BeforeAll()
         {
-            _host = new KestrelHost(configure: options => options.ErrorHandler = new ClientErrorHandler());
-
-            await _host.StartAsync(
-                services =>
+            _host = await new KestrelHost()
+                .ConfigureClientFactory(options => options.ErrorHandler = new ClientErrorHandler())
+                .ConfigureServices(services =>
                 {
                     services.AddScoped<ServerErrorHandler>();
 
@@ -42,11 +42,12 @@ namespace ServiceModel.Grpc.AspNetCore
                     {
                         options.DefaultErrorHandlerFactory = p => p.GetRequiredService<ServerErrorHandler>();
                     });
-                },
-                configureEndpoints: endpoints =>
+                })
+                .ConfigureEndpoints(endpoints =>
                 {
                     endpoints.MapGrpcService<ErrorService>();
-                });
+                })
+                .StartAsync();
 
             DomainService = _host.ClientFactory.CreateClient<IErrorService>(_host.Channel);
         }

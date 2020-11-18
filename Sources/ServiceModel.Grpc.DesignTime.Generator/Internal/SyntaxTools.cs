@@ -220,6 +220,22 @@ namespace ServiceModel.Grpc.DesignTime.Internal
 
         public static bool IsStream(ITypeSymbol type) => IsMatch(type, typeof(Stream));
 
+        public static IMethodSymbol GetInterfaceImplementation(this ITypeSymbol type, IMethodSymbol interfaceMethod)
+        {
+            if (SymbolEqualityComparer.Default.Equals(type, interfaceMethod.ContainingType))
+            {
+                return interfaceMethod;
+            }
+
+            var result = type.FindImplementationForInterfaceMember(interfaceMethod);
+            if (result == null)
+            {
+                throw new ArgumentNullException(nameof(interfaceMethod));
+            }
+
+            return (IMethodSymbol)result;
+        }
+
         public static bool IsOut(this IParameterSymbol parameter)
         {
             return parameter.RefKind == RefKind.Out;

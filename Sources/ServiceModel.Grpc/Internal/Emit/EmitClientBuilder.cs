@@ -21,6 +21,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
 using Grpc.Core;
+using ServiceModel.Grpc.Client;
 
 namespace ServiceModel.Grpc.Internal.Emit
 {
