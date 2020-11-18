@@ -2,7 +2,7 @@
 
 ## Reflection.Emit by default
 
-By default all proxies requested from ClientFactory are generated on demand via Reflection.Emit.
+By default all proxies requested from ClientFactory are generating on demand via Reflection.Emit.
 Reflection.Emit proxy class is generated only once for the specific contract, no matter how many ClientFactory instances exist.
 
 example 1:

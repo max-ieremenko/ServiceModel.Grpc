@@ -2,6 +2,8 @@
 
 `ServiceModel.Grpc` enables applications to communicate with gRPC services using code-first approach (no .proto files), helps to get around some limitations of gRPC protocol like "only reference types", "exact one input", "no nulls". Helps to migrate existing WCF solution to gRPC with minimum effort.
 
+The library supports lightweight runtime proxy generation via Reflection.Emit and C# source code generation.
+
 The solution is built on top of [gRPC C#](https://github.com/grpc/grpc/tree/master/src/csharp).
 
 ## Links
@@ -11,6 +13,7 @@ The solution is built on top of [gRPC C#](https://github.com/grpc/grpc/tree/mast
   - [service and operation bindings](https://max-ieremenko.github.io/ServiceModel.Grpc/ServiceAndOperationBinding.html)
   - [client configuration](https://max-ieremenko.github.io/ServiceModel.Grpc/ClientConfiguration.html)
   - [client code generation](https://max-ieremenko.github.io/ServiceModel.Grpc/client-code-generation.html)
+  - [server code generation](https://max-ieremenko.github.io/ServiceModel.Grpc/server-code-generation.html)
   - [ASP.NET Core server configuration](https://max-ieremenko.github.io/ServiceModel.Grpc/ASPNETCoreServerConfiguration.html)
   - [Grpc.Core server configuration](https://max-ieremenko.github.io/ServiceModel.Grpc/GrpcCoreServerConfiguration.html)
   - error handler general [information](https://max-ieremenko.github.io/ServiceModel.Grpc/error-handling-general.html)

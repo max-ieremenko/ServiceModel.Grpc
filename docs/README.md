@@ -8,6 +8,7 @@
 - [service and operation bindings](ServiceAndOperationBinding.md)
 - [client configuration](ClientConfiguration.md)
 - [client code generation](client-code-generation.md)
+- [server code generation](server-code-generation.md)
 - [ASP.NET Core server configuration](ASPNETCoreServerConfiguration.md)
 - [Grpc.Core server configuration](GrpcCoreServerConfiguration.md)
 - error handler general [information](error-handling-general.md)
