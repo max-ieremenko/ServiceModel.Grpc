@@ -3,7 +3,7 @@ CodeGeneration.Roslyn.Tool [0.7.63](https://www.nuget.org/packages/CodeGeneratio
 
 Used by: DesignTime internal
 
-Target frameworks: netcoreapp2.1
+Target frameworks: netcoreapp3.1
 
 License: [MS-PL](../../../../licenses/ms-pl) 
 

@@ -36,7 +36,8 @@
       "Name": "DesignTime",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp2.1"
+        "netcoreapp2.1",
+        "netcoreapp3.1"
       ]
     }
   ],

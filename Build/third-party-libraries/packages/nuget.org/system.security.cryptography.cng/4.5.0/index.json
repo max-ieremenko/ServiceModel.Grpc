@@ -5,20 +5,20 @@
   },
   "UsedBy": [
     {
-      "Name": "AspNetCore",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "netcoreapp3.1",
-        "net5.0"
-      ]
-    },
-    {
       "Name": "Core",
       "InternalOnly": true,
       "TargetFrameworks": [
         "netcoreapp2.1",
         "netcoreapp3.1",
         "net461"
+      ]
+    },
+    {
+      "Name": "AspNetCore",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1",
+        "net5.0"
       ]
     }
   ],

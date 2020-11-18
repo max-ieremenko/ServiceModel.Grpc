@@ -18,7 +18,8 @@ Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
 $appNames = @("AspNetCore", "Core")
 $sources = @(
     (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore"),
-    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.Test")
+    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.Test"),
+    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.TestApi")
 )
 
 Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
