@@ -19,22 +19,19 @@ using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 
-namespace ServiceModel.Grpc.Internal.Emit
+namespace ServiceModel.Grpc.DesignTime.Generator.Test
 {
     [TestFixture]
-    public class EmitServiceEndpointBuilderGenericTest : ServiceEndpointBuilderGenericTestBase
+    [ExportGrpcService(typeof(IContract))]
+    public partial class CSharpServiceEndpointBuilderTest : ServiceEndpointBuilderTestBase
     {
         [OneTimeSetUp]
         public void BeforeAllTest()
         {
-            var description = new ContractDescription(typeof(IGenericContract<int, string>));
-            var contractType = new EmitContractBuilder(description).Build(ProxyAssembly.DefaultModule, nameof(EmitServiceEndpointBuilderGenericTest) + "Contract");
+            ChannelType = typeof(ContractEndpoint);
 
-            var sut = new EmitServiceEndpointBuilder(description, contractType);
-            ChannelType = sut.Build(ProxyAssembly.DefaultModule, className: nameof(EmitServiceEndpointBuilderGenericTest) + "Channel");
-
-            var contract = EmitContractBuilder.CreateFactory(contractType)(DataContractMarshallerFactory.Default);
-            Channel = EmitServiceEndpointBuilder.CreateFactory(ChannelType, contractType)(contract);
+            var contract = new ContractContract(DataContractMarshallerFactory.Default);
+            Channel = new ContractEndpoint(contract);
         }
     }
 }
