@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyTitle>ServiceModel.Grpc.DesignTime</AssemblyTitle>
-    <Version>$(DesignTimePackageVersion)</Version>
+    <Version>$(DefaultPackageVersion)</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' != 'Debug'">

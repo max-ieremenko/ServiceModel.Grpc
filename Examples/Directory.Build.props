@@ -9,8 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <ServiceModelGrpcVersion>1.1.4</ServiceModelGrpcVersion>
-    <ServiceModelGrpcDesignTimeVersion>1.0.1</ServiceModelGrpcDesignTimeVersion>
+    <ServiceModelGrpcVersion>1.1.5</ServiceModelGrpcVersion>
   </PropertyGroup>
   
 </Project>
