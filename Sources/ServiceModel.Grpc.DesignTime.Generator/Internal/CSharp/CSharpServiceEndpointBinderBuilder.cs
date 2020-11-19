@@ -99,7 +99,8 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
                 var ns = SyntaxTools.GetNamespace(attribute.AttributeClass);
                 if (!string.IsNullOrEmpty(ns)
                     && !ns.StartsWith("System.Runtime.CompilerServices", StringComparison.OrdinalIgnoreCase)
-                    && !ns.StartsWith("System.Diagnostics", StringComparison.OrdinalIgnoreCase))
+                    && !ns.StartsWith("System.Diagnostics", StringComparison.OrdinalIgnoreCase)
+                    && !ns.StartsWith("System.ServiceModel", StringComparison.OrdinalIgnoreCase))
                 {
                     yield return attribute;
                 }
@@ -191,14 +192,24 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
 
             using (Output.Indent())
             {
-                if (!SyntaxTools.IsInterface(_contract.ContractInterface))
+                Output
+                    .Append("// copy attributes from ")
+                    .Append(_contract.ContractInterface.TypeKind.ToString().ToLowerInvariant())
+                    .Append(" ")
+                    .AppendLine(_contract.ContractInterface.Name);
+
+                var length = Output.Length;
+
+                foreach (var attribute in FilterAttributes(_contract.ContractInterface.GetAttributes()))
                 {
-                    foreach (var attribute in FilterAttributes(_contract.ContractInterface.GetAttributes()))
-                    {
-                        Output.Append("metadata.Add(");
-                        WriteNewAttribute(Output, attribute);
-                        Output.AppendLine(");");
-                    }
+                    Output.Append("metadata.Add(");
+                    WriteNewAttribute(Output, attribute);
+                    Output.AppendLine(");");
+                }
+
+                if (Output.Length == length)
+                {
+                    Output.AppendLine("// no applicable attributes found");
                 }
 
                 Output.AppendLine("ServiceGetMetadataOverride(metadata);");
@@ -226,21 +237,39 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
                     .AppendLine("var metadata = new List<object>();")
                     .AppendLine("ServiceGetMetadata(metadata);");
 
-                if (!SyntaxTools.IsInterface(_contract.ContractInterface))
+                var implementation = method.Method.Source;
+                if (SyntaxTools.IsInterface(_contract.ContractInterface))
                 {
-                    var implementation = _contract.ContractInterface.GetInterfaceImplementation(method.Method.Source);
                     Output
-                        .Append("// from ")
+                        .Append("// copy attributes from method ")
                         .Append(interfaceDescription.InterfaceType.Name)
                         .Append(".")
                         .AppendLine(implementation.Name);
+                }
+                else
+                {
+                    implementation = _contract.ContractInterface.GetInterfaceImplementation(method.Method.Source);
+                    Output
+                        .Append("// copy attributes from method ")
+                        .Append(implementation.Name)
+                        .Append(", implementation of ")
+                        .Append(interfaceDescription.InterfaceType.Name)
+                        .Append(".")
+                        .AppendLine(method.Method.Name);
+                }
 
-                    foreach (var attribute in FilterAttributes(implementation.GetAttributes()))
-                    {
-                        Output.Append("metadata.Add(");
-                        WriteNewAttribute(Output, attribute);
-                        Output.AppendLine(");");
-                    }
+                var length = Output.Length;
+
+                foreach (var attribute in FilterAttributes(implementation.GetAttributes()))
+                {
+                    Output.Append("metadata.Add(");
+                    WriteNewAttribute(Output, attribute);
+                    Output.AppendLine(");");
+                }
+
+                if (Output.Length == length)
+                {
+                    Output.AppendLine("// no applicable attributes found");
                 }
 
                 Output

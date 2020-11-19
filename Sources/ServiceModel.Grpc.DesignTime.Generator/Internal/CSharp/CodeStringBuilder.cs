@@ -33,6 +33,8 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
             _writer.Indent = 0;
         }
 
+        public int Length => _output.Length;
+
         public CodeStringBuilder AppendLine(string text)
         {
             _writer.WriteLine(text);
