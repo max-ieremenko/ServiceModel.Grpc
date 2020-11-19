@@ -25,7 +25,7 @@ The solution is built on top of [gRPC C#](https://github.com/grpc/grpc/tree/mast
   - [example](Examples/ProtobufMarshaller) protobuf marshaller
 - [examples](Examples)
 
-## Usage
+## Servicemodel.grpc at a glance
 
 ### Declare a service contract
 

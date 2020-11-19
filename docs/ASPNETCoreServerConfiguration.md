@@ -116,7 +116,7 @@ Type implementationType = currentProvider.GetRequiredService<IMyService>().GetTy
 
 The implementation type is used for service binding.
 
-## Silent proxy generation
+## Silent proxy generation (Reflection.Emit)
 
 In this example SumAsync and Dispose will be ignored during the service binding, use log output to see warnings:
 

@@ -30,7 +30,7 @@ server.Services.AddServiceModelTransient(
 - IServerErrorHandler ErrorHandler; by default is null (error handling by gRPC API)
 - ILogger Logger: by default is null. To setup possible output provided by service binding
 
-## Silent proxy generation
+## Silent proxy generation (Reflection.Emit)
 
 In this example
 
