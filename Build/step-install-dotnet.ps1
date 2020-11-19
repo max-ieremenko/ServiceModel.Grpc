@@ -10,4 +10,4 @@ if (Test-Path $dotnetInstall) {
 
 Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile $dotnetInstall
 
-& $dotnetInstall -Version "5.0.100-rc.2.20464.8" -InstallDir "C:\Program Files\dotnet"
+& $dotnetInstall -Version "5.0.100" -InstallDir "C:\Program Files\dotnet"
