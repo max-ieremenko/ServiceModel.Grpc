@@ -2,12 +2,17 @@
 
 `ServiceModel.Grpc` enables applications to communicate with gRPC services using code-first approach (no .proto files), helps to get around some limitations of gRPC protocol like "only reference types", "exact one input", "no nulls". Helps to migrate existing WCF solution to gRPC with minimum efforts.
 
+The library supports lightweight runtime proxy generation via Reflection.Emit and C# source code generation.
+
+The solution is built on top of [gRPC C#](https://github.com/grpc/grpc/tree/master/src/csharp).
+
 ## Links
 
 - [service and operation names](ServiceAndOperationName.md)
 - [service and operation bindings](ServiceAndOperationBinding.md)
 - [client configuration](ClientConfiguration.md)
 - [client code generation](client-code-generation.md)
+- [server code generation](server-code-generation.md)
 - [ASP.NET Core server configuration](ASPNETCoreServerConfiguration.md)
 - [Grpc.Core server configuration](GrpcCoreServerConfiguration.md)
 - error handler general [information](error-handling-general.md)

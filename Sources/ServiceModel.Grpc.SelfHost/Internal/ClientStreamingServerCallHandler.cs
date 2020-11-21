@@ -25,20 +25,15 @@ namespace ServiceModel.Grpc.SelfHost.Internal
         where TResponse : class
     {
         private readonly Func<TService> _serviceFactory;
-        private readonly ClientStreamingServerMethod _invoker;
+        private readonly Func<TService, IAsyncStreamReader<TRequest>, ServerCallContext, Task<TResponse>> _invoker;
 
         public ClientStreamingServerCallHandler(
             Func<TService> serviceFactory,
-            ClientStreamingServerMethod invoker)
+            Func<TService, IAsyncStreamReader<TRequest>, ServerCallContext, Task<TResponse>> invoker)
         {
             _serviceFactory = serviceFactory;
             _invoker = invoker;
         }
-
-        internal delegate Task<TResponse> ClientStreamingServerMethod(
-            TService service,
-            IAsyncStreamReader<TRequest> requestStream,
-            ServerCallContext context);
 
         public Task<TResponse> Handle(IAsyncStreamReader<TRequest> requestStream, ServerCallContext context)
         {

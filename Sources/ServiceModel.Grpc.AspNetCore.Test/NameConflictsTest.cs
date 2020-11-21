@@ -17,6 +17,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using NUnit.Framework;
+using ServiceModel.Grpc.AspNetCore.TestApi;
 using Shouldly;
 
 namespace ServiceModel.Grpc.AspNetCore
@@ -30,12 +31,12 @@ namespace ServiceModel.Grpc.AspNetCore
         [OneTimeSetUp]
         public async Task BeforeAll()
         {
-            _host = new KestrelHost();
-
-            await _host.StartAsync(configureEndpoints: endpoints =>
-            {
-                endpoints.MapGrpcService<Calculator>();
-            });
+            _host = await new KestrelHost()
+                .ConfigureEndpoints(endpoints =>
+                {
+                    endpoints.MapGrpcService<Calculator>();
+                })
+                .StartAsync();
 
             _calculator = _host.ClientFactory.CreateClient<ICalculator>(_host.Channel);
         }

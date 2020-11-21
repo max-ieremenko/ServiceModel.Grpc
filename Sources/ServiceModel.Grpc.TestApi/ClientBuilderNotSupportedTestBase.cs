@@ -63,7 +63,7 @@ namespace ServiceModel.Grpc.TestApi
             var ex = Assert.Throws<NotSupportedException>(() => _contract.Dispose());
             Console.WriteLine(ex.Message);
 
-            ex.Message.ShouldContain(typeof(IDisposable).FullName);
+            ex.Message.ShouldContain(typeof(IDisposable).FullName!);
         }
     }
 }

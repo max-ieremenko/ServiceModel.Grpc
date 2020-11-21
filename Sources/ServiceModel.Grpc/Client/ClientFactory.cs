@@ -31,7 +31,7 @@ namespace ServiceModel.Grpc.Client
     public sealed class ClientFactory : IClientFactory
     {
         private readonly object _syncRoot;
-        private readonly IGenerator? _generator;
+        private readonly IEmitGenerator? _generator;
         private readonly ServiceModelGrpcClientOptions? _defaultOptions;
         private readonly IDictionary<Type, object> _builderByContract;
         private readonly IDictionary<Type, Interceptor> _interceptorByContract;
@@ -45,7 +45,7 @@ namespace ServiceModel.Grpc.Client
         {
         }
 
-        internal ClientFactory(IGenerator? generator, ServiceModelGrpcClientOptions? defaultOptions)
+        internal ClientFactory(IEmitGenerator? generator, ServiceModelGrpcClientOptions? defaultOptions)
         {
             _generator = generator;
             _defaultOptions = defaultOptions;
@@ -126,7 +126,7 @@ namespace ServiceModel.Grpc.Client
             return builder.Build(callInvoker);
         }
 
-        private IGenerator CreateGenerator(ServiceModelGrpcClientOptions clientOptions)
+        private IEmitGenerator CreateGenerator(ServiceModelGrpcClientOptions clientOptions)
         {
             var generator = _generator ?? new EmitGenerator();
             generator.Logger = clientOptions.Logger;

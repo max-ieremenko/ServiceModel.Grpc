@@ -29,13 +29,6 @@
         "netcoreapp3.1",
         "net5.0"
       ]
-    },
-    {
-      "Name": "DesignTime",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "netcoreapp2.1"
-      ]
     }
   ],
   "Licenses": [

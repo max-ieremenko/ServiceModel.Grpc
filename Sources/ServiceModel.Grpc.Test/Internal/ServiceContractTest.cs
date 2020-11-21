@@ -28,6 +28,7 @@ namespace ServiceModel.Grpc.Internal
         [Test]
         [TestCase(typeof(object), false)]
         [TestCase(typeof(NativeGrpcService), true)]
+        [TestCase(typeof(NativeGrpcServiceImplementation), true)]
         public void IsNativeGrpcService(Type serviceType, bool expected)
         {
             ServiceContract.IsNativeGrpcService(serviceType).ShouldBe(expected);

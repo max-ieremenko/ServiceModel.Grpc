@@ -1,12 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CodeGeneration.Roslyn.Tool" Version="0.7.63" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -14,9 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ServiceModel.Grpc.AspNetCore.TestApi\ServiceModel.Grpc.AspNetCore.TestApi.csproj" />
     <ProjectReference Include="..\ServiceModel.Grpc.DesignTime.Generator\ServiceModel.Grpc.DesignTime.Generator.csproj" OutputItemType="CodeGenerationRoslynPlugin" PrivateAssets="all" />
     <ProjectReference Include="..\ServiceModel.Grpc.DesignTime\ServiceModel.Grpc.DesignTime.csproj" />
-    <ProjectReference Include="..\ServiceModel.Grpc.TestApi\ServiceModel.Grpc.TestApi.csproj" />
+    <ProjectReference Include="..\ServiceModel.Grpc.SelfHost\ServiceModel.Grpc.SelfHost.csproj" />
   </ItemGroup>
 
 </Project>

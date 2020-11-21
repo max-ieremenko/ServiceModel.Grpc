@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Grpc.Core" Version="2.31.0" />
-    <PackageReference Include="ServiceModel.Grpc.DesignTime" Version="$(ServiceModelGrpcDesignTimeVersion)" />
+    <PackageReference Include="ServiceModel.Grpc.DesignTime" Version="$(ServiceModelGrpcVersion)" />
   </ItemGroup>
 
   <ItemGroup>

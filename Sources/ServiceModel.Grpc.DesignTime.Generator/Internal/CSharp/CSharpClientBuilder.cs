@@ -16,6 +16,7 @@
 
 using System;
 using Grpc.Core;
+using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
@@ -31,6 +32,8 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
         {
             _contract = contract;
         }
+
+        public override string GetGeneratedMemberName() => _contract.ClientClassName;
 
         protected override void Generate()
         {

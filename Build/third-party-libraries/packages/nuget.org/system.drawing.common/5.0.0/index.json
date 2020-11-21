@@ -1,0 +1,43 @@
+{
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "Core",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp2.1",
+        "netcoreapp3.1",
+        "net461"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.Win32.SystemEvents",
+          "Version": "5.0.0"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT",
+      "Description": null
+    },
+    {
+      "Subject": "repository",
+      "Code": null,
+      "HRef": "git://github.com/dotnet/runtime",
+      "Description": "License should be verified on git://github.com/dotnet/runtime"
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "https://github.com/dotnet/runtime",
+      "Description": "License should be verified on https://github.com/dotnet/runtime"
+    }
+  ]
+}

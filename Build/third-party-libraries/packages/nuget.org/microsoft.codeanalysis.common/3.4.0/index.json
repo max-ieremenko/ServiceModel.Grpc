@@ -21,11 +21,11 @@
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "4.5.2"
+          "Version": "5.0.0"
         },
         {
           "Name": "System.Text.Encoding.CodePages",
-          "Version": "4.5.1"
+          "Version": "5.0.0"
         }
       ]
     }

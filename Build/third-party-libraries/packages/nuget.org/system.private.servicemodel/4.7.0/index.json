@@ -19,11 +19,11 @@
         },
         {
           "Name": "System.Security.Cryptography.Xml",
-          "Version": "4.5.0"
+          "Version": "5.0.0"
         },
         {
           "Name": "System.Security.Principal.Windows",
-          "Version": "4.5.0"
+          "Version": "5.0.0"
         }
       ]
     }

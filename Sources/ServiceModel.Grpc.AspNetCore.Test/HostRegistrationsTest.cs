@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
+using ServiceModel.Grpc.AspNetCore.TestApi;
 using ServiceModel.Grpc.Interceptors;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
@@ -54,7 +55,8 @@ namespace ServiceModel.Grpc.AspNetCore
                         .Where(i => "GlobalErrorHandler".Equals(i.Key, StringComparison.OrdinalIgnoreCase) || "LocalErrorHandler".Equals(i.Key, StringComparison.OrdinalIgnoreCase)));
                 });
 
-            _host = new KestrelHost(configure: options => options.ErrorHandler = clientErrorHandler.Object);
+            _host = new KestrelHost()
+                .ConfigureClientFactory(options => options.ErrorHandler = clientErrorHandler.Object);
 
             var globalErrorHandler = new Mock<IServerErrorHandler>(MockBehavior.Strict);
             globalErrorHandler
@@ -77,8 +79,6 @@ namespace ServiceModel.Grpc.AspNetCore
                     return null;
                 });
             _localErrorHandler = localErrorHandler.Object;
-
-            _domainService = _host.ClientFactory.CreateClient<IErrorService>(_host.Channel);
         }
 
         [TearDown]
@@ -90,15 +90,17 @@ namespace ServiceModel.Grpc.AspNetCore
         [Test]
         public async Task GlobalErrorHandler()
         {
-            await _host.StartAsync(
-                services =>
+            await _host
+                .ConfigureServices(services =>
                 {
                     services.AddServiceModelGrpc(options => options.DefaultErrorHandlerFactory = _ => _globalErrorHandler);
-                },
-                configureEndpoints: endpoints =>
+                })
+                .ConfigureEndpoints(endpoints =>
                 {
                     endpoints.MapGrpcService<ErrorService>();
-                });
+                })
+                .StartAsync();
+            _domainService = _host.ClientFactory.CreateClient<IErrorService>(_host.Channel);
 
             Assert.Throws<RpcException>(() => _domainService.ThrowApplicationException("some message"));
 
@@ -109,15 +111,17 @@ namespace ServiceModel.Grpc.AspNetCore
         [Test]
         public async Task ServiceErrorHandler()
         {
-            await _host.StartAsync(
-                services =>
+            await _host
+                .ConfigureServices(services =>
                 {
                     services.AddServiceModelGrpcServiceOptions<ErrorService>(options => options.ErrorHandlerFactory = _ => _localErrorHandler);
-                },
-                configureEndpoints: endpoints =>
+                })
+                .ConfigureEndpoints(endpoints =>
                 {
                     endpoints.MapGrpcService<ErrorService>();
-                });
+                })
+                .StartAsync();
+            _domainService = _host.ClientFactory.CreateClient<IErrorService>(_host.Channel);
 
             Assert.Throws<RpcException>(() => _domainService.ThrowApplicationException("some message"));
 
@@ -128,16 +132,18 @@ namespace ServiceModel.Grpc.AspNetCore
         [Test]
         public async Task ServiceErrorHandlerViaInterface()
         {
-            await _host.StartAsync(
-                services =>
+            await _host
+                .ConfigureServices(services =>
                 {
                     services.AddTransient<IErrorService, ErrorService>();
                     services.AddServiceModelGrpcServiceOptions<IErrorService>(options => options.ErrorHandlerFactory = _ => _localErrorHandler);
-                },
-                configureEndpoints: endpoints =>
+                })
+                .ConfigureEndpoints(endpoints =>
                 {
                     endpoints.MapGrpcService<IErrorService>();
-                });
+                })
+                .StartAsync();
+            _domainService = _host.ClientFactory.CreateClient<IErrorService>(_host.Channel);
 
             Assert.Throws<RpcException>(() => _domainService.ThrowApplicationException("some message"));
 
@@ -148,16 +154,18 @@ namespace ServiceModel.Grpc.AspNetCore
         [Test]
         public async Task ServiceErrorHandlerOverrideGlobal()
         {
-            await _host.StartAsync(
-                services =>
+            await _host
+                .ConfigureServices(services =>
                 {
                     services.AddServiceModelGrpc(options => options.DefaultErrorHandlerFactory = _ => _globalErrorHandler);
                     services.AddServiceModelGrpcServiceOptions<ErrorService>(options => options.ErrorHandlerFactory = _ => _localErrorHandler);
-                },
-                configureEndpoints: endpoints =>
+                })
+                .ConfigureEndpoints(endpoints =>
                 {
                     endpoints.MapGrpcService<ErrorService>();
-                });
+                })
+                .StartAsync();
+            _domainService = _host.ClientFactory.CreateClient<IErrorService>(_host.Channel);
 
             Assert.Throws<RpcException>(() => _domainService.ThrowApplicationException("some message"));
 

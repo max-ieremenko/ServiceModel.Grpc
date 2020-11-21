@@ -15,13 +15,12 @@
 // </copyright>
 
 using System;
-using Grpc.Core;
-using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.Hosting;
 
 namespace ServiceModel.Grpc.Internal.Emit
 {
-    internal sealed class EmitGenerator : IGenerator
+    internal sealed class EmitGenerator : IEmitGenerator
     {
         public ILogger? Logger { get; set; }
 
@@ -44,18 +43,14 @@ namespace ServiceModel.Grpc.Internal.Emit
             return (IClientBuilder<TContract>)Activator.CreateInstance(clientBuilderType);
         }
 
-        public void BindService(IServiceBinder binder, Type serviceType, IMarshallerFactory marshallerFactory)
+        public IServiceEndpointBinder<TService> GenerateServiceEndpointBinder<TService>(Type? serviceInstanceType)
         {
-            if (!ServiceContract.IsServiceInstanceType(serviceType))
+            if (serviceInstanceType != null && !ServiceContract.IsServiceInstanceType(serviceInstanceType))
             {
-                throw new ArgumentOutOfRangeException(nameof(serviceType));
+                throw new ArgumentOutOfRangeException(nameof(serviceInstanceType));
             }
 
-            if (ServiceContract.IsNativeGrpcService(serviceType))
-            {
-                Logger?.LogDebug("Ignore service {0} binding: native grpc service.", serviceType.FullName);
-                return;
-            }
+            var serviceType = typeof(TService);
 
             ContractDescription description;
             Type contractType;
@@ -63,38 +58,15 @@ namespace ServiceModel.Grpc.Internal.Emit
             lock (ProxyAssembly.SyncRoot)
             {
                 (description, contractType) = GenerateContract(serviceType);
-                channelType = ProxyAssembly.DefaultModule.GetType(ContractDescription.GetServiceClassName(serviceType), false, false)!;
+                channelType = ProxyAssembly.DefaultModule.GetType(ContractDescription.GetEndpointClassName(serviceType), false, false)!;
                 if (channelType == null)
                 {
-                    channelType = GenerateChannel(description, serviceType, contractType);
+                    var serviceBuilder = new EmitServiceEndpointBuilder(description, contractType);
+                    channelType = serviceBuilder.Build(ProxyAssembly.DefaultModule, Logger);
                 }
             }
 
-            var contract = EmitContractBuilder.CreateFactory(contractType)(marshallerFactory);
-            var channelInstance = EmitServiceBuilder.CreateFactory(channelType, contractType)(contract);
-
-            var addMethodGeneric = typeof(EmitGenerator).StaticMethod(nameof(ServiceBinderAddMethod));
-            foreach (var interfaceDescription in description.Services)
-            {
-                foreach (var operation in interfaceDescription.Operations)
-                {
-                    var message = operation.Message;
-
-                    var addMethod = addMethodGeneric
-                        .MakeGenericMethod(message.RequestType, message.ResponseType)
-                        .CreateDelegate<Action<IServiceBinder, object, ServiceCallInfo>>();
-
-                    var callInfo = new ServiceCallInfo(
-                        ReflectionTools.ImplementationOfMethod(serviceType, interfaceDescription.InterfaceType, message.Operation),
-                        channelType.InstanceMethod(operation.OperationName),
-                        channelInstance);
-
-                    var grpcMethodMethod = contractType.InstanceFiled(operation.GrpcMethodName).GetValue(contract);
-
-                    Logger?.LogDebug("Bind service method {0}.{1}.", serviceType.FullName, callInfo.ServiceInstanceMethod.Name);
-                    addMethod(binder, grpcMethodMethod, callInfo);
-                }
-            }
+            return new EmitServiceEndpointBinder<TService>(description, serviceInstanceType, contractType, channelType, Logger);
         }
 
         private static ContractDescription CreateDescription(Type serviceType, ILogger? logger)
@@ -120,61 +92,6 @@ namespace ServiceModel.Grpc.Internal.Emit
             }
 
             return contractDescription;
-        }
-
-        private static void ServiceBinderAddMethod<TRequest, TResponse>(
-            IServiceBinder binder,
-            object grpcMethodMethod,
-            ServiceCallInfo callInfo)
-            where TRequest : class
-            where TResponse : class
-        {
-            var method = (Method<TRequest, TResponse>)grpcMethodMethod;
-
-            switch (method.Type)
-            {
-                case MethodType.Unary:
-                    binder.AddUnaryServerMethod(method, callInfo);
-                    return;
-
-                case MethodType.ClientStreaming:
-                    binder.AddClientStreamingServerMethod(method, callInfo);
-                    return;
-
-                case MethodType.ServerStreaming:
-                    binder.AddServerStreamingServerMethod(method, callInfo);
-                    return;
-
-                case MethodType.DuplexStreaming:
-                    binder.AddDuplexStreamingServerMethod(method, callInfo);
-                    return;
-            }
-
-            throw new NotImplementedException("{0} operation is not implemented.".FormatWith(method.Type));
-        }
-
-        private Type GenerateChannel(ContractDescription description, Type serviceType, Type contractType)
-        {
-            var serviceBuilder = new EmitServiceBuilder(ProxyAssembly.DefaultModule, description.ServiceClassName, contractType);
-
-            foreach (var interfaceDescription in description.Services)
-            {
-                foreach (var operation in interfaceDescription.Operations)
-                {
-                    if (EmitServiceBuilder.IsSupportedContextInput(operation.Message))
-                    {
-                        serviceBuilder.BuildOperation(operation, interfaceDescription.InterfaceType);
-                    }
-                    else
-                    {
-                        var error = "Context options in [{0}] are not supported.".FormatWith(ReflectionTools.GetSignature(operation.Message.Operation));
-                        Logger?.LogError("Service {0}: {1}", serviceType.FullName, error);
-                        serviceBuilder.BuildNotSupportedOperation(operation, interfaceDescription.InterfaceType, error);
-                    }
-                }
-            }
-
-            return serviceBuilder.BuildType();
         }
 
         private (ContractDescription Description, Type ContractType) GenerateContract(Type serviceType)

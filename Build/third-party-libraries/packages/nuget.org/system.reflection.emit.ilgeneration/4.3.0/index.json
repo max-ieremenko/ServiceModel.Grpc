@@ -5,15 +5,6 @@
   },
   "UsedBy": [
     {
-      "Name": "Core",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "netcoreapp2.1",
-        "netcoreapp3.1",
-        "net461"
-      ]
-    },
-    {
       "Name": "ProtoBuf",
       "InternalOnly": false,
       "TargetFrameworks": [

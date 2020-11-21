@@ -14,6 +14,10 @@
 // limitations under the License.
 // </copyright>
 
+using System.Collections.Generic;
+using ServiceModel.Grpc.Client;
+using ServiceModel.Grpc.Internal;
+
 namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
 {
     internal sealed class CSharpClientBuilderBuilder : CodeGeneratorBase
@@ -23,6 +27,14 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
         public CSharpClientBuilderBuilder(ContractDescription contract)
         {
             _contract = contract;
+        }
+
+        public override string GetGeneratedMemberName() => _contract.ClientBuilderClassName;
+
+        public override IEnumerable<string> GetUsing()
+        {
+            yield return typeof(IClientFactory).Namespace;
+            yield return typeof(CallOptionsBuilder).Namespace;
         }
 
         protected override void Generate()

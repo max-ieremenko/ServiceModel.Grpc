@@ -38,5 +38,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Gets or sets a factory for server call error handler.
         /// </summary>
         public Func<IServiceProvider, IServerErrorHandler>? ErrorHandlerFactory { get; set; }
+
+        internal Type? EndpointBinderType { get; set; }
     }
 }

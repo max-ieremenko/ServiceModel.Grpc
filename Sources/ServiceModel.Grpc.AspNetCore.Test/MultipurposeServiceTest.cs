@@ -17,6 +17,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using NUnit.Framework;
+using ServiceModel.Grpc.AspNetCore.TestApi;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
@@ -32,16 +33,15 @@ namespace ServiceModel.Grpc.AspNetCore
         [OneTimeSetUp]
         public async Task BeforeAll()
         {
-            _host = new KestrelHost();
-
-            await _host.StartAsync(configureEndpoints: endpoints =>
-            {
-                endpoints.MapGrpcService<GreeterService>();
-                endpoints.MapGrpcService<MultipurposeService>();
-            });
+            _host = await new KestrelHost()
+                .ConfigureEndpoints(endpoints =>
+                {
+                    endpoints.MapGrpcService<GreeterService>();
+                    endpoints.MapGrpcService<MultipurposeService>();
+                })
+                .StartAsync();
 
             DomainService = _host.ClientFactory.CreateClient<IMultipurposeService>(_host.Channel);
-
             _greeterService = new Greeter.GreeterClient(_host.Channel);
         }
 

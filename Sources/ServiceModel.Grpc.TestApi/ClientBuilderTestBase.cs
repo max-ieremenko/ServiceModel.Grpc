@@ -424,8 +424,8 @@ namespace ServiceModel.Grpc.TestApi
                 options =>
                 {
                     var values = CompatibilityTools.GetMethodInputFromHeader<int, string>(DataContractMarshallerFactory.Default, options.Headers);
-                    values.Item1.ShouldBe(2);
-                    values.Item2.ShouldBe("sum-");
+                    values.Value1.ShouldBe(2);
+                    values.Value2.ShouldBe("sum-");
                 });
 
             await Factory().ClientStreamingHeaderParameters(new[] { 1, 2 }.AsAsyncEnumerable(), 2, "sum-");
@@ -569,8 +569,8 @@ namespace ServiceModel.Grpc.TestApi
                 options =>
                 {
                     var header = CompatibilityTools.GetMethodInputFromHeader<int, string>(DataContractMarshallerFactory.Default, options.Headers);
-                    header.Item1.ShouldBe(1);
-                    header.Item2.ShouldBe("prefix-");
+                    header.Value1.ShouldBe(1);
+                    header.Value2.ShouldBe("prefix-");
                 });
 
             var actual = Factory().DuplexStreamingHeaderParameters(new[] { 1, 2 }.AsAsyncEnumerable(), 1, "prefix-");

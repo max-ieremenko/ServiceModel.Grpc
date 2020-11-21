@@ -28,15 +28,13 @@ Remarks
 no remarks
 
 
-Dependencies 6
+Dependencies 4
 -----------
 
 |Name|Version|
 |----------|:----|
 |[System.Linq](../../../../packages/nuget.org/system.linq/4.3.0)|4.3.0|
 |[System.ObjectModel](../../../../packages/nuget.org/system.objectmodel/4.3.0)|4.3.0|
-|[System.Reflection.Emit.ILGeneration](../../../../packages/nuget.org/system.reflection.emit.ilgeneration/4.3.0)|4.3.0|
-|[System.Reflection.Emit.Lightweight](../../../../packages/nuget.org/system.reflection.emit.lightweight/4.3.0)|4.3.0|
 |[System.Reflection.TypeExtensions](../../../../packages/nuget.org/system.reflection.typeextensions/4.3.0)|4.3.0|
 |[System.Threading](../../../../packages/nuget.org/system.threading/4.3.0)|4.3.0|
 

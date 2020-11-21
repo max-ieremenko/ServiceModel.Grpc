@@ -45,6 +45,10 @@ namespace ServiceModel.Grpc.Internal
             public static void BindService() => throw new NotImplementedException();
         }
 
+        public sealed class NativeGrpcServiceImplementation : NativeGrpcService
+        {
+        }
+
         [DataContract(Name = "Some-Data")]
         public sealed class SomeData
         {

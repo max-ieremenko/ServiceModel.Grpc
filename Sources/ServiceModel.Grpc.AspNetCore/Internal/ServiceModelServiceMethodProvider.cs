@@ -20,7 +20,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Hosting;
 using ServiceModel.Grpc.Internal;
+using ServiceModel.Grpc.Internal.Emit;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal
 {
@@ -51,14 +53,17 @@ namespace ServiceModel.Grpc.AspNetCore.Internal
 
         public void OnServiceMethodDiscovery(ServiceMethodProviderContext<TService> context)
         {
-            var serviceInstanceType = GetServiceInstanceType();
+            var serviceType = typeof(TService);
+            if (ServiceContract.IsNativeGrpcService(serviceType))
+            {
+                _logger.LogDebug("Ignore service {0} binding: native grpc service.", serviceType.FullName);
+                return;
+            }
 
             var marshallerFactory = (_serviceConfiguration.MarshallerFactory ?? _rootConfiguration.DefaultMarshallerFactory).ThisOrDefault();
+            var serviceBinder = new AspNetCoreServiceMethodBinder<TService>(context, marshallerFactory);
 
-            var log = new LogAdapter(_logger);
-
-            var factory = new AspNetCoreGrpcServiceFactory<TService>(log, context, serviceInstanceType, marshallerFactory);
-            factory.Bind();
+            CreateEndpointBinder().Bind(serviceBinder);
         }
 
         internal Type GetServiceInstanceType()
@@ -79,6 +84,16 @@ namespace ServiceModel.Grpc.AspNetCore.Internal
                     "A gRPC service binding is registered via {0}. Failed to resolve the implementation: {1}.".FormatWith(serviceInstanceType.GetShortAssemblyQualifiedName(), ex.Message),
                     ex);
             }
+        }
+
+        private IServiceEndpointBinder<TService> CreateEndpointBinder()
+        {
+            if (_serviceConfiguration.EndpointBinderType == null)
+            {
+                return new EmitGenerator { Logger = new LogAdapter(_logger) }.GenerateServiceEndpointBinder<TService>(GetServiceInstanceType());
+            }
+
+            return (IServiceEndpointBinder<TService>)Activator.CreateInstance(_serviceConfiguration.EndpointBinderType)!;
         }
     }
 }

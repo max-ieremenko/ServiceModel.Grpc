@@ -67,7 +67,7 @@ DefaultClientFactory.AddMyContractClient(options =>
 
 `CreateClient` creates an new instance of a specific client with previously assigned configuration.
 
-## Silent proxy generation
+## Silent proxy generation (Reflection.Emit)
 
 In this example
 

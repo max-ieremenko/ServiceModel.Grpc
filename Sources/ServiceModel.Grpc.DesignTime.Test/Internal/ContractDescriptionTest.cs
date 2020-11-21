@@ -74,6 +74,8 @@ namespace ServiceModel.Grpc.DesignTime.Internal
             sut.ClientClassName.ShouldBe("CalculatorSome_ValueClient");
             sut.ClientBuilderClassName.ShouldBe("CalculatorSome_ValueClientBuilder");
             sut.ContractClassName.ShouldBe("CalculatorSome_ValueContract");
+            sut.EndpointClassName.ShouldBe("CalculatorSome_ValueEndpoint");
+            sut.EndpointBinderClassName.ShouldBe("CalculatorSome_ValueEndpointBinder");
 
             sut.Interfaces.Count.ShouldBe(0);
             sut.Services.Count.ShouldBe(2);

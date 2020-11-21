@@ -22,6 +22,7 @@ using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Interceptors;
 using ServiceModel.Grpc.Interceptors.Internal;
 using ServiceModel.Grpc.Internal;
+using ServiceModel.Grpc.Internal.Emit;
 using ServiceModel.Grpc.TestApi;
 using Shouldly;
 
@@ -35,7 +36,7 @@ namespace ServiceModel.Grpc.Client
         private Mock<CallInvoker> _callInvoker = null!;
         private IClientErrorHandler _globalErrorHandler = null!;
         private IClientErrorHandler _localErrorHandler = null!;
-        private Mock<IGenerator> _generator = null!;
+        private Mock<IEmitGenerator> _generator = null!;
         private ClientFactory _sut = null!;
 
         [SetUp]
@@ -50,7 +51,7 @@ namespace ServiceModel.Grpc.Client
             _globalErrorHandler = new Mock<IClientErrorHandler>(MockBehavior.Strict).Object;
             _localErrorHandler = new Mock<IClientErrorHandler>(MockBehavior.Strict).Object;
 
-            _generator = new Mock<IGenerator>(MockBehavior.Strict);
+            _generator = new Mock<IEmitGenerator>(MockBehavior.Strict);
             _generator.SetupProperty(g => g.Logger, null);
             _generator
                 .Setup(g => g.GenerateClientBuilder<IDisposable>())
@@ -155,7 +156,7 @@ namespace ServiceModel.Grpc.Client
 
         [Test]
         [TestCase(typeof(object))] // class
-        [TestCase(typeof(IGenerator))] // not public
+        [TestCase(typeof(IEmitGenerator))] // not public
         public void InvalidContracts(Type contractType)
         {
             var addClient = (Action<Action<ServiceModelGrpcClientOptions>?>)_sut

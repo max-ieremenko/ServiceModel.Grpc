@@ -22,14 +22,6 @@
           "Version": "4.3.0"
         },
         {
-          "Name": "System.Reflection.Emit.ILGeneration",
-          "Version": "4.3.0"
-        },
-        {
-          "Name": "System.Reflection.Emit.Lightweight",
-          "Version": "4.3.0"
-        },
-        {
           "Name": "System.Reflection.TypeExtensions",
           "Version": "4.3.0"
         },

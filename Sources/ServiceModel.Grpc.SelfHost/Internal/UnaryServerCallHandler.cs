@@ -25,20 +25,15 @@ namespace ServiceModel.Grpc.SelfHost.Internal
         where TResponse : class
     {
         private readonly Func<TService> _serviceFactory;
-        private readonly UnaryServerMethod _invoker;
+        private readonly Func<TService, TRequest, ServerCallContext, Task<TResponse>> _invoker;
 
         public UnaryServerCallHandler(
             Func<TService> serviceFactory,
-            UnaryServerMethod invoker)
+            Func<TService, TRequest, ServerCallContext, Task<TResponse>> invoker)
         {
             _serviceFactory = serviceFactory;
             _invoker = invoker;
         }
-
-        internal delegate Task<TResponse> UnaryServerMethod(
-            TService service,
-            TRequest request,
-            ServerCallContext context);
 
         public Task<TResponse> Handle(TRequest request, ServerCallContext context)
         {

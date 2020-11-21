@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.AspNetCore.Builder;
 using NUnit.Framework;
+using ServiceModel.Grpc.AspNetCore.TestApi;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.TestApi;
 using Shouldly;
@@ -35,13 +36,15 @@ namespace ServiceModel.Grpc.AspNetCore
         [OneTimeSetUp]
         public async Task BeforeAll()
         {
-            _grpcHost = new KestrelHost(ProtobufMarshallerFactory.Default);
+            _grpcHost = await new KestrelHost()
+                .ConfigureClientFactory(options => options.MarshallerFactory = ProtobufMarshallerFactory.Default)
+                .ConfigureEndpoints(endpoints => endpoints.MapGrpcService<GreeterService>())
+                .StartAsync();
 
-            await _grpcHost.StartAsync(configureEndpoints: endpoints => endpoints.MapGrpcService<GreeterService>());
-
-            _serviceModelHost = new KestrelHost(ProtobufMarshallerFactory.Default, 8081);
-
-            await _serviceModelHost.StartAsync(configureEndpoints: endpoints => endpoints.MapGrpcService<DomainGreeterService>());
+            _serviceModelHost = await new KestrelHost(8081)
+                .ConfigureClientFactory(options => options.MarshallerFactory = ProtobufMarshallerFactory.Default)
+                .ConfigureEndpoints(endpoints => endpoints.MapGrpcService<DomainGreeterService>())
+                .StartAsync();
         }
 
         [OneTimeTearDown]

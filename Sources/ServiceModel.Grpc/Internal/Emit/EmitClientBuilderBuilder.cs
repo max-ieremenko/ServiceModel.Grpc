@@ -18,6 +18,7 @@ using System;
 using System.Reflection;
 using System.Reflection.Emit;
 using Grpc.Core;
+using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.Configuration;
 
 namespace ServiceModel.Grpc.Internal.Emit

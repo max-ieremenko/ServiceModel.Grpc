@@ -38,7 +38,7 @@ namespace ServiceModel.Grpc.Internal
             ClientClassName = baseClassName + "Client";
             ContractClassName = baseClassName + "Contract";
             ClientBuilderClassName = baseClassName + "ClientBuilder";
-            ServiceClassName = baseClassName + "Service";
+            EndpointClassName = baseClassName + "Endpoint";
         }
 
         public string ClientClassName { get; }
@@ -47,7 +47,7 @@ namespace ServiceModel.Grpc.Internal
 
         public string ClientBuilderClassName { get; }
 
-        public string ServiceClassName { get; }
+        public string EndpointClassName { get; }
 
         public Type ServiceType { get; }
 
@@ -59,7 +59,7 @@ namespace ServiceModel.Grpc.Internal
 
         public static string GetClientBuilderClassName(Type serviceType) => GetClassName(serviceType, "ClientBuilder");
 
-        public static string GetServiceClassName(Type serviceType) => GetClassName(serviceType, "Service");
+        public static string GetEndpointClassName(Type serviceType) => GetClassName(serviceType, "Endpoint");
 
         private static string GetClassName(Type serviceType, string? suffix = null)
         {

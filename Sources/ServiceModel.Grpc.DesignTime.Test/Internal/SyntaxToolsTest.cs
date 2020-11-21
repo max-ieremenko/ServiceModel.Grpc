@@ -36,6 +36,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal
                 references: new[]
                 {
                     MetadataReference.CreateFromFile(typeof(string).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(IDisposable).Assembly.Location),
                     MetadataReference.CreateFromFile(typeof(Task).Assembly.Location),
                     MetadataReference.CreateFromFile(typeof(DisplayNameAttribute).Assembly.Location),
                     MetadataReference.CreateFromFile(typeof(SyntaxToolsTest).Assembly.Location)
@@ -88,6 +89,20 @@ namespace ServiceModel.Grpc.DesignTime.Internal
         }
 
         [Test]
+        public void ExpandClassInterface()
+        {
+            var s1Symbol = Compilation.GetTypeByMetadataName(typeof(S1).FullName);
+            s1Symbol.ShouldNotBeNull();
+
+            var actual = SyntaxTools.ExpandInterface(s1Symbol);
+
+            actual.Count.ShouldBe(2);
+            actual.ShouldNotContain(s1Symbol);
+
+            actual.ShouldContain(Compilation.GetTypeByMetadataName(typeof(I1)));
+        }
+
+        [Test]
         public void GetInstanceMethods()
         {
             var i1Symbol = Compilation.GetTypeByMetadataName(typeof(I1).FullName);
@@ -127,6 +142,28 @@ namespace ServiceModel.Grpc.DesignTime.Internal
             symbol.ShouldNotBeNull();
 
             SyntaxTools.IsAssignableFrom(symbol, expected).ShouldBe(result);
+        }
+
+        [Test]
+        public void GetClassInterfaceImplementation()
+        {
+            var s1Symbol = Compilation.GetTypeByMetadataName(typeof(S1));
+
+            foreach (var method in SyntaxTools.GetInstanceMethods(Compilation.GetTypeByMetadataName(typeof(I1))))
+            {
+                s1Symbol.GetInterfaceImplementation(method).ShouldNotBeNull();
+            }
+        }
+
+        [Test]
+        public void GetInterfaceImplementation()
+        {
+            var i1Symbol = Compilation.GetTypeByMetadataName(typeof(I1));
+
+            foreach (var method in SyntaxTools.GetInstanceMethods(i1Symbol))
+            {
+                i1Symbol.GetInterfaceImplementation(method).ShouldNotBeNull();
+            }
         }
 
         private static IEnumerable<TestCaseData> GetFullNameCases()

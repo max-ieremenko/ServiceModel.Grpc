@@ -29,11 +29,13 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
             _isStaticClass = isStaticClass;
         }
 
+        public override string GetGeneratedMemberName() => "Add" + _contract.ClientClassName;
+
         protected override void Generate()
         {
             Output
-                .Append("public static IClientFactory Add")
-                .Append(_contract.ClientClassName)
+                .Append("public static IClientFactory ")
+                .Append(GetGeneratedMemberName())
                 .Append("(");
 
             if (_isStaticClass)

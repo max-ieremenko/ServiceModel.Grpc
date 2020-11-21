@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.AspNetCore.Builder;
 using NUnit.Framework;
+using ServiceModel.Grpc.AspNetCore.TestApi;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 
@@ -31,12 +32,13 @@ namespace ServiceModel.Grpc.AspNetCore
         [OneTimeSetUp]
         public async Task BeforeAll()
         {
-            _host = new KestrelHost(configure: options => options.DefaultCallOptionsFactory = () => new CallOptions(DefaultMetadata));
-
-            await _host.StartAsync(configureEndpoints: endpoints =>
-            {
-                endpoints.MapGrpcService<HeadersService>();
-            });
+            _host = await new KestrelHost()
+                .ConfigureClientFactory(options => options.DefaultCallOptionsFactory = () => new CallOptions(DefaultMetadata))
+                .ConfigureEndpoints(endpoints =>
+                {
+                    endpoints.MapGrpcService<HeadersService>();
+                })
+                .StartAsync();
 
             DomainService = _host.ClientFactory.CreateClient<IHeadersService>(_host.Channel);
         }

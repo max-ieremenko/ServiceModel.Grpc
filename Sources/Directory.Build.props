@@ -14,8 +14,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DefaultPackageVersion>1.1.4</DefaultPackageVersion>
-    <DesignTimePackageVersion>1.0.1</DesignTimePackageVersion>
+    <DefaultPackageVersion>1.1.5</DefaultPackageVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -38,7 +37,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="StyleCop.Analyzers.Unstable" Version="1.2.0.205">
+    <PackageReference Include="StyleCop.Analyzers.Unstable" Version="1.2.0.261">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
