@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Grpc.Tools</id>
+    <version>2.33.1</version>
+    <authors>The gRPC Authors</authors>
+    <owners>The gRPC Authors</owners>
+    <developmentDependency>true</developmentDependency>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <projectUrl>https://github.com/grpc/grpc</projectUrl>
+    <iconUrl>https://github.com/grpc/grpc.github.io/raw/master/img/grpc_square_reverse_4x.png</iconUrl>
+    <description>gRPC and Protocol Buffer compiler for managed C# and native C++ projects.
+
+Add this package to a project that contains .proto files to be compiled to code.
+It contains the compilers, include files and project system integration for gRPC
+and Protocol buffer service description files necessary to build them on Windows,
+Linux and MacOS. Managed runtime is supplied separately in the Grpc.Core package.</description>
+    <copyright>Copyright 2018 The gRPC Authors</copyright>
+    <tags>gRPC RPC HTTP/2</tags>
+    <repository type="git" url="https://github.com/grpc/grpc.git" commit="054ff69350dfea1876f388e7cf05f19d5d76bc12" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.5" />
+      <group targetFramework=".NETStandard1.3" />
+    </dependencies>
+  </metadata>
+</package>
