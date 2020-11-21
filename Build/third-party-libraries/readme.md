@@ -11,12 +11,6 @@ Licenses
 |[ms-net-library](licenses/ms-net-library)|no|no|30|
 |[MS-PL](licenses/ms-pl)|no|no|4|
 
-TODO 1
---------
-
-|Name|Version|Source|License|Used by|
-|----------|:----|:----|:----|:----|
-|[Google.Protobuf](packages/nuget.org/google.protobuf/3.14.0)|3.14.0|[nuget.org](https://www.nuget.org/packages/Google.Protobuf/3.14.0)|[Google.Protobuf](licenses/google.protobuf)|AspNetCore internal|
 
 
 Packages 98

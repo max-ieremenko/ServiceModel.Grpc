@@ -5,7 +5,7 @@ Used by: AspNetCore internal
 
 Target frameworks: net5.0, netcoreapp3.1
 
-License: [Google.Protobuf](../../../../licenses/google.protobuf) , has to be approved
+License: [Google.Protobuf](../../../../licenses/google.protobuf) 
 
 - package license: [Unknown](https://github.com/protocolbuffers/protobuf/blob/master/LICENSE) , License should be verified on https://github.com/protocolbuffers/protobuf/blob/master/LICENSE
 - repository license: [Unknown](https://github.com/protocolbuffers/protobuf.git) , License should be verified on https://github.com/protocolbuffers/protobuf.git

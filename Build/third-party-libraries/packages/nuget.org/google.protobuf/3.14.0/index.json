@@ -1,7 +1,7 @@
 {
   "License": {
     "Code": "Google.Protobuf",
-    "Status": "HasToBeApproved"
+    "Status": "Approved"
   },
   "UsedBy": [
     {
