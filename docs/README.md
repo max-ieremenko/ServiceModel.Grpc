@@ -4,6 +4,8 @@
 
 The library supports lightweight runtime proxy generation via Reflection.Emit and C# source code generation.
 
+The solution is built on top of [gRPC C#](https://github.com/grpc/grpc/tree/master/src/csharp).
+
 ## Links
 
 - [service and operation names](ServiceAndOperationName.md)
