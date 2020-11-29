@@ -35,7 +35,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal
         {
             _compilation = CSharpCompilation
                 .Create(
-                    nameof(SyntaxToolsTest),
+                    nameof(ServiceContractTest),
                     references: new[]
                     {
                         MetadataReference.CreateFromFile(typeof(string).Assembly.Location),
@@ -72,7 +72,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal
         [TestCase(typeof(I2), nameof(I2.Operation), "Method")]
         public void GetServiceOperationName(Type type, string methodName, string expected)
         {
-            var symbol = _compilation.GetTypeByMetadataName(type.FullName);
+            var symbol = _compilation.GetTypeByMetadataName(type);
             symbol.ShouldNotBeNull();
 
             var method = SyntaxTools.GetInstanceMethods(symbol).First(i => i.Name == methodName);

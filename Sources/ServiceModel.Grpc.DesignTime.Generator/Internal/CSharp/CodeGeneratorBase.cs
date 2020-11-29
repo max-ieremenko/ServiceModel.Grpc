@@ -28,7 +28,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
         public MemberDeclarationSyntax AsMemberDeclaration()
         {
             Generate();
-            return SyntaxFactory.ParseMemberDeclaration(Output.ToString());
+            return SyntaxFactory.ParseMemberDeclaration(Output.ToString())!;
         }
 
         public abstract string GetGeneratedMemberName();

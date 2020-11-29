@@ -47,7 +47,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal
         [TestCase(typeof(SyntaxToolsTest), false)]
         public void IsInterface(Type type, bool expected)
         {
-            var symbol = Compilation.GetTypeByMetadataName(type.FullName);
+            var symbol = Compilation.GetTypeByMetadataName(type);
             symbol.ShouldNotBeNull();
 
             SyntaxTools.IsInterface(symbol).ShouldBe(expected);
@@ -59,10 +59,10 @@ namespace ServiceModel.Grpc.DesignTime.Internal
         [TestCase(typeof(SyntaxToolsTest), typeof(ServiceContractAttribute), false)]
         public void GetCustomAttribute(Type type, Type attributeType, bool expected)
         {
-            var symbol = Compilation.GetTypeByMetadataName(type.FullName);
+            var symbol = Compilation.GetTypeByMetadataName(type);
             symbol.ShouldNotBeNull();
 
-            var actual = SyntaxTools.GetCustomAttribute(symbol, attributeType.FullName);
+            var actual = SyntaxTools.GetCustomAttribute(symbol, attributeType.FullName!);
             if (expected)
             {
                 actual.ShouldNotBeNull();
@@ -76,7 +76,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal
         [Test]
         public void ExpandInterface()
         {
-            var i1Symbol = Compilation.GetTypeByMetadataName(typeof(I1).FullName);
+            var i1Symbol = Compilation.GetTypeByMetadataName(typeof(I1));
             i1Symbol.ShouldNotBeNull();
 
             var actual = SyntaxTools.ExpandInterface(i1Symbol);
@@ -91,7 +91,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal
         [Test]
         public void ExpandClassInterface()
         {
-            var s1Symbol = Compilation.GetTypeByMetadataName(typeof(S1).FullName);
+            var s1Symbol = Compilation.GetTypeByMetadataName(typeof(S1));
             s1Symbol.ShouldNotBeNull();
 
             var actual = SyntaxTools.ExpandInterface(s1Symbol);
@@ -105,7 +105,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal
         [Test]
         public void GetInstanceMethods()
         {
-            var i1Symbol = Compilation.GetTypeByMetadataName(typeof(I1).FullName);
+            var i1Symbol = Compilation.GetTypeByMetadataName(typeof(I1));
             i1Symbol.ShouldNotBeNull();
 
             var methods = SyntaxTools.GetInstanceMethods(i1Symbol).ToList();
@@ -118,7 +118,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal
         [TestCase(typeof(SyntaxToolsTest), "ServiceModel.Grpc.DesignTime.Internal")]
         public void GetNamespace(Type type, string expected)
         {
-            var symbol = Compilation.GetTypeByMetadataName(type.FullName);
+            var symbol = Compilation.GetTypeByMetadataName(type);
             symbol.ShouldNotBeNull();
 
             SyntaxTools.GetNamespace(symbol).ShouldBe(expected);
@@ -138,7 +138,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal
         [TestCase(typeof(I1), typeof(IAliasSymbol), false)]
         public void IsAssignableFrom(Type type, Type expected, bool result)
         {
-            var symbol = Compilation.GetTypeByMetadataName(type.FullName);
+            var symbol = Compilation.GetTypeByMetadataName(type);
             symbol.ShouldNotBeNull();
 
             SyntaxTools.IsAssignableFrom(symbol, expected).ShouldBe(result);
@@ -173,7 +173,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal
 
             foreach (var method in SyntaxTools.GetInstanceMethods(type))
             {
-                var attribute = SyntaxTools.GetCustomAttribute(method, typeof(DisplayNameAttribute).FullName);
+                var attribute = SyntaxTools.GetCustomAttribute(method, typeof(DisplayNameAttribute).FullName!);
                 var expected = (string)attribute!.ConstructorArguments[0].Value!;
                 expected.ShouldNotBeNull();
 

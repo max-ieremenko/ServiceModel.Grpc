@@ -36,15 +36,15 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
 
         public override IEnumerable<string> GetUsing()
         {
-            yield return typeof(IServiceMethodBinder<>).Namespace;
-            yield return typeof(IServiceEndpointBinder<>).Namespace;
+            yield return typeof(IServiceMethodBinder<>).Namespace!;
+            yield return typeof(IServiceEndpointBinder<>).Namespace!;
         }
 
         internal static void WriteNewAttribute(CodeStringBuilder output, AttributeData attribute)
         {
             output
                 .Append("new ")
-                .Append(SyntaxTools.GetFullName(attribute.AttributeClass));
+                .Append(SyntaxTools.GetFullName(attribute.AttributeClass!));
 
             if (attribute.ConstructorArguments.Length == 0 && attribute.NamedArguments.Length == 0)
             {
@@ -96,7 +96,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
         {
             foreach (var attribute in attributes)
             {
-                var ns = SyntaxTools.GetNamespace(attribute.AttributeClass);
+                var ns = SyntaxTools.GetNamespace(attribute.AttributeClass!);
                 if (!string.IsNullOrEmpty(ns)
                     && !ns.StartsWith("System.Runtime.CompilerServices", StringComparison.OrdinalIgnoreCase)
                     && !ns.StartsWith("System.Diagnostics", StringComparison.OrdinalIgnoreCase)

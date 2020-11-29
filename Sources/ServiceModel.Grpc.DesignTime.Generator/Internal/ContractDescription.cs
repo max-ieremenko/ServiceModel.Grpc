@@ -108,7 +108,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal
             catch (NotSupportedException ex)
             {
                 var text = new StringBuilder();
-                Exception e = ex;
+                Exception? e = ex;
                 while (e != null)
                 {
                     if (text.Length > 0)
@@ -235,7 +235,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal
                     && StringComparer.OrdinalIgnoreCase.Equals(_operationName, _operationName);
             }
 
-            public override bool Equals(object obj) => throw new NotSupportedException();
+            public override bool Equals(object? obj) => throw new NotSupportedException();
 
             public override int GetHashCode()
             {

@@ -33,8 +33,8 @@ namespace ServiceModel.Grpc.DesignTime.Internal.CSharp
 
         public override IEnumerable<string> GetUsing()
         {
-            yield return typeof(IClientFactory).Namespace;
-            yield return typeof(CallOptionsBuilder).Namespace;
+            yield return typeof(IClientFactory).Namespace!;
+            yield return typeof(CallOptionsBuilder).Namespace!;
         }
 
         protected override void Generate()

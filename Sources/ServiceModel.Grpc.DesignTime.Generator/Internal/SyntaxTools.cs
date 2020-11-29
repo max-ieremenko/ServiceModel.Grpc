@@ -34,7 +34,9 @@ namespace ServiceModel.Grpc.DesignTime.Internal
 
         public static ICollection<INamedTypeSymbol> ExpandInterface(INamedTypeSymbol type)
         {
+#pragma warning disable RS1024 // Compare symbols correctly
             var result = new HashSet<INamedTypeSymbol>();
+#pragma warning restore RS1024 // Compare symbols correctly
 
             if (IsInterface(type))
             {
@@ -53,7 +55,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal
         {
             foreach (var attribute in owner.GetAttributes())
             {
-                var fullName = GetFullName(attribute.AttributeClass);
+                var fullName = GetFullName(attribute.AttributeClass!);
                 if (string.Equals(attributeTypeFullName, fullName, StringComparison.Ordinal))
                 {
                     return attribute;
@@ -255,7 +257,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal
 
             if (expected.IsGenericType)
             {
-                if (!expected.Name.AsSpan(0, expected.Name.IndexOf('`')).Equals(type.Name, StringComparison.OrdinalIgnoreCase))
+                if (!expected.Name.AsSpan(0, expected.Name.IndexOf('`')).Equals(type.Name.AsSpan(), StringComparison.OrdinalIgnoreCase))
                 {
                     return false;
                 }

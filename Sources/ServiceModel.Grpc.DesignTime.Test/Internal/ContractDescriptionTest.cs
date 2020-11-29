@@ -34,7 +34,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal
         {
             _compilation = CSharpCompilation
                 .Create(
-                    nameof(SyntaxToolsTest),
+                    nameof(ContractDescriptionTest),
                     references: new[]
                     {
                         MetadataReference.CreateFromFile(typeof(string).Assembly.Location),

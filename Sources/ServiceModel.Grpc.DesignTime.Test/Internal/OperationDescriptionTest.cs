@@ -31,7 +31,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal
     {
         private static readonly Compilation Compilation = CSharpCompilation
             .Create(
-                nameof(SyntaxToolsTest),
+                nameof(OperationDescriptionTest),
                 options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary),
                 references: new[]
                 {
@@ -42,7 +42,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal
 
         [Test]
         [TestCaseSource(nameof(GetResponseTypeCases))]
-        public void ResponseType(IMethodSymbol method, string className, string valueTypeName)
+        public void ResponseType(IMethodSymbol method, string className, string? valueTypeName)
         {
             var actual = new OperationDescription(method, "s1");
 
@@ -127,12 +127,12 @@ namespace ServiceModel.Grpc.DesignTime.Internal
 
         private static IEnumerable<TestCaseData> GetResponseTypeCases()
         {
-            var type = Compilation.GetTypeByMetadataName(typeof(ResponseTypeCases).FullName);
+            var type = Compilation.GetTypeByMetadataName(typeof(ResponseTypeCases));
             type.ShouldNotBeNull();
 
             foreach (var method in SyntaxTools.GetInstanceMethods(type))
             {
-                var description = method.GetAttributes().First(i => i.AttributeClass.Name == nameof(ResponseTypeAttribute));
+                var description = method.GetAttributes().First(i => i.AttributeClass!.Name == nameof(ResponseTypeAttribute));
 
                 yield return new TestCaseData(
                     method,
@@ -143,13 +143,13 @@ namespace ServiceModel.Grpc.DesignTime.Internal
 
         private static IEnumerable<TestCaseData> GetRequestTypeCases()
         {
-            var type = Compilation.GetTypeByMetadataName(typeof(RequestTypeCases).FullName);
+            var type = Compilation.GetTypeByMetadataName(typeof(RequestTypeCases));
             type.ShouldNotBeNull();
 
             foreach (var method in SyntaxTools.GetInstanceMethods(type))
             {
-                var request = method.GetAttributes().First(i => i.AttributeClass.Name == nameof(RequestTypeAttribute));
-                var headerRequest = method.GetAttributes().FirstOrDefault(i => i.AttributeClass.Name == nameof(HeaderRequestTypeAttribute));
+                var request = method.GetAttributes().First(i => i.AttributeClass!.Name == nameof(RequestTypeAttribute));
+                var headerRequest = method.GetAttributes().FirstOrDefault(i => i.AttributeClass!.Name == nameof(HeaderRequestTypeAttribute));
 
                 yield return new TestCaseData(
                     method,
@@ -164,12 +164,12 @@ namespace ServiceModel.Grpc.DesignTime.Internal
 
         private static IEnumerable<TestCaseData> GetContextInputCases()
         {
-            var type = Compilation.GetTypeByMetadataName(typeof(ContextInputCases).FullName);
+            var type = Compilation.GetTypeByMetadataName(typeof(ContextInputCases));
             type.ShouldNotBeNull();
 
             foreach (var method in SyntaxTools.GetInstanceMethods(type))
             {
-                var description = method.GetAttributes().First(i => i.AttributeClass.Name == nameof(ContextInputAttribute));
+                var description = method.GetAttributes().First(i => i.AttributeClass!.Name == nameof(ContextInputAttribute));
 
                 yield return new TestCaseData(
                     method,
@@ -179,7 +179,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal
 
         private static IEnumerable<TestCaseData> GetNotSupportedResponseTypeCases()
         {
-            var type = Compilation.GetTypeByMetadataName(typeof(NotSupportedResponseTypeCases).FullName);
+            var type = Compilation.GetTypeByMetadataName(typeof(NotSupportedResponseTypeCases));
             type.ShouldNotBeNull();
 
             foreach (var method in SyntaxTools.GetInstanceMethods(type))
@@ -190,7 +190,7 @@ namespace ServiceModel.Grpc.DesignTime.Internal
 
         private static IEnumerable<TestCaseData> GetNotSupportedParametersCases()
         {
-            var type = Compilation.GetTypeByMetadataName(typeof(NotSupportedParametersCases).FullName);
+            var type = Compilation.GetTypeByMetadataName(typeof(NotSupportedParametersCases));
             type.ShouldNotBeNull();
 
             foreach (var method in SyntaxTools.GetInstanceMethods(type))
@@ -201,12 +201,12 @@ namespace ServiceModel.Grpc.DesignTime.Internal
 
         private static IEnumerable<TestCaseData> GetOperationTypeCases()
         {
-            var type = Compilation.GetTypeByMetadataName(typeof(OperationTypeCases).FullName);
+            var type = Compilation.GetTypeByMetadataName(typeof(OperationTypeCases));
             type.ShouldNotBeNull();
 
             foreach (var method in SyntaxTools.GetInstanceMethods(type))
             {
-                var description = method.GetAttributes().First(i => i.AttributeClass.Name == nameof(OperationTypeAttribute));
+                var description = method.GetAttributes().First(i => i.AttributeClass!.Name == nameof(OperationTypeAttribute));
                 var methodType = (string)description.ConstructorArguments[0].Value!;
 
                 yield return new TestCaseData(
