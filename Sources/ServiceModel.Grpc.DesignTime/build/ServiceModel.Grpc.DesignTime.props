@@ -1,0 +1,25 @@
+<Project>
+
+  <PropertyGroup>
+    <ServiceModelGrpcDesignTime_DesignTime Condition="'$(DesignTimeBuild)' == 'true' or '$(BuildingProject)' != 'true'">true</ServiceModelGrpcDesignTime_DesignTime>
+    <ServiceModelGrpcDesignTime_LaunchDebugger>false</ServiceModelGrpcDesignTime_LaunchDebugger>
+    <ServiceModelGrpcDesignTime_CsExtension>.smgrpcdtg.cs</ServiceModelGrpcDesignTime_CsExtension>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- workaround intellisense issue: https://github.com/dotnet/roslyn/issues/44093 -->
+    <Compile Include="$(IntermediateOutputPath)*$(ServiceModelGrpcDesignTime_CsExtension)"
+             Condition="'$(DesignTimeBuild)' == 'true'"
+             Link="%(Filename)%(Extension)"
+             Visible="false"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <CompilerVisibleProperty Include="IntermediateOutputPath" />
+    <CompilerVisibleProperty Include="ProjectDir" />
+    <CompilerVisibleProperty Include="ServiceModelGrpcDesignTime_DesignTime" />
+    <CompilerVisibleProperty Include="ServiceModelGrpcDesignTime_LaunchDebugger" />
+    <CompilerVisibleProperty Include="ServiceModelGrpcDesignTime_CsExtension" />
+  </ItemGroup>
+
+</Project>
