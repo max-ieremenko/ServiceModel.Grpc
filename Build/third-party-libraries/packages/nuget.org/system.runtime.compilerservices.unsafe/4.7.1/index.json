@@ -1,0 +1,29 @@
+{
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "DesignTime",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "netstandard2.0"
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT",
+      "Description": null
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "https://github.com/dotnet/corefx",
+      "Description": "License should be verified on https://github.com/dotnet/corefx"
+    }
+  ]
+}

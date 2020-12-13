@@ -1,9 +1,9 @@
 System.Reflection.Metadata [1.6.0](https://www.nuget.org/packages/System.Reflection.Metadata/1.6.0)
 --------------------
 
-Used by: DesignTime internal
+Used by: AspNetCore internal, Core internal, DesignTime internal, SelfHost internal
 
-Target frameworks: netcoreapp2.1
+Target frameworks: net461, net5.0, netcoreapp2.1, netcoreapp3.1
 
 License: [MIT](../../../../licenses/mit) 
 

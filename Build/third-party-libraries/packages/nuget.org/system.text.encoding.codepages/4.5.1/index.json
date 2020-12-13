@@ -1,0 +1,35 @@
+{
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "DesignTime",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "netstandard2.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Runtime.CompilerServices.Unsafe",
+          "Version": "4.7.1"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT",
+      "Description": null
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "https://dot.net/",
+      "Description": "License should be verified on https://dot.net/"
+    }
+  ]
+}

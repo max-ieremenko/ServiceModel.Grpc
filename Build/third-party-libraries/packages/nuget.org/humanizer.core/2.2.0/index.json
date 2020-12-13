@@ -1,0 +1,35 @@
+{
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "DesignTime",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "netstandard2.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "NETStandard.Library",
+          "Version": "2.0.3"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": null,
+      "HRef": "https://raw.githubusercontent.com/Humanizr/Humanizer/master/LICENSE",
+      "Description": "License should be verified on https://raw.githubusercontent.com/Humanizr/Humanizer/master/LICENSE"
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "https://github.com/Humanizr/Humanizer",
+      "Description": "License should be verified on https://github.com/Humanizr/Humanizer"
+    }
+  ]
+}

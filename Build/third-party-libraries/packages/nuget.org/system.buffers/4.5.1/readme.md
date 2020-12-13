@@ -1,9 +1,9 @@
 System.Buffers [4.5.1](https://www.nuget.org/packages/System.Buffers/4.5.1)
 --------------------
 
-Used by: Core internal
+Used by: Core internal, DesignTime
 
-Target frameworks: net461, netcoreapp2.1, netcoreapp3.1
+Target frameworks: net461, netcoreapp2.1, netcoreapp3.1, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 

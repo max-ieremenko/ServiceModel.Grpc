@@ -23,13 +23,6 @@
         "net5.0",
         "net461"
       ]
-    },
-    {
-      "Name": "DesignTime",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "netcoreapp2.1"
-      ]
     }
   ],
   "Licenses": [
