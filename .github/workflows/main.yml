@@ -29,14 +29,6 @@ jobs:
       shell: pwsh
       run: dotnet --info
 
-    - name: Install net5.0
-      shell: pwsh
-      run: .\Build\step-install-dotnet.ps1
-
-    - name: Dotnet info
-      shell: pwsh
-      run: dotnet --info
-
     - name: Install ThirdPartyLibraries
       shell: cmd
       run: dotnet tool install --global ThirdPartyLibraries.GlobalTool
