@@ -35,11 +35,8 @@ clientFactory.CreateClient<IMyContract>(...);
 
 To enable source code generation:
 
-- make sure [the .NET Core SDK 2.1+](https://dotnet.microsoft.com/download/dotnet-core/2.1) is installed
+- make sure [.NET 5.0 SDK](https://dotnet.microsoft.com/download/dotnet/5.0) is installed
 - add reference to the package [ServiceModel.Grpc.DesignTime](https://www.nuget.org/packages/ServiceModel.Grpc.DesignTime)
-
-> ServiceModel.Grpc.DesignTime uses [CodeGeneration.Roslyn](https://github.com/AArnott/CodeGeneration.Roslyn), which requires [the .NET Core SDK 2.1+](https://dotnet.microsoft.com/download/dotnet-core/2.1).
-
 - create a static partial class, the name doesn't matter
 - the class is a placeholder for generated source code
 - configure which proxies have to be generated via `ImportGrpcServiceAttribute`

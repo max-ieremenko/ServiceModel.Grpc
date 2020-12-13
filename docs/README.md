@@ -101,7 +101,7 @@ var greeter = clientFactory.CreateClient<IGreeter>(channel);
 var greet = await greeter.SayHello(new Person { FirstName = "John", SecondName = "X" });
 ```
 
-> ServiceModel.Grpc.DesignTime uses [CodeGeneration.Roslyn](https://github.com/AArnott/CodeGeneration.Roslyn), which requires [the .NET Core SDK 2.1+](https://dotnet.microsoft.com/download/dotnet-core/2.1).
+> ServiceModel.Grpc.DesignTime uses roslyn [source generators](https://github.com/dotnet/roslyn/blob/master/docs/features/source-generators.md), which requires [net5.0 sdk](https://dotnet.microsoft.com/download/dotnet/5.0).
 
 ### Implement a service
 
