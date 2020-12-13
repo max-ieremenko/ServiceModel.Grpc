@@ -12,7 +12,7 @@ install [psake](https://www.powershellgallery.com/packages/psake)
 PS> Install-Module -Name psake
 ```
 
-install [net5.0](https://dotnet.microsoft.com/download/dotnet/5.0)
+install [net5.0 sdk](https://dotnet.microsoft.com/download/dotnet/5.0)
 
 install ThirdPartyLibraries
 

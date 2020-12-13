@@ -30,15 +30,6 @@ dotnet pack `
     -p:RepositoryCommit=$repositoryCommitId `
     -o $binDir `
     $projectFile
-Update-DesignTimePackage $binDir
-
-$projectFile = Join-Path $sourceDir "ServiceModel.Grpc.DesignTime.Generator\ServiceModel.Grpc.DesignTime.Generator.csproj"
-dotnet pack `
-    -c Release `
-    --no-build `
-    -p:RepositoryCommit=$repositoryCommitId `
-    -o $binDir `
-    $projectFile
 
 # ServiceModel.Grpc.SelfHost
 $projectFile = Join-Path $sourceDir "ServiceModel.Grpc.SelfHost\ServiceModel.Grpc.SelfHost.csproj"
@@ -51,7 +42,6 @@ dotnet pack `
 
 # ServiceModel.Grpc.ProtoBufMarshaller
 $projectFile = Join-Path $sourceDir "ServiceModel.Grpc.ProtoBufMarshaller\ServiceModel.Grpc.ProtoBufMarshaller.csproj"
-
 dotnet pack `
     -c Release `
     --no-build `

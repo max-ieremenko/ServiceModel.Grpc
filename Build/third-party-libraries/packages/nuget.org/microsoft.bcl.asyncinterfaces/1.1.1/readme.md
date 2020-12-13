@@ -1,7 +1,7 @@
 Microsoft.Bcl.AsyncInterfaces [1.1.1](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/1.1.1)
 --------------------
 
-Used by: Core
+Used by: Core, DesignTime
 
 Target frameworks: net461, netstandard2.0, netstandard2.1
 

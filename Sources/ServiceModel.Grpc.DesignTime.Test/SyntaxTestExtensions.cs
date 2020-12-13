@@ -30,9 +30,9 @@ namespace ServiceModel.Grpc.DesignTime
         private static ITypeSymbol GetTypeByMetadataNameCore(Compilation compilation, Type metadata)
         {
             ITypeSymbol? symbol;
-            if (metadata.IsGenericType)
+            if (metadata.IsGenericType && !metadata.IsGenericTypeDefinition)
             {
-                var unbound = compilation.GetTypeByMetadataName(metadata.GetGenericTypeDefinition().FullName);
+                var unbound = compilation.GetTypeByMetadataName(metadata.GetGenericTypeDefinition());
                 var unboundArgs = metadata.GetGenericArguments();
 
                 var args = new ITypeSymbol[unboundArgs.Length];
@@ -51,7 +51,7 @@ namespace ServiceModel.Grpc.DesignTime
             }
             else
             {
-                symbol = compilation.GetTypeByMetadataName(metadata.FullName);
+                symbol = compilation.GetTypeByMetadataName(metadata.FullName!);
             }
 
             symbol.ShouldNotBeNull();

@@ -3,7 +3,7 @@ System.Text.Encoding.CodePages [5.0.0](https://www.nuget.org/packages/System.Tex
 
 Used by: DesignTime internal
 
-Target frameworks: netcoreapp2.1
+Target frameworks: netcoreapp3.1
 
 License: [MIT](../../../../licenses/mit) 
 

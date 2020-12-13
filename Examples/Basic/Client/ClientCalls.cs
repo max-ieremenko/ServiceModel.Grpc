@@ -180,7 +180,7 @@ namespace Client
 
                 try
                 {
-                    await foreach (var person in response)
+                    await foreach (var person in response.WithCancellation(cancellationTokenSource.Token))
                     {
                         persons.Add(person);
                     }

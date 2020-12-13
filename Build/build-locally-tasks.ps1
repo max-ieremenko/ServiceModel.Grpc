@@ -1,4 +1,4 @@
-Task default -Depends Clean, Build, ThirdPartyNotices, UnitTest, Pack, PackTest
+Task default -Depends Clean, Build, ThirdPartyNotices, UnitTest, Pack, PackTest, SdkTest
 Task UnitTest -Depends UnitTest461, UnitTestCore21, UnitTestCore31, UnitTestNet50
 
 Task Clean {
@@ -38,4 +38,8 @@ Task Pack {
 
 Task PackTest {
     Exec { .\step-pack-test.ps1 }
+}
+
+Task SdkTest {
+    Exec { .\step-sdk-test.ps1 }
 }

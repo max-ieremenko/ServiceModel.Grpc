@@ -11,7 +11,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CodeGeneration.Roslyn.Attributes" Version="0.7.63" />
+    <PackageReference Include="Grpc.Core.Api" Version="2.34.0" GeneratePathProperty="true" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.8.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -22,8 +24,18 @@
     <ProjectReference Include="..\ServiceModel.Grpc\ServiceModel.Grpc.csproj" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <!-- https://github.com/dotnet/roslyn/discussions/47517#discussioncomment-64145 -->
+    <Copy SourceFiles="$(PKGGrpc_Core_Api)\lib\netstandard2.0\Grpc.Core.Api.dll" DestinationFolder="$(OutDir)dependencies" />
+    <Copy SourceFiles="$(OutDir)ServiceModel.Grpc.dll" DestinationFolder="$(OutDir)dependencies" />
+  </Target>
+
   <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">
     <Content Include="..\..\LICENSE" PackagePath="" />
     <Content Include="..\..\build-out\DesignTimeThirdPartyNotices.txt" PackagePath="ThirdPartyNotices.txt" />
+    <None Include="build\ServiceModel.Grpc.DesignTime.props" Pack="true" PackagePath="build/ServiceModel.Grpc.DesignTime.props" />
+    <Content Include="$(TargetPath)" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <Content Include="$(OutDir)dependencies\*" PackagePath="build/dependencies" Visible="false" />
   </ItemGroup>
+
 </Project>

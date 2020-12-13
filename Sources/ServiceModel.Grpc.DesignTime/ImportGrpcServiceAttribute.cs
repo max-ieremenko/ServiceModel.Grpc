@@ -16,7 +16,6 @@
 
 using System;
 using System.Diagnostics;
-using CodeGeneration.Roslyn;
 
 namespace ServiceModel.Grpc.DesignTime
 {
@@ -24,7 +23,6 @@ namespace ServiceModel.Grpc.DesignTime
     /// A marker to generate the source code for client service proxy.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    [CodeGenerationAttribute("ServiceModel.Grpc.DesignTime.CSharpClientCodeGenerator, ServiceModel.Grpc.DesignTime.Generator")]
     [Conditional("CodeGeneration")]
     public sealed class ImportGrpcServiceAttribute : Attribute
     {
