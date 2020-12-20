@@ -95,13 +95,13 @@ namespace ServiceModel.Grpc.Hosting
 
         internal static async Task<Message> UnaryCallWaitTask(Task call)
         {
-            await call;
+            await call.ConfigureAwait(false);
             return new Message();
         }
 
         internal static async Task<Message> UnaryCallWaitValueTask(ValueTask call)
         {
-            await call;
+            await call.ConfigureAwait(false);
             return new Message();
         }
 
@@ -126,7 +126,7 @@ namespace ServiceModel.Grpc.Hosting
         internal static async Task WriteServerStreamingResultValueTask<T>(ValueTask<IAsyncEnumerable<T>> result, IServerStreamWriter<Message<T>> stream, ServerCallContext context)
         {
             var source = await result.ConfigureAwait(false);
-            await ServerChannelAdapter.WriteServerStreamingResult<T>(source, stream, context);
+            await WriteServerStreamingResult<T>(source, stream, context);
         }
 
         internal static MethodInfo GetServiceContextOptionMethod(Type optionType)

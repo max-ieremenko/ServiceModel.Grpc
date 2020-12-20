@@ -15,7 +15,6 @@
 // </copyright>
 
 using System;
-using System.Linq;
 using Grpc.Core;
 using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.Configuration;
@@ -39,21 +38,21 @@ namespace ServiceModel.Grpc.Channel
                 new Message<T1, T2>(value1, value2));
         }
 
-        public static T GetMethodInputFromHeader<T>(IMarshallerFactory marshallerFactory, Metadata requestHeaders)
+        public static T GetMethodInputFromHeader<T>(IMarshallerFactory marshallerFactory, Metadata? requestHeaders)
         {
             var input = GetMethodInputFromHeader(marshallerFactory.CreateMarshaller<Message<T>>(), requestHeaders);
             return input.Value1;
         }
 
-        public static (T1 Value1, T2 Value2) GetMethodInputFromHeader<T1, T2>(IMarshallerFactory marshallerFactory, Metadata requestHeaders)
+        public static (T1 Value1, T2 Value2) GetMethodInputFromHeader<T1, T2>(IMarshallerFactory marshallerFactory, Metadata? requestHeaders)
         {
             var input = GetMethodInputFromHeader(marshallerFactory.CreateMarshaller<Message<T1, T2>>(), requestHeaders);
             return (input.Value1, input.Value2);
         }
 
-        internal static T GetMethodInputFromHeader<T>(Marshaller<T> marshaller, Metadata requestHeaders)
+        internal static T GetMethodInputFromHeader<T>(Marshaller<T> marshaller, Metadata? requestHeaders)
         {
-            var header = requestHeaders?.FirstOrDefault(i => i.IsBinary && CallContext.HeaderNameMethodInput.Equals(i.Key, StringComparison.OrdinalIgnoreCase));
+            var header = requestHeaders.FindHeader(CallContext.HeaderNameMethodInput, true);
             if (header == null)
             {
                 throw new InvalidOperationException("Fail to resolve header parameters, {0} header not found.".FormatWith(CallContext.HeaderNameMethodInput));

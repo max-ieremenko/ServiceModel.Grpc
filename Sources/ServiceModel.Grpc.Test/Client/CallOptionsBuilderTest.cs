@@ -138,20 +138,19 @@ namespace ServiceModel.Grpc.Client
 
         [Test]
         [TestCaseSource(nameof(GetMergeMetadataTestCases))]
-        public void MergeMetadata(Metadata current, Metadata mergeWith, Metadata expected)
+        public void MergeMetadata(Metadata? current, Metadata? mergeWith, Metadata? expected)
         {
             var actual = CallOptionsBuilder.MergeMetadata(current, mergeWith);
 
-            actual.Select(i => i.Key).ShouldBe(expected.Select(i => i.Key), Case.Sensitive);
+            var actualKeys = actual?.Select(i => i.Key) ?? Enumerable.Empty<string>();
+            var expectedKeys = expected?.Select(i => i.Key) ?? Enumerable.Empty<string>();
+            actualKeys.ShouldBe(expectedKeys, Case.Sensitive);
         }
 
         private static IEnumerable<TestCaseData> GetMergeMetadataTestCases()
         {
-            var current = new Metadata();
-            var mergeWith = new Metadata();
-
-            yield return new TestCaseData(null, mergeWith, mergeWith);
-            yield return new TestCaseData(current, null, current);
+            yield return new TestCaseData(null, new Metadata(), new Metadata());
+            yield return new TestCaseData(new Metadata(), null, null);
 
             yield return new TestCaseData(
                 new Metadata

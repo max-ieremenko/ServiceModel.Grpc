@@ -21,7 +21,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
-using ServiceModel.Grpc.Client;
 
 namespace ServiceModel.Grpc.Client
 {
@@ -117,7 +116,7 @@ namespace ServiceModel.Grpc.Client
                         call.GetTrailers);
                 }
 
-                while (await call.ResponseStream.MoveNext(token))
+                while (await call.ResponseStream.MoveNext(token).ConfigureAwait(false))
                 {
                     yield return call.ResponseStream.Current.Value1;
                 }
@@ -149,7 +148,7 @@ namespace ServiceModel.Grpc.Client
         {
             using (call)
             {
-                await foreach (var i in request.WithCancellation(token))
+                await foreach (var i in request.WithCancellation(token).ConfigureAwait(false))
                 {
                     await call.RequestStream.WriteAsync(new Message<TRequest>(i)).ConfigureAwait(false);
                 }
@@ -196,7 +195,7 @@ namespace ServiceModel.Grpc.Client
             Message<TResponse> result;
             using (call)
             {
-                await foreach (var i in request.WithCancellation(token))
+                await foreach (var i in request.WithCancellation(token).ConfigureAwait(false))
                 {
                     await call.RequestStream.WriteAsync(new Message<TRequest>(i)).ConfigureAwait(false);
                 }
@@ -255,7 +254,7 @@ namespace ServiceModel.Grpc.Client
                         call.GetTrailers);
                 }
 
-                while (await call.ResponseStream.MoveNext(token))
+                while (await call.ResponseStream.MoveNext(token).ConfigureAwait(false))
                 {
                     yield return call.ResponseStream.Current.Value1;
                 }
@@ -277,7 +276,7 @@ namespace ServiceModel.Grpc.Client
             IClientStreamWriter<Message<TRequest>> stream,
             CancellationToken token)
         {
-            await foreach (var i in request.WithCancellation(token))
+            await foreach (var i in request.WithCancellation(token).ConfigureAwait(false))
             {
                 await stream.WriteAsync(new Message<TRequest>(i)).ConfigureAwait(false);
             }

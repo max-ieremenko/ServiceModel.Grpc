@@ -17,6 +17,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Grpc.Core;
+using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
 
 namespace ServiceModel.Grpc.Interceptors.Internal
@@ -62,13 +63,14 @@ namespace ServiceModel.Grpc.Interceptors.Internal
             detailTypeName = null;
             detailContent = null;
 
-            foreach (var entry in metadata)
+            for (var i = 0; i < metadata.Count; i++)
             {
-                if (!entry.IsBinary && CallContext.HeaderNameErrorDetailType.Equals(entry.Key, StringComparison.OrdinalIgnoreCase))
+                var entry = metadata[i];
+                if (entry.Equals(CallContext.HeaderNameErrorDetailType, false))
                 {
                     detailTypeName = entry.Value;
                 }
-                else if (entry.IsBinary && CallContext.HeaderNameErrorDetail.Equals(entry.Key, StringComparison.OrdinalIgnoreCase))
+                else if (entry.Equals(CallContext.HeaderNameErrorDetail, true))
                 {
                     detailContent = entry.ValueBytes;
                 }
