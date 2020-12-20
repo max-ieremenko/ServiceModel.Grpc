@@ -22,9 +22,9 @@ namespace ServiceModel.Grpc.Internal.IO
 {
     internal sealed class DefaultDeserializationContext : DeserializationContext
     {
-        private readonly byte[] _payload;
+        private readonly byte[]? _payload;
 
-        public DefaultDeserializationContext(byte[] payload)
+        public DefaultDeserializationContext(byte[]? payload)
         {
             _payload = payload;
         }
