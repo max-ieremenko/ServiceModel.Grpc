@@ -37,23 +37,27 @@ namespace ServiceModel.Grpc.Client
         /// </summary>
         /// <param name="call">Single request-response call.</param>
         /// <param name="context">Optional call context.</param>
+        /// <param name="token">Cancellation token.</param>
         /// <returns>Call result.</returns>
-        public static async Task AsyncUnaryCallWait(AsyncUnaryCall<Message> call, CallContext? context)
+        public static async Task AsyncUnaryCallWait(AsyncUnaryCall<Message> call, CallContext? context, CancellationToken token)
         {
             using (call)
             {
-                Metadata? headers = default;
-                if (context != null)
+                if (context != null && !token.IsCancellationRequested)
                 {
-                    headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
+                    var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
+                    context.ServerResponse = new ServerResponse(
+                        headers,
+                        call.GetStatus,
+                        call.GetTrailers);
                 }
 
                 await call;
 
-                if (context != null)
+                if (context != null && !token.IsCancellationRequested)
                 {
                     context.ServerResponse = new ServerResponse(
-                        headers!,
+                        context.ResponseHeaders!,
                         call.GetStatus(),
                         call.GetTrailers());
                 }
@@ -66,24 +70,28 @@ namespace ServiceModel.Grpc.Client
         /// <typeparam name="T">Result type.</typeparam>
         /// <param name="call">Single request-response call.</param>
         /// <param name="context">Optional call context.</param>
+        /// <param name="token">Cancellation token.</param>
         /// <returns>Call result.</returns>
-        public static async Task<T> GetAsyncUnaryCallResult<T>(AsyncUnaryCall<Message<T>> call, CallContext? context)
+        public static async Task<T> GetAsyncUnaryCallResult<T>(AsyncUnaryCall<Message<T>> call, CallContext? context, CancellationToken token)
         {
             Message<T> result;
             using (call)
             {
-                Metadata? headers = default;
-                if (context != null)
+                if (context != null && !token.IsCancellationRequested)
                 {
-                    headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
+                    var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
+                    context.ServerResponse = new ServerResponse(
+                        headers,
+                        call.GetStatus,
+                        call.GetTrailers);
                 }
 
                 result = await call;
 
-                if (context != null)
+                if (context != null && !token.IsCancellationRequested)
                 {
                     context.ServerResponse = new ServerResponse(
-                        headers!,
+                        context.ResponseHeaders!,
                         call.GetStatus(),
                         call.GetTrailers());
                 }
@@ -134,6 +142,39 @@ namespace ServiceModel.Grpc.Client
         /// <summary>
         /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
         /// </summary>
+        /// <typeparam name="T">Result type.</typeparam>
+        /// <param name="call">Single request-response call.</param>
+        /// <param name="context">Optional call context.</param>
+        /// <param name="token">Cancellation token.</param>
+        /// <returns>Call result.</returns>
+        public static async Task<IAsyncEnumerable<T>> GetServerStreamingCallResultAsync<T>(
+            AsyncServerStreamingCall<Message<T>> call,
+            CallContext? context,
+            CancellationToken token)
+        {
+            try
+            {
+                if (context != null && !token.IsCancellationRequested)
+                {
+                    var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
+                    context.ServerResponse = new ServerResponse(
+                        headers,
+                        call.GetStatus,
+                        call.GetTrailers);
+                }
+            }
+            catch
+            {
+                call.Dispose();
+                throw;
+            }
+
+            return ReadServerStreamingCallResultAsync(call, context, token);
+        }
+
+        /// <summary>
+        /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+        /// </summary>
         /// <typeparam name="TRequest">Request type.</typeparam>
         /// <param name="call">Single request-response call.</param>
         /// <param name="request">The call request.</param>
@@ -158,18 +199,21 @@ namespace ServiceModel.Grpc.Client
                     await call.RequestStream.CompleteAsync().ConfigureAwait(false);
                 }
 
-                Metadata? headers = null;
-                if (!token.IsCancellationRequested && context != null)
+                if (context != null && !token.IsCancellationRequested)
                 {
-                    headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
+                    var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
+                    context.ServerResponse = new ServerResponse(
+                        headers,
+                        call.GetStatus,
+                        call.GetTrailers);
                 }
 
                 await call.ResponseAsync.ConfigureAwait(false);
 
-                if (!token.IsCancellationRequested && context != null)
+                if (context != null && !token.IsCancellationRequested)
                 {
                     context.ServerResponse = new ServerResponse(
-                        headers!,
+                        context.ResponseHeaders!,
                         call.GetStatus(),
                         call.GetTrailers());
                 }
@@ -205,10 +249,13 @@ namespace ServiceModel.Grpc.Client
                     await call.RequestStream.CompleteAsync().ConfigureAwait(false);
                 }
 
-                Metadata? headers = null;
-                if (!token.IsCancellationRequested && context != null)
+                if (context != null && !token.IsCancellationRequested)
                 {
-                    headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
+                    var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
+                    context.ServerResponse = new ServerResponse(
+                        headers,
+                        call.GetStatus,
+                        call.GetTrailers);
                 }
 
                 result = await call.ResponseAsync.ConfigureAwait(false);
@@ -216,7 +263,7 @@ namespace ServiceModel.Grpc.Client
                 if (!token.IsCancellationRequested && context != null)
                 {
                     context.ServerResponse = new ServerResponse(
-                        headers!,
+                        context.ResponseHeaders!,
                         call.GetStatus(),
                         call.GetTrailers());
                 }
@@ -271,6 +318,45 @@ namespace ServiceModel.Grpc.Client
             }
         }
 
+        /// <summary>
+        /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+        /// </summary>
+        /// <typeparam name="TRequest">Request type.</typeparam>
+        /// <typeparam name="TResponse">Response type.</typeparam>
+        /// <param name="call">Single request-response call.</param>
+        /// <param name="request">The call request.</param>
+        /// <param name="context">Optional call context.</param>
+        /// <param name="token">Cancellation token.</param>
+        /// <returns>Call result.</returns>
+        public static async Task<IAsyncEnumerable<TResponse>> GetDuplexCallResultAsync<TRequest, TResponse>(
+            AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>> call,
+            IAsyncEnumerable<TRequest> request,
+            CallContext? context,
+            CancellationToken token)
+        {
+            Task writer;
+            try
+            {
+                writer = DuplexCallWriteRequest(request, call.RequestStream, token);
+
+                if (context != null && !token.IsCancellationRequested)
+                {
+                    var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
+                    context.ServerResponse = new ServerResponse(
+                        headers,
+                        call.GetStatus,
+                        call.GetTrailers);
+                }
+            }
+            catch
+            {
+                call.Dispose();
+                throw;
+            }
+
+            return ReadDuplexCallResultAsync(call, context, writer, token);
+        }
+
         private static async Task DuplexCallWriteRequest<TRequest>(
             IAsyncEnumerable<TRequest> request,
             IClientStreamWriter<Message<TRequest>> stream,
@@ -284,6 +370,53 @@ namespace ServiceModel.Grpc.Client
             if (!token.IsCancellationRequested)
             {
                 await stream.CompleteAsync().ConfigureAwait(false);
+            }
+        }
+
+        private static async IAsyncEnumerable<T> ReadServerStreamingCallResultAsync<T>(
+            AsyncServerStreamingCall<Message<T>> call,
+            CallContext? context,
+            [EnumeratorCancellation] CancellationToken token)
+        {
+            using (call)
+            {
+                while (await call.ResponseStream.MoveNext(token).ConfigureAwait(false))
+                {
+                    yield return call.ResponseStream.Current.Value1;
+                }
+
+                if (context != null && !token.IsCancellationRequested)
+                {
+                    context.ServerResponse = new ServerResponse(
+                        context.ResponseHeaders!,
+                        call.GetStatus(),
+                        call.GetTrailers());
+                }
+            }
+        }
+
+        private static async IAsyncEnumerable<TResponse> ReadDuplexCallResultAsync<TRequest, TResponse>(
+            AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>> call,
+            CallContext? context,
+            Task writer,
+            [EnumeratorCancellation] CancellationToken token)
+        {
+            using (call)
+            {
+                while (await call.ResponseStream.MoveNext(token).ConfigureAwait(false))
+                {
+                    yield return call.ResponseStream.Current.Value1;
+                }
+
+                await writer.ConfigureAwait(false);
+
+                if (context != null && !token.IsCancellationRequested)
+                {
+                    context.ServerResponse = new ServerResponse(
+                        context.ResponseHeaders!,
+                        call.GetStatus(),
+                        call.GetTrailers());
+                }
             }
         }
     }

@@ -219,7 +219,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                         .Append(nameof(ClientChannelAdapter.AsyncUnaryCallWait))
                         .Append("(__call, ")
                         .Append(callContextValue)
-                        .AppendLine(");");
+                        .AppendLine(", __callOptions.CancellationToken);");
 
                     if (operation.Method.ReturnTypeSymbol.IsValueTask())
                     {
@@ -238,7 +238,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                         .Append(nameof(ClientChannelAdapter.GetAsyncUnaryCallResult))
                         .Append("(__call, ")
                         .Append(callContextValue)
-                        .AppendLine(");");
+                        .AppendLine(", __callOptions.CancellationToken);");
 
                     if (operation.Method.ReturnTypeSymbol.IsValueTask())
                     {
@@ -345,8 +345,18 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             Output
                 .Append("var __response = ")
                 .Append(nameof(ClientChannelAdapter))
-                .Append(".")
-                .Append(nameof(ClientChannelAdapter.GetServerStreamingCallResult))
+                .Append(".");
+
+            if (operation.IsAsync)
+            {
+                Output.Append(nameof(ClientChannelAdapter.GetServerStreamingCallResultAsync));
+            }
+            else
+            {
+                Output.Append(nameof(ClientChannelAdapter.GetServerStreamingCallResult));
+            }
+
+            Output
                 .Append("(__call, ")
                 .Append(callContextValue)
                 .Append(", ")
@@ -354,19 +364,12 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .AppendLine(".CancellationToken);");
 
             Output.Append("return ");
-            if (operation.IsAsync)
+            if (operation.IsAsync && operation.Method.ReturnTypeSymbol.IsValueTask())
             {
-                if (operation.Method.ReturnTypeSymbol.IsValueTask())
-                {
-                    Output
-                        .Append("new ")
-                        .Append(operation.Method.ReturnType)
-                        .Append("(__response)");
-                }
-                else
-                {
-                    Output.Append("Task.FromResult(__response)");
-                }
+                Output
+                    .Append("new ")
+                    .Append(operation.Method.ReturnType)
+                    .Append("(__response)");
             }
             else
             {
@@ -391,8 +394,18 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             Output
                 .Append("var __response = ")
                 .Append(nameof(ClientChannelAdapter))
-                .Append(".")
-                .Append(nameof(ClientChannelAdapter.GetDuplexCallResult))
+                .Append(".");
+
+            if (operation.IsAsync)
+            {
+                Output.Append(nameof(ClientChannelAdapter.GetDuplexCallResultAsync));
+            }
+            else
+            {
+                Output.Append(nameof(ClientChannelAdapter.GetDuplexCallResult));
+            }
+
+            Output
                 .Append("(__call, ")
                 .Append(operation.Method.Parameters[operation.RequestTypeInput[0]].Name)
                 .Append(", ")
@@ -402,19 +415,12 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .AppendLine(".CancellationToken);");
 
             Output.Append("return ");
-            if (operation.IsAsync)
+            if (operation.IsAsync && operation.Method.ReturnTypeSymbol.IsValueTask())
             {
-                if (operation.Method.ReturnTypeSymbol.IsValueTask())
-                {
-                    Output
-                        .Append("new ")
-                        .Append(operation.Method.ReturnType)
-                        .Append("(__response)");
-                }
-                else
-                {
-                    Output.Append("Task.FromResult(__response)");
-                }
+                Output
+                    .Append("new ")
+                    .Append(operation.Method.ReturnType)
+                    .Append("(__response)");
             }
             else
             {

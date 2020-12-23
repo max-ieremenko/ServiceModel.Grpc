@@ -65,6 +65,7 @@ namespace ServiceModel.Grpc.TestApi
 
             var stream = DomainService.ServerStreamingCall(context);
 
+            // in ServerStreamingCallAsync headers are already available
             context.ResponseHeaders.ShouldBeNull();
             context.ResponseTrailers.ShouldBeNull();
 
@@ -93,14 +94,12 @@ namespace ServiceModel.Grpc.TestApi
 
             var stream = await DomainService.ServerStreamingCallAsync(context).ConfigureAwait(false);
 
-            context.ResponseHeaders.ShouldBeNull();
-            context.ResponseTrailers.ShouldBeNull();
+            // in ServerStreamingCall headers are not available yet
+            ValidateResponse(context, true);
 
             var values = new List<int>();
             await foreach (var i in stream)
             {
-                context.ResponseHeaders.ShouldNotBeNull();
-
                 if (values.Count == 0)
                 {
                     // InvalidOperationException : Trailers can only be accessed once the call has finished.
@@ -131,6 +130,7 @@ namespace ServiceModel.Grpc.TestApi
 
             var stream = DomainService.DuplexStreamingCall(Enumerable.Range(1, 10).AsAsyncEnumerable(), context);
 
+            // in DuplexStreamingCallAsync headers are already available
             context.ResponseHeaders.ShouldBeNull();
             context.ResponseTrailers.ShouldBeNull();
 
@@ -159,14 +159,12 @@ namespace ServiceModel.Grpc.TestApi
 
             var stream = await DomainService.DuplexStreamingCallAsync(Enumerable.Range(1, 10).AsAsyncEnumerable(), context).ConfigureAwait(false);
 
-            context.ResponseHeaders.ShouldBeNull();
-            context.ResponseTrailers.ShouldBeNull();
+            // in DuplexStreamingCall headers are not available yet
+            ValidateResponse(context, true);
 
             var values = new List<int>();
             await foreach (var i in stream)
             {
-                context.ResponseHeaders.ShouldNotBeNull();
-
                 if (values.Count == 0)
                 {
                     // InvalidOperationException : Trailers can only be accessed once the call has finished.
@@ -180,7 +178,7 @@ namespace ServiceModel.Grpc.TestApi
             values.Count.ShouldBe(10);
         }
 
-        private static void ValidateResponse(CallContext context)
+        private static void ValidateResponse(CallContext context, bool headersOnly = false)
         {
             context.ResponseHeaders.ShouldNotBeNull();
 
@@ -192,11 +190,19 @@ namespace ServiceModel.Grpc.TestApi
             callHeader.ShouldNotBeNull();
             callHeader.Value.ShouldBe(HeadersService.CallHeaderValue);
 
-            context.ResponseTrailers.ShouldNotBeNull();
+            if (headersOnly)
+            {
+                // InvalidOperationException : Trailers can only be accessed once the call has finished.
+                Assert.Throws<InvalidOperationException>(() => Console.WriteLine(context.ResponseTrailers));
+            }
+            else
+            {
+                context.ResponseTrailers.ShouldNotBeNull();
 
-            var callTrailer = context.ResponseTrailers.FindHeader(HeadersService.CallTrailerName, false);
-            callTrailer.ShouldNotBeNull();
-            callTrailer.Value.ShouldBe(HeadersService.CallTrailerValue);
+                var callTrailer = context.ResponseTrailers.FindHeader(HeadersService.CallTrailerName, false);
+                callTrailer.ShouldNotBeNull();
+                callTrailer.Value.ShouldBe(HeadersService.CallTrailerValue);
+            }
         }
 
         private static CallContext CreateCallContext()

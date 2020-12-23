@@ -183,6 +183,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 body.Emit(OpCodes.Callvirt, typeof(CallInvoker).InstanceMethod(nameof(CallInvoker.AsyncUnaryCall)).MakeGenericMethod(operation.Message.RequestType, operation.Message.ResponseType));
 
                 PushCallContext(body, operation.Message);
+                PushToken(body);
 
                 if (operation.Message.ResponseType.IsGenericType)
                 {
@@ -259,23 +260,19 @@ namespace ServiceModel.Grpc.Internal.Emit
             // GetServerStreamingCallResult(call, options)
             PushCallContext(body, operation.Message);
             PushToken(body);
-            body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.GetServerStreamingCallResult)).MakeGenericMethod(operation.Message.ResponseType.GenericTypeArguments[0]));
 
             if (operation.Message.IsAsync)
             {
-                // IAsyncEnumerable<T>
-                var adapterReturnType = operation.Message.Operation.ReturnType.GetGenericArguments()[0];
+                body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.GetServerStreamingCallResultAsync)).MakeGenericMethod(operation.Message.ResponseType.GenericTypeArguments[0]));
 
                 if (operation.Message.Operation.ReturnType.IsValueTask())
                 {
-                    // new ValueTask(IAsyncEnumerable<T>)
-                    body.Emit(OpCodes.Newobj, typeof(ValueTask<>).MakeGenericType(adapterReturnType).Constructor(adapterReturnType));
+                    ConvertTaskToValueTask(body, operation.Message.Operation.ReturnType);
                 }
-                else
-                {
-                    // Task.FromResult
-                    body.Emit(OpCodes.Call, typeof(Task).StaticMethod(nameof(Task.FromResult)).MakeGenericMethod(adapterReturnType));
-                }
+            }
+            else
+            {
+                body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.GetServerStreamingCallResult)).MakeGenericMethod(operation.Message.ResponseType.GenericTypeArguments[0]));
             }
 
             body.Emit(OpCodes.Ret);
@@ -342,23 +339,19 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.EmitLdarg(1); // request
             PushCallContext(body, operation.Message);
             PushToken(body);
-            body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.GetDuplexCallResult)).MakeGenericMethod(operation.Message.RequestType.GenericTypeArguments[0], operation.Message.ResponseType.GenericTypeArguments[0]));
 
             if (operation.Message.IsAsync)
             {
-                // IAsyncEnumerable<T>
-                var adapterReturnType = operation.Message.Operation.ReturnType.GetGenericArguments()[0];
+                body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.GetDuplexCallResultAsync)).MakeGenericMethod(operation.Message.RequestType.GenericTypeArguments[0], operation.Message.ResponseType.GenericTypeArguments[0]));
 
                 if (operation.Message.Operation.ReturnType.IsValueTask())
                 {
-                    // new ValueTask(IAsyncEnumerable<T>)
-                    body.Emit(OpCodes.Newobj, typeof(ValueTask<>).MakeGenericType(adapterReturnType).Constructor(adapterReturnType));
+                    ConvertTaskToValueTask(body, operation.Message.Operation.ReturnType);
                 }
-                else
-                {
-                    // Task.FromResult
-                    body.Emit(OpCodes.Call, typeof(Task).StaticMethod(nameof(Task.FromResult)).MakeGenericMethod(adapterReturnType));
-                }
+            }
+            else
+            {
+                body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.GetDuplexCallResult)).MakeGenericMethod(operation.Message.RequestType.GenericTypeArguments[0], operation.Message.ResponseType.GenericTypeArguments[0]));
             }
 
             body.Emit(OpCodes.Ret);
@@ -458,6 +451,15 @@ namespace ServiceModel.Grpc.Internal.Emit
             _typeBuilder.DefineMethodOverride(method, signature);
 
             return method.GetILGenerator();
+        }
+
+        private void ConvertTaskToValueTask(ILGenerator body, Type valueTaskType)
+        {
+            // Task<IAsyncEnumerable<T>>
+            var taskType = typeof(Task<>).MakeGenericType(valueTaskType.GetGenericArguments()[0]);
+
+            // new ValueTask(Task<IAsyncEnumerable<T>>)
+            body.Emit(OpCodes.Newobj, valueTaskType.Constructor(taskType));
         }
 
         private void BuildCtor()
