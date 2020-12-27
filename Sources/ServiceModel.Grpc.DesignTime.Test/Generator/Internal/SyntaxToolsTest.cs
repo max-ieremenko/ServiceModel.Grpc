@@ -191,8 +191,8 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
                 var expected = (string)attribute!.ConstructorArguments[0].Value!;
                 expected.ShouldNotBeNull();
 
-                yield return new TestCaseData(method.ReturnType, expected);
-            }
+                yield return new TestCaseData(method.ReturnType, expected) { TestName = "FullName." + method.Name };
+                }
         }
     }
 }

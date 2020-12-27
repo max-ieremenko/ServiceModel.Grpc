@@ -148,7 +148,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
         }
 
         [Test]
-        [TestCaseSource(nameof(GetNotSupportedParametersCases))]
+        [TestCaseSource(nameof(GetGenericNotSupportedCases))]
         public void GenericNotSupported(IMethodSymbol method)
         {
             var ex = Assert.Throws<NotSupportedException>(() => new OperationDescription(method, "s1"));
@@ -175,7 +175,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
                     responseHeader?.ConstructorArguments[2].Values.Select(i => (string)i.Value!).ToArray(),
                     responseHeader?.ConstructorArguments[3].Value)
                 {
-                    TestName = method.Name
+                    TestName = "ResponseType." + method.Name
                 };
             }
         }
@@ -199,7 +199,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
                     headerRequest?.ConstructorArguments[1].Values.Select(i => (int)i.Value!).ToArray(),
                     headerRequest?.ConstructorArguments[2].Values.Select(i => (string)i.Value!).ToArray())
                 {
-                    TestName = method.Name
+                    TestName = "RequestType." + method.Name
                 };
             }
         }
@@ -217,7 +217,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
                     method,
                     description.ConstructorArguments[0].Values.Select(i => (int)i.Value!).ToArray())
                 {
-                    TestName = method.Name
+                    TestName = "ContextInput." + method.Name
                 };
             }
         }
@@ -229,7 +229,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
 
             foreach (var method in SyntaxTools.GetInstanceMethods(type))
             {
-                yield return new TestCaseData(method) { TestName = method.Name };
+                yield return new TestCaseData(method) { TestName = "ResponseType." + method.Name };
             }
         }
 
@@ -240,7 +240,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
 
             foreach (var method in SyntaxTools.GetInstanceMethods(type))
             {
-                yield return new TestCaseData(method) { TestName = method.Name };
+                yield return new TestCaseData(method) { TestName = "Parameters." + method.Name };
             }
         }
 
@@ -258,7 +258,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
                     method,
                     Enum.Parse<MethodType>(methodType))
                 {
-                    TestName = method.Name
+                    TestName = "OperationType." + method.Name
                 };
             }
         }

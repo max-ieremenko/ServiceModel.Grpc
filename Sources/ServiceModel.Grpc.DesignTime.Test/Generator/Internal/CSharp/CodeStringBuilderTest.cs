@@ -46,7 +46,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             Console.WriteLine("----------");
             Console.WriteLine(_sut.ToString());
             Console.WriteLine("----------");
-            _sut.ToString().ShouldBe(@"{
+            _sut.AsStringBuilder().ToString().ShouldBe(@"{
     x = 1;
 }");
         }
