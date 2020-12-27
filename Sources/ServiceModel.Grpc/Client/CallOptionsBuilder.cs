@@ -20,7 +20,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
-using ServiceModel.Grpc.Internal.IO;
 
 #pragma warning disable SA1642 // Constructor summary documentation should begin with standard text
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
@@ -87,27 +86,12 @@ namespace ServiceModel.Grpc.Client
         /// <exclude />
         public CallOptionsBuilder WithMethodInputHeader<T>(Marshaller<T> marshaller, T value)
         {
-            var metadata = GetMethodInputHeader(marshaller, value);
+            var metadata = CompatibilityTools.SerializeMethodInputHeader(marshaller, value);
             return WithCallOptions(new CallOptions(metadata));
         }
 
         /// <exclude />
         public CallOptions Build() => _options;
-
-        internal static Metadata GetMethodInputHeader<T>(Marshaller<T> marshaller, T value)
-        {
-            byte[] headerValue;
-            using (var serializationContext = new DefaultSerializationContext())
-            {
-                marshaller.ContextualSerializer(value, serializationContext);
-                headerValue = serializationContext.GetContent();
-            }
-
-            return new Metadata
-            {
-                { CallContext.HeaderNameMethodInput, headerValue }
-            };
-        }
 
         internal static Metadata? MergeMetadata(Metadata? current, Metadata? mergeWith)
         {

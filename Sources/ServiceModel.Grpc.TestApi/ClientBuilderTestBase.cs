@@ -315,6 +315,57 @@ namespace ServiceModel.Grpc.TestApi
         }
 
         [Test]
+        public async Task ServerStreamingWithHeadersTask()
+        {
+            Console.WriteLine(GetClientInstanceMethod(nameof(IContract.ServerStreamingWithHeadersTask)).Disassemble());
+
+            var responseStream = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
+            responseStream.Setup(TokenSource.Token, 10);
+
+            CallInvoker.SetupAsyncServerStreamingCall(
+                1,
+                2,
+                responseStream.Object,
+                o => o.CancellationToken.ShouldBe(TokenSource.Token),
+                CompatibilityToolsTestExtensions.SerializeMethodOutput(DataContractMarshallerFactory.Default, 1, 2));
+
+            var actual = await Factory().ServerStreamingWithHeadersTask(1, 2, TokenSource.Token);
+
+            actual.Value.ShouldBe(1);
+            actual.Count.ShouldBe(2);
+
+            var content = await actual.Stream.ToListAsync().ConfigureAwait(false);
+
+            content.ShouldBe(new[] { 10 });
+            responseStream.Verify();
+        }
+
+        [Test]
+        public async Task ServerStreamingWithHeadersValueTask()
+        {
+            Console.WriteLine(GetClientInstanceMethod(nameof(IContract.ServerStreamingWithHeadersValueTask)).Disassemble());
+
+            var responseStream = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
+            responseStream.Setup(TokenSource.Token, 10);
+
+            CallInvoker.SetupAsyncServerStreamingCall(
+                1,
+                2,
+                responseStream.Object,
+                o => o.CancellationToken.ShouldBe(TokenSource.Token),
+                CompatibilityToolsTestExtensions.SerializeMethodOutput(DataContractMarshallerFactory.Default, 2));
+
+            var actual = await Factory().ServerStreamingWithHeadersValueTask(1, 2, TokenSource.Token);
+
+            actual.Count.ShouldBe(2);
+
+            var content = await actual.Stream.ToListAsync().ConfigureAwait(false);
+
+            content.ShouldBe(new[] { 10 });
+            responseStream.Verify();
+        }
+
+        [Test]
         public async Task DuplicateServerStreaming1()
         {
             Console.WriteLine(GetClientInstanceMethod(nameof(IContract.DuplicateServerStreaming), Array.Empty<Type>()).Disassemble());
@@ -423,7 +474,7 @@ namespace ServiceModel.Grpc.TestApi
                 "sum-6",
                 options =>
                 {
-                    var values = CompatibilityTools.GetMethodInputFromHeader<int, string>(DataContractMarshallerFactory.Default, options.Headers);
+                    var values = CompatibilityToolsTestExtensions.DeserializeMethodInput<int, string>(DataContractMarshallerFactory.Default, options.Headers);
                     values.Value1.ShouldBe(2);
                     values.Value2.ShouldBe("sum-");
                 });
@@ -568,7 +619,7 @@ namespace ServiceModel.Grpc.TestApi
                 responseStream.Object,
                 options =>
                 {
-                    var header = CompatibilityTools.GetMethodInputFromHeader<int, string>(DataContractMarshallerFactory.Default, options.Headers);
+                    var header = CompatibilityToolsTestExtensions.DeserializeMethodInput<int, string>(DataContractMarshallerFactory.Default, options.Headers);
                     header.Value1.ShouldBe(1);
                     header.Value2.ShouldBe("prefix-");
                 });
@@ -625,6 +676,69 @@ namespace ServiceModel.Grpc.TestApi
             var actual = await Factory().DuplicateDuplexStreaming(new[] { 1, 2 }.AsAsyncEnumerable()).ToListAsync();
 
             actual.ShouldBe(new[] { 2, 3 });
+            responseStream.Verify();
+            requestStream.VerifyAll();
+        }
+
+        [Test]
+        public async Task DuplexStreamingWithHeadersTask()
+        {
+            Console.WriteLine(GetClientInstanceMethod(nameof(IContract.DuplexStreamingWithHeadersTask)).Disassemble());
+
+            var requestValues = new List<int>();
+
+            var responseStream = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
+            responseStream.Setup(TokenSource.Token, requestValues, i => i + 1);
+
+            var requestStream = new Mock<IClientStreamWriter<Message<int>>>(MockBehavior.Strict);
+            requestStream.Setup(requestValues);
+
+            CallInvoker.SetupAsyncDuplexStreamingCall(
+                requestStream.Object,
+                responseStream.Object,
+                options => options.CancellationToken.ShouldBe(TokenSource.Token),
+                CompatibilityToolsTestExtensions.SerializeMethodOutput(DataContractMarshallerFactory.Default, 1, 2));
+
+            var actual = await Factory().DuplexStreamingWithHeadersTask(new[] { 1, 2 }.AsAsyncEnumerable(), TokenSource.Token);
+
+            actual.Value.ShouldBe(1);
+            actual.Count.ShouldBe(2);
+            var stream = await actual.Stream.ToListAsync().ConfigureAwait(false);
+            stream.ShouldBe(new[] { 2, 3 });
+            responseStream.Verify();
+            requestStream.VerifyAll();
+        }
+
+        [Test]
+        public async Task DuplexStreamingWithHeadersValueTask()
+        {
+            Console.WriteLine(GetClientInstanceMethod(nameof(IContract.DuplexStreamingWithHeadersValueTask)).Disassemble());
+
+            var requestValues = new List<int>();
+
+            var responseStream = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
+            responseStream.Setup(TokenSource.Token, requestValues, i => i + 1);
+
+            var requestStream = new Mock<IClientStreamWriter<Message<int>>>(MockBehavior.Strict);
+            requestStream.Setup(requestValues);
+
+            CallInvoker.SetupAsyncDuplexStreamingCall(
+                requestStream.Object,
+                responseStream.Object,
+                options =>
+                {
+                    options.CancellationToken.ShouldBe(TokenSource.Token);
+                    var header = CompatibilityToolsTestExtensions.DeserializeMethodInput<int, int>(DataContractMarshallerFactory.Default, options.Headers);
+                    header.Value1.ShouldBe(1);
+                    header.Value2.ShouldBe(2);
+                },
+                CompatibilityToolsTestExtensions.SerializeMethodOutput(DataContractMarshallerFactory.Default, 2));
+
+            var actual = await Factory().DuplexStreamingWithHeadersValueTask(new[] { 1, 2 }.AsAsyncEnumerable(), 1, 2, TokenSource.Token);
+
+            actual.Count.ShouldBe(2);
+            var stream = await actual.Stream.ToListAsync().ConfigureAwait(false);
+            stream.ShouldBe(new[] { 2, 3 });
             responseStream.Verify();
             requestStream.VerifyAll();
         }

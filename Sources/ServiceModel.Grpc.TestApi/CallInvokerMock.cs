@@ -285,7 +285,8 @@ namespace ServiceModel.Grpc.TestApi
             TRequest1 request1,
             TRequest2 request2,
             IAsyncStreamReader<Message<TResponse>> responseStream,
-            Action<CallOptions>? callOptions = null)
+            Action<CallOptions>? callOptions = null,
+            Metadata? responseHeaders = null)
         {
             invoker
                 .Setup(i => i.AsyncServerStreamingCall(
@@ -302,7 +303,7 @@ namespace ServiceModel.Grpc.TestApi
                 })
                 .Returns(new AsyncServerStreamingCall<Message<TResponse>>(
                     responseStream,
-                    _ => Task.FromResult(default(Metadata)),
+                    _ => Task.FromResult(responseHeaders),
                     _ => default,
                     _ => default,
                     _ =>
@@ -370,7 +371,8 @@ namespace ServiceModel.Grpc.TestApi
             this Mock<CallInvoker> invoker,
             IClientStreamWriter<Message<TRequest>> requestStream,
             IAsyncStreamReader<Message<TResponse>> responseStream,
-            Action<CallOptions>? callOptions = null)
+            Action<CallOptions>? callOptions = null,
+            Metadata? responseHeaders = null)
         {
             invoker
                 .Setup(i => i.AsyncDuplexStreamingCall(
@@ -385,7 +387,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Returns(new AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>>(
                     requestStream,
                     responseStream,
-                    _ => Task.FromResult(default(Metadata)),
+                    _ => Task.FromResult(responseHeaders),
                     _ => default,
                     _ => default,
                     _ =>

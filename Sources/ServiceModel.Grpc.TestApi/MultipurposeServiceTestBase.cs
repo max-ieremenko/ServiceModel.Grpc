@@ -14,6 +14,8 @@
 // limitations under the License.
 // </copyright>
 
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
 using NUnit.Framework;
@@ -78,6 +80,23 @@ namespace ServiceModel.Grpc.TestApi
         }
 
         [Test]
+        public async Task GenerateArraysAsync()
+        {
+            var (totalItemsCount, arrays) = await DomainService.GenerateArraysAsync(10, 5).ConfigureAwait(false);
+
+            totalItemsCount.ShouldBe(10 * 5);
+
+            var arraysCount = 0;
+            await foreach (var array in arrays.ConfigureAwait(false))
+            {
+                arraysCount++;
+                array.ShouldBe(Enumerable.Range(0, 10).Select(i => (byte)i).ToArray());
+            }
+
+            arraysCount.ShouldBe(5);
+        }
+
+        [Test]
         public async Task SumValues()
         {
             var values = new[] { 1, 2, 3 }.AsAsyncEnumerable();
@@ -126,6 +145,19 @@ namespace ServiceModel.Grpc.TestApi
             var actual = await source.ToListAsync();
 
             actual.ShouldBe(new[] { 2, 4, 6 });
+        }
+
+        [Test]
+        public async Task GreetAsync()
+        {
+            var names = new[] { "world", "grpc", "X" }.AsAsyncEnumerable();
+
+            var (stream, greeting) = await DomainService.GreetAsync(names, "Hello");
+
+            greeting.ShouldBe("Hello");
+
+            var greetings = await stream.ToListAsync().ConfigureAwait(false);
+            greetings.ShouldBe(new[] { "Hello world", "Hello grpc", "Hello X" });
         }
     }
 }

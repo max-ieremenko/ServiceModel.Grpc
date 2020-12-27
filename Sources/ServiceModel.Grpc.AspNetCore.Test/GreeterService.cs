@@ -14,18 +14,16 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.TestApi;
 
 namespace ServiceModel.Grpc.AspNetCore
 {
     internal sealed class GreeterService : Greeter.GreeterBase
     {
-        public override Task<HelloResult> Hello(HelloRequest request, ServerCallContext context)
+        public override Task<HelloResult> Unary(HelloRequest request, ServerCallContext context)
         {
             return Task.FromResult(new HelloResult
             {
@@ -33,46 +31,19 @@ namespace ServiceModel.Grpc.AspNetCore
             });
         }
 
-        public override async Task HelloAll(
+        public override async Task DuplexStreaming(
             IAsyncStreamReader<HelloRequest> requestStream,
             IServerStreamWriter<HelloResult> responseStream,
             ServerCallContext context)
         {
-            var greet = GetHelloAllHeader(context);
+            var greet = CompatibilityToolsTestExtensions.DeserializeMethodInput<string>(ProtobufMarshallerFactory.Default, context.RequestHeaders);
+            await context.WriteResponseHeadersAsync(CompatibilityToolsTestExtensions.SerializeMethodOutput(ProtobufMarshallerFactory.Default, greet)).ConfigureAwait(false);
 
-            while (await requestStream.MoveNext(context.CancellationToken))
+            while (await requestStream.MoveNext(context.CancellationToken).ConfigureAwait(false))
             {
                 var message = greet + " " + requestStream.Current.Name + "!";
-                await responseStream.WriteAsync(new HelloResult { Message = message });
+                await responseStream.WriteAsync(new HelloResult { Message = message }).ConfigureAwait(false);
             }
-        }
-
-        internal static Metadata CreateHelloAllHeader(string value)
-        {
-            var methodInputAsHeader = (Func<IMarshallerFactory, string, Metadata>)typeof(CallContext)
-                .Assembly
-                .GetType("ServiceModel.Grpc.Channel.CompatibilityTools", true, false)
-                !.GetMethods(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static)
-                .Where(i => i.Name == "MethodInputAsHeader")
-                .First(i => i.GetParameters().Length == 2)
-                .MakeGenericMethod(typeof(string))
-                .CreateDelegate(typeof(Func<IMarshallerFactory, string, Metadata>));
-
-            return methodInputAsHeader(ProtobufMarshallerFactory.Default, value);
-        }
-
-        private static string GetHelloAllHeader(ServerCallContext context)
-        {
-            var methodInputFromHeader = (Func<IMarshallerFactory, Metadata, string>)typeof(CallContext)
-                .Assembly
-                .GetType("ServiceModel.Grpc.Channel.CompatibilityTools", true, false)
-                !.GetMethods(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static)
-                .Where(i => i.Name == "GetMethodInputFromHeader")
-                .First(i => i.GetGenericArguments().Length == 1)
-                .MakeGenericMethod(typeof(string))
-                .CreateDelegate(typeof(Func<IMarshallerFactory, Metadata, string>));
-
-            return methodInputFromHeader(ProtobufMarshallerFactory.Default, context.RequestHeaders);
         }
     }
 }

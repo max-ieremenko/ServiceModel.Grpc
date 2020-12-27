@@ -16,6 +16,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Shouldly;
@@ -57,6 +58,13 @@ namespace ServiceModel.Grpc.TestApi.Domain
         {
             await Task.Delay(100);
             return RepeatValue(value, count, context);
+        }
+
+        public ValueTask<(int TotalItemsCount, IAsyncEnumerable<byte[]> Arrays)> GenerateArraysAsync(int arrayLength, int count, CancellationToken token)
+        {
+            var totalItemsCount = arrayLength * count;
+            var arrays = GenerateArrays(arrayLength, count, token);
+            return new ValueTask<(int, IAsyncEnumerable<byte[]>)>((totalItemsCount, arrays));
         }
 
         public async Task<long> SumValues(IAsyncEnumerable<int> values, CallContext? context)
@@ -102,6 +110,36 @@ namespace ServiceModel.Grpc.TestApi.Domain
         {
             await Task.Delay(100);
             return MultiplyBy(values, multiplier, context);
+        }
+
+        public ValueTask<(IAsyncEnumerable<string> Greetings, string Greeting)> GreetAsync(IAsyncEnumerable<string> names, string greeting, CancellationToken token)
+        {
+            var greetings = Greet(names, greeting, token);
+            return new ValueTask<(IAsyncEnumerable<string>, string)>((greetings, greeting));
+        }
+
+        private static async IAsyncEnumerable<byte[]> GenerateArrays(int arrayLength, int count, [EnumeratorCancellation] CancellationToken token)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                await Task.Delay(1, token).ConfigureAwait(false);
+
+                var array = new byte[arrayLength];
+                for (var j = 0; j < arrayLength; j++)
+                {
+                    array[j] = (byte)j;
+                }
+
+                yield return array;
+            }
+        }
+
+        private static async IAsyncEnumerable<string> Greet(IAsyncEnumerable<string> names, string greeting, [EnumeratorCancellation] CancellationToken token)
+        {
+            await foreach (var name in names.WithCancellation(token).ConfigureAwait(false))
+            {
+                yield return greeting + " " + name;
+            }
         }
     }
 }

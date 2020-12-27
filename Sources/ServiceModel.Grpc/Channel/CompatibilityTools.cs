@@ -15,47 +15,59 @@
 // </copyright>
 
 using System;
+using System.Runtime.CompilerServices;
 using Grpc.Core;
-using ServiceModel.Grpc.Client;
-using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Internal.IO;
 
 namespace ServiceModel.Grpc.Channel
 {
     internal static class CompatibilityTools
     {
-        public static Metadata MethodInputAsHeader<T>(IMarshallerFactory marshallerFactory, T value)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Metadata SerializeMethodInputHeader<T>(Marshaller<T> marshaller, T value)
         {
-            return CallOptionsBuilder.GetMethodInputHeader(
-                marshallerFactory.CreateMarshaller<Message<T>>(),
-                new Message<T>(value));
+            return SerializeHeader(marshaller, CallContext.HeaderNameMethodInput, value);
         }
 
-        public static Metadata MethodInputAsHeader<T1, T2>(IMarshallerFactory marshallerFactory, T1 value1, T2 value2)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T DeserializeMethodInputHeader<T>(Marshaller<T> marshaller, Metadata? requestHeaders)
         {
-            return CallOptionsBuilder.GetMethodInputHeader(
-                marshallerFactory.CreateMarshaller<Message<T1, T2>>(),
-                new Message<T1, T2>(value1, value2));
+            return DeserializeHeader(marshaller, requestHeaders, CallContext.HeaderNameMethodInput);
         }
 
-        public static T GetMethodInputFromHeader<T>(IMarshallerFactory marshallerFactory, Metadata? requestHeaders)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Metadata SerializeMethodOutputHeader<T>(Marshaller<T> marshaller, T value)
         {
-            var input = GetMethodInputFromHeader(marshallerFactory.CreateMarshaller<Message<T>>(), requestHeaders);
-            return input.Value1;
+            return SerializeHeader(marshaller, CallContext.HeaderNameMethodOutput, value);
         }
 
-        public static (T1 Value1, T2 Value2) GetMethodInputFromHeader<T1, T2>(IMarshallerFactory marshallerFactory, Metadata? requestHeaders)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T DeserializeMethodOutputHeader<T>(Marshaller<T> marshaller, Metadata? responseHeaders)
         {
-            var input = GetMethodInputFromHeader(marshallerFactory.CreateMarshaller<Message<T1, T2>>(), requestHeaders);
-            return (input.Value1, input.Value2);
+            return DeserializeHeader(marshaller, responseHeaders, CallContext.HeaderNameMethodOutput);
         }
 
-        internal static T GetMethodInputFromHeader<T>(Marshaller<T> marshaller, Metadata? requestHeaders)
+        private static Metadata SerializeHeader<T>(Marshaller<T> marshaller, string headerName, T headerValue)
         {
-            var header = requestHeaders.FindHeader(CallContext.HeaderNameMethodInput, true);
+            byte[] payload;
+            using (var serializationContext = new DefaultSerializationContext())
+            {
+                marshaller.ContextualSerializer(headerValue, serializationContext);
+                payload = serializationContext.GetContent();
+            }
+
+            return new Metadata
+            {
+                { headerName, payload }
+            };
+        }
+
+        private static T DeserializeHeader<T>(Marshaller<T> marshaller, Metadata? headers, string headerName)
+        {
+            var header = headers.FindHeader(headerName, true);
             if (header == null)
             {
-                throw new InvalidOperationException("Fail to resolve header parameters, {0} header not found.".FormatWith(CallContext.HeaderNameMethodInput));
+                throw new InvalidOperationException("Fail to resolve header parameters, {0} header not found.".FormatWith(headerName));
             }
 
             return marshaller.ContextualDeserializer(new DefaultDeserializationContext(header.ValueBytes));

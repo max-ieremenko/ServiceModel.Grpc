@@ -80,6 +80,12 @@ namespace ServiceModel.Grpc.TestApi.Domain
         [OperationContract]
         ValueTask<IAsyncEnumerable<int>> ServerStreamingRepeatValueValueTaskAsync(int value, int count, CancellationToken token);
 
+        [OperationContract]
+        Task<(int Value, IAsyncEnumerable<int> Stream, int Count)> ServerStreamingWithHeadersTask(int value, int count, CancellationToken token);
+
+        [OperationContract]
+        ValueTask<(IAsyncEnumerable<int> Stream, int Count)> ServerStreamingWithHeadersValueTask(int value, int count, CancellationToken token);
+
         [OperationContract(Name = "DuplicateServerStreaming1")]
         IAsyncEnumerable<string> DuplicateServerStreaming();
 
@@ -118,5 +124,11 @@ namespace ServiceModel.Grpc.TestApi.Domain
 
         [OperationContract(Name = "DuplicateDuplexStreaming2")]
         IAsyncEnumerable<int> DuplicateDuplexStreaming(IAsyncEnumerable<int> values);
+
+        [OperationContract]
+        Task<(int Value, IAsyncEnumerable<int> Stream, int Count)> DuplexStreamingWithHeadersTask(IAsyncEnumerable<int> values, CancellationToken token);
+
+        [OperationContract]
+        ValueTask<(IAsyncEnumerable<int> Stream, int Count)> DuplexStreamingWithHeadersValueTask(IAsyncEnumerable<int> values, int value, int count, CancellationToken token);
     }
 }

@@ -413,6 +413,77 @@ namespace ServiceModel.Grpc.TestApi
         }
 
         [Test]
+        public async Task ServerStreamingWithHeadersTask()
+        {
+            var call = ChannelType
+                .InstanceMethod(nameof(IContract.ServerStreamingWithHeadersTask))
+                .CreateDelegate<Func<IContract, Message<int, int>, IServerStreamWriter<Message<int>>, ServerCallContext, Task>>(Channel);
+            Console.WriteLine(call.Method.Disassemble());
+
+            var stream = new Mock<IServerStreamWriter<Message<int>>>(MockBehavior.Strict);
+            var actual = stream.Setup();
+
+            _service
+                .Setup(s => s.ServerStreamingWithHeadersTask(1, 2, _tokenSource.Token))
+                .Returns(Task.FromResult((1, new[] { 1, 2, 3 }.AsAsyncEnumerable(), 2)));
+
+            _serverCallContext
+                .Protected()
+                .Setup<Task>("WriteResponseHeadersAsyncCore", ItExpr.IsAny<Metadata>())
+                .Callback<Metadata>(responseHeaders =>
+                {
+                    responseHeaders.ShouldNotBeNull();
+                    var headers = CompatibilityToolsTestExtensions.DeserializeMethodOutput<int, int>(DataContractMarshallerFactory.Default, responseHeaders);
+                    headers.Value1.ShouldBe(1);
+                    headers.Value2.ShouldBe(2);
+                })
+                .Returns(Task.CompletedTask)
+                .Verifiable();
+
+            await call(_service.Object, new Message<int, int>(1, 2), stream.Object, _serverCallContext.Object);
+
+            actual.ShouldBe(new[] { 1, 2, 3 });
+            stream.VerifyAll();
+            _service.VerifyAll();
+            _serverCallContext.Verify();
+        }
+
+        [Test]
+        public async Task ServerStreamingWithHeadersValueTask()
+        {
+            var call = ChannelType
+                .InstanceMethod(nameof(IContract.ServerStreamingWithHeadersValueTask))
+                .CreateDelegate<Func<IContract, Message<int, int>, IServerStreamWriter<Message<int>>, ServerCallContext, Task>>(Channel);
+            Console.WriteLine(call.Method.Disassemble());
+
+            var stream = new Mock<IServerStreamWriter<Message<int>>>(MockBehavior.Strict);
+            var actual = stream.Setup();
+
+            _service
+                .Setup(s => s.ServerStreamingWithHeadersValueTask(1, 2, _tokenSource.Token))
+                .Returns(new ValueTask<(IAsyncEnumerable<int> Stream, int Count)>((new[] { 1, 2, 3 }.AsAsyncEnumerable(), 2)));
+
+            _serverCallContext
+                .Protected()
+                .Setup<Task>("WriteResponseHeadersAsyncCore", ItExpr.IsAny<Metadata>())
+                .Callback<Metadata>(responseHeaders =>
+                {
+                    responseHeaders.ShouldNotBeNull();
+                    var header = CompatibilityToolsTestExtensions.DeserializeMethodOutput<int>(DataContractMarshallerFactory.Default, responseHeaders);
+                    header.ShouldBe(2);
+                })
+                .Returns(Task.CompletedTask)
+                .Verifiable();
+
+            await call(_service.Object, new Message<int, int>(1, 2), stream.Object, _serverCallContext.Object);
+
+            actual.ShouldBe(new[] { 1, 2, 3 });
+            stream.VerifyAll();
+            _service.VerifyAll();
+            _serverCallContext.Verify();
+        }
+
+        [Test]
         public async Task DuplicateServerStreaming1()
         {
             var call = ChannelType
@@ -520,7 +591,7 @@ namespace ServiceModel.Grpc.TestApi
             _serverCallContext
                 .Protected()
                 .SetupGet<Metadata>("RequestHeadersCore")
-                .Returns(CompatibilityTools.MethodInputAsHeader(DataContractMarshallerFactory.Default, 1, "prefix"));
+                .Returns(CompatibilityToolsTestExtensions.SerializeMethodInput(DataContractMarshallerFactory.Default, 1, "prefix"));
 
             var stream = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
             stream.Setup(_tokenSource.Token, 2);
@@ -699,7 +770,7 @@ namespace ServiceModel.Grpc.TestApi
             _serverCallContext
                 .Protected()
                 .SetupGet<Metadata>("RequestHeadersCore")
-                .Returns(CompatibilityTools.MethodInputAsHeader(DataContractMarshallerFactory.Default, 1, "prefix"));
+                .Returns(CompatibilityToolsTestExtensions.SerializeMethodInput(DataContractMarshallerFactory.Default, 1, "prefix"));
 
             var input = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
             input.Setup(_tokenSource.Token, 2);
@@ -784,6 +855,100 @@ namespace ServiceModel.Grpc.TestApi
             input.Verify();
             output.VerifyAll();
             _service.VerifyAll();
+        }
+
+        [Test]
+        public async Task DuplexStreamingWithHeadersTask()
+        {
+            var call = ChannelType
+                .InstanceMethod("DuplexStreamingWithHeadersTask")
+                .CreateDelegate<Func<IContract, IAsyncStreamReader<Message<int>>, IServerStreamWriter<Message<int>>, ServerCallContext, Task>>(Channel);
+            Console.WriteLine(call.Method.Disassemble());
+
+            var input = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
+            input.Setup(_tokenSource.Token, 1);
+
+            var output = new Mock<IServerStreamWriter<Message<int>>>(MockBehavior.Strict);
+            var outputValues = output.Setup();
+
+            _service
+                .Setup(s => s.DuplexStreamingWithHeadersTask(It.IsNotNull<IAsyncEnumerable<int>>(), _tokenSource.Token))
+                .Callback<IAsyncEnumerable<int>, CancellationToken>(async (values, _) =>
+                {
+                    var items = await values.ToListAsync();
+                    items.ShouldBe(new[] { 1 });
+                })
+                .ReturnsAsync((1, new[] { 2 }.AsAsyncEnumerable(), 2));
+
+            _serverCallContext
+                .Protected()
+                .Setup<Task>("WriteResponseHeadersAsyncCore", ItExpr.IsAny<Metadata>())
+                .Callback<Metadata>(responseHeaders =>
+                {
+                    responseHeaders.ShouldNotBeNull();
+                    var headers = CompatibilityToolsTestExtensions.DeserializeMethodOutput<int, int>(DataContractMarshallerFactory.Default, responseHeaders);
+                    headers.Value1.ShouldBe(1);
+                    headers.Value2.ShouldBe(2);
+                })
+                .Returns(Task.CompletedTask)
+                .Verifiable();
+
+            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object);
+
+            outputValues.ShouldBe(new[] { 2 });
+            input.Verify();
+            output.VerifyAll();
+            _service.VerifyAll();
+            _serverCallContext.Verify();
+        }
+
+        [Test]
+        public async Task DuplexStreamingWithHeadersValueTask()
+        {
+            var call = ChannelType
+                .InstanceMethod("DuplexStreamingWithHeadersValueTask")
+                .CreateDelegate<Func<IContract, IAsyncStreamReader<Message<int>>, IServerStreamWriter<Message<int>>, ServerCallContext, Task>>(Channel);
+            Console.WriteLine(call.Method.Disassemble());
+
+            var input = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
+            input.Setup(_tokenSource.Token, 1);
+
+            var output = new Mock<IServerStreamWriter<Message<int>>>(MockBehavior.Strict);
+            var outputValues = output.Setup();
+
+            _service
+                .Setup(s => s.DuplexStreamingWithHeadersValueTask(It.IsNotNull<IAsyncEnumerable<int>>(), 1, 2, _tokenSource.Token))
+                .Callback<IAsyncEnumerable<int>, int, int, CancellationToken>(async (values, value, count, _) =>
+                {
+                    var items = await values.ToListAsync();
+                    items.ShouldBe(new[] { 1 });
+                })
+                .Returns(new ValueTask<(IAsyncEnumerable<int> Stream, int Count)>((new[] { 2 }.AsAsyncEnumerable(), 1)));
+
+            _serverCallContext
+                .Protected()
+                .SetupGet<Metadata>("RequestHeadersCore")
+                .Returns(CompatibilityToolsTestExtensions.SerializeMethodInput(DataContractMarshallerFactory.Default, 1, 2));
+
+            _serverCallContext
+                .Protected()
+                .Setup<Task>("WriteResponseHeadersAsyncCore", ItExpr.IsAny<Metadata>())
+                .Callback<Metadata>(responseHeaders =>
+                {
+                    responseHeaders.ShouldNotBeNull();
+                    var header = CompatibilityToolsTestExtensions.DeserializeMethodOutput<int>(DataContractMarshallerFactory.Default, responseHeaders);
+                    header.ShouldBe(1);
+                })
+                .Returns(Task.CompletedTask)
+                .Verifiable();
+
+            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object);
+
+            outputValues.ShouldBe(new[] { 2 });
+            input.Verify();
+            output.VerifyAll();
+            _service.VerifyAll();
+            _serverCallContext.Verify();
         }
     }
 }

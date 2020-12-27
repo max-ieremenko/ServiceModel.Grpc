@@ -166,6 +166,20 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             }
         }
 
+        [Test]
+        [TestCase(typeof(ValueTuple<string>), true)]
+        [TestCase(typeof((string, string)), true)]
+        [TestCase(typeof((string, string, int)), true)]
+        [TestCase(typeof(ValueTuple), false)]
+        [TestCase(typeof(Tuple<string, string>), false)]
+        [TestCase(typeof(object), false)]
+        [TestCase(typeof((string, string)?), false)]
+        public void IsValueTuple(Type type, bool expected)
+        {
+            var symbol = Compilation.GetTypeByMetadataName(type);
+            SyntaxTools.IsValueTuple(symbol).ShouldBe(expected);
+        }
+
         private static IEnumerable<TestCaseData> GetFullNameCases()
         {
             var type = Compilation.GetTypeByMetadataName(typeof(FullNameCases));

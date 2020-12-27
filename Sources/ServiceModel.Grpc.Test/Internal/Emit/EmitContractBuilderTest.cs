@@ -78,10 +78,10 @@ namespace ServiceModel.Grpc.Internal.Emit
                     .GetField(operation.GrpcMethodName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
                 field.ShouldNotBeNull();
-                field!.GetValue(instance).ShouldNotBeNull();
+                field.GetValue(instance).ShouldNotBeNull();
 
                 field = _contractType
-                    .GetField(operation.GrpcMethodHeaderName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+                    .GetField(operation.GrpcMethodInputHeaderName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
                 if (operation.Message.HeaderRequestType == null)
                 {
@@ -90,7 +90,20 @@ namespace ServiceModel.Grpc.Internal.Emit
                 else
                 {
                     field.ShouldNotBeNull();
-                    field!.GetValue(instance).ShouldNotBeNull();
+                    field.GetValue(instance).ShouldNotBeNull();
+                }
+
+                field = _contractType
+                    .GetField(operation.GrpcMethodOutputHeaderName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+
+                if (operation.Message.HeaderResponseType == null)
+                {
+                    field.ShouldBeNull();
+                }
+                else
+                {
+                    field.ShouldNotBeNull();
+                    field.GetValue(instance).ShouldNotBeNull();
                 }
             }
         }

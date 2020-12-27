@@ -54,7 +54,7 @@ namespace ServiceModel.Grpc.AspNetCore
         [Test]
         public async Task NativeGreet()
         {
-            var actual = await _greeterService.HelloAsync(new HelloRequest { Name = "world" });
+            var actual = await _greeterService.UnaryAsync(new HelloRequest { Name = "world" });
 
             actual.Message.ShouldBe("Hello world!");
         }
