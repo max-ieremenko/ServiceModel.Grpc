@@ -15,6 +15,8 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -29,6 +31,7 @@ namespace ServiceModel.Grpc.Internal.Emit
     {
         private readonly ContractDescription _description;
         private readonly Type _contractType;
+        private readonly HashSet<string> _uniqueMemberNames;
 
         private TypeBuilder _typeBuilder = null!;
         private FieldBuilder _contractField = null!;
@@ -39,6 +42,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         {
             _description = description;
             _contractType = contractType;
+            _uniqueMemberNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
         public TypeInfo Build(ModuleBuilder moduleBuilder)
@@ -263,7 +267,36 @@ namespace ServiceModel.Grpc.Internal.Emit
 
             if (operation.Message.IsAsync)
             {
-                body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.GetServerStreamingCallResultAsync)).MakeGenericMethod(operation.Message.ResponseType.GenericTypeArguments[0]));
+                if (operation.Message.HeaderResponseType == null)
+                {
+                    body.Emit(
+                        OpCodes.Call,
+                        typeof(ClientChannelAdapter)
+                            .StaticMethod(nameof(ClientChannelAdapter.GetServerStreamingCallResultAsync), 3)
+                            .MakeGenericMethod(operation.Message.ResponseType.GenericTypeArguments[0]));
+                }
+                else
+                {
+                    PushContractMethod(body, operation.GrpcMethodOutputHeaderName); // Marshaller<>
+                    var getServerStreaming = typeof(ClientChannelAdapter)
+                        .StaticMethod(nameof(ClientChannelAdapter.GetServerStreamingCallResultAsync), 4)
+                        .MakeGenericMethod(operation.Message.HeaderResponseType, operation.Message.ResponseType.GenericTypeArguments[0]);
+
+                    body.Emit(OpCodes.Call, getServerStreaming);
+
+                    var (adapter, adapterType) = BuildServerStreamingResultAdapter(operation);
+
+                    // new Func<,>(Adapter)
+                    body.Emit(OpCodes.Ldnull);
+                    body.Emit(OpCodes.Ldftn, adapter);
+                    body.Emit(OpCodes.Newobj, adapterType.Constructor(typeof(object), typeof(IntPtr)));
+
+                    body.Emit(
+                        OpCodes.Call,
+                        typeof(ClientChannelAdapter)
+                            .StaticMethod(nameof(ClientChannelAdapter.ContinueWith))
+                            .MakeGenericMethod(getServerStreaming.ReturnType.GetGenericArguments()[0], operation.Message.Operation.ReturnType.GetGenericArguments()[0]));
+                }
 
                 if (operation.Message.Operation.ReturnType.IsValueTask())
                 {
@@ -276,6 +309,51 @@ namespace ServiceModel.Grpc.Internal.Emit
             }
 
             body.Emit(OpCodes.Ret);
+        }
+
+        private (MethodInfo Method, Type DelegateType) BuildServerStreamingResultAdapter(OperationDescription operation)
+        {
+            var parameterType = typeof(ValueTuple<,>).MakeGenericType(
+                operation.Message.HeaderResponseType,
+                typeof(IAsyncEnumerable<>).MakeGenericType(operation.Message.ResponseType.GetGenericArguments()[0]));
+
+            var returnType = operation.Message.Operation.ReturnType.GetGenericArguments()[0];
+
+            var method = _typeBuilder
+                .DefineMethod(
+                    GetUniqueMemberName("Adapt" + operation.Message.Operation.Name + "Response"),
+                    MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static,
+                    returnType,
+                    new[] { parameterType });
+
+            var body = method.GetILGenerator();
+
+            var propertiesCount = operation.Message.HeaderResponseTypeInput.Length + 1;
+            var messageFiled = parameterType.InstanceFiled("Item1");
+
+            for (var i = 0; i < propertiesCount; i++)
+            {
+                body.Emit(OpCodes.Ldarg_0);
+
+                if (i == operation.Message.ResponseTypeIndex)
+                {
+                    body.Emit(OpCodes.Ldfld, parameterType.InstanceFiled("Item2"));
+                }
+                else
+                {
+                    var index = Array.IndexOf(operation.Message.HeaderResponseTypeInput, i) + 1;
+                    var propertyName = "Value" + index.ToString(CultureInfo.InvariantCulture);
+
+                    body.Emit(OpCodes.Ldfld, messageFiled);
+                    body.Emit(OpCodes.Callvirt, messageFiled.FieldType.InstanceProperty(propertyName).GetMethod);
+                }
+            }
+
+            body.Emit(OpCodes.Newobj, returnType.Constructor(propertiesCount));
+            body.Emit(OpCodes.Ret);
+
+            var delegateType = typeof(Func<,>).MakeGenericType(parameterType, returnType);
+            return (method, delegateType);
         }
 
         private void BuildClientStreaming(ILGenerator body, OperationDescription operation)
@@ -342,7 +420,36 @@ namespace ServiceModel.Grpc.Internal.Emit
 
             if (operation.Message.IsAsync)
             {
-                body.Emit(OpCodes.Call, typeof(ClientChannelAdapter).StaticMethod(nameof(ClientChannelAdapter.GetDuplexCallResultAsync)).MakeGenericMethod(operation.Message.RequestType.GenericTypeArguments[0], operation.Message.ResponseType.GenericTypeArguments[0]));
+                if (operation.Message.HeaderResponseType == null)
+                {
+                    body.Emit(
+                        OpCodes.Call,
+                        typeof(ClientChannelAdapter)
+                            .StaticMethod(nameof(ClientChannelAdapter.GetDuplexCallResultAsync), 4)
+                            .MakeGenericMethod(operation.Message.RequestType.GenericTypeArguments[0], operation.Message.ResponseType.GenericTypeArguments[0]));
+                }
+                else
+                {
+                    PushContractMethod(body, operation.GrpcMethodOutputHeaderName); // Marshaller<>
+                    var getServerStreaming = typeof(ClientChannelAdapter)
+                        .StaticMethod(nameof(ClientChannelAdapter.GetDuplexCallResultAsync), 5)
+                        .MakeGenericMethod(operation.Message.HeaderResponseType, operation.Message.RequestType.GenericTypeArguments[0], operation.Message.ResponseType.GenericTypeArguments[0]);
+
+                    body.Emit(OpCodes.Call, getServerStreaming);
+
+                    var (adapter, adapterType) = BuildServerStreamingResultAdapter(operation);
+
+                    // new Func<,>(Adapter)
+                    body.Emit(OpCodes.Ldnull);
+                    body.Emit(OpCodes.Ldftn, adapter);
+                    body.Emit(OpCodes.Newobj, adapterType.Constructor(typeof(object), typeof(IntPtr)));
+
+                    body.Emit(
+                        OpCodes.Call,
+                        typeof(ClientChannelAdapter)
+                            .StaticMethod(nameof(ClientChannelAdapter.ContinueWith))
+                            .MakeGenericMethod(getServerStreaming.ReturnType.GetGenericArguments()[0], operation.Message.Operation.ReturnType.GetGenericArguments()[0]));
+                }
 
                 if (operation.Message.Operation.ReturnType.IsValueTask())
                 {
@@ -379,7 +486,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             if (operation.Message.HeaderRequestType != null)
             {
                 body.Emit(OpCodes.Ldloca_S, 1); // optionsBuilder
-                PushContractMethod(body, operation.GrpcMethodHeaderName); // Marshaller<>
+                PushContractMethod(body, operation.GrpcMethodInputHeaderName); // Marshaller<>
                 foreach (var i in operation.Message.HeaderRequestTypeInput)
                 {
                     body.EmitLdarg(i + 1); // parameter
@@ -489,6 +596,20 @@ namespace ServiceModel.Grpc.Internal.Emit
             il.Emit(OpCodes.Stfld, _callOptionsFactoryField);
 
             il.Emit(OpCodes.Ret);
+        }
+
+        private string GetUniqueMemberName(string suggestedName)
+        {
+            var index = 1;
+            var result = suggestedName;
+
+            while (!_uniqueMemberNames.Add(result))
+            {
+                result = suggestedName + index.ToString(CultureInfo.InvariantCulture);
+                index++;
+            }
+
+            return result;
         }
     }
 }

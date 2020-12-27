@@ -75,7 +75,17 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                             .Append("private readonly Marshaller<")
                             .Append(method.HeaderRequestType.ClassName)
                             .Append("> ")
-                            .Append(GetMethodHeaderMarshallerField(method.GrpcMethodHeaderName))
+                            .Append(GetMethodHeaderMarshallerField(method.GrpcMethodInputHeaderName))
+                            .AppendLine(";");
+                    }
+
+                    if (method.HeaderResponseType != null)
+                    {
+                        Output
+                            .Append("private readonly Marshaller<")
+                            .Append(method.HeaderResponseType.ClassName)
+                            .Append("> ")
+                            .Append(GetMethodHeaderMarshallerField(method.GrpcMethodOutputHeaderName))
                             .AppendLine(";");
                     }
                 }
@@ -103,10 +113,20 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                         if (method.HeaderRequestType != null)
                         {
                             Output
-                                .Append(GetMethodHeaderMarshallerField(method.GrpcMethodHeaderName))
+                                .Append(GetMethodHeaderMarshallerField(method.GrpcMethodInputHeaderName))
                                 .Append(" = ")
                                 .Append("contract.")
-                                .Append(method.GrpcMethodHeaderName)
+                                .Append(method.GrpcMethodInputHeaderName)
+                                .Append(";");
+                        }
+
+                        if (method.HeaderResponseType != null)
+                        {
+                            Output
+                                .Append(GetMethodHeaderMarshallerField(method.GrpcMethodOutputHeaderName))
+                                .Append(" = ")
+                                .Append("contract.")
+                                .Append(method.GrpcMethodOutputHeaderName)
                                 .Append(";");
                         }
                     }
@@ -363,12 +383,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
                 Output.AppendLine(";");
 
-                Output
-                    .Append("await ")
-                    .Append(nameof(ServerChannelAdapter))
-                    .Append(".")
-                    .Append(nameof(ServerChannelAdapter.WriteServerStreamingResult))
-                    .AppendLine("(result, response, context).ConfigureAwait(false);");
+                BuildWriteServerStreamingResult(operation);
             }
 
             Output.AppendLine("}");
@@ -439,15 +454,55 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
                 Output.AppendLine(";");
 
-                Output
-                    .Append("await ")
-                    .Append(nameof(ServerChannelAdapter))
-                    .Append(".")
-                    .Append(nameof(ServerChannelAdapter.WriteServerStreamingResult))
-                    .AppendLine("(result, response, context).ConfigureAwait(false);");
+                BuildWriteServerStreamingResult(operation);
             }
 
             Output.AppendLine("}");
+        }
+
+        private void BuildWriteServerStreamingResult(OperationDescription operation)
+        {
+            Output
+                .Append("await ")
+                .Append(nameof(ServerChannelAdapter))
+                .Append(".")
+                .Append(nameof(ServerChannelAdapter.WriteServerStreamingResult));
+
+            if (operation.HeaderResponseType == null)
+            {
+                Output.Append("(result");
+            }
+            else
+            {
+                Output
+                    .Append("<")
+                    .Append(operation.HeaderResponseType.ClassName)
+                    .Append(", ")
+                    .Append(operation.ResponseType.Properties[0])
+                    .Append(">(result.Item")
+                    .Append((operation.ResponseTypeIndex + 1).ToString(CultureInfo.InvariantCulture))
+                    .Append(", ");
+
+                Output
+                    .Append(GetMethodHeaderMarshallerField(operation.GrpcMethodOutputHeaderName))
+                    .Append(", new ")
+                    .Append(operation.HeaderResponseType.ClassName)
+                    .Append("(");
+
+                for (var i = 0; i < operation.HeaderResponseTypeInput.Length; i++)
+                {
+                    if (i > 0)
+                    {
+                        Output.Append(", ");
+                    }
+
+                    Output.Append("result.Item").Append((operation.HeaderResponseTypeInput[i] + 1).ToString(CultureInfo.InvariantCulture));
+                }
+
+                Output.Append(")");
+            }
+
+            Output.AppendLine(", response, context).ConfigureAwait(false);");
         }
 
         private void PushContext(ParameterDescription parameter)
@@ -498,7 +553,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .Append(".")
                 .Append(nameof(ServerChannelAdapter.GetMethodInputHeader))
                 .Append("(")
-                .Append(GetMethodHeaderMarshallerField(operation.GrpcMethodHeaderName))
+                .Append(GetMethodHeaderMarshallerField(operation.GrpcMethodInputHeaderName))
                 .AppendLine(", context);");
         }
     }

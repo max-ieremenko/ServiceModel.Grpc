@@ -229,6 +229,14 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
 
         public static bool IsStream(ITypeSymbol type) => IsMatch(type, typeof(Stream));
 
+        public static bool IsValueTuple(ITypeSymbol type)
+        {
+            return type.IsTupleType
+                   && type.Name.Equals(nameof(ValueTuple), StringComparison.Ordinal)
+                   && type.GenericTypeArguments().Length > 0
+                   && "System".Equals(GetNamespace(type), StringComparison.Ordinal);
+        }
+
         public static IMethodSymbol GetInterfaceImplementation(this ITypeSymbol type, IMethodSymbol interfaceMethod)
         {
             if (SymbolEqualityComparer.Default.Equals(type, interfaceMethod.ContainingType))

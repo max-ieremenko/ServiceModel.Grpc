@@ -144,14 +144,14 @@ namespace ServiceModel.Grpc.DesignTime.Generator
             var descriptions = contract
                 .Services
                 .SelectMany(i => i.Operations)
-                .SelectMany(i => new[] { i.RequestType, i.ResponseType })
-                .Where(i => !i.IsBuildIn)
-                .OrderBy(i => i.Properties.Length);
+                .SelectMany(i => new[] { i.RequestType, i.ResponseType, i.HeaderRequestType, i.HeaderResponseType })
+                .Where(i => i != null && !i.IsBuildIn)
+                .OrderBy(i => i!.Properties.Length);
 
             var distinct = new HashSet<int>();
             foreach (var description in descriptions)
             {
-                if (distinct.Add(description.Properties.Length))
+                if (distinct.Add(description!.Properties.Length))
                 {
                     yield return new CSharpMessageBuilder(description);
                 }

@@ -27,7 +27,8 @@ namespace ServiceModel.Grpc.Internal
             OperationName = operationName;
             Message = message;
             GrpcMethodName = "Method" + OperationName;
-            GrpcMethodHeaderName = "MethodHeader" + OperationName;
+            GrpcMethodInputHeaderName = "MethodHeader" + OperationName;
+            GrpcMethodOutputHeaderName = "MethodOutputHeader" + OperationName;
         }
 
         public string ServiceName { get; }
@@ -38,6 +39,8 @@ namespace ServiceModel.Grpc.Internal
 
         public string GrpcMethodName { get; }
 
-        public string GrpcMethodHeaderName { get; }
+        public string GrpcMethodInputHeaderName { get; }
+
+        public string GrpcMethodOutputHeaderName { get; }
     }
 }

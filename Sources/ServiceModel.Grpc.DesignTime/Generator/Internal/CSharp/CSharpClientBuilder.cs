@@ -15,6 +15,8 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using Grpc.Core;
 using ServiceModel.Grpc.Client;
 
@@ -26,10 +28,12 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
         private const string VarRequest = "__request";
 
         private readonly ContractDescription _contract;
+        private readonly HashSet<string> _uniqueMemberNames;
 
         public CSharpClientBuilder(ContractDescription contract)
         {
             _contract = contract;
+            _uniqueMemberNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
         public override string GetGeneratedMemberName() => _contract.ClientClassName;
@@ -168,6 +172,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             CreateMethodWithSignature(interfaceType, operation.Method);
             Output.AppendLine("{");
 
+            Action? adapterBuilder = null;
             using (Output.Indent())
             {
                 switch (operation.OperationType)
@@ -179,10 +184,10 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                         BuildClientStreaming(operation);
                         break;
                     case MethodType.ServerStreaming:
-                        BuildServerStreaming(operation);
+                        adapterBuilder = BuildServerStreaming(operation);
                         break;
                     case MethodType.DuplexStreaming:
-                        BuildDuplexStreaming(operation);
+                        adapterBuilder = BuildDuplexStreaming(operation);
                         break;
                     default:
                         throw new NotImplementedException("{0} operation is not implemented.".FormatWith(operation.OperationType));
@@ -190,6 +195,8 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             }
 
             Output.AppendLine("}");
+
+            adapterBuilder?.Invoke();
         }
 
         private void BuildUnary(OperationDescription operation)
@@ -327,7 +334,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             Output.AppendLine(";");
         }
 
-        private void BuildServerStreaming(OperationDescription operation)
+        private Action? BuildServerStreaming(OperationDescription operation)
         {
             InitializeCallOptionsVariable(operation);
             InitializeRequestVariable(operation);
@@ -356,12 +363,46 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 Output.Append(nameof(ClientChannelAdapter.GetServerStreamingCallResult));
             }
 
-            Output
-                .Append("(__call, ")
-                .Append(callContextValue)
-                .Append(", ")
-                .Append(VarCallOptions)
-                .AppendLine(".CancellationToken);");
+            string resultName;
+            Action? adapterBuilder = null;
+            if (operation.HeaderResponseType == null)
+            {
+                Output
+                    .Append("(__call, ")
+                    .Append(callContextValue)
+                    .Append(", ")
+                    .Append(VarCallOptions)
+                    .AppendLine(".CancellationToken);");
+                resultName = "__response";
+            }
+            else
+            {
+                Output
+                    .Append("<")
+                    .Append(operation.HeaderResponseType.ClassName)
+                    .Append(", ")
+                    .Append(operation.ResponseType.Properties[0])
+                    .Append(">(__call, ")
+                    .Append(callContextValue)
+                    .Append(", ")
+                    .Append(VarCallOptions)
+                    .Append(".CancellationToken, Contract.")
+                    .Append(operation.GrpcMethodOutputHeaderName)
+                    .AppendLine(");");
+
+                var adapterFunctionName = GetUniqueMemberName("Adapt" + operation.Method.Name + "Response");
+                Output
+                    .Append("var __result = ")
+                    .Append(nameof(ClientChannelAdapter))
+                    .Append(".")
+                    .Append(nameof(ClientChannelAdapter.ContinueWith))
+                    .Append("(__response, ")
+                    .Append(adapterFunctionName)
+                    .AppendLine(");");
+
+                resultName = "__result";
+                adapterBuilder = () => BuildServerStreamingResultAdapter(operation, adapterFunctionName);
+            }
 
             Output.Append("return ");
             if (operation.IsAsync && operation.Method.ReturnTypeSymbol.IsValueTask())
@@ -369,17 +410,76 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 Output
                     .Append("new ")
                     .Append(operation.Method.ReturnType)
-                    .Append("(__response)");
+                    .Append("(")
+                    .Append(resultName)
+                    .Append(")");
             }
             else
             {
-                Output.Append("__response");
+                Output.Append(resultName);
             }
 
             Output.AppendLine(";");
+            return adapterBuilder;
         }
 
-        private void BuildDuplexStreaming(OperationDescription operation)
+        private void BuildServerStreamingResultAdapter(OperationDescription operation, string functionName)
+        {
+            var returnType = SyntaxTools.GetFullName(operation.Method.ReturnTypeSymbol.GenericTypeArguments()[0]);
+            Output
+                .Append("private static ")
+                .Append(returnType)
+                .Append(" ")
+                .Append(functionName)
+                .Append("(")
+                .Append(nameof(ValueTuple))
+                .Append("<")
+                .Append(operation.HeaderResponseType!.ClassName)
+                .Append(", IAsyncEnumerable<")
+                .Append(operation.ResponseType.Properties[0])
+                .Append(">>")
+                .AppendLine("response)");
+
+            Output.AppendLine("{");
+            using (Output.Indent())
+            {
+                Output.AppendLine("var message = response.Item1;");
+
+                Output
+                    .Append("return new ")
+                    .Append(returnType)
+                    .Append("(");
+
+                // operation.ResponseTypeIndex;
+                var propertiesCount = operation.HeaderResponseTypeInput.Length + 1;
+                for (var i = 0; i < propertiesCount; i++)
+                {
+                    string value;
+                    if (i == operation.ResponseTypeIndex)
+                    {
+                        value = "response.Item2";
+                    }
+                    else
+                    {
+                        var index = Array.IndexOf(operation.HeaderResponseTypeInput, i) + 1;
+                        value = "message.Value" + index.ToString(CultureInfo.InvariantCulture);
+                    }
+
+                    if (i > 0)
+                    {
+                        Output.Append(", ");
+                    }
+
+                    Output.Append(value);
+                }
+
+                Output.AppendLine(");");
+            }
+
+            Output.AppendLine("}");
+        }
+
+        private Action? BuildDuplexStreaming(OperationDescription operation)
         {
             InitializeCallOptionsVariable(operation);
             var callContextValue = GetContextVariableValue(operation);
@@ -405,14 +505,52 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 Output.Append(nameof(ClientChannelAdapter.GetDuplexCallResult));
             }
 
-            Output
-                .Append("(__call, ")
-                .Append(operation.Method.Parameters[operation.RequestTypeInput[0]].Name)
-                .Append(", ")
-                .Append(callContextValue)
-                .Append(", ")
-                .Append(VarCallOptions)
-                .AppendLine(".CancellationToken);");
+            string resultName;
+            Action? adapterBuilder = null;
+            if (operation.HeaderResponseType == null)
+            {
+                Output
+                    .Append("(__call, ")
+                    .Append(operation.Method.Parameters[operation.RequestTypeInput[0]].Name)
+                    .Append(", ")
+                    .Append(callContextValue)
+                    .Append(", ")
+                    .Append(VarCallOptions)
+                    .AppendLine(".CancellationToken);");
+                resultName = "__response";
+            }
+            else
+            {
+                Output
+                    .Append("<")
+                    .Append(operation.HeaderResponseType.ClassName)
+                    .Append(", ")
+                    .Append(operation.RequestType.Properties[0])
+                    .Append(", ")
+                    .Append(operation.ResponseType.Properties[0])
+                    .Append(">(__call, ")
+                    .Append(operation.Method.Parameters[operation.RequestTypeInput[0]].Name)
+                    .Append(", ")
+                    .Append(callContextValue)
+                    .Append(", ")
+                    .Append(VarCallOptions)
+                    .Append(".CancellationToken, Contract.")
+                    .Append(operation.GrpcMethodOutputHeaderName)
+                    .AppendLine(");");
+
+                var adapterFunctionName = GetUniqueMemberName("Adapt" + operation.Method.Name + "Response");
+                Output
+                    .Append("var __result = ")
+                    .Append(nameof(ClientChannelAdapter))
+                    .Append(".")
+                    .Append(nameof(ClientChannelAdapter.ContinueWith))
+                    .Append("(__response, ")
+                    .Append(adapterFunctionName)
+                    .AppendLine(");");
+
+                resultName = "__result";
+                adapterBuilder = () => BuildServerStreamingResultAdapter(operation, adapterFunctionName);
+            }
 
             Output.Append("return ");
             if (operation.IsAsync && operation.Method.ReturnTypeSymbol.IsValueTask())
@@ -420,14 +558,17 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 Output
                     .Append("new ")
                     .Append(operation.Method.ReturnType)
-                    .Append("(__response)");
+                    .Append("(")
+                    .Append(resultName)
+                    .Append(")");
             }
             else
             {
-                Output.Append("__response");
+                Output.Append(resultName);
             }
 
             Output.AppendLine(";");
+            return adapterBuilder;
         }
 
         private void ImplementNotSupportedMethod(string interfaceType, NotSupportedMethodDescription method)
@@ -522,7 +663,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                         .AppendLine(".")
                         .Append(nameof(CallOptionsBuilder.WithMethodInputHeader))
                         .Append("(Contract.")
-                        .Append(operation.GrpcMethodHeaderName)
+                        .Append(operation.GrpcMethodInputHeaderName)
                         .Append(", new ")
                         .Append(operation.HeaderRequestType.ClassName)
                         .Append("(");
@@ -576,6 +717,20 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             }
 
             return "null";
+        }
+
+        private string GetUniqueMemberName(string suggestedName)
+        {
+            var index = 1;
+            var result = suggestedName;
+
+            while (!_uniqueMemberNames.Add(result))
+            {
+                result = suggestedName + index.ToString(CultureInfo.InvariantCulture);
+                index++;
+            }
+
+            return result;
         }
     }
 }

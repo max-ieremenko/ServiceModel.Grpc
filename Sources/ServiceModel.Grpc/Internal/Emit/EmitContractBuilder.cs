@@ -65,7 +65,8 @@ namespace ServiceModel.Grpc.Internal.Emit
             foreach (var operation in GetAllOperations())
             {
                 BuildMethod(operation, typeBuilder, ctor);
-                BuildHeader(operation, typeBuilder, ctor);
+                BuildRequestHeader(operation, typeBuilder, ctor);
+                BuildResponseHeader(operation, typeBuilder, ctor);
             }
 
             ctor.Emit(OpCodes.Ret);
@@ -108,7 +109,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             ctor.Emit(OpCodes.Stfld, field);
         }
 
-        private void BuildHeader(OperationDescription operation, TypeBuilder typeBuilder, ILGenerator ctor)
+        private void BuildRequestHeader(OperationDescription operation, TypeBuilder typeBuilder, ILGenerator ctor)
         {
             if (operation.Message.HeaderRequestType == null)
             {
@@ -120,13 +121,41 @@ namespace ServiceModel.Grpc.Internal.Emit
             // public Marshaller<> HeaderX
             var field = typeBuilder
                 .DefineField(
-                    operation.GrpcMethodHeaderName,
+                    operation.GrpcMethodInputHeaderName,
                     filedType,
                     FieldAttributes.Public | FieldAttributes.InitOnly);
 
             var createMarshaller = typeof(IMarshallerFactory)
                 .InstanceMethod(nameof(IMarshallerFactory.CreateMarshaller))
                 .MakeGenericMethod(operation.Message.HeaderRequestType);
+
+            ctor.Emit(OpCodes.Ldarg_0);
+
+            // marshallerFactory.CreateMarshaller<>()
+            ctor.Emit(OpCodes.Ldarg_1);
+            ctor.Emit(OpCodes.Callvirt, createMarshaller);
+            ctor.Emit(OpCodes.Stfld, field);
+        }
+
+        private void BuildResponseHeader(OperationDescription operation, TypeBuilder typeBuilder, ILGenerator ctor)
+        {
+            if (operation.Message.HeaderResponseType == null)
+            {
+                return;
+            }
+
+            var filedType = typeof(Marshaller<>).MakeGenericType(operation.Message.HeaderResponseType);
+
+            // public Marshaller<> HeaderX
+            var field = typeBuilder
+                .DefineField(
+                    operation.GrpcMethodOutputHeaderName,
+                    filedType,
+                    FieldAttributes.Public | FieldAttributes.InitOnly);
+
+            var createMarshaller = typeof(IMarshallerFactory)
+                .InstanceMethod(nameof(IMarshallerFactory.CreateMarshaller))
+                .MakeGenericMethod(operation.Message.HeaderResponseType);
 
             ctor.Emit(OpCodes.Ldarg_0);
 

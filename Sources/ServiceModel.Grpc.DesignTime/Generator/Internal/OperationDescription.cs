@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using Grpc.Core;
 using Microsoft.CodeAnalysis;
@@ -32,13 +33,14 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             ValidateSignature();
 
             OperationName = ServiceContract.GetServiceOperationName(method);
-            ResponseType = CreateResponseType(method.ReturnType);
+            (ResponseType, ResponseTypeIndex, HeaderResponseType, HeaderResponseTypeInput) = CreateResponseType(method.ReturnType);
             (RequestType, RequestTypeInput, HeaderRequestType, HeaderRequestTypeInput) = GetRequestType();
             OperationType = GetOperationType();
             ContextInput = GetContextInput();
             IsAsync = SyntaxTools.IsTask(method.ReturnType);
             GrpcMethodName = "Method" + OperationName;
-            GrpcMethodHeaderName = "MethodHeader" + OperationName;
+            GrpcMethodInputHeaderName = "MethodInputHeader" + OperationName;
+            GrpcMethodOutputHeaderName = "MethodOutputHeader" + OperationName;
         }
 
         public MethodDescription Method { get; }
@@ -48,6 +50,12 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
         public string OperationName { get; }
 
         public MessageDescription ResponseType { get; }
+
+        public int ResponseTypeIndex { get; }
+
+        public MessageDescription? HeaderResponseType { get; }
+
+        public int[] HeaderResponseTypeInput { get; }
 
         public MessageDescription RequestType { get; }
 
@@ -65,7 +73,9 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
 
         public string GrpcMethodName { get; }
 
-        public string GrpcMethodHeaderName { get; }
+        public string GrpcMethodInputHeaderName { get; }
+
+        public string GrpcMethodOutputHeaderName { get; }
 
         private static bool IsContextParameter(ITypeSymbol type)
         {
@@ -87,11 +97,11 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             return new MessageDescription(properties.Select(SyntaxTools.GetFullName).ToArray());
         }
 
-        private MessageDescription CreateResponseType(ITypeSymbol returnType)
+        private (MessageDescription ResponseType, int Index, MessageDescription? HeaderType, int[] HeaderIndexes) CreateResponseType(ITypeSymbol returnType)
         {
             if (SyntaxTools.IsVoid(returnType))
             {
-                return MessageDescription.Empty();
+                return (MessageDescription.Empty(), 0, null, Array.Empty<int>());
             }
 
             var responseType = returnType;
@@ -100,10 +110,57 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
                 var genericArguments = responseType.GenericTypeArguments();
                 if (genericArguments.IsEmpty)
                 {
-                    return MessageDescription.Empty();
+                    return (MessageDescription.Empty(), 0, null, Array.Empty<int>());
                 }
 
                 responseType = genericArguments[0];
+            }
+
+            if (SyntaxTools.IsValueTuple(responseType) && responseType.GenericTypeArguments().Any(SyntaxTools.IsAsyncEnumerable))
+            {
+                if (!SyntaxTools.IsTask(returnType))
+                {
+                    ThrowInvalidSignature("Wrap return type with Task<> or ValueTask<>.");
+                }
+
+                var genericArguments = responseType.GenericTypeArguments();
+                if (genericArguments.Length == 1)
+                {
+                    ThrowInvalidSignature("Unwrap return type from ValueTuple<>.");
+                }
+
+                var streamIndex = -1;
+                var headerIndexes = new List<int>();
+                var headerTypes = new List<ITypeSymbol>();
+                for (var i = 0; i < genericArguments.Length; i++)
+                {
+                    var genericArgument = genericArguments[i];
+                    if (SyntaxTools.IsAsyncEnumerable(genericArgument))
+                    {
+                        responseType = genericArgument.GenericTypeArguments()[0];
+                        if (streamIndex >= 0 || IsContextParameter(responseType) || !IsDataParameter(responseType))
+                        {
+                            ThrowInvalidSignature();
+                        }
+
+                        streamIndex = i;
+                    }
+                    else if (IsContextParameter(genericArgument) || !IsDataParameter(genericArgument))
+                    {
+                        ThrowInvalidSignature();
+                    }
+                    else
+                    {
+                        headerIndexes.Add(i);
+                        headerTypes.Add(genericArgument);
+                    }
+                }
+
+                return (
+                    CreateMessage(responseType),
+                    streamIndex,
+                    CreateMessage(headerTypes.ToArray()),
+                    headerIndexes.ToArray());
             }
 
             if (SyntaxTools.IsAsyncEnumerable(responseType))
@@ -116,7 +173,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
                 ThrowInvalidSignature();
             }
 
-            return new MessageDescription(new[] { SyntaxTools.GetFullName(responseType) });
+            return (CreateMessage(responseType), 0, null, Array.Empty<int>());
         }
 
         private (MessageDescription RequestType, int[] DataIndexes, MessageDescription? HeaderType, int[] HeaderIndexes) GetRequestType()
@@ -192,11 +249,17 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
 
         private MethodType GetOperationType()
         {
-            var returnTypeGenericArgs = Method.ReturnTypeSymbol.GenericTypeArguments();
-            var responseIsStreaming = SyntaxTools.IsAsyncEnumerable(Method.ReturnTypeSymbol)
-                                      || (!returnTypeGenericArgs.IsEmpty && SyntaxTools.IsTask(Method.ReturnTypeSymbol) && SyntaxTools.IsAsyncEnumerable(returnTypeGenericArgs[0]));
-            var requestIsStreaming = Method.Parameters.Select(i => i.TypeSymbol).Any(SyntaxTools.IsAsyncEnumerable);
+            var returnType = Method.ReturnTypeSymbol;
+            if (SyntaxTools.IsTask(Method.ReturnTypeSymbol))
+            {
+                var args = returnType.GenericTypeArguments();
+                returnType = args.IsEmpty ? returnType : args[0];
+            }
 
+            var responseIsStreaming = SyntaxTools.IsAsyncEnumerable(returnType)
+                                      || (SyntaxTools.IsValueTuple(returnType) && returnType.GenericTypeArguments().Any(SyntaxTools.IsAsyncEnumerable));
+
+            var requestIsStreaming = Method.Parameters.Select(i => i.TypeSymbol).Any(SyntaxTools.IsAsyncEnumerable);
             if (responseIsStreaming)
             {
                 return requestIsStreaming ? MethodType.DuplexStreaming : MethodType.ServerStreaming;
@@ -242,10 +305,17 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             }
         }
 
-        private void ThrowInvalidSignature()
+        private void ThrowInvalidSignature(string? additionalInfo = null)
         {
-            var message = "Method signature [{0}] is not supported.".FormatWith(SyntaxTools.GetSignature(Method.Source));
-            throw new NotSupportedException(message);
+            var message = new StringBuilder()
+                .AppendFormat("Method signature [{0}] is not supported.", SyntaxTools.GetSignature(Method.Source));
+
+            if (!string.IsNullOrEmpty(additionalInfo))
+            {
+                message.Append(" ").Append(additionalInfo);
+            }
+
+            throw new NotSupportedException(message.ToString());
         }
     }
 }

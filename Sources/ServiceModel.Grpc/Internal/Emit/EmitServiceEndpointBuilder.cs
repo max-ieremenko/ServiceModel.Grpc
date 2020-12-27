@@ -15,6 +15,8 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -29,6 +31,7 @@ namespace ServiceModel.Grpc.Internal.Emit
     {
         private readonly ContractDescription _description;
         private readonly Type _contractType;
+        private readonly HashSet<string> _uniqueMemberNames;
 
         private TypeBuilder _typeBuilder = null!;
         private ILGenerator _ctor = null!;
@@ -37,6 +40,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         {
             _description = description;
             _contractType = contractType;
+            _uniqueMemberNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
         public static bool IsSupportedContextInput(MessageAssembler message)
@@ -115,7 +119,8 @@ namespace ServiceModel.Grpc.Internal.Emit
         private void BuildOperation(OperationDescription operation, Type serviceType)
         {
             var body = CreateMethodWithSignature(operation.Message, serviceType, operation.OperationName);
-            var headersMarshallerFiled = InitializeHeadersMarshaller(operation);
+            var inputHeadersMarshaller = InitializeInputHeadersMarshaller(operation);
+            var outputHeadersMarshaller = InitializeOutputHeadersMarshaller(operation);
 
             switch (operation.Message.OperationType)
             {
@@ -124,15 +129,15 @@ namespace ServiceModel.Grpc.Internal.Emit
                     break;
 
                 case MethodType.ClientStreaming:
-                    BuildClientStreaming(body, operation.Message, serviceType, headersMarshallerFiled);
+                    BuildClientStreaming(body, operation.Message, serviceType, inputHeadersMarshaller);
                     break;
 
                 case MethodType.ServerStreaming:
-                    BuildServerStreaming(body, operation.Message, serviceType);
+                    BuildServerStreaming(body, operation.Message, serviceType, outputHeadersMarshaller);
                     break;
 
                 case MethodType.DuplexStreaming:
-                    BuildDuplexStreaming(body, operation.Message, serviceType, headersMarshallerFiled);
+                    BuildDuplexStreaming(body, operation.Message, serviceType, inputHeadersMarshaller, outputHeadersMarshaller);
                     break;
             }
         }
@@ -186,9 +191,9 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ret);
         }
 
-        private void BuildClientStreaming(ILGenerator body, MessageAssembler message, Type serviceType, FieldBuilder? headersMarshallerFiled)
+        private void BuildClientStreaming(ILGenerator body, MessageAssembler message, Type serviceType, FieldBuilder? inputHeadersMarshaller)
         {
-            DeclareHeaderValues(body, message, headersMarshallerFiled, 3);
+            DeclareHeaderValues(body, message, inputHeadersMarshaller, 3);
 
             // service
             body.Emit(OpCodes.Ldarg_1);
@@ -221,7 +226,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ret);
         }
 
-        private void BuildServerStreaming(ILGenerator body, MessageAssembler message, Type serviceType)
+        private void BuildServerStreaming(ILGenerator body, MessageAssembler message, Type serviceType, FieldBuilder? outputHeadersMarshaller)
         {
             // service
             body.Emit(OpCodes.Ldarg_1);
@@ -246,35 +251,56 @@ namespace ServiceModel.Grpc.Internal.Emit
             // service.Method
             CallContractMethod(body, message, serviceType);
 
-            // ServerChannelAdapter.WriteServerStreamingResult(result, stream, serverCallContext);
-            body.Emit(OpCodes.Ldarg_3); // stream
-            body.EmitLdarg(4); // serverCallContext
-
-            string adapterName;
-            if (message.IsAsync)
-            {
-                adapterName = message.Operation.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.WriteServerStreamingResultValueTask) : nameof(ServerChannelAdapter.WriteServerStreamingResultTask);
-            }
-            else
-            {
-                adapterName = nameof(ServerChannelAdapter.WriteServerStreamingResult);
-            }
-
-            if (message.ResponseType.IsGenericType)
-            {
-                body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(adapterName).MakeGenericMethod(message.ResponseType.GenericTypeArguments));
-            }
-            else
-            {
-                body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(adapterName).MakeGenericMethod(message.ResponseType));
-            }
+            BuildWriteServerStreamingResult(body, message, outputHeadersMarshaller);
 
             body.Emit(OpCodes.Ret);
         }
 
-        private void BuildDuplexStreaming(ILGenerator body, MessageAssembler message, Type serviceType, FieldBuilder? headersMarshallerFiled)
+        private (MethodInfo Method, Type DelegateType) BuildServerStreamingResultAdapter(MessageAssembler message)
         {
-            DeclareHeaderValues(body, message, headersMarshallerFiled, 4);
+            var parameterType = message.Operation.ReturnType.GetGenericArguments()[0];
+            var returnType = typeof(ValueTuple<,>).MakeGenericType(
+                message.HeaderResponseType,
+                typeof(IAsyncEnumerable<>).MakeGenericType(message.ResponseType.GenericTypeArguments[0]));
+
+            var method = _typeBuilder
+                .DefineMethod(
+                    GetUniqueMemberName("Adapt" + message.Operation.Name + "Response"),
+                    MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static,
+                    returnType,
+                    new[] { parameterType });
+
+            var body = method.GetILGenerator();
+
+            var headerPropertiesCount = message.HeaderResponseTypeInput.Length;
+            for (var i = 0; i < headerPropertiesCount; i++)
+            {
+                body.Emit(OpCodes.Ldarg_0);
+
+                var index = message.HeaderResponseTypeInput[i] + 1;
+                var fieldName = "Item" + index.ToString(CultureInfo.InvariantCulture);
+
+                body.Emit(OpCodes.Ldfld, parameterType.InstanceFiled(fieldName));
+            }
+
+            // new Header()
+            body.Emit(OpCodes.Newobj, message.HeaderResponseType!.Constructor(headerPropertiesCount));
+
+            // push stream
+            var streamFieldName = "Item" + (message.ResponseTypeIndex + 1).ToString(CultureInfo.InvariantCulture);
+            body.Emit(OpCodes.Ldarg_0);
+            body.Emit(OpCodes.Ldfld, parameterType.InstanceFiled(streamFieldName));
+
+            body.Emit(OpCodes.Newobj, returnType!.Constructor(2));
+            body.Emit(OpCodes.Ret);
+
+            var delegateType = typeof(Func<,>).MakeGenericType(parameterType, returnType);
+            return (method, delegateType);
+        }
+
+        private void BuildDuplexStreaming(ILGenerator body, MessageAssembler message, Type serviceType, FieldBuilder? inputHeadersMarshallerFiled, FieldBuilder? outputHeadersMarshaller)
+        {
+            DeclareHeaderValues(body, message, inputHeadersMarshallerFiled, 4);
 
             body.Emit(OpCodes.Ldarg_1); // service
 
@@ -301,21 +327,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             // service.Method
             CallContractMethod(body, message, serviceType);
 
-            // ServerChannelAdapter.WriteServerStreamingResult
-            body.Emit(OpCodes.Ldarg_3); // output
-            body.EmitLdarg(4); // context
-
-            string adapterName;
-            if (message.IsAsync)
-            {
-                adapterName = message.Operation.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.WriteServerStreamingResultValueTask) : nameof(ServerChannelAdapter.WriteServerStreamingResultTask);
-            }
-            else
-            {
-                adapterName = nameof(ServerChannelAdapter.WriteServerStreamingResult);
-            }
-
-            body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(adapterName).MakeGenericMethod(message.ResponseType.GenericTypeArguments));
+            BuildWriteServerStreamingResult(body, message, outputHeadersMarshaller);
 
             body.Emit(OpCodes.Ret);
         }
@@ -431,22 +443,23 @@ namespace ServiceModel.Grpc.Internal.Emit
                 parameters[i] = message.Parameters[i].ParameterType;
             }
 
-            body.Emit(OpCodes.Callvirt, serviceType.InstanceMethod(message.Operation.Name, parameters));
+            var method = serviceType.InstanceMethod(message.Operation.Name, parameters);
+            body.Emit(OpCodes.Callvirt, method);
         }
 
-        private FieldBuilder? InitializeHeadersMarshaller(OperationDescription operation)
+        private FieldBuilder? InitializeInputHeadersMarshaller(OperationDescription operation)
         {
             if (operation.Message.HeaderRequestType == null)
             {
                 return null;
             }
 
-            var contractField = _contractType.InstanceFiled(operation.GrpcMethodHeaderName);
+            var contractField = _contractType.InstanceFiled(operation.GrpcMethodInputHeaderName);
 
             // private Marshaller<Message<string, string>> _MethodMarshaller;
             var field = _typeBuilder
                 .DefineField(
-                    "_{0}".FormatWith(operation.GrpcMethodHeaderName),
+                    "_{0}".FormatWith(operation.GrpcMethodInputHeaderName),
                     contractField.FieldType,
                     FieldAttributes.Private | FieldAttributes.InitOnly);
 
@@ -457,6 +470,88 @@ namespace ServiceModel.Grpc.Internal.Emit
             _ctor.Emit(OpCodes.Stfld, field);
 
             return field;
+        }
+
+        private FieldBuilder? InitializeOutputHeadersMarshaller(OperationDescription operation)
+        {
+            if (operation.Message.HeaderResponseType == null)
+            {
+                return null;
+            }
+
+            var contractField = _contractType.InstanceFiled(operation.GrpcMethodOutputHeaderName);
+
+            // private Marshaller<Message<string, string>> _MethodMarshaller;
+            var field = _typeBuilder
+                .DefineField(
+                    "_{0}".FormatWith(operation.GrpcMethodOutputHeaderName),
+                    contractField.FieldType,
+                    FieldAttributes.Private | FieldAttributes.InitOnly);
+
+            // _MethodMarshaller = contract.MethodMarshaller
+            _ctor.Emit(OpCodes.Ldarg_0);
+            _ctor.Emit(OpCodes.Ldarg_1);
+            _ctor.Emit(OpCodes.Ldfld, contractField);
+            _ctor.Emit(OpCodes.Stfld, field);
+
+            return field;
+        }
+
+        private void BuildWriteServerStreamingResult(ILGenerator body, MessageAssembler message, FieldBuilder? outputHeadersMarshaller)
+        {
+            if (message.HeaderResponseType == null)
+            {
+                // ServerChannelAdapter.WriteServerStreamingResult(result, stream, serverCallContext);
+                body.Emit(OpCodes.Ldarg_3); // stream
+                body.EmitLdarg(4); // serverCallContext
+
+                MethodInfo channelAdapter;
+                if (message.IsAsync)
+                {
+                    channelAdapter = typeof(ServerChannelAdapter)
+                        .StaticMethod(message.Operation.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.WriteServerStreamingResultValueTask) : nameof(ServerChannelAdapter.WriteServerStreamingResultTask));
+                }
+                else
+                {
+                    channelAdapter = typeof(ServerChannelAdapter).StaticMethod(nameof(ServerChannelAdapter.WriteServerStreamingResult), 3);
+                }
+
+                body.Emit(OpCodes.Call, channelAdapter.MakeGenericMethod(message.ResponseType.GenericTypeArguments));
+            }
+            else
+            {
+                var (adapter, adapterType) = BuildServerStreamingResultAdapter(message);
+
+                // new Func<TResponse, (THeader Header, IAsyncEnumerable<TResult> Stream)> convertResponse
+                body.Emit(OpCodes.Ldnull);
+                body.Emit(OpCodes.Ldftn, adapter);
+                body.Emit(OpCodes.Newobj, adapterType.Constructor(typeof(object), typeof(IntPtr)));
+
+                body.Emit(OpCodes.Ldarg_0);
+                body.Emit(OpCodes.Ldfld, outputHeadersMarshaller!); // Marshaller<>
+
+                body.Emit(OpCodes.Ldarg_3); // stream
+                body.EmitLdarg(4); // serverCallContext
+
+                var channelAdapter = typeof(ServerChannelAdapter)
+                    .StaticMethod(message.Operation.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.WriteServerStreamingResultWithHeaderValueTask) : nameof(ServerChannelAdapter.WriteServerStreamingResultWithHeaderTask))
+                    .MakeGenericMethod(message.Operation.ReturnType.GetGenericArguments()[0], message.HeaderResponseType, message.ResponseType.GenericTypeArguments[0]);
+                body.Emit(OpCodes.Call, channelAdapter);
+            }
+        }
+
+        private string GetUniqueMemberName(string suggestedName)
+        {
+            var index = 1;
+            var result = suggestedName;
+
+            while (!_uniqueMemberNames.Add(result))
+            {
+                result = suggestedName + index.ToString(CultureInfo.InvariantCulture);
+                index++;
+            }
+
+            return result;
         }
     }
 }
