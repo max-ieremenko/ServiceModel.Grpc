@@ -22,7 +22,6 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Text;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
@@ -117,7 +116,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator
                 .Returns(true);
 
             var node = SyntaxFactory.ClassDeclaration("ClassName");
-            var source = SourceText.From("public class A {}");
+            var source = "public class A {}";
 
             var sut = new GeneratorContext(_context);
             sut.AddOutput(node, "hint_name", source);

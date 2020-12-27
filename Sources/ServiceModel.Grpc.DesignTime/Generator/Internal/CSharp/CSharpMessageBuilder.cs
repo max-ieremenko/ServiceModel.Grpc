@@ -53,6 +53,8 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             using (Output.Indent())
             {
                 BuildCtorDefault();
+                Output.AppendLine();
+
                 BuildCtorFull();
                 BuildProperties();
             }
@@ -108,14 +110,18 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                     .AppendFormat("T{0} value{0}", i + 1);
             }
 
-            Output.AppendLine(")");
-            Output.AppendLine("{");
+            Output
+                .AppendLine(")")
+                .AppendLine("{");
 
-            for (var i = 0; i < _description.Properties.Length; i++)
+            using (Output.Indent())
             {
-                Output
-                    .AppendFormat("Value{0} = value{0}", i + 1)
-                    .AppendLine(";");
+                for (var i = 0; i < _description.Properties.Length; i++)
+                {
+                    Output
+                        .AppendFormat("Value{0} = value{0}", i + 1)
+                        .AppendLine(";");
+                }
             }
 
             Output.AppendLine("}");
@@ -126,6 +132,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             for (var i = 0; i < _description.Properties.Length; i++)
             {
                 Output
+                    .AppendLine()
                     .AppendFormat("[DataMember(Name = \"v{0}\", Order = {0})]", i + 1)
                     .AppendLine()
                     .AppendFormat("public T{0} Value{0}", i + 1)

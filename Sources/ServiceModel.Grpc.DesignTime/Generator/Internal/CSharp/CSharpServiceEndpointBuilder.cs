@@ -44,12 +44,15 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             using (Output.Indent())
             {
                 BuildFields();
+                Output.AppendLine();
+
                 BuildCtor();
 
                 foreach (var interfaceDescription in _contract.Services)
                 {
                     foreach (var method in interfaceDescription.Operations)
                     {
+                        Output.AppendLine();
                         ImplementMethod(interfaceDescription.InterfaceTypeName, method);
                     }
                 }
@@ -101,7 +104,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .Append(_contract.ContractClassName)
                 .AppendLine(" contract)");
 
-            Output.Append("{");
+            Output.AppendLine("{");
             using (Output.Indent())
             {
                 Output.AppendLine("if (contract == null) throw new ArgumentNullException(\"contract\");");
@@ -117,7 +120,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                                 .Append(" = ")
                                 .Append("contract.")
                                 .Append(method.GrpcMethodInputHeaderName)
-                                .Append(";");
+                                .AppendLine(";");
                         }
 
                         if (method.HeaderResponseType != null)
@@ -127,13 +130,13 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                                 .Append(" = ")
                                 .Append("contract.")
                                 .Append(method.GrpcMethodOutputHeaderName)
-                                .Append(";");
+                                .AppendLine(";");
                         }
                     }
                 }
             }
 
-            Output.Append("}");
+            Output.AppendLine("}");
         }
 
         private void ImplementMethod(string interfaceType, OperationDescription operation)
@@ -409,7 +412,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 Output.Append("var result = ");
                 if (operation.IsAsync)
                 {
-                    Output.Append("await  ");
+                    Output.Append("await ");
                 }
 
                 Output
@@ -441,7 +444,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                             .Append(nameof(ServerChannelAdapter))
                             .Append(".")
                             .Append(nameof(ServerChannelAdapter.ReadClientStream))
-                            .AppendLine("(request, context)");
+                            .Append("(request, context)");
                     }
                 }
 

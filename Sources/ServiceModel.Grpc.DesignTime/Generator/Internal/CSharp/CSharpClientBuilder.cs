@@ -49,7 +49,11 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             using (Output.Indent())
             {
                 BuildCtorCallInvoker();
+                Output.AppendLine();
+
                 BuildCtorConfiguration();
+                Output.AppendLine();
+
                 BuildProperties();
 
                 foreach (var interfaceDescription in _contract.Interfaces)
@@ -57,6 +61,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                     foreach (var method in interfaceDescription.Methods)
                     {
                         ImplementNotSupportedMethod(interfaceDescription.InterfaceTypeName, method);
+                        Output.AppendLine();
                     }
                 }
 
@@ -65,16 +70,19 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                     foreach (var method in interfaceDescription.Methods)
                     {
                         ImplementNotSupportedMethod(interfaceDescription.InterfaceTypeName, method);
+                        Output.AppendLine();
                     }
 
                     foreach (var method in interfaceDescription.NotSupportedOperations)
                     {
                         ImplementNotSupportedMethod(interfaceDescription.InterfaceTypeName, method);
+                        Output.AppendLine();
                     }
 
                     foreach (var method in interfaceDescription.Operations)
                     {
                         ImplementMethod(interfaceDescription.InterfaceTypeName, method);
+                        Output.AppendLine();
                     }
                 }
 
@@ -100,7 +108,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 Output.AppendLine(": base(callInvoker)");
             }
 
-            Output.Append("{");
+            Output.AppendLine("{");
             using (Output.Indent())
             {
                 Output.AppendLine("if (contract == null) throw new ArgumentNullException(\"contract\");");
@@ -109,7 +117,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 Output.AppendLine("DefaultCallOptionsFactory = defaultCallOptionsFactory;");
             }
 
-            Output.Append("}");
+            Output.AppendLine("}");
         }
 
         private void BuildCtorConfiguration()
@@ -128,14 +136,14 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 Output.AppendLine(": base(configuration)");
             }
 
-            Output.Append("{");
+            Output.AppendLine("{");
             using (Output.Indent())
             {
                 Output.AppendLine("Contract = contract;");
                 Output.AppendLine("DefaultCallOptionsFactory = defaultCallOptionsFactory;");
             }
 
-            Output.Append("}");
+            Output.AppendLine("}");
         }
 
         private void BuildMethodNewInstance()
@@ -145,7 +153,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .Append(_contract.ClientClassName)
                 .AppendLine(" NewInstance(ClientBaseConfiguration configuration)");
 
-            Output.Append("{");
+            Output.AppendLine("{");
             using (Output.Indent())
             {
                 Output
@@ -154,7 +162,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                     .AppendLine("(configuration, Contract, DefaultCallOptionsFactory);");
             }
 
-            Output.Append("}");
+            Output.AppendLine("}");
         }
 
         private void BuildProperties()
@@ -162,9 +170,12 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             Output
                 .Append("public ")
                 .Append(_contract.ContractClassName)
-                .AppendLine(" Contract { get; }");
+                .AppendLine(" Contract { get; }")
+                .AppendLine();
 
-            Output.AppendLine("public Func<CallOptions> DefaultCallOptionsFactory  { get; }");
+            Output
+                .AppendLine("public Func<CallOptions> DefaultCallOptionsFactory  { get; }")
+                .AppendLine();
         }
 
         private void ImplementMethod(string interfaceType, OperationDescription operation)
@@ -679,9 +690,16 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                     Output.Append("))");
                 }
 
-                Output
-                    .AppendLine(".")
-                    .AppendLine("Build();");
+                if (operation.ContextInput.Length > 0 || operation.HeaderRequestType != null)
+                {
+                    Output
+                        .AppendLine(".")
+                        .AppendLine("Build();");
+                }
+                else
+                {
+                    Output.AppendLine(".Build();");
+                }
             }
         }
 

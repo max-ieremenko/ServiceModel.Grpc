@@ -44,7 +44,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             Output
                 .Append("Server.ServiceDefinitionCollection services, ")
                 .Append(_contract.ContractInterfaceName)
-                .Append(" service, Action<global::Grpc.Core.ServiceModelGrpcServiceOptions> configure = default)")
+                .AppendLine(" service, Action<global::Grpc.Core.ServiceModelGrpcServiceOptions> configure = default)")
                 .AppendLine("{");
 
             using (Output.Indent())

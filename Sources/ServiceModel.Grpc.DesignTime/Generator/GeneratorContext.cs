@@ -61,9 +61,10 @@ namespace ServiceModel.Grpc.DesignTime.Generator
             return bool.Parse(value);
         }
 
-        public void AddOutput(ClassDeclarationSyntax node, string hintName, SourceText source)
+        public void AddOutput(ClassDeclarationSyntax node, string hintName, string source)
         {
             var fileName = GetOutputFileName(_executionContext, node, hintName);
+            var sourceText = SourceText.From(source, GetOutEncoding());
 
             if (!string.IsNullOrEmpty(_intermediateOutputPath))
             {
@@ -72,13 +73,13 @@ namespace ServiceModel.Grpc.DesignTime.Generator
                 var outFileName = Path.Combine(_intermediateOutputPath!, fileName);
                 using (var writer = new StreamWriter(outFileName, false, GetOutEncoding()))
                 {
-                    source.Write(writer);
+                    sourceText.Write(writer, CancellationToken);
                 }
 
                 _filesToDelete.Remove(fileName);
             }
 
-            _executionContext.AddSource(fileName, WithEncoding(source));
+            _executionContext.AddSource(fileName, sourceText);
         }
 
         public void CleanUp()
@@ -142,24 +143,6 @@ namespace ServiceModel.Grpc.DesignTime.Generator
         {
             context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.servicemodelgrpcdesigntime_csextension", out var value);
             return string.IsNullOrEmpty(value) ? ".smgrpcdtg.cs" : value!;
-        }
-
-        private static SourceText WithEncoding(SourceText text)
-        {
-            if (text.Encoding != null)
-            {
-                return text;
-            }
-
-            // Warning CS8785 Generator failed to generate source. It will not contribute to the output and compilation errors may occur as a result.
-            // Exception was of type 'ArgumentException' with message 'The provided SourceText must have an explicit encoding set.
-            var source = new StringBuilder();
-            using (var writer = new StringWriter(source))
-            {
-                text.Write(writer);
-            }
-
-            return SourceText.From(new StringReader(source.ToString()), source.Length, Encoding.UTF8);
         }
 
         private static Encoding GetOutEncoding() => Encoding.UTF8;

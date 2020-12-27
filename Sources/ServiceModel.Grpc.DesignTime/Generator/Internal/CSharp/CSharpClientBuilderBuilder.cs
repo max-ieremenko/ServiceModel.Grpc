@@ -49,8 +49,14 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             using (Output.Indent())
             {
                 BuildFields();
+                Output.AppendLine();
+
                 BuildCtor();
+                Output.AppendLine();
+
                 BuildMethodInitialize();
+                Output.AppendLine();
+
                 BuildMethodBuild();
             }
 
@@ -75,7 +81,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .AppendLine(" _contract;");
 
             Output
-                .Append("private Func<CallOptions> _defaultCallOptionsFactory;");
+                .AppendLine("private Func<CallOptions> _defaultCallOptionsFactory;");
         }
 
         private void BuildMethodInitialize()
@@ -83,7 +89,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             Output
                 .AppendLine("public void Initialize(IMarshallerFactory marshallerFactory, Func<CallOptions> defaultCallOptionsFactory)");
 
-            Output.Append("{");
+            Output.AppendLine("{");
             using (Output.Indent())
             {
                 Output
@@ -102,7 +108,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                     .AppendLine("_defaultCallOptionsFactory = defaultCallOptionsFactory;");
             }
 
-            Output.Append("}");
+            Output.AppendLine("}");
         }
 
         private void BuildMethodBuild()
@@ -112,7 +118,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .Append(_contract.ContractInterfaceName)
                 .AppendLine(" Build(CallInvoker callInvoker)");
 
-            Output.Append("{");
+            Output.AppendLine("{");
             using (Output.Indent())
             {
                 Output
@@ -128,7 +134,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                     .AppendLine("(callInvoker, _contract, _defaultCallOptionsFactory);");
             }
 
-            Output.Append("}");
+            Output.AppendLine("}");
         }
     }
 }

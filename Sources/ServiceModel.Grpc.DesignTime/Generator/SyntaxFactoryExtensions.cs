@@ -18,33 +18,12 @@ using System;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ServiceModel.Grpc.DesignTime.Generator
 {
     internal static class SyntaxFactoryExtensions
     {
-        public static SyntaxList<MemberDeclarationSyntax> CopyParent(this MemberDeclarationSyntax target, SyntaxNode source)
-        {
-            var result = SyntaxFactory.SingletonList(target);
-            foreach (var ancestor in source.Ancestors())
-            {
-                switch (ancestor)
-                {
-                    case NamespaceDeclarationSyntax ns:
-                        result = SyntaxFactory.SingletonList<MemberDeclarationSyntax>(SyntaxFactory.NamespaceDeclaration(ns.Name.WithoutTrivia()).WithMembers(result));
-                        break;
-
-                    case ClassDeclarationSyntax c:
-                        result = SyntaxFactory.SingletonList<MemberDeclarationSyntax>(SyntaxFactory.ClassDeclaration(c.Identifier.WithoutTrivia()).WithMembers(result));
-                        break;
-                }
-            }
-
-            return result;
-        }
-
         public static string GetFullName(this ClassDeclarationSyntax node)
         {
             var result = new StringBuilder(node.Identifier.WithoutTrivia().ToString());

@@ -39,6 +39,8 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             using (Output.Indent())
             {
                 BuildCtor();
+                Output.AppendLine();
+
                 BuildProperties();
             }
 
@@ -82,7 +84,8 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                     .Append(operation.ResponseType.ClassName)
                     .Append("> ")
                     .Append(operation.GrpcMethodName)
-                    .AppendLine(" { get; }");
+                    .AppendLine(" { get; }")
+                    .AppendLine();
 
                 if (operation.HeaderRequestType != null)
                 {
@@ -91,7 +94,8 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                         .Append(operation.HeaderRequestType.ClassName)
                         .Append("> ")
                         .Append(operation.GrpcMethodInputHeaderName)
-                        .AppendLine(" { get; }");
+                        .AppendLine(" { get; }")
+                        .AppendLine();
                 }
 
                 if (operation.HeaderResponseType != null)
@@ -101,7 +105,8 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                         .Append(operation.HeaderResponseType.ClassName)
                         .Append("> ")
                         .Append(operation.GrpcMethodOutputHeaderName)
-                        .AppendLine(" { get; }");
+                        .AppendLine(" { get; }")
+                        .AppendLine();
                 }
             }
         }
@@ -110,31 +115,31 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
         {
             Output
                 .Append(operation.GrpcMethodName)
-                .Append(" =  new Method<")
+                .Append(" = new Method<")
                 .Append(operation.RequestType.ClassName)
                 .Append(", ")
                 .Append(operation.ResponseType.ClassName)
-                .AppendLine(">(");
+                .Append(">(");
 
             Output
                 .Append("MethodType.")
                 .Append(operation.OperationType.ToString())
-                .AppendLine(",");
+                .Append(",");
 
             Output
                 .Append("\"")
                 .Append(operation.ServiceName)
-                .AppendLine("\",");
+                .Append("\",");
 
             Output
                 .Append("\"")
                 .Append(operation.OperationName)
-                .AppendLine("\",");
+                .Append("\",");
 
             Output
                 .Append("marshallerFactory.CreateMarshaller<")
                 .Append(operation.RequestType.ClassName)
-                .AppendLine(">(),");
+                .Append(">(),");
 
             Output
                 .Append("marshallerFactory.CreateMarshaller<")
