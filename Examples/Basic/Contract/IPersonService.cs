@@ -33,6 +33,10 @@ namespace Contract
         [OperationContract]
         IAsyncEnumerable<Person> GetRandomPersonUntilCancel(CancellationToken token);
 
+        // async server streaming call with external response parameters
+        [OperationContract]
+        Task<(int Count, Address Address, IAsyncEnumerable<Person> Persons)> GetListOfStreetResidents(string country, string city, string street, CancellationToken token = default);
+
         // async duplex streaming call
         [OperationContract]
         IAsyncEnumerable<Person> OrderPersonsByAge(IAsyncEnumerable<Person> persons, CancellationToken token = default);
@@ -40,5 +44,9 @@ namespace Contract
         // async duplex streaming call with external parameters
         [OperationContract]
         IAsyncEnumerable<Person> FindPersonsYoungerThan(IAsyncEnumerable<Person> persons, TimeSpan age, CancellationToken token = default);
+
+        // async duplex streaming call with external request and response parameters
+        [OperationContract]
+        Task<(Address Address, IAsyncEnumerable<Person> Persons)> FilterPersonsByAddress(IAsyncEnumerable<Person> persons, string country, string city, string street, CancellationToken token = default);
     }
 }
