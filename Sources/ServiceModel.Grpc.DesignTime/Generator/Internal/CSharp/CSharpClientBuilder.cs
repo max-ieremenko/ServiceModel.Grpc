@@ -664,14 +664,15 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 for (var i = 0; i < operation.ContextInput.Length; i++)
                 {
                     var parameter = operation.Method.Parameters[operation.ContextInput[i]];
-                    Output.AppendLine(".");
-                    Output.AppendFormat("With{0}({1})", parameter.Type, parameter.Name);
+                    Output.AppendLine();
+                    Output.AppendFormat(".With{0}({1})", parameter.Type, parameter.Name);
                 }
 
                 if (operation.HeaderRequestType != null)
                 {
                     Output
-                        .AppendLine(".")
+                        .AppendLine()
+                        .Append(".")
                         .Append(nameof(CallOptionsBuilder.WithMethodInputHeader))
                         .Append("(Contract.")
                         .Append(operation.GrpcMethodInputHeaderName)
@@ -693,8 +694,8 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 if (operation.ContextInput.Length > 0 || operation.HeaderRequestType != null)
                 {
                     Output
-                        .AppendLine(".")
-                        .AppendLine("Build();");
+                        .AppendLine()
+                        .AppendLine(".Build();");
                 }
                 else
                 {
