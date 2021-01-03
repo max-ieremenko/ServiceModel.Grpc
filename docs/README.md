@@ -17,7 +17,7 @@ The solution is built on top of [gRPC C#](https://github.com/grpc/grpc/tree/mast
   - [unary](operation-unary.md)
   - [client streaming](operation-client-streaming.md)
   - [server streaming](operation-server-streaming.md)
-  - [duplex streaming](operation-duplex-streaming)
+  - [duplex streaming](operation-duplex-streaming.md)
 - [ASP.NET Core server configuration](ASPNETCoreServerConfiguration.md)
 - [Grpc.Core server configuration](GrpcCoreServerConfiguration.md)
 - error handler general [information](error-handling-general.md)

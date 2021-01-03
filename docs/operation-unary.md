@@ -7,7 +7,7 @@
 - the order of input and context parameters does not matter
 
 ``` c#
-// blocking unary calls
+// blocking unary call
 [OperationContract]
 [TResult|void] OperationName([T1 arg1, T2 arg2, ..., TN argN], [CancellationToken|CallContext context]);
 
