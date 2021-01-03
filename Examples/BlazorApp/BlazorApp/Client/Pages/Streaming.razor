@@ -1,0 +1,67 @@
+﻿@page "/streaming"
+@using BlazorApp.Shared
+@using System.Threading
+@using Grpc.Core
+@implements IDisposable
+@inject IWeatherForecastService Service
+
+<h1>Streaming</h1>
+
+<p>This component demonstrates server forecast streaming.</p>
+
+<p>Date: @_currentForecast?.Date.ToShortDateString()</p>
+<p>Temp. (C): @_currentForecast?.TemperatureC</p>
+<p>Temp. (F): @_currentForecast?.TemperatureF</p>
+<p>Summary: @_currentForecast?.Summary</p>
+
+<button class="btn btn-primary" @onclick="StartOrStopStreaming">@_buttonText</button>
+
+@code {
+    private string _buttonText = "Start streaming";
+    private WeatherForecast _currentForecast;
+    private CancellationTokenSource _streamingCancellationSource;
+
+    private Task StartOrStopStreaming()
+    {
+        if (_streamingCancellationSource == null)
+        {
+            _buttonText = "Stop streaming";
+            return StartStreaming();
+        }
+
+        _buttonText = "Start streaming";
+        StopStreaming();
+        return Task.CompletedTask;
+    }
+
+    private async Task StartStreaming()
+    {
+        try
+        {
+            using (_streamingCancellationSource = new CancellationTokenSource())
+            {
+                await foreach (var forecast in Service.StartForecast(_streamingCancellationSource.Token))
+                {
+                    _currentForecast = forecast;
+                    StateHasChanged();
+                }
+            }
+        }
+        catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
+        {
+        }
+    }
+
+    private void StopStreaming()
+    {
+        _streamingCancellationSource?.Cancel();
+        _streamingCancellationSource?.Dispose();
+        _streamingCancellationSource = null;
+        _currentForecast = null;
+    }
+
+    public void Dispose()
+    {
+        StopStreaming();
+    }
+}
