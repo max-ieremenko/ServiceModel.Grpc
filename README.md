@@ -1,6 +1,6 @@
 # ServiceModel.Grpc
 
-`ServiceModel.Grpc` enables applications to communicate with gRPC services using code-first approach (no .proto files), helps to get around some limitations of gRPC protocol like "only reference types", "exact one input", "no nulls". Helps to migrate existing WCF solution to gRPC with minimum effort.
+`ServiceModel.Grpc` enables applications to communicate with gRPC services using code-first approach (no .proto files), helps to get around some limitations of gRPC protocol like "only reference types", "exact one input", "no nulls". Provides exception handling. Helps to migrate existing WCF solution to gRPC with minimum effort.
 
 The library supports lightweight runtime proxy generation via Reflection.Emit and C# source code generation.
 
@@ -14,6 +14,11 @@ The solution is built on top of [gRPC C#](https://github.com/grpc/grpc/tree/mast
   - [client configuration](https://max-ieremenko.github.io/ServiceModel.Grpc/ClientConfiguration.html)
   - [client code generation](https://max-ieremenko.github.io/ServiceModel.Grpc/client-code-generation.html)
   - [server code generation](https://max-ieremenko.github.io/ServiceModel.Grpc/server-code-generation.html)
+  - operations
+    - [unary](https://max-ieremenko.github.io/ServiceModel.Grpc/operation-unary.md)
+    - [client streaming](https://max-ieremenko.github.io/ServiceModel.Grpc/operation-client-streaming.md)
+    - [server streaming](https://max-ieremenko.github.io/ServiceModel.Grpc/operation-server-streaming.md)
+    - [duplex streaming](https://max-ieremenko.github.io/ServiceModel.Grpc/operation-duplex-streaming)
   - [ASP.NET Core server configuration](https://max-ieremenko.github.io/ServiceModel.Grpc/ASPNETCoreServerConfiguration.html)
   - [Grpc.Core server configuration](https://max-ieremenko.github.io/ServiceModel.Grpc/GrpcCoreServerConfiguration.html)
   - error handler general [information](https://max-ieremenko.github.io/ServiceModel.Grpc/error-handling-general.html)
@@ -25,7 +30,7 @@ The solution is built on top of [gRPC C#](https://github.com/grpc/grpc/tree/mast
   - [example](Examples/ProtobufMarshaller) protobuf marshaller
 - [examples](Examples)
 
-## Servicemodel.grpc at a glance
+## ServiceModel.Grpc at a glance
 
 ### Declare a service contract
 
@@ -35,6 +40,9 @@ public interface ICalculator
 {
     [OperationContract]
     Task<long> Sum(long x, int y, int z, CancellationToken token = default);
+
+    [OperationContract]
+    ValueTask<(int Multiplier, IAsyncEnumerable<int> Values)> MultiplyBy(IAsyncEnumerable<int> values, int multiplier, CancellationToken token = default);
 }
 ```
 
@@ -56,8 +64,11 @@ var clientFactory = new ClientFactory();
 // request the factory to generate a proxy for ICalculator service
 var calculator = clientFactory.CreateClient<ICalculator>(channel);
 
-// the call
-var result = await calculator.Sum(1, 2, 3);
+// call Sum: sum == 6
+var sum = await calculator.Sum(1, 2, 3);
+
+// call MultiplyBy: multiplier == 2, values == [] {2, 4, 6}
+var (multiplier, values) = await calculator.MultiplyBy(new[] {1, 2, 3}, 2);
 ```
 
 ### Client call (source code generation)
@@ -89,8 +100,11 @@ clientFactory.AddCalculatorClient();
 // create a new instance of the proxy
 var calculator = clientFactory.CreateClient<ICalculator>(channel);
 
-// the call
-var result = await calculator.Sum(1, 2, 3);
+// call Sum: sum == 6
+var sum = await calculator.Sum(1, 2, 3);
+
+// call MultiplyBy: multiplier == 2, values == [] {2, 4, 6}
+var (multiplier, values) = await calculator.MultiplyBy(new[] {1, 2, 3}, 2);
 ```
 
 > ServiceModel.Grpc.DesignTime uses roslyn [source generators](https://github.com/dotnet/roslyn/blob/master/docs/features/source-generators.md), which requires [net5.0 sdk](https://dotnet.microsoft.com/download/dotnet/5.0).
@@ -101,6 +115,20 @@ var result = await calculator.Sum(1, 2, 3);
 internal sealed class Calculator : ICalculator
 {
     public Task<long> Sum(long x, int y, int z, CancellationToken token) => x + y + z;
+
+    public ValueTask<(int Multiplier, IAsyncEnumerable<int> Values)> MultiplyBy(IAsyncEnumerable<int> values, int multiplier, CancellationToken token)
+    {
+        var multiplicationResult = DoMultiplication(values, multiplier, token);
+        return new ValueTask<(int, IAsyncEnumerable<int>)>((multiplier, multiplicationResult));
+    };
+
+    private static async IAsyncEnumerable<int> DoMultiplication(IAsyncEnumerable<int> values, int multiplier, [EnumeratorCancellation] CancellationToken token)
+    {
+        await foreach (var value in values.WithCancellation(token))
+        {
+            yield return value * multiplier;
+        }
+    }
 }
 ```
 

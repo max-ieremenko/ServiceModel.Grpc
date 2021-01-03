@@ -1,6 +1,6 @@
 # ServiceModel.Grpc
 
-`ServiceModel.Grpc` enables applications to communicate with gRPC services using code-first approach (no .proto files), helps to get around some limitations of gRPC protocol like "only reference types", "exact one input", "no nulls". Helps to migrate existing WCF solution to gRPC with minimum efforts.
+`ServiceModel.Grpc` enables applications to communicate with gRPC services using code-first approach (no .proto files), helps to get around some limitations of gRPC protocol like "only reference types", "exact one input", "no nulls". Provides exception handling. Helps to migrate existing WCF solution to gRPC with minimum efforts.
 
 The library supports lightweight runtime proxy generation via Reflection.Emit and C# source code generation.
 
@@ -13,6 +13,11 @@ The solution is built on top of [gRPC C#](https://github.com/grpc/grpc/tree/mast
 - [client configuration](ClientConfiguration.md)
 - [client code generation](client-code-generation.md)
 - [server code generation](server-code-generation.md)
+- operations
+  - [unary](operation-unary.md)
+  - [client streaming](operation-client-streaming.md)
+  - [server streaming](operation-server-streaming.md)
+  - [duplex streaming](operation-duplex-streaming)
 - [ASP.NET Core server configuration](ASPNETCoreServerConfiguration.md)
 - [Grpc.Core server configuration](GrpcCoreServerConfiguration.md)
 - error handler general [information](error-handling-general.md)
@@ -43,6 +48,9 @@ public interface IGreeter
 {
     [OperationContract]
     Task<string> SayHello(Person person, CancellationToken token = default);
+
+    [OperationContract]
+    ValueTask<(string Greeting, IAsyncEnumerable<string> Greetings)> Greet(IAsyncEnumerable<Person> persons, string greeting, CancellationToken token = default);
 }
 ```
 
@@ -64,8 +72,11 @@ var clientFactory = new ClientFactory();
 // request the factory to generate a proxy for IGreeter service
 var greeter = clientFactory.CreateClient<IGreeter>(channel);
 
-// the call
+// call SayHello
 var greet = await greeter.SayHello(new Person { FirstName = "John", SecondName = "X" });
+
+// call Greet
+var (greeting, greetings) = await greeter.Greet(new[] { new Person { FirstName = "John", SecondName = "X" } }, "hello");
 ```
 
 ### Client call (source code generation)
@@ -97,8 +108,11 @@ clientFactory.AddGreeterClient();
 // create a new instance of the proxy
 var greeter = clientFactory.CreateClient<IGreeter>(channel);
 
-// the call
+// call SayHello
 var greet = await greeter.SayHello(new Person { FirstName = "John", SecondName = "X" });
+
+// call Greet
+var (greeting, greetings) = await greeter.Greet(new[] { new Person { FirstName = "John", SecondName = "X" } }, "hello");
 ```
 
 > ServiceModel.Grpc.DesignTime uses roslyn [source generators](https://github.com/dotnet/roslyn/blob/master/docs/features/source-generators.md), which requires [net5.0 sdk](https://dotnet.microsoft.com/download/dotnet/5.0).
@@ -111,6 +125,20 @@ internal sealed class Greeter : IGreeter
     public Task<string> SayHello(Person person, CancellationToken token = default)
     {
         return string.Format("Hello {0} {1}", person.FirstName, person.SecondName);
+    }
+
+    public ValueTask<(string Greeting, IAsyncEnumerable<string> Greetings)> Greet(IAsyncEnumerable<Person> persons, string greeting, CancellationToken token)
+    {
+        var greetings = DoGreet();
+        return new ValueTask<(string, IAsyncEnumerable<string>)>((greeting, greetings));
+    }
+
+    private static async IAsyncEnumerable<string> DoGreet(IAsyncEnumerable<Person> persons, string greeting, [EnumeratorCancellation] CancellationToken token)
+    {
+        await foreach (var person in persons.WithCancellation(token))
+        {
+            yield return string.Format("{0} {1} {2}", greeting, person.FirstName, person.SecondName);
+        }
     }
 }
 ```
@@ -195,86 +223,7 @@ public interface IPersonService
 
 ## Operation contracts
 
-Any operation in a service contract is one of gRPC method: Unary, ClientStreaming, ServerStreaming or DuplexStreaming.
-
-#### Unary operation
-
-Response is optional, any number of request parameters
-
-``` c#
-// blocking unary client call
-[OperationContract]
-int Sum(int x, int y);
-
-// async unary client call
-[OperationContract]
-Task<string> SumAsync(int x, int y);
-```
-
-#### ClientStreaming operation
-
-Response is optional
-
-``` c#
-// call is compatible with native gRPC
-[OperationContract]
-Task<long> SumValues(IAsyncEnumerable<int> values);
-```
-
-ServiceModel.Grpc supports any number of extra request parameters, but this call is not fully compatible with native gRPC call.
-
-``` c#
-// call is not fully compatible with native gRPC
-[OperationContract]
-Task<long> MultiplyByAndSumValues(IAsyncEnumerable<int> values, int multiplier);
-```
-
-#### ServerStreaming operation
-
-Any number of request parameters
-
-``` c#
-[OperationContract]
-IAsyncEnumerable<int> EnumerableRange(int start, int count);
-
-[OperationContract]
-Task<IAsyncEnumerable<int>> EnumerableRange(int start, int count);
-
-[OperationContract]
-ValueTask<IAsyncEnumerable<int>> EnumerableRange(int start, int count);
-```
-
-#### DuplexStreaming operation
-
-``` c#
-// call is compatible with native gRPC
-[OperationContract]
-IAsyncEnumerable<int> MultiplyBy2(IAsyncEnumerable<int> values);
-
-// call is compatible with native gRPC
-[OperationContract]
-Task<IAsyncEnumerable<int>> MultiplyBy2(IAsyncEnumerable<int> values);
-
-// call is compatible with native gRPC
-[OperationContract]
-ValueTask<IAsyncEnumerable<int>> MultiplyBy2(IAsyncEnumerable<int> values);
-```
-
-ServiceModel.Grpc supports any number of extra request parameters, but this call is not fully compatible with native gRPC call.
-
-``` c#
-// call is not fully compatible with native gRPC
-[OperationContract]
-IAsyncEnumerable<int> MultiplyBy(IAsyncEnumerable<int> values, int multiplier);
-
-// call is not fully compatible with native gRPC
-[OperationContract]
-Task<IAsyncEnumerable<int>> MultiplyBy(IAsyncEnumerable<int> values, int multiplier);
-
-// call is not fully compatible with native gRPC
-[OperationContract]
-ValueTask<IAsyncEnumerable<int>> MultiplyBy(IAsyncEnumerable<int> values, int multiplier);
-```
+Any operation in a service contract is one of gRPC method: [Unary](operation-unary.md), [ClientStreaming](operation-client-streaming.md), [ServerStreaming](operation-server-streaming.md) or [DuplexStreaming](operation-duplex-streaming.md).
 
 #### Context parameters
 
