@@ -45,7 +45,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             var output = new CodeStringBuilder();
             CSharpServiceEndpointBinderBuilder.WriteNewAttribute(output, attribute);
 
-            output.ToString().ShouldBe(expected);
+            output.AsStringBuilder().ToString().ShouldBe(expected);
         }
 
         private static IEnumerable<TestCaseData> GetWriteNewAttributeCases()
@@ -64,7 +64,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
                 yield return new TestCaseData(attributes[0], expected)
                 {
-                    TestName = method.Name
+                    TestName = "WriteAttribute." + method.Name
                 };
             }
         }

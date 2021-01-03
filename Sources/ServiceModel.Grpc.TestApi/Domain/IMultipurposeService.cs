@@ -40,6 +40,9 @@ namespace ServiceModel.Grpc.TestApi.Domain
         Task<IAsyncEnumerable<string>> RepeatValueAsync(string value, int count, CallContext? context = default);
 
         [OperationContract]
+        ValueTask<(int TotalItemsCount, IAsyncEnumerable<byte[]> Arrays)> GenerateArraysAsync(int arrayLength, int count, CancellationToken token = default);
+
+        [OperationContract]
         Task<long> SumValues(IAsyncEnumerable<int> values, CallContext? context = default);
 
         [OperationContract]
@@ -53,5 +56,8 @@ namespace ServiceModel.Grpc.TestApi.Domain
 
         [OperationContract]
         ValueTask<IAsyncEnumerable<int>> MultiplyByAsync(IAsyncEnumerable<int> values, int multiplier, CallContext? context = default);
+
+        [OperationContract]
+        ValueTask<(IAsyncEnumerable<string> Greetings, string Greeting)> GreetAsync(IAsyncEnumerable<string> names, string greeting, CancellationToken token = default);
     }
 }

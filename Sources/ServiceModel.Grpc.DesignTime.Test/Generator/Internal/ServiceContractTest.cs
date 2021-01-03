@@ -45,21 +45,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
         }
 
         [Test]
-        [TestCase(typeof(I1), "I1")]
-        [TestCase(typeof(I2), "Service2")]
-        [TestCase(typeof(I3), "Test.Service2")]
-        [TestCase(typeof(IGeneric1<double>), "IGeneric1-Double")]
-        [TestCase(typeof(IGeneric2<double, int>), "Service2-Double-Int32")]
-        [TestCase(typeof(IGeneric1<IGeneric2<double, int>>), "IGeneric1-IGeneric2-Double-Int32")]
-        [TestCase(typeof(IGeneric1<SomeData>), "IGeneric1-Some-Data")]
-        [TestCase(typeof(IGeneric1<int?>), "IGeneric1-Nullable-Int32")]
-        [TestCase(typeof(IGeneric1<int?[][]>), "IGeneric1-ArrayArrayNullable-Int32")]
-        [TestCase(typeof(IGeneric1<string?>), "IGeneric1-String")]
-        [TestCase(typeof(IGeneric1<string[]>), "IGeneric1-ArrayString")]
-        [TestCase(typeof(IGeneric1<string[][]>), "IGeneric1-ArrayArrayString")]
-        [TestCase(typeof(IGeneric1<string[,]>), "IGeneric1-Array2String")]
-        [TestCase(typeof(IGeneric1<IList<string>?>), "IGeneric1-IList-String")]
-        [TestCase(typeof(IGeneric1<IList<int?>>), "IGeneric1-IList-Nullable-Int32")]
+        [TestCaseSource(nameof(GetGetServiceNameCases))]
         public void GetServiceName(Type type, string expected)
         {
             var symbol = _compilation.GetTypeByMetadataName(type);
@@ -78,6 +64,33 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             var method = SyntaxTools.GetInstanceMethods(symbol).First(i => i.Name == methodName);
 
             ServiceContract.GetServiceOperationName(method).ShouldBe(expected);
+        }
+
+        private static IEnumerable<TestCaseData> GetGetServiceNameCases()
+        {
+            var cases = new[]
+            {
+                (typeof(I1), "I1"),
+                (typeof(I2), "Service2"),
+                (typeof(I3), "Test.Service2"),
+                (typeof(IGeneric1<double>), "IGeneric1-Double"),
+                (typeof(IGeneric2<double, int>), "Service2-Double-Int32"),
+                (typeof(IGeneric1<IGeneric2<double, int>>), "IGeneric1-IGeneric2-Double-Int32"),
+                (typeof(IGeneric1<SomeData>), "IGeneric1-Some-Data"),
+                (typeof(IGeneric1<int?>), "IGeneric1-Nullable-Int32"),
+                (typeof(IGeneric1<int?[][]>), "IGeneric1-ArrayArrayNullable-Int32"),
+                (typeof(IGeneric1<string?>), "IGeneric1-String"),
+                (typeof(IGeneric1<string[]>), "IGeneric1-ArrayString"),
+                (typeof(IGeneric1<string[][]>), "IGeneric1-ArrayArrayString"),
+                (typeof(IGeneric1<string[,]>), "IGeneric1-Array2String"),
+                (typeof(IGeneric1<IList<string>?>), "IGeneric1-IList-String"),
+                (typeof(IGeneric1<IList<int?>>), "IGeneric1-IList-Nullable-Int32")
+            };
+
+            foreach (var item in cases)
+            {
+                yield return new TestCaseData(item.Item1, item.Item2) { TestName = "GetServiceName." + item.Item2 };
+            }
         }
     }
 }

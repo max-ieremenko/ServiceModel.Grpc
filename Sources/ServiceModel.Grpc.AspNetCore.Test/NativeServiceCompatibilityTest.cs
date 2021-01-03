@@ -57,10 +57,10 @@ namespace ServiceModel.Grpc.AspNetCore
         [Test]
         [TestCase("Native")]
         [TestCase("Domain")]
-        public async Task HelloNativeCall(string channelName)
+        public async Task UnaryNativeCall(string channelName)
         {
             var client = new Greeter.GreeterClient(GetChannel(channelName));
-            var response = await client.HelloAsync(new HelloRequest { Name = "world" });
+            var response = await client.UnaryAsync(new HelloRequest { Name = "world" });
 
             response.Message.ShouldBe("Hello world!");
         }
@@ -68,13 +68,16 @@ namespace ServiceModel.Grpc.AspNetCore
         [Test]
         [TestCase("Native")]
         [TestCase("Domain")]
-        public async Task HelloAllNativeCall(string channelName)
+        public async Task DuplexStreamingNativeCall(string channelName)
         {
             var client = new Greeter.GreeterClient(GetChannel(channelName));
             var response = new List<string>();
 
-            using (var call = client.HelloAll(GreeterService.CreateHelloAllHeader("Hello")))
+            using (var call = client.DuplexStreaming(CompatibilityToolsTestExtensions.SerializeMethodInput(ProtobufMarshallerFactory.Default, "Hello")))
             {
+                var responseHeaders = await call.ResponseHeadersAsync.ConfigureAwait(false);
+                CompatibilityToolsTestExtensions.DeserializeMethodOutput<string>(ProtobufMarshallerFactory.Default, responseHeaders).ShouldBe("Hello");
+
                 foreach (var name in new[] { "person 1", "person 2" })
                 {
                     await call.RequestStream.WriteAsync(new HelloRequest { Name = name });
@@ -94,10 +97,10 @@ namespace ServiceModel.Grpc.AspNetCore
         [Test]
         [TestCase("Native")]
         [TestCase("Domain")]
-        public async Task HelloDomainCall(string channelName)
+        public async Task UnaryDomainCall(string channelName)
         {
             var client = _serviceModelHost.ClientFactory.CreateClient<IDomainGreeterService>(GetChannel(channelName));
-            var response = await client.HelloAsync("world");
+            var response = await client.UnaryAsync("world");
 
             response.ShouldBe("Hello world!");
         }
@@ -105,11 +108,13 @@ namespace ServiceModel.Grpc.AspNetCore
         [Test]
         [TestCase("Native")]
         [TestCase("Domain")]
-        public async Task HelloAllDomainCall(string channelName)
+        public async Task DuplexStreamingDomainCall(string channelName)
         {
             var client = _serviceModelHost.ClientFactory.CreateClient<IDomainGreeterService>(GetChannel(channelName));
-            var response = await client.HelloAllAsync(new[] { "person 1", "person 2" }.AsAsyncEnumerable(), "Hello").ToListAsync();
+            var (greet, stream) = await client.DuplexStreaming(new[] { "person 1", "person 2" }.AsAsyncEnumerable(), "Hello").ConfigureAwait(false);
 
+            greet.ShouldBe("Hello");
+            var response = await stream.ToListAsync().ConfigureAwait(false);
             response.ShouldBe(new[] { "Hello person 1!", "Hello person 2!" });
         }
 

@@ -96,6 +96,14 @@ namespace ServiceModel.Grpc.Internal
                    && type.Name.Equals("IAsyncEnumerable`1", StringComparison.Ordinal);
         }
 
+        public static bool IsValueTuple(Type type)
+        {
+            return type.IsGenericType
+                   && type.Name.StartsWith(nameof(ValueTuple) + "`", StringComparison.Ordinal)
+                   && type.GenericTypeArguments.Length > 0
+                   && "System".Equals(type.Namespace, StringComparison.Ordinal);
+        }
+
         public static bool IsOut(this ParameterInfo parameter) => parameter.IsOut;
 
         public static bool IsRef(this ParameterInfo parameter) => parameter.ParameterType.Name.EndsWith("&", StringComparison.Ordinal);
@@ -113,6 +121,33 @@ namespace ServiceModel.Grpc.Internal
                 throw new ArgumentOutOfRangeException("{0} has no .ctor ({1}).".FormatWith(
                     type.Name,
                     string.Join(",", parameters.Select(i => i.Name))));
+            }
+
+            return result;
+        }
+
+        public static ConstructorInfo Constructor(this Type type, int parametersCount)
+        {
+            var constructors = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+            ConstructorInfo? result = null;
+            for (var i = 0; i < constructors.Length; i++)
+            {
+                var ctor = constructors[i];
+                if (ctor.GetParameters().Length == parametersCount)
+                {
+                    if (result != null)
+                    {
+                        throw new ArgumentException("{0} contains too many ctors with {1} parameters.".FormatWith(type.Name, parametersCount));
+                    }
+
+                    result = ctor;
+                }
+            }
+
+            if (result == null)
+            {
+                throw new ArgumentException("{0} does not contain ctor with {1} parameters.".FormatWith(type.Name, parametersCount));
             }
 
             return result;
@@ -190,14 +225,24 @@ namespace ServiceModel.Grpc.Internal
             return result;
         }
 
-        public static MethodInfo StaticMethod(this Type type, string name, params Type[] parameters)
+        public static MethodInfo StaticMethod(this Type type, string name, int parametersCount)
         {
-            var result = type.GetMethod(
-                name,
-                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly,
-                null,
-                parameters,
-                null);
+            var methods = type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly);
+
+            MethodInfo? result = null;
+            for (var i = 0; i < methods.Length; i++)
+            {
+                var method = methods[i];
+                if (name.Equals(method.Name, StringComparison.Ordinal) && method.GetParameters().Length == parametersCount)
+                {
+                    if (result != null)
+                    {
+                        throw new ArgumentOutOfRangeException("{0} implements too many methods {1} with {2} parameters.".FormatWith(type.Name, name, parametersCount));
+                    }
+
+                    result = method;
+                }
+            }
 
             if (result == null)
             {

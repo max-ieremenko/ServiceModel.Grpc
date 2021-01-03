@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
@@ -34,7 +35,7 @@ namespace ServiceModel.Grpc.Internal
 
             ValidateSignature();
 
-            ResponseType = GetResponseType();
+            (ResponseType, ResponseTypeIndex, HeaderResponseType, HeaderResponseTypeInput) = GetResponseType(operation.ReturnType);
             (RequestType, RequestTypeInput, HeaderRequestType, HeaderRequestTypeInput) = GetRequestType();
             ContextInput = GetContextInput();
             OperationType = GetOperationType();
@@ -46,6 +47,12 @@ namespace ServiceModel.Grpc.Internal
         public ParameterInfo[] Parameters { get; }
 
         public Type ResponseType { get; }
+
+        public int ResponseTypeIndex { get; }
+
+        public Type? HeaderResponseType { get; }
+
+        public int[] HeaderResponseTypeInput { get; }
 
         public Type RequestType { get; }
 
@@ -76,24 +83,69 @@ namespace ServiceModel.Grpc.Internal
                 && !ReflectionTools.IsStream(type);
         }
 
-        private Type GetResponseType()
+        private (Type ResponseType, int Index, Type? HeaderType, int[] HeaderIndexes) GetResponseType(Type returnType)
         {
-            var returnType = Operation.ReturnType;
             if (returnType == typeof(void))
             {
-                return typeof(Message);
+                return (typeof(Message), 0, null, Array.Empty<int>());
             }
 
             var responseType = returnType;
-
             if (ReflectionTools.IsTask(returnType))
             {
                 if (!returnType.IsGenericType)
                 {
-                    return typeof(Message);
+                    return (typeof(Message), 0, null, Array.Empty<int>());
                 }
 
                 responseType = returnType.GenericTypeArguments[0];
+            }
+
+            if (ReflectionTools.IsValueTuple(responseType) && responseType.GenericTypeArguments.Any(ReflectionTools.IsAsyncEnumerable))
+            {
+                if (!ReflectionTools.IsTask(returnType))
+                {
+                    ThrowInvalidSignature("Wrap return type with Task<> or ValueTask<>.");
+                }
+
+                var genericArguments = responseType.GenericTypeArguments;
+                if (genericArguments.Length == 1)
+                {
+                    ThrowInvalidSignature("Unwrap return type from ValueTuple<>.");
+                }
+
+                var streamIndex = -1;
+                var headerIndexes = new List<int>();
+                var headerTypes = new List<Type>();
+                for (var i = 0; i < genericArguments.Length; i++)
+                {
+                    var genericArgument = genericArguments[i];
+                    if (ReflectionTools.IsAsyncEnumerable(genericArgument))
+                    {
+                        responseType = genericArgument.GenericTypeArguments[0];
+                        if (streamIndex >= 0 || IsContextParameter(responseType) || !IsDataParameter(responseType))
+                        {
+                            ThrowInvalidSignature();
+                        }
+
+                        streamIndex = i;
+                    }
+                    else if (IsContextParameter(genericArgument) || !IsDataParameter(genericArgument))
+                    {
+                        ThrowInvalidSignature();
+                    }
+                    else
+                    {
+                        headerIndexes.Add(i);
+                        headerTypes.Add(genericArgument);
+                    }
+                }
+
+                return (
+                    MessageBuilder.GetMessageType(responseType),
+                    streamIndex,
+                    MessageBuilder.GetMessageType(headerTypes.ToArray()),
+                    headerIndexes.ToArray());
             }
 
             if (ReflectionTools.IsAsyncEnumerable(responseType))
@@ -106,7 +158,7 @@ namespace ServiceModel.Grpc.Internal
                 ThrowInvalidSignature();
             }
 
-            return typeof(Message<>).MakeGenericType(responseType);
+            return (MessageBuilder.GetMessageType(responseType), 0, null, Array.Empty<int>());
         }
 
         private (Type MessageType, int[] DataIndexes, Type? HeaderType, int[] HeaderIndexes) GetRequestType()
@@ -175,10 +227,17 @@ namespace ServiceModel.Grpc.Internal
 
         private MethodType GetOperationType()
         {
-            var responseIsStreaming = ReflectionTools.IsAsyncEnumerable(Operation.ReturnType)
-                || (Operation.ReturnType.IsGenericType && ReflectionTools.IsTask(Operation.ReturnType) && ReflectionTools.IsAsyncEnumerable(Operation.ReturnType.GetGenericArguments()[0]));
-            var requestIsStreaming = Parameters.Select(i => i.ParameterType).Any(ReflectionTools.IsAsyncEnumerable);
+            var returnType = Operation.ReturnType;
+            if (ReflectionTools.IsTask(returnType))
+            {
+                var args = returnType.GenericTypeArguments;
+                returnType = args.Length == 0 ? returnType : args[0];
+            }
 
+            var responseIsStreaming = ReflectionTools.IsAsyncEnumerable(returnType)
+                                      || (ReflectionTools.IsValueTuple(returnType) && returnType.GenericTypeArguments.Any(ReflectionTools.IsAsyncEnumerable));
+
+            var requestIsStreaming = Parameters.Select(i => i.ParameterType).Any(ReflectionTools.IsAsyncEnumerable);
             if (responseIsStreaming)
             {
                 return requestIsStreaming ? MethodType.DuplexStreaming : MethodType.ServerStreaming;
@@ -224,10 +283,17 @@ namespace ServiceModel.Grpc.Internal
             }
         }
 
-        private void ThrowInvalidSignature()
+        private void ThrowInvalidSignature(string? additionalInfo = null)
         {
-            var message = "Method signature [{0}] is not supported.".FormatWith(ReflectionTools.GetSignature(Operation));
-            throw new NotSupportedException(message);
+            var message = new StringBuilder()
+                .AppendFormat("Method signature [{0}] is not supported.", ReflectionTools.GetSignature(Operation));
+
+            if (!string.IsNullOrEmpty(additionalInfo))
+            {
+                message.Append(" ").Append(additionalInfo);
+            }
+
+            throw new NotSupportedException(message.ToString());
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -89,6 +90,22 @@ namespace Service
             }
         }
 
+        public async Task<(int Count, Address Address, IAsyncEnumerable<Person> Persons)> GetListOfStreetResidents(string country, string city, string street, CancellationToken token)
+        {
+            await Task.Delay(TimeSpan.FromMilliseconds(100), token);
+
+            var count = 3;
+            var address = new Address
+            {
+                City = city,
+                Country = country,
+                Street = street
+            };
+
+            var persons = CreateStreetResidents(count, address, token);
+            return (count, address, persons);
+        }
+
         public async IAsyncEnumerable<Person> OrderPersonsByAge(IAsyncEnumerable<Person> persons, [EnumeratorCancellation] CancellationToken token)
         {
             var buffer = new List<Person>();
@@ -110,6 +127,50 @@ namespace Service
             await foreach (var person in persons.WithCancellation(token))
             {
                 if ((DateTime.Now - person.DateOfBirth) < age)
+                {
+                    yield return person;
+                }
+            }
+        }
+
+        public async Task<(Address Address, IAsyncEnumerable<Person> Persons)> FilterPersonsByAddress(IAsyncEnumerable<Person> persons, string country, string city, string street, CancellationToken token)
+        {
+            await Task.Delay(TimeSpan.FromMilliseconds(100), token);
+
+            var address = new Address
+            {
+                City = city,
+                Country = country,
+                Street = street
+            };
+
+            var filtered = FilterPersonsByAddress(persons, address, token);
+            return (address, filtered);
+        }
+
+        private static async IAsyncEnumerable<Person> CreateStreetResidents(int top, Address address, [EnumeratorCancellation] CancellationToken token)
+        {
+            for (var i = 0; i < top; i++)
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(100), token);
+
+                yield return new Person
+                {
+                    FullName = Guid.NewGuid().ToString(),
+                    Addresses = new[] { address }
+                };
+            }
+        }
+
+        private static async IAsyncEnumerable<Person> FilterPersonsByAddress(IAsyncEnumerable<Person> persons, Address address, [EnumeratorCancellation] CancellationToken token)
+        {
+            await foreach (var person in persons.WithCancellation(token).ConfigureAwait(false))
+            {
+                var match = person.Addresses != null && person.Addresses.Any(i =>
+                    string.Equals(i.City, address.City, StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(i.Country, address.Country, StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(i.Street, address.Street, StringComparison.OrdinalIgnoreCase));
+                if (match)
                 {
                     yield return person;
                 }

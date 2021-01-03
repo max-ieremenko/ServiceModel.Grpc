@@ -95,7 +95,7 @@ namespace ServiceModel.Grpc.Internal
             catch (NotSupportedException ex)
             {
                 var text = new StringBuilder();
-                Exception e = ex;
+                Exception? e = ex;
                 while (e != null)
                 {
                     if (text.Length > 0)

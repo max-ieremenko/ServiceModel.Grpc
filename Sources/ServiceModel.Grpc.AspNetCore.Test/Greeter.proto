@@ -11,6 +11,6 @@ message HelloResult {
 }
 
 service Greeter {
-	rpc Hello (HelloRequest) returns (HelloResult);
-	rpc HelloAll (stream HelloRequest) returns (stream HelloResult);
+	rpc Unary (HelloRequest) returns (HelloResult);
+	rpc DuplexStreaming (stream HelloRequest) returns (stream HelloResult);
 }

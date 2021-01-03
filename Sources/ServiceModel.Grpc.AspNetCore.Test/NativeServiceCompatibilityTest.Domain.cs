@@ -25,24 +25,32 @@ namespace ServiceModel.Grpc.AspNetCore
         [ServiceContract(Name = "Greeter")]
         public interface IDomainGreeterService
         {
-            [OperationContract(Name = "Hello")]
-            Task<string> HelloAsync(string name, CallContext? context = default);
+            [OperationContract(Name = "Unary")]
+            Task<string> UnaryAsync(string name, CallContext? context = default);
 
-            [OperationContract(Name = "HelloAll")]
-            IAsyncEnumerable<string> HelloAllAsync(IAsyncEnumerable<string> names, string greet, CallContext? context = default);
+            [OperationContract]
+            Task<(string Greet, IAsyncEnumerable<string> Stream)> DuplexStreaming(IAsyncEnumerable<string> names, string greet, CallContext? context = default);
         }
 
         private sealed class DomainGreeterService : IDomainGreeterService
         {
-            public async Task<string> HelloAsync(string name, CallContext? context)
+            public async Task<string> UnaryAsync(string name, CallContext? context)
             {
-                var response = await new GreeterService().Hello(new HelloRequest { Name = name }, context!);
+                var response = await new GreeterService().Unary(new HelloRequest { Name = name }, context!);
                 return response.Message;
             }
 
-            public async IAsyncEnumerable<string> HelloAllAsync(IAsyncEnumerable<string> names, string greet, CallContext? context)
+            public async Task<(string Greet, IAsyncEnumerable<string> Stream)> DuplexStreaming(IAsyncEnumerable<string> names, string greet, CallContext? context)
             {
-                await foreach (var i in names)
+                await Task.CompletedTask.ConfigureAwait(false);
+
+                var stream = Greet(names, greet);
+                return (greet, stream);
+            }
+
+            private static async IAsyncEnumerable<string> Greet(IAsyncEnumerable<string> names, string greet)
+            {
+                await foreach (var i in names.ConfigureAwait(false))
                 {
                     yield return greet + " " + i + "!";
                 }

@@ -14,11 +14,13 @@
 // limitations under the License.
 // </copyright>
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using NUnit.Framework;
+using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
 
@@ -28,101 +30,187 @@ namespace ServiceModel.Grpc.TestApi
     {
         protected Metadata DefaultMetadata { get; } = new Metadata
         {
-            { "defaultHeader", "defaultHeader value" }
+            { HeadersService.DefaultHeaderName, HeadersService.DefaultHeaderValue }
         };
 
         protected IHeadersService DomainService { get; set; } = null!;
 
         [Test]
-        public void GetDefaultRequestHeader()
+        public void UnaryCall()
         {
-            DomainService.GetRequestHeader(DefaultMetadata[0].Key).ShouldBe(DefaultMetadata[0].Value);
-        }
+            var context = CreateCallContext();
 
-        [Test]
-        public void GetRequestHeader()
-        {
-            var options = new CallOptions(new Metadata
-            {
-                { "h1", "value 1" }
-            });
+            DomainService.UnaryCall(context);
 
-            DomainService.GetRequestHeader("h1", options).ShouldBe("value 1");
-        }
-
-        [Test]
-        public async Task WriteResponseHeader()
-        {
-            var context = new CallContext();
-
-            await DomainService.WriteResponseHeader("h1", "value 1", context);
-
-            var actual = context.ResponseHeaders.Where(i => i.Key == "h1").Select(i => i.Value).ToArray();
-            actual.ShouldBe(new[] { "value 1" });
-        }
-
-        [Test]
-        public async Task ServerStreamingWriteResponseHeader()
-        {
-            var context = new CallContext();
-
-            var response = DomainService.ServerStreamingWriteResponseHeader("h1", "value 1", context);
-
+            // see CallInvoker.BlockingUnaryCall: no API to access response headers
             context.ResponseHeaders.ShouldBeNull();
+            context.ResponseTrailers.ShouldBeNull();
+            context.ResponseStatus.ShouldBeNull();
+        }
+
+        [Test]
+        public async Task UnaryCallAsync()
+        {
+            var context = CreateCallContext();
+
+            await DomainService.UnaryCallAsync(context).ConfigureAwait(false);
+
+            ValidateResponse(context);
+        }
+
+        [Test]
+        public async Task ServerStreamingCall()
+        {
+            var context = CreateCallContext();
+
+            var stream = DomainService.ServerStreamingCall(context);
+
+            // in ServerStreamingCallAsync headers are already available
+            context.ResponseHeaders.ShouldBeNull();
+            context.ResponseTrailers.ShouldBeNull();
 
             var values = new List<int>();
-            await foreach (var i in response)
+            await foreach (var i in stream)
             {
                 context.ResponseHeaders.ShouldNotBeNull();
+
+                if (values.Count == 0)
+                {
+                    // InvalidOperationException : Trailers can only be accessed once the call has finished.
+                    Assert.Throws<InvalidOperationException>(() => Console.WriteLine(context.ResponseTrailers));
+                }
+
                 values.Add(i);
             }
 
-            var actual = context.ResponseHeaders.Where(i => i.Key == "h1").Select(i => i.Value).ToArray();
-            actual.ShouldBe(new[] { "value 1" });
-
+            ValidateResponse(context);
             values.Count.ShouldBe(10);
         }
 
         [Test]
-        public async Task ClientStreaming()
+        public async Task ServerStreamingCallAsync()
         {
-            var context = new CallContext(new Metadata
+            var context = CreateCallContext();
+
+            var stream = await DomainService.ServerStreamingCallAsync(context).ConfigureAwait(false);
+
+            // in ServerStreamingCall headers are not available yet
+            ValidateResponse(context, true);
+
+            var values = new List<int>();
+            await foreach (var i in stream)
             {
-                { "h1", "value " }
-            });
+                if (values.Count == 0)
+                {
+                    // InvalidOperationException : Trailers can only be accessed once the call has finished.
+                    Assert.Throws<InvalidOperationException>(() => Console.WriteLine(context.ResponseTrailers));
+                }
 
-            var actual = await DomainService.ClientStreaming(new[] { 1, 2 }.AsAsyncEnumerable(), context);
-
-            context.ResponseHeaders.ShouldNotBeNull();
-            actual.ShouldBe("value ");
-
-            var header = context.ResponseHeaders.Where(i => i.Key == "h1").Select(i => i.Value).ToArray();
-            header.ShouldBe(new[] { "value 2" });
-        }
-
-        [Test]
-        public async Task DuplexStreaming()
-        {
-            var context = new CallContext(new Metadata
-            {
-                { "h1", "value " }
-            });
-
-            var response = DomainService.DuplexStreaming(new[] { 1, 2 }.AsAsyncEnumerable(), context);
-
-            context.ResponseHeaders.ShouldBeNull();
-
-            var values = new List<string>();
-            await foreach (var i in response)
-            {
-                context.ResponseHeaders.ShouldNotBeNull();
                 values.Add(i);
             }
 
-            var header = context.ResponseHeaders.Where(i => i.Key == "h1").Select(i => i.Value).ToArray();
-            header.ShouldBe(new[] { "value 2" });
+            ValidateResponse(context);
+            values.Count.ShouldBe(10);
+        }
 
-            values.ShouldBe(new[] { "value " });
+        [Test]
+        public async Task ClientStreamingCall()
+        {
+            var context = CreateCallContext();
+
+            await DomainService.ClientStreamingCall(Enumerable.Range(1, 10).AsAsyncEnumerable(), context);
+
+            ValidateResponse(context);
+        }
+
+        [Test]
+        public async Task DuplexStreamingCall()
+        {
+            var context = CreateCallContext();
+
+            var stream = DomainService.DuplexStreamingCall(Enumerable.Range(1, 10).AsAsyncEnumerable(), context);
+
+            // in DuplexStreamingCallAsync headers are already available
+            context.ResponseHeaders.ShouldBeNull();
+            context.ResponseTrailers.ShouldBeNull();
+
+            var values = new List<int>();
+            await foreach (var i in stream)
+            {
+                context.ResponseHeaders.ShouldNotBeNull();
+
+                if (values.Count == 0)
+                {
+                    // InvalidOperationException : Trailers can only be accessed once the call has finished.
+                    Assert.Throws<InvalidOperationException>(() => Console.WriteLine(context.ResponseTrailers));
+                }
+
+                values.Add(i);
+            }
+
+            ValidateResponse(context);
+            values.Count.ShouldBe(10);
+        }
+
+        [Test]
+        public async Task DuplexStreamingCallAsync()
+        {
+            var context = CreateCallContext();
+
+            var stream = await DomainService.DuplexStreamingCallAsync(Enumerable.Range(1, 10).AsAsyncEnumerable(), context).ConfigureAwait(false);
+
+            // in DuplexStreamingCall headers are not available yet
+            ValidateResponse(context, true);
+
+            var values = new List<int>();
+            await foreach (var i in stream)
+            {
+                if (values.Count == 0)
+                {
+                    // InvalidOperationException : Trailers can only be accessed once the call has finished.
+                    Assert.Throws<InvalidOperationException>(() => Console.WriteLine(context.ResponseTrailers));
+                }
+
+                values.Add(i);
+            }
+
+            ValidateResponse(context);
+            values.Count.ShouldBe(10);
+        }
+
+        private static void ValidateResponse(CallContext context, bool headersOnly = false)
+        {
+            context.ResponseHeaders.ShouldNotBeNull();
+
+            var defaultHeader = context.ResponseHeaders.FindHeader(HeadersService.DefaultHeaderName, false);
+            defaultHeader.ShouldNotBeNull();
+            defaultHeader.Value.ShouldBe(HeadersService.DefaultHeaderValue);
+
+            var callHeader = context.ResponseHeaders.FindHeader(HeadersService.CallHeaderName, false);
+            callHeader.ShouldNotBeNull();
+            callHeader.Value.ShouldBe(HeadersService.CallHeaderValue);
+
+            if (headersOnly)
+            {
+                // InvalidOperationException : Trailers can only be accessed once the call has finished.
+                Assert.Throws<InvalidOperationException>(() => Console.WriteLine(context.ResponseTrailers));
+            }
+            else
+            {
+                context.ResponseTrailers.ShouldNotBeNull();
+
+                var callTrailer = context.ResponseTrailers.FindHeader(HeadersService.CallTrailerName, false);
+                callTrailer.ShouldNotBeNull();
+                callTrailer.Value.ShouldBe(HeadersService.CallTrailerValue);
+            }
+        }
+
+        private static CallContext CreateCallContext()
+        {
+            return new CallContext(new Metadata
+            {
+                { HeadersService.CallHeaderName, HeadersService.CallHeaderValue }
+            });
         }
     }
 }

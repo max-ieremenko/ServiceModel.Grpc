@@ -16,11 +16,10 @@
 
 using System;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Grpc.Core;
-using ServiceModel.Grpc.Internal.IO;
+using ServiceModel.Grpc.Channel;
 
 #pragma warning disable SA1642 // Constructor summary documentation should begin with standard text
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
@@ -87,50 +86,35 @@ namespace ServiceModel.Grpc.Client
         /// <exclude />
         public CallOptionsBuilder WithMethodInputHeader<T>(Marshaller<T> marshaller, T value)
         {
-            var metadata = GetMethodInputHeader(marshaller, value);
+            var metadata = CompatibilityTools.SerializeMethodInputHeader(marshaller, value);
             return WithCallOptions(new CallOptions(metadata));
         }
 
         /// <exclude />
         public CallOptions Build() => _options;
 
-        internal static Metadata GetMethodInputHeader<T>(Marshaller<T> marshaller, T value)
+        internal static Metadata? MergeMetadata(Metadata? current, Metadata? mergeWith)
         {
-            byte[] headerValue;
-            using (var serializationContext = new DefaultSerializationContext())
-            {
-                marshaller.ContextualSerializer(value, serializationContext);
-                headerValue = serializationContext.GetContent();
-            }
-
-            return new Metadata
-            {
-                { CallContext.HeaderNameMethodInput, headerValue }
-            };
-        }
-
-        internal static Metadata MergeMetadata(Metadata current, Metadata mergeWith)
-        {
-            if (current == null)
+            if (current == null || current.Count == 0)
             {
                 return mergeWith;
             }
 
-            if (mergeWith == null)
+            if (mergeWith == null || mergeWith.Count == 0)
             {
                 return current;
             }
 
             var result = new Metadata();
-            foreach (var entry in mergeWith)
+            for (var i = 0; i < mergeWith.Count; i++)
             {
-                result.Add(entry);
+                result.Add(mergeWith[i]);
             }
 
-            foreach (var entry in current)
+            for (var i = 0; i < current.Count; i++)
             {
-                var exists = result.Any(i => HeadersAreEqual(i, entry));
-                if (!exists)
+                var entry = current[i];
+                if (!result.ContainsHeader(entry))
                 {
                     result.Add(entry);
                 }
@@ -148,22 +132,6 @@ namespace ServiceModel.Grpc.Client
                 writeOptions: mergeWith.WriteOptions ?? current.WriteOptions,
                 propagationToken: mergeWith.PropagationToken ?? current.PropagationToken,
                 credentials: mergeWith.Credentials ?? current.Credentials);
-        }
-
-        private static bool HeadersAreEqual(Metadata.Entry x, Metadata.Entry y)
-        {
-            if (!string.Equals(x.Key, y.Key, StringComparison.OrdinalIgnoreCase)
-                || x.IsBinary != y.IsBinary)
-            {
-                return false;
-            }
-
-            if (x.IsBinary)
-            {
-                return x.ValueBytes.SequenceEqual(y.ValueBytes);
-            }
-
-            return string.Equals(x.Value, y.Value, StringComparison.Ordinal);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

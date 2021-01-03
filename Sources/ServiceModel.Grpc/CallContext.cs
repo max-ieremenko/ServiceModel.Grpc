@@ -27,6 +27,7 @@ namespace ServiceModel.Grpc
     public sealed class CallContext
     {
         internal const string HeaderNameMethodInput = "smgrpc-method-input-bin";
+        internal const string HeaderNameMethodOutput = "smgrpc-method-output-bin";
         internal const string HeaderNameErrorDetail = "smgrpc-error-detail-bin";
         internal const string HeaderNameErrorDetailType = "smgrpc-error-detail-type";
 

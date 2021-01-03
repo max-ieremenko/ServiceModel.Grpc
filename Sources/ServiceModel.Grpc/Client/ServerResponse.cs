@@ -54,7 +54,7 @@ namespace ServiceModel.Grpc.Client
 
         public Metadata ResponseHeaders { get; }
 
-        public Status? ResponseStatus
+        public Status ResponseStatus
         {
             get
             {
@@ -67,13 +67,13 @@ namespace ServiceModel.Grpc.Client
             }
         }
 
-        public Metadata? ResponseTrailers
+        public Metadata ResponseTrailers
         {
             get
             {
                 if (_getResponseTrailers == null)
                 {
-                    return _responseTrailers;
+                    return _responseTrailers!;
                 }
 
                 return _getResponseTrailers();

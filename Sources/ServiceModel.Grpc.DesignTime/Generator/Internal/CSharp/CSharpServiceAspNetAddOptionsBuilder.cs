@@ -49,7 +49,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             }
 
             Output
-                .AppendLine("IServiceCollection services, Action<ServiceModelGrpcServiceOptions<")
+                .Append("IServiceCollection services, Action<ServiceModelGrpcServiceOptions<")
                 .Append(_contract.ContractInterfaceName)
                 .AppendLine(">> configure)")
                 .AppendLine("{");

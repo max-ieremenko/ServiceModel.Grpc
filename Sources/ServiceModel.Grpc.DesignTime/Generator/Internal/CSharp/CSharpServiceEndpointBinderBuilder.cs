@@ -122,14 +122,20 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             using (Output.Indent())
             {
                 BuildBind();
+                Output.AppendLine();
+
                 BuildGetServiceMetadata();
+                Output.AppendLine();
+
                 BuildGetServiceMetadataOverride();
 
                 foreach (var interfaceDescription in _contract.Services)
                 {
                     foreach (var method in interfaceDescription.Operations)
                     {
+                        Output.AppendLine();
                         BuildGetMethodMetadata(interfaceDescription, method);
+                        Output.AppendLine();
                         BuildGetMethodMetadataOverride(method);
                     }
                 }

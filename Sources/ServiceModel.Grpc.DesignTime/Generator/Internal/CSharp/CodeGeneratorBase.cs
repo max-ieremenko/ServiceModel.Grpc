@@ -16,19 +16,17 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 {
     internal abstract class CodeGeneratorBase
     {
-        public CodeStringBuilder Output { get; } = new CodeStringBuilder();
+        protected CodeStringBuilder Output { get; private set; } = null!;
 
-        public MemberDeclarationSyntax AsMemberDeclaration()
+        public void GenerateMemberDeclaration(CodeStringBuilder output)
         {
+            Output = output;
             Generate();
-            return SyntaxFactory.ParseMemberDeclaration(Output.ToString())!;
         }
 
         public abstract string GetGeneratedMemberName();

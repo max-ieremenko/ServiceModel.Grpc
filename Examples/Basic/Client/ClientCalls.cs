@@ -36,11 +36,17 @@ namespace Client
             Console.WriteLine("Invoke GetRandomPersonUntilCancel");
             await InvokeGetRandomPersonUntilCancel(proxy);
 
+            Console.WriteLine("Invoke GetListOfStreetResidents");
+            await InvokeGetListOfStreetResidents(proxy);
+
             Console.WriteLine("Invoke OrderPersonsByAge");
             await InvokeOrderPersonsByAge(proxy);
 
             Console.WriteLine("Invoke FindPersonsYoungerThan");
             await InvokeFindPersonsYoungerThan(proxy);
+
+            Console.WriteLine("Invoke FilterPersonsByAddress");
+            await InvokeFilterPersonsByAddress(proxy);
         }
 
         private static void InvokeCreatePerson(IPersonService proxy)
@@ -193,6 +199,27 @@ namespace Client
             persons.Count.ShouldBeGreaterThan(0);
         }
 
+        private static async Task InvokeGetListOfStreetResidents(IPersonService proxy)
+        {
+            var persons = new List<Person>();
+            using (var cancellationTokenSource = new CancellationTokenSource())
+            {
+                var (count, address, personsStream) = await proxy.GetListOfStreetResidents("country name", "city name", "street name", cancellationTokenSource.Token);
+
+                count.ShouldBe(3);
+                address.Country.ShouldBe("country name");
+                address.City.ShouldBe("city name");
+                address.Street.ShouldBe("street name");
+
+                await foreach (var person in personsStream.WithCancellation(cancellationTokenSource.Token))
+                {
+                    persons.Add(person);
+                }
+            }
+
+            persons.Count.ShouldBe(3);
+        }
+
         private static async Task InvokeOrderPersonsByAge(IPersonService proxy)
         {
             var persons = new[]
@@ -257,6 +284,60 @@ namespace Client
 
             youngPersons.Count.ShouldBe(1);
             youngPersons[0].FullName = "person 20 years old";
+        }
+
+        private static async Task InvokeFilterPersonsByAddress(IPersonService proxy)
+        {
+            var persons = new[]
+            {
+                new Person
+                {
+                    FullName = "person 1",
+                    Addresses = new []
+                    {
+                        new Address
+                        {
+                            Country = "country name",
+                            City = "city name",
+                            Street = "street name"
+                        }
+                    }
+                },
+                new Person
+                {
+                    FullName = "person 2"
+                },
+                new Person
+                {
+                    FullName = "person 3",
+                    Addresses = new []
+                    {
+                        new Address
+                        {
+                            Country = "country name",
+                            City = "city name",
+                            Street = "street name"
+                        }
+                    }
+                }
+            };
+
+            Address address;
+            IList<Person> filteredPersons;
+            using (var cancellationTokenSource = new CancellationTokenSource())
+            {
+                IAsyncEnumerable<Person> personsStream;
+                (address, personsStream) = await proxy.FilterPersonsByAddress(persons.AsAsyncEnumerable(), "country name", "city name", "street name", cancellationTokenSource.Token);
+                filteredPersons = await personsStream.ToListAsync();
+            }
+
+            address.Country.ShouldBe("country name");
+            address.City.ShouldBe("city name");
+            address.Street.ShouldBe("street name");
+
+            filteredPersons.Count.ShouldBe(2);
+            filteredPersons[0].FullName.ShouldBe("person 1");
+            filteredPersons[1].FullName.ShouldBe("person 3");
         }
     }
 }

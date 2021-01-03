@@ -16,189 +16,194 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using Grpc.Core;
-using Moq;
 using NUnit.Framework;
-using ServiceModel.Grpc.Channel;
 using Shouldly;
 
 namespace ServiceModel.Grpc.Internal
 {
     [TestFixture]
-    public class MessageAssemblerTest
+    public partial class MessageAssemblerTest
     {
-        private Mock<MethodInfo> _method = null!;
-
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            _method = new Mock<MethodInfo>(MockBehavior.Strict);
-
-            _method
-                .SetupGet(m => m.DeclaringType)
-                .Returns(GetType());
-            _method
-                .SetupGet(m => m.Name)
-                .Returns("Test");
-            _method
-                .SetupGet(m => m.ReturnType)
-                .Returns(typeof(void));
-            _method
-                .Setup(m => m.GetParameters())
-                .Returns(Array.Empty<ParameterInfo>());
-            _method
-                .SetupGet(m => m.IsGenericMethod)
-                .Returns(false);
-        }
-
         [Test]
-        [TestCase(typeof(void), typeof(Message))]
-        [TestCase(typeof(Task), typeof(Message))]
-        [TestCase(typeof(ValueTask), typeof(Message))]
-        [TestCase(typeof(string), typeof(Message<string>))]
-        [TestCase(typeof(int), typeof(Message<int>))]
-        [TestCase(typeof(int?), typeof(Message<int?>))]
-        [TestCase(typeof(Task<string>), typeof(Message<string>))]
-        [TestCase(typeof(Task<int>), typeof(Message<int>))]
-        [TestCase(typeof(ValueTask<int?>), typeof(Message<int?>))]
-        [TestCase(typeof(IAsyncEnumerable<int>), typeof(Message<int>))]
-        [TestCase(typeof(Task<IAsyncEnumerable<int>>), typeof(Message<int>))]
-        public void ResponseType(Type returnType, Type expected)
+        [TestCaseSource(nameof(GetResponseTypeCases))]
+        public void ResponseType(
+            MethodInfo method,
+            Type responseType,
+            Type? headerResponseType,
+            int[]? headerIndexes,
+            int? streamIndex)
         {
-            _method
-                .SetupGet(m => m.ReturnType)
-                .Returns(returnType);
+            var actual = new MessageAssembler(method);
 
-            new MessageAssembler(_method.Object).ResponseType.ShouldBe(expected);
-        }
+            actual.ResponseType.ShouldBe(responseType);
+            actual.HeaderResponseType.ShouldBe(headerResponseType);
 
-        [Test]
-        [TestCase(MethodType.Unary, typeof(void))]
-        [TestCase(MethodType.Unary, typeof(int))]
-        [TestCase(MethodType.Unary, typeof(Task<int>))]
-        [TestCase(MethodType.Unary, typeof(Task<int>), typeof(string))]
-        [TestCase(MethodType.ClientStreaming, typeof(void), typeof(IAsyncEnumerable<string>))]
-        [TestCase(MethodType.ServerStreaming, typeof(IAsyncEnumerable<string>))]
-        [TestCase(MethodType.ServerStreaming, typeof(Task<IAsyncEnumerable<string>>))]
-        [TestCase(MethodType.DuplexStreaming, typeof(IAsyncEnumerable<string>), typeof(IAsyncEnumerable<int>))]
-        public void OperationType(MethodType expected, Type returnType, params Type[] dataParameters)
-        {
-            _method
-                .SetupGet(m => m.ReturnType)
-                .Returns(returnType);
-            MethodSetupParameters(dataParameters);
-
-            new MessageAssembler(_method.Object).OperationType.ShouldBe(expected);
-        }
-
-        [Test]
-        [TestCase(typeof(CallContext))]
-        [TestCase(typeof(CallOptions))]
-        [TestCase(typeof(ServerCallContext))]
-        [TestCase(typeof(Task<CallOptions>))]
-        [TestCase(typeof(Stream))]
-        [TestCase(typeof(Task<Stream>))]
-        public void NotSupportedResponseType(Type returnType)
-        {
-            _method
-                .SetupGet(m => m.ReturnType)
-                .Returns(returnType);
-
-            Assert.Throws<NotSupportedException>(() => new MessageAssembler(_method.Object));
-        }
-
-        [Test]
-        [TestCase(typeof(Message), null, new int[0])]
-        [TestCase(typeof(Message<int>), null, new[] { 0 }, typeof(int))]
-        [TestCase(typeof(Message<string, int?>), null, new[] { 0, 1 }, typeof(string), typeof(int?))]
-        [TestCase(typeof(Message<int>), null, new[] { 0 }, typeof(IAsyncEnumerable<int>))]
-        [TestCase(typeof(Message<int>), typeof(Message<int, string>), new[] { 0 }, typeof(IAsyncEnumerable<int>), typeof(int), typeof(string))]
-        [TestCase(typeof(Message<int>), typeof(Message<string>), new[] { 1 }, typeof(string), typeof(IAsyncEnumerable<int>))]
-        public void RequestType(Type expectedRequestType, Type expectedHeaderRequestType, int[] expectedRequestTypeInput, params Type[] dataParameters)
-        {
-            MethodSetupParameters(dataParameters);
-
-            var sut = new MessageAssembler(_method.Object);
-
-            sut.RequestType.ShouldBe(expectedRequestType);
-            sut.RequestTypeInput.ShouldBe(expectedRequestTypeInput);
-
-            sut.HeaderRequestType.ShouldBe(expectedHeaderRequestType);
-            sut.HeaderRequestTypeInput.ShouldBe(dataParameters.Select((_, i) => i).Except(expectedRequestTypeInput).ToArray());
-        }
-
-        [Test]
-        [TestCase(null)]
-        [TestCase(typeof(CallOptions))]
-        [TestCase(typeof(CallContext))]
-        [TestCase(typeof(ServerCallContext))]
-        [TestCase(typeof(CancellationToken))]
-        public void ContextInput(Type contextParameter)
-        {
-            MethodSetupParameters(contextParameter == null ? Array.Empty<Type>() : new[] { contextParameter });
-
-            var actual = new MessageAssembler(_method.Object).ContextInput;
-
-            actual.ShouldNotBeNull();
-
-            if (contextParameter == null)
+            if (headerResponseType == null)
             {
-                actual.ShouldBeEmpty();
+                actual.HeaderResponseTypeInput.ShouldBeEmpty();
+                actual.ResponseTypeIndex.ShouldBe(0);
             }
             else
             {
-                actual.ShouldBe(new[] { 0 });
+                actual.HeaderResponseTypeInput.ShouldBe(headerIndexes);
+                actual.ResponseTypeIndex.ShouldBe(streamIndex!.Value);
             }
         }
 
         [Test]
-        [TestCase(typeof(Task))]
-        [TestCase(typeof(Stream))]
-        public void NotSupportedParameters(params Type[] parameters)
+        [TestCaseSource(nameof(GetOperationTypeCases))]
+        public void OperationType(MethodInfo method, MethodType expected)
         {
-            MethodSetupParameters(parameters);
-
-            Assert.Throws<NotSupportedException>(() => new MessageAssembler(_method.Object));
+            new MessageAssembler(method).OperationType.ShouldBe(expected);
         }
 
         [Test]
-        public void GenericNotSupported()
+        [TestCaseSource(nameof(GetNotSupportedResponseTypeCases))]
+        public void NotSupportedResponseType(MethodInfo method)
         {
-            MethodSetupParameters(Array.Empty<Type>());
-            _method
-                .SetupGet(m => m.IsGenericMethod)
-                .Returns(true);
-
-            Assert.Throws<NotSupportedException>(() => new MessageAssembler(_method.Object));
+            Assert.Throws<NotSupportedException>(() => new MessageAssembler(method));
         }
 
-        private void MethodSetupParameters(Type[] parameterTypes)
+        [Test]
+        [TestCaseSource(nameof(GetRequestTypeCases))]
+        public void RequestType(
+            MethodInfo method,
+            Type requestType,
+            int[] requestIndexes,
+            Type? headerRequestType,
+            int[] headerIndexes)
         {
-            var parameters = new ParameterInfo[parameterTypes.Length];
+            var sut = new MessageAssembler(method);
 
-            for (var i = 0; i < parameterTypes.Length; i++)
+            sut.RequestType.ShouldBe(requestType);
+            sut.RequestTypeInput.ShouldBe(requestIndexes);
+            sut.HeaderRequestType.ShouldBe(headerRequestType);
+
+            if (headerRequestType == null)
             {
-                var parameterType = parameterTypes[i];
-
-                var parameter = new Mock<ParameterInfo>(MockBehavior.Strict);
-                parameter
-                    .SetupGet(p => p.Attributes)
-                    .Returns(ParameterAttributes.None);
-                parameter
-                    .SetupGet(p => p.ParameterType)
-                    .Returns(parameterType);
-
-                parameters[i] = parameter.Object;
+                sut.HeaderRequestTypeInput.ShouldBeEmpty();
             }
+            else
+            {
+                sut.HeaderRequestTypeInput.ShouldBe(headerIndexes);
+            }
+        }
 
-            _method
-                .Setup(m => m.GetParameters())
-                .Returns(parameters);
+        [Test]
+        [TestCaseSource(nameof(GetContextInputCases))]
+        public void ContextInput(MethodInfo method, int[] expected)
+        {
+            var actual = new MessageAssembler(method).ContextInput;
+
+            actual.ShouldBe(expected);
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetNotSupportedParametersCases))]
+        public void NotSupportedParameters(MethodInfo method)
+        {
+            Assert.Throws<NotSupportedException>(() => new MessageAssembler(method));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetGenericNotSupportedCases))]
+        public void GenericNotSupported(MethodInfo method)
+        {
+            Assert.Throws<NotSupportedException>(() => new MessageAssembler(method));
+        }
+
+        private static IEnumerable<TestCaseData> GetResponseTypeCases()
+        {
+            foreach (var method in ReflectionTools.GetMethods(typeof(ResponseTypeCases)))
+            {
+                var response = method.GetCustomAttribute<ResponseTypeAttribute>();
+                var responseHeader = method.GetCustomAttribute<HeaderResponseTypeAttribute>();
+
+                yield return new TestCaseData(
+                    method,
+                    response!.Type,
+                    responseHeader?.Type,
+                    responseHeader?.Indexes,
+                    responseHeader?.StreamIndex)
+                {
+                    TestName = method.Name
+                };
+            }
+        }
+
+        private static IEnumerable<TestCaseData> GetNotSupportedResponseTypeCases()
+        {
+            foreach (var method in ReflectionTools.GetMethods(typeof(NotSupportedResponseTypeCases)))
+            {
+                yield return new TestCaseData(method) { TestName = method.Name };
+            }
+        }
+
+        private static IEnumerable<TestCaseData> GetOperationTypeCases()
+        {
+            foreach (var method in ReflectionTools.GetMethods(typeof(OperationTypeCases)))
+            {
+                var description = method.GetCustomAttribute<OperationTypeAttribute>();
+
+                yield return new TestCaseData(
+                    method,
+                    description!.Type)
+                {
+                    TestName = method.Name
+                };
+            }
+        }
+
+        private static IEnumerable<TestCaseData> GetRequestTypeCases()
+        {
+            foreach (var method in ReflectionTools.GetMethods(typeof(RequestTypeCases)))
+            {
+                var request = method.GetCustomAttribute<RequestTypeAttribute>();
+                var headerRequest = method.GetCustomAttribute<HeaderRequestTypeAttribute>();
+
+                yield return new TestCaseData(
+                    method,
+                    request!.Type,
+                    request!.Indexes,
+                    headerRequest?.Type,
+                    headerRequest?.Indexes)
+                {
+                    TestName = method.Name
+                };
+            }
+        }
+
+        private static IEnumerable<TestCaseData> GetNotSupportedParametersCases()
+        {
+            foreach (var method in ReflectionTools.GetMethods(typeof(NotSupportedParametersCases)))
+            {
+                yield return new TestCaseData(method) { TestName = method.Name };
+            }
+        }
+
+        private static IEnumerable<TestCaseData> GetContextInputCases()
+        {
+            foreach (var method in ReflectionTools.GetMethods(typeof(ContextInputCases)))
+            {
+                var description = method.GetCustomAttribute<ContextInputAttribute>();
+
+                yield return new TestCaseData(
+                    method,
+                    description!.Indexes)
+                {
+                    TestName = method.Name
+                };
+            }
+        }
+
+        private static IEnumerable<TestCaseData> GetGenericNotSupportedCases()
+        {
+            foreach (var method in ReflectionTools.GetMethods(typeof(GenericNotSupportedCases)))
+            {
+                yield return new TestCaseData(method) { TestName = method.Name };
+            }
         }
     }
 }

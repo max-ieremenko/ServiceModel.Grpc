@@ -30,7 +30,6 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
         {
             _output = new StringBuilder();
             _writer = new IndentedTextWriter(new StringWriter(_output), "    ");
-            _writer.Indent = 0;
         }
 
         public int Length => _output.Length;
@@ -71,10 +70,10 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
         public IDisposable Indent() => new Indenter(this);
 
-        public override string ToString()
+        public StringBuilder AsStringBuilder()
         {
             _writer.Flush();
-            return _output.ToString();
+            return _output;
         }
 
         private sealed class Indenter : IDisposable

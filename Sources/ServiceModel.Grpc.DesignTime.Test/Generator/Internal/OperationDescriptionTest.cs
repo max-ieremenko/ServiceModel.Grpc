@@ -42,7 +42,14 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
 
         [Test]
         [TestCaseSource(nameof(GetResponseTypeCases))]
-        public void ResponseType(IMethodSymbol method, string className, string? valueTypeName)
+        public void ResponseType(
+            IMethodSymbol method,
+            string className,
+            string? valueTypeName,
+            string? headerClassName,
+            int[]? headerIndexes,
+            string[]? headerValueTypeName,
+            int? streamIndex)
         {
             var actual = new OperationDescription(method, "s1");
 
@@ -55,6 +62,21 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             {
                 actual.ResponseType.Properties.Length.ShouldBe(1);
                 actual.ResponseType.Properties[0].ShouldBe(valueTypeName);
+            }
+
+            if (headerClassName == null)
+            {
+                actual.HeaderResponseType.ShouldBeNull();
+                actual.HeaderResponseTypeInput.ShouldBeEmpty();
+                actual.ResponseTypeIndex.ShouldBe(0);
+            }
+            else
+            {
+                actual.HeaderResponseType.ShouldNotBeNull();
+                actual.HeaderResponseType.ClassName.ShouldBe(headerClassName);
+                actual.HeaderResponseType.Properties.ShouldBe(headerValueTypeName);
+                actual.HeaderResponseTypeInput.ShouldBe(headerIndexes);
+                actual.ResponseTypeIndex.ShouldBe(streamIndex!.Value);
             }
         }
 
@@ -101,7 +123,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             else
             {
                 actual.HeaderRequestType.ShouldNotBeNull();
-                actual.HeaderRequestType!.ClassName.ShouldBe(headerClassName);
+                actual.HeaderRequestType.ClassName.ShouldBe(headerClassName);
                 actual.HeaderRequestTypeInput.ShouldBe(headerIndexes);
                 actual.HeaderRequestType.Properties.ShouldBe(headerValueTypeName);
             }
@@ -125,6 +147,15 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             ex.Message.ShouldContain(method.Name);
         }
 
+        [Test]
+        [TestCaseSource(nameof(GetGenericNotSupportedCases))]
+        public void GenericNotSupported(IMethodSymbol method)
+        {
+            var ex = Assert.Throws<NotSupportedException>(() => new OperationDescription(method, "s1"));
+
+            ex.Message.ShouldContain(method.Name);
+        }
+
         private static IEnumerable<TestCaseData> GetResponseTypeCases()
         {
             var type = Compilation.GetTypeByMetadataName(typeof(ResponseTypeCases));
@@ -132,12 +163,20 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
 
             foreach (var method in SyntaxTools.GetInstanceMethods(type))
             {
-                var description = method.GetAttributes().First(i => i.AttributeClass!.Name == nameof(ResponseTypeAttribute));
+                var response = method.GetAttributes().First(i => i.AttributeClass!.Name == nameof(ResponseTypeAttribute));
+                var responseHeader = method.GetAttributes().FirstOrDefault(i => i.AttributeClass!.Name == nameof(HeaderResponseTypeAttribute));
 
                 yield return new TestCaseData(
                     method,
-                    description.ConstructorArguments[0].Value,
-                    description.ConstructorArguments[1].Value);
+                    response.ConstructorArguments[0].Value,
+                    response.ConstructorArguments[1].Value,
+                    responseHeader?.ConstructorArguments[0].Value,
+                    responseHeader?.ConstructorArguments[1].Values.Select(i => (int)i.Value!).ToArray(),
+                    responseHeader?.ConstructorArguments[2].Values.Select(i => (string)i.Value!).ToArray(),
+                    responseHeader?.ConstructorArguments[3].Value)
+                {
+                    TestName = "ResponseType." + method.Name
+                };
             }
         }
 
@@ -158,7 +197,10 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
                     request.ConstructorArguments[2].Values.Select(i => (string)i.Value!).ToArray(),
                     headerRequest?.ConstructorArguments[0].Value,
                     headerRequest?.ConstructorArguments[1].Values.Select(i => (int)i.Value!).ToArray(),
-                    headerRequest?.ConstructorArguments[2].Values.Select(i => (string)i.Value!).ToArray());
+                    headerRequest?.ConstructorArguments[2].Values.Select(i => (string)i.Value!).ToArray())
+                {
+                    TestName = "RequestType." + method.Name
+                };
             }
         }
 
@@ -173,7 +215,10 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
 
                 yield return new TestCaseData(
                     method,
-                    description.ConstructorArguments[0].Values.Select(i => (int)i.Value!).ToArray());
+                    description.ConstructorArguments[0].Values.Select(i => (int)i.Value!).ToArray())
+                {
+                    TestName = "ContextInput." + method.Name
+                };
             }
         }
 
@@ -184,7 +229,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
 
             foreach (var method in SyntaxTools.GetInstanceMethods(type))
             {
-                yield return new TestCaseData(method);
+                yield return new TestCaseData(method) { TestName = "ResponseType." + method.Name };
             }
         }
 
@@ -195,7 +240,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
 
             foreach (var method in SyntaxTools.GetInstanceMethods(type))
             {
-                yield return new TestCaseData(method);
+                yield return new TestCaseData(method) { TestName = "Parameters." + method.Name };
             }
         }
 
@@ -211,7 +256,21 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
 
                 yield return new TestCaseData(
                     method,
-                    Enum.Parse<MethodType>(methodType));
+                    Enum.Parse<MethodType>(methodType))
+                {
+                    TestName = "OperationType." + method.Name
+                };
+            }
+        }
+
+        private static IEnumerable<TestCaseData> GetGenericNotSupportedCases()
+        {
+            var type = Compilation.GetTypeByMetadataName(typeof(GenericNotSupportedCases));
+            type.ShouldNotBeNull();
+
+            foreach (var method in SyntaxTools.GetInstanceMethods(type))
+            {
+                yield return new TestCaseData(method) { TestName = method.Name };
             }
         }
     }

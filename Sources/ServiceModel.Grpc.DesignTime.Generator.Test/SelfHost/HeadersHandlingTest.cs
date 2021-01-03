@@ -26,6 +26,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Test.SelfHost
 {
     [TestFixture]
     [ExportGrpcService(typeof(HeadersService), GenerateSelfHostExtensions = true)]
+    [ImportGrpcService(typeof(IHeadersService))]
     public partial class HeadersHandlingTest : HeadersHandlingTestBase
     {
         private const int Port = 8080;
@@ -44,8 +45,10 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Test.SelfHost
 
             AddHeadersService(_server.Services, new HeadersService());
 
-            var options = new ServiceModelGrpcClientOptions { DefaultCallOptionsFactory = () => new CallOptions(DefaultMetadata) };
-            DomainService = new ClientFactory(options).CreateClient<IHeadersService>(_channel);
+            var clientFactory = new ClientFactory();
+            AddHeadersServiceClient(clientFactory, options => options.DefaultCallOptionsFactory = () => new CallOptions(DefaultMetadata));
+
+            DomainService = clientFactory.CreateClient<IHeadersService>(_channel);
 
             _server.Start();
         }
