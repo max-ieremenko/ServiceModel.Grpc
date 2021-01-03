@@ -3,10 +3,12 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net461;netcoreapp3.1</TargetFrameworks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="ServiceModel.Grpc.SelfHost" Version="$(ServiceModelGrpcVersion)" />
+    <PackageReference Include="Grpc.Core" Version="$(GrpcCoreVersion)" />
   </ItemGroup>
   
   <ItemGroup>
