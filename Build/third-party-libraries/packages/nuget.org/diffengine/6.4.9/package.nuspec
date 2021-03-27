@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>DiffEngine</id>
+    <version>6.4.9</version>
+    <authors>https://github.com/VerifyTests/DiffEngine/graphs/contributors</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>icon.png</icon>
+    <projectUrl>https://github.com/VerifyTests/DiffEngine</projectUrl>
+    <description>Launches diff tools based on file extensions. Designed to be consumed by snapshot testing libraries.</description>
+    <copyright>Copyright 2020. All rights reserved</copyright>
+    <tags>Testing, Snapshot, Diff, Compare</tags>
+    <repository type="git" url="https://github.com/VerifyTests/DiffEngine.git" commit="9994eefa4bd8ee633f6b4cbee5fe5693f71a4e41" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.6.1">
+        <dependency id="EmptyFiles" version="2.3.3" include="All" />
+        <dependency id="System.Runtime.InteropServices.RuntimeInformation" version="4.3.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="EmptyFiles" version="2.3.3" include="All" />
+        <dependency id="Microsoft.Windows.Compatibility" version="5.0.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.1">
+        <dependency id="EmptyFiles" version="2.3.3" include="All" />
+        <dependency id="Microsoft.Windows.Compatibility" version="5.0.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System.Management" targetFramework=".NETFramework4.6.1" />
+    </frameworkAssemblies>
+  </metadata>
+</package>

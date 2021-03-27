@@ -43,6 +43,8 @@ namespace ServiceModel.Grpc.TestApi
         {
             var x = 0;
             var ex = Assert.Throws<NotSupportedException>(() => _contract.InvalidSignature(ref x, out _));
+
+            ex.ShouldNotBeNull();
             Console.WriteLine(ex.Message);
 
             ex.Message.ShouldContain(nameof(IInvalidContract.InvalidSignature));
@@ -52,6 +54,8 @@ namespace ServiceModel.Grpc.TestApi
         public void GenericMethod()
         {
             var ex = Assert.Throws<NotSupportedException>(() => _contract.Generic<int, string>(2));
+
+            ex.ShouldNotBeNull();
             Console.WriteLine(ex.Message);
 
             ex.Message.ShouldContain(nameof(IInvalidContract.Generic));
@@ -61,6 +65,8 @@ namespace ServiceModel.Grpc.TestApi
         public void DisposableIsNotServiceContract()
         {
             var ex = Assert.Throws<NotSupportedException>(() => _contract.Dispose());
+
+            ex.ShouldNotBeNull();
             Console.WriteLine(ex.Message);
 
             ex.Message.ShouldContain(typeof(IDisposable).FullName!);

@@ -77,6 +77,7 @@ namespace ServiceModel.Grpc.Interceptors.Internal
             _errorHandler.VerifyAll();
             _context.ServerCallContext.UserState.Keys.ShouldBe(new[] { ServerCallErrorInterceptor.VisitMarker });
 
+            ex.ShouldNotBeNull();
             ex.StatusCode.ShouldBe(StatusCode.DataLoss);
             ex.Message.ShouldBe("error message");
             ex.Trailers.Count.ShouldBe(3);

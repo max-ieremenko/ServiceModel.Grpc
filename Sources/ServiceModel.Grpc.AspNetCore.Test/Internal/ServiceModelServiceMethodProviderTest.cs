@@ -73,6 +73,7 @@ namespace ServiceModel.Grpc.AspNetCore.Internal
             Console.WriteLine(ex);
 
             _serviceProvider.VerifyAll();
+            ex.ShouldNotBeNull();
             ex.InnerException.ShouldBe(fail);
         }
 

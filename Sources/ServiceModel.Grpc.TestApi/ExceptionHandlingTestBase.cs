@@ -46,6 +46,7 @@ namespace ServiceModel.Grpc.TestApi
         {
             var ex = Assert.Throws<ServerException>(() => DomainService.ThrowApplicationException("some text"));
 
+            ex.ShouldNotBeNull();
             ex.Message.ShouldBe("some text");
             ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
             ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
@@ -57,6 +58,7 @@ namespace ServiceModel.Grpc.TestApi
         {
             var ex = Assert.ThrowsAsync<ServerException>(() => DomainService.ThrowApplicationExceptionAsync("some text"));
 
+            ex.ShouldNotBeNull();
             ex.Message.ShouldBe("some text");
             ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
             ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
@@ -69,6 +71,7 @@ namespace ServiceModel.Grpc.TestApi
             // handled as regular exception
             var ex = Assert.Throws<ServerException>(() => DomainService.ThrowOperationCanceledException());
 
+            ex.ShouldNotBeNull();
             ex.Detail.ErrorType.ShouldBe(typeof(OperationCanceledException).FullName);
             ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
         }
@@ -80,6 +83,7 @@ namespace ServiceModel.Grpc.TestApi
 
             var ex = Assert.Throws<OperationCanceledException>(() => DomainService.CancelOperation(_cancellationSource.Token));
 
+            ex.ShouldNotBeNull();
             ex.CancellationToken.ShouldBe(_cancellationSource.Token);
             ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Cancelled);
         }
@@ -91,6 +95,7 @@ namespace ServiceModel.Grpc.TestApi
 
             var ex = Assert.ThrowsAsync<OperationCanceledException>(() => DomainService.CancelOperationAsync(_cancellationSource.Token));
 
+            ex.ShouldNotBeNull();
             ex.CancellationToken.ShouldBe(_cancellationSource.Token);
             ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Cancelled);
         }
@@ -102,6 +107,7 @@ namespace ServiceModel.Grpc.TestApi
 
             var ex = Assert.Throws<OperationCanceledException>(() => DomainService.ThrowApplicationExceptionAfterCancel("some text", _cancellationSource.Token));
 
+            ex.ShouldNotBeNull();
             ex.CancellationToken.ShouldBe(_cancellationSource.Token);
             ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Cancelled);
         }
@@ -113,6 +119,7 @@ namespace ServiceModel.Grpc.TestApi
 
             var ex = Assert.ThrowsAsync<OperationCanceledException>(() => DomainService.ThrowApplicationExceptionAfterCancelAsync("some text", _cancellationSource.Token));
 
+            ex.ShouldNotBeNull();
             ex.CancellationToken.ShouldBe(_cancellationSource.Token);
             ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Cancelled);
         }
@@ -123,6 +130,7 @@ namespace ServiceModel.Grpc.TestApi
             var call = DomainService.ThrowApplicationExceptionClientStreaming(new[] { 1, 2 }.AsAsyncEnumerable(), "some text");
             var ex = Assert.ThrowsAsync<ServerException>(() => call);
 
+            ex.ShouldNotBeNull();
             ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
             ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
         }
@@ -132,6 +140,7 @@ namespace ServiceModel.Grpc.TestApi
         {
             var ex = Assert.ThrowsAsync<ServerException>(() => DomainService.ThrowApplicationExceptionServerStreaming("some text").ToListAsync());
 
+            ex.ShouldNotBeNull();
             ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
             ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
         }
@@ -142,6 +151,7 @@ namespace ServiceModel.Grpc.TestApi
             var call = DomainService.ThrowApplicationExceptionDuplexStreaming(new[] { 1, 2 }.AsAsyncEnumerable(), "some text").ToListAsync();
             var ex = Assert.ThrowsAsync<ServerException>(() => call);
 
+            ex.ShouldNotBeNull();
             ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
             ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
         }
@@ -152,6 +162,7 @@ namespace ServiceModel.Grpc.TestApi
             var ex = Assert.Throws<ApplicationException>(() => DomainService.PassSerializationFail(new DomainObjectSerializationFail { OnSerializedError = "On serialized error" }));
             Console.WriteLine(ex);
 
+            ex.ShouldNotBeNull();
             ex.Message.ShouldBe("On serialized error");
         }
 
@@ -161,6 +172,7 @@ namespace ServiceModel.Grpc.TestApi
             var ex = Assert.Throws<RpcException>(() => DomainService.ReturnSerializationFail(onDeserializedError: "On deserialized error"));
             Console.WriteLine(ex);
 
+            ex.ShouldNotBeNull();
             ex.StatusCode.ShouldBe(StatusCode.Internal);
             ex.Message.ShouldContain("Failed to deserialize response message");
         }
@@ -171,6 +183,7 @@ namespace ServiceModel.Grpc.TestApi
             var ex = Assert.Throws<RpcException>(() => DomainService.PassSerializationFail(new DomainObjectSerializationFail { OnDeserializedError = "On deserialized error" }));
             Console.WriteLine(ex);
 
+            ex.ShouldNotBeNull();
             ex.StatusCode.ShouldBe(StatusCode.Unknown);
         }
 
@@ -178,6 +191,8 @@ namespace ServiceModel.Grpc.TestApi
         public void ExceptionOnServerSerialize()
         {
             var ex = Assert.Throws<RpcException>(() => DomainService.ReturnSerializationFail(onSerializedError: "On serialized error"));
+
+            ex.ShouldNotBeNull();
             Console.WriteLine(ex);
 
             ex.StatusCode.ShouldBeOneOf(StatusCode.Unknown, StatusCode.Cancelled);

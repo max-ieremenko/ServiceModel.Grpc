@@ -18,19 +18,6 @@
           "Version": "4.5.4"
         }
       ]
-    },
-    {
-      "Name": "DesignTime",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "netstandard2.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Threading.Tasks.Extensions",
-          "Version": "4.5.4"
-        }
-      ]
     }
   ],
   "Licenses": [

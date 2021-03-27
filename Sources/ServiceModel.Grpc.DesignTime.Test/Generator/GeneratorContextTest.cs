@@ -44,17 +44,26 @@ namespace ServiceModel.Grpc.DesignTime.Generator
                 .SetupGet(p => p.GlobalOptions)
                 .Returns(_globalOptions.Object);
 
+            var additionalSourcesCtor = typeof(GeneratorExecutionContext)
+                .Assembly
+                .GetType("Microsoft.CodeAnalysis.AdditionalSourcesCollection", true, false)
+                !.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                .Single(i => i.GetParameters().Length == 1);
+
+            var additionalSources = additionalSourcesCtor.Invoke(new object[] { ".cs" });
+
             var ctor = typeof(GeneratorExecutionContext)
                 .GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                .Single(i => i.GetParameters().Length == 6);
+                .Single(i => i.GetParameters().Length == 7);
 
             _context = (GeneratorExecutionContext)ctor.Invoke(new object?[]
             {
-                null, // Compilation
-                null, // ParseOptions
-                ImmutableArray<AdditionalText>.Empty,
-                optionsProvider.Object,
-                null, // ISyntaxReceiver
+                null, // Compilation compilation
+                null, // ParseOptions parseOptions
+                ImmutableArray<AdditionalText>.Empty, // ImmutableArray<AdditionalText> additionalTexts
+                optionsProvider.Object, // AnalyzerConfigOptionsProvider optionsProvider
+                null, // ISyntaxReceiver syntaxReceiver
+                additionalSources, // AdditionalSourcesCollection additionalSources
                 CancellationToken.None
             });
         }

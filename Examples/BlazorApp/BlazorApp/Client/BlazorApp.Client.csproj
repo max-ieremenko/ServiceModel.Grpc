@@ -9,8 +9,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="5.0.1" PrivateAssets="all" />
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
     <PackageReference Include="ServiceModel.Grpc" Version="$(ServiceModelGrpcVersion)" />
-    <PackageReference Include="Grpc.Net.Client" Version="$(GrpcCoreVersion)" />
-    <PackageReference Include="Grpc.Net.Client.Web" Version="$(GrpcCoreVersion)" />
+    <PackageReference Include="Grpc.Net.Client" Version="$(GrpcNetVersion)" />
+    <PackageReference Include="Grpc.Net.Client.Web" Version="$(GrpcNetVersion)" />
   </ItemGroup>
 
   <ItemGroup>

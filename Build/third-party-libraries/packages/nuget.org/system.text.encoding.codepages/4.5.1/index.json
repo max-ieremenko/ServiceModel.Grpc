@@ -13,7 +13,7 @@
       "Dependencies": [
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "4.7.1"
+          "Version": "5.0.0"
         }
       ]
     }
