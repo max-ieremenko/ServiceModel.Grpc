@@ -20,4 +20,11 @@
   </ItemGroup>
 
   <Import Project="..\ServiceModel.Grpc.DesignTime\build\ServiceModel.Grpc.DesignTime.props" />
+  <PropertyGroup>
+    <ServiceModelGrpcDesignTime_Dependencies>$(SolutionDir)ServiceModel.Grpc.DesignTime\bin\$(Configuration)\netstandard2.0\dependencies</ServiceModelGrpcDesignTime_Dependencies>
+    <ServiceModelGrpcDesignTime_LocalBuild>true</ServiceModelGrpcDesignTime_LocalBuild>
+  </PropertyGroup>
+  <ItemGroup>
+    <CompilerVisibleProperty Include="ServiceModelGrpcDesignTime_LocalBuild" />
+  </ItemGroup>
 </Project>
