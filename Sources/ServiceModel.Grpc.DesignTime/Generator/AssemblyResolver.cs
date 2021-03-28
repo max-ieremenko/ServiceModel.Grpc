@@ -17,6 +17,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using Microsoft.CodeAnalysis;
 
 namespace ServiceModel.Grpc.DesignTime.Generator
 {
@@ -24,25 +25,31 @@ namespace ServiceModel.Grpc.DesignTime.Generator
     internal sealed class AssemblyResolver : IDisposable
     {
         private readonly string _dependenciesLocation;
+        private readonly bool _canLockFile;
 
-        public AssemblyResolver()
+        public AssemblyResolver(GeneratorExecutionContext context)
         {
-            var root = Path.GetDirectoryName(GetType().Assembly.Location)!;
-            var location = Path.Combine(root, "dependencies");
-            if (!Directory.Exists(location))
-            {
-                location = Path.GetFullPath(Path.Combine(
-                    root,
-                    string.Format("..{0}..{0}..{0}build{0}dependencies", Path.DirectorySeparatorChar)));
-            }
-
-            _dependenciesLocation = location;
+            (_dependenciesLocation, _canLockFile) = ResolveDependenciesLocation(context);
             AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
         }
 
         public void Dispose()
         {
             AppDomain.CurrentDomain.AssemblyResolve -= AssemblyResolve;
+        }
+
+        private static (string Location, bool CanLockFile) ResolveDependenciesLocation(GeneratorExecutionContext context)
+        {
+            context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.servicemodelgrpcdesigntime_dependencies", out var dependencies);
+            context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.servicemodelgrpcdesigntime_localbuild", out var localBuild);
+
+            if (string.IsNullOrEmpty(dependencies) || !Directory.Exists(dependencies))
+            {
+                throw new InvalidOperationException(string.Format("Dependencies not found in [{0}].", dependencies));
+            }
+
+            var canLockFile = string.IsNullOrWhiteSpace(localBuild) || !bool.Parse(localBuild!);
+            return (dependencies!, canLockFile);
         }
 
         private Assembly? AssemblyResolve(object sender, ResolveEventArgs args)
@@ -54,12 +61,17 @@ namespace ServiceModel.Grpc.DesignTime.Generator
         private Assembly? ResolveDependency(string fileName)
         {
             var location = Path.Combine(_dependenciesLocation, fileName);
-            if (File.Exists(location))
+            if (!File.Exists(location))
+            {
+                return null;
+            }
+
+            if (_canLockFile)
             {
                 return Assembly.LoadFrom(location);
             }
 
-            return null;
+            return Assembly.Load(File.ReadAllBytes(location));
         }
     }
 }

@@ -95,6 +95,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
         {
             var ex = Assert.Throws<NotSupportedException>(() => new OperationDescription(method, "s1"));
 
+            ex.ShouldNotBeNull();
             ex.Message.ShouldContain(method.Name);
         }
 
@@ -144,6 +145,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
         {
             var ex = Assert.Throws<NotSupportedException>(() => new OperationDescription(method, "s1"));
 
+            ex.ShouldNotBeNull();
             ex.Message.ShouldContain(method.Name);
         }
 
@@ -153,6 +155,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
         {
             var ex = Assert.Throws<NotSupportedException>(() => new OperationDescription(method, "s1"));
 
+            ex.ShouldNotBeNull();
             ex.Message.ShouldContain(method.Name);
         }
 

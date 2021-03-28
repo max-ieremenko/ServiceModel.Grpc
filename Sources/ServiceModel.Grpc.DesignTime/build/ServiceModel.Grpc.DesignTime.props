@@ -4,6 +4,9 @@
     <ServiceModelGrpcDesignTime_DesignTime Condition="'$(DesignTimeBuild)' == 'true' or '$(BuildingProject)' != 'true'">true</ServiceModelGrpcDesignTime_DesignTime>
     <ServiceModelGrpcDesignTime_LaunchDebugger>false</ServiceModelGrpcDesignTime_LaunchDebugger>
     <ServiceModelGrpcDesignTime_CsExtension>.smgrpcdtg.cs</ServiceModelGrpcDesignTime_CsExtension>
+    
+    <!--.nupkg: analyzers\dotnet\cs => build\dependencies-->
+    <ServiceModelGrpcDesignTime_Dependencies>$(MSBuildThisFileDirectory)dependencies</ServiceModelGrpcDesignTime_Dependencies>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +23,7 @@
     <CompilerVisibleProperty Include="ServiceModelGrpcDesignTime_DesignTime" />
     <CompilerVisibleProperty Include="ServiceModelGrpcDesignTime_LaunchDebugger" />
     <CompilerVisibleProperty Include="ServiceModelGrpcDesignTime_CsExtension" />
+    <CompilerVisibleProperty Include="ServiceModelGrpcDesignTime_Dependencies" />
   </ItemGroup>
 
 </Project>

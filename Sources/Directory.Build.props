@@ -14,7 +14,9 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DefaultPackageVersion>1.1.7</DefaultPackageVersion>
+    <DefaultPackageVersion>1.1.8</DefaultPackageVersion>
+    <GrpcCoreVersion>2.36.4</GrpcCoreVersion>
+    <GrpcNetVersion>2.36.0</GrpcNetVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -28,7 +30,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageProjectUrl>https://max-ieremenko.github.io/ServiceModel.Grpc/</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <Copyright>(C) 2021 Max Ieremenko.</Copyright>
+    <Copyright>(C) 2020-2021 Max Ieremenko.</Copyright>
     <RepositoryType>git</RepositoryType>
     <PackageTags>gRPC grpc-dotnet servicemodel wcf code-first code-generator</PackageTags>
 
@@ -37,7 +39,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="StyleCop.Analyzers.Unstable" Version="1.2.0.312">
+    <PackageReference Include="StyleCop.Analyzers.Unstable" Version="1.2.0.333">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

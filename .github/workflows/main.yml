@@ -33,6 +33,10 @@ jobs:
       shell: cmd
       run: dotnet tool install --global ThirdPartyLibraries.GlobalTool
 
+    - name: Install psake
+      shell: pwsh
+      run: Install-Module -Name psake -Force
+
     - name: Build
       shell: pwsh
       run: .\Build\step-build.ps1

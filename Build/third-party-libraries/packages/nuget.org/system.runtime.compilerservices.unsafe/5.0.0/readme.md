@@ -1,9 +1,9 @@
 System.Runtime.CompilerServices.Unsafe [5.0.0](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/5.0.0)
 --------------------
 
-Used by: AspNetCore internal, DesignTime internal
+Used by: AspNetCore internal, DesignTime
 
-Target frameworks: net5.0, netcoreapp3.1
+Target frameworks: net5.0, netcoreapp3.1, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 

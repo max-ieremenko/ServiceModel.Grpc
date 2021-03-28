@@ -62,7 +62,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator
                 return;
             }
 
-            using (new AssemblyResolver())
+            using (new AssemblyResolver(context))
             {
                 foreach (var entry in ExpandCandidates(context, candidates))
                 {

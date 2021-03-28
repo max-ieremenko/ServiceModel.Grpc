@@ -7,7 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.1" />
     <PackageReference Include="ServiceModel.Grpc.AspNetCore" Version="$(ServiceModelGrpcVersion)" />
-    <PackageReference Include="Grpc.AspNetCore.Web" Version="$(GrpcCoreVersion)" />
+    <PackageReference Include="Grpc.AspNetCore.Web" Version="$(GrpcNetVersion)" />
   </ItemGroup>
 
   <ItemGroup>

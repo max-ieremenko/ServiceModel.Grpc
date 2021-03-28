@@ -65,6 +65,7 @@ namespace ServiceModel.Grpc.Interceptors
 
             var ex = Assert.Throws<OperationCanceledException>(() => _sut.Object.ThrowOrIgnore(_callContext, _faultDetail));
 
+            ex.ShouldNotBeNull();
             ex.CancellationToken.ShouldBe(_tokenSource.Token);
             ex.InnerException.ShouldBe(_faultDetail.OriginalError);
         }

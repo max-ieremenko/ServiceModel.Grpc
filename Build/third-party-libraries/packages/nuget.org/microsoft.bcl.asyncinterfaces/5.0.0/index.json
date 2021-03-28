@@ -5,12 +5,16 @@
   },
   "UsedBy": [
     {
-      "Name": "Core",
-      "InternalOnly": true,
+      "Name": "DesignTime",
+      "InternalOnly": false,
       "TargetFrameworks": [
-        "netcoreapp2.1",
-        "netcoreapp3.1",
-        "net461"
+        "netstandard2.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Threading.Tasks.Extensions",
+          "Version": "4.5.4"
+        }
       ]
     }
   ],
