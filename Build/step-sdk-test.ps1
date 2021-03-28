@@ -5,7 +5,7 @@ Get-ChildItem -Recurse -Path (Join-Path $examplesDir "obj") -Directory | Remove-
 Get-ChildItem -Recurse -Path (Join-Path $examplesDir "bin") -Directory | Remove-Item -Recurse -Force
 
 $containerId = Exec {
-    docker run -d -it -v "${examplesDir}:/examples" -v "${packageDir}:/packages" mcr.microsoft.com/dotnet/sdk:5.0-alpine
+    docker run -d -it -v "${examplesDir}:/examples" -v "${packageDir}:/packages" mcr.microsoft.com/dotnet/sdk:5.0
 }
 
 try {
