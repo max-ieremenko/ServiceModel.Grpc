@@ -1,4 +1,4 @@
-Task default -Depends Clean, Build, ThirdPartyNotices, UnitTest, Pack, PackTest, SdkTest
+Task default -Depends Clean, Init, Build, ThirdPartyNotices, UnitTest, Pack, PackTest, SdkTest
 Task UnitTest -Depends UnitTest461, UnitTestCore21, UnitTestCore31, UnitTestNet50
 
 Task Clean {
@@ -6,6 +6,10 @@ Task Clean {
     if (Test-Path $binDir) {
         Remove-Item -Path $binDir -Recurse -Force
     }
+}
+
+Task Init {
+    $env:GITHUB_SHA = Exec { git rev-parse HEAD }
 }
 
 Task Build {
@@ -41,5 +45,5 @@ Task PackTest {
 }
 
 Task SdkTest {
-    Exec { .\step-sdk-test.ps1 }
+    Exec { .\step-sdk-test-locally.ps1 }
 }
