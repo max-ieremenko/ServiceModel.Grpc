@@ -6,19 +6,21 @@ The repository is configured to run [CI build](https://github.com/max-ieremenko/
 
 To run CI build locally
 
-install [psake](https://www.powershellgallery.com/packages/psake)
+- install [psake](https://www.powershellgallery.com/packages/psake)
 
 ``` powershell
 PS> Install-Module -Name psake
 ```
 
-install [net5.0 sdk](https://dotnet.microsoft.com/download/dotnet/5.0)
+- install [net5.0 sdk](https://dotnet.microsoft.com/download/dotnet/5.0)
 
-install ThirdPartyLibraries
+- install ThirdPartyLibraries
 
 ``` powershell
 PS> dotnet tool install --global ThirdPartyLibraries.GlobalTool
 ```
+
+- switch docker to linux containers
 
 run build
 

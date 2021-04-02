@@ -14,15 +14,9 @@ try {
 
     Write-Host "=== restore ==="
     Exec { docker exec -it $containerId dotnet restore /examples/Basic }
-    if (-not $?) {
-        throw "restore faulted."
-    }
 
     Write-Host "=== build ==="
     Exec { docker exec -it $containerId dotnet build --configuration Release /examples/Basic }
-    if (-not $?) {
-        throw "build faulted."
-    }
 }
 finally {
     Exec { docker container rm -f $containerId }
@@ -37,9 +31,6 @@ try {
     foreach ($app in $apps) {
         Write-Host "=== exec $app ==="
         Exec { docker exec -it $containerId dotnet "/examples/Basic/$app/bin/Release/netcoreapp3.1/$app.dll" }
-        if (-not $?) {
-            throw "$app does not work."
-        }
     }
 }
 finally {
