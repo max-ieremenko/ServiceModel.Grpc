@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DefaultPackageVersion>1.1.8</DefaultPackageVersion>
+    <DefaultPackageVersion>1.1.9</DefaultPackageVersion>
     <GrpcCoreVersion>2.36.4</GrpcCoreVersion>
     <GrpcNetVersion>2.36.0</GrpcNetVersion>
   </PropertyGroup>
