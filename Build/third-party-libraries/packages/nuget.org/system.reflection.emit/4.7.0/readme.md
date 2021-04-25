@@ -1,9 +1,9 @@
 System.Reflection.Emit [4.7.0](https://www.nuget.org/packages/System.Reflection.Emit/4.7.0)
 --------------------
 
-Used by: Core, ProtoBuf
+Used by: Core, MessagePack, ProtoBuf
 
-Target frameworks: net461, netstandard2.0, netstandard2.1
+Target frameworks: net461, net5.0, netcoreapp3.1, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 

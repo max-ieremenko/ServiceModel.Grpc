@@ -58,3 +58,14 @@ Exec {
         -o $binDir `
         $projectFile
 }
+
+# ServiceModel.Grpc.MessagePackMarshaller
+$projectFile = Join-Path $sourceDir "ServiceModel.Grpc.MessagePackMarshaller\ServiceModel.Grpc.MessagePackMarshaller.csproj"
+Exec {
+    dotnet pack `
+        -c Release `
+        --no-build `
+        -p:RepositoryCommit=$repositoryCommitId `
+        -o $binDir `
+        $projectFile
+}

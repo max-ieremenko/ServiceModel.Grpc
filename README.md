@@ -27,6 +27,7 @@ The solution is built on top of [gRPC C#](https://github.com/grpc/grpc/tree/mast
   - [compatibility with native gRPC](https://max-ieremenko.github.io/ServiceModel.Grpc/CompatibilityWithNativegRPC.html)
   - migrate from WCF to a gRPC [tutorial](https://max-ieremenko.github.io/ServiceModel.Grpc/MigrateWCFServiceTogRPC.html)
   - migrate from WCF FaultContract to a gRPC global error handling [tutorial](https://max-ieremenko.github.io/ServiceModel.Grpc/migrate-wcf-faultcontract-to-global-error-handling.html)
+  - [example](Examples/MessagePackMarshaller) MessagePack marshaller
   - [example](Examples/ProtobufMarshaller) protobuf marshaller
 - [examples](Examples)
 
@@ -183,4 +184,5 @@ ServiceModel.Grpc | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.G
 ServiceModel.Grpc.AspNetCore | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.AspNetCore.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.AspNetCore) | net5.0, .net core 3.0/3.1+ | Grpc.AspNetCore.Server extensions
 ServiceModel.Grpc.SelfHost | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.SelfHost.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.SelfHost) | netstandard2.0/2.1, net461+ | Grpc.Core extensions for self-hosted Grpc.Core.Server
 ServiceModel.Grpc.DesignTime | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.DesignTime.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.DesignTime) | netstandard2.0/2.1, net461+ | C# code generator
-ServiceModel.Grpc.ProtoBufMarshaller | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.ProtoBufMarshaller.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.ProtoBufMarshaller) | netstandard2.0/2.1, net461+ | marshaller factory based on protobuf-net
+ServiceModel.Grpc.MessagePackMarshaller | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.MessagePackMarshaller.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.MessagePackMarshaller) | netstandard2.0, net5.0, .net core 3.1 | marshaller factory based on [MessagePack serializer](https://www.nuget.org/packages/MessagePack)
+ServiceModel.Grpc.ProtoBufMarshaller | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.ProtoBufMarshaller.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.ProtoBufMarshaller) | netstandard2.0/2.1, net461+ | marshaller factory based on [protobuf-net serializer](https://www.nuget.org/packages/protobuf-net/)

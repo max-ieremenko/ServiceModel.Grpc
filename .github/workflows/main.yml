@@ -103,6 +103,10 @@ jobs:
       shell: pwsh
       run: dotnet --info
 
-    - name: Sdk test
+    - name: test Basic
       shell: pwsh
-      run: .\Build\step-sdk-test-github.ps1
+      run: .\Build\step-sdk-test-basic-github.ps1
+
+    - name: test MessagePack
+      shell: pwsh
+      run: .\Build\step-sdk-test-messagepack-github.ps1

@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.1;net5.0</TargetFrameworks>
+    <RootNamespace>ServiceModel.Grpc</RootNamespace>
+    <AssemblyTitle>ServiceModel.Grpc.MessagePackMarshaller</AssemblyTitle>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MessagePack" Version="2.2.85" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ServiceModel.Grpc\ServiceModel.Grpc.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">
+    <Content Include="..\..\LICENSE" PackagePath="" />
+    <Content Include="..\..\build-out\MessagePackThirdPartyNotices.txt" PackagePath="ThirdPartyNotices.txt" />
+  </ItemGroup>
+
+</Project>
