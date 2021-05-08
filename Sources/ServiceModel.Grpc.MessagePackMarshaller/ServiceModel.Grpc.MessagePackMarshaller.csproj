@@ -23,8 +23,8 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">
-    <Content Include="..\..\LICENSE" PackagePath="" />
-    <Content Include="..\..\build-out\MessagePackThirdPartyNotices.txt" PackagePath="ThirdPartyNotices.txt" />
+    <Content Include="..\..\LICENSE" PackagePath="" Visible="false" />
+    <Content Include="..\..\build-out\MessagePackThirdPartyNotices.txt" PackagePath="ThirdPartyNotices.txt" Visible="false" />
   </ItemGroup>
 
 </Project>
