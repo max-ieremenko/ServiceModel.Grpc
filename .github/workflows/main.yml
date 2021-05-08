@@ -78,10 +78,6 @@ jobs:
           .\build-out\*.nupkg
           .\build-out\*.snupkg
 
-    - name: Benchmarks test
-      shell: pwsh
-      run: .\Build\step-benchmarks.ps1
-
   sdk-test:
     name: linux-sdk-test
     runs-on: ubuntu-latest
@@ -114,3 +110,30 @@ jobs:
     - name: test MessagePack
       shell: pwsh
       run: .\Build\step-sdk-test-messagepack-github.ps1
+
+  benchmarks:
+    name: linux-benchmarks
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install psake
+      shell: pwsh
+      run: Install-Module -Name psake -Force
+
+    - name: Dotnet info
+      shell: pwsh
+      run: dotnet --info
+
+    - name: run benchmarks
+      shell: pwsh
+      run: .\Build\step-benchmarks-github.ps1
+
+    - name: Artifact results
+      uses: actions/upload-artifact@v2
+      with:
+        name: benchmarks
+        path: |
+          ./Benchmarks/ServiceModel.Grpc.Benchmarks/bin/Release/net5.0/BenchmarkDotNet.Artifacts/results/*.*
+

@@ -54,5 +54,5 @@ Task SdkTestMessagePack {
 }
 
 Task Benchmarks {
-    Exec { .\step-benchmarks.ps1 }
+    Exec { .\step-benchmarks-locally.ps1 }
 }
