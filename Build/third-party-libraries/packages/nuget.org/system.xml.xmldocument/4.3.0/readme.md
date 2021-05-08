@@ -1,9 +1,9 @@
 System.Xml.XmlDocument [4.3.0](https://www.nuget.org/packages/System.Xml.XmlDocument/4.3.0)
 --------------------
 
-Used by: AspNetCore internal, Core internal, DesignTime internal, ProtoBuf, SelfHost internal
+Used by: AspNetCore internal, Core internal, DesignTime internal, SelfHost internal
 
-Target frameworks: net461, net5.0, netcoreapp2.1, netcoreapp3.1, netstandard2.0, netstandard2.1
+Target frameworks: net461, net5.0, netcoreapp2.1, netcoreapp3.1
 
 License: [ms-net-library](../../../../licenses/ms-net-library) 
 

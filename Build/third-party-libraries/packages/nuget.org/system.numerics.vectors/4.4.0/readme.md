@@ -1,7 +1,7 @@
 System.Numerics.Vectors [4.4.0](https://www.nuget.org/packages/System.Numerics.Vectors/4.4.0)
 --------------------
 
-Used by: Core, DesignTime, MessagePack, SelfHost
+Used by: Core, DesignTime, MessagePack, ProtoBuf, SelfHost
 
 Target frameworks: net461, net5.0, netcoreapp3.1, netstandard2.0, netstandard2.1
 

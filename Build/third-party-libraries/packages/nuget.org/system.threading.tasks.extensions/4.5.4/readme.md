@@ -1,7 +1,7 @@
 System.Threading.Tasks.Extensions [4.5.4](https://www.nuget.org/packages/System.Threading.Tasks.Extensions/4.5.4)
 --------------------
 
-Used by: Core, DesignTime, MessagePack, ProtoBuf
+Used by: Core, DesignTime, MessagePack
 
 Target frameworks: net461, net5.0, netcoreapp2.1, netcoreapp3.1, netstandard2.0, netstandard2.1
 
