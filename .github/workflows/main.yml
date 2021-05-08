@@ -77,6 +77,7 @@ jobs:
         path: |
           .\build-out\*.nupkg
           .\build-out\*.snupkg
+        if-no-files-found: error
 
   sdk-test:
     name: linux-sdk-test
@@ -133,7 +134,8 @@ jobs:
     - name: Artifact results
       uses: actions/upload-artifact@v2
       with:
-        name: benchmarks
+        name: benchmark-results
         path: |
-          Benchmarks/ServiceModel.Grpc.Benchmarks/bin/Release/net5.0/BenchmarkDotNet.Artifacts/results
+          ./BenchmarkDotNet.Artifacts/results
+        if-no-files-found: error
 
