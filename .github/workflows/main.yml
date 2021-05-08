@@ -135,5 +135,5 @@ jobs:
       with:
         name: benchmarks
         path: |
-          ./Benchmarks/ServiceModel.Grpc.Benchmarks/bin/Release/net5.0/BenchmarkDotNet.Artifacts/results/*.*
+          Benchmarks/ServiceModel.Grpc.Benchmarks/bin/Release/net5.0/BenchmarkDotNet.Artifacts/results
 
