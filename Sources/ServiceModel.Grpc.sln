@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.DesignTim
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.AspNetCore.TestApi", "ServiceModel.Grpc.AspNetCore.TestApi\ServiceModel.Grpc.AspNetCore.TestApi.csproj", "{D9B1C523-9684-45C2-90B1-140BE909C03B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceModel.Grpc.MessagePackMarshaller", "ServiceModel.Grpc.MessagePackMarshaller\ServiceModel.Grpc.MessagePackMarshaller.csproj", "{7EB54615-CC2E-4BD9-9249-EF8511125A07}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,10 @@ Global
 		{D9B1C523-9684-45C2-90B1-140BE909C03B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9B1C523-9684-45C2-90B1-140BE909C03B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9B1C523-9684-45C2-90B1-140BE909C03B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EB54615-CC2E-4BD9-9249-EF8511125A07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EB54615-CC2E-4BD9-9249-EF8511125A07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EB54615-CC2E-4BD9-9249-EF8511125A07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EB54615-CC2E-4BD9-9249-EF8511125A07}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

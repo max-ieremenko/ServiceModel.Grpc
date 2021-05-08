@@ -24,11 +24,13 @@ namespace ServiceModel.Grpc.Internal.IO
 {
     internal sealed class BufferReaderStream : Stream
     {
-        private ReadOnlySequence<byte> _sequence;
+        private readonly ReadOnlySequence<byte> _sequence;
+        private SequencePosition _offset;
 
         public BufferReaderStream(ReadOnlySequence<byte> sequence)
         {
             _sequence = sequence;
+            _offset = sequence.Start;
         }
 
         public override bool CanRead => true;
@@ -89,13 +91,11 @@ namespace ServiceModel.Grpc.Internal.IO
                 return 0;
             }
 
-            var source = _sequence.Slice(0, Math.Min(count, _sequence.Length));
-            if (source.Length > 0)
-            {
-                source.CopyTo(buffer.AsSpan(offset, count));
-                _sequence = _sequence.Slice(source.End);
-            }
+            var source = _sequence.Slice(_offset);
+            source = source.Slice(0, Math.Min(count, source.Length));
+            _offset = source.End;
 
+            source.CopyTo(buffer.AsSpan(offset, count));
             return (int)source.Length;
         }
 
@@ -107,15 +107,32 @@ namespace ServiceModel.Grpc.Internal.IO
 
         public override int ReadByte()
         {
-            if (_sequence.Length == 0)
+            var source = _sequence.Slice(_offset);
+            if (source.Length == 0)
             {
                 return -1;
             }
 
-            var source = _sequence.Slice(0, 1);
-            _sequence = _sequence.Slice(source.End);
-
+            _offset = source.GetPosition(1, _offset);
             return source.First.Span[0];
         }
+
+#if NETSTANDARD2_1
+        public override int Read(Span<byte> buffer)
+        {
+            var source = _sequence.Slice(_offset);
+            source = source.Slice(0, Math.Min(buffer.Length, source.Length));
+            _offset = source.End;
+
+            source.CopyTo(buffer);
+            return (int)source.Length;
+        }
+
+        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            var result = Read(buffer.Span);
+            return new ValueTask<int>(result);
+        }
+#endif
     }
 }

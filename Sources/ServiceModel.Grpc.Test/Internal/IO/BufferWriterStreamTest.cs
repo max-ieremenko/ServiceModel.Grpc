@@ -14,6 +14,7 @@
 // limitations under the License.
 // </copyright>
 
+using System;
 using NUnit.Framework;
 using Shouldly;
 
@@ -52,6 +53,23 @@ namespace ServiceModel.Grpc.Internal.IO
             actual.Length.ShouldBe(expected.Length);
             actual.ShouldBe(expected);
         }
+
+#if !NET461
+        [Test]
+        [TestCase(new byte[] { 1, 2, 3 }, 0, 3, new byte[] { 1, 2, 3 })]
+        [TestCase(new byte[] { 1, 2, 3 }, 1, 2, new byte[] { 2, 3 })]
+        [TestCase(new byte[] { 1, 2, 3 }, 0, 0, new byte[0])]
+        [TestCase(new byte[] { 1, 2, 3 }, 2, 1, new byte[] { 3 })]
+        public void WriteSpan(byte[] buffer, int offset, int count, byte[] expected)
+        {
+            var span = new ReadOnlySpan<byte>(buffer, offset, count);
+            _sut.Write(span);
+
+            var actual = _writer.ToArray();
+            actual.Length.ShouldBe(expected.Length);
+            actual.ShouldBe(expected);
+        }
+#endif
 
         [Test]
         public void WriteByte()

@@ -1,9 +1,9 @@
 Microsoft.Bcl.AsyncInterfaces [1.1.1](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/1.1.1)
 --------------------
 
-Used by: Core
+Used by: Core, MessagePack
 
-Target frameworks: net461, netstandard2.0, netstandard2.1
+Target frameworks: net461, net5.0, netcoreapp3.1, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 

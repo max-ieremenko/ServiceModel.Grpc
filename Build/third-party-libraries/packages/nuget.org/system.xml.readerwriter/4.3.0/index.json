@@ -78,29 +78,6 @@
           "Version": "4.3.0"
         }
       ]
-    },
-    {
-      "Name": "ProtoBuf",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "net461",
-        "netstandard2.0",
-        "netstandard2.1"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.IO.FileSystem.Primitives",
-          "Version": "4.3.0"
-        },
-        {
-          "Name": "System.Text.RegularExpressions",
-          "Version": "4.3.0"
-        },
-        {
-          "Name": "System.Threading.Tasks.Extensions",
-          "Version": "4.5.4"
-        }
-      ]
     }
   ],
   "Licenses": [

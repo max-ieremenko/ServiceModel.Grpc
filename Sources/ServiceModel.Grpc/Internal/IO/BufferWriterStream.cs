@@ -105,5 +105,20 @@ namespace ServiceModel.Grpc.Internal.IO
             Write(buffer, offset, count);
             return Task.CompletedTask;
         }
+
+#if NETSTANDARD2_1
+        public override void Write(ReadOnlySpan<byte> buffer)
+        {
+            var span = _writer.GetSpan(buffer.Length);
+            buffer.CopyTo(span);
+            _writer.Advance(buffer.Length);
+        }
+
+        public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            Write(buffer.Span);
+            return default;
+        }
+#endif
     }
 }

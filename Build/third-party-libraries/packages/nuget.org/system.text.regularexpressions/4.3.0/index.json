@@ -38,21 +38,6 @@
       "TargetFrameworks": [
         "netcoreapp3.1"
       ]
-    },
-    {
-      "Name": "ProtoBuf",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "net461",
-        "netstandard2.0",
-        "netstandard2.1"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Threading",
-          "Version": "4.3.0"
-        }
-      ]
     }
   ],
   "Licenses": [

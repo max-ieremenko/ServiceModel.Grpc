@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
 // limitations under the License.
 // </copyright>
 
+using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Grpc.Core;
 
@@ -23,12 +25,14 @@ namespace ServiceModel.Grpc.Configuration
     {
         public static readonly Marshaller<T> Default = new Marshaller<T>(Serialize, Deserialize);
 
+        // https://docs.microsoft.com/en-us/dotnet/api/system.runtime.serialization.datacontractserializer?view=net-5.0#thread-safety
+        private static readonly DataContractSerializer Serializer = new DataContractSerializer(typeof(T), ResolveKnownTypes());
+
         private static void Serialize(T value, SerializationContext context)
         {
             using (var buffer = context.AsStream())
             {
-                var serializer = new DataContractSerializer(typeof(T));
-                serializer.WriteObject(buffer, value);
+                Serializer.WriteObject(buffer, value);
             }
 
             context.Complete();
@@ -38,9 +42,23 @@ namespace ServiceModel.Grpc.Configuration
         {
             using (var buffer = context.AsStream())
             {
-                var serializer = new DataContractSerializer(typeof(T));
-                return (T)serializer.ReadObject(buffer);
+                return (T)Serializer.ReadObject(buffer);
             }
+        }
+
+        private static Type[] ResolveKnownTypes()
+        {
+            var root = typeof(T);
+            if (!root.IsGenericType)
+            {
+                return Array.Empty<Type>();
+            }
+
+            var types = new HashSet<Type>(root.GenericTypeArguments);
+
+            var result = new Type[types.Count];
+            types.CopyTo(result, 0);
+            return result;
         }
     }
 }

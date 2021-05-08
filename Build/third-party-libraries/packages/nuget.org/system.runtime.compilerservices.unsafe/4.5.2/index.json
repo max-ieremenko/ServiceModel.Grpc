@@ -23,11 +23,12 @@
       ]
     },
     {
-      "Name": "AspNetCore",
-      "InternalOnly": true,
+      "Name": "MessagePack",
+      "InternalOnly": false,
       "TargetFrameworks": [
         "netcoreapp3.1",
-        "net5.0"
+        "net5.0",
+        "netstandard2.0"
       ]
     }
   ],

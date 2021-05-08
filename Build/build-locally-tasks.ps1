@@ -1,5 +1,6 @@
-Task default -Depends Clean, Init, Build, ThirdPartyNotices, UnitTest, Pack, PackTest, SdkTest
+Task default -Depends Clean, Init, Build, ThirdPartyNotices, UnitTest, Pack, PackTest, SdkTest, Benchmarks
 Task UnitTest -Depends UnitTest461, UnitTestCore21, UnitTestCore31, UnitTestNet50
+Task SdkTest -Depends SdkTestBasic, SdkTestMessagePack
 
 Task Clean {
     $binDir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\build-out"))
@@ -44,6 +45,14 @@ Task PackTest {
     Exec { .\step-pack-test.ps1 }
 }
 
-Task SdkTest {
-    Exec { .\step-sdk-test-locally.ps1 }
+Task SdkTestBasic {
+    Exec { .\step-sdk-test-basic-locally.ps1 }
+}
+
+Task SdkTestMessagePack {
+    Exec { .\step-sdk-test-messagepack-locally.ps1 }
+}
+
+Task Benchmarks {
+    Exec { .\step-benchmarks-locally.ps1 }
 }

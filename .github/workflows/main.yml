@@ -77,6 +77,7 @@ jobs:
         path: |
           .\build-out\*.nupkg
           .\build-out\*.snupkg
+        if-no-files-found: error
 
   sdk-test:
     name: linux-sdk-test
@@ -103,6 +104,38 @@ jobs:
       shell: pwsh
       run: dotnet --info
 
-    - name: Sdk test
+    - name: test Basic
       shell: pwsh
-      run: .\Build\step-sdk-test-github.ps1
+      run: .\Build\step-sdk-test-basic-github.ps1
+
+    - name: test MessagePack
+      shell: pwsh
+      run: .\Build\step-sdk-test-messagepack-github.ps1
+
+  benchmarks:
+    name: linux-benchmarks
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install psake
+      shell: pwsh
+      run: Install-Module -Name psake -Force
+
+    - name: Dotnet info
+      shell: pwsh
+      run: dotnet --info
+
+    - name: run benchmarks
+      shell: pwsh
+      run: .\Build\step-benchmarks-github.ps1
+
+    - name: Artifact results
+      uses: actions/upload-artifact@v2
+      with:
+        name: benchmark-results
+        path: |
+          ./BenchmarkDotNet.Artifacts/results
+        if-no-files-found: error
+

@@ -50,3 +50,11 @@ $sources = @(
 )
 
 Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
+
+# ServiceModel.Grpc.MessagePackMarshaller
+$appNames = @("MessagePack", "Core")
+$sources = @(
+    (Join-Path $script:sourceDir "ServiceModel.Grpc.MessagePackMarshaller")
+)
+
+Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir

@@ -28,6 +28,24 @@
       "TargetFrameworks": [
         "netstandard2.0"
       ]
+    },
+    {
+      "Name": "MessagePack",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "netcoreapp3.1",
+        "net5.0",
+        "netstandard2.0"
+      ]
+    },
+    {
+      "Name": "ProtoBuf",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net461",
+        "netstandard2.0",
+        "netstandard2.1"
+      ]
     }
   ],
   "Licenses": [

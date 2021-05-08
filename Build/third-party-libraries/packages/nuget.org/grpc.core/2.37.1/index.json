@@ -1,0 +1,61 @@
+{
+  "License": {
+    "Code": "Apache-2.0",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "AspNetCore",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1",
+        "net5.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Grpc.Core.Api",
+          "Version": "2.37.1"
+        }
+      ]
+    },
+    {
+      "Name": "SelfHost",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net461",
+        "netstandard2.0",
+        "netstandard2.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Grpc.Core.Api",
+          "Version": "2.37.1"
+        },
+        {
+          "Name": "System.Memory",
+          "Version": "4.5.3"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "Apache-2.0",
+      "HRef": "https://licenses.nuget.org/Apache-2.0",
+      "Description": null
+    },
+    {
+      "Subject": "repository",
+      "Code": "Apache-2.0",
+      "HRef": "https://github.com/grpc/grpc.git",
+      "Description": null
+    },
+    {
+      "Subject": "project",
+      "Code": "Apache-2.0",
+      "HRef": "https://github.com/grpc/grpc",
+      "Description": null
+    }
+  ]
+}

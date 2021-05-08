@@ -1,9 +1,9 @@
 Microsoft.SourceLink.GitHub [1.0.0](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub/1.0.0)
 --------------------
 
-Used by: AspNetCore, Core, DesignTime, ProtoBuf, SelfHost
+Used by: AspNetCore, Core, DesignTime, MessagePack, ProtoBuf, SelfHost
 
-Target frameworks: net461, net5.0, netcoreapp3.0, netstandard2.0, netstandard2.1
+Target frameworks: net461, net5.0, netcoreapp3.0, netcoreapp3.1, netstandard2.0, netstandard2.1
 
 License: [Apache-2.0](../../../../licenses/apache-2.0) 
 
