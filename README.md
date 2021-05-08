@@ -221,7 +221,7 @@ value = new SomeObject
 - `ServiceModelGrpc.DataContract` test uses DataContractSerializer
 - `ServiceModelGrpc.Protobuf` test uses protobuf-net serializer
 - `ServiceModelGrpc.MessagePack` test uses MessagePack serializer
-- `ServiceModelGrpc.proto-emulation` test used Google protobuf serialization, the same as `grpc-dotnet`. This test is designed to compare numbers between `ServiceModelGrpc` and `grpc-dotnet` without influence of serializer.
+- `ServiceModelGrpc.proto-emulation` test uses Google protobuf serialization, the same as `grpc-dotnet`. This test is designed to compare numbers between `ServiceModelGrpc` and `grpc-dotnet` without influence of serializer.
 
 - `grpc-dotnet` is a baseline:
 
