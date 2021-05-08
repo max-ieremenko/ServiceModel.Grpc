@@ -78,6 +78,10 @@ jobs:
           .\build-out\*.nupkg
           .\build-out\*.snupkg
 
+    - name: Benchmarks test
+      shell: pwsh
+      run: .\Build\step-benchmarks.ps1
+
   sdk-test:
     name: linux-sdk-test
     runs-on: ubuntu-latest

@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+option csharp_namespace = "ServiceModel.Grpc.Benchmarks.Domain";
+
+service TestServiceNative {
+	rpc PingPong (SomeObjectProto) returns (SomeObjectProto);
+}
+
+message SomeObjectProto {
+	string stringScalar = 1;
+	google.protobuf.Timestamp dateScalar = 2;
+	float singleScalar = 3;
+	int32 int32Scalar = 4;
+	repeated float singleArray = 5 [packed=true];
+	repeated int32 int32Array = 6 [packed=true];
+	repeated double doubleArray = 7 [packed=true];
+}

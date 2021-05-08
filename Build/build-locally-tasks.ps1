@@ -1,4 +1,4 @@
-Task default -Depends Clean, Init, Build, ThirdPartyNotices, UnitTest, Pack, PackTest, SdkTest
+Task default -Depends Clean, Init, Build, ThirdPartyNotices, UnitTest, Pack, PackTest, SdkTest, Benchmarks
 Task UnitTest -Depends UnitTest461, UnitTestCore21, UnitTestCore31, UnitTestNet50
 Task SdkTest -Depends SdkTestBasic, SdkTestMessagePack
 
@@ -51,4 +51,8 @@ Task SdkTestBasic {
 
 Task SdkTestMessagePack {
     Exec { .\step-sdk-test-messagepack-locally.ps1 }
+}
+
+Task Benchmarks {
+    Exec { .\step-benchmarks.ps1 }
 }
