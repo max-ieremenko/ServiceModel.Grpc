@@ -74,20 +74,13 @@ namespace ServiceModel.Grpc.Configuration
 
         internal static void Serialize<T>(T value, SerializationContext context, MessagePackSerializerOptions options)
         {
-            using (var buffer = context.AsStream())
-            {
-                MessagePackSerializer.Serialize(buffer, value, options);
-            }
-
+            MessagePackSerializer.Serialize(context.GetBufferWriter(), value, options);
             context.Complete();
         }
 
         internal static T Deserialize<T>(DeserializationContext context, MessagePackSerializerOptions options)
         {
-            using (var buffer = context.AsStream())
-            {
-                return MessagePackSerializer.Deserialize<T>(buffer, options);
-            }
+            return MessagePackSerializer.Deserialize<T>(context.PayloadAsReadOnlySequence(), options);
         }
 
         private void Serialize<T>(T value, SerializationContext context) => Serialize(value, context, Options);
