@@ -14,6 +14,7 @@
 // limitations under the License.
 // </copyright>
 
+using System;
 using System.Buffers;
 using NUnit.Framework;
 using Shouldly;
@@ -44,6 +45,22 @@ namespace ServiceModel.Grpc.Internal.IO
 
             buffer.ShouldBe(expected);
         }
+
+#if !NET461
+        [Test]
+        [TestCase(new byte[] { 5, 5 }, 0, 2, 2, new byte[] { 1, 2 })]
+        [TestCase(new byte[] { 5, 5 }, 1, 1, 1, new byte[] { 5, 1 })]
+        [TestCase(new byte[] { 5, 5, 5 }, 0, 3, 3, new byte[] { 1, 2, 3 })]
+        [TestCase(new byte[] { 5, 5, 5, 5 }, 0, 4, 3, new byte[] { 1, 2, 3, 5 })]
+        [TestCase(new byte[] { 5, 5, 5, 5, 5 }, 1, 4, 3, new byte[] { 5, 1, 2, 3, 5 })]
+        public void ReadSpan(byte[] buffer, int offset, int count, int expectedLength, byte[] expected)
+        {
+            var span = buffer.AsSpan(offset, count);
+            _sut.Read(span).ShouldBe(expectedLength);
+
+            buffer.ShouldBe(expected);
+        }
+#endif
 
         [Test]
         public void ReadByte()
