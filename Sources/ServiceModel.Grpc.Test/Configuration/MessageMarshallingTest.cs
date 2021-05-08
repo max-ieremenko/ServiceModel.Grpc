@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using Grpc.Core;
 using KellermanSoftware.CompareNetObjects;
 using NUnit.Framework;
@@ -32,16 +33,16 @@ namespace ServiceModel.Grpc.Configuration
     public partial class MessageMarshallingTest
     {
         [Test]
-        [TestCaseSource(nameof(GetMessages))]
+        [TestCaseSource(nameof(GetAllMessages))]
         public void DataContractTest(object value) => RunTest(value, nameof(DataContractClone));
 
         [Test]
-        [TestCaseSource(nameof(GetMessages))]
+        [TestCaseSource(nameof(GetDefaultMessages))]
         public void ProtobufTest(object value) => RunTest(value, nameof(ProtobufClone));
 
 #if !NETCOREAPP2_1
         [Test]
-        [TestCaseSource(nameof(GetMessages))]
+        [TestCaseSource(nameof(GetAllMessages))]
         public void JsonTest(object value) => RunTest(value, nameof(JsonClone));
 #endif
 
@@ -91,7 +92,7 @@ namespace ServiceModel.Grpc.Configuration
             return marshaller.ContextualDeserializer(new DefaultDeserializationContext(content));
         }
 
-        private static IEnumerable<object> GetMessages()
+        private static IEnumerable<object> GetDefaultMessages()
         {
             yield return new Message();
             yield return new Message<int>(1);
@@ -126,6 +127,19 @@ namespace ServiceModel.Grpc.Configuration
                 bigMessageType,
                 Enumerable.Range(0, 1000).Select(i => new Person { Name = "name " + i }).Cast<object>().ToArray());
             yield return bigMessage!;
+        }
+
+        private static IEnumerable<object> GetAllMessages()
+        {
+            foreach (var i in GetDefaultMessages())
+            {
+                yield return i;
+            }
+
+            yield return new Message<DynamicObject>(new DynamicObject { Values = { new DynamicObject() } });
+            yield return new Message<TheContainer<int>>(new TheContainer<int>(10));
+            yield return new Message<TheContainer<string>>(new TheContainer<string>("abc"));
+            yield return new Message<TheContainer<DataContractSerializer>>(new TheContainer<DataContractSerializer>());
         }
     }
 }

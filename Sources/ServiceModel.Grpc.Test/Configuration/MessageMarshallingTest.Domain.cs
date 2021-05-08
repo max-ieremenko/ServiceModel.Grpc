@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,8 @@
 // limitations under the License.
 // </copyright>
 
-using System.Diagnostics.CodeAnalysis;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
@@ -64,6 +65,51 @@ namespace ServiceModel.Grpc.Configuration
         [DataContract]
         public class Knife : Weapon
         {
+        }
+
+        [DataContract]
+        ////[KnownType(typeof(DynamicObject))]
+        public class DynamicObject
+        {
+            [DataMember(Order = 1)]
+            public List<object> Values { get; private set; } = new List<object>();
+        }
+
+        [Serializable]
+        public class TheContainer<T> : ISerializable
+        {
+            public TheContainer()
+            {
+            }
+
+            public TheContainer(T value)
+            {
+                Value = value;
+            }
+
+            private TheContainer(SerializationInfo info, StreamingContext context)
+            {
+                Value = (T)info.GetValue(nameof(Value), typeof(T))!;
+            }
+
+            public T Value { get; set; } = default!;
+
+            public void GetObjectData(SerializationInfo info, StreamingContext context)
+            {
+                info.AddValue(nameof(Value), Value);
+            }
+
+            public override bool Equals(object? obj)
+            {
+                if (obj is TheContainer<T> other)
+                {
+                    return EqualityComparer<T>.Default.Equals(Value, other.Value);
+                }
+
+                return false;
+            }
+
+            public override int GetHashCode() => Value == null ? 0 : Value.GetHashCode();
         }
 
         public sealed class JsonMarshaller<T>
