@@ -28,23 +28,22 @@ namespace ServiceModel.Grpc.Configuration
     public sealed class ProtobufMarshallerFactory : IMarshallerFactory
     {
         /// <summary>
-        /// Default instance of <see cref="ProtobufMarshallerFactory"/> with <see cref="RuntimeTypeModel"/>.Default.
+        /// Default instance of <see cref="ProtobufMarshallerFactory"/> with <see cref="ProtoBuf.Meta.RuntimeTypeModel"/>.Default.
         /// </summary>
         public static readonly IMarshallerFactory Default = new ProtobufMarshallerFactory();
-
-        private readonly RuntimeTypeModel? _runtimeTypeModel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProtobufMarshallerFactory"/> class.
         /// </summary>
         public ProtobufMarshallerFactory()
+            : this(RuntimeTypeModel.Default)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ProtobufMarshallerFactory"/> class with specific <see cref="RuntimeTypeModel"/>.
+        /// Initializes a new instance of the <see cref="ProtobufMarshallerFactory"/> class with specific <see cref="ProtoBuf.Meta.RuntimeTypeModel"/>.
         /// </summary>
-        /// <param name="runtimeTypeModel">The <see cref="RuntimeTypeModel"/>.</param>
+        /// <param name="runtimeTypeModel">The <see cref="ProtoBuf.Meta.RuntimeTypeModel"/>.</param>
         public ProtobufMarshallerFactory(RuntimeTypeModel runtimeTypeModel)
         {
             if (runtimeTypeModel == null)
@@ -52,8 +51,13 @@ namespace ServiceModel.Grpc.Configuration
                 throw new ArgumentNullException(nameof(runtimeTypeModel));
             }
 
-            _runtimeTypeModel = runtimeTypeModel;
+            RuntimeTypeModel = runtimeTypeModel;
         }
+
+        /// <summary>
+        /// Gets the <see cref="ProtoBuf.Meta.RuntimeTypeModel"/>.
+        /// </summary>
+        public RuntimeTypeModel RuntimeTypeModel { get; }
 
         /// <summary>
         /// Creates the <see cref="Marshaller{T}"/>.
@@ -62,7 +66,7 @@ namespace ServiceModel.Grpc.Configuration
         /// <returns>The instance of <see cref="Marshaller{T}"/> for serializing and deserializing messages.</returns>
         public Marshaller<T> CreateMarshaller<T>()
         {
-            if (_runtimeTypeModel == null)
+            if (ReferenceEquals(RuntimeTypeModel, RuntimeTypeModel.Default))
             {
                 return ProtobufMarshaller<T>.Default;
             }
@@ -72,24 +76,17 @@ namespace ServiceModel.Grpc.Configuration
 
         internal static void Serialize<T>(T value, SerializationContext context, RuntimeTypeModel runtimeTypeModel)
         {
-            using (var buffer = context.AsStream())
-            {
-                runtimeTypeModel.Serialize(buffer, value);
-            }
-
+            runtimeTypeModel.Serialize(context.GetBufferWriter(), value);
             context.Complete();
         }
 
         internal static T Deserialize<T>(DeserializationContext context, RuntimeTypeModel runtimeTypeModel)
         {
-            using (var buffer = context.AsStream())
-            {
-                return (T)runtimeTypeModel.Deserialize(buffer, null, typeof(T));
-            }
+            return runtimeTypeModel.Deserialize<T>(context.PayloadAsReadOnlySequence());
         }
 
-        private void Serialize<T>(T value, SerializationContext context) => Serialize(value, context, _runtimeTypeModel!);
+        private void Serialize<T>(T value, SerializationContext context) => Serialize(value, context, RuntimeTypeModel!);
 
-        private T Deserialize<T>(DeserializationContext context) => Deserialize<T>(context, _runtimeTypeModel!);
+        private T Deserialize<T>(DeserializationContext context) => Deserialize<T>(context, RuntimeTypeModel!);
     }
 }
