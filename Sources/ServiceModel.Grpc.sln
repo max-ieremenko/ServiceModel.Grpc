@@ -29,7 +29,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.DesignTim
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.AspNetCore.TestApi", "ServiceModel.Grpc.AspNetCore.TestApi\ServiceModel.Grpc.AspNetCore.TestApi.csproj", "{D9B1C523-9684-45C2-90B1-140BE909C03B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceModel.Grpc.MessagePackMarshaller", "ServiceModel.Grpc.MessagePackMarshaller\ServiceModel.Grpc.MessagePackMarshaller.csproj", "{7EB54615-CC2E-4BD9-9249-EF8511125A07}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.MessagePackMarshaller", "ServiceModel.Grpc.MessagePackMarshaller\ServiceModel.Grpc.MessagePackMarshaller.csproj", "{7EB54615-CC2E-4BD9-9249-EF8511125A07}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.AspNetCore.Swashbuckle", "ServiceModel.Grpc.AspNetCore.Swashbuckle\ServiceModel.Grpc.AspNetCore.Swashbuckle.csproj", "{2391FD35-EAC7-4303-83D5-3E5920695339}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceModel.Grpc.AspNetCore.Swashbuckle.Test", "ServiceModel.Grpc.AspNetCore.Swashbuckle.Test\ServiceModel.Grpc.AspNetCore.Swashbuckle.Test.csproj", "{92BE9D50-8031-4239-93A5-FA1A0B92AD45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,6 +93,14 @@ Global
 		{7EB54615-CC2E-4BD9-9249-EF8511125A07}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7EB54615-CC2E-4BD9-9249-EF8511125A07}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7EB54615-CC2E-4BD9-9249-EF8511125A07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2391FD35-EAC7-4303-83D5-3E5920695339}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2391FD35-EAC7-4303-83D5-3E5920695339}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2391FD35-EAC7-4303-83D5-3E5920695339}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2391FD35-EAC7-4303-83D5-3E5920695339}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92BE9D50-8031-4239-93A5-FA1A0B92AD45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92BE9D50-8031-4239-93A5-FA1A0B92AD45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92BE9D50-8031-4239-93A5-FA1A0B92AD45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92BE9D50-8031-4239-93A5-FA1A0B92AD45}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -101,6 +113,7 @@ Global
 		{5A15F328-AB5F-4FAA-B606-0700E2A72B38} = {2B957488-05AA-4B3F-B954-321B3ACE98B7}
 		{3828170C-4688-4B97-9596-7961679C5E45} = {2B957488-05AA-4B3F-B954-321B3ACE98B7}
 		{D9B1C523-9684-45C2-90B1-140BE909C03B} = {2B957488-05AA-4B3F-B954-321B3ACE98B7}
+		{92BE9D50-8031-4239-93A5-FA1A0B92AD45} = {2B957488-05AA-4B3F-B954-321B3ACE98B7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A48B878D-6D95-484D-9585-1BD5C3A3610B}
