@@ -15,7 +15,6 @@
 // </copyright>
 
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
 using NUnit.Framework;
