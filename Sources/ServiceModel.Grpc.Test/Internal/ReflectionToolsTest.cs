@@ -64,6 +64,17 @@ namespace ServiceModel.Grpc.Internal
         }
 
         [Test]
+        [TestCaseSource(nameof(GetUserFriendlyNameTestCases))]
+        public void GetUserFriendlyName(Type type, string expected)
+        {
+            var name = type.GetUserFriendlyName();
+            Console.WriteLine();
+            Console.WriteLine(name);
+
+            name.ShouldBe(expected);
+        }
+
+        [Test]
         [TestCase(typeof(ValueTuple<string>), true)]
         [TestCase(typeof((string, string)), true)]
         [TestCase(typeof((string, string, int)), true)]
@@ -110,6 +121,7 @@ namespace ServiceModel.Grpc.Internal
                 typeof(ReflectionToolsTest[]),
                 typeof(Tuple<int>),
                 typeof(Tuple<int>[]),
+                typeof(Tuple<int[]>),
                 typeof(Tuple<Tuple<int, long>, string>),
                 typeof(Tuple<Tuple<int, long>, string>[]),
                 typeof(ValueTuple<int>),
@@ -119,6 +131,30 @@ namespace ServiceModel.Grpc.Internal
             };
 
             return cases.Select(i => new TestCaseData(i));
+        }
+
+        private static IEnumerable<TestCaseData> GetUserFriendlyNameTestCases()
+        {
+            var cases = new Dictionary<Type, string>
+            {
+                { typeof(int), "Int32" },
+                { typeof(int[]), "Int32[]" },
+                { typeof(string), "String" },
+                { typeof(string[]), "String[]" },
+                { typeof(byte[]), "Byte[]" },
+                { typeof(Guid), "Guid" },
+                { typeof(Tuple<int>), "Tuple<Int32>" },
+                { typeof(Tuple<int[]>), "Tuple<Int32[]>" },
+                { typeof(Tuple<int>[]), "Tuple<Int32>[]" },
+                { typeof(Tuple<Tuple<int, long>, string>), "Tuple<Tuple<Int32, Int64>, String>" },
+                { typeof(Tuple<Tuple<int, long>, string>[]), "Tuple<Tuple<Int32, Int64>, String>[]" },
+                { typeof(ValueTuple<int>), "ValueTuple<Int32>" },
+                { typeof(ValueTuple<Tuple<int, long>, string>), "ValueTuple<Tuple<Int32, Int64>, String>" },
+                { typeof(Interceptor.AsyncClientStreamingCallContinuation<Tuple<object>, string>), "Interceptor.AsyncClientStreamingCallContinuation<Tuple<Object>, String>" },
+                { typeof(Interceptor.AsyncClientStreamingCallContinuation<Tuple<object>, string>[]), "Interceptor.AsyncClientStreamingCallContinuation<Tuple<Object>, String>[]" }
+            };
+
+            return cases.Select(i => new TestCaseData(i.Key, i.Value) { TestName = i.Value });
         }
     }
 }

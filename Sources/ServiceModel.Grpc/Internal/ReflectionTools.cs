@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 
 namespace ServiceModel.Grpc.Internal
 {
-    internal static class ReflectionTools
+    internal static partial class ReflectionTools
     {
         public static ICollection<Type> ExpandInterface(Type type)
         {
@@ -337,92 +337,14 @@ namespace ServiceModel.Grpc.Internal
             return (TDelegate)result;
         }
 
+        public static string GetUserFriendlyName(this Type type)
+        {
+            return new TypeUserFriendlyBuilder(type).Build();
+        }
+
         public static string GetShortAssemblyQualifiedName(this Type type)
         {
-            var result = new StringBuilder();
-            WriteShortAssemblyQualifiedName(type, result);
-            return result.ToString();
-        }
-
-        private static void WriteShortAssemblyQualifiedName(Type type, StringBuilder result)
-        {
-            var isArray = type.IsArray;
-            if (isArray)
-            {
-                type = type.GetElementType()!;
-            }
-
-            WriteTypeFullName(type, result);
-
-            // System.Tuple`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib
-            if (type.IsGenericType)
-            {
-                result.Append("[");
-
-                var args = type.GetGenericArguments();
-                for (var i = 0; i < args.Length; i++)
-                {
-                    if (i > 0)
-                    {
-                        result.Append(", ");
-                    }
-
-                    result.Append("[");
-                    WriteShortAssemblyQualifiedName(args[i], result);
-                    result.Append("]");
-                }
-
-                result.Append("]");
-            }
-
-            // System.Private.CoreLib, mscorlib
-            if (isArray)
-            {
-                result.Append("[]");
-            }
-
-            WriteAssemblyName(type, result);
-        }
-
-        private static void WriteTypeFullName(Type type, StringBuilder result)
-        {
-            if (type.IsNested)
-            {
-                WriteTypeFullName(type.DeclaringType, result);
-                result
-                    .Append("+")
-                    .Append(type.Name);
-            }
-            else
-            {
-                result
-                    .Append(type.Namespace)
-                    .Append(".")
-                    .Append(type.Name);
-            }
-        }
-
-        private static void WriteAssemblyName(Type type, StringBuilder result)
-        {
-            if (type.IsPrimitive)
-            {
-                return;
-            }
-
-            var assemblyName = type.Assembly.GetName().Name;
-            if ("System.Private.CoreLib".Equals(assemblyName, StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
-
-            if ("mscorlib".Equals(assemblyName, StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
-
-            result
-                .Append(", ")
-                .Append(assemblyName);
+            return new TypeFullNameBuilder(type).Build();
         }
     }
 }
