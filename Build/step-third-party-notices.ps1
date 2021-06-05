@@ -24,6 +24,17 @@ $sources = @(
 
 Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
 
+# ServiceModel.Grpc.AspNetCore.Swashbuckle
+$appNames = @("AspNetCoreSwashbuckle", "Core")
+$sources = @(
+    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.Swashbuckle"),
+    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.Swashbuckle.Test"),
+    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.Test"),
+    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.TestApi")
+)
+
+Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
+
 # ServiceModel.Grpc.DesignTime
 $appNames = @("DesignTime")
 $sources = @(
