@@ -50,6 +50,7 @@ namespace ServiceModel.Grpc.AspNetCore.Internal
             where TResponse : class
         {
             var invoker = handler.Method.CreateDelegate<UnaryServerMethod<TService, TRequest, TResponse>>(handler.Target);
+            metadata = AddServiceModelGrpcMarker(metadata);
             _context.AddUnaryMethod(method, metadata, invoker);
         }
 
@@ -61,6 +62,7 @@ namespace ServiceModel.Grpc.AspNetCore.Internal
             where TResponse : class
         {
             var invoker = handler.Method.CreateDelegate<ClientStreamingServerMethod<TService, TRequest, TResponse>>(handler.Target);
+            metadata = AddServiceModelGrpcMarker(metadata);
             _context.AddClientStreamingMethod(method, metadata, invoker);
         }
 
@@ -72,6 +74,7 @@ namespace ServiceModel.Grpc.AspNetCore.Internal
             where TResponse : class
         {
             var invoker = handler.Method.CreateDelegate<ServerStreamingServerMethod<TService, TRequest, TResponse>>(handler.Target);
+            metadata = AddServiceModelGrpcMarker(metadata);
             _context.AddServerStreamingMethod(method, metadata, invoker);
         }
 
@@ -83,7 +86,22 @@ namespace ServiceModel.Grpc.AspNetCore.Internal
             where TResponse : class
         {
             var invoker = handler.Method.CreateDelegate<DuplexStreamingServerMethod<TService, TRequest, TResponse>>(handler.Target);
+            metadata = AddServiceModelGrpcMarker(metadata);
             _context.AddDuplexStreamingMethod(method, metadata, invoker);
+        }
+
+        private static IList<object> AddServiceModelGrpcMarker(IList<object>? metadata)
+        {
+            var metadataLength = metadata?.Count ?? 0;
+            var result = new object[metadataLength + 1];
+
+            for (var i = 0; i < metadataLength; i++)
+            {
+                result[i] = metadata![i];
+            }
+
+            result[metadataLength] = ServiceModelGrpcMarker.Instance;
+            return result;
         }
     }
 }

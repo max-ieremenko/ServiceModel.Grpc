@@ -16,10 +16,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Internal
 {
@@ -215,33 +215,6 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
                     service.Operations.Remove(operation);
                     service.NotSupportedOperations.Add(new NotSupportedMethodDescription(operation.Method.Source, error));
                 }
-            }
-        }
-
-        private readonly struct OperationKey : IEquatable<OperationKey>
-        {
-            private readonly string _serviceName;
-            private readonly string _operationName;
-
-            public OperationKey(string serviceName, string operationName)
-            {
-                _serviceName = serviceName;
-                _operationName = operationName;
-            }
-
-            public bool Equals(OperationKey other)
-            {
-                return StringComparer.OrdinalIgnoreCase.Equals(_serviceName, _serviceName)
-                    && StringComparer.OrdinalIgnoreCase.Equals(_operationName, _operationName);
-            }
-
-            public override bool Equals(object? obj) => throw new NotSupportedException();
-
-            public override int GetHashCode()
-            {
-                var h1 = StringComparer.OrdinalIgnoreCase.GetHashCode(_serviceName);
-                var h2 = StringComparer.OrdinalIgnoreCase.GetHashCode(_operationName);
-                return ((h1 << 5) + h1) ^ h2;
             }
         }
     }

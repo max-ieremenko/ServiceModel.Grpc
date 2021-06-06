@@ -98,7 +98,9 @@ namespace ServiceModel.Grpc.AspNetCore.TestApi
             return this;
         }
 
-        public async Task<KestrelHost> StartAsync()
+        public Uri GetLocation(string relativePath) => new Uri(string.Format("http://localhost:{0}/{1}", DefaultPort, relativePath));
+
+        public async Task<KestrelHost> StartAsync(HttpProtocols protocols = HttpProtocols.Http2)
         {
             GrpcChannelExtensions.Http2UnencryptedSupport = true;
 
@@ -124,7 +126,7 @@ namespace ServiceModel.Grpc.AspNetCore.TestApi
                         }
                     });
 
-                    webBuilder.UseKestrel(o => o.ListenLocalhost(_port, l => l.Protocols = HttpProtocols.Http2));
+                    webBuilder.UseKestrel(o => o.ListenLocalhost(_port, l => l.Protocols = protocols));
                 })
                 .Build();
 

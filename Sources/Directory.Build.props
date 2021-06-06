@@ -14,9 +14,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DefaultPackageVersion>1.1.9</DefaultPackageVersion>
+    <DefaultPackageVersion>1.2.0</DefaultPackageVersion>
+	<AspNetCoreSwashbucklePackageVersion>1.2.0-pre1</AspNetCoreSwashbucklePackageVersion>
     <GrpcCoreVersion>2.37.1</GrpcCoreVersion>
     <GrpcNetVersion>2.37.0</GrpcNetVersion>
+	<SwashbuckleVersion>6.1.4</SwashbuckleVersion>
   </PropertyGroup>
 
   <PropertyGroup>
