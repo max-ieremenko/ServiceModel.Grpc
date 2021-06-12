@@ -33,7 +33,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.MessagePa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.AspNetCore.Swashbuckle", "ServiceModel.Grpc.AspNetCore.Swashbuckle\ServiceModel.Grpc.AspNetCore.Swashbuckle.csproj", "{2391FD35-EAC7-4303-83D5-3E5920695339}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceModel.Grpc.AspNetCore.Swashbuckle.Test", "ServiceModel.Grpc.AspNetCore.Swashbuckle.Test\ServiceModel.Grpc.AspNetCore.Swashbuckle.Test.csproj", "{92BE9D50-8031-4239-93A5-FA1A0B92AD45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.AspNetCore.Swashbuckle.Test", "ServiceModel.Grpc.AspNetCore.Swashbuckle.Test\ServiceModel.Grpc.AspNetCore.Swashbuckle.Test.csproj", "{92BE9D50-8031-4239-93A5-FA1A0B92AD45}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.AspNetCore.NSwag", "ServiceModel.Grpc.AspNetCore.NSwag\ServiceModel.Grpc.AspNetCore.NSwag.csproj", "{4F34C47E-A153-4C96-9E5E-32A927268195}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.AspNetCore.NSwag.Test", "ServiceModel.Grpc.AspNetCore.NSwag.Test\ServiceModel.Grpc.AspNetCore.NSwag.Test.csproj", "{577E1380-3245-4F1E-93F3-AC8A14E5C88F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,6 +105,14 @@ Global
 		{92BE9D50-8031-4239-93A5-FA1A0B92AD45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92BE9D50-8031-4239-93A5-FA1A0B92AD45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92BE9D50-8031-4239-93A5-FA1A0B92AD45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F34C47E-A153-4C96-9E5E-32A927268195}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F34C47E-A153-4C96-9E5E-32A927268195}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F34C47E-A153-4C96-9E5E-32A927268195}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F34C47E-A153-4C96-9E5E-32A927268195}.Release|Any CPU.Build.0 = Release|Any CPU
+		{577E1380-3245-4F1E-93F3-AC8A14E5C88F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{577E1380-3245-4F1E-93F3-AC8A14E5C88F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{577E1380-3245-4F1E-93F3-AC8A14E5C88F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{577E1380-3245-4F1E-93F3-AC8A14E5C88F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -114,6 +126,7 @@ Global
 		{3828170C-4688-4B97-9596-7961679C5E45} = {2B957488-05AA-4B3F-B954-321B3ACE98B7}
 		{D9B1C523-9684-45C2-90B1-140BE909C03B} = {2B957488-05AA-4B3F-B954-321B3ACE98B7}
 		{92BE9D50-8031-4239-93A5-FA1A0B92AD45} = {2B957488-05AA-4B3F-B954-321B3ACE98B7}
+		{577E1380-3245-4F1E-93F3-AC8A14E5C88F} = {2B957488-05AA-4B3F-B954-321B3ACE98B7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A48B878D-6D95-484D-9585-1BD5C3A3610B}
