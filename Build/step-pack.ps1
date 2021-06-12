@@ -36,6 +36,18 @@ Exec {
         -o $binDir `
         $projectFile
 }
+
+# ServiceModel.Grpc.AspNetCore.NSwag
+$projectFile = Join-Path $sourceDir "ServiceModel.Grpc.AspNetCore.NSwag\ServiceModel.Grpc.AspNetCore.NSwag.csproj"
+Exec {
+    dotnet pack `
+        -c Release `
+        --no-build `
+        -p:RepositoryCommit=$repositoryCommitId `
+        -o $binDir `
+        $projectFile
+}
+
 # ServiceModel.Grpc.DesignTime
 $projectFile = Join-Path $sourceDir "ServiceModel.Grpc.DesignTime\ServiceModel.Grpc.DesignTime.csproj"
 Exec {

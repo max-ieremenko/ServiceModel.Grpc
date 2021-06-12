@@ -35,6 +35,17 @@ $sources = @(
 
 Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
 
+# ServiceModel.Grpc.AspNetCore.NSwag
+$appNames = @("AspNetCoreNSwag", "Core")
+$sources = @(
+    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.NSwag"),
+    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.NSwag.Test"),
+    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.Test"),
+    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.TestApi")
+)
+
+Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
+
 # ServiceModel.Grpc.DesignTime
 $appNames = @("DesignTime")
 $sources = @(
