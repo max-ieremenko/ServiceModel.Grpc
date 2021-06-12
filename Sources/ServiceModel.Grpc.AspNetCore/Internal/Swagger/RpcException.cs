@@ -14,14 +14,24 @@
 // limitations under the License.
 // </copyright>
 
-namespace ServiceModel.Grpc.Hosting
-{
-    internal sealed class ServiceModelGrpcMarker
-    {
-        public static readonly object Instance = new ServiceModelGrpcMarker();
+using Grpc.Core;
 
-        private ServiceModelGrpcMarker()
+namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger
+{
+    internal sealed class RpcException
+    {
+        public RpcException()
         {
         }
+
+        public RpcException(Status status)
+        {
+            StatusCode = status.StatusCode.ToString();
+            Detail = status.Detail;
+        }
+
+        public string StatusCode { get; set; } = null!;
+
+        public string? Detail { get; set; }
     }
 }

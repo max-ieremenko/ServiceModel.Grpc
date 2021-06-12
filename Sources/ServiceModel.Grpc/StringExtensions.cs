@@ -22,19 +22,19 @@ namespace ServiceModel.Grpc
     internal static class StringExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string FormatWith(this string format, object arg0)
+        public static string FormatWith(this string format, object? arg0)
         {
             return string.Format(CultureInfo.InvariantCulture, format, arg0);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string FormatWith(this string format, object arg0, object arg1)
+        public static string FormatWith(this string format, object? arg0, object? arg1)
         {
             return string.Format(CultureInfo.InvariantCulture, format, arg0, arg1);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string FormatWith(this string format, object arg0, object arg1, object arg2)
+        public static string FormatWith(this string format, object? arg0, object? arg1, object? arg2)
         {
             return string.Format(CultureInfo.InvariantCulture, format, arg0, arg1, arg2);
         }

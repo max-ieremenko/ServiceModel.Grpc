@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-201 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ using Grpc.AspNetCore.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal
+namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
 {
     internal sealed class PostConfigureGrpcServiceOptions<TService> : IPostConfigureOptions<GrpcServiceOptions<TService>>
         where TService : class

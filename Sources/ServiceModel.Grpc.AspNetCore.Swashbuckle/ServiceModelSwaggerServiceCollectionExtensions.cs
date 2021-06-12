@@ -14,9 +14,10 @@
 // limitations under the License.
 // </copyright>
 
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using ServiceModel.Grpc;
+using System;
+using Microsoft.Extensions.Options;
+using ServiceModel.Grpc.AspNetCore.Internal.Swagger;
+using ServiceModel.Grpc.AspNetCore.Swashbuckle.Configuration;
 using ServiceModel.Grpc.AspNetCore.Swashbuckle.Internal;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -25,22 +26,39 @@ namespace Microsoft.Extensions.DependencyInjection
 //// ReSharper restore CheckNamespace
 {
     /// <summary>
-    /// Provides a set of methods to simplify ServiceModel.Grpc services registration.
+    /// Provides a set of methods to simplify registration of ServiceModel.Grpc integration with Swashbuckle.AspNetCore.
     /// </summary>
-    public static class ServiceModelSwashbuckleServiceCollectionExtensions
+    public static class ServiceModelSwaggerServiceCollectionExtensions
     {
         /// <summary>
-        /// Enables integration of ServiceModel.Grpc with Swashbuckle.
+        /// Enables integration of ServiceModel.Grpc with Swashbuckle.AspNetCore.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="configure">The optional configuration action.</param>
         /// <returns>The the same <see cref="IServiceCollection"/>.</returns>
-        public static IServiceCollection AddServiceModelGrpcSwagger(this IServiceCollection services)
+        public static IServiceCollection AddServiceModelGrpcSwagger(
+            this IServiceCollection services,
+            Action<ServiceModelGrpcSwaggerOptions>? configure = default)
         {
-            services.AssertNotNull(nameof(services));
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
 
-            services.TryAddEnumerable(ServiceDescriptor.Transient<IApiDescriptionProvider, ApiDescriptionProvider>());
+            if (configure != null)
+            {
+                services.Configure(configure);
+            }
+
+            ServiceCollectionExtensions.AddSwagger(services, ResolveDataSerializer);
             services.ConfigureSwaggerGen(ConfigureSwagger);
             return services;
+        }
+
+        private static IDataSerializer ResolveDataSerializer(IServiceProvider serviceProvider)
+        {
+            var options = serviceProvider.GetRequiredService<IOptions<ServiceModelGrpcSwaggerOptions>>().Value;
+            return new DataSerializer(options.JsonSerializer);
         }
 
         private static void ConfigureSwagger(SwaggerGenOptions options)

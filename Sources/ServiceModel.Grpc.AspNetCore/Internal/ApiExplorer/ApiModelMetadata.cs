@@ -20,7 +20,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 
-namespace ServiceModel.Grpc.AspNetCore.Swashbuckle.Internal
+namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
 {
     internal sealed class ApiModelMetadata : ModelMetadata
     {

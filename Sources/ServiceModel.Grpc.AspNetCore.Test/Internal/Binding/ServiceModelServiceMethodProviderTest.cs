@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-201 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ using Moq;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal
+namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
 {
     [TestFixture]
     public partial class ServiceModelServiceMethodProviderTest

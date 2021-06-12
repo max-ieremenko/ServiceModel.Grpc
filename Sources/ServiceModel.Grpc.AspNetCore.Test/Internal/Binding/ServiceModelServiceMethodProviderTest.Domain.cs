@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-namespace ServiceModel.Grpc.AspNetCore.Internal
+namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
 {
     public partial class ServiceModelServiceMethodProviderTest
     {

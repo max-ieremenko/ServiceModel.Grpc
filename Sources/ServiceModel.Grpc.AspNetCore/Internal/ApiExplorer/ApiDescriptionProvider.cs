@@ -17,7 +17,7 @@
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Routing;
 
-namespace ServiceModel.Grpc.AspNetCore.Swashbuckle.Internal
+namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
 {
     internal sealed class ApiDescriptionProvider : IApiDescriptionProvider
     {

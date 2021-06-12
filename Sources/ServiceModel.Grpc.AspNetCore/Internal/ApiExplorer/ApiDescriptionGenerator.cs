@@ -28,11 +28,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
-using ServiceModel.Grpc.Channel;
-using ServiceModel.Grpc.Hosting;
 using ServiceModel.Grpc.Internal;
 
-namespace ServiceModel.Grpc.AspNetCore.Swashbuckle.Internal
+namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
 {
     internal sealed class ApiDescriptionGenerator
     {
@@ -75,7 +73,8 @@ namespace ServiceModel.Grpc.AspNetCore.Swashbuckle.Internal
         internal static (Type? Type, ParameterInfo Parameter) GetResponseType(MessageAssembler message)
         {
             // do not return typeof(void) => Swashbuckle schema generation error
-            var responseType = message.ResponseType == typeof(Message) ? null : message.ResponseType.GetGenericArguments()[0];
+            var arguments = message.ResponseType.GetGenericArguments();
+            var responseType = arguments.Length == 0 ? null : arguments[0];
             if (message.OperationType == MethodType.ServerStreaming || message.OperationType == MethodType.DuplexStreaming)
             {
                 responseType = typeof(IAsyncEnumerable<>).MakeGenericType(responseType!);
@@ -124,14 +123,25 @@ namespace ServiceModel.Grpc.AspNetCore.Swashbuckle.Internal
                 operation.Message.Operation.DeclaringType!,
                 operation.Message.Operation);
 
-            var descriptor = new GrpcActionDescriptor(metadata, serviceInstanceMethod);
-            descriptor.MethodSignature = GetSignature(operation.Message, descriptor.ActionName);
+            var descriptor = new GrpcActionDescriptor
+            {
+                MethodInfo = serviceInstanceMethod,
+                ControllerTypeInfo = metadata.ServiceType.GetTypeInfo(),
+                ActionName = metadata.Method.Name,
+                ControllerName = metadata.Method.ServiceName,
+                RouteValues = new Dictionary<string, string>
+                {
+                    ["controller"] = metadata.Method.ServiceName
+                },
+                MethodType = metadata.Method.Type,
+                MethodSignature = GetSignature(operation.Message, metadata.Method.Name)
+            };
 
             var description = new ApiDescription
             {
                 HttpMethod = HttpMethods.Post,
                 ActionDescriptor = descriptor,
-                RelativePath = endpoint.RoutePattern.RawText!.TrimStart('/')!
+                RelativePath = ProtocolConstants.NormalizeRelativePath(endpoint.RoutePattern.RawText!)
             };
 
             AddRequest(description, operation.Message);
@@ -144,7 +154,7 @@ namespace ServiceModel.Grpc.AspNetCore.Swashbuckle.Internal
         {
             description.SupportedRequestFormats.Add(new ApiRequestFormat
             {
-                MediaType = ProtocolConstants.MediaTypeName
+                MediaType = ProtocolConstants.MediaTypeNameSwaggerRequest
             });
 
             foreach (var parameter in GetRequestHeaderParameters(message))
@@ -184,7 +194,7 @@ namespace ServiceModel.Grpc.AspNetCore.Swashbuckle.Internal
             {
                 ApiResponseFormats =
                 {
-                    new ApiResponseFormat { MediaType = ProtocolConstants.MediaTypeName }
+                    new ApiResponseFormat { MediaType = ProtocolConstants.MediaTypeNameSwaggerResponse }
                 },
                 ModelMetadata = model,
                 Type = responseType,

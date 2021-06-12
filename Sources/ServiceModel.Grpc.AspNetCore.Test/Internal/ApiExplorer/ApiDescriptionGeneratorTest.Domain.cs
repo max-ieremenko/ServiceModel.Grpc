@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 #pragma warning disable SA1414 // Tuple types in signatures should have element names
 
-namespace ServiceModel.Grpc.AspNetCore.Swashbuckle.Internal
+namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
 {
     public partial class ApiDescriptionGeneratorTest
     {

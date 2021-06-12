@@ -14,10 +14,16 @@
 // limitations under the License.
 // </copyright>
 
-namespace ServiceModel.Grpc.AspNetCore.Swashbuckle.Internal
+using Grpc.Core;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+
+namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger
 {
-    internal static class ProtocolConstants
+    internal interface IApiDescriptionAdapter
     {
-        public const string MediaTypeName = "application/grpc+servicemodel";
+        ApiDescription? FindApiDescription(string requestPath);
+
+        IMethod? GetMethod(HttpContext context);
     }
 }

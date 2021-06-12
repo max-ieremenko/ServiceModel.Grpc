@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using ServiceModel.Grpc.Internal;
 
-namespace ServiceModel.Grpc.AspNetCore.Swashbuckle.Internal
+namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
 {
     internal sealed class ContractDescriptionCache
     {

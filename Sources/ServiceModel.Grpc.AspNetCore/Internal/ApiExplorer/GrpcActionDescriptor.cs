@@ -14,30 +14,14 @@
 // limitations under the License.
 // </copyright>
 
-using System.Collections.Generic;
-using System.Reflection;
-using Grpc.AspNetCore.Server;
 using Grpc.Core;
 using Microsoft.AspNetCore.Mvc.Controllers;
 
-namespace ServiceModel.Grpc.AspNetCore.Swashbuckle.Internal
+namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
 {
     internal sealed class GrpcActionDescriptor : ControllerActionDescriptor
     {
-        public GrpcActionDescriptor(GrpcMethodMetadata metadata, MethodInfo serviceInstanceMethod)
-        {
-            MethodInfo = serviceInstanceMethod;
-            ControllerTypeInfo = metadata.ServiceType.GetTypeInfo();
-            ActionName = metadata.Method.Name;
-            ControllerName = metadata.Method.ServiceName;
-            RouteValues = new Dictionary<string, string>
-            {
-                ["controller"] = metadata.Method.ServiceName // Swashbuckle
-            };
-            MethodType = metadata.Method.Type;
-        }
-
-        public MethodType MethodType { get; }
+        public MethodType MethodType { get; set; }
 
         public string MethodSignature { get; set; } = null!;
     }

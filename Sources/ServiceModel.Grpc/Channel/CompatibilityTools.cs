@@ -26,7 +26,10 @@ namespace ServiceModel.Grpc.Channel
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Metadata SerializeMethodInputHeader<T>(Marshaller<T> marshaller, T value)
         {
-            return SerializeHeader(marshaller, CallContext.HeaderNameMethodInput, value);
+            return new Metadata
+            {
+                { CallContext.HeaderNameMethodInput, SerializeValue(marshaller, value) }
+            };
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -38,7 +41,10 @@ namespace ServiceModel.Grpc.Channel
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Metadata SerializeMethodOutputHeader<T>(Marshaller<T> marshaller, T value)
         {
-            return SerializeHeader(marshaller, CallContext.HeaderNameMethodOutput, value);
+            return new Metadata
+            {
+                { CallContext.HeaderNameMethodOutput, SerializeValue(marshaller, value) }
+            };
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -47,19 +53,21 @@ namespace ServiceModel.Grpc.Channel
             return DeserializeHeader(marshaller, responseHeaders, CallContext.HeaderNameMethodOutput);
         }
 
-        private static Metadata SerializeHeader<T>(Marshaller<T> marshaller, string headerName, T headerValue)
+        public static byte[] SerializeValue<T>(Marshaller<T> marshaller, T value)
         {
             byte[] payload;
             using (var serializationContext = new DefaultSerializationContext())
             {
-                marshaller.ContextualSerializer(headerValue, serializationContext);
+                marshaller.ContextualSerializer(value, serializationContext);
                 payload = serializationContext.GetContent();
             }
 
-            return new Metadata
-            {
-                { headerName, payload }
-            };
+            return payload;
+        }
+
+        public static T DeserializeValue<T>(Marshaller<T> marshaller, byte[] payload)
+        {
+            return marshaller.ContextualDeserializer(new DefaultDeserializationContext(payload));
         }
 
         private static T DeserializeHeader<T>(Marshaller<T> marshaller, Metadata? headers, string headerName)

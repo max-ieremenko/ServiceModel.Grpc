@@ -21,7 +21,7 @@ using NUnit.Framework;
 using ServiceModel.Grpc.Internal;
 using Shouldly;
 
-namespace ServiceModel.Grpc.AspNetCore.Swashbuckle.Internal
+namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
 {
     [TestFixture]
     public partial class ApiDescriptionGeneratorTest

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-201 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ using ServiceModel.Grpc.Hosting;
 using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.Internal.Emit;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal
+namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
 {
     internal sealed class ServiceModelServiceMethodProvider<TService> : IServiceMethodProvider<TService>
         where TService : class

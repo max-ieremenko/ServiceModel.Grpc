@@ -98,7 +98,16 @@ namespace ServiceModel.Grpc.AspNetCore.TestApi
             return this;
         }
 
-        public Uri GetLocation(string relativePath) => new Uri(string.Format("http://localhost:{0}/{1}", DefaultPort, relativePath));
+        public string GetLocation(string? relativePath = default)
+        {
+            var root = string.Format("http://localhost:{0}", DefaultPort);
+            if (string.IsNullOrEmpty(relativePath))
+            {
+                return root;
+            }
+
+            return new Uri(new Uri(root), relativePath).ToString();
+        }
 
         public async Task<KestrelHost> StartAsync(HttpProtocols protocols = HttpProtocols.Http2)
         {
