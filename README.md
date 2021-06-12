@@ -124,7 +124,7 @@ internal sealed class Calculator : ICalculator
     {
         var multiplicationResult = DoMultiplication(values, multiplier, token);
         return new ValueTask<(int, IAsyncEnumerable<int>)>((multiplier, multiplicationResult));
-    };
+    }
 
     private static async IAsyncEnumerable<int> DoMultiplication(IAsyncEnumerable<int> values, int multiplier, [EnumeratorCancellation] CancellationToken token)
     {
@@ -162,6 +162,10 @@ internal sealed class Startup
 }
 ```
 
+Integrate with Swagger, see [example](Examples/Swagger)
+
+![UI demo](Examples/Swagger/calculator-swagger-ui.png)
+
 ### Host the service in Grpc.Core.Server
 
 ```powershell
@@ -186,6 +190,7 @@ Name | Package | Supported platforms | Description
 ServiceModel.Grpc | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.svg)](https://www.nuget.org/packages/ServiceModel.Grpc) | netstandard2.0/2.1, net461+ | main functionality, basic Grpc.Core.Api extensions, ClientFactory
 ServiceModel.Grpc.AspNetCore | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.AspNetCore.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.AspNetCore) | net5.0, .net core 3.0/3.1+ | Grpc.AspNetCore.Server extensions
 ServiceModel.Grpc.AspNetCore.Swashbuckle | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.AspNetCore.Swashbuckle.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.AspNetCore.Swashbuckle) | net5.0, .net core 3.0/3.1+ | Swagger integration, based on [Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore)
+ServiceModel.Grpc.AspNetCore.NSwag | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.AspNetCore.NSwag.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.AspNetCore.NSwag) | net5.0, .net core 3.0/3.1+ | Swagger integration, based on [NSwag](https://github.com/RicoSuter/NSwag)
 ServiceModel.Grpc.SelfHost | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.SelfHost.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.SelfHost) | netstandard2.0/2.1, net461+ | Grpc.Core extensions for self-hosted Grpc.Core.Server
 ServiceModel.Grpc.DesignTime | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.DesignTime.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.DesignTime) | netstandard2.0/2.1, net461+ | C# code generator
 ServiceModel.Grpc.MessagePackMarshaller | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.MessagePackMarshaller.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.MessagePackMarshaller) | netstandard2.0, net5.0, .net core 3.1 | marshaller factory, based on [MessagePack serializer](https://www.nuget.org/packages/MessagePack)
