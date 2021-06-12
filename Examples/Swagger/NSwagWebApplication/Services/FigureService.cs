@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Contract;
+using NSwag.Annotations;
 
-namespace WebApplication.Services
+namespace NSwagWebApplication.Services
 {
     internal sealed class FigureService : IFigureService
     {
-        private static int _figureIndex;
-
+        [OpenApiOperation("Create a triangle", null)]
         public Task<Triangle> CreateTriangle(Point vertex1, Point vertex2, Point vertex3, CancellationToken token)
         {
             return Task.FromResult(new Triangle
             {
-                Name = GetFigureUniqueName(nameof(Triangle)),
                 Vertex1 = vertex1,
                 Vertex2 = vertex2,
                 Vertex3 = vertex3
@@ -26,28 +25,24 @@ namespace WebApplication.Services
         {
             return new Rectangle
             {
-                Name = GetFigureUniqueName(nameof(Triangle)),
                 VertexLeftTop = vertexLeftTop,
                 Width = width,
                 Height = height
             };
         }
 
-        public double CalculateArea(FigureBase figure)
+        // this method demonstrates gRPC exception handling, see services.AddGrpc(options => options.EnableDetailedErrors = true);
+        public Task<Point> CreatePoint(int x, int y)
         {
-            if (figure is Triangle triangle)
-            {
-                return triangle.Area();
-            }
-
-            if (figure is Rectangle rectangle)
-            {
-                return rectangle.Area();
-            }
-
-            throw new NotImplementedException();
+            throw new NotSupportedException("Point is not a 2d figure.");
         }
 
+        public double CalculateArea(FigureBase figure)
+        {
+            return figure.GetArea();
+        }
+
+        // call to this method from Swagger UI is not supported
         public async Task<FigureBase> FindSmallestFigure(IAsyncEnumerable<FigureBase> figures, CancellationToken token)
         {
             FigureBase result = null;
@@ -65,6 +60,7 @@ namespace WebApplication.Services
             return result;
         }
 
+        // call to this method from Swagger UI is not supported
         public async IAsyncEnumerable<FigureBase> CreateRandomFigures(int count, [EnumeratorCancellation] CancellationToken token)
         {
             for (var i = 0; i < count; i++)
@@ -81,18 +77,13 @@ namespace WebApplication.Services
             }
         }
 
+        // call to this method from Swagger UI is not supported
         public async IAsyncEnumerable<double> CalculateAreas(IAsyncEnumerable<FigureBase> figures, [EnumeratorCancellation] CancellationToken token)
         {
             await foreach (var figure in figures.WithCancellation(token))
             {
                 yield return CalculateArea(figure);
             }
-        }
-
-        private static string GetFigureUniqueName(string name)
-        {
-            var index = Interlocked.Increment(ref _figureIndex);
-            return name + index.ToString(CultureInfo.InvariantCulture);
         }
     }
 }

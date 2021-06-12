@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Serialization;
 
-namespace WebApplication
+namespace SwashbuckleWebApplication.Configuration
 {
     public static class SwaggerTools
     {

@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace WebApplication.Services
+namespace Contract
 {
     [DataContract]
     public class Point

@@ -1,13 +1,15 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+using Contract.Internal;
 
-namespace WebApplication.Services
+namespace Contract
 {
     [DataContract]
     [KnownType(typeof(Triangle))]
     [KnownType(typeof(Rectangle))]
+    [JsonConverter(typeof(FigureBaseJsonConverter))]
     public abstract class FigureBase
     {
-        [DataMember]
-        public string Name { get; set; }
+        public abstract double GetArea();
     }
 }
