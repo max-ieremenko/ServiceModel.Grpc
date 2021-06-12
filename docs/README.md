@@ -173,7 +173,7 @@ internal sealed class Startup
 
 Integrate with Swagger, see [example](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/Swagger)
 
-![UI demo](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/Swagger/greeter-swagger-ui.png)
+![UI demo](https://raw.githubusercontent.com/max-ieremenko/ServiceModel.Grpc/master/Examples/Swagger/greeter-swagger-ui.png)
 
 ### Host the service in Grpc.Core.Server
 
