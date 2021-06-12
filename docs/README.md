@@ -22,6 +22,7 @@ The solution is built on top of [gRPC C#](https://github.com/grpc/grpc/tree/mast
 - [Grpc.Core server configuration](GrpcCoreServerConfiguration.md)
 - error handler general [information](error-handling-general.md)
 - global error handling [tutorial](global-error-handling.md)
+- Swagger integration [example](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/Swagger)
 - getting started [tutorial](CreateClientAndServerASPNETCore.md) create a gRPC client and server
 - [compatibility with native gRPC](CompatibilityWithNativegRPC.md)
 - migrate from WCF to a gRPC [tutorial](MigrateWCFServiceTogRPC.md)
@@ -82,7 +83,7 @@ var (greeting, greetings) = await greeter.Greet(new[] { new Person { FirstName =
 
 ### Client call (source code generation)
 
-A proxy for ICalculator service will be generated in the source code.
+A proxy for IGreeter service will be generated in the source code.
 
 ```powershell
 PS> Install-Package ServiceModel.Grpc.DesignTime
@@ -130,7 +131,7 @@ internal sealed class Greeter : IGreeter
 
     public ValueTask<(string Greeting, IAsyncEnumerable<string> Greetings)> Greet(IAsyncEnumerable<Person> persons, string greeting, CancellationToken token)
     {
-        var greetings = DoGreet();
+        var greetings = DoGreet(persons, greeting, token);
         return new ValueTask<(string, IAsyncEnumerable<string>)>((greeting, greetings));
     }
 
@@ -169,6 +170,10 @@ internal sealed class Startup
     }
 }
 ```
+
+Integrate with Swagger, see [example](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/Swagger)
+
+![UI demo](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/Swagger/greeter-swagger-ui.png)
 
 ### Host the service in Grpc.Core.Server
 

@@ -1,0 +1,31 @@
+{
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "AspNetCoreSwashbuckle",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "netcoreapp3.0",
+        "net5.0",
+        "netcoreapp3.1"
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://raw.githubusercontent.com/Microsoft/OpenAPI.NET/master/LICENSE",
+      "Description": null
+    },
+    {
+      "Subject": "project",
+      "Code": "MIT",
+      "HRef": "https://github.com/Microsoft/OpenAPI.NET",
+      "Description": null
+    }
+  ]
+}

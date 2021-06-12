@@ -25,6 +25,50 @@
           "Version": "5.0.0"
         }
       ]
+    },
+    {
+      "Name": "AspNetCoreSwashbuckle",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1",
+        "net5.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.IdentityModel.Logging",
+          "Version": "5.5.0"
+        },
+        {
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.1"
+        },
+        {
+          "Name": "System.Security.Cryptography.Cng",
+          "Version": "5.0.0"
+        }
+      ]
+    },
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1",
+        "net5.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.IdentityModel.Logging",
+          "Version": "5.5.0"
+        },
+        {
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.1"
+        },
+        {
+          "Name": "System.Security.Cryptography.Cng",
+          "Version": "5.0.0"
+        }
+      ]
     }
   ],
   "Licenses": [

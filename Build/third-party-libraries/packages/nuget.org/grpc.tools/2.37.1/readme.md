@@ -1,7 +1,7 @@
 Grpc.Tools [2.37.1](https://www.nuget.org/packages/Grpc.Tools/2.37.1)
 --------------------
 
-Used by: AspNetCore internal
+Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal
 
 Target frameworks: net5.0, netcoreapp3.1
 

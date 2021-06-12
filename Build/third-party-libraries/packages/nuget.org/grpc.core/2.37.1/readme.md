@@ -1,7 +1,7 @@
 Grpc.Core [2.37.1](https://www.nuget.org/packages/Grpc.Core/2.37.1)
 --------------------
 
-Used by: AspNetCore internal, SelfHost
+Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, SelfHost
 
 Target frameworks: net461, net5.0, netcoreapp3.1, netstandard2.0, netstandard2.1
 

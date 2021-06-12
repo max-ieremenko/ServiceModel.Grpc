@@ -78,6 +78,42 @@
           "Version": "16.9.4"
         }
       ]
+    },
+    {
+      "Name": "AspNetCoreSwashbuckle",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1",
+        "net5.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.CodeCoverage",
+          "Version": "16.9.4"
+        },
+        {
+          "Name": "Microsoft.TestPlatform.TestHost",
+          "Version": "16.9.4"
+        }
+      ]
+    },
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1",
+        "net5.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.CodeCoverage",
+          "Version": "16.9.4"
+        },
+        {
+          "Name": "Microsoft.TestPlatform.TestHost",
+          "Version": "16.9.4"
+        }
+      ]
     }
   ],
   "Licenses": [

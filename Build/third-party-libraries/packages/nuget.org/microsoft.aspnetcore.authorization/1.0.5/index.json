@@ -1,0 +1,44 @@
+{
+  "License": {
+    "Code": "ms-net-library",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "netcoreapp3.0",
+        "net5.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.Extensions.Logging.Abstractions",
+          "Version": "1.0.2"
+        },
+        {
+          "Name": "Microsoft.Extensions.Options",
+          "Version": "1.0.2"
+        },
+        {
+          "Name": "System.Security.Claims",
+          "Version": "4.0.1"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "ms-net-library",
+      "HRef": "http://www.microsoft.com/web/webpi/eula/net_library_eula_enu.htm",
+      "Description": null
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "http://www.asp.net/",
+      "Description": "License should be verified on http://www.asp.net/"
+    }
+  ]
+}

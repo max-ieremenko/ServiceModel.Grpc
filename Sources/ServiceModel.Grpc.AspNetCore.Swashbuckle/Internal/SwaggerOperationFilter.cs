@@ -14,10 +14,11 @@
 // limitations under the License.
 // </copyright>
 
-using System;
+using System.Globalization;
 using System.Text;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.OpenApi.Models;
+using ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace ServiceModel.Grpc.AspNetCore.Swashbuckle.Internal
@@ -44,11 +45,11 @@ namespace ServiceModel.Grpc.AspNetCore.Swashbuckle.Internal
         {
             if (string.IsNullOrWhiteSpace(operation.Summary))
             {
-                operation.Summary = "ServiceModel.Grpc - {0}".FormatWith(descriptor.MethodType.ToString());
+                operation.Summary = string.Format(CultureInfo.InvariantCulture, "ServiceModel.Grpc - {0}", descriptor.MethodType.ToString());
             }
             else
             {
-                operation.Summary = "ServiceModel.Grpc - {0}. {1}".FormatWith(descriptor.MethodType.ToString(), operation.Summary);
+                operation.Summary = string.Format(CultureInfo.InvariantCulture, "ServiceModel.Grpc - {0}. {1}", descriptor.MethodType.ToString(), operation.Summary);
             }
         }
 

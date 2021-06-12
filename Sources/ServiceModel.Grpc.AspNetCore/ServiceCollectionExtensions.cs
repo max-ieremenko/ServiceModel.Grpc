@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,10 +17,13 @@
 using System;
 using Grpc.AspNetCore.Server;
 using Grpc.AspNetCore.Server.Model;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using ServiceModel.Grpc;
-using ServiceModel.Grpc.AspNetCore.Internal;
+using ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer;
+using ServiceModel.Grpc.AspNetCore.Internal.Binding;
+using ServiceModel.Grpc.AspNetCore.Internal.Swagger;
 
 //// ReSharper disable CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
@@ -91,6 +94,14 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<IPostConfigureOptions<GrpcServiceOptions<TService>>, PostConfigureGrpcServiceOptions<TService>>();
 
             return services;
+        }
+
+        internal static void AddSwagger(IServiceCollection services, Func<IServiceProvider, IDataSerializer> serializerFactory)
+        {
+            services.TryAddEnumerable(ServiceDescriptor.Transient<IApiDescriptionProvider, ApiDescriptionProvider>());
+            services.AddTransient<IApiDescriptionAdapter, ApiDescriptionAdapter>();
+            services.AddTransient<ISwaggerUiRequestHandler, SwaggerUiRequestHandler>();
+            services.AddTransient(serializerFactory);
         }
     }
 }

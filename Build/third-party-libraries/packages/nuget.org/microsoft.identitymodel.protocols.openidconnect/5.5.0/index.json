@@ -25,6 +25,50 @@
           "Version": "5.5.0"
         }
       ]
+    },
+    {
+      "Name": "AspNetCoreSwashbuckle",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1",
+        "net5.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.IdentityModel.Protocols",
+          "Version": "5.5.0"
+        },
+        {
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.1"
+        },
+        {
+          "Name": "System.IdentityModel.Tokens.Jwt",
+          "Version": "5.5.0"
+        }
+      ]
+    },
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1",
+        "net5.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.IdentityModel.Protocols",
+          "Version": "5.5.0"
+        },
+        {
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.1"
+        },
+        {
+          "Name": "System.IdentityModel.Tokens.Jwt",
+          "Version": "5.5.0"
+        }
+      ]
     }
   ],
   "Licenses": [
