@@ -158,6 +158,82 @@
           "Version": "4.3.0"
         }
       ]
+    },
+    {
+      "Name": "AspNetCoreSwashbuckle",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1",
+        "net5.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.DotNet.InternalAbstractions",
+          "Version": "1.0.0"
+        },
+        {
+          "Name": "System.ComponentModel.EventBasedAsync",
+          "Version": "4.3.0"
+        },
+        {
+          "Name": "System.ComponentModel.TypeConverter",
+          "Version": "4.3.0"
+        },
+        {
+          "Name": "System.Runtime.InteropServices.RuntimeInformation",
+          "Version": "4.3.0"
+        },
+        {
+          "Name": "System.Threading.Thread",
+          "Version": "4.3.0"
+        },
+        {
+          "Name": "System.Xml.XPath.XmlDocument",
+          "Version": "4.3.0"
+        },
+        {
+          "Name": "System.Xml.XmlDocument",
+          "Version": "4.3.0"
+        }
+      ]
+    },
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1",
+        "net5.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.DotNet.InternalAbstractions",
+          "Version": "1.0.0"
+        },
+        {
+          "Name": "System.ComponentModel.EventBasedAsync",
+          "Version": "4.3.0"
+        },
+        {
+          "Name": "System.ComponentModel.TypeConverter",
+          "Version": "4.3.0"
+        },
+        {
+          "Name": "System.Runtime.InteropServices.RuntimeInformation",
+          "Version": "4.3.0"
+        },
+        {
+          "Name": "System.Threading.Thread",
+          "Version": "4.3.0"
+        },
+        {
+          "Name": "System.Xml.XPath.XmlDocument",
+          "Version": "4.3.0"
+        },
+        {
+          "Name": "System.Xml.XmlDocument",
+          "Version": "4.3.0"
+        }
+      ]
     }
   ],
   "Licenses": [

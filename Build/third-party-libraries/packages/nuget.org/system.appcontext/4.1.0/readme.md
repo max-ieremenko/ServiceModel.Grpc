@@ -1,9 +1,9 @@
 System.AppContext [4.1.0](https://www.nuget.org/packages/System.AppContext/4.1.0)
 --------------------
 
-Used by: AspNetCore internal, Core internal, DesignTime internal, SelfHost internal
+Used by: AspNetCore internal, AspNetCoreNSwag, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal
 
-Target frameworks: net461, net5.0, netcoreapp2.1, netcoreapp3.1
+Target frameworks: net461, net5.0, netcoreapp2.1, netcoreapp3.0, netcoreapp3.1
 
 License: [ms-net-library](../../../../licenses/ms-net-library) 
 

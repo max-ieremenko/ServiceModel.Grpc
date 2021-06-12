@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.AspNetCore.Routing.Abstractions</id>
+    <version>1.0.5</version>
+    <authors>Microsoft.AspNetCore.Routing.Abstractions</authors>
+    <owners>Microsoft.AspNetCore.Routing.Abstractions</owners>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>ASP.NET Core abstractions for routing requests to application logic and for generating links.
+Commonly used types:
+Microsoft.AspNetCore.Routing.IRouteHandler
+Microsoft.AspNetCore.Routing.RouteData.</description>
+    <tags>aspnetcore,routing</tags>
+    <serviceable>true</serviceable>
+    <dependencies>
+      <group targetFramework=".NETFramework4.5.1">
+        <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="[1.0.4, )" />
+      </group>
+      <group targetFramework=".NETStandard1.3">
+        <dependency id="System.Collections.Concurrent" version="[4.0.12, )" />
+        <dependency id="System.Threading.Tasks" version="[4.0.11, )" />
+        <dependency id="System.Reflection.Extensions" version="[4.0.1, )" />
+        <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="[1.0.4, )" />
+      </group>
+    </dependencies>
+    <licenseUrl>http://www.microsoft.com/web/webpi/eula/net_library_eula_enu.htm</licenseUrl>
+    <iconUrl>http://go.microsoft.com/fwlink/?LinkID=288859</iconUrl>
+    <copyright>Copyright © Microsoft Corporation</copyright>
+    <projectUrl>http://www.asp.net/</projectUrl>
+  </metadata>
+</package>

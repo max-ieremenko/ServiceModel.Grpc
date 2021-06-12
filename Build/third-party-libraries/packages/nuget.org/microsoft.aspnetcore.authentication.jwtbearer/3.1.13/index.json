@@ -17,6 +17,34 @@
           "Version": "5.5.0"
         }
       ]
+    },
+    {
+      "Name": "AspNetCoreSwashbuckle",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1",
+        "net5.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.IdentityModel.Protocols.OpenIdConnect",
+          "Version": "5.5.0"
+        }
+      ]
+    },
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1",
+        "net5.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.IdentityModel.Protocols.OpenIdConnect",
+          "Version": "5.5.0"
+        }
+      ]
     }
   ],
   "Licenses": [

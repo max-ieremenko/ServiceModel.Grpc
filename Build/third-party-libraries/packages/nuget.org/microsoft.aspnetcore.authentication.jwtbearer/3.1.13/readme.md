@@ -1,7 +1,7 @@
 Microsoft.AspNetCore.Authentication.JwtBearer [3.1.13](https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.JwtBearer/3.1.13)
 --------------------
 
-Used by: AspNetCore internal
+Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal
 
 Target frameworks: net5.0, netcoreapp3.1
 

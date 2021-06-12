@@ -26,6 +26,34 @@
           "Version": "5.0.0"
         }
       ]
+    },
+    {
+      "Name": "AspNetCoreSwashbuckle",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1",
+        "net5.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Formats.Asn1",
+          "Version": "5.0.0"
+        }
+      ]
+    },
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1",
+        "net5.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Formats.Asn1",
+          "Version": "5.0.0"
+        }
+      ]
     }
   ],
   "Licenses": [

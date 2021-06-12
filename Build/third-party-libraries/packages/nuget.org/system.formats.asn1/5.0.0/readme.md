@@ -1,7 +1,7 @@
 System.Formats.Asn1 [5.0.0](https://www.nuget.org/packages/System.Formats.Asn1/5.0.0)
 --------------------
 
-Used by: AspNetCore internal, Core internal
+Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal
 
 Target frameworks: net461, net5.0, netcoreapp2.1, netcoreapp3.1
 

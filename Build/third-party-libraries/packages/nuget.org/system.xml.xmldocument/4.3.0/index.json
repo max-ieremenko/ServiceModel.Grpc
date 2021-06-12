@@ -78,6 +78,42 @@
           "Version": "4.3.0"
         }
       ]
+    },
+    {
+      "Name": "AspNetCoreSwashbuckle",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1",
+        "net5.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Threading",
+          "Version": "4.3.0"
+        },
+        {
+          "Name": "System.Xml.ReaderWriter",
+          "Version": "4.3.0"
+        }
+      ]
+    },
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1",
+        "net5.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Threading",
+          "Version": "4.3.0"
+        },
+        {
+          "Name": "System.Xml.ReaderWriter",
+          "Version": "4.3.0"
+        }
+      ]
     }
   ],
   "Licenses": [

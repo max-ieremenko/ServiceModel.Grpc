@@ -1,7 +1,7 @@
 NuGet.Frameworks [5.0.0](https://www.nuget.org/packages/NuGet.Frameworks/5.0.0%2b42a8779499c1d1ed2488c2e6b9e2ee6ff6107766)
 --------------------
 
-Used by: AspNetCore internal, Core internal, DesignTime internal, SelfHost internal
+Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal
 
 Target frameworks: net461, net5.0, netcoreapp2.1, netcoreapp3.1
 

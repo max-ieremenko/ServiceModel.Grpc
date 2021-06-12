@@ -1,0 +1,42 @@
+{
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "netcoreapp3.0",
+        "net5.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.DotNet.InternalAbstractions",
+          "Version": "1.0.0"
+        },
+        {
+          "Name": "Newtonsoft.Json",
+          "Version": "9.0.1"
+        },
+        {
+          "Name": "System.Dynamic.Runtime",
+          "Version": "4.0.11"
+        },
+        {
+          "Name": "System.Linq",
+          "Version": "4.1.0"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": null,
+      "HRef": null,
+      "Description": null
+    }
+  ]
+}

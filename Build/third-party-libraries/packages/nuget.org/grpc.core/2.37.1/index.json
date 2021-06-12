@@ -36,6 +36,34 @@
           "Version": "4.5.3"
         }
       ]
+    },
+    {
+      "Name": "AspNetCoreSwashbuckle",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1",
+        "net5.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Grpc.Core.Api",
+          "Version": "2.37.1"
+        }
+      ]
+    },
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1",
+        "net5.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Grpc.Core.Api",
+          "Version": "2.37.1"
+        }
+      ]
     }
   ],
   "Licenses": [

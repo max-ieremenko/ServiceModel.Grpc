@@ -1,7 +1,7 @@
 Microsoft.NET.Test.Sdk [16.9.4](https://www.nuget.org/packages/Microsoft.NET.Test.Sdk/16.9.4)
 --------------------
 
-Used by: AspNetCore internal, Core internal, DesignTime internal, SelfHost internal
+Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal
 
 Target frameworks: net461, net5.0, netcoreapp2.1, netcoreapp3.1
 

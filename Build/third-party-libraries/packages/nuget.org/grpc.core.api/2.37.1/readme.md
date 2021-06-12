@@ -1,7 +1,7 @@
 Grpc.Core.Api [2.37.1](https://www.nuget.org/packages/Grpc.Core.Api/2.37.1)
 --------------------
 
-Used by: AspNetCore, Core, DesignTime, SelfHost
+Used by: AspNetCore, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core, DesignTime, SelfHost
 
 Target frameworks: net461, net5.0, netcoreapp3.0, netcoreapp3.1, netstandard2.0, netstandard2.1
 
