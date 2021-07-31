@@ -21,10 +21,10 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
 {
     internal sealed class Logger
     {
-        private readonly GeneratorExecutionContext _context;
+        private readonly GeneratorContext _context;
         private readonly Location _location;
 
-        public Logger(GeneratorExecutionContext context, ClassDeclarationSyntax root, AttributeData attribute)
+        public Logger(GeneratorContext context, ClassDeclarationSyntax root, AttributeData attribute)
         {
             _context = context;
 

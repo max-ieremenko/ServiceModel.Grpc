@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -83,60 +83,17 @@ namespace ServiceModel.Grpc.DesignTime.Generator
         }
 
         [Test]
-        [TestCase(null, ".smgrpcdtg.cs")]
-        [TestCase(".11.cs", ".11.cs")]
-        public void GetOutputFileName(string? optionsFileExtension, string expectedFileExtension)
+        public void GetOutputFileName()
         {
-            _globalOptions
-                .Setup(o => o.TryGetValue("build_property.servicemodelgrpcdesigntime_csextension", out optionsFileExtension))
-                .Returns(optionsFileExtension != null);
-
-            var node = SyntaxFactory.ClassDeclaration("ClassName");
-            var actual = GeneratorContext
-                .GetOutputFileName(_context, node, "HintName");
-
-            actual.ShouldStartWith("ClassName.");
-            actual.ShouldEndWith(expectedFileExtension);
-        }
-
-        [Test]
-        public void AddOutput()
-        {
-            var csExtension = string.Empty;
-            _globalOptions
-                .Setup(o => o.TryGetValue("build_property.servicemodelgrpcdesigntime_csextension", out csExtension))
-                .Returns(false);
-
-            var designTime = "true";
-            _globalOptions
-                .Setup(o => o.TryGetValue("build_property.servicemodelgrpcdesigntime_designtime", out designTime))
-                .Returns(true);
-
-            var projectDir = "dummy";
-            _globalOptions
-                .Setup(o => o.TryGetValue("build_property.projectdir", out projectDir))
-                .Returns(true);
-
-            using var output = new TempDirectory();
-
-            var intermediatePath = output.Location;
-            _globalOptions
-                .Setup(o => o.TryGetValue("build_property.intermediateoutputpath", out intermediatePath))
-                .Returns(true);
-
-            var node = SyntaxFactory.ClassDeclaration("ClassName");
-            var source = "public class A {}";
-
             var sut = new GeneratorContext(_context);
-            sut.AddOutput(node, "hint_name", source);
+            var node = SyntaxFactory.ClassDeclaration("ClassName");
 
-            DirectoryAssert.Exists(output.Location);
-            Directory.GetFiles(output.Location).Length.ShouldBe(1);
+            var actual = sut.GetOutputFileName(node, "HintName");
+            actual.ShouldBe("ClassName.HintName");
 
-            var fileName = Path.GetFileName(Directory.GetFiles(output.Location)[0]);
-            fileName.ShouldBe(fileName.ToLowerInvariant());
-
-            FileAssert.Exists(Path.Combine(output.Location, fileName));
+            // duplicate
+            actual = sut.GetOutputFileName(node, "HintName");
+            actual.ShouldBe("ClassName.HintName1");
         }
     }
 }

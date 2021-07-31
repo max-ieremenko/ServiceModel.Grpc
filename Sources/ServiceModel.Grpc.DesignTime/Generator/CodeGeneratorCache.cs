@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using ServiceModel.Grpc.DesignTime.Generator.Internal;
 
 namespace ServiceModel.Grpc.DesignTime.Generator
 {

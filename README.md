@@ -198,7 +198,7 @@ ServiceModel.Grpc.ProtoBufMarshaller | [![Version](https://img.shields.io/nuget/
 
 ## Benchmarks
 
-ServiceModel.Grpc is a tiny layer on top of gRPC C# and grpc-dotnet, helps to adapt code-first to gRPC protocol. The performance picture makes a serializer.
+ServiceModel.Grpc is a tiny layer on top of gRPC C# and grpc-dotnet, helps to adapt code-first to gRPC protocol. A serializer makes performance picture.
 
 Benchmark code is available [here](/Benchmarks).
 
