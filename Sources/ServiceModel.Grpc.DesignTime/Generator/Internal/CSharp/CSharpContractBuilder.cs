@@ -33,6 +33,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
         protected override void Generate()
         {
+            WriteMetadata();
             Output.AppendLine($"internal sealed class {_contract.ContractClassName}");
             Output.AppendLine("{");
 

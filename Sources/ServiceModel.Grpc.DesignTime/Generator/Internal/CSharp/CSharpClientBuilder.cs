@@ -40,6 +40,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
         protected override void Generate()
         {
+            WriteMetadata();
             Output
                 .Append($"internal sealed class {_contract.ClientClassName} : ")
                 .AppendFormat("ClientBase<{0}>, ", _contract.ClientClassName)

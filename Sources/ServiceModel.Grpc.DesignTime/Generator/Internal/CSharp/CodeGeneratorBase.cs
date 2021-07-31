@@ -34,5 +34,14 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
         public virtual IEnumerable<string> GetUsing() => Enumerable.Empty<string>();
 
         protected abstract void Generate();
+
+        protected void WriteMetadata()
+        {
+            Output
+                .Append("[GeneratedCode(\"ServiceModel.Grpc\", \"")
+                .Append(GetType().Assembly.GetName().Version.ToString(3))
+                .AppendLine("\")]")
+                .AppendLine("[CompilerGenerated]");
+        }
     }
 }

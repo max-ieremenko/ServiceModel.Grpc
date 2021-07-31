@@ -109,6 +109,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
         protected override void Generate()
         {
+            WriteMetadata();
             Output
                 .Append("internal sealed partial class ")
                 .Append(GetGeneratedMemberName())
