@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.NET.Test.Sdk</id>
+    <version>16.10.0</version>
+    <title>Microsoft.NET.Test.Sdk</title>
+    <authors>Microsoft</authors>
+    <owners>Microsoft</owners>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="file">LICENSE_NET.txt</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+    <icon>Icon.png</icon>
+    <projectUrl>https://github.com/microsoft/vstest/</projectUrl>
+    <iconUrl>http://go.microsoft.com/fwlink/?LinkID=288859</iconUrl>
+    <description>The MSbuild targets and properties for building .NET test projects.</description>
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <tags>vstest visual-studio unittest testplatform mstest microsoft test testing</tags>
+    <repository type="git" url="https://github.com/microsoft/vstest" branch="refs/heads/rel/16.10" commit="5c9abb2ae1b0318dc52729a3639e72089c79fb3c" />
+    <dependencies>
+      <group targetFramework="UAP10.0">
+        <dependency id="System.ComponentModel.Primitives" version="4.1.0" />
+        <dependency id="System.ComponentModel.TypeConverter" version="4.1.0" />
+        <dependency id="System.Runtime.InteropServices.RuntimeInformation" version="4.0.0" />
+        <dependency id="Newtonsoft.Json" version="9.0.1" />
+      </group>
+      <group targetFramework=".NETCoreApp1.0">
+        <dependency id="Microsoft.TestPlatform.TestHost" version="16.10.0" />
+        <dependency id="Microsoft.CodeCoverage" version="16.10.0" />
+      </group>
+      <group targetFramework=".NETCoreApp2.1">
+        <dependency id="Microsoft.TestPlatform.TestHost" version="16.10.0" />
+        <dependency id="Microsoft.CodeCoverage" version="16.10.0" />
+      </group>
+      <group targetFramework=".NETFramework4.0" />
+      <group targetFramework=".NETFramework4.5">
+        <dependency id="Microsoft.CodeCoverage" version="16.10.0" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

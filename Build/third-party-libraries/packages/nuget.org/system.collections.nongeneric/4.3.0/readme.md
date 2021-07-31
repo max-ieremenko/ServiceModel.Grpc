@@ -1,9 +1,9 @@
 System.Collections.NonGeneric [4.3.0](https://www.nuget.org/packages/System.Collections.NonGeneric/4.3.0)
 --------------------
 
-Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal
+Used by: Core internal
 
-Target frameworks: net461, net5.0, netcoreapp2.1, netcoreapp3.1
+Target frameworks: net461, netcoreapp2.1, netcoreapp3.1
 
 License: [ms-net-library](../../../../licenses/ms-net-library) 
 

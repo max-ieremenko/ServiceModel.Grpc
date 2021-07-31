@@ -1,9 +1,9 @@
 System.Runtime.CompilerServices.Unsafe [4.5.2](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/4.5.2)
 --------------------
 
-Used by: Core, MessagePack, SelfHost
+Used by: Core, SelfHost
 
-Target frameworks: net461, net5.0, netcoreapp3.1, netstandard2.0, netstandard2.1
+Target frameworks: net461, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 
