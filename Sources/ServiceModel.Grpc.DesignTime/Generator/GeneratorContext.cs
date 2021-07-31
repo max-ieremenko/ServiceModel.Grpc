@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Globalization;
 using System.Text;
 using System.Threading;
 using Microsoft.CodeAnalysis;
@@ -25,30 +25,20 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace ServiceModel.Grpc.DesignTime.Generator
 {
-    // mostly workaround intellisense issue, see .props file
     internal sealed class GeneratorContext
     {
         private readonly GeneratorExecutionContext _executionContext;
-        private readonly string? _intermediateOutputPath;
-        private readonly HashSet<string> _filesToDelete;
+        private readonly HashSet<string> _generatedNames;
 
         public GeneratorContext(GeneratorExecutionContext executionContext)
         {
             _executionContext = executionContext;
-            _intermediateOutputPath = GetIntermediateOutputPath(executionContext);
-
-            _filesToDelete = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            if (!string.IsNullOrEmpty(_intermediateOutputPath) && Directory.Exists(_intermediateOutputPath))
-            {
-                var files = Directory.GetFiles(_intermediateOutputPath!, "*" + GetOutFileExtension(executionContext));
-                for (var i = 0; i < files.Length; i++)
-                {
-                    _filesToDelete.Add(Path.GetFileName(files[i]));
-                }
-            }
+            _generatedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
         public CancellationToken CancellationToken => _executionContext.CancellationToken;
+
+        public Compilation Compilation => _executionContext.Compilation;
 
         public static bool LaunchDebugger(GeneratorExecutionContext context)
         {
@@ -61,110 +51,40 @@ namespace ServiceModel.Grpc.DesignTime.Generator
             return bool.Parse(value);
         }
 
+        public void ReportDiagnostic(Diagnostic diagnostic) => _executionContext.ReportDiagnostic(diagnostic);
+
         public void AddOutput(ClassDeclarationSyntax node, string hintName, string source)
         {
-            var fileName = GetOutputFileName(_executionContext, node, hintName);
-            var sourceText = SourceText.From(source, GetOutEncoding());
-
-            if (!string.IsNullOrEmpty(_intermediateOutputPath))
-            {
-                Directory.CreateDirectory(_intermediateOutputPath!);
-
-                var outFileName = Path.Combine(_intermediateOutputPath!, fileName);
-                using (var writer = new StreamWriter(outFileName, false, GetOutEncoding()))
-                {
-                    sourceText.Write(writer, CancellationToken);
-                }
-
-                _filesToDelete.Remove(fileName);
-            }
-
+            var fileName = GetOutputFileName(node, hintName);
+            var sourceText = SourceText.From(source, Encoding.UTF8);
             _executionContext.AddSource(fileName, sourceText);
         }
 
-        public void CleanUp()
+        internal string GetOutputFileName(ClassDeclarationSyntax node, string hintName)
         {
-            if (_executionContext.CancellationToken.IsCancellationRequested
-                || _filesToDelete.Count == 0
-                || string.IsNullOrEmpty(_intermediateOutputPath))
-            {
-                return;
-            }
-
-            foreach (var file in _filesToDelete)
-            {
-                var fileName = Path.Combine(_intermediateOutputPath!, file);
-                if (File.Exists(fileName))
-                {
-                    File.Delete(fileName);
-                }
-            }
-        }
-
-        internal static string GetOutputFileName(GeneratorExecutionContext context, ClassDeclarationSyntax node, string hintName)
-        {
-            var result = new StringBuilder()
+            var name = new StringBuilder()
                 .Append(node.Identifier.WithoutTrivia().ToString())
                 .Append(".")
-                .Append(GetOutputFileNameIdentifier(node, hintName))
-                .Append(GetOutFileExtension(context))
-                .ToString();
-            return result.ToLowerInvariant();
-        }
-
-        private static string? GetIntermediateOutputPath(GeneratorExecutionContext context)
-        {
-            context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.servicemodelgrpcdesigntime_designtime", out var designTime);
-            context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.intermediateoutputpath", out var intermediatePath);
-            context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.projectdir", out var projectDir);
-
-            if (string.IsNullOrEmpty(designTime)
-                || !bool.Parse(designTime!)
-                || string.IsNullOrEmpty(intermediatePath)
-                || string.IsNullOrEmpty(projectDir))
-            {
-                return null;
-            }
-
-            if (Path.IsPathRooted(intermediatePath))
-            {
-                return intermediatePath;
-            }
-
-            if (!Path.IsPathRooted(projectDir))
-            {
-                return null;
-            }
-
-            return Path.Combine(projectDir!, intermediatePath!);
-        }
-
-        private static string GetOutFileExtension(GeneratorExecutionContext context)
-        {
-            context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.servicemodelgrpcdesigntime_csextension", out var value);
-            return string.IsNullOrEmpty(value) ? ".smgrpcdtg.cs" : value!;
-        }
-
-        private static Encoding GetOutEncoding() => Encoding.UTF8;
-
-        private static string GetOutputFileNameIdentifier(ClassDeclarationSyntax node, string hintName)
-        {
-            StringBuilder result;
-
-            using (var sha1 = System.Security.Cryptography.SHA1.Create())
-            {
-                var name = node.GetFullName() + "." + hintName;
-                var hash = sha1.ComputeHash(GetOutEncoding().GetBytes(name));
-                result = new StringBuilder(Convert.ToBase64String(hash));
-            }
-
-            // ArgumentException : The hintName contains an invalid character '=' at position 37. (Parameter 'hintName')
-            result
+                .Append(hintName)
                 .Replace('=', '-')
                 .Replace('+', '-')
-                .Replace('/', '-');
+                .Replace('/', '-')
+                .Replace('\\', '-')
+                .Replace('<', '-')
+                .Replace('>', '-')
+                .Replace('{', '-')
+                .Replace('}', '-')
+                .ToString();
 
-            return result.ToString();
+            var result = name;
+            var index = 0;
+            while (!_generatedNames.Add(result))
+            {
+                index++;
+                result = name + index.ToString(CultureInfo.InvariantCulture);
+            }
+
+            return result;
         }
     }
 }
