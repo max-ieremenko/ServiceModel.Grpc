@@ -1,10 +1,10 @@
 # ServiceModel.Grpc
 
-`ServiceModel.Grpc` enables applications to communicate with gRPC services using code-first approach (no .proto files), helps to get around some limitations of gRPC protocol like "only reference types", "exact one input", "no nulls". Provides exception handling. Helps to migrate existing WCF solution to gRPC with minimum effort.
+`ServiceModel.Grpc` enables applications to communicate with gRPC services using code-first approach (no .proto files), helps to get around some limitations of gRPC protocol like "only reference types", "exact one input", "no nulls/value-types". Provides exception handling. Helps to migrate existing WCF solution to gRPC with minimum effort.
 
 The library supports lightweight runtime proxy generation via Reflection.Emit and C# source code generation.
 
-The solution is built on top of [gRPC C#](https://github.com/grpc/grpc/tree/master/src/csharp).
+The solution is built on top of [gRPC C#](https://github.com/grpc/grpc/tree/master/src/csharp) and [grpc-dotnet](https://github.com/grpc/grpc-dotnet).
 
 ## Links
 
@@ -187,7 +187,7 @@ server.Services.AddServiceModelTransient(() => new Calculator());
 -----
 Name | Package | Supported platforms | Description
 -----| :------ |:------------------- | :----------
-ServiceModel.Grpc | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.svg)](https://www.nuget.org/packages/ServiceModel.Grpc) | netstandard2.0/2.1, net461+ | main functionality, basic Grpc.Core.Api extensions, ClientFactory
+ServiceModel.Grpc | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.svg)](https://www.nuget.org/packages/ServiceModel.Grpc) | netstandard2.0/2.1, net461+ | main functionality, basic Grpc.Core.Api extensions and ClientFactory. ClientFactory is fully compatible with Grpc.Net.Client.
 ServiceModel.Grpc.AspNetCore | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.AspNetCore.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.AspNetCore) | net5.0, .net core 3.0/3.1+ | Grpc.AspNetCore.Server extensions
 ServiceModel.Grpc.AspNetCore.Swashbuckle | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.AspNetCore.Swashbuckle.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.AspNetCore.Swashbuckle) | net5.0, .net core 3.0/3.1+ | Swagger integration, based on [Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore)
 ServiceModel.Grpc.AspNetCore.NSwag | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.AspNetCore.NSwag.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.AspNetCore.NSwag) | net5.0, .net core 3.0/3.1+ | Swagger integration, based on [NSwag](https://github.com/RicoSuter/NSwag)
