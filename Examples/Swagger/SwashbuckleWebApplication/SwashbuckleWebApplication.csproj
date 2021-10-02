@@ -6,8 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="ServiceModel.Grpc.AspNetCore.Swashbuckle" Version="$(ServiceModelGrpcVersion)" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.1.4" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.1.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="$(SwashbuckleVersion)" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="$(SwashbuckleVersion)" />
   </ItemGroup>
 
   <ItemGroup>

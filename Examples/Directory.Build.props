@@ -1,4 +1,6 @@
 <Project>
+  <Import Project="..\Sources\Versions.props" />
+
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -6,12 +8,6 @@
     <WarningsAsErrors />
     
     <LangVersion>8.0</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <ServiceModelGrpcVersion>1.3.0</ServiceModelGrpcVersion>
-    <GrpcCoreVersion>2.38.1</GrpcCoreVersion>
-    <GrpcNetVersion>2.38.0</GrpcNetVersion>
   </PropertyGroup>
   
 </Project>
