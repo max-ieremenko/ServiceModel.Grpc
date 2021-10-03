@@ -1,3 +1,4 @@
+$sourcesDir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\Sources"))
 $packageDir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\build-out"))
 $examplesDir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\Examples"))
 
@@ -5,7 +6,11 @@ Get-ChildItem -Recurse -Path (Join-Path $examplesDir "obj") -Directory | Remove-
 Get-ChildItem -Recurse -Path (Join-Path $examplesDir "bin") -Directory | Remove-Item -Recurse -Force
 
 $containerId = Exec {
-    docker run -d -it -v "${examplesDir}:/examples" -v "${packageDir}:/packages" mcr.microsoft.com/dotnet/sdk:5.0
+    docker run -d -it `
+        -v "${sourcesDir}:/Sources" `
+        -v "${examplesDir}:/examples" `
+        -v "${packageDir}:/packages" `
+        mcr.microsoft.com/dotnet/sdk:5.0
 }
 
 try {
