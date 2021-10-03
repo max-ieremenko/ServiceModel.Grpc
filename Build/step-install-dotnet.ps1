@@ -11,6 +11,11 @@ if (Test-Path $dotnetInstall) {
 Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile $dotnetInstall
 
 $globalJson = Get-Content -Raw (Join-Path $PSScriptRoot "..\Sources\global.json") | ConvertFrom-Json
-$sdkVersion = $globalJson.sdk.version
+$version = $globalJson.sdk.version
 
-& $dotnetInstall -Version $sdkVersion -InstallDir "C:\Program Files\dotnet"
+$installDir = "/usr/share/dotnet"
+if ($IsWindows) {
+    $installDir = "C:\Program Files\dotnet"
+}
+
+& $dotnetInstall -Version $version -InstallDir $installDir

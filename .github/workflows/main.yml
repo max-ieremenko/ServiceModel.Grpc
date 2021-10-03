@@ -127,6 +127,10 @@ jobs:
       shell: pwsh
       run: Install-Module -Name psake -Force
 
+    - name: Install dotnet sdk
+      shell: pwsh
+      run: .\Build\step-install-dotnet.ps1
+
     - name: Dotnet info
       shell: pwsh
       run: dotnet --info
