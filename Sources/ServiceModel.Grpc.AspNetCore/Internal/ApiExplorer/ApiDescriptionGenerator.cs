@@ -29,6 +29,11 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
 using ServiceModel.Grpc.Internal;
+#if NET6_0
+using RouteValuesType = System.Collections.Generic.Dictionary<string, string?>;
+#else
+using RouteValuesType = System.Collections.Generic.Dictionary<string, string>;
+#endif
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
 {
@@ -129,7 +134,7 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
                 ControllerTypeInfo = metadata.ServiceType.GetTypeInfo(),
                 ActionName = metadata.Method.Name,
                 ControllerName = metadata.Method.ServiceName,
-                RouteValues = new Dictionary<string, string>
+                RouteValues = new RouteValuesType
                 {
                     ["controller"] = metadata.Method.ServiceName
                 },

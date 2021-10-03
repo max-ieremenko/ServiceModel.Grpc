@@ -34,7 +34,7 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger
             throw new NotSupportedException();
         }
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
             Output.Add("{0}: {1}".FormatWith(logLevel, state));
         }

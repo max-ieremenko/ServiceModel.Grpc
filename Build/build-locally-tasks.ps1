@@ -1,5 +1,5 @@
 Task default -Depends Clean, Init, Build, ThirdPartyNotices, UnitTest, Pack, PackTest, SdkTest, Benchmarks
-Task UnitTest -Depends UnitTest461, UnitTestCore21, UnitTestCore31, UnitTestNet50
+Task UnitTest -Depends UnitTest461, UnitTestCore31, UnitTestNet50, UnitTestNet60
 Task SdkTest -Depends SdkTestBasic, SdkTestMessagePack
 
 Task Clean {
@@ -33,16 +33,16 @@ Task UnitTest461 {
     Exec { .\step-unit-test.ps1 -Framework net461 }
 }
 
-Task UnitTestCore21 {
-    Exec { .\step-unit-test.ps1 -Framework netcoreapp2.1 }
-}
-
 Task UnitTestCore31 {
     Exec { .\step-unit-test.ps1 -Framework netcoreapp3.1 }
 }
 
 Task UnitTestNet50 {
     Exec { .\step-unit-test.ps1 -Framework net5.0 }
+}
+
+Task UnitTestNet60 {
+    Exec { .\step-unit-test.ps1 -Framework net6.0 }
 }
 
 Task ThirdPartyNotices {
