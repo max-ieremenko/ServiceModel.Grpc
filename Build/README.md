@@ -12,7 +12,11 @@ To run CI build locally
     PS> Install-Module -Name psake
     ```
 
-- install [net6.0 sdk](https://dotnet.microsoft.com/download/dotnet/6.0)
+- install net6.0 sdk: manual [download](https://dotnet.microsoft.com/download/dotnet/6.0) or
+
+    ``` powershell
+    PS> .\Build\step-install-dotnet.ps1
+    ```
 
 - install ThirdPartyLibraries
 
