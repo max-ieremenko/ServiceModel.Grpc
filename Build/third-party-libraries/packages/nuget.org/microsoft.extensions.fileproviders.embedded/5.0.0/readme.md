@@ -3,7 +3,7 @@ Microsoft.Extensions.FileProviders.Embedded [5.0.0](https://www.nuget.org/packag
 
 Used by: AspNetCoreNSwag
 
-Target frameworks: net5.0, netcoreapp3.0
+Target frameworks: net5.0, net6.0, netcoreapp3.0
 
 License: [Apache-2.0](../../../../licenses/apache-2.0) 
 

@@ -3,7 +3,7 @@ System.Linq [4.1.0](https://www.nuget.org/packages/System.Linq/4.1.0)
 
 Used by: AspNetCoreNSwag
 
-Target frameworks: net5.0, netcoreapp3.0
+Target frameworks: net5.0, net6.0, netcoreapp3.0
 
 License: [ms-net-library](../../../../licenses/ms-net-library) 
 

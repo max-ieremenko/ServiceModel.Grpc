@@ -3,7 +3,7 @@ Microsoft.AspNetCore.Routing [1.0.5](https://www.nuget.org/packages/Microsoft.As
 
 Used by: AspNetCoreNSwag
 
-Target frameworks: net5.0, netcoreapp3.0
+Target frameworks: net5.0, net6.0, netcoreapp3.0
 
 License: [ms-net-library](../../../../licenses/ms-net-library) 
 

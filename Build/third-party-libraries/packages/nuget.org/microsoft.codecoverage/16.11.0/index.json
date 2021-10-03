@@ -8,9 +8,9 @@
       "Name": "Core",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp2.1",
         "netcoreapp3.1",
         "net5.0",
+        "net6.0",
         "net461"
       ]
     },
@@ -19,7 +19,8 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "netcoreapp3.1",
-        "net5.0"
+        "net5.0",
+        "net6.0"
       ]
     },
     {
@@ -27,7 +28,8 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "netcoreapp3.1",
-        "net5.0"
+        "net5.0",
+        "net6.0"
       ]
     },
     {
@@ -35,23 +37,26 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "netcoreapp3.1",
-        "net5.0"
+        "net5.0",
+        "net6.0"
       ]
     },
     {
       "Name": "DesignTime",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp3.1"
+        "netcoreapp3.1",
+        "net5.0",
+        "net6.0"
       ]
     },
     {
       "Name": "SelfHost",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp2.1",
         "netcoreapp3.1",
         "net5.0",
+        "net6.0",
         "net461"
       ]
     }

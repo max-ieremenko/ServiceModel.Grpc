@@ -3,7 +3,7 @@ Swashbuckle.AspNetCore.SwaggerUI [6.1.4](https://www.nuget.org/packages/Swashbuc
 
 Used by: AspNetCoreSwashbuckle internal
 
-Target frameworks: net5.0, netcoreapp3.1
+Target frameworks: net5.0, net6.0, netcoreapp3.1
 
 License: [MIT](../../../../licenses/mit) 
 

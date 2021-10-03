@@ -11,9 +11,9 @@
         "net461",
         "netstandard2.0",
         "netstandard2.1",
-        "netcoreapp2.1",
         "netcoreapp3.1",
-        "net5.0"
+        "net5.0",
+        "net6.0"
       ]
     },
     {
@@ -22,6 +22,7 @@
       "TargetFrameworks": [
         "netcoreapp3.0",
         "net5.0",
+        "net6.0",
         "netcoreapp3.1"
       ]
     },
@@ -31,6 +32,7 @@
       "TargetFrameworks": [
         "netcoreapp3.0",
         "net5.0",
+        "net6.0",
         "netcoreapp3.1"
       ]
     },
@@ -40,6 +42,7 @@
       "TargetFrameworks": [
         "netcoreapp3.0",
         "net5.0",
+        "net6.0",
         "netcoreapp3.1"
       ]
     },
@@ -48,7 +51,9 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "netstandard2.0",
-        "netcoreapp3.1"
+        "netcoreapp3.1",
+        "net5.0",
+        "net6.0"
       ]
     },
     {
@@ -58,15 +63,17 @@
         "net461",
         "netstandard2.0",
         "netstandard2.1",
-        "netcoreapp2.1",
         "netcoreapp3.1",
-        "net5.0"
+        "net5.0",
+        "net6.0"
       ]
     },
     {
       "Name": "ProtoBuf",
       "InternalOnly": true,
       "TargetFrameworks": [
+        "net5.0",
+        "net6.0",
         "net461",
         "netstandard2.0",
         "netstandard2.1"
@@ -78,6 +85,7 @@
       "TargetFrameworks": [
         "netcoreapp3.1",
         "net5.0",
+        "net6.0",
         "netstandard2.0"
       ]
     }

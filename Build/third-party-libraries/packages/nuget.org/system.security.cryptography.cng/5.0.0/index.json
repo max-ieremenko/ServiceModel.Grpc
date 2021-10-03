@@ -8,9 +8,16 @@
       "Name": "Core",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp2.1",
         "netcoreapp3.1",
+        "net5.0",
+        "net6.0",
         "net461"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Formats.Asn1",
+          "Version": "5.0.0"
+        }
       ]
     },
     {
@@ -18,7 +25,8 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "netcoreapp3.1",
-        "net5.0"
+        "net5.0",
+        "net6.0"
       ],
       "Dependencies": [
         {
@@ -32,7 +40,8 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "netcoreapp3.1",
-        "net5.0"
+        "net5.0",
+        "net6.0"
       ],
       "Dependencies": [
         {
@@ -46,7 +55,8 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "netcoreapp3.1",
-        "net5.0"
+        "net5.0",
+        "net6.0"
       ],
       "Dependencies": [
         {

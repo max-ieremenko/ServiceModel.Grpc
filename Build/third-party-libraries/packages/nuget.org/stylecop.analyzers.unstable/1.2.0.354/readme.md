@@ -3,7 +3,7 @@ StyleCop.Analyzers.Unstable [1.2.0.354](https://www.nuget.org/packages/StyleCop.
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, MessagePack internal, ProtoBuf internal, SelfHost internal
 
-Target frameworks: net461, net5.0, netcoreapp2.1, netcoreapp3.0, netcoreapp3.1, netstandard2.0, netstandard2.1
+Target frameworks: net461, net5.0, net6.0, netcoreapp3.0, netcoreapp3.1, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 

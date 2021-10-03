@@ -10,6 +10,7 @@
       "TargetFrameworks": [
         "netcoreapp3.0",
         "net5.0",
+        "net6.0",
         "netcoreapp3.1"
       ]
     }

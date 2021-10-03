@@ -3,7 +3,7 @@ Namotion.Reflection [1.0.23](https://www.nuget.org/packages/Namotion.Reflection/
 
 Used by: AspNetCoreNSwag
 
-Target frameworks: net5.0, netcoreapp3.0
+Target frameworks: net5.0, net6.0, netcoreapp3.0
 
 License: [MIT](../../../../licenses/mit) 
 

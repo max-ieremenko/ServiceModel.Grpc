@@ -7,13 +7,13 @@ Licenses
 |[BSD-2-Clause](licenses/bsd-2-clause)|no|no|1|
 |[BSD-3-Clause](licenses/bsd-3-clause)|no|no|1|
 |[Google.Protobuf](licenses/google.protobuf)|yes|no|1|
-|[MIT](licenses/mit)|no|no|86|
+|[MIT](licenses/mit)|no|no|85|
 |[ms-net-library](licenses/ms-net-library)|no|no|75|
 |[MS-PL](licenses/ms-pl)|no|no|1|
 
 
 
-Packages 178
+Packages 177
 --------
 
 |Name|Version|Source|License|Used by|
@@ -80,7 +80,6 @@ Packages 178
 |[Microsoft.IdentityModel.Tokens](packages/nuget.org/microsoft.identitymodel.tokens/5.5.0)|5.5.0|[nuget.org](https://www.nuget.org/packages/Microsoft.IdentityModel.Tokens/5.5.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
 |[Microsoft.Net.Http.Headers](packages/nuget.org/microsoft.net.http.headers/1.0.4)|1.0.4|[nuget.org](https://www.nuget.org/packages/Microsoft.Net.Http.Headers/1.0.4)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
 |[Microsoft.NET.Test.Sdk](packages/nuget.org/microsoft.net.test.sdk/16.11.0)|16.11.0|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.Test.Sdk/16.11.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal|
-|[Microsoft.NETCore.App](packages/nuget.org/microsoft.netcore.app/2.1.0)|2.1.0|[nuget.org](https://www.nuget.org/packages/Microsoft.NETCore.App/2.1.0)|[MIT](licenses/mit)|Core internal, SelfHost internal|
 |[Microsoft.OpenApi](packages/nuget.org/microsoft.openapi/1.2.3)|1.2.3|[nuget.org](https://www.nuget.org/packages/Microsoft.OpenApi/1.2.3)|[MIT](licenses/mit)|AspNetCoreSwashbuckle|
 |[Microsoft.SourceLink.GitHub](packages/nuget.org/microsoft.sourcelink.github/1.0.0)|1.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub/1.0.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore, AspNetCoreNSwag, AspNetCoreSwashbuckle, Core, DesignTime, MessagePack, ProtoBuf, SelfHost|
 |[Microsoft.TestPlatform.ObjectModel](packages/nuget.org/microsoft.testplatform.objectmodel/16.11.0)|16.11.0|[nuget.org](https://www.nuget.org/packages/Microsoft.TestPlatform.ObjectModel/16.11.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal|

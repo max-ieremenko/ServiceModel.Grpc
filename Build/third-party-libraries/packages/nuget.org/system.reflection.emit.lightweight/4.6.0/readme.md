@@ -3,7 +3,7 @@ System.Reflection.Emit.Lightweight [4.6.0](https://www.nuget.org/packages/System
 
 Used by: MessagePack
 
-Target frameworks: net5.0, netcoreapp3.1, netstandard2.0
+Target frameworks: net5.0, net6.0, netcoreapp3.1, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 

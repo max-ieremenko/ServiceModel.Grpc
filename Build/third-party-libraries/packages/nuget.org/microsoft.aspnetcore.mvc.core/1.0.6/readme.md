@@ -3,7 +3,7 @@ Microsoft.AspNetCore.Mvc.Core [1.0.6](https://www.nuget.org/packages/Microsoft.A
 
 Used by: AspNetCoreNSwag
 
-Target frameworks: net5.0, netcoreapp3.0
+Target frameworks: net5.0, net6.0, netcoreapp3.0
 
 License: [ms-net-library](../../../../licenses/ms-net-library) 
 

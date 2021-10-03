@@ -3,7 +3,7 @@ System.Reflection.Emit.Lightweight [4.7.0](https://www.nuget.org/packages/System
 
 Used by: ProtoBuf
 
-Target frameworks: net461, netstandard2.0, netstandard2.1
+Target frameworks: net461, net5.0, net6.0, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 

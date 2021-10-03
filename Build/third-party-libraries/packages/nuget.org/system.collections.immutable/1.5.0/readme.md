@@ -3,7 +3,7 @@ System.Collections.Immutable [1.5.0](https://www.nuget.org/packages/System.Colle
 
 Used by: MessagePack
 
-Target frameworks: net5.0, netcoreapp3.1, netstandard2.0
+Target frameworks: net5.0, net6.0, netcoreapp3.1, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 

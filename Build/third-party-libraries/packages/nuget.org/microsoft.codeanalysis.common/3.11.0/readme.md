@@ -3,7 +3,7 @@ Microsoft.CodeAnalysis.Common [3.11.0](https://www.nuget.org/packages/Microsoft.
 
 Used by: DesignTime
 
-Target frameworks: netcoreapp3.1, netstandard2.0
+Target frameworks: net5.0, net6.0, netcoreapp3.1, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
