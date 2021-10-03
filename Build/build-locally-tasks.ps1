@@ -3,10 +3,22 @@ Task UnitTest -Depends UnitTest461, UnitTestCore21, UnitTestCore31, UnitTestNet5
 Task SdkTest -Depends SdkTestBasic, SdkTestMessagePack
 
 Task Clean {
-    $binDir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\build-out"))
-    if (Test-Path $binDir) {
-        Remove-Item -Path $binDir -Recurse -Force
+    $dir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\build-out"))
+    if (Test-Path $dir) {
+        Remove-Item -Path $dir -Recurse -Force
     }
+
+    $dir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\Sources"))
+    Get-ChildItem -Path $dir -Filter bin -Directory -Recurse | Remove-Item -Recurse -Force
+    Get-ChildItem -Path $dir -Filter obj -Directory -Recurse | Remove-Item -Recurse -Force
+
+    $dir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\Examples"))
+    Get-ChildItem -Path $dir -Filter bin -Directory -Recurse | Remove-Item -Recurse -Force
+    Get-ChildItem -Path $dir -Filter obj -Directory -Recurse | Remove-Item -Recurse -Force
+
+    $dir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\Benchmarks"))
+    Get-ChildItem -Path $dir -Filter bin -Directory -Recurse | Remove-Item -Recurse -Force
+    Get-ChildItem -Path $dir -Filter obj -Directory -Recurse | Remove-Item -Recurse -Force
 }
 
 Task Init {
