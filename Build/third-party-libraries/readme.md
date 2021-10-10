@@ -22,11 +22,11 @@ Packages 177
 |[CompareNETObjects](packages/nuget.org/comparenetobjects/4.74.0)|4.74.0|[nuget.org](https://www.nuget.org/packages/CompareNETObjects/4.74.0)|[MS-PL](licenses/ms-pl)|Core internal|
 |[DiffEngine](packages/nuget.org/diffengine/6.4.9)|6.4.9|[nuget.org](https://www.nuget.org/packages/DiffEngine/6.4.9)|[MIT](licenses/mit)|Core internal|
 |[EmptyFiles](packages/nuget.org/emptyfiles/2.3.3)|2.3.3|[nuget.org](https://www.nuget.org/packages/EmptyFiles/2.3.3)|[MIT](licenses/mit)|Core internal|
-|[Google.Protobuf](packages/nuget.org/google.protobuf/3.18.0)|3.18.0|[nuget.org](https://www.nuget.org/packages/Google.Protobuf/3.18.0)|[Google.Protobuf](licenses/google.protobuf)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
-|[Grpc.AspNetCore.Server](packages/nuget.org/grpc.aspnetcore.server/2.39.0)|2.39.0|[nuget.org](https://www.nuget.org/packages/Grpc.AspNetCore.Server/2.39.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore|
+|[Google.Protobuf](packages/nuget.org/google.protobuf/3.18.1)|3.18.1|[nuget.org](https://www.nuget.org/packages/Google.Protobuf/3.18.1)|[Google.Protobuf](licenses/google.protobuf)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
+|[Grpc.AspNetCore.Server](packages/nuget.org/grpc.aspnetcore.server/2.40.0)|2.40.0|[nuget.org](https://www.nuget.org/packages/Grpc.AspNetCore.Server/2.40.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore|
 |[Grpc.Core](packages/nuget.org/grpc.core/2.41.0)|2.41.0|[nuget.org](https://www.nuget.org/packages/Grpc.Core/2.41.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, SelfHost|
 |[Grpc.Core.Api](packages/nuget.org/grpc.core.api/2.41.0)|2.41.0|[nuget.org](https://www.nuget.org/packages/Grpc.Core.Api/2.41.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core, DesignTime, SelfHost|
-|[Grpc.Net.Common](packages/nuget.org/grpc.net.common/2.39.0)|2.39.0|[nuget.org](https://www.nuget.org/packages/Grpc.Net.Common/2.39.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore|
+|[Grpc.Net.Common](packages/nuget.org/grpc.net.common/2.40.0)|2.40.0|[nuget.org](https://www.nuget.org/packages/Grpc.Net.Common/2.40.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore|
 |[Grpc.Tools](packages/nuget.org/grpc.tools/2.41.0)|2.41.0|[nuget.org](https://www.nuget.org/packages/Grpc.Tools/2.41.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
 |[Humanizer.Core](packages/nuget.org/humanizer.core/2.2.0)|2.2.0|[nuget.org](https://www.nuget.org/packages/Humanizer.Core/2.2.0)|[MIT](licenses/mit)|DesignTime|
 |[MessagePack](packages/nuget.org/messagepack/2.3.75)|2.3.75|[nuget.org](https://www.nuget.org/packages/MessagePack/2.3.75)|[MIT](licenses/mit)|MessagePack|
