@@ -3,7 +3,7 @@ Microsoft.OpenApi [1.2.3](https://www.nuget.org/packages/Microsoft.OpenApi/1.2.3
 
 Used by: AspNetCoreSwashbuckle
 
-Target frameworks: net5.0, netcoreapp3.0, netcoreapp3.1
+Target frameworks: net5.0, net6.0, netcoreapp3.0, netcoreapp3.1
 
 License: [MIT](../../../../licenses/mit) 
 

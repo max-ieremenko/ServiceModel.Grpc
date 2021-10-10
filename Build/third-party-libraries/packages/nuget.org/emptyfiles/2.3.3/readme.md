@@ -3,7 +3,7 @@ EmptyFiles [2.3.3](https://www.nuget.org/packages/EmptyFiles/2.3.3)
 
 Used by: Core internal
 
-Target frameworks: net461, netcoreapp2.1, netcoreapp3.1
+Target frameworks: net461, net5.0, net6.0, netcoreapp3.1
 
 License: [MIT](../../../../licenses/mit) 
 

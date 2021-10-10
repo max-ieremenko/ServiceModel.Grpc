@@ -3,7 +3,7 @@ Moq [4.16.1](https://www.nuget.org/packages/Moq/4.16.1)
 
 Used by: Core internal
 
-Target frameworks: net461, netcoreapp2.1, netcoreapp3.1
+Target frameworks: net461, net5.0, net6.0, netcoreapp3.1
 
 License: [BSD-3-Clause](../../../../licenses/bsd-3-clause) 
 

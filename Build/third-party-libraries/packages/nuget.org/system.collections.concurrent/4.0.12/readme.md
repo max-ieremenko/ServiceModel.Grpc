@@ -3,7 +3,7 @@ System.Collections.Concurrent [4.0.12](https://www.nuget.org/packages/System.Col
 
 Used by: AspNetCoreNSwag
 
-Target frameworks: net5.0, netcoreapp3.0
+Target frameworks: net5.0, net6.0, netcoreapp3.0
 
 License: [ms-net-library](../../../../licenses/ms-net-library) 
 

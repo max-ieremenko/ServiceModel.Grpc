@@ -1,4 +1,6 @@
 <Project>
+  <Import Project="Versions.props" />
+
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -14,17 +16,9 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DefaultPackageVersion>1.3.0</DefaultPackageVersion>
-    <GrpcCoreVersion>2.38.1</GrpcCoreVersion>
-    <GrpcNetVersion>2.38.0</GrpcNetVersion>
-	<SwashbuckleVersion>6.1.4</SwashbuckleVersion>
-	<NSwagVersion>13.12.1</NSwagVersion>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <Version>$(DefaultPackageVersion)</Version>
-    <AssemblyVersion>$(DefaultPackageVersion).0</AssemblyVersion>
-    <FileVersion>$(DefaultPackageVersion).0</FileVersion>
+    <Version>$(ServiceModelGrpcVersion)</Version>
+    <AssemblyVersion>$(ServiceModelGrpcVersion).0</AssemblyVersion>
+    <FileVersion>$(ServiceModelGrpcVersion).0</FileVersion>
     <Product>ServiceModel.Grpc</Product>
     <Authors>Max Ieremenko</Authors>
     <Description>Library that enables applications to communicate with gRPC services using code-first approach, helps to get around some limitations of gRPC protocol. Provides exception handling. Helps to migrate existing WCF solution to gRPC with minimum effort.</Description>
@@ -41,7 +35,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="StyleCop.Analyzers.Unstable" Version="1.2.0.354">
+    <PackageReference Include="StyleCop.Analyzers.Unstable" Version="$(StyleCopVersion)">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

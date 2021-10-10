@@ -3,7 +3,7 @@ NJsonSchema.Yaml [10.4.6](https://www.nuget.org/packages/NJsonSchema.Yaml/10.4.6
 
 Used by: AspNetCoreNSwag
 
-Target frameworks: net5.0, netcoreapp3.0
+Target frameworks: net5.0, net6.0, netcoreapp3.0
 
 License: [MIT](../../../../licenses/mit) 
 

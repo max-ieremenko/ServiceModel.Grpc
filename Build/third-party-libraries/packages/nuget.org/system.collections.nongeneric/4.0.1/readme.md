@@ -3,7 +3,7 @@ System.Collections.NonGeneric [4.0.1](https://www.nuget.org/packages/System.Coll
 
 Used by: AspNetCoreNSwag
 
-Target frameworks: net5.0, netcoreapp3.0
+Target frameworks: net5.0, net6.0, netcoreapp3.0
 
 License: [ms-net-library](../../../../licenses/ms-net-library) 
 

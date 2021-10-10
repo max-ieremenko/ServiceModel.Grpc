@@ -43,8 +43,8 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger
             _context = context;
 
             _originalProtocol = context.Request.Protocol;
-            _originalRequestBodyPipeFeature = context.Features.Get<IRequestBodyPipeFeature>();
-            _originalResponseBodyFeature = context.Features.Get<IHttpResponseBodyFeature>();
+            _originalRequestBodyPipeFeature = context.Features.Get<IRequestBodyPipeFeature>()!;
+            _originalResponseBodyFeature = context.Features.Get<IHttpResponseBodyFeature>()!;
             _originalResponseTrailersFeature = context.Features.Get<IHttpResponseTrailersFeature>();
 
             _responseStream = new MemoryStream();

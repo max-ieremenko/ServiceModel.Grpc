@@ -7,7 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Grpc.Core" Version="$(GrpcCoreVersion)" />
     <PackageReference Include="ServiceModel.Grpc" Version="$(ServiceModelGrpcVersion)" />
-    <PackageReference Include="Shouldly" Version="4.0.1" />
+    <PackageReference Include="Shouldly" Version="$(ShouldlyVersion)" />
   </ItemGroup>
 
   <ItemGroup>

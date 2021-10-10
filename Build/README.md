@@ -8,22 +8,26 @@ To run CI build locally
 
 - install [psake](https://www.powershellgallery.com/packages/psake)
 
-``` powershell
-PS> Install-Module -Name psake
-```
+    ``` powershell
+    PS> Install-Module -Name psake
+    ```
 
-- install [net5.0 sdk](https://dotnet.microsoft.com/download/dotnet/5.0)
+- install net6.0 sdk: manual [download](https://dotnet.microsoft.com/download/dotnet/6.0) or
+
+    ``` powershell
+    PS> .\Build\step-install-dotnet.ps1
+    ```
 
 - install ThirdPartyLibraries
 
-``` powershell
-PS> dotnet tool install --global ThirdPartyLibraries.GlobalTool
-```
+    ``` powershell
+    PS> dotnet tool install --global ThirdPartyLibraries.GlobalTool
+    ```
 
 - switch docker to linux containers
 
-run build
+- run build
 
-``` powershell
-PS> .\Build\build-locally.ps1
-```
+    ``` powershell
+    PS> .\Build\build-locally.ps1
+    ```

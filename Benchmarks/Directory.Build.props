@@ -1,4 +1,6 @@
 <Project>
+  <Import Project="..\Sources\Versions.props" />
+
   <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
@@ -9,15 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StyleCop.Analyzers.Unstable" Version="1.2.0.333">
+    <PackageReference Include="StyleCop.Analyzers.Unstable" Version="$(StyleCopVersion)">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  
-  <PropertyGroup>
-    <GrpcCoreVersion>2.37.1</GrpcCoreVersion>
-    <GrpcNetVersion>2.37.0</GrpcNetVersion>
-  </PropertyGroup>
   
 </Project>

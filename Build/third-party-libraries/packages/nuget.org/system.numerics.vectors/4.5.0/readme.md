@@ -3,7 +3,7 @@ System.Numerics.Vectors [4.5.0](https://www.nuget.org/packages/System.Numerics.V
 
 Used by: Core internal, ProtoBuf
 
-Target frameworks: net461, netcoreapp2.1, netcoreapp3.1, netstandard2.0, netstandard2.1
+Target frameworks: net461, net5.0, net6.0, netcoreapp3.1, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 

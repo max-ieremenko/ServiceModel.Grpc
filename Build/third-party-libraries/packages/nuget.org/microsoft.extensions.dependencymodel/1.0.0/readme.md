@@ -3,7 +3,7 @@ Microsoft.Extensions.DependencyModel [1.0.0](https://www.nuget.org/packages/Micr
 
 Used by: AspNetCoreNSwag
 
-Target frameworks: net5.0, netcoreapp3.0
+Target frameworks: net5.0, net6.0, netcoreapp3.0
 
 License: [MIT](../../../../licenses/mit) 
 

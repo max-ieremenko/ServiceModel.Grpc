@@ -19,6 +19,11 @@ using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
+#if NET6_0
+using PropertySetterType = System.Action<object, object?>;
+#else
+using PropertySetterType = System.Action<object, object>;
+#endif
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
 {
@@ -87,7 +92,7 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
 
         public override Func<object, object> PropertyGetter { get; } = null!;
 
-        public override Action<object, object> PropertySetter { get; } = null!;
+        public override PropertySetterType PropertySetter { get; } = null!;
 
         public override bool ShowForDisplay { get; }
 
