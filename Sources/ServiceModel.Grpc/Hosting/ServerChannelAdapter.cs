@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -126,7 +126,7 @@ namespace ServiceModel.Grpc.Hosting
         internal static async Task WriteServerStreamingResultValueTask<T>(ValueTask<IAsyncEnumerable<T>> result, IServerStreamWriter<Message<T>> stream, ServerCallContext context)
         {
             var source = await result.ConfigureAwait(false);
-            await WriteServerStreamingResult(source, stream, context);
+            await WriteServerStreamingResult(source, stream, context).ConfigureAwait(false);
         }
 
         internal static async Task WriteServerStreamingResultWithHeaderTask<TResponse, THeader, TResult>(

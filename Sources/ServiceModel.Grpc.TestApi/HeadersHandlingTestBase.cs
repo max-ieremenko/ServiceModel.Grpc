@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ namespace ServiceModel.Grpc.TestApi
             context.ResponseTrailers.ShouldBeNull();
 
             var values = new List<int>();
-            await foreach (var i in stream)
+            await foreach (var i in stream.ConfigureAwait(false))
             {
                 context.ResponseHeaders.ShouldNotBeNull();
 
@@ -98,7 +98,7 @@ namespace ServiceModel.Grpc.TestApi
             ValidateResponse(context, true);
 
             var values = new List<int>();
-            await foreach (var i in stream)
+            await foreach (var i in stream.ConfigureAwait(false))
             {
                 if (values.Count == 0)
                 {
@@ -118,7 +118,7 @@ namespace ServiceModel.Grpc.TestApi
         {
             var context = CreateCallContext();
 
-            await DomainService.ClientStreamingCall(Enumerable.Range(1, 10).AsAsyncEnumerable(), context);
+            await DomainService.ClientStreamingCall(Enumerable.Range(1, 10).AsAsyncEnumerable(), context).ConfigureAwait(false);
 
             ValidateResponse(context);
         }
@@ -135,7 +135,7 @@ namespace ServiceModel.Grpc.TestApi
             context.ResponseTrailers.ShouldBeNull();
 
             var values = new List<int>();
-            await foreach (var i in stream)
+            await foreach (var i in stream.ConfigureAwait(false))
             {
                 context.ResponseHeaders.ShouldNotBeNull();
 
@@ -163,7 +163,7 @@ namespace ServiceModel.Grpc.TestApi
             ValidateResponse(context, true);
 
             var values = new List<int>();
-            await foreach (var i in stream)
+            await foreach (var i in stream.ConfigureAwait(false))
             {
                 if (values.Count == 0)
                 {

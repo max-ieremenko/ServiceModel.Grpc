@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ namespace ServiceModel.Grpc.TestApi
 
             CallInvoker.SetupAsyncUnaryCall();
 
-            await Factory().EmptyAsync();
+            await Factory().EmptyAsync().ConfigureAwait(false);
 
             CallInvoker.VerifyAll();
         }
@@ -76,7 +76,7 @@ namespace ServiceModel.Grpc.TestApi
 
             CallInvoker.SetupAsyncUnaryCall();
 
-            await Factory().EmptyValueTaskAsync();
+            await Factory().EmptyValueTaskAsync().ConfigureAwait(false);
 
             CallInvoker.VerifyAll();
         }
@@ -102,7 +102,7 @@ namespace ServiceModel.Grpc.TestApi
 
             CallInvoker.SetupAsyncUnaryCall(actual => actual.CancellationToken.ShouldBe(TokenSource.Token));
 
-            await Factory().EmptyTokenAsync(TokenSource.Token);
+            await Factory().EmptyTokenAsync(TokenSource.Token).ConfigureAwait(false);
 
             CallInvoker.VerifyAll();
         }
@@ -127,7 +127,7 @@ namespace ServiceModel.Grpc.TestApi
 
             CallInvoker.SetupAsyncUnaryCallOut("a");
 
-            var actual = await Factory().ReturnStringAsync();
+            var actual = await Factory().ReturnStringAsync().ConfigureAwait(false);
 
             actual.ShouldBe("a");
             CallInvoker.VerifyAll();
@@ -152,7 +152,7 @@ namespace ServiceModel.Grpc.TestApi
 
             CallInvoker.SetupAsyncUnaryCallOut(true);
 
-            var actual = await Factory().ReturnValueTaskBoolAsync();
+            var actual = await Factory().ReturnValueTaskBoolAsync().ConfigureAwait(false);
 
             actual.ShouldBeTrue();
             CallInvoker.VerifyAll();
@@ -179,7 +179,7 @@ namespace ServiceModel.Grpc.TestApi
 
             CallInvoker.SetupAsyncUnaryCallIn(1.5);
 
-            await Factory().OneParameterAsync(1.5);
+            await Factory().OneParameterAsync(1.5).ConfigureAwait(false);
 
             CallInvoker.VerifyAll();
         }
@@ -204,7 +204,7 @@ namespace ServiceModel.Grpc.TestApi
 
             CallInvoker.SetupAsyncUnaryCallInOut(1, "a", 2L, "1a2", options => options.CancellationToken.ShouldBe(TokenSource.Token));
 
-            var actual = await Factory().ConcatThreeValueAsync(1, "a", TokenSource.Token, 2);
+            var actual = await Factory().ConcatThreeValueAsync(1, "a", TokenSource.Token, 2).ConfigureAwait(false);
 
             actual.ShouldBe("1a2");
             CallInvoker.VerifyAll();
@@ -253,7 +253,7 @@ namespace ServiceModel.Grpc.TestApi
             var actual = Factory().ServerStreamingRepeatValue(1, 2, TokenSource.Token);
 
             var content = new List<int>();
-            await foreach (var i in actual.WithCancellation(TokenSource.Token))
+            await foreach (var i in actual.WithCancellation(TokenSource.Token).ConfigureAwait(false))
             {
                 content.Add(i);
             }
@@ -276,10 +276,10 @@ namespace ServiceModel.Grpc.TestApi
                 responseStream.Object,
                 o => o.CancellationToken.ShouldBe(TokenSource.Token));
 
-            var actual = await Factory().ServerStreamingRepeatValueAsync(1, 2, TokenSource.Token);
+            var actual = await Factory().ServerStreamingRepeatValueAsync(1, 2, TokenSource.Token).ConfigureAwait(false);
 
             var content = new List<int>();
-            await foreach (var i in actual.WithCancellation(TokenSource.Token))
+            await foreach (var i in actual.WithCancellation(TokenSource.Token).ConfigureAwait(false))
             {
                 content.Add(i);
             }
@@ -302,10 +302,10 @@ namespace ServiceModel.Grpc.TestApi
                 responseStream.Object,
                 o => o.CancellationToken.ShouldBe(TokenSource.Token));
 
-            var actual = await Factory().ServerStreamingRepeatValueValueTaskAsync(1, 2, TokenSource.Token);
+            var actual = await Factory().ServerStreamingRepeatValueValueTaskAsync(1, 2, TokenSource.Token).ConfigureAwait(false);
 
             var content = new List<int>();
-            await foreach (var i in actual.WithCancellation(TokenSource.Token))
+            await foreach (var i in actual.WithCancellation(TokenSource.Token).ConfigureAwait(false))
             {
                 content.Add(i);
             }
@@ -329,7 +329,7 @@ namespace ServiceModel.Grpc.TestApi
                 o => o.CancellationToken.ShouldBe(TokenSource.Token),
                 CompatibilityToolsTestExtensions.SerializeMethodOutput(DataContractMarshallerFactory.Default, 1, 2));
 
-            var actual = await Factory().ServerStreamingWithHeadersTask(1, 2, TokenSource.Token);
+            var actual = await Factory().ServerStreamingWithHeadersTask(1, 2, TokenSource.Token).ConfigureAwait(false);
 
             actual.Value.ShouldBe(1);
             actual.Count.ShouldBe(2);
@@ -355,7 +355,7 @@ namespace ServiceModel.Grpc.TestApi
                 o => o.CancellationToken.ShouldBe(TokenSource.Token),
                 CompatibilityToolsTestExtensions.SerializeMethodOutput(DataContractMarshallerFactory.Default, 2));
 
-            var actual = await Factory().ServerStreamingWithHeadersValueTask(1, 2, TokenSource.Token);
+            var actual = await Factory().ServerStreamingWithHeadersValueTask(1, 2, TokenSource.Token).ConfigureAwait(false);
 
             actual.Count.ShouldBe(2);
 
@@ -375,7 +375,7 @@ namespace ServiceModel.Grpc.TestApi
 
             CallInvoker.SetupAsyncServerStreamingCall(responseStream.Object);
 
-            var actual = await Factory().DuplicateServerStreaming().ToListAsync();
+            var actual = await Factory().DuplicateServerStreaming().ToListAsync().ConfigureAwait(false);
 
             actual.ShouldBe(new[] { "a" });
             responseStream.Verify();
@@ -391,7 +391,7 @@ namespace ServiceModel.Grpc.TestApi
 
             CallInvoker.SetupAsyncServerStreamingCall("a", responseStream.Object);
 
-            var actual = await Factory().DuplicateServerStreaming("a").ToListAsync();
+            var actual = await Factory().DuplicateServerStreaming("a").ToListAsync().ConfigureAwait(false);
 
             actual.ShouldBe(new[] { "b" });
             responseStream.Verify();
@@ -410,7 +410,7 @@ namespace ServiceModel.Grpc.TestApi
             var actual = Factory().EmptyServerStreaming();
 
             var content = new List<int>();
-            await foreach (var i in actual.WithCancellation(TokenSource.Token))
+            await foreach (var i in actual.WithCancellation(TokenSource.Token).ConfigureAwait(false))
             {
                 content.Add(i);
             }
@@ -434,7 +434,7 @@ namespace ServiceModel.Grpc.TestApi
                 "3",
                 o => o.CancellationToken.ShouldBe(TokenSource.Token));
 
-            var actual = await Factory().ClientStreamingSumValues(new[] { 1, 2 }.AsAsyncEnumerable(), TokenSource.Token);
+            var actual = await Factory().ClientStreamingSumValues(new[] { 1, 2 }.AsAsyncEnumerable(), TokenSource.Token).ConfigureAwait(false);
 
             actual.ShouldBe("3");
             serverValues.ShouldBe(new[] { 1, 2 });
@@ -453,7 +453,7 @@ namespace ServiceModel.Grpc.TestApi
 
             CallInvoker.SetupAsyncClientStreamingCall(requestStream.Object);
 
-            await Factory().ClientStreamingEmpty(new[] { 1, 2 }.AsAsyncEnumerable());
+            await Factory().ClientStreamingEmpty(new[] { 1, 2 }.AsAsyncEnumerable()).ConfigureAwait(false);
 
             serverValues.ShouldBe(new[] { 1, 2 });
             requestStream.VerifyAll();
@@ -479,7 +479,7 @@ namespace ServiceModel.Grpc.TestApi
                     values.Value2.ShouldBe("sum-");
                 });
 
-            await Factory().ClientStreamingHeaderParameters(new[] { 1, 2 }.AsAsyncEnumerable(), 2, "sum-");
+            await Factory().ClientStreamingHeaderParameters(new[] { 1, 2 }.AsAsyncEnumerable(), 2, "sum-").ConfigureAwait(false);
 
             serverValues.ShouldBe(new[] { 1, 2 });
             requestStream.VerifyAll();
@@ -497,7 +497,7 @@ namespace ServiceModel.Grpc.TestApi
 
             CallInvoker.SetupAsyncClientStreamingCall(requestStream.Object, "3");
 
-            var actual = await Factory().DuplicateClientStreaming(new[] { "a", "b" }.AsAsyncEnumerable());
+            var actual = await Factory().DuplicateClientStreaming(new[] { "a", "b" }.AsAsyncEnumerable()).ConfigureAwait(false);
 
             actual.ShouldBe("3");
             serverValues.ShouldBe(new[] { "a", "b" });
@@ -516,7 +516,7 @@ namespace ServiceModel.Grpc.TestApi
 
             CallInvoker.SetupAsyncClientStreamingCall(requestStream.Object, "3");
 
-            var actual = await Factory().DuplicateClientStreaming(new[] { 1, 2 }.AsAsyncEnumerable());
+            var actual = await Factory().DuplicateClientStreaming(new[] { 1, 2 }.AsAsyncEnumerable()).ConfigureAwait(false);
 
             actual.ShouldBe("3");
             serverValues.ShouldBe(new[] { 1, 2 });
@@ -543,7 +543,7 @@ namespace ServiceModel.Grpc.TestApi
 
             var actual = Factory().DuplexStreamingConvert(new[] { 1, 2 }.AsAsyncEnumerable(), TokenSource.Token);
 
-            var values = await actual.ToListAsync();
+            var values = await actual.ToListAsync().ConfigureAwait(false);
             values.ShouldBe(new[] { "1", "2" });
             responseStream.Verify();
             requestStream.VerifyAll();
@@ -569,7 +569,7 @@ namespace ServiceModel.Grpc.TestApi
 
             var actual = await Factory().DuplexStreamingConvertAsync(new[] { 1, 2 }.AsAsyncEnumerable(), TokenSource.Token);
 
-            var values = await actual.ToListAsync();
+            var values = await actual.ToListAsync().ConfigureAwait(false);
             values.ShouldBe(new[] { "1", "2" });
             responseStream.Verify();
             requestStream.VerifyAll();
@@ -593,9 +593,9 @@ namespace ServiceModel.Grpc.TestApi
                 responseStream.Object,
                 o => o.CancellationToken.ShouldBe(TokenSource.Token));
 
-            var actual = await Factory().DuplexStreamingConvertValueTaskAsync(new[] { 1, 2 }.AsAsyncEnumerable(), TokenSource.Token);
+            var actual = await Factory().DuplexStreamingConvertValueTaskAsync(new[] { 1, 2 }.AsAsyncEnumerable(), TokenSource.Token).ConfigureAwait(false);
 
-            var values = await actual.ToListAsync();
+            var values = await actual.ToListAsync().ConfigureAwait(false);
             values.ShouldBe(new[] { "1", "2" });
             responseStream.Verify();
             requestStream.VerifyAll();
@@ -626,7 +626,7 @@ namespace ServiceModel.Grpc.TestApi
 
             var actual = Factory().DuplexStreamingHeaderParameters(new[] { 1, 2 }.AsAsyncEnumerable(), 1, "prefix-");
 
-            var values = await actual.ToListAsync();
+            var values = await actual.ToListAsync().ConfigureAwait(false);
             values.ShouldBe(new[] { "prefix-1", "prefix-2" });
             responseStream.Verify();
             requestStream.VerifyAll();
@@ -649,7 +649,7 @@ namespace ServiceModel.Grpc.TestApi
                 requestStream.Object,
                 responseStream.Object);
 
-            var actual = await Factory().DuplicateDuplexStreaming(new[] { "a", "b" }.AsAsyncEnumerable()).ToListAsync();
+            var actual = await Factory().DuplicateDuplexStreaming(new[] { "a", "b" }.AsAsyncEnumerable()).ToListAsync().ConfigureAwait(false);
 
             actual.ShouldBe(new[] { "a1", "b1" });
             responseStream.Verify();
@@ -673,7 +673,7 @@ namespace ServiceModel.Grpc.TestApi
                 requestStream.Object,
                 responseStream.Object);
 
-            var actual = await Factory().DuplicateDuplexStreaming(new[] { 1, 2 }.AsAsyncEnumerable()).ToListAsync();
+            var actual = await Factory().DuplicateDuplexStreaming(new[] { 1, 2 }.AsAsyncEnumerable()).ToListAsync().ConfigureAwait(false);
 
             actual.ShouldBe(new[] { 2, 3 });
             responseStream.Verify();
@@ -699,7 +699,7 @@ namespace ServiceModel.Grpc.TestApi
                 options => options.CancellationToken.ShouldBe(TokenSource.Token),
                 CompatibilityToolsTestExtensions.SerializeMethodOutput(DataContractMarshallerFactory.Default, 1, 2));
 
-            var actual = await Factory().DuplexStreamingWithHeadersTask(new[] { 1, 2 }.AsAsyncEnumerable(), TokenSource.Token);
+            var actual = await Factory().DuplexStreamingWithHeadersTask(new[] { 1, 2 }.AsAsyncEnumerable(), TokenSource.Token).ConfigureAwait(false);
 
             actual.Value.ShouldBe(1);
             actual.Count.ShouldBe(2);
@@ -734,7 +734,7 @@ namespace ServiceModel.Grpc.TestApi
                 },
                 CompatibilityToolsTestExtensions.SerializeMethodOutput(DataContractMarshallerFactory.Default, 2));
 
-            var actual = await Factory().DuplexStreamingWithHeadersValueTask(new[] { 1, 2 }.AsAsyncEnumerable(), 1, 2, TokenSource.Token);
+            var actual = await Factory().DuplexStreamingWithHeadersValueTask(new[] { 1, 2 }.AsAsyncEnumerable(), 1, 2, TokenSource.Token).ConfigureAwait(false);
 
             actual.Count.ShouldBe(2);
             var stream = await actual.Stream.ToListAsync().ConfigureAwait(false);

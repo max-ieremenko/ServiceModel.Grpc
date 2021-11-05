@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,7 +60,8 @@ namespace ServiceModel.Grpc.AspNetCore.NSwag
                 {
                     endpoints.MapGrpcService<MultipurposeService>();
                 })
-                .StartAsync(HttpProtocols.Http1);
+                .StartAsync(HttpProtocols.Http1)
+                .ConfigureAwait(false);
 
             var document = await OpenApiDocument
                 .DownloadAsync(_host.GetLocation("swagger/v1/swagger.json"))

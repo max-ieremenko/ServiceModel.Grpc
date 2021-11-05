@@ -127,7 +127,7 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger
                 .SetupGet(r => r.ContentType)
                 .Returns(MediaTypeNames.Application.Json);
 
-            await _sut.Invoke(_httpContext.Object);
+            await _sut.Invoke(_httpContext.Object).ConfigureAwait(false);
 
             _isNextCalled.ShouldBeTrue();
             _loggerOutput.ShouldBeEmpty();
@@ -140,7 +140,7 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger
                 .Setup(a => a.FindApiDescription(_httpRequest.Object.Path))
                 .Returns((ApiDescription?)null);
 
-            await _sut.Invoke(_httpContext.Object);
+            await _sut.Invoke(_httpContext.Object).ConfigureAwait(false);
 
             _isNextCalled.ShouldBeTrue();
             _apiAdapter.VerifyAll();
@@ -158,7 +158,7 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger
                 .Setup(a => a.GetMethod(_httpContext.Object))
                 .Returns((IMethod?)null);
 
-            await _sut.Invoke(_httpContext.Object);
+            await _sut.Invoke(_httpContext.Object).ConfigureAwait(false);
 
             _isNextCalled.ShouldBeTrue();
             _apiAdapter.VerifyAll();
@@ -183,7 +183,7 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger
                 .Setup(a => a.GetMethod(_httpContext.Object))
                 .Returns(_method.Object);
 
-            await _sut.Invoke(_httpContext.Object);
+            await _sut.Invoke(_httpContext.Object).ConfigureAwait(false);
 
             _httpResponse.Object.StatusCode.ShouldBe((int)HttpStatusCode.NotImplemented);
 

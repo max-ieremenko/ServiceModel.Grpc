@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,7 +39,8 @@ namespace ServiceModel.Grpc.AspNetCore
                     endpoints.MapGrpcService<GreeterService>();
                     endpoints.MapGrpcService<MultipurposeService>();
                 })
-                .StartAsync();
+                .StartAsync()
+                .ConfigureAwait(false);
 
             DomainService = _host.ClientFactory.CreateClient<IMultipurposeService>(_host.Channel);
             _greeterService = new Greeter.GreeterClient(_host.Channel);
@@ -48,13 +49,13 @@ namespace ServiceModel.Grpc.AspNetCore
         [OneTimeTearDown]
         public async Task AfterAll()
         {
-            await _host.DisposeAsync();
+            await _host.DisposeAsync().ConfigureAwait(false);
         }
 
         [Test]
         public async Task NativeGreet()
         {
-            var actual = await _greeterService.UnaryAsync(new HelloRequest { Name = "world" });
+            var actual = await _greeterService.UnaryAsync(new HelloRequest { Name = "world" }).ResponseAsync.ConfigureAwait(false);
 
             actual.Message.ShouldBe("Hello world!");
         }

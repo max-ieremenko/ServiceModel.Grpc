@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ namespace ServiceModel.Grpc.TestApi
             _service
                 .Setup(s => s.Empty());
 
-            var actual = await call(_service.Object, new Message(), null!);
+            var actual = await call(_service.Object, new Message(), null!).ConfigureAwait(false);
 
             actual.ShouldNotBeNull();
             _service.VerifyAll();
@@ -82,7 +82,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.EmptyAsync())
                 .Returns(Task.CompletedTask);
 
-            var actual = await call(_service.Object, new Message(), null!);
+            var actual = await call(_service.Object, new Message(), null!).ConfigureAwait(false);
 
             actual.ShouldNotBeNull();
             _service.VerifyAll();
@@ -100,7 +100,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.EmptyValueTaskAsync())
                 .Returns(new ValueTask(Task.CompletedTask));
 
-            var actual = await call(_service.Object, new Message(), null!);
+            var actual = await call(_service.Object, new Message(), null!).ConfigureAwait(false);
 
             actual.ShouldNotBeNull();
             _service.VerifyAll();
@@ -121,7 +121,7 @@ namespace ServiceModel.Grpc.TestApi
                     c.ServerCallContext.ShouldBe(_serverCallContext.Object);
                 });
 
-            var actual = await call(_service.Object, new Message(), _serverCallContext.Object);
+            var actual = await call(_service.Object, new Message(), _serverCallContext.Object).ConfigureAwait(false);
 
             actual.ShouldNotBeNull();
             _service.VerifyAll();
@@ -139,7 +139,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.EmptyTokenAsync(_tokenSource.Token))
                 .Returns(Task.CompletedTask);
 
-            var actual = await call(_service.Object, new Message(), _serverCallContext.Object);
+            var actual = await call(_service.Object, new Message(), _serverCallContext.Object).ConfigureAwait(false);
 
             actual.ShouldNotBeNull();
             _service.VerifyAll();
@@ -157,7 +157,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.ReturnString())
                 .Returns("a");
 
-            var actual = await call(_service.Object, new Message(), null!);
+            var actual = await call(_service.Object, new Message(), null!).ConfigureAwait(false);
 
             actual.Value1.ShouldBe("a");
             _service.VerifyAll();
@@ -175,7 +175,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.ReturnStringAsync(_serverCallContext.Object))
                 .Returns(Task.FromResult("a"));
 
-            var actual = await call(_service.Object, new Message(), _serverCallContext.Object);
+            var actual = await call(_service.Object, new Message(), _serverCallContext.Object).ConfigureAwait(false);
 
             actual.Value1.ShouldBe("a");
             _service.VerifyAll();
@@ -193,7 +193,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.ReturnValueTaskBoolAsync())
                 .Returns(new ValueTask<bool>(Task.FromResult(true)));
 
-            var actual = await call(_service.Object, new Message(), null!);
+            var actual = await call(_service.Object, new Message(), null!).ConfigureAwait(false);
 
             actual.Value1.ShouldBeTrue();
             _service.VerifyAll();
@@ -227,7 +227,7 @@ namespace ServiceModel.Grpc.TestApi
                     options.CancellationToken.ShouldBe(_tokenSource.Token);
                 });
 
-            var actual = await call(_service.Object, new Message<int>(3), _serverCallContext.Object);
+            var actual = await call(_service.Object, new Message<int>(3), _serverCallContext.Object).ConfigureAwait(false);
 
             actual.ShouldNotBeNull();
             _service.VerifyAll();
@@ -245,7 +245,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.OneParameterAsync(3.5))
                 .Returns(Task.CompletedTask);
 
-            var actual = await call(_service.Object, new Message<double>(3.5), null!);
+            var actual = await call(_service.Object, new Message<double>(3.5), null!).ConfigureAwait(false);
 
             actual.ShouldNotBeNull();
             _service.VerifyAll();
@@ -263,7 +263,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.AddTwoValues(1, 3.5))
                 .Returns(4.5);
 
-            var actual = await call(_service.Object, new Message<int, double>(1, 3.5), null!);
+            var actual = await call(_service.Object, new Message<int, double>(1, 3.5), null!).ConfigureAwait(false);
 
             actual.Value1.ShouldBe(4.5);
             _service.VerifyAll();
@@ -281,7 +281,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.ConcatThreeValueAsync(1, "a", _tokenSource.Token, 3))
                 .Returns(Task.FromResult("1a3"));
 
-            var actual = await call(_service.Object, new Message<int, string, long>(1, "a", 3), _serverCallContext.Object);
+            var actual = await call(_service.Object, new Message<int, string, long>(1, "a", 3), _serverCallContext.Object).ConfigureAwait(false);
 
             actual.Value1.ShouldBe("1a3");
             _service.VerifyAll();
@@ -299,7 +299,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.DuplicateUnary())
                 .Returns("a");
 
-            var actual = await call(_service.Object, new Message(), null!);
+            var actual = await call(_service.Object, new Message(), null!).ConfigureAwait(false);
 
             actual.Value1.ShouldBe("a");
             _service.VerifyAll();
@@ -317,7 +317,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.DuplicateUnary("a"))
                 .Returns("b");
 
-            var actual = await call(_service.Object, new Message<string>("a"), null!);
+            var actual = await call(_service.Object, new Message<string>("a"), null!).ConfigureAwait(false);
 
             actual.Value1.ShouldBe("b");
             _service.VerifyAll();
@@ -338,7 +338,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.EmptyServerStreaming())
                 .Returns(new[] { 1, 2, 3 }.AsAsyncEnumerable());
 
-            await call(_service.Object, new Message(), stream.Object, _serverCallContext.Object);
+            await call(_service.Object, new Message(), stream.Object, _serverCallContext.Object).ConfigureAwait(false);
 
             actual.ShouldBe(new[] { 1, 2, 3 });
             stream.VerifyAll();
@@ -361,7 +361,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.ServerStreamingRepeatValue(1, 2, _tokenSource.Token))
                 .Returns(new[] { 1, 2, 3 }.AsAsyncEnumerable());
 
-            await call(_service.Object, new Message<int, int>(1, 2), stream.Object, _serverCallContext.Object);
+            await call(_service.Object, new Message<int, int>(1, 2), stream.Object, _serverCallContext.Object).ConfigureAwait(false);
 
             actual.ShouldBe(new[] { 1, 2, 3 });
             stream.VerifyAll();
@@ -383,7 +383,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.ServerStreamingRepeatValueAsync(1, 2, _tokenSource.Token))
                 .Returns(Task.FromResult(new[] { 1, 2, 3 }.AsAsyncEnumerable()));
 
-            await call(_service.Object, new Message<int, int>(1, 2), stream.Object, _serverCallContext.Object);
+            await call(_service.Object, new Message<int, int>(1, 2), stream.Object, _serverCallContext.Object).ConfigureAwait(false);
 
             actual.ShouldBe(new[] { 1, 2, 3 });
             stream.VerifyAll();
@@ -405,7 +405,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.ServerStreamingRepeatValueValueTaskAsync(1, 2, _tokenSource.Token))
                 .Returns(new ValueTask<IAsyncEnumerable<int>>(new[] { 1, 2, 3 }.AsAsyncEnumerable()));
 
-            await call(_service.Object, new Message<int, int>(1, 2), stream.Object, _serverCallContext.Object);
+            await call(_service.Object, new Message<int, int>(1, 2), stream.Object, _serverCallContext.Object).ConfigureAwait(false);
 
             actual.ShouldBe(new[] { 1, 2, 3 });
             stream.VerifyAll();
@@ -440,7 +440,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
-            await call(_service.Object, new Message<int, int>(1, 2), stream.Object, _serverCallContext.Object);
+            await call(_service.Object, new Message<int, int>(1, 2), stream.Object, _serverCallContext.Object).ConfigureAwait(false);
 
             actual.ShouldBe(new[] { 1, 2, 3 });
             stream.VerifyAll();
@@ -475,7 +475,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
-            await call(_service.Object, new Message<int, int>(1, 2), stream.Object, _serverCallContext.Object);
+            await call(_service.Object, new Message<int, int>(1, 2), stream.Object, _serverCallContext.Object).ConfigureAwait(false);
 
             actual.ShouldBe(new[] { 1, 2, 3 });
             stream.VerifyAll();
@@ -498,7 +498,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.DuplicateServerStreaming())
                 .Returns(new[] { "a" }.AsAsyncEnumerable());
 
-            await call(_service.Object, new Message(), stream.Object, _serverCallContext.Object);
+            await call(_service.Object, new Message(), stream.Object, _serverCallContext.Object).ConfigureAwait(false);
 
             actual.ShouldBe(new[] { "a" });
             stream.VerifyAll();
@@ -520,7 +520,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.DuplicateServerStreaming("b"))
                 .Returns(new[] { "a" }.AsAsyncEnumerable());
 
-            await call(_service.Object, new Message<string>("b"), stream.Object, _serverCallContext.Object);
+            await call(_service.Object, new Message<string>("b"), stream.Object, _serverCallContext.Object).ConfigureAwait(false);
 
             actual.ShouldBe(new[] { "a" });
             stream.VerifyAll();
@@ -542,12 +542,12 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.ClientStreamingEmpty(It.IsNotNull<IAsyncEnumerable<int>>()))
                 .Callback<IAsyncEnumerable<int>>(async values =>
                 {
-                    var items = await values.ToListAsync();
+                    var items = await values.ToListAsync().ConfigureAwait(false);
                     items.ShouldBe(new[] { 2 });
                 })
                 .Returns(Task.CompletedTask);
 
-            await call(_service.Object, stream.Object, _serverCallContext.Object);
+            await call(_service.Object, stream.Object, _serverCallContext.Object).ConfigureAwait(false);
 
             stream.Verify();
             _service.VerifyAll();
@@ -568,12 +568,12 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.ClientStreamingSumValues(It.IsNotNull<IAsyncEnumerable<int>>(), _tokenSource.Token))
                 .Returns<IAsyncEnumerable<int>, CancellationToken>(async (values, _) =>
                 {
-                    var items = await values.ToListAsync();
+                    var items = await values.ToListAsync().ConfigureAwait(false);
                     items.ShouldBe(new[] { 2 });
                     return "2";
                 });
 
-            var actual = await call(_service.Object, stream.Object, _serverCallContext.Object);
+            var actual = await call(_service.Object, stream.Object, _serverCallContext.Object).ConfigureAwait(false);
 
             actual.Value1.ShouldBe("2");
             stream.Verify();
@@ -600,12 +600,12 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.ClientStreamingHeaderParameters(It.IsNotNull<IAsyncEnumerable<int>>(), 1, "prefix"))
                 .Returns<IAsyncEnumerable<int>, int, string>(async (values, m, p) =>
                 {
-                    var items = await values.ToListAsync();
+                    var items = await values.ToListAsync().ConfigureAwait(false);
                     items.ShouldBe(new[] { 2 });
                     return "2";
                 });
 
-            var actual = await call(_service.Object, stream.Object, _serverCallContext.Object);
+            var actual = await call(_service.Object, stream.Object, _serverCallContext.Object).ConfigureAwait(false);
 
             actual.Value1.ShouldBe("2");
             stream.Verify();
@@ -627,12 +627,12 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.DuplicateClientStreaming(It.IsNotNull<IAsyncEnumerable<string>>()))
                 .Returns<IAsyncEnumerable<string>>(async values =>
                 {
-                    var items = await values.ToListAsync();
+                    var items = await values.ToListAsync().ConfigureAwait(false);
                     items.ShouldBe(new[] { "a" });
                     return "b";
                 });
 
-            var actual = await call(_service.Object, stream.Object, _serverCallContext.Object);
+            var actual = await call(_service.Object, stream.Object, _serverCallContext.Object).ConfigureAwait(false);
 
             actual.Value1.ShouldBe("b");
             stream.Verify();
@@ -654,12 +654,12 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.DuplicateClientStreaming(It.IsNotNull<IAsyncEnumerable<int>>()))
                 .Returns<IAsyncEnumerable<int>>(async values =>
                 {
-                    var items = await values.ToListAsync();
+                    var items = await values.ToListAsync().ConfigureAwait(false);
                     items.ShouldBe(new[] { 1 });
                     return "b";
                 });
 
-            var actual = await call(_service.Object, stream.Object, _serverCallContext.Object);
+            var actual = await call(_service.Object, stream.Object, _serverCallContext.Object).ConfigureAwait(false);
 
             actual.Value1.ShouldBe("b");
             stream.Verify();
@@ -684,12 +684,12 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.DuplexStreamingConvert(It.IsNotNull<IAsyncEnumerable<int>>(), _tokenSource.Token))
                 .Callback<IAsyncEnumerable<int>, CancellationToken>(async (values, _) =>
                 {
-                    var items = await values.ToListAsync();
+                    var items = await values.ToListAsync().ConfigureAwait(false);
                     items.ShouldBe(new[] { 2 });
                 })
                 .Returns(new[] { "2" }.AsAsyncEnumerable());
 
-            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object);
+            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object).ConfigureAwait(false);
 
             outputValues.ShouldBe(new[] { "2" });
             input.Verify();
@@ -715,12 +715,12 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.DuplexStreamingConvertAsync(It.IsNotNull<IAsyncEnumerable<int>>(), _tokenSource.Token))
                 .Callback<IAsyncEnumerable<int>, CancellationToken>(async (values, _) =>
                 {
-                    var items = await values.ToListAsync();
+                    var items = await values.ToListAsync().ConfigureAwait(false);
                     items.ShouldBe(new[] { 2 });
                 })
                 .Returns(Task.FromResult(new[] { "2" }.AsAsyncEnumerable()));
 
-            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object);
+            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object).ConfigureAwait(false);
 
             outputValues.ShouldBe(new[] { "2" });
             input.Verify();
@@ -746,12 +746,12 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.DuplexStreamingConvertValueTaskAsync(It.IsNotNull<IAsyncEnumerable<int>>(), _tokenSource.Token))
                 .Callback<IAsyncEnumerable<int>, CancellationToken>(async (values, _) =>
                 {
-                    var items = await values.ToListAsync();
+                    var items = await values.ToListAsync().ConfigureAwait(false);
                     items.ShouldBe(new[] { 2 });
                 })
                 .Returns(new ValueTask<IAsyncEnumerable<string>>(new[] { "2" }.AsAsyncEnumerable()));
 
-            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object);
+            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object).ConfigureAwait(false);
 
             outputValues.ShouldBe(new[] { "2" });
             input.Verify();
@@ -782,12 +782,12 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.DuplexStreamingHeaderParameters(It.IsNotNull<IAsyncEnumerable<int>>(), 1, "prefix"))
                 .Callback<IAsyncEnumerable<int>, int, string>(async (values, m, p) =>
                 {
-                    var items = await values.ToListAsync();
+                    var items = await values.ToListAsync().ConfigureAwait(false);
                     items.ShouldBe(new[] { 2 });
                 })
                 .Returns(new[] { "2" }.AsAsyncEnumerable());
 
-            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object);
+            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object).ConfigureAwait(false);
 
             outputValues.ShouldBe(new[] { "2" });
             input.Verify();
@@ -813,12 +813,12 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.DuplicateDuplexStreaming(It.IsNotNull<IAsyncEnumerable<string>>()))
                 .Callback<IAsyncEnumerable<string>>(async values =>
                 {
-                    var items = await values.ToListAsync();
+                    var items = await values.ToListAsync().ConfigureAwait(false);
                     items.ShouldBe(new[] { "a" });
                 })
                 .Returns(new[] { "b" }.AsAsyncEnumerable());
 
-            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object);
+            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object).ConfigureAwait(false);
 
             outputValues.ShouldBe(new[] { "b" });
             input.Verify();
@@ -844,12 +844,12 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.DuplicateDuplexStreaming(It.IsNotNull<IAsyncEnumerable<int>>()))
                 .Callback<IAsyncEnumerable<int>>(async values =>
                 {
-                    var items = await values.ToListAsync();
+                    var items = await values.ToListAsync().ConfigureAwait(false);
                     items.ShouldBe(new[] { 1 });
                 })
                 .Returns(new[] { 2 }.AsAsyncEnumerable());
 
-            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object);
+            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object).ConfigureAwait(false);
 
             outputValues.ShouldBe(new[] { 2 });
             input.Verify();
@@ -875,7 +875,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.DuplexStreamingWithHeadersTask(It.IsNotNull<IAsyncEnumerable<int>>(), _tokenSource.Token))
                 .Callback<IAsyncEnumerable<int>, CancellationToken>(async (values, _) =>
                 {
-                    var items = await values.ToListAsync();
+                    var items = await values.ToListAsync().ConfigureAwait(false);
                     items.ShouldBe(new[] { 1 });
                 })
                 .ReturnsAsync((1, new[] { 2 }.AsAsyncEnumerable(), 2));
@@ -893,7 +893,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
-            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object);
+            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object).ConfigureAwait(false);
 
             outputValues.ShouldBe(new[] { 2 });
             input.Verify();
@@ -920,7 +920,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.DuplexStreamingWithHeadersValueTask(It.IsNotNull<IAsyncEnumerable<int>>(), 1, 2, _tokenSource.Token))
                 .Callback<IAsyncEnumerable<int>, int, int, CancellationToken>(async (values, value, count, _) =>
                 {
-                    var items = await values.ToListAsync();
+                    var items = await values.ToListAsync().ConfigureAwait(false);
                     items.ShouldBe(new[] { 1 });
                 })
                 .Returns(new ValueTask<(IAsyncEnumerable<int> Stream, int Count)>((new[] { 2 }.AsAsyncEnumerable(), 1)));
@@ -942,7 +942,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
-            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object);
+            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object).ConfigureAwait(false);
 
             outputValues.ShouldBe(new[] { 2 });
             input.Verify();

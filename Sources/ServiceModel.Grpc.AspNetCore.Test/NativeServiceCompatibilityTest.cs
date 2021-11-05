@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,19 +39,21 @@ namespace ServiceModel.Grpc.AspNetCore
             _grpcHost = await new KestrelHost()
                 .ConfigureClientFactory(options => options.MarshallerFactory = ProtobufMarshallerFactory.Default)
                 .ConfigureEndpoints(endpoints => endpoints.MapGrpcService<GreeterService>())
-                .StartAsync();
+                .StartAsync()
+                .ConfigureAwait(false);
 
             _serviceModelHost = await new KestrelHost(8081)
                 .ConfigureClientFactory(options => options.MarshallerFactory = ProtobufMarshallerFactory.Default)
                 .ConfigureEndpoints(endpoints => endpoints.MapGrpcService<DomainGreeterService>())
-                .StartAsync();
+                .StartAsync()
+                .ConfigureAwait(false);
         }
 
         [OneTimeTearDown]
         public async Task AfterAll()
         {
-            await _grpcHost.DisposeAsync();
-            await _serviceModelHost.DisposeAsync();
+            await _grpcHost.DisposeAsync().ConfigureAwait(false);
+            await _serviceModelHost.DisposeAsync().ConfigureAwait(false);
         }
 
         [Test]
@@ -60,7 +62,7 @@ namespace ServiceModel.Grpc.AspNetCore
         public async Task UnaryNativeCall(string channelName)
         {
             var client = new Greeter.GreeterClient(GetChannel(channelName));
-            var response = await client.UnaryAsync(new HelloRequest { Name = "world" });
+            var response = await client.UnaryAsync(new HelloRequest { Name = "world" }).ResponseAsync.ConfigureAwait(false);
 
             response.Message.ShouldBe("Hello world!");
         }
@@ -80,12 +82,12 @@ namespace ServiceModel.Grpc.AspNetCore
 
                 foreach (var name in new[] { "person 1", "person 2" })
                 {
-                    await call.RequestStream.WriteAsync(new HelloRequest { Name = name });
+                    await call.RequestStream.WriteAsync(new HelloRequest { Name = name }).ConfigureAwait(false);
                 }
 
-                await call.RequestStream.CompleteAsync();
+                await call.RequestStream.CompleteAsync().ConfigureAwait(false);
 
-                while (await call.ResponseStream.MoveNext(default))
+                while (await call.ResponseStream.MoveNext(default).ConfigureAwait(false))
                 {
                     response.Add(call.ResponseStream.Current.Message);
                 }
@@ -100,7 +102,7 @@ namespace ServiceModel.Grpc.AspNetCore
         public async Task UnaryDomainCall(string channelName)
         {
             var client = _serviceModelHost.ClientFactory.CreateClient<IDomainGreeterService>(GetChannel(channelName));
-            var response = await client.UnaryAsync("world");
+            var response = await client.UnaryAsync("world").ConfigureAwait(false);
 
             response.ShouldBe("Hello world!");
         }

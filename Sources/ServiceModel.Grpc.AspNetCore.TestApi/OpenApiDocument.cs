@@ -40,10 +40,10 @@ namespace ServiceModel.Grpc.AspNetCore.TestApi
 
             using (var client = new HttpClient())
             {
-                using (var response = await client.GetAsync(location))
+                using (var response = await client.GetAsync(location).ConfigureAwait(false))
                 {
                     response.EnsureSuccessStatusCode();
-                    using (var stream = await response.Content.ReadAsStreamAsync())
+                    using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                     {
                         content = (JObject)JsonSerializer.CreateDefault().Deserialize(new JsonTextReader(new StreamReader(stream)))!;
                     }

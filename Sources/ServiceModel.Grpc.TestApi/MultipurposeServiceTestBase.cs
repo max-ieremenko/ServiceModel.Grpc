@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ namespace ServiceModel.Grpc.TestApi
                 { "value", "b" }
             });
 
-            var actual = await DomainService.ConcatAsync("a", context);
+            var actual = await DomainService.ConcatAsync("a", context).ConfigureAwait(false);
 
             actual.ShouldBe("ab");
         }
@@ -56,7 +56,7 @@ namespace ServiceModel.Grpc.TestApi
         [Test]
         public async Task Sum5ValuesAsync()
         {
-            var actual = await DomainService.Sum5ValuesAsync(1, 2, 3, 4, 5, default);
+            var actual = await DomainService.Sum5ValuesAsync(1, 2, 3, 4, 5, default).ConfigureAwait(false);
 
             actual.ShouldBe(15);
         }
@@ -64,7 +64,7 @@ namespace ServiceModel.Grpc.TestApi
         [Test]
         public async Task RepeatValue()
         {
-            var actual = await DomainService.RepeatValue("a", 3).ToListAsync();
+            var actual = await DomainService.RepeatValue("a", 3).ToListAsync().ConfigureAwait(false);
 
             actual.ShouldBe(new[] { "a", "a", "a" });
         }
@@ -72,8 +72,8 @@ namespace ServiceModel.Grpc.TestApi
         [Test]
         public async Task RepeatValueAsync()
         {
-            var source = await DomainService.RepeatValueAsync("a", 3);
-            var actual = await source.ToListAsync();
+            var source = await DomainService.RepeatValueAsync("a", 3).ConfigureAwait(false);
+            var actual = await source.ToListAsync().ConfigureAwait(false);
 
             actual.ShouldBe(new[] { "a", "a", "a" });
         }
@@ -100,7 +100,7 @@ namespace ServiceModel.Grpc.TestApi
         {
             var values = new[] { 1, 2, 3 }.AsAsyncEnumerable();
 
-            var actual = await DomainService.SumValues(values);
+            var actual = await DomainService.SumValues(values).ConfigureAwait(false);
 
             actual.ShouldBe(6);
         }
@@ -110,7 +110,7 @@ namespace ServiceModel.Grpc.TestApi
         {
             var values = new[] { 1, 2, 3 }.AsAsyncEnumerable();
 
-            var actual = await DomainService.MultiplyByAndSumValues(values, 2);
+            var actual = await DomainService.MultiplyByAndSumValues(values, 2).ConfigureAwait(false);
 
             actual.ShouldBe(12);
         }
@@ -120,7 +120,7 @@ namespace ServiceModel.Grpc.TestApi
         {
             var values = new[] { 1, 2, 3 }.AsAsyncEnumerable();
 
-            var actual = await DomainService.ConvertValues(values).ToListAsync();
+            var actual = await DomainService.ConvertValues(values).ToListAsync().ConfigureAwait(false);
 
             actual.ShouldBe(new[] { "1", "2", "3" });
         }
@@ -130,7 +130,7 @@ namespace ServiceModel.Grpc.TestApi
         {
             var values = new[] { 1, 2, 3 }.AsAsyncEnumerable();
 
-            var actual = await DomainService.MultiplyBy(values, 2).ToListAsync();
+            var actual = await DomainService.MultiplyBy(values, 2).ToListAsync().ConfigureAwait(false);
 
             actual.ShouldBe(new[] { 2, 4, 6 });
         }
@@ -140,8 +140,8 @@ namespace ServiceModel.Grpc.TestApi
         {
             var values = new[] { 1, 2, 3 }.AsAsyncEnumerable();
 
-            var source = await DomainService.MultiplyByAsync(values, 2);
-            var actual = await source.ToListAsync();
+            var source = await DomainService.MultiplyByAsync(values, 2).ConfigureAwait(false);
+            var actual = await source.ToListAsync().ConfigureAwait(false);
 
             actual.ShouldBe(new[] { 2, 4, 6 });
         }
@@ -151,7 +151,7 @@ namespace ServiceModel.Grpc.TestApi
         {
             var names = new[] { "world", "grpc", "X" }.AsAsyncEnumerable();
 
-            var (stream, greeting) = await DomainService.GreetAsync(names, "Hello");
+            var (stream, greeting) = await DomainService.GreetAsync(names, "Hello").ConfigureAwait(false);
 
             greeting.ShouldBe("Hello");
 

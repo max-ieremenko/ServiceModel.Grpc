@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Test.AspNetCore
                     MapMultipurposeService(endpoints);
                 });
 
-            await _host.StartAsync();
+            await _host.StartAsync().ConfigureAwait(false);
 
             _host.ClientFactory.AddMultipurposeServiceClient();
             DomainService = _host.ClientFactory.CreateClient<IMultipurposeService>(_host.Channel);
@@ -54,7 +54,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Test.AspNetCore
         [OneTimeTearDown]
         public async Task AfterAll()
         {
-            await _host.DisposeAsync();
+            await _host.DisposeAsync().ConfigureAwait(false);
         }
     }
 }

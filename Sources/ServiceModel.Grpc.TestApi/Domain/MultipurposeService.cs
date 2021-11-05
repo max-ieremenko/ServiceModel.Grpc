@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,14 +49,14 @@ namespace ServiceModel.Grpc.TestApi.Domain
         {
             for (var i = 0; i < count; i++)
             {
-                await Task.Delay(300);
+                await Task.Delay(300).ConfigureAwait(false);
                 yield return value;
             }
         }
 
         public async Task<IAsyncEnumerable<string>> RepeatValueAsync(string value, int count, CallContext? context)
         {
-            await Task.Delay(100);
+            await Task.Delay(100).ConfigureAwait(false);
             return RepeatValue(value, count, context);
         }
 
@@ -70,7 +70,7 @@ namespace ServiceModel.Grpc.TestApi.Domain
         public async Task<long> SumValues(IAsyncEnumerable<int> values, CallContext? context)
         {
             var result = 0;
-            await foreach (var i in values.WithCancellation(context!.ServerCallContext!.CancellationToken))
+            await foreach (var i in values.WithCancellation(context!.ServerCallContext!.CancellationToken).ConfigureAwait(false))
             {
                 result += i;
             }
@@ -82,7 +82,7 @@ namespace ServiceModel.Grpc.TestApi.Domain
         {
             var result = 0;
 
-            await foreach (var i in values.WithCancellation(context!.ServerCallContext!.CancellationToken))
+            await foreach (var i in values.WithCancellation(context!.ServerCallContext!.CancellationToken).ConfigureAwait(false))
             {
                 result += i * multiplier;
             }
@@ -92,7 +92,7 @@ namespace ServiceModel.Grpc.TestApi.Domain
 
         public async IAsyncEnumerable<string> ConvertValues(IAsyncEnumerable<int> values, CallContext? context)
         {
-            await foreach (var i in values.WithCancellation(context!.ServerCallContext!.CancellationToken))
+            await foreach (var i in values.WithCancellation(context!.ServerCallContext!.CancellationToken).ConfigureAwait(false))
             {
                 yield return i.ToString();
             }
@@ -100,7 +100,7 @@ namespace ServiceModel.Grpc.TestApi.Domain
 
         public async IAsyncEnumerable<int> MultiplyBy(IAsyncEnumerable<int> values, int multiplier, CallContext? context)
         {
-            await foreach (var i in values.WithCancellation(context!.ServerCallContext!.CancellationToken))
+            await foreach (var i in values.WithCancellation(context!.ServerCallContext!.CancellationToken).ConfigureAwait(false))
             {
                 yield return i * multiplier;
             }
@@ -108,7 +108,7 @@ namespace ServiceModel.Grpc.TestApi.Domain
 
         public async ValueTask<IAsyncEnumerable<int>> MultiplyByAsync(IAsyncEnumerable<int> values, int multiplier, CallContext? context)
         {
-            await Task.Delay(100);
+            await Task.Delay(100).ConfigureAwait(false);
             return MultiplyBy(values, multiplier, context);
         }
 

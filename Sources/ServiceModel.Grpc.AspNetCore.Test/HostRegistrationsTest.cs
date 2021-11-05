@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ namespace ServiceModel.Grpc.AspNetCore
         [TearDown]
         public async Task AfterEachAll()
         {
-            await _host.DisposeAsync();
+            await _host.DisposeAsync().ConfigureAwait(false);
         }
 
         [Test]
@@ -99,7 +99,8 @@ namespace ServiceModel.Grpc.AspNetCore
                 {
                     endpoints.MapGrpcService<ErrorService>();
                 })
-                .StartAsync();
+                .StartAsync()
+                .ConfigureAwait(false);
             _domainService = _host.ClientFactory.CreateClient<IErrorService>(_host.Channel);
 
             Assert.Throws<RpcException>(() => _domainService.ThrowApplicationException("some message"));
@@ -120,7 +121,8 @@ namespace ServiceModel.Grpc.AspNetCore
                 {
                     endpoints.MapGrpcService<ErrorService>();
                 })
-                .StartAsync();
+                .StartAsync()
+                .ConfigureAwait(false);
             _domainService = _host.ClientFactory.CreateClient<IErrorService>(_host.Channel);
 
             Assert.Throws<RpcException>(() => _domainService.ThrowApplicationException("some message"));
@@ -142,7 +144,8 @@ namespace ServiceModel.Grpc.AspNetCore
                 {
                     endpoints.MapGrpcService<IErrorService>();
                 })
-                .StartAsync();
+                .StartAsync()
+                .ConfigureAwait(false);
             _domainService = _host.ClientFactory.CreateClient<IErrorService>(_host.Channel);
 
             Assert.Throws<RpcException>(() => _domainService.ThrowApplicationException("some message"));
@@ -164,7 +167,8 @@ namespace ServiceModel.Grpc.AspNetCore
                 {
                     endpoints.MapGrpcService<ErrorService>();
                 })
-                .StartAsync();
+                .StartAsync()
+                .ConfigureAwait(false);
             _domainService = _host.ClientFactory.CreateClient<IErrorService>(_host.Channel);
 
             Assert.Throws<RpcException>(() => _domainService.ThrowApplicationException("some message"));
