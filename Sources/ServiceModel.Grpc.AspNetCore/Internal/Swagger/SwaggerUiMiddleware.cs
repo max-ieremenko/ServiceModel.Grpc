@@ -151,7 +151,9 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger
             else
             {
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                await handler.WriteResponseErrorAsync(new RpcException(status), context.Response.BodyWriter, context.RequestAborted).ConfigureAwait(false);
+                await handler
+                    .WriteResponseErrorAsync(new RpcException(status), context.Response.BodyWriter, context.RequestAborted)
+                    .ConfigureAwait(false);
             }
         }
     }

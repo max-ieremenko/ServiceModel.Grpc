@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ namespace ServiceModel.Grpc.TestApi.Domain
 
         public async Task CancelOperationAsync(CancellationToken token)
         {
-            await WaitForCancelAsync(token);
+            await WaitForCancelAsync(token).ConfigureAwait(false);
             token.ThrowIfCancellationRequested();
         }
 
@@ -72,13 +72,13 @@ namespace ServiceModel.Grpc.TestApi.Domain
 
         public async Task ThrowApplicationExceptionAfterCancelAsync(string message, CancellationToken token)
         {
-            await WaitForCancelAsync(token);
+            await WaitForCancelAsync(token).ConfigureAwait(false);
             throw new ApplicationException(message);
         }
 
         public async Task ThrowApplicationExceptionClientStreaming(IAsyncEnumerable<int> data, string message)
         {
-            await foreach (var i in data)
+            await foreach (var i in data.ConfigureAwait(false))
             {
                 throw new ApplicationException(message);
             }
@@ -91,7 +91,7 @@ namespace ServiceModel.Grpc.TestApi.Domain
 
         public async IAsyncEnumerable<int> ThrowApplicationExceptionDuplexStreaming(IAsyncEnumerable<int> data, string message)
         {
-            await foreach (var i in data)
+            await foreach (var i in data.ConfigureAwait(false))
             {
                 yield return i;
                 throw new ApplicationException(message);
@@ -112,7 +112,7 @@ namespace ServiceModel.Grpc.TestApi.Domain
             var timeout = Stopwatch.StartNew();
             while (!token.IsCancellationRequested && timeout.Elapsed < TimeSpan.FromSeconds(10))
             {
-                await Task.Delay(300, token);
+                await Task.Delay(300, token).ConfigureAwait(false);
             }
         }
     }

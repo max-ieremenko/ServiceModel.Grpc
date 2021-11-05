@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,8 +56,8 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Test.SelfHost
         [OneTimeTearDown]
         public async Task AfterAll()
         {
-            await _channel.ShutdownAsync();
-            await _server.ShutdownAsync();
+            await _channel.ShutdownAsync().ConfigureAwait(false);
+            await _server.ShutdownAsync().ConfigureAwait(false);
         }
     }
 }

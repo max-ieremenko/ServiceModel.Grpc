@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Setup(s => s.Invoke(3, "4"))
                 .Returns("34");
 
-            var actual = await call(_service.Object, new Message<int, string>(3, "4"), serverContext.Object);
+            var actual = await call(_service.Object, new Message<int, string>(3, "4"), serverContext.Object).ConfigureAwait(false);
 
             actual.Value1.ShouldBe("34");
             _service.VerifyAll();

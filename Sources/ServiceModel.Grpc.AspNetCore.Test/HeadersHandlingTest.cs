@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,7 +38,8 @@ namespace ServiceModel.Grpc.AspNetCore
                 {
                     endpoints.MapGrpcService<HeadersService>();
                 })
-                .StartAsync();
+                .StartAsync()
+                .ConfigureAwait(false);
 
             DomainService = _host.ClientFactory.CreateClient<IHeadersService>(_host.Channel);
         }
@@ -46,7 +47,7 @@ namespace ServiceModel.Grpc.AspNetCore
         [OneTimeTearDown]
         public async Task AfterAll()
         {
-            await _host.DisposeAsync();
+            await _host.DisposeAsync().ConfigureAwait(false);
         }
     }
 }

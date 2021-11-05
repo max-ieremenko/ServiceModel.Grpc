@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ namespace ServiceModel.Grpc.TestApi
         {
             foreach (var i in source)
             {
-                await Task.CompletedTask;
+                await Task.CompletedTask.ConfigureAwait(false);
                 yield return i;
             }
         }
@@ -34,7 +34,7 @@ namespace ServiceModel.Grpc.TestApi
         {
             var result = new List<T>();
 
-            await foreach (var i in source)
+            await foreach (var i in source.ConfigureAwait(false))
             {
                 result.Add(i);
             }

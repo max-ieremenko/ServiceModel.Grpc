@@ -53,7 +53,7 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger
                 using (var stream = bodyReader.AsStream())
                 {
                     var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                    body = await JsonSerializer.DeserializeAsync<JsonElement>(stream, options, token);
+                    body = await JsonSerializer.DeserializeAsync<JsonElement>(stream, options, token).ConfigureAwait(false);
                 }
 
                 foreach (var entry in body.EnumerateObject())
