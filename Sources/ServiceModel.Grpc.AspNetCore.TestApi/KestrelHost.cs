@@ -161,7 +161,10 @@ namespace ServiceModel.Grpc.AspNetCore.TestApi
             _configureServices = null;
             _configureEndpoints = null;
 
-            await Channel.ShutdownAsync().ConfigureAwait(false);
+            if (Channel != null)
+            {
+                await Channel.ShutdownAsync().ConfigureAwait(false);
+            }
 
             if (_host != null)
             {

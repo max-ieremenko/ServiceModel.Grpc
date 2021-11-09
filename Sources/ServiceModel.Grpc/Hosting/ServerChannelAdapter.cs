@@ -43,12 +43,6 @@ namespace ServiceModel.Grpc.Hosting
     public static class ServerChannelAdapter
     {
         /// <exclude />
-        public static T GetMethodInputHeader<T>(Marshaller<T> marshaller, ServerCallContext context)
-        {
-            return CompatibilityTools.DeserializeMethodInputHeader(marshaller, context.RequestHeaders);
-        }
-
-        /// <exclude />
         public static async IAsyncEnumerable<T> ReadClientStream<T>(IAsyncStreamReader<Message<T>> stream, ServerCallContext context)
         {
             while (await stream.MoveNext(context.CancellationToken).ConfigureAwait(false))

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using Grpc.Core;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using ServiceModel.Grpc.Hosting;
@@ -177,7 +178,22 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                             .Append("methodBinder.Add")
                             .Append(method.OperationType.ToString())
                             .Append("Method(contract.")
-                            .Append(method.GrpcMethodName)
+                            .Append(method.GrpcMethodName);
+
+                        if (method.OperationType == MethodType.ClientStreaming || method.OperationType == MethodType.DuplexStreaming)
+                        {
+                            string requestHeaderMarshaller = "(Marshaller<Message>)null";
+                            if (method.HeaderRequestType != null)
+                            {
+                                requestHeaderMarshaller = "contract." + method.GrpcMethodInputHeaderName;
+                            }
+
+                            Output
+                                .Append(", ")
+                                .Append(requestHeaderMarshaller);
+                        }
+
+                        Output
                             .Append(", ")
                             .Append("methodBinder.RequiresMetadata ? ")
                             .Append(GetMethodMetadataName(method))

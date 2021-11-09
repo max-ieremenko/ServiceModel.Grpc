@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using Grpc.Core;
+using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Hosting;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
@@ -73,16 +74,6 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             {
                 foreach (var method in interfaceDescription.Operations)
                 {
-                    if (method.HeaderRequestType != null)
-                    {
-                        Output
-                            .Append("private readonly Marshaller<")
-                            .Append(method.HeaderRequestType.ClassName)
-                            .Append("> ")
-                            .Append(GetMethodHeaderMarshallerField(method.GrpcMethodInputHeaderName))
-                            .AppendLine(";");
-                    }
-
                     if (method.HeaderResponseType != null)
                     {
                         Output
@@ -114,16 +105,6 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 {
                     foreach (var method in interfaceDescription.Operations)
                     {
-                        if (method.HeaderRequestType != null)
-                        {
-                            Output
-                                .Append(GetMethodHeaderMarshallerField(method.GrpcMethodInputHeaderName))
-                                .Append(" = ")
-                                .Append("contract.")
-                                .Append(method.GrpcMethodInputHeaderName)
-                                .AppendLine(";");
-                        }
-
                         if (method.HeaderResponseType != null)
                         {
                             Output
@@ -260,19 +241,19 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
         private void BuildClientStreaming(string interfaceType, OperationDescription operation)
         {
-            // Task<TResponse> Invoke(TService service, IAsyncStreamReader<TRequest> request, ServerCallContext context)
+            // Task<TResponse> Invoke(TService service, TRequestHeader requestHeader, IAsyncStreamReader<TRequest> request, ServerCallContext context)
             Output
                 .Append("public async Task<").Append(operation.ResponseType.ClassName).Append("> ")
                 .Append(operation.OperationName)
                 .Append("(")
                 .Append(interfaceType).Append(" service, ")
+                .Append(operation.HeaderRequestType?.ClassName ?? nameof(Message)).Append(" requestHeader, ")
                 .Append("IAsyncStreamReader<").Append(operation.RequestType.ClassName).Append(">").Append(" request, ")
                 .Append(nameof(ServerCallContext)).AppendLine(" context)")
                 .AppendLine("{");
 
             using (Output.Indent())
             {
-                DeclareHeaderValues(operation);
                 if (operation.ResponseType.Properties.Length > 0)
                 {
                     Output.Append("var result = ");
@@ -298,7 +279,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                     else if (operation.HeaderRequestTypeInput.Contains(i))
                     {
                         Output
-                            .Append("headers.Value")
+                            .Append("requestHeader.Value")
                             .Append((Array.IndexOf(operation.HeaderRequestTypeInput, i) + 1).ToString(CultureInfo.InvariantCulture));
                     }
                     else
@@ -395,12 +376,13 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
         private void BuildDuplexStreaming(string interfaceType, OperationDescription operation)
         {
-            // Task Invoke(TService service, IAsyncStreamReader<TRequest> request, IServerStreamWriter<TResponse> response, ServerCallContext context)
+            // Task Invoke(TService service, TRequestHeader requestHeader, IAsyncStreamReader<TRequest> request, IServerStreamWriter<TResponse> response, ServerCallContext context)
             Output
                 .Append("public async Task ")
                 .Append(operation.OperationName)
                 .Append("(")
                 .Append(interfaceType).Append(" service, ")
+                .Append(operation.HeaderRequestType?.ClassName ?? nameof(Message)).Append(" requestHeader, ")
                 .Append("IAsyncStreamReader<").Append(operation.RequestType.ClassName).Append("> request, ")
                 .Append("IServerStreamWriter<").Append(operation.ResponseType.ClassName).Append("> response, ")
                 .Append(nameof(ServerCallContext)).AppendLine(" context)")
@@ -408,8 +390,6 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
             using (Output.Indent())
             {
-                DeclareHeaderValues(operation);
-
                 Output.Append("var result = ");
                 if (operation.IsAsync)
                 {
@@ -436,7 +416,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                     else if (operation.HeaderRequestTypeInput.Contains(i))
                     {
                         Output
-                            .Append("headers.Value")
+                            .Append("requestHeader.Value")
                             .Append((Array.IndexOf(operation.HeaderRequestTypeInput, i) + 1).ToString(CultureInfo.InvariantCulture));
                     }
                     else
@@ -542,23 +522,6 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             }
 
             throw new NotImplementedException();
-        }
-
-        private void DeclareHeaderValues(OperationDescription operation)
-        {
-            if (operation.HeaderRequestType == null)
-            {
-                return;
-            }
-
-            Output
-                .Append("var headers = ")
-                .Append(nameof(ServerChannelAdapter))
-                .Append(".")
-                .Append(nameof(ServerChannelAdapter.GetMethodInputHeader))
-                .Append("(")
-                .Append(GetMethodHeaderMarshallerField(operation.GrpcMethodInputHeaderName))
-                .AppendLine(", context);");
         }
     }
 }

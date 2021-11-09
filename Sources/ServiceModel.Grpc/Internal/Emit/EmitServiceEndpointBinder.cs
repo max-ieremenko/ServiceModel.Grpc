@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using Grpc.Core;
+using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Hosting;
 
 namespace ServiceModel.Grpc.Internal.Emit
@@ -59,8 +60,8 @@ namespace ServiceModel.Grpc.Internal.Emit
                     var message = operation.Message;
 
                     var addMethod = serviceBinderAddMethod
-                        .MakeGenericMethod(message.RequestType, message.ResponseType)
-                        .CreateDelegate<Action<IServiceMethodBinder<TService>, object, IList<object>, MethodInfo, object>>();
+                        .MakeGenericMethod(message.HeaderRequestType ?? typeof(Message), message.RequestType, message.ResponseType)
+                        .CreateDelegate<Action<IServiceMethodBinder<TService>, object, object?, IList<object>, MethodInfo, object>>();
 
                     var channelMethod = _channelType.InstanceMethod(operation.OperationName);
 
@@ -68,18 +69,26 @@ namespace ServiceModel.Grpc.Internal.Emit
 
                     var grpcMethodMethod = _contractType.InstanceFiled(operation.GrpcMethodName).GetValue(contract);
 
+                    object? requestHeaderMarshaller = null;
+                    if (message.HeaderRequestType != null)
+                    {
+                        requestHeaderMarshaller = _contractType.InstanceFiled(operation.GrpcMethodInputHeaderName).GetValue(contract);
+                    }
+
                     _logger?.LogDebug("Bind service method {0}.{1}.", serviceType.FullName, message.Operation.Name);
-                    addMethod(binder, grpcMethodMethod, metadata, channelMethod, channelInstance);
+                    addMethod(binder, grpcMethodMethod, requestHeaderMarshaller, metadata, channelMethod, channelInstance);
                 }
             }
         }
 
-        private static void ServiceBinderAddMethod<TRequest, TResponse>(
+        private static void ServiceBinderAddMethod<TRequestHeader, TRequest, TResponse>(
             IServiceMethodBinder<TService> binder,
             object grpcMethod,
+            object? requestHeaderMarshaller,
             IList<object> metadata,
             MethodInfo channelMethod,
             object channelInstance)
+            where TRequestHeader : class
             where TRequest : class
             where TResponse : class
         {
@@ -96,8 +105,8 @@ namespace ServiceModel.Grpc.Internal.Emit
 
                 case MethodType.ClientStreaming:
                 {
-                    var handler = channelMethod.CreateDelegate<Func<TService, IAsyncStreamReader<TRequest>, ServerCallContext, Task<TResponse>>>(channelInstance);
-                    binder.AddClientStreamingMethod(method, metadata, handler);
+                    var handler = channelMethod.CreateDelegate<Func<TService, TRequestHeader?, IAsyncStreamReader<TRequest>, ServerCallContext, Task<TResponse>>>(channelInstance);
+                    binder.AddClientStreamingMethod(method, (Marshaller<TRequestHeader>?)requestHeaderMarshaller, metadata, handler);
                     return;
                 }
 
@@ -110,8 +119,8 @@ namespace ServiceModel.Grpc.Internal.Emit
 
                 case MethodType.DuplexStreaming:
                 {
-                    var handler = channelMethod.CreateDelegate<Func<TService, IAsyncStreamReader<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task>>(channelInstance);
-                    binder.AddDuplexStreamingMethod(method, metadata, handler);
+                    var handler = channelMethod.CreateDelegate<Func<TService, TRequestHeader?, IAsyncStreamReader<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task>>(channelInstance);
+                    binder.AddDuplexStreamingMethod(method, (Marshaller<TRequestHeader>?)requestHeaderMarshaller, metadata, handler);
                     return;
                 }
             }

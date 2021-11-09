@@ -54,16 +54,18 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
             _context.AddUnaryMethod(method, metadata, invoker);
         }
 
-        public void AddClientStreamingMethod<TRequest, TResponse>(
+        public void AddClientStreamingMethod<TRequestHeader, TRequest, TResponse>(
             Method<TRequest, TResponse> method,
+            Marshaller<TRequestHeader>? requestHeaderMarshaller,
             IList<object> metadata,
-            Func<TService, IAsyncStreamReader<TRequest>, ServerCallContext, Task<TResponse>> handler)
+            Func<TService, TRequestHeader?, IAsyncStreamReader<TRequest>, ServerCallContext, Task<TResponse>> handler)
+            where TRequestHeader : class
             where TRequest : class
             where TResponse : class
         {
-            var invoker = handler.Method.CreateDelegate<ClientStreamingServerMethod<TService, TRequest, TResponse>>(handler.Target);
+            var invoker = new ClientStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponse>(handler, requestHeaderMarshaller);
             metadata = AddServiceModelGrpcMarker(metadata);
-            _context.AddClientStreamingMethod(method, metadata, invoker);
+            _context.AddClientStreamingMethod(method, metadata, invoker.Handle);
         }
 
         public void AddServerStreamingMethod<TRequest, TResponse>(
@@ -78,16 +80,18 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
             _context.AddServerStreamingMethod(method, metadata, invoker);
         }
 
-        public void AddDuplexStreamingMethod<TRequest, TResponse>(
+        public void AddDuplexStreamingMethod<TRequestHeader, TRequest, TResponse>(
             Method<TRequest, TResponse> method,
+            Marshaller<TRequestHeader>? requestHeaderMarshaller,
             IList<object> metadata,
-            Func<TService, IAsyncStreamReader<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> handler)
+            Func<TService, TRequestHeader?, IAsyncStreamReader<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> handler)
+            where TRequestHeader : class
             where TRequest : class
             where TResponse : class
         {
-            var invoker = handler.Method.CreateDelegate<DuplexStreamingServerMethod<TService, TRequest, TResponse>>(handler.Target);
+            var invoker = new DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponse>(handler, requestHeaderMarshaller);
             metadata = AddServiceModelGrpcMarker(metadata);
-            _context.AddDuplexStreamingMethod(method, metadata, invoker);
+            _context.AddDuplexStreamingMethod(method, metadata, invoker.Handle);
         }
 
         private static IList<object> AddServiceModelGrpcMarker(IList<object>? metadata)

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,10 +49,12 @@ namespace ServiceModel.Grpc.Hosting
             where TRequest : class
             where TResponse : class;
 
-        void AddClientStreamingMethod<TRequest, TResponse>(
+        void AddClientStreamingMethod<TRequestHeader, TRequest, TResponse>(
             Method<TRequest, TResponse> method,
+            Marshaller<TRequestHeader>? requestHeaderMarshaller,
             IList<object> metadata,
-            Func<TService, IAsyncStreamReader<TRequest>, ServerCallContext, Task<TResponse>> handler)
+            Func<TService, TRequestHeader?, IAsyncStreamReader<TRequest>, ServerCallContext, Task<TResponse>> handler)
+            where TRequestHeader : class
             where TRequest : class
             where TResponse : class;
 
@@ -63,10 +65,12 @@ namespace ServiceModel.Grpc.Hosting
             where TRequest : class
             where TResponse : class;
 
-        void AddDuplexStreamingMethod<TRequest, TResponse>(
+        void AddDuplexStreamingMethod<TRequestHeader, TRequest, TResponse>(
             Method<TRequest, TResponse> method,
+            Marshaller<TRequestHeader>? requestHeaderMarshaller,
             IList<object> metadata,
-            Func<TService, IAsyncStreamReader<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> handler)
+            Func<TService, TRequestHeader?, IAsyncStreamReader<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> handler)
+            where TRequestHeader : class
             where TRequest : class
             where TResponse : class;
     }
