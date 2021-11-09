@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Grpc.Core;
+using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
 
 #pragma warning disable SA1642 // Constructor summary documentation should begin with standard text
@@ -50,12 +51,11 @@ namespace ServiceModel.Grpc.Hosting
             where TResponse : class;
 
         void AddClientStreamingMethod<TRequestHeader, TRequest, TResponse>(
-            Method<TRequest, TResponse> method,
+            Method<Message<TRequest>, TResponse> method,
             Marshaller<TRequestHeader>? requestHeaderMarshaller,
             IList<object> metadata,
-            Func<TService, TRequestHeader?, IAsyncStreamReader<TRequest>, ServerCallContext, Task<TResponse>> handler)
+            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, Task<TResponse>> handler)
             where TRequestHeader : class
-            where TRequest : class
             where TResponse : class;
 
         void AddServerStreamingMethod<TRequest, TResponse>(
@@ -66,12 +66,11 @@ namespace ServiceModel.Grpc.Hosting
             where TResponse : class;
 
         void AddDuplexStreamingMethod<TRequestHeader, TRequest, TResponse>(
-            Method<TRequest, TResponse> method,
+            Method<Message<TRequest>, TResponse> method,
             Marshaller<TRequestHeader>? requestHeaderMarshaller,
             IList<object> metadata,
-            Func<TService, TRequestHeader?, IAsyncStreamReader<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> handler)
+            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> handler)
             where TRequestHeader : class
-            where TRequest : class
             where TResponse : class;
     }
 }

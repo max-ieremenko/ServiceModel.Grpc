@@ -43,15 +43,6 @@ namespace ServiceModel.Grpc.Hosting
     public static class ServerChannelAdapter
     {
         /// <exclude />
-        public static async IAsyncEnumerable<T> ReadClientStream<T>(IAsyncStreamReader<Message<T>> stream, ServerCallContext context)
-        {
-            while (await stream.MoveNext(context.CancellationToken).ConfigureAwait(false))
-            {
-                yield return stream.Current.Value1;
-            }
-        }
-
-        /// <exclude />
         public static async Task WriteServerStreamingResult<T>(IAsyncEnumerable<T> result, IServerStreamWriter<Message<T>> stream, ServerCallContext context)
         {
             await foreach (var i in result.WithCancellation(context.CancellationToken).ConfigureAwait(false))
@@ -70,6 +61,15 @@ namespace ServiceModel.Grpc.Hosting
         {
             await context.WriteResponseHeadersAsync(CompatibilityTools.SerializeMethodOutputHeader(headerMarshaller, header)).ConfigureAwait(false);
             await WriteServerStreamingResult(result, stream, context).ConfigureAwait(false);
+        }
+
+        /// <exclude />
+        internal static async IAsyncEnumerable<T> ReadClientStream<T>(IAsyncStreamReader<Message<T>> stream, ServerCallContext context)
+        {
+            while (await stream.MoveNext(context.CancellationToken).ConfigureAwait(false))
+            {
+                yield return stream.Current.Value1;
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

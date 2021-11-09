@@ -15,22 +15,23 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
+using ServiceModel.Grpc.Hosting;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
 {
     internal sealed class ClientStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponse>
         where TRequestHeader : class
-        where TRequest : class
         where TResponse : class
     {
-        private readonly Func<TService, TRequestHeader?, IAsyncStreamReader<TRequest>, ServerCallContext, Task<TResponse>> _invoker;
+        private readonly Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, Task<TResponse>> _invoker;
         private readonly Marshaller<TRequestHeader>? _requestHeaderMarshaller;
 
         public ClientStreamingServerCallHandler(
-            Func<TService, TRequestHeader?, IAsyncStreamReader<TRequest>, ServerCallContext, Task<TResponse>> invoker,
+            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, Task<TResponse>> invoker,
             Marshaller<TRequestHeader>? requestHeaderMarshaller)
         {
             _invoker = invoker;
@@ -39,7 +40,7 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
 
         public Task<TResponse> Handle(
             TService service,
-            IAsyncStreamReader<TRequest> stream,
+            IAsyncStreamReader<Message<TRequest>> stream,
             ServerCallContext serverCallContext)
         {
             TRequestHeader? header = null;
@@ -48,7 +49,9 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
                 header = CompatibilityTools.DeserializeMethodInputHeader(_requestHeaderMarshaller, serverCallContext.RequestHeaders);
             }
 
-            return _invoker(service, header, stream, serverCallContext);
+            var request = ServerChannelAdapter.ReadClientStream(stream, serverCallContext);
+
+            return _invoker(service, header, request, serverCallContext);
         }
     }
 }

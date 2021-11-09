@@ -15,24 +15,25 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
+using ServiceModel.Grpc.Hosting;
 
 namespace ServiceModel.Grpc.SelfHost.Internal
 {
     internal sealed class DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponse>
         where TRequestHeader : class
-        where TRequest : class
         where TResponse : class
     {
         private readonly Func<TService> _serviceFactory;
-        private readonly Func<TService, TRequestHeader?, IAsyncStreamReader<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> _invoker;
+        private readonly Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> _invoker;
         private readonly Marshaller<TRequestHeader>? _requestHeaderMarshaller;
 
         public DuplexStreamingServerCallHandler(
             Func<TService> serviceFactory,
-            Func<TService, TRequestHeader?, IAsyncStreamReader<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> invoker,
+            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> invoker,
             Marshaller<TRequestHeader>? requestHeaderMarshaller)
         {
             _serviceFactory = serviceFactory;
@@ -40,7 +41,7 @@ namespace ServiceModel.Grpc.SelfHost.Internal
             _requestHeaderMarshaller = requestHeaderMarshaller;
         }
 
-        public Task Handle(IAsyncStreamReader<TRequest> requestStream, IServerStreamWriter<TResponse> responseStream, ServerCallContext context)
+        public Task Handle(IAsyncStreamReader<Message<TRequest>> requestStream, IServerStreamWriter<TResponse> responseStream, ServerCallContext context)
         {
             TRequestHeader? header = null;
             if (_requestHeaderMarshaller != null)
@@ -48,8 +49,10 @@ namespace ServiceModel.Grpc.SelfHost.Internal
                 header = CompatibilityTools.DeserializeMethodInputHeader(_requestHeaderMarshaller, context.RequestHeaders);
             }
 
+            var request = ServerChannelAdapter.ReadClientStream(requestStream, context);
+
             var service = _serviceFactory();
-            return _invoker(service, header, requestStream, responseStream, context);
+            return _invoker(service, header, request, responseStream, context);
         }
     }
 }

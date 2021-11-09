@@ -209,10 +209,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 }
                 else
                 {
-                    // ReadClientStream()
                     body.Emit(OpCodes.Ldarg_3); // stream
-                    body.EmitLdarg(4); // context
-                    body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(nameof(ServerChannelAdapter.ReadClientStream)).MakeGenericMethod(message.RequestType.GenericTypeArguments));
                 }
             }
 
@@ -313,10 +310,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 }
                 else
                 {
-                    // ReadClientStream()
                     body.Emit(OpCodes.Ldarg_3); // request
-                    body.EmitLdarg(5); // context
-                    body.Emit(OpCodes.Call, typeof(ServerChannelAdapter).StaticMethod(nameof(ServerChannelAdapter.ReadClientStream)).MakeGenericMethod(message.RequestType.GenericTypeArguments));
                 }
             }
 
@@ -343,7 +337,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                         .GetILGenerator();
 
                 case MethodType.ClientStreaming:
-                    // Task<TResponse> Invoke(TService service, Message<TRequestHeader>? requestHeader, IAsyncStreamReader<TRequest> request, ServerCallContext context)
+                    // Task<TResponse> Invoke(TService service, Message<TRequestHeader>? requestHeader, IAsyncEnumerable<TRequest> request, ServerCallContext context)
                     return _typeBuilder
                         .DefineMethod(
                             methodName,
@@ -353,7 +347,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                             {
                                 serviceType,
                                 message.HeaderRequestType ?? typeof(Message),
-                                typeof(IAsyncStreamReader<>).MakeGenericType(message.RequestType),
+                                typeof(IAsyncEnumerable<>).MakeGenericType(message.RequestType.GenericTypeArguments[0]),
                                 typeof(ServerCallContext)
                             })
                         .GetILGenerator();
@@ -369,7 +363,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                         .GetILGenerator();
 
                 case MethodType.DuplexStreaming:
-                    // Task Invoke(TService service, Message<TRequestHeader>? requestHeader, IAsyncStreamReader<TRequest> request, IServerStreamWriter<TResponse> response, ServerCallContext context)
+                    // Task Invoke(TService service, Message<TRequestHeader>? requestHeader, IAsyncEnumerable<TRequest> request, IServerStreamWriter<TResponse> response, ServerCallContext context)
                     return _typeBuilder
                         .DefineMethod(
                             methodName,
@@ -379,7 +373,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                             {
                                 serviceType,
                                 message.HeaderRequestType ?? typeof(Message),
-                                typeof(IAsyncStreamReader<>).MakeGenericType(message.RequestType),
+                                typeof(IAsyncEnumerable<>).MakeGenericType(message.RequestType.GenericTypeArguments[0]),
                                 typeof(IServerStreamWriter<>).MakeGenericType(message.ResponseType),
                                 typeof(ServerCallContext)
                             })

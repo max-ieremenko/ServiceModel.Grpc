@@ -32,6 +32,11 @@ namespace ServiceModel.Grpc.Internal.Emit
         private readonly Type _channelType;
         private readonly ILogger? _logger;
 
+        private readonly MethodInfo _serviceBinderAddUnaryMethod;
+        private readonly MethodInfo _serviceBinderAddClientStreamingMethod;
+        private readonly MethodInfo _serviceBinderAddServerStreamingMethod;
+        private readonly MethodInfo _serviceBinderAddDuplexStreamingMethod;
+
         public EmitServiceEndpointBinder(
             ContractDescription description,
             Type? serviceInstanceType,
@@ -44,6 +49,11 @@ namespace ServiceModel.Grpc.Internal.Emit
             _contractType = contractType;
             _channelType = channelType;
             _logger = logger;
+
+            _serviceBinderAddUnaryMethod = GetType().StaticMethod(nameof(AddUnaryMethod));
+            _serviceBinderAddClientStreamingMethod = GetType().StaticMethod(nameof(AddClientStreamingMethod));
+            _serviceBinderAddServerStreamingMethod = GetType().StaticMethod(nameof(AddServerStreamingMethod));
+            _serviceBinderAddDuplexStreamingMethod = GetType().StaticMethod(nameof(AddDuplexStreamingMethod));
         }
 
         public void Bind(IServiceMethodBinder<TService> binder)
@@ -52,22 +62,14 @@ namespace ServiceModel.Grpc.Internal.Emit
             var channelInstance = EmitServiceEndpointBuilder.CreateFactory(_channelType, _contractType)(contract);
             var serviceType = typeof(TService);
 
-            var serviceBinderAddMethod = GetType().StaticMethod(nameof(ServiceBinderAddMethod));
             foreach (var interfaceDescription in _description.Services)
             {
                 foreach (var operation in interfaceDescription.Operations)
                 {
                     var message = operation.Message;
-
-                    var addMethod = serviceBinderAddMethod
-                        .MakeGenericMethod(message.HeaderRequestType ?? typeof(Message), message.RequestType, message.ResponseType)
-                        .CreateDelegate<Action<IServiceMethodBinder<TService>, object, object?, IList<object>, MethodInfo, object>>();
-
                     var channelMethod = _channelType.InstanceMethod(operation.OperationName);
-
                     var metadata = TryGetMethodMetadata(interfaceDescription.InterfaceType, message.Operation);
-
-                    var grpcMethodMethod = _contractType.InstanceFiled(operation.GrpcMethodName).GetValue(contract);
+                    var grpcMethodMethod = (IMethod)_contractType.InstanceFiled(operation.GrpcMethodName).GetValue(contract);
 
                     object? requestHeaderMarshaller = null;
                     if (message.HeaderRequestType != null)
@@ -76,12 +78,86 @@ namespace ServiceModel.Grpc.Internal.Emit
                     }
 
                     _logger?.LogDebug("Bind service method {0}.{1}.", serviceType.FullName, message.Operation.Name);
-                    addMethod(binder, grpcMethodMethod, requestHeaderMarshaller, metadata, channelMethod, channelInstance);
+                    if (grpcMethodMethod.Type == MethodType.Unary)
+                    {
+                        var addMethod = _serviceBinderAddUnaryMethod
+                            .MakeGenericMethod(message.RequestType, message.ResponseType)
+                            .CreateDelegate<Action<IServiceMethodBinder<TService>, IMethod, IList<object>, MethodInfo, object>>();
+                        addMethod(binder, grpcMethodMethod, metadata, channelMethod, channelInstance);
+                    }
+                    else if (grpcMethodMethod.Type == MethodType.ClientStreaming)
+                    {
+                        var addMethod = _serviceBinderAddClientStreamingMethod
+                            .MakeGenericMethod(message.HeaderRequestType ?? typeof(Message), message.RequestType.GenericTypeArguments[0], message.ResponseType)
+                            .CreateDelegate<Action<IServiceMethodBinder<TService>, IMethod, object?, IList<object>, MethodInfo, object>>();
+                        addMethod(binder, grpcMethodMethod, requestHeaderMarshaller, metadata, channelMethod, channelInstance);
+                    }
+                    else if (grpcMethodMethod.Type == MethodType.ServerStreaming)
+                    {
+                        var addMethod = _serviceBinderAddServerStreamingMethod
+                            .MakeGenericMethod(message.RequestType, message.ResponseType)
+                            .CreateDelegate<Action<IServiceMethodBinder<TService>, IMethod, IList<object>, MethodInfo, object>>();
+                        addMethod(binder, grpcMethodMethod, metadata, channelMethod, channelInstance);
+                    }
+                    else if (grpcMethodMethod.Type == MethodType.DuplexStreaming)
+                    {
+                        var addMethod = _serviceBinderAddDuplexStreamingMethod
+                            .MakeGenericMethod(message.HeaderRequestType ?? typeof(Message), message.RequestType.GenericTypeArguments[0], message.ResponseType)
+                            .CreateDelegate<Action<IServiceMethodBinder<TService>, IMethod, object?, IList<object>, MethodInfo, object>>();
+                        addMethod(binder, grpcMethodMethod, requestHeaderMarshaller, metadata, channelMethod, channelInstance);
+                    }
+                    else
+                    {
+                        throw new NotImplementedException("{0} operation is not implemented.".FormatWith(grpcMethodMethod.Type));
+                    }
                 }
             }
         }
 
-        private static void ServiceBinderAddMethod<TRequestHeader, TRequest, TResponse>(
+        private static void AddUnaryMethod<TRequest, TResponse>(
+            IServiceMethodBinder<TService> binder,
+            IMethod grpcMethod,
+            IList<object> metadata,
+            MethodInfo channelMethod,
+            object channelInstance)
+            where TRequest : class
+            where TResponse : class
+        {
+            var method = (Method<TRequest, TResponse>)grpcMethod;
+            var handler = channelMethod.CreateDelegate<Func<TService, TRequest, ServerCallContext, Task<TResponse>>>(channelInstance);
+            binder.AddUnaryMethod(method, metadata, handler);
+        }
+
+        private static void AddClientStreamingMethod<TRequestHeader, TRequest, TResponse>(
+            IServiceMethodBinder<TService> binder,
+            IMethod grpcMethod,
+            object? requestHeaderMarshaller,
+            IList<object> metadata,
+            MethodInfo channelMethod,
+            object channelInstance)
+            where TRequestHeader : class
+            where TResponse : class
+        {
+            var method = (Method<Message<TRequest>, TResponse>)grpcMethod;
+            var handler = channelMethod.CreateDelegate<Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, Task<TResponse>>>(channelInstance);
+            binder.AddClientStreamingMethod(method, (Marshaller<TRequestHeader>?)requestHeaderMarshaller, metadata, handler);
+        }
+
+        private static void AddServerStreamingMethod<TRequest, TResponse>(
+            IServiceMethodBinder<TService> binder,
+            object grpcMethod,
+            IList<object> metadata,
+            MethodInfo channelMethod,
+            object channelInstance)
+            where TRequest : class
+            where TResponse : class
+        {
+            var method = (Method<TRequest, TResponse>)grpcMethod;
+            var handler = channelMethod.CreateDelegate<Func<TService, TRequest, IServerStreamWriter<TResponse>, ServerCallContext, Task>>(channelInstance);
+            binder.AddServerStreamingMethod(method, metadata, handler);
+        }
+
+        private static void AddDuplexStreamingMethod<TRequestHeader, TRequest, TResponse>(
             IServiceMethodBinder<TService> binder,
             object grpcMethod,
             object? requestHeaderMarshaller,
@@ -89,43 +165,11 @@ namespace ServiceModel.Grpc.Internal.Emit
             MethodInfo channelMethod,
             object channelInstance)
             where TRequestHeader : class
-            where TRequest : class
             where TResponse : class
         {
-            var method = (Method<TRequest, TResponse>)grpcMethod;
-
-            switch (method.Type)
-            {
-                case MethodType.Unary:
-                {
-                    var handler = channelMethod.CreateDelegate<Func<TService, TRequest, ServerCallContext, Task<TResponse>>>(channelInstance);
-                    binder.AddUnaryMethod(method, metadata, handler);
-                    return;
-                }
-
-                case MethodType.ClientStreaming:
-                {
-                    var handler = channelMethod.CreateDelegate<Func<TService, TRequestHeader?, IAsyncStreamReader<TRequest>, ServerCallContext, Task<TResponse>>>(channelInstance);
-                    binder.AddClientStreamingMethod(method, (Marshaller<TRequestHeader>?)requestHeaderMarshaller, metadata, handler);
-                    return;
-                }
-
-                case MethodType.ServerStreaming:
-                {
-                    var handler = channelMethod.CreateDelegate<Func<TService, TRequest, IServerStreamWriter<TResponse>, ServerCallContext, Task>>(channelInstance);
-                    binder.AddServerStreamingMethod(method, metadata, handler);
-                    return;
-                }
-
-                case MethodType.DuplexStreaming:
-                {
-                    var handler = channelMethod.CreateDelegate<Func<TService, TRequestHeader?, IAsyncStreamReader<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task>>(channelInstance);
-                    binder.AddDuplexStreamingMethod(method, (Marshaller<TRequestHeader>?)requestHeaderMarshaller, metadata, handler);
-                    return;
-                }
-            }
-
-            throw new NotImplementedException("{0} operation is not implemented.".FormatWith(method.Type));
+            var method = (Method<Message<TRequest>, TResponse>)grpcMethod;
+            var handler = channelMethod.CreateDelegate<Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task>>(channelInstance);
+            binder.AddDuplexStreamingMethod(method, (Marshaller<TRequestHeader>?)requestHeaderMarshaller, metadata, handler);
         }
 
         private static IList<object> GetMethodMetadata(Type serviceInstanceType, MethodInfo serviceInstanceMethod)

@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Grpc.Core;
+using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Hosting;
 
@@ -54,12 +55,11 @@ namespace ServiceModel.Grpc.SelfHost.Internal
         }
 
         public void AddClientStreamingMethod<TRequestHeader, TRequest, TResponse>(
-            Method<TRequest, TResponse> method,
+            Method<Message<TRequest>, TResponse> method,
             Marshaller<TRequestHeader>? requestHeaderMarshaller,
             IList<object> metadata,
-            Func<TService, TRequestHeader?, IAsyncStreamReader<TRequest>, ServerCallContext, Task<TResponse>> handler)
+            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, Task<TResponse>> handler)
             where TRequestHeader : class
-            where TRequest : class
             where TResponse : class
         {
             var invoker = new ClientStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponse>(_serviceFactory, handler, requestHeaderMarshaller);
@@ -78,12 +78,11 @@ namespace ServiceModel.Grpc.SelfHost.Internal
         }
 
         public void AddDuplexStreamingMethod<TRequestHeader, TRequest, TResponse>(
-            Method<TRequest, TResponse> method,
+            Method<Message<TRequest>, TResponse> method,
             Marshaller<TRequestHeader>? requestHeaderMarshaller,
             IList<object> metadata,
-            Func<TService, TRequestHeader?, IAsyncStreamReader<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> handler)
+            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> handler)
             where TRequestHeader : class
-            where TRequest : class
             where TResponse : class
         {
             var invoker = new DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponse>(_serviceFactory, handler, requestHeaderMarshaller);

@@ -15,22 +15,23 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
+using ServiceModel.Grpc.Hosting;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
 {
     internal sealed class DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponse>
         where TRequestHeader : class
-        where TRequest : class
         where TResponse : class
     {
-        private readonly Func<TService, TRequestHeader?, IAsyncStreamReader<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> _invoker;
+        private readonly Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> _invoker;
         private readonly Marshaller<TRequestHeader>? _requestHeaderMarshaller;
 
         public DuplexStreamingServerCallHandler(
-            Func<TService, TRequestHeader?, IAsyncStreamReader<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> invoker,
+            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> invoker,
             Marshaller<TRequestHeader>? requestHeaderMarshaller)
         {
             _invoker = invoker;
@@ -39,7 +40,7 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
 
         public Task Handle(
             TService service,
-            IAsyncStreamReader<TRequest> input,
+            IAsyncStreamReader<Message<TRequest>> input,
             IServerStreamWriter<TResponse> output,
             ServerCallContext serverCallContext)
         {
@@ -49,7 +50,9 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
                 header = CompatibilityTools.DeserializeMethodInputHeader(_requestHeaderMarshaller, serverCallContext.RequestHeaders);
             }
 
-            return _invoker(service, header, input, output, serverCallContext);
+            var request = ServerChannelAdapter.ReadClientStream(input, serverCallContext);
+
+            return _invoker(service, header, request, output, serverCallContext);
         }
     }
 }

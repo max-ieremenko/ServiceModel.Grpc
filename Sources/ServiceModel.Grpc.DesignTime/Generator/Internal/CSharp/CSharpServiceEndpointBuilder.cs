@@ -241,14 +241,14 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
         private void BuildClientStreaming(string interfaceType, OperationDescription operation)
         {
-            // Task<TResponse> Invoke(TService service, TRequestHeader requestHeader, IAsyncStreamReader<TRequest> request, ServerCallContext context)
+            // Task<TResponse> Invoke(TService service, TRequestHeader requestHeader, IAsyncEnumerable<TRequest> request, ServerCallContext context)
             Output
                 .Append("public async Task<").Append(operation.ResponseType.ClassName).Append("> ")
                 .Append(operation.OperationName)
                 .Append("(")
                 .Append(interfaceType).Append(" service, ")
                 .Append(operation.HeaderRequestType?.ClassName ?? nameof(Message)).Append(" requestHeader, ")
-                .Append("IAsyncStreamReader<").Append(operation.RequestType.ClassName).Append(">").Append(" request, ")
+                .Append("IAsyncEnumerable<").Append(operation.RequestType.Properties[0]).Append(">").Append(" request, ")
                 .Append(nameof(ServerCallContext)).AppendLine(" context)")
                 .AppendLine("{");
 
@@ -284,13 +284,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                     }
                     else
                     {
-                        Output
-                            .Append(nameof(ServerChannelAdapter))
-                            .Append(".")
-                            .Append(nameof(ServerChannelAdapter.ReadClientStream))
-                            .Append("<")
-                            .Append(operation.RequestType.Properties[0])
-                            .Append(">(request, context)");
+                        Output.Append("request");
                     }
                 }
 
@@ -376,14 +370,14 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
         private void BuildDuplexStreaming(string interfaceType, OperationDescription operation)
         {
-            // Task Invoke(TService service, TRequestHeader requestHeader, IAsyncStreamReader<TRequest> request, IServerStreamWriter<TResponse> response, ServerCallContext context)
+            // Task Invoke(TService service, TRequestHeader requestHeader, IAsyncEnumerable<TRequest> request, IServerStreamWriter<TResponse> response, ServerCallContext context)
             Output
                 .Append("public async Task ")
                 .Append(operation.OperationName)
                 .Append("(")
                 .Append(interfaceType).Append(" service, ")
                 .Append(operation.HeaderRequestType?.ClassName ?? nameof(Message)).Append(" requestHeader, ")
-                .Append("IAsyncStreamReader<").Append(operation.RequestType.ClassName).Append("> request, ")
+                .Append("IAsyncEnumerable<").Append(operation.RequestType.Properties[0]).Append("> request, ")
                 .Append("IServerStreamWriter<").Append(operation.ResponseType.ClassName).Append("> response, ")
                 .Append(nameof(ServerCallContext)).AppendLine(" context)")
                 .AppendLine("{");
@@ -421,11 +415,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                     }
                     else
                     {
-                        Output
-                            .Append(nameof(ServerChannelAdapter))
-                            .Append(".")
-                            .Append(nameof(ServerChannelAdapter.ReadClientStream))
-                            .Append("(request, context)");
+                        Output.Append("request");
                     }
                 }
 

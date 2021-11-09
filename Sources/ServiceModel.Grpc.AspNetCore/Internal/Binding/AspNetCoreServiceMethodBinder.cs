@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-201 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Grpc.AspNetCore.Server.Model;
 using Grpc.Core;
+using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Hosting;
 using ServiceModel.Grpc.Internal;
@@ -55,12 +56,11 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
         }
 
         public void AddClientStreamingMethod<TRequestHeader, TRequest, TResponse>(
-            Method<TRequest, TResponse> method,
+            Method<Message<TRequest>, TResponse> method,
             Marshaller<TRequestHeader>? requestHeaderMarshaller,
             IList<object> metadata,
-            Func<TService, TRequestHeader?, IAsyncStreamReader<TRequest>, ServerCallContext, Task<TResponse>> handler)
+            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, Task<TResponse>> handler)
             where TRequestHeader : class
-            where TRequest : class
             where TResponse : class
         {
             var invoker = new ClientStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponse>(handler, requestHeaderMarshaller);
@@ -81,12 +81,11 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
         }
 
         public void AddDuplexStreamingMethod<TRequestHeader, TRequest, TResponse>(
-            Method<TRequest, TResponse> method,
+            Method<Message<TRequest>, TResponse> method,
             Marshaller<TRequestHeader>? requestHeaderMarshaller,
             IList<object> metadata,
-            Func<TService, TRequestHeader?, IAsyncStreamReader<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> handler)
+            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> handler)
             where TRequestHeader : class
-            where TRequest : class
             where TResponse : class
         {
             var invoker = new DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponse>(handler, requestHeaderMarshaller);
