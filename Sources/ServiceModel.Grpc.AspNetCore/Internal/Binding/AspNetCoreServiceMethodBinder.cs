@@ -50,9 +50,9 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
             where TRequest : class
             where TResponse : class
         {
-            var invoker = handler.Method.CreateDelegate<UnaryServerMethod<TService, TRequest, TResponse>>(handler.Target);
+            var invoker = new UnaryServerCallHandler<TService, TRequest, TResponse>(handler);
             metadata = AddServiceModelGrpcMarker(metadata);
-            _context.AddUnaryMethod(method, metadata, invoker);
+            _context.AddUnaryMethod(method, metadata, invoker.Handle);
         }
 
         public void AddClientStreamingMethod<TRequestHeader, TRequest, TResponse>(

@@ -18,7 +18,7 @@ using System;
 using System.Threading.Tasks;
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.SelfHost.Internal
+namespace ServiceModel.Grpc.Hosting
 {
     internal sealed class UnaryServerCallHandler<TService, TRequest, TResponse>
         where TRequest : class
@@ -35,9 +35,18 @@ namespace ServiceModel.Grpc.SelfHost.Internal
             _invoker = invoker;
         }
 
+        public UnaryServerCallHandler(Func<TService, TRequest, ServerCallContext, Task<TResponse>> invoker)
+            : this(null!, invoker)
+        {
+        }
+
         public Task<TResponse> Handle(TRequest request, ServerCallContext context)
         {
-            var service = _serviceFactory();
+            return Handle(_serviceFactory(), request, context);
+        }
+
+        public Task<TResponse> Handle(TService service, TRequest request, ServerCallContext context)
+        {
             return _invoker(service, request, context);
         }
     }

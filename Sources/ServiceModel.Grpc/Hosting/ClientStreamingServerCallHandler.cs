@@ -19,23 +19,39 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
-using ServiceModel.Grpc.Hosting;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
+namespace ServiceModel.Grpc.Hosting
 {
     internal sealed class ClientStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponse>
         where TRequestHeader : class
         where TResponse : class
     {
+        private readonly Func<TService> _serviceFactory;
         private readonly Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, Task<TResponse>> _invoker;
         private readonly Marshaller<TRequestHeader>? _requestHeaderMarshaller;
 
         public ClientStreamingServerCallHandler(
+            Func<TService> serviceFactory,
             Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, Task<TResponse>> invoker,
             Marshaller<TRequestHeader>? requestHeaderMarshaller)
         {
+            _serviceFactory = serviceFactory;
             _invoker = invoker;
             _requestHeaderMarshaller = requestHeaderMarshaller;
+        }
+
+        public ClientStreamingServerCallHandler(
+            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, Task<TResponse>> invoker,
+            Marshaller<TRequestHeader>? requestHeaderMarshaller)
+            : this(null!, invoker, requestHeaderMarshaller)
+        {
+        }
+
+        public Task<TResponse> Handle(
+            IAsyncStreamReader<Message<TRequest>> stream,
+            ServerCallContext serverCallContext)
+        {
+            return Handle(_serviceFactory(), stream, serverCallContext);
         }
 
         public Task<TResponse> Handle(
