@@ -34,6 +34,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         private readonly HashSet<string> _uniqueMemberNames;
 
         private TypeBuilder _typeBuilder = null!;
+        private ILGenerator _ctor = null!;
 
         public EmitServiceEndpointBuilder(ContractDescription description)
         {
@@ -69,6 +70,12 @@ namespace ServiceModel.Grpc.Internal.Emit
                 className ?? _description.EndpointClassName,
                 TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit);
 
+            _ctor = _typeBuilder
+                .DefineConstructor(MethodAttributes.Public | MethodAttributes.HideBySig, CallingConventions.HasThis, null)
+                .GetILGenerator();
+            _ctor.Emit(OpCodes.Ldarg_0);
+            _ctor.Emit(OpCodes.Call, typeof(object).Constructor());
+
             foreach (var interfaceDescription in _description.Services)
             {
                 foreach (var operation in interfaceDescription.Operations)
@@ -85,6 +92,8 @@ namespace ServiceModel.Grpc.Internal.Emit
                     }
                 }
             }
+
+            _ctor.Emit(OpCodes.Ret);
 
             return _typeBuilder.CreateTypeInfo()!;
         }
@@ -232,7 +241,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ret);
         }
 
-        private (MethodInfo Method, Type DelegateType) BuildServerStreamingResultAdapter(MessageAssembler message)
+        private FieldBuilder BuildServerStreamingResultAdapter(MessageAssembler message)
         {
             // private static (Message<string, int>, IAsyncEnumerable<int>) AdaptHeaderTask((string, IAsyncEnumerable<int>, int) result)
             var parameterType = message.Operation.ReturnType.GetGenericArguments()[0];
@@ -273,7 +282,22 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ret);
 
             var delegateType = typeof(Func<,>).MakeGenericType(parameterType, returnType);
-            return (method, delegateType);
+
+            // private readonly Func<(string, IAsyncEnumerable<int>, int), (Message<string, int>, IAsyncEnumerable<int>)> _adaptHeaderTask = AdaptHeaderTask;
+            var field = _typeBuilder
+                .DefineField(
+                    GetUniqueMemberName("__" + message.Operation.Name + "ResponseAdapter"),
+                    delegateType,
+                    FieldAttributes.Private | FieldAttributes.InitOnly);
+
+            // _adaptHeaderTask = AdaptHeaderTask
+            _ctor.Emit(OpCodes.Ldarg_0);
+            _ctor.Emit(OpCodes.Ldnull);
+            _ctor.Emit(OpCodes.Ldftn, method);
+            _ctor.Emit(OpCodes.Newobj, delegateType.Constructor(typeof(object), typeof(IntPtr)));
+            _ctor.Emit(OpCodes.Stfld, field);
+
+            return field;
         }
 
         private void BuildDuplexStreaming(ILGenerator body, MessageAssembler message, Type serviceType)
@@ -445,12 +469,9 @@ namespace ServiceModel.Grpc.Internal.Emit
             else
             {
                 // return ServerChannelAdapter.ServerStreamingHeaderTask(service.HeaderTask(), AdaptHeaderTask);
-                var (adapter, adapterType) = BuildServerStreamingResultAdapter(message);
-
-                // new Func<TResponse, (THeader Header, IAsyncEnumerable<TResult> Stream)> convertResponse
-                body.Emit(OpCodes.Ldnull);
-                body.Emit(OpCodes.Ldftn, adapter);
-                body.Emit(OpCodes.Newobj, adapterType.Constructor(typeof(object), typeof(IntPtr)));
+                var adapterField = BuildServerStreamingResultAdapter(message);
+                body.Emit(OpCodes.Ldarg_0);
+                body.Emit(OpCodes.Ldfld, adapterField);
 
                 var channelAdapter = typeof(ServerChannelAdapter)
                     .StaticMethod(message.Operation.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.ServerStreamingHeaderValueTask) : nameof(ServerChannelAdapter.ServerStreamingHeaderTask))
