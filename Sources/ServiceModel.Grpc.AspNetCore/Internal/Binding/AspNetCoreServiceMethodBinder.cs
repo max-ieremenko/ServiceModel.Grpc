@@ -22,7 +22,6 @@ using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Hosting;
-using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
 {
