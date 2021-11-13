@@ -31,16 +31,13 @@ namespace ServiceModel.Grpc.Internal.Emit
     internal sealed class EmitServiceEndpointBuilder
     {
         private readonly ContractDescription _description;
-        private readonly Type _contractType;
         private readonly HashSet<string> _uniqueMemberNames;
 
         private TypeBuilder _typeBuilder = null!;
-        private ILGenerator _ctor = null!;
 
-        public EmitServiceEndpointBuilder(ContractDescription description, Type contractType)
+        public EmitServiceEndpointBuilder(ContractDescription description)
         {
             _description = description;
-            _contractType = contractType;
             _uniqueMemberNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
@@ -58,16 +55,12 @@ namespace ServiceModel.Grpc.Internal.Emit
             return true;
         }
 
-        public static Func<object, object> CreateFactory(Type implementationType, Type contractType)
+        public static Func<object> CreateFactory(Type implementationType)
         {
-            var contract = Expression.Parameter(typeof(object), "contract");
+            var ctor = implementationType.Constructor();
+            var factory = Expression.New(ctor);
 
-            var ctor = implementationType.Constructor(contractType);
-            var factory = Expression.New(
-                ctor,
-                Expression.Convert(contract, contractType));
-
-            return Expression.Lambda<Func<object, object>>(factory, contract).Compile();
+            return Expression.Lambda<Func<object>>(factory).Compile();
         }
 
         public TypeInfo Build(ModuleBuilder moduleBuilder, ILogger? logger = default, string? className = default)
@@ -75,15 +68,6 @@ namespace ServiceModel.Grpc.Internal.Emit
             _typeBuilder = moduleBuilder.DefineType(
                 className ?? _description.EndpointClassName,
                 TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit);
-
-            _ctor = _typeBuilder
-                .DefineConstructor(
-                    MethodAttributes.Public,
-                    CallingConventions.HasThis,
-                    new[] { _contractType })
-                .GetILGenerator();
-            _ctor.Emit(OpCodes.Ldarg_0);
-            _ctor.Emit(OpCodes.Call, typeof(object).Constructor());
 
             foreach (var interfaceDescription in _description.Services)
             {
@@ -102,8 +86,6 @@ namespace ServiceModel.Grpc.Internal.Emit
                 }
             }
 
-            _ctor.Emit(OpCodes.Ret);
-
             return _typeBuilder.CreateTypeInfo()!;
         }
 
@@ -120,7 +102,6 @@ namespace ServiceModel.Grpc.Internal.Emit
         private void BuildOperation(OperationDescription operation, Type serviceType)
         {
             var body = CreateMethodWithSignature(operation.Message, serviceType, operation.OperationName);
-            var outputHeadersMarshaller = InitializeOutputHeadersMarshaller(operation);
 
             switch (operation.Message.OperationType)
             {
@@ -133,11 +114,11 @@ namespace ServiceModel.Grpc.Internal.Emit
                     break;
 
                 case MethodType.ServerStreaming:
-                    BuildServerStreaming(body, operation.Message, serviceType, outputHeadersMarshaller);
+                    BuildServerStreaming(body, operation.Message, serviceType);
                     break;
 
                 case MethodType.DuplexStreaming:
-                    BuildDuplexStreaming(body, operation.Message, serviceType, outputHeadersMarshaller);
+                    BuildDuplexStreaming(body, operation.Message, serviceType);
                     break;
             }
         }
@@ -221,7 +202,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ret);
         }
 
-        private void BuildServerStreaming(ILGenerator body, MessageAssembler message, Type serviceType, FieldBuilder? outputHeadersMarshaller)
+        private void BuildServerStreaming(ILGenerator body, MessageAssembler message, Type serviceType)
         {
             // service
             body.Emit(OpCodes.Ldarg_1);
@@ -231,7 +212,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 var parameter = message.Parameters[i];
                 if (message.ContextInput.Contains(i))
                 {
-                    PushContext(body, 4, parameter.ParameterType);
+                    PushContext(body, 3, parameter.ParameterType);
                 }
                 else
                 {
@@ -246,13 +227,14 @@ namespace ServiceModel.Grpc.Internal.Emit
             // service.Method
             CallContractMethod(body, message, serviceType);
 
-            BuildWriteServerStreamingResult(body, message, outputHeadersMarshaller, 3, 4);
+            BuildWriteServerStreamingResult(body, message);
 
             body.Emit(OpCodes.Ret);
         }
 
         private (MethodInfo Method, Type DelegateType) BuildServerStreamingResultAdapter(MessageAssembler message)
         {
+            // private static (Message<string, int>, IAsyncEnumerable<int>) AdaptHeaderTask((string, IAsyncEnumerable<int>, int) result)
             var parameterType = message.Operation.ReturnType.GetGenericArguments()[0];
             var returnType = typeof(ValueTuple<,>).MakeGenericType(
                 message.HeaderResponseType,
@@ -260,13 +242,14 @@ namespace ServiceModel.Grpc.Internal.Emit
 
             var method = _typeBuilder
                 .DefineMethod(
-                    GetUniqueMemberName("Adapt" + message.Operation.Name + "Response"),
+                    GetUniqueMemberName("__Adapt" + message.Operation.Name + "Response"),
                     MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static,
                     returnType,
                     new[] { parameterType });
 
             var body = method.GetILGenerator();
 
+            // return (new Message<string, int>(result.Item1, result.Item3), result.Item2);
             var headerPropertiesCount = message.HeaderResponseTypeInput.Length;
             for (var i = 0; i < headerPropertiesCount; i++)
             {
@@ -278,7 +261,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 body.Emit(OpCodes.Ldfld, parameterType.InstanceFiled(fieldName));
             }
 
-            // new Header()
+            // new Message<string, int>()
             body.Emit(OpCodes.Newobj, message.HeaderResponseType!.Constructor(headerPropertiesCount));
 
             // push stream
@@ -293,7 +276,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             return (method, delegateType);
         }
 
-        private void BuildDuplexStreaming(ILGenerator body, MessageAssembler message, Type serviceType, FieldBuilder? outputHeadersMarshaller)
+        private void BuildDuplexStreaming(ILGenerator body, MessageAssembler message, Type serviceType)
         {
             body.Emit(OpCodes.Ldarg_1); // service
 
@@ -302,7 +285,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 var parameter = message.Parameters[i];
                 if (message.ContextInput.Contains(i))
                 {
-                    PushContext(body, 5, parameter.ParameterType);
+                    PushContext(body, 4, parameter.ParameterType);
                 }
                 else if (message.HeaderRequestTypeInput.Contains(i))
                 {
@@ -317,7 +300,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             // service.Method
             CallContractMethod(body, message, serviceType);
 
-            BuildWriteServerStreamingResult(body, message, outputHeadersMarshaller, 4, 5);
+            BuildWriteServerStreamingResult(body, message);
 
             body.Emit(OpCodes.Ret);
         }
@@ -353,31 +336,42 @@ namespace ServiceModel.Grpc.Internal.Emit
                         .GetILGenerator();
 
                 case MethodType.ServerStreaming:
-                    // Task Invoke(TService service, TRequest request, IServerStreamWriter<TResponse> stream, ServerCallContext context)
+                {
+                    var response = typeof(ValueTuple<,>).MakeGenericType(
+                        message.HeaderResponseType ?? typeof(Message),
+                        typeof(IAsyncEnumerable<>).MakeGenericType(message.ResponseType.GenericTypeArguments[0]));
+
+                    // ValueTask<(TResponseHeader, IAsyncEnumerable<TResponse>)> Invoke(TService service, TRequest request, ServerCallContext context)
                     return _typeBuilder
                         .DefineMethod(
                             methodName,
                             MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
-                            typeof(Task),
-                            new[] { serviceType, message.RequestType, typeof(IServerStreamWriter<>).MakeGenericType(message.ResponseType), typeof(ServerCallContext) })
+                            typeof(ValueTask<>).MakeGenericType(response),
+                            new[] { serviceType, message.RequestType, typeof(ServerCallContext) })
                         .GetILGenerator();
+                }
 
                 case MethodType.DuplexStreaming:
-                    // Task Invoke(TService service, Message<TRequestHeader>? requestHeader, IAsyncEnumerable<TRequest> request, IServerStreamWriter<TResponse> response, ServerCallContext context)
+                {
+                    var response = typeof(ValueTuple<,>).MakeGenericType(
+                        message.HeaderResponseType ?? typeof(Message),
+                        typeof(IAsyncEnumerable<>).MakeGenericType(message.ResponseType.GenericTypeArguments[0]));
+
+                    // ValueTask<(TResponseHeader, IAsyncEnumerable<TResponse>)> Invoke(TService service, TRequestHeader requestHeader, IAsyncEnumerable<TRequest> request, ServerCallContext context)
                     return _typeBuilder
                         .DefineMethod(
                             methodName,
                             MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
-                            typeof(Task),
+                            typeof(ValueTask<>).MakeGenericType(response),
                             new[]
                             {
                                 serviceType,
                                 message.HeaderRequestType ?? typeof(Message),
                                 typeof(IAsyncEnumerable<>).MakeGenericType(message.RequestType.GenericTypeArguments[0]),
-                                typeof(IServerStreamWriter<>).MakeGenericType(message.ResponseType),
                                 typeof(ServerCallContext)
                             })
                         .GetILGenerator();
+                }
             }
 
             throw new NotImplementedException("{0} operation is not implemented.".FormatWith(message.OperationType));
@@ -430,59 +424,27 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Callvirt, method);
         }
 
-        private FieldBuilder? InitializeOutputHeadersMarshaller(OperationDescription operation)
+        private void BuildWriteServerStreamingResult(ILGenerator body, MessageAssembler message)
         {
-            if (operation.Message.HeaderResponseType == null)
+            if (message.HeaderResponseType == null && !message.IsAsync)
             {
-                return null;
+                // return ServerChannelAdapter.ServerStreaming(service.Simple());
+                var channelAdapter = typeof(ServerChannelAdapter)
+                    .StaticMethod(nameof(ServerChannelAdapter.ServerStreaming))
+                    .MakeGenericMethod(message.ResponseType.GenericTypeArguments[0]);
+                body.Emit(OpCodes.Call, channelAdapter);
             }
-
-            var contractField = _contractType.InstanceFiled(operation.GrpcMethodOutputHeaderName);
-
-            // private Marshaller<Message<string, string>> _MethodMarshaller;
-            var field = _typeBuilder
-                .DefineField(
-                    "_{0}".FormatWith(operation.GrpcMethodOutputHeaderName),
-                    contractField.FieldType,
-                    FieldAttributes.Private | FieldAttributes.InitOnly);
-
-            // _MethodMarshaller = contract.MethodMarshaller
-            _ctor.Emit(OpCodes.Ldarg_0);
-            _ctor.Emit(OpCodes.Ldarg_1);
-            _ctor.Emit(OpCodes.Ldfld, contractField);
-            _ctor.Emit(OpCodes.Stfld, field);
-
-            return field;
-        }
-
-        private void BuildWriteServerStreamingResult(
-            ILGenerator body,
-            MessageAssembler message,
-            FieldBuilder? outputHeadersMarshaller,
-            int responseParameterIndex,
-            int contextParameterIndex)
-        {
-            if (message.HeaderResponseType == null)
+            else if (message.HeaderResponseType == null && message.IsAsync)
             {
-                // ServerChannelAdapter.WriteServerStreamingResult(result, stream, serverCallContext);
-                body.EmitLdarg(responseParameterIndex); // response
-                body.EmitLdarg(contextParameterIndex); // serverCallContext
-
-                MethodInfo channelAdapter;
-                if (message.IsAsync)
-                {
-                    channelAdapter = typeof(ServerChannelAdapter)
-                        .StaticMethod(message.Operation.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.WriteServerStreamingResultValueTask) : nameof(ServerChannelAdapter.WriteServerStreamingResultTask));
-                }
-                else
-                {
-                    channelAdapter = typeof(ServerChannelAdapter).StaticMethod(nameof(ServerChannelAdapter.WriteServerStreamingResult), 3);
-                }
-
-                body.Emit(OpCodes.Call, channelAdapter.MakeGenericMethod(message.ResponseType.GenericTypeArguments));
+                // return ServerChannelAdapter.ServerStreamingTask(service.SimpleTask());
+                var channelAdapter = typeof(ServerChannelAdapter)
+                    .StaticMethod(message.Operation.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.ServerStreamingValueTask) : nameof(ServerChannelAdapter.ServerStreamingTask))
+                    .MakeGenericMethod(message.ResponseType.GenericTypeArguments[0]);
+                body.Emit(OpCodes.Call, channelAdapter);
             }
             else
             {
+                // return ServerChannelAdapter.ServerStreamingHeaderTask(service.HeaderTask(), AdaptHeaderTask);
                 var (adapter, adapterType) = BuildServerStreamingResultAdapter(message);
 
                 // new Func<TResponse, (THeader Header, IAsyncEnumerable<TResult> Stream)> convertResponse
@@ -490,14 +452,8 @@ namespace ServiceModel.Grpc.Internal.Emit
                 body.Emit(OpCodes.Ldftn, adapter);
                 body.Emit(OpCodes.Newobj, adapterType.Constructor(typeof(object), typeof(IntPtr)));
 
-                body.Emit(OpCodes.Ldarg_0);
-                body.Emit(OpCodes.Ldfld, outputHeadersMarshaller!); // Marshaller<>
-
-                body.EmitLdarg(responseParameterIndex); // response
-                body.EmitLdarg(contextParameterIndex); // serverCallContext
-
                 var channelAdapter = typeof(ServerChannelAdapter)
-                    .StaticMethod(message.Operation.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.WriteServerStreamingResultWithHeaderValueTask) : nameof(ServerChannelAdapter.WriteServerStreamingResultWithHeaderTask))
+                    .StaticMethod(message.Operation.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.ServerStreamingHeaderValueTask) : nameof(ServerChannelAdapter.ServerStreamingHeaderTask))
                     .MakeGenericMethod(message.Operation.ReturnType.GetGenericArguments()[0], message.HeaderResponseType, message.ResponseType.GenericTypeArguments[0]);
                 body.Emit(OpCodes.Call, channelAdapter);
             }

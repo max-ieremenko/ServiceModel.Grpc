@@ -23,25 +23,28 @@ using ServiceModel.Grpc.Hosting;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
 {
-    internal sealed class DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponse>
+    internal sealed class DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponseHeader, TResponse>
         where TRequestHeader : class
-        where TResponse : class
+        where TResponseHeader : class
     {
-        private readonly Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> _invoker;
+        private readonly Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, ValueTask<(TResponseHeader?, IAsyncEnumerable<TResponse>)>> _invoker;
         private readonly Marshaller<TRequestHeader>? _requestHeaderMarshaller;
+        private readonly Marshaller<TResponseHeader>? _responseHeaderMarshaller;
 
         public DuplexStreamingServerCallHandler(
-            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> invoker,
-            Marshaller<TRequestHeader>? requestHeaderMarshaller)
+            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> invoker,
+            Marshaller<TRequestHeader>? requestHeaderMarshaller,
+            Marshaller<TResponseHeader>? responseHeaderMarshaller)
         {
             _invoker = invoker;
             _requestHeaderMarshaller = requestHeaderMarshaller;
+            _responseHeaderMarshaller = responseHeaderMarshaller;
         }
 
         public Task Handle(
             TService service,
             IAsyncStreamReader<Message<TRequest>> input,
-            IServerStreamWriter<TResponse> output,
+            IServerStreamWriter<Message<TResponse>> output,
             ServerCallContext serverCallContext)
         {
             TRequestHeader? header = null;
@@ -52,7 +55,8 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
 
             var request = ServerChannelAdapter.ReadClientStream(input, serverCallContext);
 
-            return _invoker(service, header, request, output, serverCallContext);
+            var result = _invoker(service, header, request, serverCallContext);
+            return ServerChannelAdapter.WriteServerStreamingResult(result, _responseHeaderMarshaller, output, serverCallContext);
         }
     }
 }

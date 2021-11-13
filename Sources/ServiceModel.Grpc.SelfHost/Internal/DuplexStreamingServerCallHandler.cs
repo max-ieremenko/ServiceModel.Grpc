@@ -23,25 +23,28 @@ using ServiceModel.Grpc.Hosting;
 
 namespace ServiceModel.Grpc.SelfHost.Internal
 {
-    internal sealed class DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponse>
+    internal sealed class DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponseHeader, TResponse>
         where TRequestHeader : class
-        where TResponse : class
+        where TResponseHeader : class
     {
         private readonly Func<TService> _serviceFactory;
-        private readonly Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> _invoker;
+        private readonly Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, ValueTask<(TResponseHeader?, IAsyncEnumerable<TResponse>)>> _invoker;
         private readonly Marshaller<TRequestHeader>? _requestHeaderMarshaller;
+        private readonly Marshaller<TResponseHeader>? _responseHeaderMarshaller;
 
         public DuplexStreamingServerCallHandler(
             Func<TService> serviceFactory,
-            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> invoker,
-            Marshaller<TRequestHeader>? requestHeaderMarshaller)
+            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> invoker,
+            Marshaller<TRequestHeader>? requestHeaderMarshaller,
+            Marshaller<TResponseHeader>? responseHeaderMarshaller)
         {
             _serviceFactory = serviceFactory;
             _invoker = invoker;
             _requestHeaderMarshaller = requestHeaderMarshaller;
+            _responseHeaderMarshaller = responseHeaderMarshaller;
         }
 
-        public Task Handle(IAsyncStreamReader<Message<TRequest>> requestStream, IServerStreamWriter<TResponse> responseStream, ServerCallContext context)
+        public Task Handle(IAsyncStreamReader<Message<TRequest>> requestStream, IServerStreamWriter<Message<TResponse>> responseStream, ServerCallContext context)
         {
             TRequestHeader? header = null;
             if (_requestHeaderMarshaller != null)
@@ -52,7 +55,8 @@ namespace ServiceModel.Grpc.SelfHost.Internal
             var request = ServerChannelAdapter.ReadClientStream(requestStream, context);
 
             var service = _serviceFactory();
-            return _invoker(service, header, request, responseStream, context);
+            var result = _invoker(service, header, request, context);
+            return ServerChannelAdapter.WriteServerStreamingResult(result, _responseHeaderMarshaller, responseStream, context);
         }
     }
 }

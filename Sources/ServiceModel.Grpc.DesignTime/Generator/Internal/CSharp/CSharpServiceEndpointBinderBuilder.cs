@@ -168,7 +168,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 Output
                     .Append("var endpoint = new ")
                     .Append(_contract.EndpointClassName)
-                    .AppendLine("(contract);");
+                    .AppendLine("();");
 
                 foreach (var interfaceDescription in _contract.Services)
                 {
@@ -180,9 +180,9 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                             .Append("Method(contract.")
                             .Append(method.GrpcMethodName);
 
-                        if (method.OperationType == MethodType.ClientStreaming || method.OperationType == MethodType.DuplexStreaming)
+                        if (method.OperationType == MethodType.ClientStreaming)
                         {
-                            string requestHeaderMarshaller = "(Marshaller<Message>)null";
+                            var requestHeaderMarshaller = "(Marshaller<Message>)null";
                             if (method.HeaderRequestType != null)
                             {
                                 requestHeaderMarshaller = "contract." + method.GrpcMethodInputHeaderName;
@@ -191,6 +191,38 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                             Output
                                 .Append(", ")
                                 .Append(requestHeaderMarshaller);
+                        }
+                        else if (method.OperationType == MethodType.ServerStreaming)
+                        {
+                            var responseHeaderMarshaller = "(Marshaller<Message>)null";
+                            if (method.HeaderResponseType != null)
+                            {
+                                responseHeaderMarshaller = "contract." + method.GrpcMethodOutputHeaderName;
+                            }
+
+                            Output
+                                .Append(", ")
+                                .Append(responseHeaderMarshaller);
+                        }
+                        else if (method.OperationType == MethodType.DuplexStreaming)
+                        {
+                            var requestHeaderMarshaller = "(Marshaller<Message>)null";
+                            if (method.HeaderRequestType != null)
+                            {
+                                requestHeaderMarshaller = "contract." + method.GrpcMethodInputHeaderName;
+                            }
+
+                            var responseHeaderMarshaller = "(Marshaller<Message>)null";
+                            if (method.HeaderResponseType != null)
+                            {
+                                responseHeaderMarshaller = "contract." + method.GrpcMethodOutputHeaderName;
+                            }
+
+                            Output
+                                .Append(", ")
+                                .Append(requestHeaderMarshaller)
+                                .Append(", ")
+                                .Append(responseHeaderMarshaller);
                         }
 
                         Output

@@ -20,7 +20,6 @@ using System.Linq;
 using System.Threading;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
-using ServiceModel.Grpc.Hosting;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 {
@@ -45,75 +44,12 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
             using (Output.Indent())
             {
-                BuildFields();
-                Output.AppendLine();
-
-                BuildCtor();
-
                 foreach (var interfaceDescription in _contract.Services)
                 {
                     foreach (var method in interfaceDescription.Operations)
                     {
                         Output.AppendLine();
                         ImplementMethod(interfaceDescription.InterfaceTypeName, method);
-                    }
-                }
-            }
-
-            Output.AppendLine("}");
-        }
-
-        private static string GetMethodHeaderMarshallerField(string grpcMethodHeaderName)
-        {
-            return "_" + char.ToLowerInvariant(grpcMethodHeaderName[0]) + grpcMethodHeaderName.Substring(1);
-        }
-
-        private void BuildFields()
-        {
-            foreach (var interfaceDescription in _contract.Services)
-            {
-                foreach (var method in interfaceDescription.Operations)
-                {
-                    if (method.HeaderResponseType != null)
-                    {
-                        Output
-                            .Append("private readonly Marshaller<")
-                            .Append(method.HeaderResponseType.ClassName)
-                            .Append("> ")
-                            .Append(GetMethodHeaderMarshallerField(method.GrpcMethodOutputHeaderName))
-                            .AppendLine(";");
-                    }
-                }
-            }
-        }
-
-        private void BuildCtor()
-        {
-            Output
-                .Append("public ")
-                .Append(_contract.EndpointClassName)
-                .Append("(")
-                .Append(_contract.ContractClassName)
-                .AppendLine(" contract)");
-
-            Output.AppendLine("{");
-            using (Output.Indent())
-            {
-                Output.AppendLine("if (contract == null) throw new ArgumentNullException(\"contract\");");
-
-                foreach (var interfaceDescription in _contract.Services)
-                {
-                    foreach (var method in interfaceDescription.Operations)
-                    {
-                        if (method.HeaderResponseType != null)
-                        {
-                            Output
-                                .Append(GetMethodHeaderMarshallerField(method.GrpcMethodOutputHeaderName))
-                                .Append(" = ")
-                                .Append("contract.")
-                                .Append(method.GrpcMethodOutputHeaderName)
-                                .AppendLine(";");
-                        }
                     }
                 }
             }
@@ -310,14 +246,19 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
         private void BuildServerStreaming(string interfaceType, OperationDescription operation)
         {
-            // Task Invoke(TService service, TRequest request, IServerStreamWriter<TResponse> response, ServerCallContext context)
+            // ValueTask<(TResponseHeader, IAsyncEnumerable<TResponse>)> Invoke(TService service, TRequest request, ServerCallContext context)
             Output
-                .Append("public async Task ")
+                .Append("public")
+                .Append(operation.IsAsync ? " async" : string.Empty)
+                .Append(" ValueTask<(")
+                .Append(operation.HeaderResponseType?.ClassName ?? nameof(Message))
+                .Append(", IAsyncEnumerable<")
+                .Append(operation.ResponseType.Properties[0])
+                .Append(">)> ")
                 .Append(operation.OperationName)
                 .Append("(")
                 .Append(interfaceType).Append(" service, ")
                 .Append(operation.RequestType.ClassName).Append(" request, ")
-                .Append("IServerStreamWriter<").Append(operation.ResponseType.ClassName).Append("> response, ")
                 .Append(nameof(ServerCallContext)).AppendLine(" context)")
                 .AppendLine("{");
 
@@ -370,15 +311,20 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
         private void BuildDuplexStreaming(string interfaceType, OperationDescription operation)
         {
-            // Task Invoke(TService service, TRequestHeader requestHeader, IAsyncEnumerable<TRequest> request, IServerStreamWriter<TResponse> response, ServerCallContext context)
+            // ValueTask<(TResponseHeader, IAsyncEnumerable<TResponse>)> Invoke(TService service, TRequestHeader requestHeader, IAsyncEnumerable<TRequest> request, ServerCallContext context)
             Output
-                .Append("public async Task ")
+                .Append("public")
+                .Append(operation.IsAsync ? " async" : string.Empty)
+                .Append(" ValueTask<(")
+                .Append(operation.HeaderResponseType?.ClassName ?? nameof(Message))
+                .Append(", IAsyncEnumerable<")
+                .Append(operation.ResponseType.Properties[0])
+                .Append(">)> ")
                 .Append(operation.OperationName)
                 .Append("(")
                 .Append(interfaceType).Append(" service, ")
                 .Append(operation.HeaderRequestType?.ClassName ?? nameof(Message)).Append(" requestHeader, ")
                 .Append("IAsyncEnumerable<").Append(operation.RequestType.Properties[0]).Append("> request, ")
-                .Append("IServerStreamWriter<").Append(operation.ResponseType.ClassName).Append("> response, ")
                 .Append(nameof(ServerCallContext)).AppendLine(" context)")
                 .AppendLine("{");
 
@@ -434,32 +380,32 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             Output.AppendLine("}");
         }
 
+        // return ValueTask<(Message<THeader>, IAsyncEnumerable<TResponse>)>
         private void BuildWriteServerStreamingResult(OperationDescription operation)
         {
-            Output
-                .Append("await ")
-                .Append(nameof(ServerChannelAdapter))
-                .Append(".")
-                .Append(nameof(ServerChannelAdapter.WriteServerStreamingResult));
-
-            if (operation.HeaderResponseType == null)
+            Output.Append("return ");
+            if (operation.IsAsync)
             {
-                Output.Append("(result");
+                Output.Append("(");
             }
             else
             {
                 Output
-                    .Append("<")
-                    .Append(operation.HeaderResponseType.ClassName)
-                    .Append(", ")
+                    .Append("new ValueTask<(")
+                    .Append(operation.HeaderResponseType?.ClassName ?? nameof(Message))
+                    .Append(", IAsyncEnumerable<")
                     .Append(operation.ResponseType.Properties[0])
-                    .Append(">(result.Item")
-                    .Append((operation.ResponseTypeIndex + 1).ToString(CultureInfo.InvariantCulture))
-                    .Append(", ");
+                    .Append(">)>((");
+            }
 
+            if (operation.HeaderResponseType == null)
+            {
+                Output.Append("null");
+            }
+            else
+            {
                 Output
-                    .Append(GetMethodHeaderMarshallerField(operation.GrpcMethodOutputHeaderName))
-                    .Append(", new ")
+                    .Append("new ")
                     .Append(operation.HeaderResponseType.ClassName)
                     .Append("(");
 
@@ -476,7 +422,27 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 Output.Append(")");
             }
 
-            Output.AppendLine(", response, context).ConfigureAwait(false);");
+            Output.Append(", ");
+
+            if (operation.HeaderResponseType == null)
+            {
+                Output.Append("result");
+            }
+            else
+            {
+                Output
+                    .Append("result.Item")
+                    .Append((operation.ResponseTypeIndex + 1).ToString(CultureInfo.InvariantCulture));
+            }
+
+            if (operation.IsAsync)
+            {
+                Output.AppendLine(");");
+            }
+            else
+            {
+                Output.AppendLine("));");
+            }
         }
 
         private void PushContext(ParameterDescription parameter)

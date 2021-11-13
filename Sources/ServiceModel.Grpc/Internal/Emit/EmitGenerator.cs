@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 channelType = ProxyAssembly.DefaultModule.GetType(ContractDescription.GetEndpointClassName(serviceType), false, false)!;
                 if (channelType == null)
                 {
-                    var serviceBuilder = new EmitServiceEndpointBuilder(description, contractType);
+                    var serviceBuilder = new EmitServiceEndpointBuilder(description);
                     channelType = serviceBuilder.Build(ProxyAssembly.DefaultModule, Logger);
                 }
             }

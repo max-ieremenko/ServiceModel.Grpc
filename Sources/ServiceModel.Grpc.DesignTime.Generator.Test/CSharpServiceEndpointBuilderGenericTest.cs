@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 // </copyright>
 
 using NUnit.Framework;
-using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 
@@ -29,9 +28,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Test
         public void BeforeAllTest()
         {
             ChannelType = typeof(GenericContractInt32StringEndpoint);
-
-            var contract = new GenericContractInt32StringContract(DataContractMarshallerFactory.Default);
-            Channel = new GenericContractInt32StringEndpoint(contract);
+            Channel = new GenericContractInt32StringEndpoint();
         }
     }
 }

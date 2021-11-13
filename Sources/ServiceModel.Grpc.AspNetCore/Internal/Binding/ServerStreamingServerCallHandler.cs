@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright 2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,31 +21,27 @@ using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Hosting;
 
-namespace ServiceModel.Grpc.SelfHost.Internal
+namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
 {
     internal sealed class ServerStreamingServerCallHandler<TService, TRequest, TResponseHeader, TResponse>
         where TRequest : class
         where TResponseHeader : class
     {
-        private readonly Func<TService> _serviceFactory;
         private readonly Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader?, IAsyncEnumerable<TResponse>)>> _invoker;
         private readonly Marshaller<TResponseHeader>? _responseHeaderMarshaller;
 
         public ServerStreamingServerCallHandler(
-            Func<TService> serviceFactory,
             Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> invoker,
             Marshaller<TResponseHeader>? responseHeaderMarshaller)
         {
-            _serviceFactory = serviceFactory;
             _invoker = invoker;
             _responseHeaderMarshaller = responseHeaderMarshaller;
         }
 
-        public Task Handle(TRequest request, IServerStreamWriter<Message<TResponse>> responseStream, ServerCallContext context)
+        public Task Handle(TService service, TRequest request, IServerStreamWriter<Message<TResponse>> stream, ServerCallContext serverCallContext)
         {
-            var service = _serviceFactory();
-            var result = _invoker(service, request, context);
-            return ServerChannelAdapter.WriteServerStreamingResult(result, _responseHeaderMarshaller, responseStream, context);
+            var result = _invoker(service, request, serverCallContext);
+            return ServerChannelAdapter.WriteServerStreamingResult(result, _responseHeaderMarshaller, stream, serverCallContext);
         }
     }
 }

@@ -58,19 +58,21 @@ namespace ServiceModel.Grpc.Hosting
             where TRequestHeader : class
             where TResponse : class;
 
-        void AddServerStreamingMethod<TRequest, TResponse>(
-            Method<TRequest, TResponse> method,
+        void AddServerStreamingMethod<TRequest, TResponseHeader, TResponse>(
+            Method<TRequest, Message<TResponse>> method,
+            Marshaller<TResponseHeader>? responseHeaderMarshaller,
             IList<object> metadata,
-            Func<TService, TRequest, IServerStreamWriter<TResponse>, ServerCallContext, Task> handler)
+            Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> handler)
             where TRequest : class
-            where TResponse : class;
+            where TResponseHeader : class;
 
-        void AddDuplexStreamingMethod<TRequestHeader, TRequest, TResponse>(
-            Method<Message<TRequest>, TResponse> method,
+        void AddDuplexStreamingMethod<TRequestHeader, TRequest, TResponseHeader, TResponse>(
+            Method<Message<TRequest>, Message<TResponse>> method,
             Marshaller<TRequestHeader>? requestHeaderMarshaller,
+            Marshaller<TResponseHeader>? responseHeaderMarshaller,
             IList<object> metadata,
-            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> handler)
+            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> handler)
             where TRequestHeader : class
-            where TResponse : class;
+            where TResponseHeader : class;
     }
 }

@@ -66,26 +66,28 @@ namespace ServiceModel.Grpc.SelfHost.Internal
             _builder.AddMethod(method, invoker.Handle);
         }
 
-        public void AddServerStreamingMethod<TRequest, TResponse>(
-            Method<TRequest, TResponse> method,
+        public void AddServerStreamingMethod<TRequest, TResponseHeader, TResponse>(
+            Method<TRequest, Message<TResponse>> method,
+            Marshaller<TResponseHeader>? responseHeaderMarshaller,
             IList<object> metadata,
-            Func<TService, TRequest, IServerStreamWriter<TResponse>, ServerCallContext, Task> handler)
+            Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> handler)
             where TRequest : class
-            where TResponse : class
+            where TResponseHeader : class
         {
-            var invoker = new ServerStreamingServerCallHandler<TService, TRequest, TResponse>(_serviceFactory, handler);
+            var invoker = new ServerStreamingServerCallHandler<TService, TRequest, TResponseHeader, TResponse>(_serviceFactory, handler, responseHeaderMarshaller);
             _builder.AddMethod(method, invoker.Handle);
         }
 
-        public void AddDuplexStreamingMethod<TRequestHeader, TRequest, TResponse>(
-            Method<Message<TRequest>, TResponse> method,
+        public void AddDuplexStreamingMethod<TRequestHeader, TRequest, TResponseHeader, TResponse>(
+            Method<Message<TRequest>, Message<TResponse>> method,
             Marshaller<TRequestHeader>? requestHeaderMarshaller,
+            Marshaller<TResponseHeader>? responseHeaderMarshaller,
             IList<object> metadata,
-            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> handler)
+            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> handler)
             where TRequestHeader : class
-            where TResponse : class
+            where TResponseHeader : class
         {
-            var invoker = new DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponse>(_serviceFactory, handler, requestHeaderMarshaller);
+            var invoker = new DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponseHeader, TResponse>(_serviceFactory, handler, requestHeaderMarshaller, responseHeaderMarshaller);
             _builder.AddMethod(method, invoker.Handle);
         }
     }

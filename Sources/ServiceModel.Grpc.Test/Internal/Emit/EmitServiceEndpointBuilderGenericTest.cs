@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,11 +30,11 @@ namespace ServiceModel.Grpc.Internal.Emit
             var description = new ContractDescription(typeof(IGenericContract<int, string>));
             var contractType = new EmitContractBuilder(description).Build(ProxyAssembly.DefaultModule, nameof(EmitServiceEndpointBuilderGenericTest) + "Contract");
 
-            var sut = new EmitServiceEndpointBuilder(description, contractType);
+            var sut = new EmitServiceEndpointBuilder(description);
             ChannelType = sut.Build(ProxyAssembly.DefaultModule, className: nameof(EmitServiceEndpointBuilderGenericTest) + "Channel");
 
             var contract = EmitContractBuilder.CreateFactory(contractType)(DataContractMarshallerFactory.Default);
-            Channel = EmitServiceEndpointBuilder.CreateFactory(ChannelType, contractType)(contract);
+            Channel = EmitServiceEndpointBuilder.CreateFactory(ChannelType)();
         }
     }
 }
