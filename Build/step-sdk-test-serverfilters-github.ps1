@@ -1,8 +1,4 @@
-$packageDir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "../build-out"))
 $examplesDir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "../Examples/ServerFilters"))
-
-Write-Host "=== add package source ==="
-Exec { dotnet nuget add source $packageDir }
 
 Write-Host "=== restore ==="
 Exec { dotnet restore $examplesDir }
