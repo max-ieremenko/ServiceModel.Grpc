@@ -16,11 +16,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
 using Grpc.AspNetCore.Server;
 using Grpc.Core;
@@ -94,24 +92,11 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
             if (result.Length > 0)
             {
                 var types = message.HeaderResponseType!.GetGenericArguments();
-                var names = message.Operation.ReturnParameter.GetCustomAttribute<TupleElementNamesAttribute>()?.TransformNames;
+                var names = message.GetResponseHeaderNames();
 
                 for (var i = 0; i < result.Length; i++)
                 {
-                    var index = message.HeaderResponseTypeInput[i];
-
-                    string? name = null;
-                    if (names != null)
-                    {
-                        name = names[index];
-                    }
-
-                    if (string.IsNullOrEmpty(name))
-                    {
-                        name = "Item{0}".FormatWith((i + 1).ToString(CultureInfo.InvariantCulture));
-                    }
-
-                    result[i] = (types[i]!, name!);
+                    result[i] = (types[i]!, names[i]);
                 }
             }
 

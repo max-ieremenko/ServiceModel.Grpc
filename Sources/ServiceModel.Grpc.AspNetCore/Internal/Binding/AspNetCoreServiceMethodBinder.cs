@@ -16,11 +16,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 using Grpc.AspNetCore.Server.Model;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Filters.Internal;
 using ServiceModel.Grpc.Hosting;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
@@ -29,59 +31,67 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
         where TService : class
     {
         private readonly ServiceMethodProviderContext<TService> _context;
+        private readonly ServiceMethodFilterRegistration _filterRegistration;
 
         public AspNetCoreServiceMethodBinder(
             ServiceMethodProviderContext<TService> context,
-            IMarshallerFactory marshallerFactory)
+            IMarshallerFactory marshallerFactory,
+            ServiceMethodFilterRegistration filterRegistration)
         {
             _context = context;
+            _filterRegistration = filterRegistration;
             MarshallerFactory = marshallerFactory;
         }
 
         public IMarshallerFactory MarshallerFactory { get; }
 
-        public bool RequiresMetadata => true;
-
         public void AddUnaryMethod<TRequest, TResponse>(
             Method<TRequest, TResponse> method,
+            MethodInfo contractMethodDefinition,
             IList<object> metadata,
             Func<TService, TRequest, ServerCallContext, Task<TResponse>> handler)
             where TRequest : class
             where TResponse : class
         {
-            var invoker = new UnaryServerCallHandler<TService, TRequest, TResponse>(handler);
+            var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, contractMethodDefinition);
+            var invoker = new UnaryServerCallHandler<TService, TRequest, TResponse>(handler, filterHandlerFactory);
             metadata = AddServiceModelGrpcMarker(metadata);
             _context.AddUnaryMethod(method, metadata, invoker.Handle);
         }
 
         public void AddClientStreamingMethod<TRequestHeader, TRequest, TResponse>(
             Method<Message<TRequest>, TResponse> method,
+            MethodInfo contractMethodDefinition,
             Marshaller<TRequestHeader>? requestHeaderMarshaller,
             IList<object> metadata,
             Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, Task<TResponse>> handler)
             where TRequestHeader : class
             where TResponse : class
         {
-            var invoker = new ClientStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponse>(handler, requestHeaderMarshaller);
+            var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, contractMethodDefinition);
+            var invoker = new ClientStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponse>(handler, requestHeaderMarshaller, filterHandlerFactory);
             metadata = AddServiceModelGrpcMarker(metadata);
             _context.AddClientStreamingMethod(method, metadata, invoker.Handle);
         }
 
         public void AddServerStreamingMethod<TRequest, TResponseHeader, TResponse>(
             Method<TRequest, Message<TResponse>> method,
+            MethodInfo contractMethodDefinition,
             Marshaller<TResponseHeader>? responseHeaderMarshaller,
             IList<object> metadata,
             Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> handler)
             where TRequest : class
             where TResponseHeader : class
         {
-            var invoker = new ServerStreamingServerCallHandler<TService, TRequest, TResponseHeader, TResponse>(handler, responseHeaderMarshaller);
+            var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, contractMethodDefinition);
+            var invoker = new ServerStreamingServerCallHandler<TService, TRequest, TResponseHeader, TResponse>(handler, responseHeaderMarshaller, filterHandlerFactory);
             metadata = AddServiceModelGrpcMarker(metadata);
             _context.AddServerStreamingMethod(method, metadata, invoker.Handle);
         }
 
         public void AddDuplexStreamingMethod<TRequestHeader, TRequest, TResponseHeader, TResponse>(
             Method<Message<TRequest>, Message<TResponse>> method,
+            MethodInfo contractMethodDefinition,
             Marshaller<TRequestHeader>? requestHeaderMarshaller,
             Marshaller<TResponseHeader>? responseHeaderMarshaller,
             IList<object> metadata,
@@ -89,7 +99,8 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
             where TRequestHeader : class
             where TResponseHeader : class
         {
-            var invoker = new DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponseHeader, TResponse>(handler, requestHeaderMarshaller, responseHeaderMarshaller);
+            var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, contractMethodDefinition);
+            var invoker = new DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponseHeader, TResponse>(handler, requestHeaderMarshaller, responseHeaderMarshaller, filterHandlerFactory);
             metadata = AddServiceModelGrpcMarker(metadata);
             _context.AddDuplexStreamingMethod(method, metadata, invoker.Handle);
         }

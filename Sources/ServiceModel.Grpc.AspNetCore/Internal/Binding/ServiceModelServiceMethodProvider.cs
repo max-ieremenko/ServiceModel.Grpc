@@ -20,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Filters.Internal;
 using ServiceModel.Grpc.Hosting;
 using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.Internal.Emit;
@@ -60,8 +61,12 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
                 return;
             }
 
+            var filterContext = new ServiceMethodFilterRegistration(_serviceProvider);
+            filterContext.Add(_rootConfiguration.GetFilters());
+            filterContext.Add(_serviceConfiguration.GetFilters());
+
             var marshallerFactory = (_serviceConfiguration.MarshallerFactory ?? _rootConfiguration.DefaultMarshallerFactory).ThisOrDefault();
-            var serviceBinder = new AspNetCoreServiceMethodBinder<TService>(context, marshallerFactory);
+            var serviceBinder = new AspNetCoreServiceMethodBinder<TService>(context, marshallerFactory, filterContext);
 
             CreateEndpointBinder().Bind(serviceBinder);
         }

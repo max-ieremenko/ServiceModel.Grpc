@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright 2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,9 +14,10 @@
 // limitations under the License.
 // </copyright>
 
+using System;
 using System.Threading.Tasks;
 using Grpc.Core;
-using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using NUnit.Framework;
 using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.TestApi;
@@ -26,9 +27,7 @@ using GrpcChannel = Grpc.Core.Channel;
 namespace ServiceModel.Grpc.DesignTime.Generator.Test.SelfHost
 {
     [TestFixture]
-    [ExportGrpcService(typeof(HeadersService), GenerateSelfHostExtensions = true)]
-    [ImportGrpcService(typeof(IHeadersService))]
-    public partial class HeadersHandlingTest : HeadersHandlingTestBase
+    public class MockedFilteredServiceTest : MockedFilteredServiceTestBase
     {
         private const int Port = 8080;
         private Server _server = null!;
@@ -37,21 +36,24 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Test.SelfHost
         [OneTimeSetUp]
         public void BeforeAll()
         {
-            var provider = new ServiceCollection().AddTransient<HeadersService>().BuildServiceProvider();
-
             _server = new Server
             {
                 Ports = { new ServerPort("localhost", Port, ServerCredentials.Insecure) }
             };
 
-            _channel = new GrpcChannel("localhost", Port, ChannelCredentials.Insecure);
-
-            AddHeadersService(_server.Services, provider);
+            _server.Services.AddTrackedFilteredService(
+                new TrackedFilteredService(),
+                options =>
+                {
+                    options.ServiceProvider = new Mock<IServiceProvider>().Object;
+                    options.Filters.Add(1, _ => new MockServerFilter());
+                });
 
             var clientFactory = new ClientFactory();
-            AddHeadersServiceClient(clientFactory, options => options.DefaultCallOptionsFactory = () => new CallOptions(DefaultMetadata));
+            clientFactory.AddFilteredServiceClient();
 
-            DomainService = clientFactory.CreateClient<IHeadersService>(_channel);
+            _channel = new GrpcChannel("localhost", Port, ChannelCredentials.Insecure);
+            DomainService = clientFactory.CreateClient<IFilteredService>(_channel);
 
             _server.Start();
         }

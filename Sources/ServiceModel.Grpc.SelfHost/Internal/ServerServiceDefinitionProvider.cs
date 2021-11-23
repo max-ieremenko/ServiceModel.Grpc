@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,8 +18,10 @@ using System;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Filters.Internal;
 using ServiceModel.Grpc.Hosting;
 using ServiceModel.Grpc.Interceptors.Internal;
+using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.Internal.Emit;
 
 namespace ServiceModel.Grpc.SelfHost.Internal
@@ -49,11 +51,6 @@ namespace ServiceModel.Grpc.SelfHost.Internal
                 result = _options.ConfigureServiceDefinition(result);
             }
 
-            if (_options?.ConfigureServiceDefinition != null)
-            {
-                result = _options.ConfigureServiceDefinition(result);
-            }
-
             if (_options?.ErrorHandler != null)
             {
                 result = result.Intercept(new ServerNativeInterceptor(new ServerCallErrorInterceptor(
@@ -69,9 +66,14 @@ namespace ServiceModel.Grpc.SelfHost.Internal
             var definitionBuilder = ServerServiceDefinition.CreateBuilder();
             var endpointBinder = GetOrCreateEndpointBinder();
 
+            // SelfHostBinder must check ServiceProvider availability
+            var filterRegistration = new ServiceMethodFilterRegistration(_options?.ServiceProvider!);
+            filterRegistration.Add(_options?.GetFilters());
+
             var binder = new SelfHostServiceMethodBinder<TService>(
                 (_options?.MarshallerFactory).ThisOrDefault(),
-                _serviceFactory,
+                WithLoggerFactory<TService>.Wrap(_serviceFactory, _options?.Logger),
+                filterRegistration,
                 definitionBuilder);
             endpointBinder.Bind(binder);
 
@@ -86,7 +88,14 @@ namespace ServiceModel.Grpc.SelfHost.Internal
             }
 
             var logger = new LogAdapter(_options?.Logger);
-            return new EmitGenerator { Logger = logger }.GenerateServiceEndpointBinder<TService>(null);
+
+            var serviceInstanceType = typeof(TService);
+            if (!ServiceContract.IsServiceInstanceType(serviceInstanceType))
+            {
+                serviceInstanceType = null;
+            }
+
+            return new EmitGenerator { Logger = logger }.GenerateServiceEndpointBinder<TService>(serviceInstanceType);
         }
     }
 }

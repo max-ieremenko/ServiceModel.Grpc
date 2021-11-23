@@ -25,6 +25,8 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Test
     [ImportGrpcService(typeof(IGenericContract<string, int>))]
     [ImportGrpcService(typeof(IInvalidContract))]
     [ImportGrpcService(typeof(ISomeService))]
+    [ImportGrpcService(typeof(IFilteredService))]
+    [ExportGrpcService(typeof(TrackedFilteredService), GenerateAspNetExtensions = true, GenerateSelfHostExtensions = true)]
     public static partial class GrpcServices
     {
     }
