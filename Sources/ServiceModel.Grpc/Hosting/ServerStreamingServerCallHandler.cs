@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
+using ServiceModel.Grpc.Filters.Internal;
 
 namespace ServiceModel.Grpc.Hosting
 {
@@ -29,33 +30,76 @@ namespace ServiceModel.Grpc.Hosting
         private readonly Func<TService> _serviceFactory;
         private readonly Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader?, IAsyncEnumerable<TResponse>)>> _invoker;
         private readonly Marshaller<TResponseHeader>? _responseHeaderMarshaller;
+        private readonly ServerCallFilterHandlerFactory? _filterHandlerFactory;
+        private readonly Func<IServerFilterContextInternal, ValueTask> _filterLastAsync;
 
         public ServerStreamingServerCallHandler(
             Func<TService> serviceFactory,
             Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> invoker,
-            Marshaller<TResponseHeader>? responseHeaderMarshaller)
+            Marshaller<TResponseHeader>? responseHeaderMarshaller,
+            ServerCallFilterHandlerFactory? filterHandlerFactory)
         {
             _serviceFactory = serviceFactory;
             _invoker = invoker;
             _responseHeaderMarshaller = responseHeaderMarshaller;
+            _filterHandlerFactory = filterHandlerFactory;
+
+            if (filterHandlerFactory == null)
+            {
+                _filterLastAsync = null!;
+            }
+            else
+            {
+                _filterLastAsync = FilterLastAsync;
+            }
         }
 
         public ServerStreamingServerCallHandler(
             Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> invoker,
-            Marshaller<TResponseHeader>? responseHeaderMarshaller)
-            : this(null!, invoker, responseHeaderMarshaller)
+            Marshaller<TResponseHeader>? responseHeaderMarshaller,
+            ServerCallFilterHandlerFactory? filterHandlerFactory)
+            : this(null!, invoker, responseHeaderMarshaller, filterHandlerFactory)
         {
         }
 
-        public Task Handle(TRequest request, IServerStreamWriter<Message<TResponse>> stream, ServerCallContext serverCallContext)
+        public Task Handle(TRequest request, IServerStreamWriter<Message<TResponse>> stream, ServerCallContext context)
         {
-            return Handle(_serviceFactory(), request, stream, serverCallContext);
+            return Handle(_serviceFactory(), request, stream, context);
         }
 
-        public Task Handle(TService service, TRequest request, IServerStreamWriter<Message<TResponse>> stream, ServerCallContext serverCallContext)
+        public Task Handle(TService service, TRequest request, IServerStreamWriter<Message<TResponse>> stream, ServerCallContext context)
         {
-            var result = _invoker(service, request, serverCallContext);
-            return ServerChannelAdapter.WriteServerStreamingResult(result, _responseHeaderMarshaller, stream, serverCallContext);
+            if (_filterHandlerFactory == null)
+            {
+                var result = _invoker(service, request, context);
+                return ServerChannelAdapter.WriteServerStreamingResult(result, _responseHeaderMarshaller, stream, context);
+            }
+
+            return HandleWithFilter(service, request, stream, context);
+        }
+
+        private async Task HandleWithFilter(TService service, TRequest request, IServerStreamWriter<Message<TResponse>> stream, ServerCallContext context)
+        {
+            var handler = _filterHandlerFactory!.CreateHandler(service!, context);
+            handler.Context.RequestInternal.SetRaw(request, null);
+
+            await handler.InvokeAsync(_filterLastAsync).ConfigureAwait(false);
+
+            var (rawHeader, rawData) = handler.Context.ResponseInternal.GetRaw();
+
+            var header = (TResponseHeader?)rawHeader;
+            var data = (IAsyncEnumerable<TResponse>)rawData!;
+            var result = new ValueTask<(TResponseHeader?, IAsyncEnumerable<TResponse>)>((header, data));
+
+            await ServerChannelAdapter.WriteServerStreamingResult(result, _responseHeaderMarshaller, stream, context).ConfigureAwait(false);
+        }
+
+        private async ValueTask FilterLastAsync(IServerFilterContextInternal context)
+        {
+            var service = (TService)context.ServiceInstance;
+            var request = (TRequest)context.RequestInternal.GetRaw().Request!;
+            var (header, stream) = await _invoker(service, request, context.ServerCallContext).ConfigureAwait(false);
+            context.ResponseInternal.SetRaw(header, stream);
         }
     }
 }

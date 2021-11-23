@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection;
 using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
@@ -41,10 +42,9 @@ namespace ServiceModel.Grpc.Hosting
     {
         IMarshallerFactory MarshallerFactory { get; }
 
-        bool RequiresMetadata { get; }
-
         void AddUnaryMethod<TRequest, TResponse>(
             Method<TRequest, TResponse> method,
+            MethodInfo contractMethodDefinition,
             IList<object> metadata,
             Func<TService, TRequest, ServerCallContext, Task<TResponse>> handler)
             where TRequest : class
@@ -52,6 +52,7 @@ namespace ServiceModel.Grpc.Hosting
 
         void AddClientStreamingMethod<TRequestHeader, TRequest, TResponse>(
             Method<Message<TRequest>, TResponse> method,
+            MethodInfo contractMethodDefinition,
             Marshaller<TRequestHeader>? requestHeaderMarshaller,
             IList<object> metadata,
             Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, Task<TResponse>> handler)
@@ -60,6 +61,7 @@ namespace ServiceModel.Grpc.Hosting
 
         void AddServerStreamingMethod<TRequest, TResponseHeader, TResponse>(
             Method<TRequest, Message<TResponse>> method,
+            MethodInfo contractMethodDefinition,
             Marshaller<TResponseHeader>? responseHeaderMarshaller,
             IList<object> metadata,
             Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> handler)
@@ -68,6 +70,7 @@ namespace ServiceModel.Grpc.Hosting
 
         void AddDuplexStreamingMethod<TRequestHeader, TRequest, TResponseHeader, TResponse>(
             Method<Message<TRequest>, Message<TResponse>> method,
+            MethodInfo contractMethodDefinition,
             Marshaller<TRequestHeader>? requestHeaderMarshaller,
             Marshaller<TResponseHeader>? responseHeaderMarshaller,
             IList<object> metadata,

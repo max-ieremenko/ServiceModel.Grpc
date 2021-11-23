@@ -17,6 +17,7 @@
 using System;
 using System.Threading.Tasks;
 using Grpc.Core;
+using ServiceModel.Grpc.Filters.Internal;
 
 namespace ServiceModel.Grpc.Hosting
 {
@@ -24,19 +25,34 @@ namespace ServiceModel.Grpc.Hosting
         where TRequest : class
         where TResponse : class
     {
+        private readonly ServerCallFilterHandlerFactory? _filterHandlerFactory;
         private readonly Func<TService> _serviceFactory;
         private readonly Func<TService, TRequest, ServerCallContext, Task<TResponse>> _invoker;
+        private readonly Func<IServerFilterContextInternal, ValueTask> _filterLastAsync;
 
         public UnaryServerCallHandler(
             Func<TService> serviceFactory,
-            Func<TService, TRequest, ServerCallContext, Task<TResponse>> invoker)
+            Func<TService, TRequest, ServerCallContext, Task<TResponse>> invoker,
+            ServerCallFilterHandlerFactory? filterHandlerFactory)
         {
             _serviceFactory = serviceFactory;
             _invoker = invoker;
+            _filterHandlerFactory = filterHandlerFactory;
+
+            if (filterHandlerFactory == null)
+            {
+                _filterLastAsync = null!;
+            }
+            else
+            {
+                _filterLastAsync = FilterLastAsync;
+            }
         }
 
-        public UnaryServerCallHandler(Func<TService, TRequest, ServerCallContext, Task<TResponse>> invoker)
-            : this(null!, invoker)
+        public UnaryServerCallHandler(
+            Func<TService, TRequest, ServerCallContext, Task<TResponse>> invoker,
+            ServerCallFilterHandlerFactory? filterHandlerFactory)
+            : this(null!, invoker, filterHandlerFactory)
         {
         }
 
@@ -47,7 +63,30 @@ namespace ServiceModel.Grpc.Hosting
 
         public Task<TResponse> Handle(TService service, TRequest request, ServerCallContext context)
         {
-            return _invoker(service, request, context);
+            if (_filterHandlerFactory == null)
+            {
+                return _invoker(service, request, context);
+            }
+
+            return HandleWithFilter(service, request, context);
+        }
+
+        private async Task<TResponse> HandleWithFilter(TService service, TRequest request, ServerCallContext context)
+        {
+            var handler = _filterHandlerFactory!.CreateHandler(service!, context);
+            handler.Context.RequestInternal.SetRaw(request, null);
+
+            await handler.InvokeAsync(_filterLastAsync).ConfigureAwait(false);
+
+            return (TResponse)handler.Context.ResponseInternal.GetRaw().Response;
+        }
+
+        private async ValueTask FilterLastAsync(IServerFilterContextInternal context)
+        {
+            var service = (TService)context.ServiceInstance;
+            var request = (TRequest)context.RequestInternal.GetRaw().Request!;
+            var response = await _invoker(service, request, context.ServerCallContext).ConfigureAwait(false);
+            context.ResponseInternal.SetRaw(response, null);
         }
     }
 }
