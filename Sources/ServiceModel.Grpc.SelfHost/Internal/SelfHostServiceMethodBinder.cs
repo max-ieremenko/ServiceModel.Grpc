@@ -48,13 +48,13 @@ namespace ServiceModel.Grpc.SelfHost.Internal
 
         public void AddUnaryMethod<TRequest, TResponse>(
             Method<TRequest, TResponse> method,
-            MethodInfo contractMethodDefinition,
+            Func<MethodInfo> resolveContractMethodDefinition,
             IList<object> metadata,
             Func<TService, TRequest, ServerCallContext, Task<TResponse>> handler)
             where TRequest : class
             where TResponse : class
         {
-            var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, contractMethodDefinition);
+            var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
             ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
             var invoker = new UnaryServerCallHandler<TService, TRequest, TResponse>(_serviceFactory, handler, filterHandlerFactory);
@@ -63,14 +63,14 @@ namespace ServiceModel.Grpc.SelfHost.Internal
 
         public void AddClientStreamingMethod<TRequestHeader, TRequest, TResponse>(
             Method<Message<TRequest>, TResponse> method,
-            MethodInfo contractMethodDefinition,
+            Func<MethodInfo> resolveContractMethodDefinition,
             Marshaller<TRequestHeader>? requestHeaderMarshaller,
             IList<object> metadata,
             Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, Task<TResponse>> handler)
             where TRequestHeader : class
             where TResponse : class
         {
-            var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, contractMethodDefinition);
+            var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
             ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
             var invoker = new ClientStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponse>(
@@ -83,14 +83,14 @@ namespace ServiceModel.Grpc.SelfHost.Internal
 
         public void AddServerStreamingMethod<TRequest, TResponseHeader, TResponse>(
             Method<TRequest, Message<TResponse>> method,
-            MethodInfo contractMethodDefinition,
+            Func<MethodInfo> resolveContractMethodDefinition,
             Marshaller<TResponseHeader>? responseHeaderMarshaller,
             IList<object> metadata,
             Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> handler)
             where TRequest : class
             where TResponseHeader : class
         {
-            var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, contractMethodDefinition);
+            var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
             ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
             var invoker = new ServerStreamingServerCallHandler<TService, TRequest, TResponseHeader, TResponse>(
@@ -103,7 +103,7 @@ namespace ServiceModel.Grpc.SelfHost.Internal
 
         public void AddDuplexStreamingMethod<TRequestHeader, TRequest, TResponseHeader, TResponse>(
             Method<Message<TRequest>, Message<TResponse>> method,
-            MethodInfo contractMethodDefinition,
+            Func<MethodInfo> resolveContractMethodDefinition,
             Marshaller<TRequestHeader>? requestHeaderMarshaller,
             Marshaller<TResponseHeader>? responseHeaderMarshaller,
             IList<object> metadata,
@@ -111,7 +111,7 @@ namespace ServiceModel.Grpc.SelfHost.Internal
             where TRequestHeader : class
             where TResponseHeader : class
         {
-            var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, contractMethodDefinition);
+            var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
             ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
             var invoker = new DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponseHeader, TResponse>(

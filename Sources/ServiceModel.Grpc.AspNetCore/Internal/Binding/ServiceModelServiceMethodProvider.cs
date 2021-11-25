@@ -57,7 +57,11 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
             var serviceType = typeof(TService);
             if (ServiceContract.IsNativeGrpcService(serviceType))
             {
-                _logger.LogDebug("Ignore service {0} binding: native grpc service.", serviceType.FullName);
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("Ignore service {0} binding: native grpc service.", serviceType.FullName);
+                }
+
                 return;
             }
 
@@ -66,7 +70,11 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
             filterContext.Add(_serviceConfiguration.GetFilters());
 
             var marshallerFactory = (_serviceConfiguration.MarshallerFactory ?? _rootConfiguration.DefaultMarshallerFactory).ThisOrDefault();
-            var serviceBinder = new AspNetCoreServiceMethodBinder<TService>(context, marshallerFactory, filterContext);
+            var serviceBinder = new AspNetCoreServiceMethodBinder<TService>(
+                context,
+                marshallerFactory,
+                filterContext,
+                _rootConfiguration.IsApiDescriptionRequested);
 
             CreateEndpointBinder().Bind(serviceBinder);
         }

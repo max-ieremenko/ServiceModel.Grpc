@@ -45,7 +45,7 @@ namespace ServiceModel.Grpc.Filters.Internal
             _registrations.AddRange(registrations);
         }
 
-        public ServerCallFilterHandlerFactory? CreateHandlerFactory(IList<object> metadata, MethodInfo contractMethodDefinition)
+        public ServerCallFilterHandlerFactory? CreateHandlerFactory(IList<object> metadata, Func<MethodInfo> resolveContractMethodDefinition)
         {
             var registrations = CombineRegistrations(metadata);
             if (registrations == null)
@@ -61,7 +61,7 @@ namespace ServiceModel.Grpc.Filters.Internal
                 filterFactories[i] = registrations[i].Factory;
             }
 
-            return new ServerCallFilterHandlerFactory(_serviceProvider, contractMethodDefinition, filterFactories);
+            return new ServerCallFilterHandlerFactory(_serviceProvider, resolveContractMethodDefinition(), filterFactories);
         }
 
         private List<FilterRegistration<IServerFilter>>? CombineRegistrations(IList<object> metadata)

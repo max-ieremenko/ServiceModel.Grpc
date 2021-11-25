@@ -186,8 +186,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                             .Append("Method(contract.")
                             .Append(method.GrpcMethodName)
                             .Append(", ")
-                            .Append(GetMethodDefinitionName(method))
-                            .Append("()");
+                            .Append(GetMethodDefinitionName(method));
 
                         if (method.OperationType == MethodType.ClientStreaming)
                         {

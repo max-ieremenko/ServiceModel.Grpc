@@ -44,7 +44,7 @@ namespace ServiceModel.Grpc.Hosting
 
         void AddUnaryMethod<TRequest, TResponse>(
             Method<TRequest, TResponse> method,
-            MethodInfo contractMethodDefinition,
+            Func<MethodInfo> resolveContractMethodDefinition,
             IList<object> metadata,
             Func<TService, TRequest, ServerCallContext, Task<TResponse>> handler)
             where TRequest : class
@@ -52,7 +52,7 @@ namespace ServiceModel.Grpc.Hosting
 
         void AddClientStreamingMethod<TRequestHeader, TRequest, TResponse>(
             Method<Message<TRequest>, TResponse> method,
-            MethodInfo contractMethodDefinition,
+            Func<MethodInfo> resolveContractMethodDefinition,
             Marshaller<TRequestHeader>? requestHeaderMarshaller,
             IList<object> metadata,
             Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, Task<TResponse>> handler)
@@ -61,7 +61,7 @@ namespace ServiceModel.Grpc.Hosting
 
         void AddServerStreamingMethod<TRequest, TResponseHeader, TResponse>(
             Method<TRequest, Message<TResponse>> method,
-            MethodInfo contractMethodDefinition,
+            Func<MethodInfo> resolveContractMethodDefinition,
             Marshaller<TResponseHeader>? responseHeaderMarshaller,
             IList<object> metadata,
             Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> handler)
@@ -70,7 +70,7 @@ namespace ServiceModel.Grpc.Hosting
 
         void AddDuplexStreamingMethod<TRequestHeader, TRequest, TResponseHeader, TResponse>(
             Method<Message<TRequest>, Message<TResponse>> method,
-            MethodInfo contractMethodDefinition,
+            Func<MethodInfo> resolveContractMethodDefinition,
             Marshaller<TRequestHeader>? requestHeaderMarshaller,
             Marshaller<TResponseHeader>? responseHeaderMarshaller,
             IList<object> metadata,

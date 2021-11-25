@@ -57,6 +57,8 @@ namespace Microsoft.Extensions.DependencyInjection
             }
         }
 
+        internal bool IsApiDescriptionRequested { get; set; }
+
         internal IList<FilterRegistration<IServerFilter>>? GetFilters() => _filters;
     }
 }

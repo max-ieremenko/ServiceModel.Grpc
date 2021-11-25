@@ -50,7 +50,7 @@ namespace ServiceModel.Grpc.Filters.Internal
 
             for (var i = 0; i < 2; i++)
             {
-                var actual = _sut.CreateHandlerFactory(metadata, _contractMethodDefinition);
+                var actual = _sut.CreateHandlerFactory(metadata, () => throw new NotSupportedException());
 
                 actual.ShouldBeNull();
             }
@@ -72,7 +72,7 @@ namespace ServiceModel.Grpc.Filters.Internal
 
             for (var i = 0; i < 2; i++)
             {
-                var actual = _sut.CreateHandlerFactory(Array.Empty<object>(), _contractMethodDefinition);
+                var actual = _sut.CreateHandlerFactory(Array.Empty<object>(), () => _contractMethodDefinition);
 
                 actual.ShouldNotBeNull();
                 actual.ServiceProvider.ShouldBe(_serviceProvider.Object);
@@ -103,7 +103,7 @@ namespace ServiceModel.Grpc.Filters.Internal
 
             for (var i = 0; i < 2; i++)
             {
-                var actual = _sut.CreateHandlerFactory(metadata, _contractMethodDefinition);
+                var actual = _sut.CreateHandlerFactory(metadata, () => _contractMethodDefinition);
 
                 actual.ShouldNotBeNull();
                 actual.ServiceProvider.ShouldBe(_serviceProvider.Object);
@@ -136,7 +136,7 @@ namespace ServiceModel.Grpc.Filters.Internal
 
             for (var i = 0; i < 2; i++)
             {
-                var actual = _sut.CreateHandlerFactory(metadata, _contractMethodDefinition);
+                var actual = _sut.CreateHandlerFactory(metadata, () => _contractMethodDefinition);
 
                 actual.ShouldNotBeNull();
                 actual.ServiceProvider.ShouldBe(_serviceProvider.Object);
