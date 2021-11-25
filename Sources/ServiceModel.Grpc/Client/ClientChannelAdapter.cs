@@ -160,7 +160,7 @@ namespace ServiceModel.Grpc.Client
             CancellationToken token,
             Marshaller<THeader> marshaller)
         {
-            THeader header;
+            THeader header = default!;
             try
             {
                 var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
@@ -172,7 +172,14 @@ namespace ServiceModel.Grpc.Client
                         call.GetTrailers);
                 }
 
-                header = CompatibilityTools.DeserializeMethodOutputHeader(marshaller, headers);
+                if (headers != null && headers.Count != 0)
+                {
+                    header = CompatibilityTools.DeserializeMethodOutputHeader(marshaller, headers);
+                }
+                else
+                {
+                    await WaitForServerStreamExceptionAsync(call.ResponseStream, headers, marshaller, token).ConfigureAwait(false);
+                }
             }
             catch
             {
@@ -343,7 +350,7 @@ namespace ServiceModel.Grpc.Client
             Marshaller<THeader> marshaller)
         {
             Task writer;
-            THeader header;
+            THeader header = default!;
             try
             {
                 writer = DuplexCallWriteRequest(request, call.RequestStream, token);
@@ -357,7 +364,14 @@ namespace ServiceModel.Grpc.Client
                         call.GetTrailers);
                 }
 
-                header = CompatibilityTools.DeserializeMethodOutputHeader(marshaller, headers);
+                if (headers != null && headers.Count != 0)
+                {
+                    header = CompatibilityTools.DeserializeMethodOutputHeader(marshaller, headers);
+                }
+                else
+                {
+                    await WaitForServerStreamExceptionAsync(call.ResponseStream, headers, marshaller, token).ConfigureAwait(false);
+                }
             }
             catch
             {
@@ -436,6 +450,23 @@ namespace ServiceModel.Grpc.Client
                         call.GetTrailers());
                 }
             }
+        }
+
+        private static async Task WaitForServerStreamExceptionAsync<THeader, TResult>(
+            IAsyncStreamReader<Message<TResult>> responseStream,
+            Metadata? responseHeaders,
+            Marshaller<THeader> marshaller,
+            CancellationToken token)
+        {
+            // here should throw the RpcException from server-side
+            // see ExceptionHandlingTestBase ThrowApplicationExceptionServerStreamingHeader and ThrowApplicationExceptionDuplexStreamingHeader
+            await responseStream.MoveNext(token).ConfigureAwait(false);
+
+            // this line should not be reached
+            // if the case, check for the headers content
+            CompatibilityTools.DeserializeMethodOutputHeader(marshaller, responseHeaders);
+
+            throw new InvalidOperationException("The server streaming ResponseHeadersAsync did not provide any headers, headers are available only after the streaming.");
         }
     }
 }

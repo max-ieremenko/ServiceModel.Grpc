@@ -58,6 +58,12 @@ namespace ServiceModel.Grpc.TestApi.Domain
         IAsyncEnumerable<int> ThrowApplicationExceptionServerStreaming(string message);
 
         [OperationContract]
+        ValueTask<(IAsyncEnumerable<int> Stream, string Message)> ThrowApplicationExceptionServerStreamingHeader(string message);
+
+        [OperationContract]
         IAsyncEnumerable<int> ThrowApplicationExceptionDuplexStreaming(IAsyncEnumerable<int> data, string message);
+
+        [OperationContract]
+        Task<(IAsyncEnumerable<int> Stream, string Message)> ThrowApplicationExceptionDuplexStreamingHeader(IAsyncEnumerable<int> data, string message);
     }
 }

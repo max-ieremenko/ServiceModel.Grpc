@@ -146,10 +146,32 @@ namespace ServiceModel.Grpc.TestApi
         }
 
         [Test]
+        public void ThrowApplicationExceptionServerStreamingHeader()
+        {
+            var call = DomainService.ThrowApplicationExceptionServerStreamingHeader("some text");
+            var ex = Assert.ThrowsAsync<ServerException>(async () => await call.ConfigureAwait(false));
+
+            ex.ShouldNotBeNull();
+            ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
+            ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
+        }
+
+        [Test]
         public void ThrowApplicationExceptionDuplexStreaming()
         {
             var call = DomainService.ThrowApplicationExceptionDuplexStreaming(new[] { 1, 2 }.AsAsyncEnumerable(), "some text").ToListAsync();
             var ex = Assert.ThrowsAsync<ServerException>(() => call);
+
+            ex.ShouldNotBeNull();
+            ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
+            ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
+        }
+
+        [Test]
+        public void ThrowApplicationExceptionDuplexStreamingHeader()
+        {
+            var call = DomainService.ThrowApplicationExceptionDuplexStreamingHeader(new[] { 1, 2 }.AsAsyncEnumerable(), "some text");
+            var ex = Assert.ThrowsAsync<ServerException>(async () => await call.ConfigureAwait(false));
 
             ex.ShouldNotBeNull();
             ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);

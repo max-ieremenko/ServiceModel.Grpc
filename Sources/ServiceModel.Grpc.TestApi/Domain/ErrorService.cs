@@ -89,6 +89,11 @@ namespace ServiceModel.Grpc.TestApi.Domain
             throw new ApplicationException(message);
         }
 
+        public ValueTask<(IAsyncEnumerable<int> Stream, string Message)> ThrowApplicationExceptionServerStreamingHeader(string message)
+        {
+            throw new ApplicationException(message);
+        }
+
         public async IAsyncEnumerable<int> ThrowApplicationExceptionDuplexStreaming(IAsyncEnumerable<int> data, string message)
         {
             await foreach (var i in data.ConfigureAwait(false))
@@ -96,6 +101,11 @@ namespace ServiceModel.Grpc.TestApi.Domain
                 yield return i;
                 throw new ApplicationException(message);
             }
+        }
+
+        public Task<(IAsyncEnumerable<int> Stream, string Message)> ThrowApplicationExceptionDuplexStreamingHeader(IAsyncEnumerable<int> data, string message)
+        {
+            throw new ApplicationException(message);
         }
 
         private static void WaitForCancel(CancellationToken token)
