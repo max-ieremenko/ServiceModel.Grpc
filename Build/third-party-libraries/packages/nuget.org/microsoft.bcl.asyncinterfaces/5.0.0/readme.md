@@ -1,9 +1,9 @@
 Microsoft.Bcl.AsyncInterfaces [5.0.0](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/5.0.0)
 --------------------
 
-Used by: DesignTime
+Used by: Core internal, DesignTime
 
-Target frameworks: netstandard2.0
+Target frameworks: net461, net5.0, net6.0, netcoreapp3.1, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 

@@ -29,7 +29,7 @@ Dependencies 8
 
 |Name|Version|
 |----------|:----|
-|[Microsoft.CodeAnalysis.Analyzers](../../../../packages/nuget.org/microsoft.codeanalysis.analyzers/3.3.2)|3.3.2|
+|[Microsoft.CodeAnalysis.Analyzers](../../../../packages/nuget.org/microsoft.codeanalysis.analyzers/3.3.3)|3.3.3|
 |[System.Collections.Immutable](../../../../packages/nuget.org/system.collections.immutable/5.0.0)|5.0.0|
 |[System.Memory](../../../../packages/nuget.org/system.memory/4.5.4)|4.5.4|
 |[System.Reflection.Metadata](../../../../packages/nuget.org/system.reflection.metadata/5.0.0)|5.0.0|

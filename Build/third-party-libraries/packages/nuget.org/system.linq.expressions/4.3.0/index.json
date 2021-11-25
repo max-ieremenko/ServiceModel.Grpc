@@ -31,6 +31,41 @@
           "Version": "4.3.0"
         }
       ]
+    },
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "netcoreapp3.0",
+        "net5.0",
+        "net6.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Linq",
+          "Version": "4.3.0"
+        },
+        {
+          "Name": "System.ObjectModel",
+          "Version": "4.3.0"
+        },
+        {
+          "Name": "System.Reflection.Emit.ILGeneration",
+          "Version": "4.3.0"
+        },
+        {
+          "Name": "System.Reflection.Emit.Lightweight",
+          "Version": "4.3.0"
+        },
+        {
+          "Name": "System.Reflection.TypeExtensions",
+          "Version": "4.3.0"
+        },
+        {
+          "Name": "System.Threading",
+          "Version": "4.3.0"
+        }
+      ]
     }
   ],
   "Licenses": [

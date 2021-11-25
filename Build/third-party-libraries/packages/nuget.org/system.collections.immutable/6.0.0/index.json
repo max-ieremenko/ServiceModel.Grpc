@@ -1,0 +1,41 @@
+{
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "DesignTime",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netcoreapp3.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Runtime.CompilerServices.Unsafe",
+          "Version": "6.0.0"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT",
+      "Description": null
+    },
+    {
+      "Subject": "repository",
+      "Code": null,
+      "HRef": "https://github.com/dotnet/runtime",
+      "Description": "License should be verified on https://github.com/dotnet/runtime"
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "https://dot.net/",
+      "Description": "License should be verified on https://dot.net/"
+    }
+  ]
+}

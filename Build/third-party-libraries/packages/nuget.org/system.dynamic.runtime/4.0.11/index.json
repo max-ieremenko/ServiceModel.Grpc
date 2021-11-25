@@ -15,27 +15,27 @@
       "Dependencies": [
         {
           "Name": "System.Linq",
-          "Version": "4.1.0"
+          "Version": "4.3.0"
         },
         {
           "Name": "System.Linq.Expressions",
-          "Version": "4.1.1"
+          "Version": "4.3.0"
         },
         {
           "Name": "System.ObjectModel",
-          "Version": "4.0.12"
+          "Version": "4.3.0"
         },
         {
           "Name": "System.Reflection.Emit.ILGeneration",
-          "Version": "4.0.1"
+          "Version": "4.3.0"
         },
         {
           "Name": "System.Reflection.TypeExtensions",
-          "Version": "4.1.0"
+          "Version": "4.3.0"
         },
         {
           "Name": "System.Threading",
-          "Version": "4.0.11"
+          "Version": "4.3.0"
         }
       ]
     }

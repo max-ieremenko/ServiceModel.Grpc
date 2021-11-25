@@ -19,7 +19,7 @@
         },
         {
           "Name": "System.Threading",
-          "Version": "4.0.11"
+          "Version": "4.3.0"
         }
       ]
     }

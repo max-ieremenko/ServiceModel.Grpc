@@ -2,21 +2,21 @@
   <PropertyGroup>
     <ServiceModelGrpcVersion>1.4.0</ServiceModelGrpcVersion>
 
-    <GrpcCoreVersion>2.41.0</GrpcCoreVersion>
+    <GrpcCoreVersion>2.42.0</GrpcCoreVersion>
     <GrpcNetVersion>2.40.0</GrpcNetVersion>
-    <GoogleProtobufVersion>3.18.1</GoogleProtobufVersion>
+    <GoogleProtobufVersion>3.19.1</GoogleProtobufVersion>
 
-    <SwashbuckleVersion>6.1.4</SwashbuckleVersion>
-    <NSwagVersion>13.12.1</NSwagVersion>
+    <SwashbuckleVersion>6.2.3</SwashbuckleVersion>
+    <NSwagVersion>13.14.7</NSwagVersion>
 
-    <MessagePackVersion>2.3.75</MessagePackVersion>
+    <MessagePackVersion>2.3.85</MessagePackVersion>
     <ProtobufVersion>3.0.101</ProtobufVersion>
 
     <StyleCopVersion>1.2.0.354</StyleCopVersion>
-    <SourceLinkGitHubVersion>1.0.0</SourceLinkGitHubVersion>
+    <SourceLinkGitHubVersion>1.1.1</SourceLinkGitHubVersion>
     
-    <MicrosoftTestSdkVersion>16.11.0</MicrosoftTestSdkVersion>
-    <NUnitAdapterVersion>4.0.0</NUnitAdapterVersion>
+    <MicrosoftTestSdkVersion>17.0.0</MicrosoftTestSdkVersion>
+    <NUnitAdapterVersion>4.1.0</NUnitAdapterVersion>
     <NUnitVersion>3.13.2</NUnitVersion>
     <ShouldlyVersion>4.0.3</ShouldlyVersion>
     <MoqVersion>4.16.1</MoqVersion>
