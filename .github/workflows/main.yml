@@ -40,7 +40,7 @@ jobs:
 
     - name: Install psake
       shell: pwsh
-      run: Install-Module -Name psake -Force
+      run: Install-Module -Name psake -RequiredVersion 4.9.0 -Force
 
     - name: Build
       shell: pwsh
@@ -102,7 +102,7 @@ jobs:
 
     - name: Install psake
       shell: pwsh
-      run: Install-Module -Name psake -Force
+      run: Install-Module -Name psake -RequiredVersion 4.9.0 -Force
 
     - name: Dotnet info
       shell: pwsh
@@ -129,7 +129,7 @@ jobs:
 
     - name: Install psake
       shell: pwsh
-      run: Install-Module -Name psake -Force
+      run: Install-Module -Name psake -RequiredVersion 4.9.0 -Force
 
     - name: Install dotnet sdk
       shell: pwsh
