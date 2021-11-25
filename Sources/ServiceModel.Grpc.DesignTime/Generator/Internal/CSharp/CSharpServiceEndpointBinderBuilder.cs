@@ -17,6 +17,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq.Expressions;
+using System.Reflection;
 using Grpc.Core;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -37,6 +39,8 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
         public override IEnumerable<string> GetUsing()
         {
+            yield return typeof(MethodInfo).Namespace!;
+            yield return typeof(Expression).Namespace!;
             yield return typeof(IServiceMethodBinder<>).Namespace!;
             yield return typeof(IServiceEndpointBinder<>).Namespace!;
         }
@@ -139,6 +143,8 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                         BuildGetMethodMetadata(interfaceDescription, method);
                         Output.AppendLine();
                         BuildGetMethodMetadataOverride(method);
+                        Output.AppendLine();
+                        BuildGetMethodDefinition(interfaceDescription.InterfaceTypeName, method);
                     }
                 }
             }
@@ -178,7 +184,9 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                             .Append("methodBinder.Add")
                             .Append(method.OperationType.ToString())
                             .Append("Method(contract.")
-                            .Append(method.GrpcMethodName);
+                            .Append(method.GrpcMethodName)
+                            .Append(", ")
+                            .Append(GetMethodDefinitionName(method));
 
                         if (method.OperationType == MethodType.ClientStreaming)
                         {
@@ -227,9 +235,8 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
                         Output
                             .Append(", ")
-                            .Append("methodBinder.RequiresMetadata ? ")
                             .Append(GetMethodMetadataName(method))
-                            .Append("() : Array.Empty<object>(), endpoint.")
+                            .Append("(), endpoint.")
                             .Append(method.OperationName)
                             .AppendLine(");");
                     }
@@ -344,9 +351,93 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .AppendLine("Override(IList<object> metadata);");
         }
 
+        private void BuildGetMethodDefinition(string interfaceType, OperationDescription method)
+        {
+            Output
+                .Append("private ")
+                .Append(nameof(MethodInfo))
+                .Append(" ")
+                .Append(GetMethodDefinitionName(method))
+                .AppendLine("()")
+                .AppendLine("{");
+
+            using (Output.Indent())
+            {
+                for (var i = 0; i < method.Method.Parameters.Length; i++)
+                {
+                    var p = method.Method.Parameters[i];
+                    if (p.IsOut)
+                    {
+                        Output
+                            .Append(p.Type)
+                            .Append(" ")
+                            .Append(p.Name)
+                            .AppendLine(";");
+                    }
+                    else if (p.IsRef)
+                    {
+                        Output
+                            .Append(p.Type)
+                            .Append(" ")
+                            .Append(p.Name)
+                            .AppendLine(" = default;");
+                    }
+                }
+
+                // Expression<Action<IDemoService>> __exp = s => s.Sum(default, default);
+                Output
+                    .Append(nameof(Expression))
+                    .Append("<Action<")
+                    .Append(interfaceType)
+                    .Append(">> __exp = s => s.")
+                    .Append(method.Method.Name)
+                    .Append("(");
+
+                for (var i = 0; i < method.Method.Parameters.Length; i++)
+                {
+                    if (i > 0)
+                    {
+                        Output.Append(", ");
+                    }
+
+                    var p = method.Method.Parameters[i];
+                    if (p.IsOut)
+                    {
+                        Output
+                            .Append("out ")
+                            .Append(p.Name);
+                    }
+                    else if (p.IsRef)
+                    {
+                        Output
+                            .Append("ref ")
+                            .Append(p.Name);
+                    }
+                    else
+                    {
+                        Output
+                            .Append("default(")
+                            .Append(method.Method.Parameters[i].Type)
+                            .Append(")");
+                    }
+                }
+
+                Output.AppendLine(");");
+
+                Output.AppendLine("return ((MethodCallExpression)__exp.Body).Method;");
+            }
+
+            Output.AppendLine("}");
+        }
+
         private string GetMethodMetadataName(OperationDescription method)
         {
             return "Method" + method.OperationName + "GetMetadata";
+        }
+
+        private string GetMethodDefinitionName(OperationDescription method)
+        {
+            return "Method" + method.OperationName + "GetDefinition";
         }
     }
 }

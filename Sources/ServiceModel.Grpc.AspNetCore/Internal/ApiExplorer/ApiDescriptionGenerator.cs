@@ -16,11 +16,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
 using Grpc.AspNetCore.Server;
 using Grpc.Core;
@@ -37,24 +35,26 @@ using RouteValuesType = System.Collections.Generic.Dictionary<string, string>;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
 {
-    internal sealed class ApiDescriptionGenerator
+    internal static class ApiDescriptionGenerator
     {
-        private readonly ContractDescriptionCache _contractCache;
-
-        public ApiDescriptionGenerator()
-        {
-            _contractCache = new ContractDescriptionCache();
-        }
-
-        public ApiDescription? TryCreateApiDescription(RouteEndpoint endpoint)
+        public static ApiDescription? TryCreateApiDescription(RouteEndpoint endpoint)
         {
             var metadata = endpoint.Metadata.GetMetadata<GrpcMethodMetadata>();
-            if (metadata == null
-                || !ContainsServiceModelGrpcMarker(endpoint.Metadata)
-                || !_contractCache.TryFindOperation(metadata.ServiceType, metadata.Method.ServiceName, metadata.Method.Name, out var operation))
+            if (metadata == null)
             {
                 return null;
             }
+
+            var marker = FindServiceModelGrpcMarker(endpoint.Metadata);
+            if (marker == null)
+            {
+                return null;
+            }
+
+            var operation = new OperationDescription(
+                metadata.Method.ServiceName,
+                metadata.Method.Name,
+                new MessageAssembler(marker.ContractMethodDefinition));
 
             return CreateApiDescription(endpoint, metadata, operation);
         }
@@ -94,24 +94,11 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
             if (result.Length > 0)
             {
                 var types = message.HeaderResponseType!.GetGenericArguments();
-                var names = message.Operation.ReturnParameter.GetCustomAttribute<TupleElementNamesAttribute>()?.TransformNames;
+                var names = message.GetResponseHeaderNames();
 
                 for (var i = 0; i < result.Length; i++)
                 {
-                    var index = message.HeaderResponseTypeInput[i];
-
-                    string? name = null;
-                    if (names != null)
-                    {
-                        name = names[index];
-                    }
-
-                    if (string.IsNullOrEmpty(name))
-                    {
-                        name = "Item{0}".FormatWith((i + 1).ToString(CultureInfo.InvariantCulture));
-                    }
-
-                    result[i] = (types[i]!, name!);
+                    result[i] = (types[i]!, names[i]);
                 }
             }
 
@@ -207,17 +194,17 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
             });
         }
 
-        private static bool ContainsServiceModelGrpcMarker(IReadOnlyList<object> metadata)
+        private static ServiceModelGrpcMarker? FindServiceModelGrpcMarker(IReadOnlyList<object> metadata)
         {
             for (var i = 0; i < metadata.Count; i++)
             {
-                if (ReferenceEquals(ServiceModelGrpcMarker.Instance, metadata[i]))
+                if (metadata[i] is ServiceModelGrpcMarker marker)
                 {
-                    return true;
+                    return marker;
                 }
             }
 
-            return false;
+            return null;
         }
 
         private static string GetSignature(MessageAssembler message, string actionName)

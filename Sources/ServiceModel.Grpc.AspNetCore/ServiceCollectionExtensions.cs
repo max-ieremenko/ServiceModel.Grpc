@@ -102,6 +102,12 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<IApiDescriptionAdapter, ApiDescriptionAdapter>();
             services.AddTransient<ISwaggerUiRequestHandler, SwaggerUiRequestHandler>();
             services.AddTransient(serializerFactory);
+            services.Configure<ServiceModelGrpcServiceOptions>(RequestApiDescription);
+        }
+
+        private static void RequestApiDescription(ServiceModelGrpcServiceOptions options)
+        {
+            options.IsApiDescriptionRequested = true;
         }
     }
 }

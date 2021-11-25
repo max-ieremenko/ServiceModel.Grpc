@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
+using ServiceModel.Grpc.Filters.Internal;
 
 namespace ServiceModel.Grpc.Hosting
 {
@@ -26,24 +27,38 @@ namespace ServiceModel.Grpc.Hosting
         where TRequestHeader : class
         where TResponse : class
     {
+        private readonly ServerCallFilterHandlerFactory? _filterHandlerFactory;
         private readonly Func<TService> _serviceFactory;
         private readonly Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, Task<TResponse>> _invoker;
         private readonly Marshaller<TRequestHeader>? _requestHeaderMarshaller;
+        private readonly Func<IServerFilterContextInternal, ValueTask> _filterLastAsync;
 
         public ClientStreamingServerCallHandler(
             Func<TService> serviceFactory,
             Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, Task<TResponse>> invoker,
-            Marshaller<TRequestHeader>? requestHeaderMarshaller)
+            Marshaller<TRequestHeader>? requestHeaderMarshaller,
+            ServerCallFilterHandlerFactory? filterHandlerFactory)
         {
             _serviceFactory = serviceFactory;
             _invoker = invoker;
             _requestHeaderMarshaller = requestHeaderMarshaller;
+            _filterHandlerFactory = filterHandlerFactory;
+
+            if (filterHandlerFactory == null)
+            {
+                _filterLastAsync = null!;
+            }
+            else
+            {
+                _filterLastAsync = FilterLastAsync;
+            }
         }
 
         public ClientStreamingServerCallHandler(
             Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, Task<TResponse>> invoker,
-            Marshaller<TRequestHeader>? requestHeaderMarshaller)
-            : this(null!, invoker, requestHeaderMarshaller)
+            Marshaller<TRequestHeader>? requestHeaderMarshaller,
+            ServerCallFilterHandlerFactory? filterHandlerFactory)
+            : this(null!, invoker, requestHeaderMarshaller, filterHandlerFactory)
         {
         }
 
@@ -67,7 +82,30 @@ namespace ServiceModel.Grpc.Hosting
 
             var request = ServerChannelAdapter.ReadClientStream(stream, serverCallContext);
 
-            return _invoker(service, header, request, serverCallContext);
+            if (_filterHandlerFactory == null)
+            {
+                return _invoker(service, header, request, serverCallContext);
+            }
+
+            return HandleWithFilter(service, header, request, serverCallContext);
+        }
+
+        private async Task<TResponse> HandleWithFilter(TService service, TRequestHeader? header, IAsyncEnumerable<TRequest> stream, ServerCallContext context)
+        {
+            var handler = _filterHandlerFactory!.CreateHandler(service!, context);
+            handler.Context.RequestInternal.SetRaw(header!, stream);
+
+            await handler.InvokeAsync(_filterLastAsync).ConfigureAwait(false);
+
+            return (TResponse)handler.Context.ResponseInternal.GetRaw().Response;
+        }
+
+        private async ValueTask FilterLastAsync(IServerFilterContextInternal context)
+        {
+            var service = (TService)context.ServiceInstance;
+            var (header, stream) = context.RequestInternal.GetRaw();
+            var response = await _invoker(service, (TRequestHeader?)header, (IAsyncEnumerable<TRequest>)stream!, context.ServerCallContext).ConfigureAwait(false);
+            context.ResponseInternal.SetRaw(response, null);
         }
     }
 }

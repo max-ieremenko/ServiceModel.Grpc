@@ -112,6 +112,10 @@ jobs:
       shell: pwsh
       run: .\Build\step-sdk-test-basic-github.ps1
 
+    - name: test ServerFilters
+      shell: pwsh
+      run: .\Build\step-sdk-test-serverfilters-github.ps1
+
     - name: test MessagePack
       shell: pwsh
       run: .\Build\step-sdk-test-messagepack-github.ps1

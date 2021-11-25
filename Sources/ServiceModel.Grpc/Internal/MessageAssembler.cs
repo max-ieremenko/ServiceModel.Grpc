@@ -16,8 +16,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using Grpc.Core;
@@ -67,6 +69,37 @@ namespace ServiceModel.Grpc.Internal
         public int[] ContextInput { get; }
 
         public bool IsAsync { get; }
+
+        public string[] GetResponseHeaderNames()
+        {
+            if (HeaderResponseTypeInput.Length == 0)
+            {
+                return Array.Empty<string>();
+            }
+
+            var result = new string[HeaderResponseTypeInput.Length];
+            var names = Operation.ReturnParameter!.GetCustomAttribute<TupleElementNamesAttribute>()?.TransformNames;
+
+            for (var i = 0; i < result.Length; i++)
+            {
+                var index = HeaderResponseTypeInput[i];
+
+                string? name = null;
+                if (names != null)
+                {
+                    name = names[index];
+                }
+
+                if (string.IsNullOrEmpty(name))
+                {
+                    name = "Item{0}".FormatWith((i + 1).ToString(CultureInfo.InvariantCulture));
+                }
+
+                result[i] = name!;
+            }
+
+            return result;
+        }
 
         private static bool IsContextParameter(Type type)
         {

@@ -16,6 +16,7 @@
 
 using System.Threading.Tasks;
 using Grpc.Core;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.TestApi;
@@ -36,6 +37,8 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Test.SelfHost
         [OneTimeSetUp]
         public void BeforeAll()
         {
+            var provider = new ServiceCollection().AddTransient<HeadersService>().BuildServiceProvider();
+
             _server = new Server
             {
                 Ports = { new ServerPort("localhost", Port, ServerCredentials.Insecure) }
@@ -43,7 +46,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Test.SelfHost
 
             _channel = new GrpcChannel("localhost", Port, ChannelCredentials.Insecure);
 
-            AddHeadersService(_server.Services, new HeadersService());
+            AddHeadersService(_server.Services, provider);
 
             var clientFactory = new ClientFactory();
             AddHeadersServiceClient(clientFactory, options => options.DefaultCallOptionsFactory = () => new CallOptions(DefaultMetadata));

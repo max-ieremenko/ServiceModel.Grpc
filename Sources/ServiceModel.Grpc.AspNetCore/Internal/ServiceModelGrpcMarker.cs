@@ -14,14 +14,17 @@
 // limitations under the License.
 // </copyright>
 
+using System.Reflection;
+
 namespace ServiceModel.Grpc.AspNetCore.Internal
 {
     internal sealed class ServiceModelGrpcMarker
     {
-        public static readonly object Instance = new ServiceModelGrpcMarker();
-
-        private ServiceModelGrpcMarker()
+        public ServiceModelGrpcMarker(MethodInfo contractMethodDefinition)
         {
+            ContractMethodDefinition = contractMethodDefinition;
         }
+
+        public MethodInfo ContractMethodDefinition { get; }
     }
 }

@@ -22,6 +22,7 @@ The solution is built on top of [gRPC C#](https://github.com/grpc/grpc/tree/mast
 - [Grpc.Core server configuration](GrpcCoreServerConfiguration.md)
 - error handler general [information](error-handling-general.md)
 - global error handling [tutorial](global-error-handling.md)
+- [server filters](server-filters.md)
 - Swagger integration [example](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/Swagger)
 - getting started [tutorial](CreateClientAndServerASPNETCore.md) create a gRPC client and server
 - [compatibility with native gRPC](CompatibilityWithNativegRPC.md)
@@ -189,6 +190,67 @@ var server = new Grpc.Core.Server
 
 // bind Greeter service
 server.Services.AddServiceModelTransient(() => new Greeter());
+```
+
+### Server filters
+
+see [example](Examples/https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/ServerFilters)
+
+``` c#
+// Startup.cs
+public void ConfigureServices(IServiceCollection services)
+{
+    // setup filter life time
+    services.AddSingleton<LoggingServerFilter>();
+
+    // attach the filter globally
+    services.AddServiceModelGrpc(options =>
+    {
+        options.Filters.Add(1, provider => provider.GetRequiredService<LoggingServerFilter>());
+    });
+}
+
+internal sealed class LoggingServerFilter : IServerFilter
+{
+    private readonly ILoggerFactory _loggerFactory;
+
+    public LoggingServerFilter(ILoggerFactory loggerFactory)
+    {
+        _loggerFactory = loggerFactory;
+    }
+
+    public async ValueTask InvokeAsync(IServerFilterContext context, Func<ValueTask> next)
+    {
+        // create logger with a service name
+        var logger = _loggerFactory.CreateLogger(context.ServiceInstance.GetType().Name);
+
+        // log input
+        logger.LogInformation("begin {0}", context.ContractMethodInfo.Name);
+        foreach (var entry in context.Request)
+        {
+            logger.LogInformation("input {0} = {1}", entry.Key, entry.Value);
+        }
+
+        try
+        {
+            // invoke all other filters in the stack and the service method
+            await next().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            // log exception
+            logger.LogError("error {0}: {1}", context.ContractMethodInfo.Name, ex);
+            throw;
+        }
+
+        // log output
+        logger.LogInformation("end {0}", context.ContractMethodInfo.Name);
+        foreach (var entry in context.Response)
+        {
+            logger.LogInformation("output {0} = {1}", entry.Key, entry.Value);
+        }
+    }
+}
 ```
 
 ## Data contracts

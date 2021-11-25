@@ -15,8 +15,10 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using Grpc.Core.Logging;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Filters;
 using ServiceModel.Grpc.Interceptors;
 
 //// ReSharper disable CheckNamespace
@@ -28,6 +30,8 @@ namespace Grpc.Core
     /// </summary>
     public sealed class ServiceModelGrpcServiceOptions
     {
+        private FilterCollection<IServerFilter>? _filters;
+
         /// <summary>
         /// Gets or sets a factory for serializing and deserializing messages.
         /// </summary>
@@ -44,8 +48,31 @@ namespace Grpc.Core
         public ILogger? Logger { get; set; }
 
         /// <summary>
+        /// Gets or sets the <see cref="IServiceProvider"/>.
+        /// </summary>
+        public IServiceProvider? ServiceProvider { get; set; }
+
+        /// <summary>
         /// Gets or sets a method for additional <see cref="ServerServiceDefinition"/> configuration.
         /// </summary>
         public Func<ServerServiceDefinition, ServerServiceDefinition>? ConfigureServiceDefinition { get; set; }
+
+        /// <summary>
+        /// Gets the collection of registered server filters for this service.
+        /// </summary>
+        public FilterCollection<IServerFilter> Filters
+        {
+            get
+            {
+                if (_filters == null)
+                {
+                    _filters = new FilterCollection<IServerFilter>();
+                }
+
+                return _filters;
+            }
+        }
+
+        internal IList<FilterRegistration<IServerFilter>>? GetFilters() => _filters;
     }
 }

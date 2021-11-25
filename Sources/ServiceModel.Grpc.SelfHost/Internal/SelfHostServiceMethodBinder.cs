@@ -16,10 +16,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Filters.Internal;
 using ServiceModel.Grpc.Hosting;
 
 namespace ServiceModel.Grpc.SelfHost.Internal
@@ -27,59 +29,81 @@ namespace ServiceModel.Grpc.SelfHost.Internal
     internal sealed class SelfHostServiceMethodBinder<TService> : IServiceMethodBinder<TService>
     {
         private readonly Func<TService> _serviceFactory;
+        private readonly ServiceMethodFilterRegistration _filterRegistration;
         private readonly ServerServiceDefinition.Builder _builder;
 
         public SelfHostServiceMethodBinder(
             IMarshallerFactory marshallerFactory,
             Func<TService> serviceFactory,
+            ServiceMethodFilterRegistration filterRegistration,
             ServerServiceDefinition.Builder builder)
         {
             MarshallerFactory = marshallerFactory;
             _serviceFactory = serviceFactory;
+            _filterRegistration = filterRegistration;
             _builder = builder;
         }
 
         public IMarshallerFactory MarshallerFactory { get; }
 
-        public bool RequiresMetadata => false;
-
         public void AddUnaryMethod<TRequest, TResponse>(
             Method<TRequest, TResponse> method,
+            Func<MethodInfo> resolveContractMethodDefinition,
             IList<object> metadata,
             Func<TService, TRequest, ServerCallContext, Task<TResponse>> handler)
             where TRequest : class
             where TResponse : class
         {
-            var invoker = new UnaryServerCallHandler<TService, TRequest, TResponse>(_serviceFactory, handler);
+            var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
+            ValidateFilterFactoryConfiguration(filterHandlerFactory);
+
+            var invoker = new UnaryServerCallHandler<TService, TRequest, TResponse>(_serviceFactory, handler, filterHandlerFactory);
             _builder.AddMethod(method, invoker.Handle);
         }
 
         public void AddClientStreamingMethod<TRequestHeader, TRequest, TResponse>(
             Method<Message<TRequest>, TResponse> method,
+            Func<MethodInfo> resolveContractMethodDefinition,
             Marshaller<TRequestHeader>? requestHeaderMarshaller,
             IList<object> metadata,
             Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, Task<TResponse>> handler)
             where TRequestHeader : class
             where TResponse : class
         {
-            var invoker = new ClientStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponse>(_serviceFactory, handler, requestHeaderMarshaller);
+            var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
+            ValidateFilterFactoryConfiguration(filterHandlerFactory);
+
+            var invoker = new ClientStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponse>(
+                _serviceFactory,
+                handler,
+                requestHeaderMarshaller,
+                filterHandlerFactory);
             _builder.AddMethod(method, invoker.Handle);
         }
 
         public void AddServerStreamingMethod<TRequest, TResponseHeader, TResponse>(
             Method<TRequest, Message<TResponse>> method,
+            Func<MethodInfo> resolveContractMethodDefinition,
             Marshaller<TResponseHeader>? responseHeaderMarshaller,
             IList<object> metadata,
             Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> handler)
             where TRequest : class
             where TResponseHeader : class
         {
-            var invoker = new ServerStreamingServerCallHandler<TService, TRequest, TResponseHeader, TResponse>(_serviceFactory, handler, responseHeaderMarshaller);
+            var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
+            ValidateFilterFactoryConfiguration(filterHandlerFactory);
+
+            var invoker = new ServerStreamingServerCallHandler<TService, TRequest, TResponseHeader, TResponse>(
+                _serviceFactory,
+                handler,
+                responseHeaderMarshaller,
+                filterHandlerFactory);
             _builder.AddMethod(method, invoker.Handle);
         }
 
         public void AddDuplexStreamingMethod<TRequestHeader, TRequest, TResponseHeader, TResponse>(
             Method<Message<TRequest>, Message<TResponse>> method,
+            Func<MethodInfo> resolveContractMethodDefinition,
             Marshaller<TRequestHeader>? requestHeaderMarshaller,
             Marshaller<TResponseHeader>? responseHeaderMarshaller,
             IList<object> metadata,
@@ -87,8 +111,26 @@ namespace ServiceModel.Grpc.SelfHost.Internal
             where TRequestHeader : class
             where TResponseHeader : class
         {
-            var invoker = new DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponseHeader, TResponse>(_serviceFactory, handler, requestHeaderMarshaller, responseHeaderMarshaller);
+            var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
+            ValidateFilterFactoryConfiguration(filterHandlerFactory);
+
+            var invoker = new DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponseHeader, TResponse>(
+                _serviceFactory,
+                handler,
+                requestHeaderMarshaller,
+                responseHeaderMarshaller,
+                filterHandlerFactory);
             _builder.AddMethod(method, invoker.Handle);
+        }
+
+        private void ValidateFilterFactoryConfiguration(ServerCallFilterHandlerFactory? filterHandlerFactory)
+        {
+            if (filterHandlerFactory != null && filterHandlerFactory.ServiceProvider == null)
+            {
+                var message = @"Server filters require ServiceProvider instance. Share your IServiceProvider via service configuration:
+Server.Services.AddServiceModel...<{0}>(options => options.ServiceProvider = [your provider here]);";
+                throw new NotSupportedException(message.FormatWith(typeof(TService).Name));
+            }
         }
     }
 }

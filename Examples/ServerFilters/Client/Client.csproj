@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net5.0</TargetFramework>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Grpc.Net.Client" Version="$(GrpcNetVersion)" />
+		<PackageReference Include="ServiceModel.Grpc" Version="$(ServiceModelGrpcVersion)" />
+		<PackageReference Include="Shouldly" Version="$(ShouldlyVersion)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Contract\Contract.csproj" />
+	</ItemGroup>
+
+</Project>
