@@ -19,11 +19,11 @@
         },
         {
           "Name": "System.Linq",
-          "Version": "4.1.0"
+          "Version": "4.3.0"
         },
         {
           "Name": "System.Linq.Expressions",
-          "Version": "4.1.1"
+          "Version": "4.3.0"
         }
       ]
     }

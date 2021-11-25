@@ -19,6 +19,21 @@
           "Version": "4.3.0"
         }
       ]
+    },
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "netcoreapp3.0",
+        "net5.0",
+        "net6.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Threading",
+          "Version": "4.3.0"
+        }
+      ]
     }
   ],
   "Licenses": [

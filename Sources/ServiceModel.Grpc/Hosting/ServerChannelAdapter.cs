@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -25,57 +24,35 @@ using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Internal;
 
-#pragma warning disable SA1642 // Constructor summary documentation should begin with standard text
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable SA1611 // Element parameters should be documented
-#pragma warning disable SA1604 // Element documentation should have summary
-#pragma warning disable SA1615 // Element return value should be documented
-#pragma warning disable SA1618 // Generic type parameters should be documented
-
 namespace ServiceModel.Grpc.Hosting
 {
-    /// <summary>
-    /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
-    /// This API may change or be removed in future releases.
-    /// </summary>
-    [Browsable(false)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public static class ServerChannelAdapter
+    internal static class ServerChannelAdapter
     {
-        /// <exclude />
-        public static T GetMethodInputHeader<T>(Marshaller<T> marshaller, ServerCallContext context)
+        internal static async Task WriteServerStreamingResult<THeader, TResult>(
+            ValueTask<(THeader? Header, IAsyncEnumerable<TResult> Response)> result,
+            Marshaller<THeader>? headerMarshaller,
+            IServerStreamWriter<Message<TResult>> stream,
+            ServerCallContext context)
+            where THeader : class
         {
-            return CompatibilityTools.DeserializeMethodInputHeader(marshaller, context.RequestHeaders);
+            var (header, response) = await result.ConfigureAwait(false);
+            if (headerMarshaller != null)
+            {
+                await context.WriteResponseHeadersAsync(CompatibilityTools.SerializeMethodOutputHeader(headerMarshaller!, header)).ConfigureAwait(false);
+            }
+
+            await foreach (var i in response.WithCancellation(context.CancellationToken).ConfigureAwait(false))
+            {
+                await stream.WriteAsync(new Message<TResult>(i)).ConfigureAwait(false);
+            }
         }
 
-        /// <exclude />
-        public static async IAsyncEnumerable<T> ReadClientStream<T>(IAsyncStreamReader<Message<T>> stream, ServerCallContext context)
+        internal static async IAsyncEnumerable<T> ReadClientStream<T>(IAsyncStreamReader<Message<T>> stream, ServerCallContext context)
         {
             while (await stream.MoveNext(context.CancellationToken).ConfigureAwait(false))
             {
                 yield return stream.Current.Value1;
             }
-        }
-
-        /// <exclude />
-        public static async Task WriteServerStreamingResult<T>(IAsyncEnumerable<T> result, IServerStreamWriter<Message<T>> stream, ServerCallContext context)
-        {
-            await foreach (var i in result.WithCancellation(context.CancellationToken).ConfigureAwait(false))
-            {
-                await stream.WriteAsync(new Message<T>(i)).ConfigureAwait(false);
-            }
-        }
-
-        /// <exclude />
-        public static async Task WriteServerStreamingResult<THeader, TResult>(
-            IAsyncEnumerable<TResult> result,
-            Marshaller<THeader> headerMarshaller,
-            THeader header,
-            IServerStreamWriter<Message<TResult>> stream,
-            ServerCallContext context)
-        {
-            await context.WriteResponseHeadersAsync(CompatibilityTools.SerializeMethodOutputHeader(headerMarshaller, header)).ConfigureAwait(false);
-            await WriteServerStreamingResult(result, stream, context).ConfigureAwait(false);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -117,44 +94,38 @@ namespace ServiceModel.Grpc.Hosting
             return new Message<T>(result);
         }
 
-        internal static async Task WriteServerStreamingResultTask<T>(Task<IAsyncEnumerable<T>> result, IServerStreamWriter<Message<T>> stream, ServerCallContext context)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static ValueTask<(Message? Header, IAsyncEnumerable<TResponse> Stream)> ServerStreaming<TResponse>(IAsyncEnumerable<TResponse> response)
         {
-            var source = await result.ConfigureAwait(false);
-            await WriteServerStreamingResult(source, stream, context).ConfigureAwait(false);
+            return new ValueTask<(Message?, IAsyncEnumerable<TResponse>)>((null, response));
         }
 
-        internal static async Task WriteServerStreamingResultValueTask<T>(ValueTask<IAsyncEnumerable<T>> result, IServerStreamWriter<Message<T>> stream, ServerCallContext context)
-        {
-            var source = await result.ConfigureAwait(false);
-            await WriteServerStreamingResult(source, stream, context).ConfigureAwait(false);
-        }
-
-        internal static async Task WriteServerStreamingResultWithHeaderTask<TResponse, THeader, TResult>(
-            Task<TResponse> responseTask,
-            Func<TResponse, (THeader Header, IAsyncEnumerable<TResult> Stream)> convertResponse,
-            Marshaller<THeader> headerMarshaller,
-            IServerStreamWriter<Message<TResult>> stream,
-            ServerCallContext context)
+        internal static async ValueTask<(Message? Header, IAsyncEnumerable<TResponse> Stream)> ServerStreamingTask<TResponse>(Task<IAsyncEnumerable<TResponse>> responseTask)
         {
             var response = await responseTask.ConfigureAwait(false);
-            var (header, result) = convertResponse(response);
-
-            await context.WriteResponseHeadersAsync(CompatibilityTools.SerializeMethodOutputHeader(headerMarshaller, header)).ConfigureAwait(false);
-            await WriteServerStreamingResult(result, stream, context).ConfigureAwait(false);
+            return (null, response);
         }
 
-        internal static async Task WriteServerStreamingResultWithHeaderValueTask<TResponse, THeader, TResult>(
-            ValueTask<TResponse> responseTask,
-            Func<TResponse, (THeader Header, IAsyncEnumerable<TResult> Stream)> convertResponse,
-            Marshaller<THeader> headerMarshaller,
-            IServerStreamWriter<Message<TResult>> stream,
-            ServerCallContext context)
+        internal static async ValueTask<(Message? Header, IAsyncEnumerable<TResponse> Stream)> ServerStreamingValueTask<TResponse>(ValueTask<IAsyncEnumerable<TResponse>> responseTask)
         {
             var response = await responseTask.ConfigureAwait(false);
-            var (header, result) = convertResponse(response);
+            return (null, response);
+        }
 
-            await context.WriteResponseHeadersAsync(CompatibilityTools.SerializeMethodOutputHeader(headerMarshaller, header)).ConfigureAwait(false);
-            await WriteServerStreamingResult(result, stream, context).ConfigureAwait(false);
+        internal static async ValueTask<(TResponseHeader Header, IAsyncEnumerable<TResponse> Stream)> ServerStreamingHeaderTask<TResult, TResponseHeader, TResponse>(
+            Task<TResult> resultTask,
+            Func<TResult, (TResponseHeader Header, IAsyncEnumerable<TResponse> Stream)> adapter)
+        {
+            var result = await resultTask.ConfigureAwait(false);
+            return adapter(result);
+        }
+
+        internal static async ValueTask<(TResponseHeader Header, IAsyncEnumerable<TResponse> Stream)> ServerStreamingHeaderValueTask<TResult, TResponseHeader, TResponse>(
+            ValueTask<TResult> resultTask,
+            Func<TResult, (TResponseHeader Header, IAsyncEnumerable<TResponse> Stream)> adapter)
+        {
+            var result = await resultTask.ConfigureAwait(false);
+            return adapter(result);
         }
 
         internal static MethodInfo GetServiceContextOptionMethod(Type optionType)

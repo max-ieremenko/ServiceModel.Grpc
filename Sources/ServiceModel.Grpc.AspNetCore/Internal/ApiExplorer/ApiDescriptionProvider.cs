@@ -33,7 +33,6 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
         public void OnProvidersExecuted(ApiDescriptionProviderContext context)
         {
             var endpoints = _endpointDataSource.Endpoints;
-            var generator = new ApiDescriptionGenerator();
 
             for (var i = 0; i < endpoints.Count; i++)
             {
@@ -42,7 +41,7 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
                     continue;
                 }
 
-                var apiDescription = generator.TryCreateApiDescription(routeEndpoint);
+                var apiDescription = ApiDescriptionGenerator.TryCreateApiDescription(routeEndpoint);
                 if (apiDescription != null)
                 {
                     context.Results.Add(apiDescription);

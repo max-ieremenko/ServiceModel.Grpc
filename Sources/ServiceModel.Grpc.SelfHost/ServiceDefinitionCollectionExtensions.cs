@@ -115,18 +115,48 @@ namespace Grpc.Core
             return services;
         }
 
+        /// <summary>
+        /// Registers a ServiceModel.Grpc service in the <see cref="Server.ServiceDefinitionCollection"/>.
+        /// </summary>
+        /// <typeparam name="TService">The implementation type of ServiceModel.Grpc service.</typeparam>
+        /// <param name="services">The <see cref="Server.ServiceDefinitionCollection"/>.</param>
+        /// <param name="serviceProvider">See <see cref="IServiceProvider"/>.</param>
+        /// <param name="configure">The optional configuration action to provide a configuration the service.</param>
+        /// <returns><see cref="Server.ServiceDefinitionCollection"/>.</returns>
+        public static Server.ServiceDefinitionCollection AddServiceModel<TService>(
+            this Server.ServiceDefinitionCollection services,
+            IServiceProvider serviceProvider,
+            Action<ServiceModelGrpcServiceOptions>? configure = default)
+        {
+            services.AssertNotNull(nameof(services));
+            serviceProvider.AssertNotNull(nameof(serviceProvider));
+
+            Func<TService> serviceFactory = serviceProvider.GetServiceRequired<TService>;
+            var options = new ServiceModelGrpcServiceOptions
+            {
+                ServiceProvider = serviceProvider
+            };
+
+            BindService(services, serviceFactory, null, configure, options);
+            return services;
+        }
+
         private static void BindService<TService>(
             Server.ServiceDefinitionCollection services,
             Func<TService> serviceFactory,
             IServiceEndpointBinder<TService>? endpointBinder,
-            Action<ServiceModelGrpcServiceOptions>? configure)
+            Action<ServiceModelGrpcServiceOptions>? configure,
+            ServiceModelGrpcServiceOptions? options = null)
         {
             ValidateServiceType(typeof(TService));
 
-            ServiceModelGrpcServiceOptions? options = null;
             if (configure != null)
             {
-                options = new ServiceModelGrpcServiceOptions();
+                if (options == null)
+                {
+                    options = new ServiceModelGrpcServiceOptions();
+                }
+
                 configure(options);
             }
 

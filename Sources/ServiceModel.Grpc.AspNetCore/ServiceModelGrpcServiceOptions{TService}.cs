@@ -15,7 +15,9 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Filters;
 using ServiceModel.Grpc.Interceptors;
 
 //// ReSharper disable CheckNamespace
@@ -29,6 +31,8 @@ namespace Microsoft.Extensions.DependencyInjection
     public sealed class ServiceModelGrpcServiceOptions<TService>
         where TService : class
     {
+        private FilterCollection<IServerFilter>? _filters;
+
         /// <summary>
         /// Gets or sets a factory for serializing and deserializing messages.
         /// </summary>
@@ -39,6 +43,24 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public Func<IServiceProvider, IServerErrorHandler>? ErrorHandlerFactory { get; set; }
 
+        /// <summary>
+        /// Gets the collection of registered server filters for this service.
+        /// </summary>
+        public FilterCollection<IServerFilter> Filters
+        {
+            get
+            {
+                if (_filters == null)
+                {
+                    _filters = new FilterCollection<IServerFilter>();
+                }
+
+                return _filters;
+            }
+        }
+
         internal Type? EndpointBinderType { get; set; }
+
+        internal IList<FilterRegistration<IServerFilter>>? GetFilters() => _filters;
     }
 }

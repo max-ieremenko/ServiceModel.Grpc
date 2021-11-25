@@ -15,7 +15,6 @@
 // </copyright>
 
 using System.ComponentModel;
-using ServiceModel.Grpc.Hosting;
 
 #pragma warning disable SA1642 // Constructor summary documentation should begin with standard text
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-201 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Filters.Internal;
 using ServiceModel.Grpc.Hosting;
 using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.Internal.Emit;
@@ -56,12 +57,24 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
             var serviceType = typeof(TService);
             if (ServiceContract.IsNativeGrpcService(serviceType))
             {
-                _logger.LogDebug("Ignore service {0} binding: native grpc service.", serviceType.FullName);
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("Ignore service {0} binding: native grpc service.", serviceType.FullName);
+                }
+
                 return;
             }
 
+            var filterContext = new ServiceMethodFilterRegistration(_serviceProvider);
+            filterContext.Add(_rootConfiguration.GetFilters());
+            filterContext.Add(_serviceConfiguration.GetFilters());
+
             var marshallerFactory = (_serviceConfiguration.MarshallerFactory ?? _rootConfiguration.DefaultMarshallerFactory).ThisOrDefault();
-            var serviceBinder = new AspNetCoreServiceMethodBinder<TService>(context, marshallerFactory);
+            var serviceBinder = new AspNetCoreServiceMethodBinder<TService>(
+                context,
+                marshallerFactory,
+                filterContext,
+                _rootConfiguration.IsApiDescriptionRequested);
 
             CreateEndpointBinder().Bind(serviceBinder);
         }

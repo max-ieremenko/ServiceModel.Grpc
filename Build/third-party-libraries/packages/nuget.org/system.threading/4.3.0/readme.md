@@ -1,9 +1,9 @@
 System.Threading [4.3.0](https://www.nuget.org/packages/System.Threading/4.3.0)
 --------------------
 
-Used by: Core internal
+Used by: AspNetCoreNSwag, Core internal
 
-Target frameworks: net461, net5.0, net6.0, netcoreapp3.1
+Target frameworks: net461, net5.0, net6.0, netcoreapp3.0, netcoreapp3.1
 
 License: [ms-net-library](../../../../licenses/ms-net-library) 
 

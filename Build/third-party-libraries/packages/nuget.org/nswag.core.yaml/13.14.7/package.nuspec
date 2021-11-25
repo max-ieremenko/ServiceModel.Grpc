@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>NSwag.Core.Yaml</id>
+    <version>13.14.7</version>
+    <authors>Rico Suter</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>NuGetIcon.png</icon>
+    <projectUrl>http://nswag.org/</projectUrl>
+    <description>NSwag: The OpenAPI/Swagger API toolchain for .NET and TypeScript</description>
+    <copyright>Copyright © Rico Suter, 2020</copyright>
+    <tags>OpenAPI Swagger AspNetCore Documentation CodeGen TypeScript WebApi AspNet</tags>
+    <repository type="git" url="https://github.com/RicoSuter/NSwag.git" commit="a092dfe3994cba42ab28dbcc502ab7ec27fb455d" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.5">
+        <dependency id="NSwag.Core" version="13.14.7" exclude="Build,Analyzers" />
+        <dependency id="NJsonSchema.Yaml" version="10.5.2" exclude="Build,Analyzers" />
+        <dependency id="YamlDotNet" version="9.1.4" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard1.3">
+        <dependency id="NSwag.Core" version="13.14.7" exclude="Build,Analyzers" />
+        <dependency id="NETStandard.Library" version="1.6.1" exclude="Build,Analyzers" />
+        <dependency id="NJsonSchema.Yaml" version="10.5.2" exclude="Build,Analyzers" />
+        <dependency id="YamlDotNet" version="9.1.4" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="NSwag.Core" version="13.14.7" exclude="Build,Analyzers" />
+        <dependency id="NJsonSchema.Yaml" version="10.5.2" exclude="Build,Analyzers" />
+        <dependency id="YamlDotNet" version="9.1.4" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

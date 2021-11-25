@@ -26,6 +26,7 @@ The solution is built on top of [gRPC C#](https://github.com/grpc/grpc/tree/mast
   - [Grpc.Core server configuration](https://max-ieremenko.github.io/ServiceModel.Grpc/GrpcCoreServerConfiguration.html)
   - error handler general [information](https://max-ieremenko.github.io/ServiceModel.Grpc/error-handling-general.html)
   - global error handling [tutorial](https://max-ieremenko.github.io/ServiceModel.Grpc/global-error-handling.html)
+  - [server filters](https://max-ieremenko.github.io/ServiceModel.Grpc/server-filters.html)
   - getting started [tutorial](https://max-ieremenko.github.io/ServiceModel.Grpc/CreateClientAndServerASPNETCore.html) create a gRPC client and server
   - [compatibility with native gRPC](https://max-ieremenko.github.io/ServiceModel.Grpc/CompatibilityWithNativegRPC.html)
   - migrate from WCF to a gRPC [tutorial](https://max-ieremenko.github.io/ServiceModel.Grpc/MigrateWCFServiceTogRPC.html)
@@ -180,6 +181,67 @@ var server = new Grpc.Core.Server
 
 // bind Calculator service
 server.Services.AddServiceModelTransient(() => new Calculator());
+```
+
+### Server filters
+
+see [example](Examples/ServerFilters)
+
+``` c#
+// Startup.cs
+public void ConfigureServices(IServiceCollection services)
+{
+    // setup filter life time
+    services.AddSingleton<LoggingServerFilter>();
+
+    // attach the filter globally
+    services.AddServiceModelGrpc(options =>
+    {
+        options.Filters.Add(1, provider => provider.GetRequiredService<LoggingServerFilter>());
+    });
+}
+
+internal sealed class LoggingServerFilter : IServerFilter
+{
+    private readonly ILoggerFactory _loggerFactory;
+
+    public LoggingServerFilter(ILoggerFactory loggerFactory)
+    {
+        _loggerFactory = loggerFactory;
+    }
+
+    public async ValueTask InvokeAsync(IServerFilterContext context, Func<ValueTask> next)
+    {
+        // create logger with a service name
+        var logger = _loggerFactory.CreateLogger(context.ServiceInstance.GetType().Name);
+
+        // log input
+        logger.LogInformation("begin {0}", context.ContractMethodInfo.Name);
+        foreach (var entry in context.Request)
+        {
+            logger.LogInformation("input {0} = {1}", entry.Key, entry.Value);
+        }
+
+        try
+        {
+            // invoke all other filters in the stack and the service method
+            await next().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            // log exception
+            logger.LogError("error {0}: {1}", context.ContractMethodInfo.Name, ex);
+            throw;
+        }
+
+        // log output
+        logger.LogInformation("end {0}", context.ContractMethodInfo.Name);
+        foreach (var entry in context.Response)
+        {
+            logger.LogInformation("output {0} = {1}", entry.Key, entry.Value);
+        }
+    }
+}
 ```
 
 ## NuGet feed <a name="nuget"></a>

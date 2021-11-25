@@ -22,6 +22,7 @@ public class Startup
             {
                 options.DefaultMarshallerFactory = ...
                 options.DefaultErrorHandlerFactory = ...
+                options.Filters ...
             });
 
         // optional configuration for a specific service
@@ -30,6 +31,7 @@ public class Startup
             {
                 options.MarshallerFactory = ...
                 options.ErrorHandlerFactory = ...
+                options.Filters ...
             });
     }
 
@@ -50,6 +52,7 @@ public class Startup
 
 - IMarshallerFactory DefaultMarshallerFactory: by default is null (DataContractMarshallerFactory.Default)
 - Func<IServiceProvider, IServerErrorHandler> DefaultErrorHandlerFactory: by default is null (error handling by gRPC API)
+- FilterCollection\<IServerFilter\> Filters: list of global server filters
 
 ## Bind a service via contract or abstract class
 

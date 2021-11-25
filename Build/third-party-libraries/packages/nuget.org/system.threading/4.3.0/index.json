@@ -13,6 +13,15 @@
         "net6.0",
         "net461"
       ]
+    },
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "netcoreapp3.0",
+        "net5.0",
+        "net6.0"
+      ]
     }
   ],
   "Licenses": [

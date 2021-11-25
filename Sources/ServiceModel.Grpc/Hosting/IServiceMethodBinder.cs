@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2021 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,8 +17,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection;
 using System.Threading.Tasks;
 using Grpc.Core;
+using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
 
 #pragma warning disable SA1642 // Constructor summary documentation should begin with standard text
@@ -40,34 +42,40 @@ namespace ServiceModel.Grpc.Hosting
     {
         IMarshallerFactory MarshallerFactory { get; }
 
-        bool RequiresMetadata { get; }
-
         void AddUnaryMethod<TRequest, TResponse>(
             Method<TRequest, TResponse> method,
+            Func<MethodInfo> resolveContractMethodDefinition,
             IList<object> metadata,
             Func<TService, TRequest, ServerCallContext, Task<TResponse>> handler)
             where TRequest : class
             where TResponse : class;
 
-        void AddClientStreamingMethod<TRequest, TResponse>(
-            Method<TRequest, TResponse> method,
+        void AddClientStreamingMethod<TRequestHeader, TRequest, TResponse>(
+            Method<Message<TRequest>, TResponse> method,
+            Func<MethodInfo> resolveContractMethodDefinition,
+            Marshaller<TRequestHeader>? requestHeaderMarshaller,
             IList<object> metadata,
-            Func<TService, IAsyncStreamReader<TRequest>, ServerCallContext, Task<TResponse>> handler)
-            where TRequest : class
+            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, Task<TResponse>> handler)
+            where TRequestHeader : class
             where TResponse : class;
 
-        void AddServerStreamingMethod<TRequest, TResponse>(
-            Method<TRequest, TResponse> method,
+        void AddServerStreamingMethod<TRequest, TResponseHeader, TResponse>(
+            Method<TRequest, Message<TResponse>> method,
+            Func<MethodInfo> resolveContractMethodDefinition,
+            Marshaller<TResponseHeader>? responseHeaderMarshaller,
             IList<object> metadata,
-            Func<TService, TRequest, IServerStreamWriter<TResponse>, ServerCallContext, Task> handler)
+            Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> handler)
             where TRequest : class
-            where TResponse : class;
+            where TResponseHeader : class;
 
-        void AddDuplexStreamingMethod<TRequest, TResponse>(
-            Method<TRequest, TResponse> method,
+        void AddDuplexStreamingMethod<TRequestHeader, TRequest, TResponseHeader, TResponse>(
+            Method<Message<TRequest>, Message<TResponse>> method,
+            Func<MethodInfo> resolveContractMethodDefinition,
+            Marshaller<TRequestHeader>? requestHeaderMarshaller,
+            Marshaller<TResponseHeader>? responseHeaderMarshaller,
             IList<object> metadata,
-            Func<TService, IAsyncStreamReader<TRequest>, IServerStreamWriter<TResponse>, ServerCallContext, Task> handler)
-            where TRequest : class
-            where TResponse : class;
+            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> handler)
+            where TRequestHeader : class
+            where TResponseHeader : class;
     }
 }

@@ -1,0 +1,59 @@
+{
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "netcoreapp3.0",
+        "net5.0",
+        "net6.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.AspNetCore.Mvc.ApiExplorer",
+          "Version": "1.0.4"
+        },
+        {
+          "Name": "Microsoft.AspNetCore.Mvc.Core",
+          "Version": "1.0.6"
+        },
+        {
+          "Name": "Microsoft.AspNetCore.Mvc.Formatters.Json",
+          "Version": "1.0.6"
+        },
+        {
+          "Name": "NJsonSchema",
+          "Version": "10.5.2"
+        },
+        {
+          "Name": "NSwag.Generation",
+          "Version": "13.14.7"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT",
+      "Description": null
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/RicoSuter/NSwag.git",
+      "Description": null
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "http://nswag.org/",
+      "Description": "License should be verified on http://nswag.org/"
+    }
+  ]
+}

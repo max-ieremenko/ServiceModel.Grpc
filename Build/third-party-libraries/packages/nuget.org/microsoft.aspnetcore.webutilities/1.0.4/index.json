@@ -19,7 +19,7 @@
         },
         {
           "Name": "System.Buffers",
-          "Version": "4.0.0"
+          "Version": "4.3.0"
         },
         {
           "Name": "System.Text.Encodings.Web",

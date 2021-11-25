@@ -9,7 +9,7 @@ To run CI build locally
 - install [psake](https://www.powershellgallery.com/packages/psake)
 
     ``` powershell
-    PS> Install-Module -Name psake
+    PS> Install-Module -Name psake -RequiredVersion 4.9.0
     ```
 
 - install net6.0 sdk: manual [download](https://dotnet.microsoft.com/download/dotnet/6.0) or

@@ -23,7 +23,6 @@ using Moq;
 using Moq.Protected;
 using NUnit.Framework;
 using ServiceModel.Grpc.Channel;
-using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
@@ -328,22 +327,19 @@ namespace ServiceModel.Grpc.TestApi
         {
             var call = ChannelType
                 .InstanceMethod(nameof(IContract.EmptyServerStreaming))
-                .CreateDelegate<Func<IContract, Message, IServerStreamWriter<Message<int>>, ServerCallContext, Task>>(Channel);
+                .CreateDelegate<Func<IContract, Message, ServerCallContext, ValueTask<(Message?, IAsyncEnumerable<int>)>>>(Channel);
             Console.WriteLine(call.Method.Disassemble());
-
-            var stream = new Mock<IServerStreamWriter<Message<int>>>(MockBehavior.Strict);
-            var actual = stream.Setup();
 
             _service
                 .Setup(s => s.EmptyServerStreaming())
                 .Returns(new[] { 1, 2, 3 }.AsAsyncEnumerable());
 
-            await call(_service.Object, new Message(), stream.Object, _serverCallContext.Object).ConfigureAwait(false);
+            var response = await call(_service.Object, new Message(), _serverCallContext.Object).ConfigureAwait(false);
 
+            response.Item1.ShouldBeNull();
+            var actual = await response.Item2.ToListAsync().ConfigureAwait(false);
             actual.ShouldBe(new[] { 1, 2, 3 });
-            stream.VerifyAll();
             _service.VerifyAll();
-            _serverCallContext.VerifyAll();
         }
 
         [Test]
@@ -351,20 +347,18 @@ namespace ServiceModel.Grpc.TestApi
         {
             var call = ChannelType
                 .InstanceMethod(nameof(IContract.ServerStreamingRepeatValue))
-                .CreateDelegate<Func<IContract, Message<int, int>, IServerStreamWriter<Message<int>>, ServerCallContext, Task>>(Channel);
+                .CreateDelegate<Func<IContract, Message<int, int>, ServerCallContext, ValueTask<(Message?, IAsyncEnumerable<int>)>>>(Channel);
             Console.WriteLine(call.Method.Disassemble());
-
-            var stream = new Mock<IServerStreamWriter<Message<int>>>(MockBehavior.Strict);
-            var actual = stream.Setup();
 
             _service
                 .Setup(s => s.ServerStreamingRepeatValue(1, 2, _tokenSource.Token))
                 .Returns(new[] { 1, 2, 3 }.AsAsyncEnumerable());
 
-            await call(_service.Object, new Message<int, int>(1, 2), stream.Object, _serverCallContext.Object).ConfigureAwait(false);
+            var response = await call(_service.Object, new Message<int, int>(1, 2), _serverCallContext.Object).ConfigureAwait(false);
 
+            response.Item1.ShouldBeNull();
+            var actual = await response.Item2.ToListAsync().ConfigureAwait(false);
             actual.ShouldBe(new[] { 1, 2, 3 });
-            stream.VerifyAll();
             _service.VerifyAll();
         }
 
@@ -373,20 +367,18 @@ namespace ServiceModel.Grpc.TestApi
         {
             var call = ChannelType
                 .InstanceMethod(nameof(IContract.ServerStreamingRepeatValueAsync))
-                .CreateDelegate<Func<IContract, Message<int, int>, IServerStreamWriter<Message<int>>, ServerCallContext, Task>>(Channel);
+                .CreateDelegate<Func<IContract, Message<int, int>, ServerCallContext, ValueTask<(Message?, IAsyncEnumerable<int>)>>>(Channel);
             Console.WriteLine(call.Method.Disassemble());
-
-            var stream = new Mock<IServerStreamWriter<Message<int>>>(MockBehavior.Strict);
-            var actual = stream.Setup();
 
             _service
                 .Setup(s => s.ServerStreamingRepeatValueAsync(1, 2, _tokenSource.Token))
                 .Returns(Task.FromResult(new[] { 1, 2, 3 }.AsAsyncEnumerable()));
 
-            await call(_service.Object, new Message<int, int>(1, 2), stream.Object, _serverCallContext.Object).ConfigureAwait(false);
+            var response = await call(_service.Object, new Message<int, int>(1, 2), _serverCallContext.Object).ConfigureAwait(false);
 
+            response.Item1.ShouldBeNull();
+            var actual = await response.Item2.ToListAsync().ConfigureAwait(false);
             actual.ShouldBe(new[] { 1, 2, 3 });
-            stream.VerifyAll();
             _service.VerifyAll();
         }
 
@@ -395,20 +387,18 @@ namespace ServiceModel.Grpc.TestApi
         {
             var call = ChannelType
                 .InstanceMethod(nameof(IContract.ServerStreamingRepeatValueValueTaskAsync))
-                .CreateDelegate<Func<IContract, Message<int, int>, IServerStreamWriter<Message<int>>, ServerCallContext, Task>>(Channel);
+                .CreateDelegate<Func<IContract, Message<int, int>, ServerCallContext, ValueTask<(Message?, IAsyncEnumerable<int>)>>>(Channel);
             Console.WriteLine(call.Method.Disassemble());
-
-            var stream = new Mock<IServerStreamWriter<Message<int>>>(MockBehavior.Strict);
-            var actual = stream.Setup();
 
             _service
                 .Setup(s => s.ServerStreamingRepeatValueValueTaskAsync(1, 2, _tokenSource.Token))
                 .Returns(new ValueTask<IAsyncEnumerable<int>>(new[] { 1, 2, 3 }.AsAsyncEnumerable()));
 
-            await call(_service.Object, new Message<int, int>(1, 2), stream.Object, _serverCallContext.Object).ConfigureAwait(false);
+            var response = await call(_service.Object, new Message<int, int>(1, 2), _serverCallContext.Object).ConfigureAwait(false);
 
+            response.Item1.ShouldBeNull();
+            var actual = await response.Item2.ToListAsync().ConfigureAwait(false);
             actual.ShouldBe(new[] { 1, 2, 3 });
-            stream.VerifyAll();
             _service.VerifyAll();
         }
 
@@ -417,35 +407,21 @@ namespace ServiceModel.Grpc.TestApi
         {
             var call = ChannelType
                 .InstanceMethod(nameof(IContract.ServerStreamingWithHeadersTask))
-                .CreateDelegate<Func<IContract, Message<int, int>, IServerStreamWriter<Message<int>>, ServerCallContext, Task>>(Channel);
+                .CreateDelegate<Func<IContract, Message<int, int>, ServerCallContext, ValueTask<(Message<int, int>?, IAsyncEnumerable<int>)>>>(Channel);
             Console.WriteLine(call.Method.Disassemble());
-
-            var stream = new Mock<IServerStreamWriter<Message<int>>>(MockBehavior.Strict);
-            var actual = stream.Setup();
 
             _service
                 .Setup(s => s.ServerStreamingWithHeadersTask(1, 2, _tokenSource.Token))
                 .Returns(Task.FromResult((1, new[] { 1, 2, 3 }.AsAsyncEnumerable(), 2)));
 
-            _serverCallContext
-                .Protected()
-                .Setup<Task>("WriteResponseHeadersAsyncCore", ItExpr.IsAny<Metadata>())
-                .Callback<Metadata>(responseHeaders =>
-                {
-                    responseHeaders.ShouldNotBeNull();
-                    var headers = CompatibilityToolsTestExtensions.DeserializeMethodOutput<int, int>(DataContractMarshallerFactory.Default, responseHeaders);
-                    headers.Value1.ShouldBe(1);
-                    headers.Value2.ShouldBe(2);
-                })
-                .Returns(Task.CompletedTask)
-                .Verifiable();
+            var response = await call(_service.Object, new Message<int, int>(1, 2), _serverCallContext.Object).ConfigureAwait(false);
 
-            await call(_service.Object, new Message<int, int>(1, 2), stream.Object, _serverCallContext.Object).ConfigureAwait(false);
-
+            response.Item1.ShouldNotBeNull();
+            response.Item1.Value1.ShouldBe(1);
+            response.Item1.Value2.ShouldBe(2);
+            var actual = await response.Item2.ToListAsync().ConfigureAwait(false);
             actual.ShouldBe(new[] { 1, 2, 3 });
-            stream.VerifyAll();
             _service.VerifyAll();
-            _serverCallContext.Verify();
         }
 
         [Test]
@@ -453,55 +429,39 @@ namespace ServiceModel.Grpc.TestApi
         {
             var call = ChannelType
                 .InstanceMethod(nameof(IContract.ServerStreamingWithHeadersValueTask))
-                .CreateDelegate<Func<IContract, Message<int, int>, IServerStreamWriter<Message<int>>, ServerCallContext, Task>>(Channel);
+                .CreateDelegate<Func<IContract, Message<int, int>, ServerCallContext, ValueTask<(Message<int>?, IAsyncEnumerable<int>)>>>(Channel);
             Console.WriteLine(call.Method.Disassemble());
-
-            var stream = new Mock<IServerStreamWriter<Message<int>>>(MockBehavior.Strict);
-            var actual = stream.Setup();
 
             _service
                 .Setup(s => s.ServerStreamingWithHeadersValueTask(1, 2, _tokenSource.Token))
                 .Returns(new ValueTask<(IAsyncEnumerable<int> Stream, int Count)>((new[] { 1, 2, 3 }.AsAsyncEnumerable(), 2)));
 
-            _serverCallContext
-                .Protected()
-                .Setup<Task>("WriteResponseHeadersAsyncCore", ItExpr.IsAny<Metadata>())
-                .Callback<Metadata>(responseHeaders =>
-                {
-                    responseHeaders.ShouldNotBeNull();
-                    var header = CompatibilityToolsTestExtensions.DeserializeMethodOutput<int>(DataContractMarshallerFactory.Default, responseHeaders);
-                    header.ShouldBe(2);
-                })
-                .Returns(Task.CompletedTask)
-                .Verifiable();
+            var response = await call(_service.Object, new Message<int, int>(1, 2), _serverCallContext.Object).ConfigureAwait(false);
 
-            await call(_service.Object, new Message<int, int>(1, 2), stream.Object, _serverCallContext.Object).ConfigureAwait(false);
-
+            response.Item1.ShouldNotBeNull();
+            response.Item1.Value1.ShouldBe(2);
+            var actual = await response.Item2.ToListAsync().ConfigureAwait(false);
             actual.ShouldBe(new[] { 1, 2, 3 });
-            stream.VerifyAll();
             _service.VerifyAll();
-            _serverCallContext.Verify();
         }
 
         [Test]
         public async Task DuplicateServerStreaming1()
         {
             var call = ChannelType
-                .InstanceMethod("DuplicateServerStreaming1", typeof(IContract), typeof(Message), typeof(IServerStreamWriter<Message<string>>), typeof(ServerCallContext))
-                .CreateDelegate<Func<IContract, Message, IServerStreamWriter<Message<string>>, ServerCallContext, Task>>(Channel);
+                .InstanceMethod("DuplicateServerStreaming1", typeof(IContract), typeof(Message), typeof(ServerCallContext))
+                .CreateDelegate<Func<IContract, Message, ServerCallContext, ValueTask<(Message?, IAsyncEnumerable<string>)>>>(Channel);
             Console.WriteLine(call.Method.Disassemble());
-
-            var stream = new Mock<IServerStreamWriter<Message<string>>>(MockBehavior.Strict);
-            var actual = stream.Setup();
 
             _service
                 .Setup(s => s.DuplicateServerStreaming())
                 .Returns(new[] { "a" }.AsAsyncEnumerable());
 
-            await call(_service.Object, new Message(), stream.Object, _serverCallContext.Object).ConfigureAwait(false);
+            var response = await call(_service.Object, new Message(), _serverCallContext.Object).ConfigureAwait(false);
 
+            response.Item1.ShouldBeNull();
+            var actual = await response.Item2.ToListAsync().ConfigureAwait(false);
             actual.ShouldBe(new[] { "a" });
-            stream.VerifyAll();
             _service.VerifyAll();
         }
 
@@ -509,21 +469,19 @@ namespace ServiceModel.Grpc.TestApi
         public async Task DuplicateServerStreaming2()
         {
             var call = ChannelType
-                .InstanceMethod("DuplicateServerStreaming2", typeof(IContract), typeof(Message<string>), typeof(IServerStreamWriter<Message<string>>), typeof(ServerCallContext))
-                .CreateDelegate<Func<IContract, Message<string>, IServerStreamWriter<Message<string>>, ServerCallContext, Task>>(Channel);
+                .InstanceMethod("DuplicateServerStreaming2", typeof(IContract), typeof(Message<string>), typeof(ServerCallContext))
+                .CreateDelegate<Func<IContract, Message<string>, ServerCallContext, ValueTask<(Message?, IAsyncEnumerable<string>)>>>(Channel);
             Console.WriteLine(call.Method.Disassemble());
-
-            var stream = new Mock<IServerStreamWriter<Message<string>>>(MockBehavior.Strict);
-            var actual = stream.Setup();
 
             _service
                 .Setup(s => s.DuplicateServerStreaming("b"))
                 .Returns(new[] { "a" }.AsAsyncEnumerable());
 
-            await call(_service.Object, new Message<string>("b"), stream.Object, _serverCallContext.Object).ConfigureAwait(false);
+            var response = await call(_service.Object, new Message<string>("b"), _serverCallContext.Object).ConfigureAwait(false);
 
+            response.Item1.ShouldBeNull();
+            var actual = await response.Item2.ToListAsync().ConfigureAwait(false);
             actual.ShouldBe(new[] { "a" });
-            stream.VerifyAll();
             _service.VerifyAll();
         }
 
@@ -532,11 +490,10 @@ namespace ServiceModel.Grpc.TestApi
         {
             var call = ChannelType
                 .InstanceMethod(nameof(IContract.ClientStreamingEmpty))
-                .CreateDelegate<Func<IContract, IAsyncStreamReader<Message<int>>, ServerCallContext, Task<Message>>>(Channel);
+                .CreateDelegate<Func<IContract, Message?, IAsyncEnumerable<int>, ServerCallContext, Task<Message>>>(Channel);
             Console.WriteLine(call.Method.Disassemble());
 
-            var stream = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
-            stream.Setup(_tokenSource.Token, 2);
+            var stream = new[] { 2 }.AsAsyncEnumerable();
 
             _service
                 .Setup(s => s.ClientStreamingEmpty(It.IsNotNull<IAsyncEnumerable<int>>()))
@@ -547,9 +504,8 @@ namespace ServiceModel.Grpc.TestApi
                 })
                 .Returns(Task.CompletedTask);
 
-            await call(_service.Object, stream.Object, _serverCallContext.Object).ConfigureAwait(false);
+            await call(_service.Object, null, stream, _serverCallContext.Object).ConfigureAwait(false);
 
-            stream.Verify();
             _service.VerifyAll();
         }
 
@@ -558,11 +514,10 @@ namespace ServiceModel.Grpc.TestApi
         {
             var call = ChannelType
                 .InstanceMethod(nameof(IContract.ClientStreamingSumValues))
-                .CreateDelegate<Func<IContract, IAsyncStreamReader<Message<int>>, ServerCallContext, Task<Message<string>>>>(Channel);
+                .CreateDelegate<Func<IContract, Message?, IAsyncEnumerable<int>, ServerCallContext, Task<Message<string>>>>(Channel);
             Console.WriteLine(call.Method.Disassemble());
 
-            var stream = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
-            stream.Setup(_tokenSource.Token, 2);
+            var stream = new[] { 2 }.AsAsyncEnumerable();
 
             _service
                 .Setup(s => s.ClientStreamingSumValues(It.IsNotNull<IAsyncEnumerable<int>>(), _tokenSource.Token))
@@ -573,10 +528,9 @@ namespace ServiceModel.Grpc.TestApi
                     return "2";
                 });
 
-            var actual = await call(_service.Object, stream.Object, _serverCallContext.Object).ConfigureAwait(false);
+            var actual = await call(_service.Object, null, stream, _serverCallContext.Object).ConfigureAwait(false);
 
             actual.Value1.ShouldBe("2");
-            stream.Verify();
             _service.VerifyAll();
         }
 
@@ -585,16 +539,10 @@ namespace ServiceModel.Grpc.TestApi
         {
             var call = ChannelType
                 .InstanceMethod(nameof(IContract.ClientStreamingHeaderParameters))
-                .CreateDelegate<Func<IContract, IAsyncStreamReader<Message<int>>, ServerCallContext, Task<Message<string>>>>(Channel);
+                .CreateDelegate<Func<IContract, Message<int, string>, IAsyncEnumerable<int>, ServerCallContext, Task<Message<string>>>>(Channel);
             Console.WriteLine(call.Method.Disassemble());
 
-            _serverCallContext
-                .Protected()
-                .SetupGet<Metadata>("RequestHeadersCore")
-                .Returns(CompatibilityToolsTestExtensions.SerializeMethodInput(DataContractMarshallerFactory.Default, 1, "prefix"));
-
-            var stream = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
-            stream.Setup(_tokenSource.Token, 2);
+            var stream = new[] { 2 }.AsAsyncEnumerable();
 
             _service
                 .Setup(s => s.ClientStreamingHeaderParameters(It.IsNotNull<IAsyncEnumerable<int>>(), 1, "prefix"))
@@ -605,10 +553,9 @@ namespace ServiceModel.Grpc.TestApi
                     return "2";
                 });
 
-            var actual = await call(_service.Object, stream.Object, _serverCallContext.Object).ConfigureAwait(false);
+            var actual = await call(_service.Object, new Message<int, string>(1, "prefix"), stream, _serverCallContext.Object).ConfigureAwait(false);
 
             actual.Value1.ShouldBe("2");
-            stream.Verify();
             _service.VerifyAll();
         }
 
@@ -616,12 +563,11 @@ namespace ServiceModel.Grpc.TestApi
         public async Task DuplicateClientStreaming1()
         {
             var call = ChannelType
-                .InstanceMethod("DuplicateClientStreaming1", typeof(IContract), typeof(IAsyncStreamReader<Message<string>>), typeof(ServerCallContext))
-                .CreateDelegate<Func<IContract, IAsyncStreamReader<Message<string>>, ServerCallContext, Task<Message<string>>>>(Channel);
+                .InstanceMethod("DuplicateClientStreaming1", typeof(IContract), typeof(Message), typeof(IAsyncEnumerable<string>), typeof(ServerCallContext))
+                .CreateDelegate<Func<IContract, Message?, IAsyncEnumerable<string>, ServerCallContext, Task<Message<string>>>>(Channel);
             Console.WriteLine(call.Method.Disassemble());
 
-            var stream = new Mock<IAsyncStreamReader<Message<string>>>(MockBehavior.Strict);
-            stream.Setup(_tokenSource.Token, "a");
+            var stream = new[] { "a" }.AsAsyncEnumerable();
 
             _service
                 .Setup(s => s.DuplicateClientStreaming(It.IsNotNull<IAsyncEnumerable<string>>()))
@@ -632,10 +578,9 @@ namespace ServiceModel.Grpc.TestApi
                     return "b";
                 });
 
-            var actual = await call(_service.Object, stream.Object, _serverCallContext.Object).ConfigureAwait(false);
+            var actual = await call(_service.Object, null, stream, _serverCallContext.Object).ConfigureAwait(false);
 
             actual.Value1.ShouldBe("b");
-            stream.Verify();
             _service.VerifyAll();
         }
 
@@ -643,12 +588,11 @@ namespace ServiceModel.Grpc.TestApi
         public async Task DuplicateClientStreaming2()
         {
             var call = ChannelType
-                .InstanceMethod("DuplicateClientStreaming2", typeof(IContract), typeof(IAsyncStreamReader<Message<int>>), typeof(ServerCallContext))
-                .CreateDelegate<Func<IContract, IAsyncStreamReader<Message<int>>, ServerCallContext, Task<Message<string>>>>(Channel);
+                .InstanceMethod("DuplicateClientStreaming2", typeof(IContract), typeof(Message), typeof(IAsyncEnumerable<int>), typeof(ServerCallContext))
+                .CreateDelegate<Func<IContract, Message?, IAsyncEnumerable<int>, ServerCallContext, Task<Message<string>>>>(Channel);
             Console.WriteLine(call.Method.Disassemble());
 
-            var stream = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
-            stream.Setup(_tokenSource.Token, 1);
+            var stream = new[] { 1 }.AsAsyncEnumerable();
 
             _service
                 .Setup(s => s.DuplicateClientStreaming(It.IsNotNull<IAsyncEnumerable<int>>()))
@@ -659,10 +603,9 @@ namespace ServiceModel.Grpc.TestApi
                     return "b";
                 });
 
-            var actual = await call(_service.Object, stream.Object, _serverCallContext.Object).ConfigureAwait(false);
+            var actual = await call(_service.Object, null, stream, _serverCallContext.Object).ConfigureAwait(false);
 
             actual.Value1.ShouldBe("b");
-            stream.Verify();
             _service.VerifyAll();
         }
 
@@ -671,14 +614,10 @@ namespace ServiceModel.Grpc.TestApi
         {
             var call = ChannelType
                 .InstanceMethod(nameof(IContract.DuplexStreamingConvert))
-                .CreateDelegate<Func<IContract, IAsyncStreamReader<Message<int>>, IServerStreamWriter<Message<string>>, ServerCallContext, Task>>(Channel);
+                .CreateDelegate<Func<IContract, Message?, IAsyncEnumerable<int>, ServerCallContext, ValueTask<(Message?, IAsyncEnumerable<string>)>>>(Channel);
             Console.WriteLine(call.Method.Disassemble());
 
-            var input = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
-            input.Setup(_tokenSource.Token, 2);
-
-            var output = new Mock<IServerStreamWriter<Message<string>>>(MockBehavior.Strict);
-            var outputValues = output.Setup();
+            var input = new[] { 2 }.AsAsyncEnumerable();
 
             _service
                 .Setup(s => s.DuplexStreamingConvert(It.IsNotNull<IAsyncEnumerable<int>>(), _tokenSource.Token))
@@ -689,11 +628,11 @@ namespace ServiceModel.Grpc.TestApi
                 })
                 .Returns(new[] { "2" }.AsAsyncEnumerable());
 
-            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object).ConfigureAwait(false);
+            var response = await call(_service.Object, null, input, _serverCallContext.Object).ConfigureAwait(false);
 
+            response.Item1.ShouldBeNull();
+            var outputValues = await response.Item2.ToListAsync().ConfigureAwait(false);
             outputValues.ShouldBe(new[] { "2" });
-            input.Verify();
-            output.VerifyAll();
             _service.VerifyAll();
         }
 
@@ -702,14 +641,10 @@ namespace ServiceModel.Grpc.TestApi
         {
             var call = ChannelType
                 .InstanceMethod(nameof(IContract.DuplexStreamingConvertAsync))
-                .CreateDelegate<Func<IContract, IAsyncStreamReader<Message<int>>, IServerStreamWriter<Message<string>>, ServerCallContext, Task>>(Channel);
+                .CreateDelegate<Func<IContract, Message?, IAsyncEnumerable<int>, ServerCallContext, ValueTask<(Message?, IAsyncEnumerable<string>)>>>(Channel);
             Console.WriteLine(call.Method.Disassemble());
 
-            var input = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
-            input.Setup(_tokenSource.Token, 2);
-
-            var output = new Mock<IServerStreamWriter<Message<string>>>(MockBehavior.Strict);
-            var outputValues = output.Setup();
+            var input = new[] { 2 }.AsAsyncEnumerable();
 
             _service
                 .Setup(s => s.DuplexStreamingConvertAsync(It.IsNotNull<IAsyncEnumerable<int>>(), _tokenSource.Token))
@@ -720,11 +655,11 @@ namespace ServiceModel.Grpc.TestApi
                 })
                 .Returns(Task.FromResult(new[] { "2" }.AsAsyncEnumerable()));
 
-            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object).ConfigureAwait(false);
+            var response = await call(_service.Object, null, input, _serverCallContext.Object).ConfigureAwait(false);
 
+            response.Item1.ShouldBeNull();
+            var outputValues = await response.Item2.ToListAsync().ConfigureAwait(false);
             outputValues.ShouldBe(new[] { "2" });
-            input.Verify();
-            output.VerifyAll();
             _service.VerifyAll();
         }
 
@@ -733,14 +668,10 @@ namespace ServiceModel.Grpc.TestApi
         {
             var call = ChannelType
                 .InstanceMethod(nameof(IContract.DuplexStreamingConvertValueTaskAsync))
-                .CreateDelegate<Func<IContract, IAsyncStreamReader<Message<int>>, IServerStreamWriter<Message<string>>, ServerCallContext, Task>>(Channel);
+                .CreateDelegate<Func<IContract, Message?, IAsyncEnumerable<int>, ServerCallContext, ValueTask<(Message?, IAsyncEnumerable<string>)>>>(Channel);
             Console.WriteLine(call.Method.Disassemble());
 
-            var input = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
-            input.Setup(_tokenSource.Token, 2);
-
-            var output = new Mock<IServerStreamWriter<Message<string>>>(MockBehavior.Strict);
-            var outputValues = output.Setup();
+            var input = new[] { 2 }.AsAsyncEnumerable();
 
             _service
                 .Setup(s => s.DuplexStreamingConvertValueTaskAsync(It.IsNotNull<IAsyncEnumerable<int>>(), _tokenSource.Token))
@@ -751,11 +682,11 @@ namespace ServiceModel.Grpc.TestApi
                 })
                 .Returns(new ValueTask<IAsyncEnumerable<string>>(new[] { "2" }.AsAsyncEnumerable()));
 
-            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object).ConfigureAwait(false);
+            var response = await call(_service.Object, null, input, _serverCallContext.Object).ConfigureAwait(false);
 
+            response.Item1.ShouldBeNull();
+            var outputValues = await response.Item2.ToListAsync().ConfigureAwait(false);
             outputValues.ShouldBe(new[] { "2" });
-            input.Verify();
-            output.VerifyAll();
             _service.VerifyAll();
         }
 
@@ -764,19 +695,10 @@ namespace ServiceModel.Grpc.TestApi
         {
             var call = ChannelType
                 .InstanceMethod(nameof(IContract.DuplexStreamingHeaderParameters))
-                .CreateDelegate<Func<IContract, IAsyncStreamReader<Message<int>>, IServerStreamWriter<Message<string>>, ServerCallContext, Task>>(Channel);
+                .CreateDelegate<Func<IContract, Message<int, string>, IAsyncEnumerable<int>, ServerCallContext, ValueTask<(Message, IAsyncEnumerable<string>)>>>(Channel);
             Console.WriteLine(call.Method.Disassemble());
 
-            _serverCallContext
-                .Protected()
-                .SetupGet<Metadata>("RequestHeadersCore")
-                .Returns(CompatibilityToolsTestExtensions.SerializeMethodInput(DataContractMarshallerFactory.Default, 1, "prefix"));
-
-            var input = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
-            input.Setup(_tokenSource.Token, 2);
-
-            var output = new Mock<IServerStreamWriter<Message<string>>>(MockBehavior.Strict);
-            var outputValues = output.Setup();
+            var input = new[] { 2 }.AsAsyncEnumerable();
 
             _service
                 .Setup(s => s.DuplexStreamingHeaderParameters(It.IsNotNull<IAsyncEnumerable<int>>(), 1, "prefix"))
@@ -787,11 +709,11 @@ namespace ServiceModel.Grpc.TestApi
                 })
                 .Returns(new[] { "2" }.AsAsyncEnumerable());
 
-            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object).ConfigureAwait(false);
+            var response = await call(_service.Object, new Message<int, string>(1, "prefix"), input, _serverCallContext.Object).ConfigureAwait(false);
 
+            response.Item1.ShouldBeNull();
+            var outputValues = await response.Item2.ToListAsync().ConfigureAwait(false);
             outputValues.ShouldBe(new[] { "2" });
-            input.Verify();
-            output.VerifyAll();
             _service.VerifyAll();
         }
 
@@ -799,15 +721,11 @@ namespace ServiceModel.Grpc.TestApi
         public async Task DuplicateDuplexStreaming1()
         {
             var call = ChannelType
-                .InstanceMethod("DuplicateDuplexStreaming1", typeof(IContract), typeof(IAsyncStreamReader<Message<string>>), typeof(IServerStreamWriter<Message<string>>), typeof(ServerCallContext))
-                .CreateDelegate<Func<IContract, IAsyncStreamReader<Message<string>>, IServerStreamWriter<Message<string>>, ServerCallContext, Task>>(Channel);
+                .InstanceMethod("DuplicateDuplexStreaming1", typeof(IContract), typeof(Message), typeof(IAsyncEnumerable<string>), typeof(ServerCallContext))
+                .CreateDelegate<Func<IContract, Message?, IAsyncEnumerable<string>, ServerCallContext, ValueTask<(Message?, IAsyncEnumerable<string>)>>>(Channel);
             Console.WriteLine(call.Method.Disassemble());
 
-            var input = new Mock<IAsyncStreamReader<Message<string>>>(MockBehavior.Strict);
-            input.Setup(_tokenSource.Token, "a");
-
-            var output = new Mock<IServerStreamWriter<Message<string>>>(MockBehavior.Strict);
-            var outputValues = output.Setup();
+            var input = new[] { "a" }.AsAsyncEnumerable();
 
             _service
                 .Setup(s => s.DuplicateDuplexStreaming(It.IsNotNull<IAsyncEnumerable<string>>()))
@@ -818,11 +736,11 @@ namespace ServiceModel.Grpc.TestApi
                 })
                 .Returns(new[] { "b" }.AsAsyncEnumerable());
 
-            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object).ConfigureAwait(false);
+            var response = await call(_service.Object, null, input, _serverCallContext.Object).ConfigureAwait(false);
 
+            response.Item1.ShouldBeNull();
+            var outputValues = await response.Item2.ToListAsync().ConfigureAwait(false);
             outputValues.ShouldBe(new[] { "b" });
-            input.Verify();
-            output.VerifyAll();
             _service.VerifyAll();
         }
 
@@ -830,15 +748,11 @@ namespace ServiceModel.Grpc.TestApi
         public async Task DuplicateDuplexStreaming2()
         {
             var call = ChannelType
-                .InstanceMethod("DuplicateDuplexStreaming2", typeof(IContract), typeof(IAsyncStreamReader<Message<int>>), typeof(IServerStreamWriter<Message<int>>), typeof(ServerCallContext))
-                .CreateDelegate<Func<IContract, IAsyncStreamReader<Message<int>>, IServerStreamWriter<Message<int>>, ServerCallContext, Task>>(Channel);
+                .InstanceMethod("DuplicateDuplexStreaming2", typeof(IContract), typeof(Message), typeof(IAsyncEnumerable<int>), typeof(ServerCallContext))
+                .CreateDelegate<Func<IContract, Message?, IAsyncEnumerable<int>, ServerCallContext, ValueTask<(Message?, IAsyncEnumerable<int>)>>>(Channel);
             Console.WriteLine(call.Method.Disassemble());
 
-            var input = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
-            input.Setup(_tokenSource.Token, 1);
-
-            var output = new Mock<IServerStreamWriter<Message<int>>>(MockBehavior.Strict);
-            var outputValues = output.Setup();
+            var input = new[] { 1 }.AsAsyncEnumerable();
 
             _service
                 .Setup(s => s.DuplicateDuplexStreaming(It.IsNotNull<IAsyncEnumerable<int>>()))
@@ -849,11 +763,11 @@ namespace ServiceModel.Grpc.TestApi
                 })
                 .Returns(new[] { 2 }.AsAsyncEnumerable());
 
-            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object).ConfigureAwait(false);
+            var response = await call(_service.Object, null, input, _serverCallContext.Object).ConfigureAwait(false);
 
+            response.Item1.ShouldBeNull();
+            var outputValues = await response.Item2.ToListAsync().ConfigureAwait(false);
             outputValues.ShouldBe(new[] { 2 });
-            input.Verify();
-            output.VerifyAll();
             _service.VerifyAll();
         }
 
@@ -861,15 +775,11 @@ namespace ServiceModel.Grpc.TestApi
         public async Task DuplexStreamingWithHeadersTask()
         {
             var call = ChannelType
-                .InstanceMethod("DuplexStreamingWithHeadersTask")
-                .CreateDelegate<Func<IContract, IAsyncStreamReader<Message<int>>, IServerStreamWriter<Message<int>>, ServerCallContext, Task>>(Channel);
+                .InstanceMethod(nameof(IContract.DuplexStreamingWithHeadersTask))
+                .CreateDelegate<Func<IContract, Message?, IAsyncEnumerable<int>, ServerCallContext, ValueTask<(Message<int, int>?, IAsyncEnumerable<int>)>>>(Channel);
             Console.WriteLine(call.Method.Disassemble());
 
-            var input = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
-            input.Setup(_tokenSource.Token, 1);
-
-            var output = new Mock<IServerStreamWriter<Message<int>>>(MockBehavior.Strict);
-            var outputValues = output.Setup();
+            var input = new[] { 1 }.AsAsyncEnumerable();
 
             _service
                 .Setup(s => s.DuplexStreamingWithHeadersTask(It.IsNotNull<IAsyncEnumerable<int>>(), _tokenSource.Token))
@@ -880,41 +790,25 @@ namespace ServiceModel.Grpc.TestApi
                 })
                 .ReturnsAsync((1, new[] { 2 }.AsAsyncEnumerable(), 2));
 
-            _serverCallContext
-                .Protected()
-                .Setup<Task>("WriteResponseHeadersAsyncCore", ItExpr.IsAny<Metadata>())
-                .Callback<Metadata>(responseHeaders =>
-                {
-                    responseHeaders.ShouldNotBeNull();
-                    var headers = CompatibilityToolsTestExtensions.DeserializeMethodOutput<int, int>(DataContractMarshallerFactory.Default, responseHeaders);
-                    headers.Value1.ShouldBe(1);
-                    headers.Value2.ShouldBe(2);
-                })
-                .Returns(Task.CompletedTask)
-                .Verifiable();
+            var response = await call(_service.Object, null, input, _serverCallContext.Object).ConfigureAwait(false);
 
-            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object).ConfigureAwait(false);
-
+            response.Item1.ShouldNotBeNull();
+            response.Item1.Value1.ShouldBe(1);
+            response.Item1.Value2.ShouldBe(2);
+            var outputValues = await response.Item2.ToListAsync().ConfigureAwait(false);
             outputValues.ShouldBe(new[] { 2 });
-            input.Verify();
-            output.VerifyAll();
             _service.VerifyAll();
-            _serverCallContext.Verify();
         }
 
         [Test]
         public async Task DuplexStreamingWithHeadersValueTask()
         {
             var call = ChannelType
-                .InstanceMethod("DuplexStreamingWithHeadersValueTask")
-                .CreateDelegate<Func<IContract, IAsyncStreamReader<Message<int>>, IServerStreamWriter<Message<int>>, ServerCallContext, Task>>(Channel);
+                .InstanceMethod(nameof(IContract.DuplexStreamingWithHeadersValueTask))
+                .CreateDelegate<Func<IContract, Message<int, int>, IAsyncEnumerable<int>, ServerCallContext, ValueTask<(Message<int>?, IAsyncEnumerable<int>)>>>(Channel);
             Console.WriteLine(call.Method.Disassemble());
 
-            var input = new Mock<IAsyncStreamReader<Message<int>>>(MockBehavior.Strict);
-            input.Setup(_tokenSource.Token, 1);
-
-            var output = new Mock<IServerStreamWriter<Message<int>>>(MockBehavior.Strict);
-            var outputValues = output.Setup();
+            var input = new[] { 1 }.AsAsyncEnumerable();
 
             _service
                 .Setup(s => s.DuplexStreamingWithHeadersValueTask(It.IsNotNull<IAsyncEnumerable<int>>(), 1, 2, _tokenSource.Token))
@@ -925,30 +819,13 @@ namespace ServiceModel.Grpc.TestApi
                 })
                 .Returns(new ValueTask<(IAsyncEnumerable<int> Stream, int Count)>((new[] { 2 }.AsAsyncEnumerable(), 1)));
 
-            _serverCallContext
-                .Protected()
-                .SetupGet<Metadata>("RequestHeadersCore")
-                .Returns(CompatibilityToolsTestExtensions.SerializeMethodInput(DataContractMarshallerFactory.Default, 1, 2));
+            var response = await call(_service.Object, new Message<int, int>(1, 2), input, _serverCallContext.Object).ConfigureAwait(false);
 
-            _serverCallContext
-                .Protected()
-                .Setup<Task>("WriteResponseHeadersAsyncCore", ItExpr.IsAny<Metadata>())
-                .Callback<Metadata>(responseHeaders =>
-                {
-                    responseHeaders.ShouldNotBeNull();
-                    var header = CompatibilityToolsTestExtensions.DeserializeMethodOutput<int>(DataContractMarshallerFactory.Default, responseHeaders);
-                    header.ShouldBe(1);
-                })
-                .Returns(Task.CompletedTask)
-                .Verifiable();
-
-            await call(_service.Object, input.Object, output.Object, _serverCallContext.Object).ConfigureAwait(false);
-
+            response.Item1.ShouldNotBeNull();
+            response.Item1.Value1.ShouldBe(1);
+            var outputValues = await response.Item2.ToListAsync().ConfigureAwait(false);
             outputValues.ShouldBe(new[] { 2 });
-            input.Verify();
-            output.VerifyAll();
             _service.VerifyAll();
-            _serverCallContext.Verify();
         }
     }
 }
