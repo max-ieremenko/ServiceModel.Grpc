@@ -7,7 +7,7 @@ using ServiceModel.Grpc.Filters;
 
 namespace Service.Filters
 {
-    public sealed class HackMultiplyFilterByAttribute : ServerFilterAttribute
+    internal sealed class HackMultiplyFilterByAttribute : ServerFilterAttribute
     {
         public HackMultiplyFilterByAttribute(int order)
             : base(order)

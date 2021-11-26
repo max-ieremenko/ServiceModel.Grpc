@@ -28,6 +28,7 @@ namespace Service.Filters
             // log input
             LogBegin(logger, context.ContractMethodInfo.Name, context.Request);
 
+            // log client stream in case of Client/Duplex streaming
             if (context.Request.Stream != null)
             {
                 context.Request.Stream = LogWrapStream(
@@ -49,6 +50,7 @@ namespace Service.Filters
                 throw;
             }
 
+            // log server stream in case of Server/Duplex streaming
             if (context.Response.Stream != null)
             {
                 context.Response.Stream = LogWrapStream(

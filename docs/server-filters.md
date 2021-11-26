@@ -2,6 +2,8 @@
 
 Server filter is a hook for service method invocation, it can work together with gRPC server interceptors, but it is not interceptor.
 
+see [example](Examples/https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/ServerFilters)
+
 ``` c#
 public sealed class MyServerFilter : IServerFilter
 {

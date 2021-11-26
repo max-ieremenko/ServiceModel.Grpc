@@ -4,7 +4,7 @@ using ServiceModel.Grpc.Filters;
 
 namespace Service.Filters
 {
-    public sealed class SumAsyncFilterAttribute : ServerFilterAttribute
+    internal sealed class SumAsyncFilterAttribute : ServerFilterAttribute
     {
         public SumAsyncFilterAttribute(int order)
             : base(order)

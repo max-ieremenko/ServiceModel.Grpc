@@ -6,7 +6,7 @@ using ServiceModel.Grpc.Filters;
 
 namespace Service.Filters
 {
-    public sealed class ValidateParameterFilterAttribute : ServerFilterRegistrationAttribute
+    internal sealed class ValidateParameterFilterAttribute : ServerFilterRegistrationAttribute
     {
         public ValidateParameterFilterAttribute(int order)
             : base(order)
@@ -25,6 +25,7 @@ namespace Service.Filters
         {
             var result = new DivideByResult { IsSuccess = true };
 
+            // invoke ValidateParameterAttribute.Validate for marked method parameters
             var parameters = context.ServiceMethodInfo.GetParameters();
             for (var i = 0; i < parameters.Length; i++)
             {
