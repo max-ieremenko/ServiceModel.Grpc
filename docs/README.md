@@ -194,7 +194,7 @@ server.Services.AddServiceModelTransient(() => new Greeter());
 
 ### Server filters
 
-see [example](Examples/https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/ServerFilters)
+see [example](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/ServerFilters)
 
 ``` c#
 // Startup.cs
