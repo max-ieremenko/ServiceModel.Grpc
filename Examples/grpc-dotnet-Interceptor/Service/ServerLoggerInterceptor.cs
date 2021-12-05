@@ -10,9 +10,9 @@ using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Microsoft.Extensions.Logging;
 
-namespace Server
+namespace Service
 {
-    internal sealed class ServerLoggerInterceptor : Interceptor
+    public sealed class ServerLoggerInterceptor : Interceptor
     {
         private readonly ILogger<ServerLoggerInterceptor> _logger;
 

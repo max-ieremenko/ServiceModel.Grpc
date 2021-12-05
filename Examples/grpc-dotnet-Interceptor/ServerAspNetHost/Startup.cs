@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Server.Services;
+using ServerAspNetHost.Services;
 
-namespace Server
+namespace ServerAspNetHost
 {
     internal sealed class Startup
     {

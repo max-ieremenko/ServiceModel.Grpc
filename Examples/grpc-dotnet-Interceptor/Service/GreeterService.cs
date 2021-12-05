@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 using Contract;
 using Microsoft.Extensions.Logging;
 
-namespace Server.Services
+namespace Service
 {
-    internal sealed class GreeterService : IGreeterService
+    public sealed class GreeterService : IGreeterService
     {
         private readonly ILogger _logger;
 
