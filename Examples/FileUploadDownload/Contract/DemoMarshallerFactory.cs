@@ -12,13 +12,13 @@ namespace Contract
 
         public Marshaller<T> CreateMarshaller<T>()
         {
-            // do not user serializer, write/read RentedArray directly
+            // skip serializer, write/read RentedArray directly
             if (typeof(T) == typeof(Message<RentedArray>))
             {
                 return (Marshaller<T>)RentedArrayMarshaller.Default;
             }
 
-            // do not user serializer, write/read byte[] directly
+            // skip serializer, write/read byte[] directly
             if (typeof(T) == typeof(Message<byte[]>))
             {
                 return (Marshaller<T>)ByteArrayMarshaller.Default;
