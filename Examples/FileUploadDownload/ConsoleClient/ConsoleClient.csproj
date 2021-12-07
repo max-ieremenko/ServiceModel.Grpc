@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Grpc.Core" Version="$(GrpcCoreVersion)" />
+		<PackageReference Include="Grpc.Net.Client" Version="$(GrpcNetVersion)" />
+		<PackageReference Include="Grpc.Net.Client.Web" Version="$(GrpcNetVersion)" />
+		<PackageReference Include="Shouldly" Version="$(ShouldlyVersion)" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Contract\Contract.csproj" />
+	</ItemGroup>
+
+</Project>
