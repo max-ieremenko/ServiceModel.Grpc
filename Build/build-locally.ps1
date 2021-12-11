@@ -1,5 +1,8 @@
-#Install-Module -Name psake
-#Requires -Modules @{ModuleName='psake'; RequiredVersion='4.9.0'}
+#Install-Module -Name InvokeBuild -RequiredVersion 5.8.6
+#Requires -Modules @{ ModuleName="InvokeBuild"; RequiredVersion="5.8.6" }
 
-$psakeMain = Join-Path $PSScriptRoot "build-locally-tasks.ps1"
-Invoke-psake $psakeMain
+$ErrorActionPreference = "Stop"
+Set-StrictMode -Version Latest
+
+$main = Join-Path $PSScriptRoot "build-locally-tasks.ps1"
+Invoke-Build -File $main

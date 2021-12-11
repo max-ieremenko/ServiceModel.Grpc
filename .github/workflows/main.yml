@@ -7,7 +7,6 @@ on:
       - 'release/**'
     paths-ignore:
       - 'docs/**'
-      - 'Examples/**'
       - '**.md'
   pull_request:
     branches:
@@ -15,7 +14,6 @@ on:
       - 'release/**'
     paths-ignore:
       - 'docs/**'
-      - 'Examples/**'
       - '**.md'
 
 jobs:
@@ -38,41 +36,13 @@ jobs:
       shell: cmd
       run: dotnet tool install --global ThirdPartyLibraries.GlobalTool
 
-    - name: Install psake
+    - name: Install InvokeBuild
       shell: pwsh
-      run: Install-Module -Name psake -RequiredVersion 4.9.0 -Force
+      run: Install-Module -Name InvokeBuild -RequiredVersion 5.8.6 -Force
 
     - name: Build
       shell: pwsh
-      run: .\Build\step-build.ps1
-
-    - name: ThirdPartyNotices
-      shell: pwsh
-      run: .\Build\step-third-party-notices.ps1
-
-    - name: Unit test net461
-      shell: pwsh
-      run: .\Build\step-unit-test.ps1 net461
-
-    - name: Unit test netcoreapp3.1
-      shell: pwsh
-      run: .\Build\step-unit-test.ps1 netcoreapp3.1
-
-    - name: Unit test net5.0
-      shell: pwsh
-      run: .\Build\step-unit-test.ps1 net5.0
-
-    - name: Unit test net6.0
-      shell: pwsh
-      run: .\Build\step-unit-test.ps1 net6.0
-
-    - name: Pack
-      shell: pwsh
-      run: .\Build\step-pack.ps1
-
-    - name: Pack test
-      shell: pwsh
-      run: .\Build\step-pack-test.ps1
+      run: Invoke-Build -File .\Build\ci-win-build-tasks.ps1
 
     - name: Artifact nuget packages
       uses: actions/upload-artifact@v2
@@ -83,7 +53,7 @@ jobs:
           .\build-out\*.snupkg
         if-no-files-found: error
 
-  sdk-test:
+  sdk-test-linux:
     name: linux-sdk-test
     runs-on: ubuntu-latest
     needs: build
@@ -100,25 +70,54 @@ jobs:
       run: ls -R
       working-directory: build-out
 
-    - name: Install psake
+    - name: Install dotnet sdk
       shell: pwsh
-      run: Install-Module -Name psake -RequiredVersion 4.9.0 -Force
+      run: .\Build\step-install-dotnet.ps1
 
     - name: Dotnet info
       shell: pwsh
       run: dotnet --info
 
-    - name: test Basic
+    - name: Install InvokeBuild
       shell: pwsh
-      run: .\Build\step-sdk-test-basic-github.ps1
+      run: Install-Module -Name InvokeBuild -RequiredVersion 5.8.6 -Force
 
-    - name: test ServerFilters
+    - name: Test
       shell: pwsh
-      run: .\Build\step-sdk-test-serverfilters-github.ps1
+      run: Invoke-Build -File .\Build\ci-linux-sdk-tasks.ps1
 
-    - name: test MessagePack
+  sdk-test-win:
+    name: win-sdk-test
+    runs-on: windows-latest
+    needs: build
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/download-artifact@v2
+      with:
+        name: nuget-packages
+        path: build-out
+
+    - name: List artifacts
+      run: ls -R
+      working-directory: build-out
+
+    - name: Install dotnet sdk
       shell: pwsh
-      run: .\Build\step-sdk-test-messagepack-github.ps1
+      run: .\Build\step-install-dotnet.ps1
+
+    - name: Dotnet info
+      shell: pwsh
+      run: dotnet --info
+
+    - name: Install InvokeBuild
+      shell: pwsh
+      run: Install-Module -Name InvokeBuild -RequiredVersion 5.8.6 -Force
+
+    - name: Test
+      shell: pwsh
+      run: Invoke-Build -File .\Build\ci-win-sdk-tasks.ps1
 
   benchmarks:
     name: linux-benchmarks
@@ -127,9 +126,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Install psake
+    - name: Install InvokeBuild
       shell: pwsh
-      run: Install-Module -Name psake -RequiredVersion 4.9.0 -Force
+      run: Install-Module -Name InvokeBuild -RequiredVersion 5.8.6 -Force
 
     - name: Install dotnet sdk
       shell: pwsh
@@ -141,13 +140,13 @@ jobs:
 
     - name: run benchmarks
       shell: pwsh
-      run: .\Build\step-benchmarks-github.ps1
+      run: Invoke-Build -File .\Build\step-benchmarks-ci.ps1
 
     - name: Artifact results
       uses: actions/upload-artifact@v2
       with:
         name: benchmark-results
         path: |
-          ./BenchmarkDotNet.Artifacts/results
+          ./BenchmarkDotNet.Artifacts
         if-no-files-found: error
 

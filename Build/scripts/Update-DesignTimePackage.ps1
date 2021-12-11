@@ -1,13 +1,45 @@
-function Update-DesignTimePackage($binDir) {
+function FunctionName {
+    param (
+        $binDir
+    )
+    
+    function Get-Version($target, $ns, $id) {
+        $node = $target.SelectSingleNode("s:dependency[@id = '" + $id + "']", $ns)
+        if ($node) {
+            return $node.GetAttribute("version")
+        }
+    
+        throw "Dependency " + $id + "not found."
+    }
+    
+    function Add-Dependency($target, $id, $version) {
+        $doc = $target.OwnerDocument
+        $dependency = $doc.CreateElement("dependency", $doc.DocumentElement.NamespaceURI)
+        
+        $idAttribute = $doc.CreateAttribute("id")
+        $idAttribute.InnerText = $id
+    
+        $versionAttribute = $doc.CreateAttribute("version")
+        $versionAttribute.InnerText = $version
+    
+        $includeAttribute = $doc.CreateAttribute("include")
+        $includeAttribute.InnerText = "All"
+    
+        $dependency.Attributes.Append($idAttribute) | Out-Null
+        $dependency.Attributes.Append($versionAttribute) | Out-Null
+        $dependency.Attributes.Append($includeAttribute) | Out-Null
+    
+        $target.AppendChild($dependency) | Out-Null
+    }
+        
     $packageFile = Get-ChildItem -Path $binDir -Filter ServiceModel.Grpc.DesignTime.?.?.*.nupkg | ForEach-Object {$_.FullName}
     if ($packageFile.Count -ne 1) {
         throw "ServiceModel.Grpc.DesignTime.*.nupkg not found."
     }
 
     $tempPath = Join-Path ([System.IO.Path]::GetTempPath()) "step-pack"
-    if (Test-Path $tempPath) {
-        Remove-Item -Path $tempPath -Force -Recurse
-    }
+    Remove-DirectoryRecurse $tempPath
+
     New-Item -Path $tempPath -ItemType Directory | Out-Null
 
     $tempPackageFileName = Join-Path $tempPath "temp.zip"
@@ -41,33 +73,4 @@ function Update-DesignTimePackage($binDir) {
     Rename-Item ($packageFile + ".zip") $packageFile
 
     Remove-Item -Path $tempPath -Force -Recurse
-}
-
-function Get-Version($target, $ns, $id) {
-    $node = $target.SelectSingleNode("s:dependency[@id = '" + $id + "']", $ns)
-    if ($node) {
-        return $node.GetAttribute("version")
-    }
-
-    throw "Dependency " + $id + "not found."
-}
-
-function Add-Dependency($target, $id, $version) {
-    $doc = $target.OwnerDocument
-    $dependency = $doc.CreateElement("dependency", $doc.DocumentElement.NamespaceURI)
-    
-    $idAttribute = $doc.CreateAttribute("id")
-    $idAttribute.InnerText = $id
-
-    $versionAttribute = $doc.CreateAttribute("version")
-    $versionAttribute.InnerText = $version
-
-    $includeAttribute = $doc.CreateAttribute("include")
-    $includeAttribute.InnerText = "All"
-
-    $dependency.Attributes.Append($idAttribute) | Out-Null
-    $dependency.Attributes.Append($versionAttribute) | Out-Null
-    $dependency.Attributes.Append($includeAttribute) | Out-Null
-
-    $target.AppendChild($dependency) | Out-Null
 }
