@@ -1,22 +1,25 @@
 [CmdletBinding()]
-param (
-    [Parameter(Mandatory=$true)]
+param(
+    [Parameter(Mandatory = $true)]
+    $Settings,
+
+    [Parameter(Mandatory = $true)]
     [ValidateSet("net461", "netcoreapp3.1", "net5.0", "net6.0")] 
     [string]
     $Framework
 )
 
-$sourceDir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\Sources"))
+task Default {
+    $testList = Get-ChildItem -Path $Settings.sources -Recurse -Filter *.Test.dll `
+        | Where-Object FullName -Match \\$Framework\\ `
+        | Where-Object FullName -Match \\bin\\Release\\ `
+        | Where-Object FullName -NotMatch \\$Framework\\ref\\ `
+        | ForEach-Object {$_.FullName}
 
-$testList = Get-ChildItem -Path $sourceDir -Recurse -Filter *.Test.dll `
-    | Where-Object FullName -Match \\$Framework\\ `
-    | Where-Object FullName -Match \\bin\\Release\\ `
-    | Where-Object FullName -NotMatch \\$Framework\\ref\\ `
-    | ForEach-Object {$_.FullName}
+    if (-not $testList.Count) {
+        throw ($Framework + " test list is empty.")
+    }
 
-if (-not $testList.Count) {
-    throw ($Framework + " test list is empty.")
+    $testList
+    exec { dotnet vstest $testList }
 }
-
-$testList
-dotnet vstest $testList

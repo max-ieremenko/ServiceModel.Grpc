@@ -1,82 +1,101 @@
-. (Join-Path $PSScriptRoot ".\step-third-party-notices-scripts.ps1")
-
-$sourceDir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\Sources"))
-$thirdPartyRepository = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "third-party-libraries"))
-$binDir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\build-out"))
-
-# ServiceModel.Grpc
-$appNames = @("Core")
-$sources = @(
-    (Join-Path $script:sourceDir "ServiceModel.Grpc"),
-    (Join-Path $script:sourceDir "ServiceModel.Grpc.Test"),
-    (Join-Path $script:sourceDir "ServiceModel.Grpc.TestApi")
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory=$true)]
+    $Settings
 )
 
-Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
+task Default Core, AspNetCore, Swashbuckle, NSwag, DesignTime, SelfHost, ProtoBufMarshaller, MessagePackMarshaller
 
-# ServiceModel.Grpc.AspNetCore
-$appNames = @("AspNetCore", "Core")
-$sources = @(
-    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore"),
-    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.Test"),
-    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.TestApi")
-)
+task Core {
+    # ServiceModel.Grpc
+    $appNames = @("Core")
+    $sources = @(
+        (Join-Path $Settings.sources "ServiceModel.Grpc"),
+        (Join-Path $Settings.sources "ServiceModel.Grpc.Test"),
+        (Join-Path $Settings.sources "ServiceModel.Grpc.TestApi")
+    )
 
-Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
+    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty $Settings.buildOut
+}
 
-# ServiceModel.Grpc.AspNetCore.Swashbuckle
-$appNames = @("AspNetCoreSwashbuckle", "Core")
-$sources = @(
-    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.Swashbuckle"),
-    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.Swashbuckle.Test"),
-    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.Test"),
-    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.TestApi")
-)
+task AspNetCore {
+    # ServiceModel.Grpc.AspNetCore
+    $appNames = @("AspNetCore", "Core")
+    $sources = @(
+        (Join-Path $Settings.sources "ServiceModel.Grpc.AspNetCore"),
+        (Join-Path $Settings.sources "ServiceModel.Grpc.AspNetCore.Test"),
+        (Join-Path $Settings.sources "ServiceModel.Grpc.AspNetCore.TestApi")
+    )
 
-Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
+    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty $Settings.buildOut
+}
 
-# ServiceModel.Grpc.AspNetCore.NSwag
-$appNames = @("AspNetCoreNSwag", "Core")
-$sources = @(
-    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.NSwag"),
-    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.NSwag.Test"),
-    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.Test"),
-    (Join-Path $script:sourceDir "ServiceModel.Grpc.AspNetCore.TestApi")
-)
+task Swashbuckle {
+    # ServiceModel.Grpc.AspNetCore.Swashbuckle
+    $appNames = @("AspNetCoreSwashbuckle", "Core")
+    $sources = @(
+        (Join-Path $Settings.sources "ServiceModel.Grpc.AspNetCore.Swashbuckle"),
+        (Join-Path $Settings.sources "ServiceModel.Grpc.AspNetCore.Swashbuckle.Test"),
+        (Join-Path $Settings.sources "ServiceModel.Grpc.AspNetCore.Test"),
+        (Join-Path $Settings.sources "ServiceModel.Grpc.AspNetCore.TestApi")
+    )
 
-Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
+    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty $Settings.buildOut
+}
 
-# ServiceModel.Grpc.DesignTime
-$appNames = @("DesignTime")
-$sources = @(
-    (Join-Path $script:sourceDir "ServiceModel.Grpc.DesignTime"),
-    (Join-Path $script:sourceDir "ServiceModel.Grpc.DesignTime.Test"),
-    (Join-Path $script:sourceDir "ServiceModel.Grpc.DesignTime.Generator.Test")
-)
+task NSwag {
+    # ServiceModel.Grpc.AspNetCore.NSwag
+    $appNames = @("AspNetCoreNSwag", "Core")
+    $sources = @(
+        (Join-Path $Settings.sources "ServiceModel.Grpc.AspNetCore.NSwag"),
+        (Join-Path $Settings.sources "ServiceModel.Grpc.AspNetCore.NSwag.Test"),
+        (Join-Path $Settings.sources "ServiceModel.Grpc.AspNetCore.Test"),
+        (Join-Path $Settings.sources "ServiceModel.Grpc.AspNetCore.TestApi")
+    )
 
-Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
+    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty $Settings.buildOut
+}
 
-# ServiceModel.Grpc.SelfHost
-$appNames = @("SelfHost", "Core")
-$sources = @(
-    (Join-Path $script:sourceDir "ServiceModel.Grpc.SelfHost"),
-    (Join-Path $script:sourceDir "ServiceModel.Grpc.SelfHost.Test")
-)
+task DesignTime {
+    # ServiceModel.Grpc.DesignTime
+    $appNames = @("DesignTime")
+    $sources = @(
+        (Join-Path $Settings.sources "ServiceModel.Grpc.DesignTime"),
+        (Join-Path $Settings.sources "ServiceModel.Grpc.DesignTime.Test"),
+        (Join-Path $Settings.sources "ServiceModel.Grpc.DesignTime.Generator.Test")
+    )
 
-Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
+    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty $Settings.buildOut
+}
 
-# ServiceModel.Grpc.ProtoBufMarshaller
-$appNames = @("ProtoBuf", "Core")
-$sources = @(
-    (Join-Path $script:sourceDir "ServiceModel.Grpc.ProtoBufMarshaller")
-)
 
-Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
+task SelfHost {
+    # ServiceModel.Grpc.SelfHost
+    $appNames = @("SelfHost", "Core")
+    $sources = @(
+        (Join-Path $Settings.sources "ServiceModel.Grpc.SelfHost"),
+        (Join-Path $Settings.sources "ServiceModel.Grpc.SelfHost.Test")
+    )
 
-# ServiceModel.Grpc.MessagePackMarshaller
-$appNames = @("MessagePack", "Core")
-$sources = @(
-    (Join-Path $script:sourceDir "ServiceModel.Grpc.MessagePackMarshaller")
-)
+    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty $Settings.buildOut
+}
 
-Write-ThirdPartyNotices $appNames $sources $thirdPartyRepository $binDir
+task ProtoBufMarshaller {
+    # ServiceModel.Grpc.ProtoBufMarshaller
+    $appNames = @("ProtoBuf", "Core")
+    $sources = @(
+        (Join-Path $Settings.sources "ServiceModel.Grpc.ProtoBufMarshaller")
+    )
+
+    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty $Settings.buildOut
+}
+
+task MessagePackMarshaller {
+    # ServiceModel.Grpc.MessagePackMarshaller
+    $appNames = @("MessagePack", "Core")
+    $sources = @(
+        (Join-Path $Settings.sources "ServiceModel.Grpc.MessagePackMarshaller")
+    )
+
+    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty $Settings.buildOut
+}

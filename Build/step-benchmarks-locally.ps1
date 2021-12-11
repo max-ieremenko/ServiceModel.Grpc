@@ -1,8 +1,23 @@
-$sourceDir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\Benchmarks"))
-$solutionFile = Join-Path $sourceDir "Benchmarks.sln"
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory = $true)]
+    $Settings
+)
 
-Exec { dotnet restore $solutionFile }
-Exec { dotnet build $solutionFile -t:Rebuild -p:Configuration=Debug }
+task Default Clean, Build, Run
 
-$app = Join-Path $sourceDir "ServiceModel.Grpc.Benchmarks/bin/Debug/net5.0/ServiceModel.Grpc.Benchmarks.dll"
-Exec { dotnet $app }
+task Clean {
+    Remove-DirectoryRecurse -Path $settings.benchmarks -Filters "bin", "obj"
+}
+
+task Build {
+    $solutionFile = Join-Path $settings.benchmarks "Benchmarks.sln"
+
+    exec { dotnet restore $solutionFile }
+    exec { dotnet build $solutionFile -t:Rebuild -p:Configuration=Debug }
+}
+
+task Run {
+    $app = Join-Path $settings.benchmarks "ServiceModel.Grpc.Benchmarks/bin/Debug/net6.0/ServiceModel.Grpc.Benchmarks.dll"
+    exec { dotnet $app }
+}
