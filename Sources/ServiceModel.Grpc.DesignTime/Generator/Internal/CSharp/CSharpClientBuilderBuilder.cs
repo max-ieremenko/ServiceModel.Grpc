@@ -16,6 +16,7 @@
 
 using System.Collections.Generic;
 using ServiceModel.Grpc.Client;
+using ServiceModel.Grpc.Client.Internal;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 {

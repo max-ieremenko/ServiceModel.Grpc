@@ -14,7 +14,9 @@
 // limitations under the License.
 // </copyright>
 
-using System.ComponentModel;
+using System;
+using Grpc.Core;
+using ServiceModel.Grpc.Configuration;
 
 #pragma warning disable SA1642 // Constructor summary documentation should begin with standard text
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
@@ -23,16 +25,18 @@ using System.ComponentModel;
 #pragma warning disable SA1615 // Element return value should be documented
 #pragma warning disable SA1618 // Generic type parameters should be documented
 
-namespace ServiceModel.Grpc.Hosting
+namespace ServiceModel.Grpc.Client.Internal
 {
     /// <summary>
     /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
     /// This API may change or be removed in future releases.
     /// </summary>
-    [Browsable(false)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public interface IServiceEndpointBinder<TService>
+    public interface IClientBuilder<TContract>
     {
-        void Bind(IServiceMethodBinder<TService> binder);
+        /// <exclude />
+        void Initialize(IMarshallerFactory marshallerFactory, Func<CallOptions>? defaultCallOptionsFactory);
+
+        /// <exclude />
+        TContract Build(CallInvoker callInvoker);
     }
 }

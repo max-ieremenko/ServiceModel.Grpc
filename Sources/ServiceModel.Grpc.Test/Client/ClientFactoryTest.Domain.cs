@@ -16,8 +16,8 @@
 
 using System;
 using Grpc.Core;
+using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
-using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Client
 {

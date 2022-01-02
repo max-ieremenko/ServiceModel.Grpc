@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ using Moq;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Client
+namespace ServiceModel.Grpc.Client.Internal
 {
     [TestFixture]
     public class CallOptionsBuilderTest
@@ -112,28 +112,6 @@ namespace ServiceModel.Grpc.Client
                 .Build();
 
             actual.Headers.ShouldBe(newOptions.Headers);
-        }
-
-        [Test]
-        public void WithMethodInputHeader()
-        {
-            var marshaller = new Marshaller<string>(
-                (value, context) =>
-                {
-                    value.ShouldBe("some value");
-                    context.Complete(Guid.Empty.ToByteArray());
-                },
-                _ => throw new NotSupportedException());
-
-            var actual = new CallOptionsBuilder(null)
-                .WithMethodInputHeader(marshaller, "some value")
-                .Build();
-
-            actual.Headers.ShouldNotBeNull();
-            actual.Headers.Count.ShouldBe(1);
-            actual.Headers[0].Key.ShouldBe(CallContext.HeaderNameMethodInput);
-            actual.Headers[0].IsBinary.ShouldBeTrue();
-            actual.Headers[0].ValueBytes.ShouldBe(Guid.Empty.ToByteArray());
         }
 
         [Test]

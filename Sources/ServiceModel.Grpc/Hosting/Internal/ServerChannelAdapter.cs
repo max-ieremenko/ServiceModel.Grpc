@@ -24,7 +24,7 @@ using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Internal;
 
-namespace ServiceModel.Grpc.Hosting
+namespace ServiceModel.Grpc.Hosting.Internal
 {
     internal static class ServerChannelAdapter
     {

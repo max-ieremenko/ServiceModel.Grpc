@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,13 +22,13 @@ using NUnit.Framework;
 using ServiceModel.Grpc.Channel;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Client
+namespace ServiceModel.Grpc.Client.Internal
 {
     [TestFixture]
-    public class ClientChannelAdapterTest
+    public class UnaryCallTest
     {
         [Test]
-        public void AsyncUnaryCallWaitResponseHeaders()
+        public void VoidCallAsyncResponseHeaders()
         {
             var expectedHeaders = new Metadata();
             var expectedStatus = new Status(StatusCode.Internal, "some details");
@@ -46,7 +46,7 @@ namespace ServiceModel.Grpc.Client
 
             using (new SynchronizationContextMock())
             {
-                ClientChannelAdapter.AsyncUnaryCallWait(call, context, CancellationToken.None).Wait();
+                UnaryCall<Message, Message>.CallAsync(call, context, CancellationToken.None).Wait();
             }
 
             context.ResponseHeaders.ShouldBe(expectedHeaders);
@@ -56,7 +56,7 @@ namespace ServiceModel.Grpc.Client
         }
 
         [Test]
-        public void AsyncUnaryCallWaitResponse()
+        public void VoidCallAsyncResponse()
         {
             var disposeCounter = 0;
 
@@ -69,14 +69,14 @@ namespace ServiceModel.Grpc.Client
 
             using (new SynchronizationContextMock())
             {
-                ClientChannelAdapter.AsyncUnaryCallWait(call, null, CancellationToken.None).Wait();
+                UnaryCall<Message, Message>.CallAsync(call, null, CancellationToken.None).Wait();
             }
 
             disposeCounter.ShouldBe(1);
         }
 
         [Test]
-        public void GetAsyncUnaryCallResultResponseHeaders()
+        public void ResultCallAsyncResponseHeaders()
         {
             var expectedMessage = new Message<int>(10);
             var expectedHeaders = new Metadata();
@@ -95,7 +95,7 @@ namespace ServiceModel.Grpc.Client
 
             using (new SynchronizationContextMock())
             {
-                var result = ClientChannelAdapter.GetAsyncUnaryCallResult(call, context, CancellationToken.None).Result;
+                var result = UnaryCall<Message<int>, Message<int>>.CallAsync(call, context, CancellationToken.None).Result;
                 result.ShouldBe(10);
             }
 
@@ -106,12 +106,10 @@ namespace ServiceModel.Grpc.Client
         }
 
         [Test]
-        public void GetAsyncUnaryCallResultResponse()
+        public void ResultCallAsyncResponse()
         {
             var expectedMessage = new Message<int>(10);
             var disposeCounter = 0;
-
-            var context = new CallContext(headers: null);
 
             var call = new AsyncUnaryCall<Message<int>>(
                 GetAsync(expectedMessage),
@@ -122,7 +120,7 @@ namespace ServiceModel.Grpc.Client
 
             using (new SynchronizationContextMock())
             {
-                var result = ClientChannelAdapter.GetAsyncUnaryCallResult(call, null, CancellationToken.None).Result;
+                var result = UnaryCall<Message<int>, Message<int>>.CallAsync(call, null, CancellationToken.None).Result;
                 result.ShouldBe(10);
             }
 

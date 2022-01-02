@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ using ServiceModel.Grpc.Channel;
 #pragma warning disable SA1615 // Element return value should be documented
 #pragma warning disable SA1618 // Generic type parameters should be documented
 
-namespace ServiceModel.Grpc.Client
+namespace ServiceModel.Grpc.Client.Internal
 {
     /// <summary>
     /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
@@ -44,12 +44,16 @@ namespace ServiceModel.Grpc.Client
         public CallOptionsBuilder(Func<CallOptions>? defaultOptionsFactory)
         {
             _options = defaultOptionsFactory?.Invoke() ?? default;
+            CallContext = default;
         }
+
+        public CallContext? CallContext { get; private set; }
 
         /// <exclude />
         public CallOptionsBuilder WithCallOptions(CallOptions options)
         {
             _options = MergeCallOptions(_options, options);
+
             return this;
         }
 
@@ -63,6 +67,8 @@ namespace ServiceModel.Grpc.Client
         /// <exclude />
         public CallOptionsBuilder WithCallContext(CallContext? context)
         {
+            CallContext = context ?? CallContext;
+
             var options = context?.CallOptions;
             if (options.HasValue)
             {
@@ -84,14 +90,7 @@ namespace ServiceModel.Grpc.Client
         }
 
         /// <exclude />
-        public CallOptionsBuilder WithMethodInputHeader<T>(Marshaller<T> marshaller, T value)
-        {
-            var metadata = CompatibilityTools.SerializeMethodInputHeader(marshaller, value);
-            return WithCallOptions(new CallOptions(metadata));
-        }
-
-        /// <exclude />
-        public CallOptions Build() => _options;
+        public readonly CallOptions Build() => _options;
 
         internal static Metadata? MergeMetadata(Metadata? current, Metadata? mergeWith)
         {
@@ -123,7 +122,7 @@ namespace ServiceModel.Grpc.Client
             return result;
         }
 
-        private static CallOptions MergeCallOptions(CallOptions current, CallOptions mergeWith)
+        internal static CallOptions MergeCallOptions(CallOptions current, CallOptions mergeWith)
         {
             return new CallOptions(
                 headers: MergeMetadata(current.Headers, mergeWith.Headers),
