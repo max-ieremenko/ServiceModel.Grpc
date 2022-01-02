@@ -18,6 +18,7 @@ using System;
 using Grpc.Core;
 using Moq;
 using NUnit.Framework;
+using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Interceptors;
 using ServiceModel.Grpc.Interceptors.Internal;

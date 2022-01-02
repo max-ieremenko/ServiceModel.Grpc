@@ -21,7 +21,7 @@ using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Filters.Internal;
 
-namespace ServiceModel.Grpc.Hosting
+namespace ServiceModel.Grpc.Hosting.Internal
 {
     internal sealed class ServerStreamingServerCallHandler<TService, TRequest, TResponseHeader, TResponse>
         where TRequest : class

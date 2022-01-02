@@ -24,7 +24,7 @@ using System.Reflection.Emit;
 using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
-using ServiceModel.Grpc.Hosting;
+using ServiceModel.Grpc.Hosting.Internal;
 
 namespace ServiceModel.Grpc.Internal.Emit
 {

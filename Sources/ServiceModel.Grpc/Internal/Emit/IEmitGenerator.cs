@@ -14,7 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-using ServiceModel.Grpc.Client;
+using ServiceModel.Grpc.Client.Internal;
 
 namespace ServiceModel.Grpc.Internal.Emit
 {

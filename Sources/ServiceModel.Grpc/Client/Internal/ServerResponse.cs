@@ -17,7 +17,7 @@
 using System;
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Client
+namespace ServiceModel.Grpc.Client.Internal
 {
     internal readonly struct ServerResponse
     {

@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Filters.Internal;
 
-namespace ServiceModel.Grpc.Hosting
+namespace ServiceModel.Grpc.Hosting.Internal
 {
     internal sealed class UnaryServerCallHandler<TService, TRequest, TResponse>
         where TRequest : class
