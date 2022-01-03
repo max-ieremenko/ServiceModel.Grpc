@@ -62,6 +62,9 @@ namespace ServiceModel.Grpc.Hosting.Internal
         internal static CancellationToken GetContextToken(ServerCallContext context) => context.CancellationToken;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static CancellationToken? GetContextNullableToken(ServerCallContext context) => GetContextToken(context);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static CallContext GetContextDefault(ServerCallContext context) => context;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -69,6 +72,9 @@ namespace ServiceModel.Grpc.Hosting.Internal
         {
             return new CallOptions(context.RequestHeaders, context.Deadline, context.CancellationToken, context.WriteOptions);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static CallOptions? GetContextNullableOptions(ServerCallContext context) => GetContextOptions(context);
 
         internal static async Task<Message> UnaryCallWaitTask(Task call)
         {

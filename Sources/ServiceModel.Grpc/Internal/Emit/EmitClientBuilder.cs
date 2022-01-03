@@ -325,7 +325,20 @@ namespace ServiceModel.Grpc.Internal.Emit
                 body.Emit(OpCodes.Ldloca_S, 0); // optionsBuilder
                 body.EmitLdarg(i + 1); // parameter
 
-                var withMethodName = "With" + operation.Message.Parameters[i].ParameterType.Name;
+                var parameterType = operation.Message.Parameters[i].ParameterType;
+
+                Type? nullable = null;
+                if (parameterType.IsValueType)
+                {
+                    nullable = Nullable.GetUnderlyingType(parameterType);
+                    if (nullable == null)
+                    {
+                        // CancellationToken => CancellationToken?
+                        body.Emit(OpCodes.Newobj, typeof(Nullable<>).MakeGenericType(parameterType).Constructor(parameterType));
+                    }
+                }
+
+                var withMethodName = "With" + (nullable?.Name ?? parameterType.Name);
                 body.Emit(OpCodes.Call, typeof(CallOptionsBuilder).InstanceMethod(withMethodName)); // .With
                 body.Emit(OpCodes.Stloc_0);
             }

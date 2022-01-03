@@ -50,6 +50,22 @@ namespace ServiceModel.Grpc.TestApi
                 .Protected()
                 .SetupGet<CancellationToken>("CancellationTokenCore")
                 .Returns(_tokenSource.Token);
+            _serverCallContext
+                .Protected()
+                .SetupGet<Metadata>("RequestHeadersCore")
+                .Returns(Metadata.Empty);
+            _serverCallContext
+                .Protected()
+                .SetupGet<DateTime>("DeadlineCore")
+                .Returns(DateTime.MinValue);
+            _serverCallContext
+                .Protected()
+                .SetupGet<DateTime>("DeadlineCore")
+                .Returns(DateTime.MinValue);
+            _serverCallContext
+                .Protected()
+                .SetupGet<WriteOptions>("WriteOptionsCore")
+                .Returns(WriteOptions.Default);
         }
 
         [Test]
@@ -319,6 +335,45 @@ namespace ServiceModel.Grpc.TestApi
             var actual = await call(_service.Object, new Message<string>("a"), null!).ConfigureAwait(false);
 
             actual.Value1.ShouldBe("b");
+            _service.VerifyAll();
+        }
+
+        [Test]
+        public async Task UnaryNullableCancellationToken()
+        {
+            var call = ChannelType
+                .InstanceMethod(nameof(IContract.UnaryNullableCancellationToken))
+                .CreateDelegate<Func<IContract, Message<TimeSpan>, ServerCallContext, Task<Message>>>(Channel);
+            Console.WriteLine(call.Method.Disassemble());
+
+            _service
+                .Setup(s => s.UnaryNullableCancellationToken(TimeSpan.FromSeconds(2), _tokenSource.Token))
+                .Returns(Task.CompletedTask);
+
+            await call(_service.Object, new Message<TimeSpan>(TimeSpan.FromSeconds(2)), _serverCallContext.Object).ConfigureAwait(false);
+
+            _service.VerifyAll();
+        }
+
+        [Test]
+        public async Task UnaryNullableCallOptions()
+        {
+            var call = ChannelType
+                .InstanceMethod(nameof(IContract.UnaryNullableCallOptions))
+                .CreateDelegate<Func<IContract, Message<TimeSpan>, ServerCallContext, Task<Message>>>(Channel);
+            Console.WriteLine(call.Method.Disassemble());
+
+            _service
+                .Setup(s => s.UnaryNullableCallOptions(TimeSpan.FromSeconds(2), It.IsAny<CallOptions?>()))
+                .Callback<TimeSpan, CallOptions?>((_, op) =>
+                {
+                    op.ShouldNotBeNull();
+                    op.Value.CancellationToken.ShouldBe(_tokenSource.Token);
+                })
+                .Returns(Task.CompletedTask);
+
+            await call(_service.Object, new Message<TimeSpan>(TimeSpan.FromSeconds(2)), _serverCallContext.Object).ConfigureAwait(false);
+
             _service.VerifyAll();
         }
 

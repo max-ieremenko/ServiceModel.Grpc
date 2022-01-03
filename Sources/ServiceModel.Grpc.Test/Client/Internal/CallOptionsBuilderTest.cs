@@ -59,6 +59,16 @@ namespace ServiceModel.Grpc.Client.Internal
         }
 
         [Test]
+        public void WithNullCancellationToken()
+        {
+            var actual = new CallOptionsBuilder(null)
+                .WithCancellationToken(null)
+                .Build();
+
+            actual.CancellationToken.ShouldBe(default);
+        }
+
+        [Test]
         public void WithNullServerCallContext()
         {
             var actual = new CallOptionsBuilder(null)
@@ -89,7 +99,7 @@ namespace ServiceModel.Grpc.Client.Internal
         }
 
         [Test]
-        public void AcceptCallContext()
+        public void WithCallContext()
         {
             var defaultOptions = new CallOptions(new Metadata());
             var newOptions = new CallContext(new CallOptions(new Metadata()));
@@ -102,7 +112,19 @@ namespace ServiceModel.Grpc.Client.Internal
         }
 
         [Test]
-        public void AcceptCallOptions()
+        public void WithNullCallOptions()
+        {
+            var options = new CallOptions(new Metadata());
+
+            var actual = new CallOptionsBuilder(() => options)
+                .WithCallOptions(null)
+                .Build();
+
+            actual.Headers.ShouldBe(options.Headers);
+        }
+
+        [Test]
+        public void WithCallOptions()
         {
             var defaultOptions = new CallOptions(new Metadata());
             var newOptions = new CallOptions(new Metadata());

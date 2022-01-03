@@ -242,6 +242,42 @@ namespace ServiceModel.Grpc.TestApi
         }
 
         [Test]
+        public async Task UnaryNullableCancellationToken()
+        {
+            Console.WriteLine(GetClientInstanceMethod(nameof(IContract.UnaryNullableCancellationToken)).Disassemble());
+
+            CallInvoker.SetupAsyncUnaryCallIn(
+                TimeSpan.FromSeconds(2),
+                options =>
+                {
+                    options.CancellationToken.ShouldBe(TokenSource.Token);
+                });
+
+            await Factory().UnaryNullableCancellationToken(TimeSpan.FromSeconds(2), TokenSource.Token).ConfigureAwait(false);
+
+            CallInvoker.VerifyAll();
+        }
+
+        [Test]
+        public async Task UnaryNullableCallOptions()
+        {
+            Console.WriteLine(GetClientInstanceMethod(nameof(IContract.UnaryNullableCallOptions)).Disassemble());
+
+            var expectedOptions = new CallOptions(cancellationToken: TokenSource.Token);
+
+            CallInvoker.SetupAsyncUnaryCallIn(
+                TimeSpan.FromSeconds(2),
+                options =>
+                {
+                    options.ShouldBe(expectedOptions);
+                });
+
+            await Factory().UnaryNullableCallOptions(TimeSpan.FromSeconds(2), expectedOptions).ConfigureAwait(false);
+
+            CallInvoker.VerifyAll();
+        }
+
+        [Test]
         public async Task ServerStreamingRepeatValue()
         {
             Console.WriteLine(GetClientInstanceMethod(nameof(IContract.ServerStreamingRepeatValue)).Disassemble());

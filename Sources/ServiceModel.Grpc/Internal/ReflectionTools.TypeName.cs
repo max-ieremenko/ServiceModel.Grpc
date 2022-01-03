@@ -46,11 +46,17 @@ namespace ServiceModel.Grpc.Internal
                     type = type.GetElementType()!;
                 }
 
+                var nullable = Nullable.GetUnderlyingType(type);
+                if (nullable != null)
+                {
+                    type = nullable;
+                }
+
                 WriteTypeFullName(type);
 
-                // System.Tuple`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib
                 if (type.IsGenericType)
                 {
+                    // System.Tuple`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib
                     _result.Append("<");
 
                     var args = type.GetGenericArguments();
@@ -72,10 +78,21 @@ namespace ServiceModel.Grpc.Internal
                 {
                     _result.Append("[]");
                 }
+
+                if (nullable != null)
+                {
+                    _result.Append("?");
+                }
             }
 
             private void WriteTypeFullName(Type type)
             {
+                if (type == typeof(void))
+                {
+                    _result.Append("void");
+                    return;
+                }
+
                 var index = type.Name.IndexOf('`');
                 var count = type.Name.Length;
                 if (index > 0)

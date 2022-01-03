@@ -277,15 +277,34 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
                     return false;
                 }
 
-                var args = GenericTypeArguments(type);
-                return expected.GetGenericArguments().Length == args.Length;
+                var typeArgs = GenericTypeArguments(type);
+                var expectedArgs = expected.GetGenericArguments();
+                if (typeArgs.Length != expectedArgs.Length)
+                {
+                    return false;
+                }
+
+                if (expected.IsGenericTypeDefinition)
+                {
+                    return true;
+                }
+
+                for (var i = 0; i < typeArgs.Length; i++)
+                {
+                    if (!IsMatch(typeArgs[i], expectedArgs[i]))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
             }
 
             return expected.Name.Equals(type.Name, StringComparison.Ordinal)
                    && GenericTypeArguments(type).IsEmpty;
         }
 
-        private static bool IsNullable(ITypeSymbol type) => IsMatch(type, typeof(Nullable<>));
+        public static bool IsNullable(ITypeSymbol type) => IsMatch(type, typeof(Nullable<>));
 
         private static IEnumerable<INamespaceSymbol> ExpandNamespace(INamespaceSymbol? startFrom)
         {
