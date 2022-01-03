@@ -69,6 +69,12 @@ namespace ServiceModel.Grpc.TestApi.Domain
         string DuplicateUnary(string value);
 
         [OperationContract]
+        Task UnaryNullableCancellationToken(TimeSpan timeout, CancellationToken? token = default);
+
+        [OperationContract]
+        Task UnaryNullableCallOptions(TimeSpan timeout, CallOptions? options = default);
+
+        [OperationContract]
         IAsyncEnumerable<int> EmptyServerStreaming();
 
         [OperationContract]

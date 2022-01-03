@@ -40,8 +40,11 @@ namespace ServiceModel.Grpc.TestApi.Domain
             return Task.FromResult(result);
         }
 
-        public ValueTask<long> Sum5ValuesAsync(long x1, int x2, int x3, int x4, int x5, CancellationToken token)
+        public ValueTask<long> Sum5ValuesAsync(long x1, int x2, int x3, int x4, int x5, CancellationToken? token)
         {
+            token.ShouldNotBeNull();
+            token.Value.CanBeCanceled.ShouldBeTrue();
+
             return new ValueTask<long>(x1 + x2 + x3 + x4 + x5);
         }
 

@@ -287,7 +287,7 @@ namespace ServiceModel.Grpc.Internal
         public static string GetSignature(MethodInfo method)
         {
             var result = new StringBuilder()
-                .Append(typeof(void) == method.ReturnType ? "void" : method.ReturnType.Name)
+                .Append(method.ReturnType.GetUserFriendlyName())
                 .Append(" ")
                 .Append(GetNamespace(method.DeclaringType))
                 .Append(".")
@@ -313,7 +313,7 @@ namespace ServiceModel.Grpc.Internal
                     result.Append("ref ");
                 }
 
-                result.Append(p.ParameterType.Name);
+                result.Append(p.ParameterType.GetUserFriendlyName());
             }
 
             result.Append(")");

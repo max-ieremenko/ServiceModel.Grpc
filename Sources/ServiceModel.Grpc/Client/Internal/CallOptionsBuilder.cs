@@ -50,17 +50,24 @@ namespace ServiceModel.Grpc.Client.Internal
         public CallContext? CallContext { get; private set; }
 
         /// <exclude />
-        public CallOptionsBuilder WithCallOptions(CallOptions options)
+        public CallOptionsBuilder WithCallOptions(CallOptions? options)
         {
-            _options = MergeCallOptions(_options, options);
+            if (options.HasValue)
+            {
+                _options = MergeCallOptions(_options, options.Value);
+            }
 
             return this;
         }
 
         /// <exclude />
-        public CallOptionsBuilder WithCancellationToken(CancellationToken token)
+        public CallOptionsBuilder WithCancellationToken(CancellationToken? token)
         {
-            _options = MergeCallOptions(_options, new CallOptions(cancellationToken: token));
+            if (token.HasValue)
+            {
+                _options = MergeCallOptions(_options, new CallOptions(cancellationToken: token.Value));
+            }
+
             return this;
         }
 
@@ -69,13 +76,7 @@ namespace ServiceModel.Grpc.Client.Internal
         {
             CallContext = context ?? CallContext;
 
-            var options = context?.CallOptions;
-            if (options.HasValue)
-            {
-                return WithCallOptions(options.Value);
-            }
-
-            return this;
+            return WithCallOptions(context?.CallOptions);
         }
 
         /// <exclude />

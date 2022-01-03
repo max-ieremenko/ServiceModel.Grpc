@@ -602,7 +602,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 {
                     var parameter = operation.Method.Parameters[operation.ContextInput[i]];
                     Output.AppendLine();
-                    Output.AppendFormat(".With{0}({1})", parameter.Type, parameter.Name);
+                    Output.AppendFormat(".With{0}({1})", parameter.GetNonNullableType(), parameter.Name);
                 }
 
                 Output.AppendLine(";");

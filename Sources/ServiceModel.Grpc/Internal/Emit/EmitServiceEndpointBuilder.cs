@@ -42,20 +42,6 @@ namespace ServiceModel.Grpc.Internal.Emit
             _uniqueMemberNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
-        public static bool IsSupportedContextInput(MessageAssembler message)
-        {
-            for (var i = 0; i < message.ContextInput.Length; i++)
-            {
-                var input = message.ContextInput[i];
-                if (!ServerChannelAdapter.TryGetServiceContextOptionMethod(message.Parameters[input].ParameterType))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
         public static Func<object> CreateFactory(Type implementationType)
         {
             var ctor = implementationType.Constructor();
@@ -96,6 +82,20 @@ namespace ServiceModel.Grpc.Internal.Emit
             _ctor.Emit(OpCodes.Ret);
 
             return _typeBuilder.CreateTypeInfo()!;
+        }
+
+        private static bool IsSupportedContextInput(MessageAssembler message)
+        {
+            for (var i = 0; i < message.ContextInput.Length; i++)
+            {
+                var input = message.ContextInput[i];
+                if (!ServerChannelAdapter.TryGetServiceContextOptionMethod(message.Parameters[input].ParameterType))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void BuildNotSupportedOperation(OperationDescription operation, Type serviceType, string error)

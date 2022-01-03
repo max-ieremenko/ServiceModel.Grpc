@@ -38,5 +38,15 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
         public bool IsOut { get; }
 
         public bool IsRef { get; }
+
+        public string GetNonNullableType()
+        {
+            if (!SyntaxTools.IsNullable(TypeSymbol))
+            {
+                return Type;
+            }
+
+            return SyntaxTools.GetFullName(TypeSymbol.GenericTypeArguments()[0]);
+        }
     }
 }
