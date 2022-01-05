@@ -46,13 +46,13 @@ namespace ServiceModel.Grpc.TestApi.Domain
         Task<long> SumValues(IAsyncEnumerable<int> values, CallContext? context = default);
 
         [OperationContract]
-        Task<long> MultiplyByAndSumValues(IAsyncEnumerable<int> values, int multiplier, CallContext? context = default);
+        Task<long> MultiplyByAndSumValues(IAsyncEnumerable<int> values, int multiplier, int? valuesCount, CallContext? context = default);
 
         [OperationContract]
         IAsyncEnumerable<string> ConvertValues(IAsyncEnumerable<int> values, CallContext? context = default);
 
         [OperationContract]
-        IAsyncEnumerable<int> MultiplyBy(IAsyncEnumerable<int> values, int multiplier, CallContext? context = default);
+        IAsyncEnumerable<int> MultiplyBy(IAsyncEnumerable<int> values, int multiplier, int? valuesCount, CallContext? context = default);
 
         [OperationContract]
         ValueTask<IAsyncEnumerable<int>> MultiplyByAsync(IAsyncEnumerable<int> values, int multiplier, CallContext? context = default);

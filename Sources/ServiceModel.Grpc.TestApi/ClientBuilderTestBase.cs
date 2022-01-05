@@ -483,6 +483,28 @@ namespace ServiceModel.Grpc.TestApi
         }
 
         [Test]
+        public async Task ClientStreamingSumValuesValueTask()
+        {
+            Console.WriteLine(GetClientInstanceMethod(nameof(IContract.ClientStreamingSumValuesValueTask)).Disassemble());
+
+            var serverValues = new List<int>();
+
+            var requestStream = new Mock<IClientStreamWriter<Message<int>>>(MockBehavior.Strict);
+            requestStream.Setup(serverValues);
+
+            CallInvoker.SetupAsyncClientStreamingCall(
+                requestStream.Object,
+                "3",
+                o => o.CancellationToken.ShouldBe(TokenSource.Token));
+
+            var actual = await Factory().ClientStreamingSumValuesValueTask(new[] { 1, 2 }.AsAsyncEnumerable(), TokenSource.Token).ConfigureAwait(false);
+
+            actual.ShouldBe("3");
+            serverValues.ShouldBe(new[] { 1, 2 });
+            requestStream.VerifyAll();
+        }
+
+        [Test]
         public async Task ClientStreamingEmpty()
         {
             Console.WriteLine(GetClientInstanceMethod(nameof(IContract.ClientStreamingEmpty)).Disassemble());
@@ -495,6 +517,24 @@ namespace ServiceModel.Grpc.TestApi
             CallInvoker.SetupAsyncClientStreamingCall(requestStream.Object);
 
             await Factory().ClientStreamingEmpty(new[] { 1, 2 }.AsAsyncEnumerable()).ConfigureAwait(false);
+
+            serverValues.ShouldBe(new[] { 1, 2 });
+            requestStream.VerifyAll();
+        }
+
+        [Test]
+        public async Task ClientStreamingEmptyValueTask()
+        {
+            Console.WriteLine(GetClientInstanceMethod(nameof(IContract.ClientStreamingEmptyValueTask)).Disassemble());
+
+            var serverValues = new List<int>();
+
+            var requestStream = new Mock<IClientStreamWriter<Message<int>>>(MockBehavior.Strict);
+            requestStream.Setup(serverValues);
+
+            CallInvoker.SetupAsyncClientStreamingCall(requestStream.Object);
+
+            await Factory().ClientStreamingEmptyValueTask(new[] { 1, 2 }.AsAsyncEnumerable()).ConfigureAwait(false);
 
             serverValues.ShouldBe(new[] { 1, 2 });
             requestStream.VerifyAll();

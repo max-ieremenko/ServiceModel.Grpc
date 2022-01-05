@@ -168,7 +168,14 @@ namespace ServiceModel.Grpc.AspNetCore.TestApi
 
             if (_host != null)
             {
-                await _host.StopAsync().ConfigureAwait(false);
+                try
+                {
+                    await _host.StopAsync().ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                }
+
                 _host.Dispose();
             }
         }
