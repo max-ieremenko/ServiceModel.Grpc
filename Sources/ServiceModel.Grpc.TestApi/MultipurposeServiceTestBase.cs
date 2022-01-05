@@ -70,6 +70,17 @@ namespace ServiceModel.Grpc.TestApi
         }
 
         [Test]
+        public async Task ServerStreamingStopReading()
+        {
+            var stream = DomainService.RepeatValue("a", int.MaxValue);
+            await foreach (var value in stream.ConfigureAwait(false))
+            {
+                value.ShouldBe("a");
+                break;
+            }
+        }
+
+        [Test]
         public async Task RepeatValueAsync()
         {
             var source = await DomainService.RepeatValueAsync("a", 3).ConfigureAwait(false);
@@ -110,9 +121,19 @@ namespace ServiceModel.Grpc.TestApi
         {
             var values = new[] { 1, 2, 3 }.AsAsyncEnumerable();
 
-            var actual = await DomainService.MultiplyByAndSumValues(values, 2).ConfigureAwait(false);
+            var actual = await DomainService.MultiplyByAndSumValues(values, 2, null).ConfigureAwait(false);
 
             actual.ShouldBe(12);
+        }
+
+        [Test]
+        public async Task ClientStreamingStopReading()
+        {
+            var values = Enumerable.Range(1, int.MaxValue).AsAsyncEnumerable();
+
+            var actual = await DomainService.MultiplyByAndSumValues(values, 2, 1).ConfigureAwait(false);
+
+            actual.ShouldBe(2);
         }
 
         [Test]
@@ -130,9 +151,32 @@ namespace ServiceModel.Grpc.TestApi
         {
             var values = new[] { 1, 2, 3 }.AsAsyncEnumerable();
 
-            var actual = await DomainService.MultiplyBy(values, 2).ToListAsync().ConfigureAwait(false);
+            var actual = await DomainService.MultiplyBy(values, 2, null).ToListAsync().ConfigureAwait(false);
 
             actual.ShouldBe(new[] { 2, 4, 6 });
+        }
+
+        [Test]
+        public async Task DuplexStreamingServerStopReading()
+        {
+            var values = Enumerable.Range(1, int.MaxValue).AsAsyncEnumerable();
+
+            var actual = await DomainService.MultiplyBy(values, 2, 1).ToListAsync().ConfigureAwait(false);
+
+            actual.ShouldBe(new[] { 2 });
+        }
+
+        [Test]
+        public async Task DuplexStreamingClientStopReading()
+        {
+            var values = Enumerable.Range(1, int.MaxValue).AsAsyncEnumerable();
+
+            var response = DomainService.MultiplyBy(values, 2, null);
+            await foreach (var value in response.ConfigureAwait(false))
+            {
+                value.ShouldBe(2);
+                break;
+            }
         }
 
         [Test]

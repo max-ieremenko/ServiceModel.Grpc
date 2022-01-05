@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -41,14 +42,40 @@ namespace ServiceModel.Grpc.Hosting.Internal
                 await context.WriteResponseHeadersAsync(CompatibilityTools.SerializeMethodOutputHeader(headerMarshaller!, header)).ConfigureAwait(false);
             }
 
-            await foreach (var i in response.WithCancellation(context.CancellationToken).ConfigureAwait(false))
+            var token = context.CancellationToken;
+            await foreach (var i in response.WithCancellation(token).ConfigureAwait(false))
             {
-                await stream.WriteAsync(new Message<TResult>(i)).ConfigureAwait(false);
+                if (token.IsCancellationRequested)
+                {
+                    break;
+                }
+
+                try
+                {
+                    await stream.WriteAsync(new Message<TResult>(i)).ConfigureAwait(false);
+                }
+                catch (InvalidOperationException) when (token.IsCancellationRequested)
+                {
+                    // asp.net host InvalidOperationException: Can't write the message because the request is complete.
+                    // self host InvalidOperationException: Already finished.
+                    // one of the reasons the client does not read the whole response, see test MultipurposeServiceTestBase.ClientStreamingStopReading
+                    break;
+                }
+                catch (IOException) when (token.IsCancellationRequested)
+                {
+                    // self host IOException: Error sending from server.
+                    // one of the reasons the client does not read the whole response, see test MultipurposeServiceTestBase.DuplexStreamingClientStopReading
+                    break;
+                }
             }
         }
 
         internal static async IAsyncEnumerable<T> ReadClientStream<T>(IAsyncStreamReader<Message<T>> stream, ServerCallContext context)
         {
+            // in case of client does not read the whole response
+            // TaskCanceledException A task was canceled, test MultipurposeServiceTestBase.see DuplexStreamingClientStopReading.
+            // Do not catch by purpose: exception must be handled by server method implementation.
+            // If the exception was ignored by server method implementation, then it will be re-throw in WriteServerStreamingResult on foreach.
             while (await stream.MoveNext(context.CancellationToken).ConfigureAwait(false))
             {
                 yield return stream.Current.Value1;

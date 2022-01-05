@@ -41,6 +41,19 @@ namespace ServiceModel.Grpc.Client.Internal
             }
         }
 
+        internal static async Task WaitForWriter(Task writer, CancellationToken token)
+        {
+            try
+            {
+                await writer.ConfigureAwait(false);
+            }
+            catch (RpcException ex) when (ex.StatusCode == StatusCode.OK || token.IsCancellationRequested)
+            {
+                // Grpc.Core.RpcException : Status(StatusCode="OK", Detail="")
+                // one of the reasons the server does not read the whole request, see test MultipurposeServiceTestBase.ClientStreamingStopReading
+            }
+        }
+
         internal static async Task WaitForServerStreamExceptionAsync<THeader, TResult>(
             IAsyncStreamReader<Message<TResult>> responseStream,
             Metadata? responseHeaders,

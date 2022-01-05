@@ -88,7 +88,7 @@ namespace ServiceModel.Grpc.Client.Internal
         {
             using (call)
             {
-                _ = ClientChannelAdapter.WriteClientStream(request, call.RequestStream, token);
+                var writer = ClientChannelAdapter.WriteClientStream(request, call.RequestStream, token);
 
                 if (context != null && !token.IsCancellationRequested)
                 {
@@ -108,6 +108,8 @@ namespace ServiceModel.Grpc.Client.Internal
                         call.GetStatus(),
                         call.GetTrailers());
                 }
+
+                await ClientChannelAdapter.WaitForWriter(writer, token).ConfigureAwait(false);
             }
         }
 
@@ -120,7 +122,7 @@ namespace ServiceModel.Grpc.Client.Internal
             Message<TResult> result;
             using (call)
             {
-                _ = ClientChannelAdapter.WriteClientStream(request, call.RequestStream, token);
+                var writer = ClientChannelAdapter.WriteClientStream(request, call.RequestStream, token);
 
                 if (context != null && !token.IsCancellationRequested)
                 {
@@ -140,6 +142,8 @@ namespace ServiceModel.Grpc.Client.Internal
                         call.GetStatus(),
                         call.GetTrailers());
                 }
+
+                await ClientChannelAdapter.WaitForWriter(writer, token).ConfigureAwait(false);
             }
 
             return result.Value1;
