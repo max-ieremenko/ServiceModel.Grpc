@@ -1,4 +1,4 @@
-NUnit3TestAdapter [4.1.0](https://www.nuget.org/packages/NUnit3TestAdapter/4.1.0)
+NUnit3TestAdapter [4.2.0](https://www.nuget.org/packages/NUnit3TestAdapter/4.2.0)
 --------------------
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal
@@ -17,8 +17,6 @@ The NUnit3 TestAdapter for Visual Studio, all versions from 2012 and onwards, an
 
           Note that this package ONLY contains the adapter, not the NUnit framework.
           For VS 2017 and forward, you should add this package to every test project in your solution. (Earlier versions only require a single adapter package per solution.)
-
-          Note that with this package you should not install the VSIX adapter package.
 
 Remarks
 -----------

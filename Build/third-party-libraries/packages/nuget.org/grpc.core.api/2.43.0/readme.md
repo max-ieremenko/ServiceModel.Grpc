@@ -1,4 +1,4 @@
-Grpc.Core.Api [2.42.0](https://www.nuget.org/packages/Grpc.Core.Api/2.42.0)
+Grpc.Core.Api [2.43.0](https://www.nuget.org/packages/Grpc.Core.Api/2.43.0)
 --------------------
 
 Used by: AspNetCore, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core, DesignTime, SelfHost

@@ -45,7 +45,7 @@ namespace ServiceModel.Grpc.Filters
         /// Gets a dictionary that can be used by the various interceptors and handlers of this call to store arbitrary state.
         /// The reference to <see cref="ServerCallContext"/>.UserState.
         /// </summary>
-        IDictionary<object, object?> UserState { get; }
+        IDictionary<object, object> UserState { get; }
 
         /// <summary>
         /// Gets the <see cref="MethodInfo"/> for the contract method declaration.

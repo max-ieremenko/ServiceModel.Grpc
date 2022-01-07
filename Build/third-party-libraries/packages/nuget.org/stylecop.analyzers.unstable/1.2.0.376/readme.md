@@ -1,4 +1,4 @@
-StyleCop.Analyzers.Unstable [1.2.0.354](https://www.nuget.org/packages/StyleCop.Analyzers.Unstable/1.2.0.354)
+StyleCop.Analyzers.Unstable [1.2.0.376](https://www.nuget.org/packages/StyleCop.Analyzers.Unstable/1.2.0.376)
 --------------------
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, MessagePack internal, ProtoBuf internal, SelfHost internal

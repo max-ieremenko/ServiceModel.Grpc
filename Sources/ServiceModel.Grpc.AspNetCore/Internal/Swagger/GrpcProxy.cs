@@ -78,7 +78,7 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger
             string status = _context.Response.Headers[ProtocolConstants.HeaderGrpcStatus];
             if (string.IsNullOrEmpty(status))
             {
-                return new Status(StatusCode.OK, null);
+                return new Status(StatusCode.OK, string.Empty);
             }
 
             var statusCode = (StatusCode)int.Parse(status, CultureInfo.InvariantCulture);
