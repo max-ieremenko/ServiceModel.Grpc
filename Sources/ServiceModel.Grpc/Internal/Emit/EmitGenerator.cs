@@ -15,8 +15,8 @@
 // </copyright>
 
 using System;
-using ServiceModel.Grpc.Client;
-using ServiceModel.Grpc.Hosting;
+using ServiceModel.Grpc.Client.Internal;
+using ServiceModel.Grpc.Hosting.Internal;
 
 namespace ServiceModel.Grpc.Internal.Emit
 {

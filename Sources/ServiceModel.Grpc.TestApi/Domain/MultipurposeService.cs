@@ -40,8 +40,11 @@ namespace ServiceModel.Grpc.TestApi.Domain
             return Task.FromResult(result);
         }
 
-        public ValueTask<long> Sum5ValuesAsync(long x1, int x2, int x3, int x4, int x5, CancellationToken token)
+        public ValueTask<long> Sum5ValuesAsync(long x1, int x2, int x3, int x4, int x5, CancellationToken? token)
         {
+            token.ShouldNotBeNull();
+            token.Value.CanBeCanceled.ShouldBeTrue();
+
             return new ValueTask<long>(x1 + x2 + x3 + x4 + x5);
         }
 
@@ -78,13 +81,20 @@ namespace ServiceModel.Grpc.TestApi.Domain
             return result;
         }
 
-        public async Task<long> MultiplyByAndSumValues(IAsyncEnumerable<int> values, int multiplier, CallContext? context)
+        public async Task<long> MultiplyByAndSumValues(IAsyncEnumerable<int> values, int multiplier, int? valuesCount, CallContext? context)
         {
             var result = 0;
 
+            var counter = 0;
             await foreach (var i in values.WithCancellation(context!.ServerCallContext!.CancellationToken).ConfigureAwait(false))
             {
                 result += i * multiplier;
+
+                counter++;
+                if (counter == valuesCount)
+                {
+                    break;
+                }
             }
 
             return result;
@@ -98,18 +108,25 @@ namespace ServiceModel.Grpc.TestApi.Domain
             }
         }
 
-        public async IAsyncEnumerable<int> MultiplyBy(IAsyncEnumerable<int> values, int multiplier, CallContext? context)
+        public async IAsyncEnumerable<int> MultiplyBy(IAsyncEnumerable<int> values, int multiplier, int? valuesCount, CallContext? context)
         {
+            var counter = 0;
             await foreach (var i in values.WithCancellation(context!.ServerCallContext!.CancellationToken).ConfigureAwait(false))
             {
                 yield return i * multiplier;
+
+                counter++;
+                if (counter == valuesCount)
+                {
+                    yield break;
+                }
             }
         }
 
         public async ValueTask<IAsyncEnumerable<int>> MultiplyByAsync(IAsyncEnumerable<int> values, int multiplier, CallContext? context)
         {
             await Task.Delay(100).ConfigureAwait(false);
-            return MultiplyBy(values, multiplier, context);
+            return MultiplyBy(values, multiplier, null, context);
         }
 
         public ValueTask<(IAsyncEnumerable<string> Greetings, string Greeting)> GreetAsync(IAsyncEnumerable<string> names, string greeting, CancellationToken token)

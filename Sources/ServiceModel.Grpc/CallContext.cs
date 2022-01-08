@@ -17,7 +17,7 @@
 using System;
 using System.Threading;
 using Grpc.Core;
-using ServiceModel.Grpc.Client;
+using ServiceModel.Grpc.Client.Internal;
 
 namespace ServiceModel.Grpc
 {

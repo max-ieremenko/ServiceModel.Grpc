@@ -49,7 +49,7 @@ namespace ServiceModel.Grpc.Filters.Internal
 
         public IServiceProvider ServiceProvider { get; }
 
-        public IDictionary<object, object?> UserState => ServerCallContext.UserState;
+        public IDictionary<object, object> UserState => ServerCallContext.UserState;
 
         public MethodInfo ContractMethodInfo { get; }
 

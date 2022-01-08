@@ -105,8 +105,10 @@ namespace ServiceModel.Grpc.Internal
         {
             return typeof(ServerCallContext).IsAssignableFrom(type)
                 || typeof(CancellationToken) == type
+                || typeof(CancellationToken?) == type
                 || typeof(CallContext) == type
-                || typeof(CallOptions) == type;
+                || typeof(CallOptions) == type
+                || typeof(CallOptions?) == type;
         }
 
         private static bool IsDataParameter(Type type)

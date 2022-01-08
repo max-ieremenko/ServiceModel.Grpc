@@ -50,6 +50,22 @@ namespace ServiceModel.Grpc.TestApi
                 .Protected()
                 .SetupGet<CancellationToken>("CancellationTokenCore")
                 .Returns(_tokenSource.Token);
+            _serverCallContext
+                .Protected()
+                .SetupGet<Metadata>("RequestHeadersCore")
+                .Returns(Metadata.Empty);
+            _serverCallContext
+                .Protected()
+                .SetupGet<DateTime>("DeadlineCore")
+                .Returns(DateTime.MinValue);
+            _serverCallContext
+                .Protected()
+                .SetupGet<DateTime>("DeadlineCore")
+                .Returns(DateTime.MinValue);
+            _serverCallContext
+                .Protected()
+                .SetupGet<WriteOptions>("WriteOptionsCore")
+                .Returns(WriteOptions.Default);
         }
 
         [Test]
@@ -323,6 +339,45 @@ namespace ServiceModel.Grpc.TestApi
         }
 
         [Test]
+        public async Task UnaryNullableCancellationToken()
+        {
+            var call = ChannelType
+                .InstanceMethod(nameof(IContract.UnaryNullableCancellationToken))
+                .CreateDelegate<Func<IContract, Message<TimeSpan>, ServerCallContext, Task<Message>>>(Channel);
+            Console.WriteLine(call.Method.Disassemble());
+
+            _service
+                .Setup(s => s.UnaryNullableCancellationToken(TimeSpan.FromSeconds(2), _tokenSource.Token))
+                .Returns(Task.CompletedTask);
+
+            await call(_service.Object, new Message<TimeSpan>(TimeSpan.FromSeconds(2)), _serverCallContext.Object).ConfigureAwait(false);
+
+            _service.VerifyAll();
+        }
+
+        [Test]
+        public async Task UnaryNullableCallOptions()
+        {
+            var call = ChannelType
+                .InstanceMethod(nameof(IContract.UnaryNullableCallOptions))
+                .CreateDelegate<Func<IContract, Message<TimeSpan>, ServerCallContext, Task<Message>>>(Channel);
+            Console.WriteLine(call.Method.Disassemble());
+
+            _service
+                .Setup(s => s.UnaryNullableCallOptions(TimeSpan.FromSeconds(2), It.IsAny<CallOptions?>()))
+                .Callback<TimeSpan, CallOptions?>((_, op) =>
+                {
+                    op.ShouldNotBeNull();
+                    op.Value.CancellationToken.ShouldBe(_tokenSource.Token);
+                })
+                .Returns(Task.CompletedTask);
+
+            await call(_service.Object, new Message<TimeSpan>(TimeSpan.FromSeconds(2)), _serverCallContext.Object).ConfigureAwait(false);
+
+            _service.VerifyAll();
+        }
+
+        [Test]
         public async Task EmptyServerStreaming()
         {
             var call = ChannelType
@@ -497,12 +552,34 @@ namespace ServiceModel.Grpc.TestApi
 
             _service
                 .Setup(s => s.ClientStreamingEmpty(It.IsNotNull<IAsyncEnumerable<int>>()))
-                .Callback<IAsyncEnumerable<int>>(async values =>
+                .Returns<IAsyncEnumerable<int>>(async values =>
                 {
                     var items = await values.ToListAsync().ConfigureAwait(false);
                     items.ShouldBe(new[] { 2 });
-                })
-                .Returns(Task.CompletedTask);
+                });
+
+            await call(_service.Object, null, stream, _serverCallContext.Object).ConfigureAwait(false);
+
+            _service.VerifyAll();
+        }
+
+        [Test]
+        public async Task ClientStreamingEmptyValueTask()
+        {
+            var call = ChannelType
+                .InstanceMethod(nameof(IContract.ClientStreamingEmptyValueTask))
+                .CreateDelegate<Func<IContract, Message?, IAsyncEnumerable<int>, ServerCallContext, Task<Message>>>(Channel);
+            Console.WriteLine(call.Method.Disassemble());
+
+            var stream = new[] { 2 }.AsAsyncEnumerable();
+
+            _service
+                .Setup(s => s.ClientStreamingEmptyValueTask(It.IsNotNull<IAsyncEnumerable<int>>()))
+                .Returns<IAsyncEnumerable<int>>(async values =>
+                {
+                    var items = await values.ToListAsync().ConfigureAwait(false);
+                    items.ShouldBe(new[] { 2 });
+                });
 
             await call(_service.Object, null, stream, _serverCallContext.Object).ConfigureAwait(false);
 
@@ -521,6 +598,31 @@ namespace ServiceModel.Grpc.TestApi
 
             _service
                 .Setup(s => s.ClientStreamingSumValues(It.IsNotNull<IAsyncEnumerable<int>>(), _tokenSource.Token))
+                .Returns<IAsyncEnumerable<int>, CancellationToken>(async (values, _) =>
+                {
+                    var items = await values.ToListAsync().ConfigureAwait(false);
+                    items.ShouldBe(new[] { 2 });
+                    return "2";
+                });
+
+            var actual = await call(_service.Object, null, stream, _serverCallContext.Object).ConfigureAwait(false);
+
+            actual.Value1.ShouldBe("2");
+            _service.VerifyAll();
+        }
+
+        [Test]
+        public async Task ClientStreamingSumValuesValueTask()
+        {
+            var call = ChannelType
+                .InstanceMethod(nameof(IContract.ClientStreamingSumValuesValueTask))
+                .CreateDelegate<Func<IContract, Message?, IAsyncEnumerable<int>, ServerCallContext, Task<Message<string>>>>(Channel);
+            Console.WriteLine(call.Method.Disassemble());
+
+            var stream = new[] { 2 }.AsAsyncEnumerable();
+
+            _service
+                .Setup(s => s.ClientStreamingSumValuesValueTask(It.IsNotNull<IAsyncEnumerable<int>>(), _tokenSource.Token))
                 .Returns<IAsyncEnumerable<int>, CancellationToken>(async (values, _) =>
                 {
                     var items = await values.ToListAsync().ConfigureAwait(false);
@@ -619,14 +721,19 @@ namespace ServiceModel.Grpc.TestApi
 
             var input = new[] { 2 }.AsAsyncEnumerable();
 
+#pragma warning disable CS8425 // Async-iterator member has one or more parameters of type 'CancellationToken' but none of them is decorated with the 'EnumeratorCancellation' attribute, so the cancellation token parameter from the generated 'IAsyncEnumerable<>.GetAsyncEnumerator' will be unconsumed
+            static async IAsyncEnumerable<string> Callback(IAsyncEnumerable<int> values, CancellationToken token)
+#pragma warning restore CS8425 // Async-iterator member has one or more parameters of type 'CancellationToken' but none of them is decorated with the 'EnumeratorCancellation' attribute, so the cancellation token parameter from the generated 'IAsyncEnumerable<>.GetAsyncEnumerator' will be unconsumed
+            {
+                var items = await values.ToListAsync().ConfigureAwait(false);
+                items.ShouldBe(new[] { 2 });
+
+                yield return "2";
+            }
+
             _service
                 .Setup(s => s.DuplexStreamingConvert(It.IsNotNull<IAsyncEnumerable<int>>(), _tokenSource.Token))
-                .Callback<IAsyncEnumerable<int>, CancellationToken>(async (values, _) =>
-                {
-                    var items = await values.ToListAsync().ConfigureAwait(false);
-                    items.ShouldBe(new[] { 2 });
-                })
-                .Returns(new[] { "2" }.AsAsyncEnumerable());
+                .Returns<IAsyncEnumerable<int>, CancellationToken>(Callback);
 
             var response = await call(_service.Object, null, input, _serverCallContext.Object).ConfigureAwait(false);
 
@@ -646,14 +753,17 @@ namespace ServiceModel.Grpc.TestApi
 
             var input = new[] { 2 }.AsAsyncEnumerable();
 
+            static async Task<IAsyncEnumerable<string>> Callback(IAsyncEnumerable<int> values, CancellationToken token)
+            {
+                var items = await values.ToListAsync().ConfigureAwait(false);
+                items.ShouldBe(new[] { 2 });
+
+                return new[] { "2" }.AsAsyncEnumerable();
+            }
+
             _service
                 .Setup(s => s.DuplexStreamingConvertAsync(It.IsNotNull<IAsyncEnumerable<int>>(), _tokenSource.Token))
-                .Callback<IAsyncEnumerable<int>, CancellationToken>(async (values, _) =>
-                {
-                    var items = await values.ToListAsync().ConfigureAwait(false);
-                    items.ShouldBe(new[] { 2 });
-                })
-                .Returns(Task.FromResult(new[] { "2" }.AsAsyncEnumerable()));
+                .Returns<IAsyncEnumerable<int>, CancellationToken>(Callback);
 
             var response = await call(_service.Object, null, input, _serverCallContext.Object).ConfigureAwait(false);
 
@@ -673,14 +783,17 @@ namespace ServiceModel.Grpc.TestApi
 
             var input = new[] { 2 }.AsAsyncEnumerable();
 
+            static async ValueTask<IAsyncEnumerable<string>> Callback(IAsyncEnumerable<int> values, CancellationToken token)
+            {
+                var items = await values.ToListAsync().ConfigureAwait(false);
+                items.ShouldBe(new[] { 2 });
+
+                return new[] { "2" }.AsAsyncEnumerable();
+            }
+
             _service
                 .Setup(s => s.DuplexStreamingConvertValueTaskAsync(It.IsNotNull<IAsyncEnumerable<int>>(), _tokenSource.Token))
-                .Callback<IAsyncEnumerable<int>, CancellationToken>(async (values, _) =>
-                {
-                    var items = await values.ToListAsync().ConfigureAwait(false);
-                    items.ShouldBe(new[] { 2 });
-                })
-                .Returns(new ValueTask<IAsyncEnumerable<string>>(new[] { "2" }.AsAsyncEnumerable()));
+                .Returns<IAsyncEnumerable<int>, CancellationToken>(Callback);
 
             var response = await call(_service.Object, null, input, _serverCallContext.Object).ConfigureAwait(false);
 
@@ -700,14 +813,19 @@ namespace ServiceModel.Grpc.TestApi
 
             var input = new[] { 2 }.AsAsyncEnumerable();
 
+#pragma warning disable CS8425 // Async-iterator member has one or more parameters of type 'CancellationToken' but none of them is decorated with the 'EnumeratorCancellation' attribute, so the cancellation token parameter from the generated 'IAsyncEnumerable<>.GetAsyncEnumerator' will be unconsumed
+            static async IAsyncEnumerable<string> Callback(IAsyncEnumerable<int> values, int m, string p)
+#pragma warning restore CS8425 // Async-iterator member has one or more parameters of type 'CancellationToken' but none of them is decorated with the 'EnumeratorCancellation' attribute, so the cancellation token parameter from the generated 'IAsyncEnumerable<>.GetAsyncEnumerator' will be unconsumed
+            {
+                var items = await values.ToListAsync().ConfigureAwait(false);
+                items.ShouldBe(new[] { 2 });
+
+                yield return "2";
+            }
+
             _service
                 .Setup(s => s.DuplexStreamingHeaderParameters(It.IsNotNull<IAsyncEnumerable<int>>(), 1, "prefix"))
-                .Callback<IAsyncEnumerable<int>, int, string>(async (values, m, p) =>
-                {
-                    var items = await values.ToListAsync().ConfigureAwait(false);
-                    items.ShouldBe(new[] { 2 });
-                })
-                .Returns(new[] { "2" }.AsAsyncEnumerable());
+                .Returns<IAsyncEnumerable<int>, int, string>(Callback);
 
             var response = await call(_service.Object, new Message<int, string>(1, "prefix"), input, _serverCallContext.Object).ConfigureAwait(false);
 
@@ -727,14 +845,17 @@ namespace ServiceModel.Grpc.TestApi
 
             var input = new[] { "a" }.AsAsyncEnumerable();
 
+            static async IAsyncEnumerable<string> Callback(IAsyncEnumerable<string> values)
+            {
+                var items = await values.ToListAsync().ConfigureAwait(false);
+                items.ShouldBe(new[] { "a" });
+
+                yield return "b";
+            }
+
             _service
                 .Setup(s => s.DuplicateDuplexStreaming(It.IsNotNull<IAsyncEnumerable<string>>()))
-                .Callback<IAsyncEnumerable<string>>(async values =>
-                {
-                    var items = await values.ToListAsync().ConfigureAwait(false);
-                    items.ShouldBe(new[] { "a" });
-                })
-                .Returns(new[] { "b" }.AsAsyncEnumerable());
+                .Returns<IAsyncEnumerable<string>>(Callback);
 
             var response = await call(_service.Object, null, input, _serverCallContext.Object).ConfigureAwait(false);
 
@@ -754,14 +875,17 @@ namespace ServiceModel.Grpc.TestApi
 
             var input = new[] { 1 }.AsAsyncEnumerable();
 
+            static async IAsyncEnumerable<int> Callback(IAsyncEnumerable<int> values)
+            {
+                var items = await values.ToListAsync().ConfigureAwait(false);
+                items.ShouldBe(new[] { 1 });
+
+                yield return 2;
+            }
+
             _service
                 .Setup(s => s.DuplicateDuplexStreaming(It.IsNotNull<IAsyncEnumerable<int>>()))
-                .Callback<IAsyncEnumerable<int>>(async values =>
-                {
-                    var items = await values.ToListAsync().ConfigureAwait(false);
-                    items.ShouldBe(new[] { 1 });
-                })
-                .Returns(new[] { 2 }.AsAsyncEnumerable());
+                .Returns<IAsyncEnumerable<int>>(Callback);
 
             var response = await call(_service.Object, null, input, _serverCallContext.Object).ConfigureAwait(false);
 
@@ -781,14 +905,17 @@ namespace ServiceModel.Grpc.TestApi
 
             var input = new[] { 1 }.AsAsyncEnumerable();
 
+            static async Task<(int Value, IAsyncEnumerable<int> Stream, int Count)> Callback(IAsyncEnumerable<int> values, CancellationToken token)
+            {
+                var items = await values.ToListAsync().ConfigureAwait(false);
+                items.ShouldBe(new[] { 1 });
+
+                return (1, new[] { 2 }.AsAsyncEnumerable(), 2);
+            }
+
             _service
                 .Setup(s => s.DuplexStreamingWithHeadersTask(It.IsNotNull<IAsyncEnumerable<int>>(), _tokenSource.Token))
-                .Callback<IAsyncEnumerable<int>, CancellationToken>(async (values, _) =>
-                {
-                    var items = await values.ToListAsync().ConfigureAwait(false);
-                    items.ShouldBe(new[] { 1 });
-                })
-                .ReturnsAsync((1, new[] { 2 }.AsAsyncEnumerable(), 2));
+                .Returns<IAsyncEnumerable<int>, CancellationToken>(Callback);
 
             var response = await call(_service.Object, null, input, _serverCallContext.Object).ConfigureAwait(false);
 
@@ -810,14 +937,17 @@ namespace ServiceModel.Grpc.TestApi
 
             var input = new[] { 1 }.AsAsyncEnumerable();
 
+            static async ValueTask<(IAsyncEnumerable<int> Stream, int Count)> Callback(IAsyncEnumerable<int> values, int value, int count, CancellationToken token)
+            {
+                var items = await values.ToListAsync().ConfigureAwait(false);
+                items.ShouldBe(new[] { 1 });
+
+                return (new[] { 2 }.AsAsyncEnumerable(), 1);
+            }
+
             _service
                 .Setup(s => s.DuplexStreamingWithHeadersValueTask(It.IsNotNull<IAsyncEnumerable<int>>(), 1, 2, _tokenSource.Token))
-                .Callback<IAsyncEnumerable<int>, int, int, CancellationToken>(async (values, value, count, _) =>
-                {
-                    var items = await values.ToListAsync().ConfigureAwait(false);
-                    items.ShouldBe(new[] { 1 });
-                })
-                .Returns(new ValueTask<(IAsyncEnumerable<int> Stream, int Count)>((new[] { 2 }.AsAsyncEnumerable(), 1)));
+                .Returns<IAsyncEnumerable<int>, int, int, CancellationToken>(Callback);
 
             var response = await call(_service.Object, new Message<int, int>(1, 2), input, _serverCallContext.Object).ConfigureAwait(false);
 

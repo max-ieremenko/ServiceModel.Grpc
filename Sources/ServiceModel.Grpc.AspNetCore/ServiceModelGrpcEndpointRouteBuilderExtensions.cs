@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using ServiceModel.Grpc;
-using ServiceModel.Grpc.Hosting;
+using ServiceModel.Grpc.Hosting.Internal;
 
 //// ReSharper disable CheckNamespace
 namespace Microsoft.AspNetCore.Builder

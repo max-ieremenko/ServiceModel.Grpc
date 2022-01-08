@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core.Interceptors;
 using NUnit.Framework;
@@ -137,12 +138,15 @@ namespace ServiceModel.Grpc.Internal
         {
             var cases = new Dictionary<Type, string>
             {
+                { typeof(void), "void" },
                 { typeof(int), "Int32" },
                 { typeof(int[]), "Int32[]" },
                 { typeof(string), "String" },
                 { typeof(string[]), "String[]" },
                 { typeof(byte[]), "Byte[]" },
                 { typeof(Guid), "Guid" },
+                { typeof(CancellationToken), "CancellationToken" },
+                { typeof(CancellationToken?), "CancellationToken?" },
                 { typeof(Tuple<int>), "Tuple<Int32>" },
                 { typeof(Tuple<int[]>), "Tuple<Int32[]>" },
                 { typeof(Tuple<int>[]), "Tuple<Int32>[]" },

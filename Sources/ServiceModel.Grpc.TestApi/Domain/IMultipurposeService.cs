@@ -31,7 +31,7 @@ namespace ServiceModel.Grpc.TestApi.Domain
         Task<string> ConcatAsync(string value, CallContext? context = default);
 
         [OperationContract]
-        ValueTask<long> Sum5ValuesAsync(long x1, int x2, int x3, int x4, int x5, CancellationToken token);
+        ValueTask<long> Sum5ValuesAsync(long x1, int x2, int x3, int x4, int x5, CancellationToken? token);
 
         [OperationContract]
         IAsyncEnumerable<string> RepeatValue(string value, int count, CallContext? context = default);
@@ -46,13 +46,13 @@ namespace ServiceModel.Grpc.TestApi.Domain
         Task<long> SumValues(IAsyncEnumerable<int> values, CallContext? context = default);
 
         [OperationContract]
-        Task<long> MultiplyByAndSumValues(IAsyncEnumerable<int> values, int multiplier, CallContext? context = default);
+        Task<long> MultiplyByAndSumValues(IAsyncEnumerable<int> values, int multiplier, int? valuesCount, CallContext? context = default);
 
         [OperationContract]
         IAsyncEnumerable<string> ConvertValues(IAsyncEnumerable<int> values, CallContext? context = default);
 
         [OperationContract]
-        IAsyncEnumerable<int> MultiplyBy(IAsyncEnumerable<int> values, int multiplier, CallContext? context = default);
+        IAsyncEnumerable<int> MultiplyBy(IAsyncEnumerable<int> values, int multiplier, int? valuesCount, CallContext? context = default);
 
         [OperationContract]
         ValueTask<IAsyncEnumerable<int>> MultiplyByAsync(IAsyncEnumerable<int> values, int multiplier, CallContext? context = default);

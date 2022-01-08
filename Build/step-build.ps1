@@ -1,5 +1,19 @@
-$sourceDir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\Sources"))
-$solutionFile = Join-Path $sourceDir "ServiceModel.Grpc.sln"
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory = $true)]
+    $Settings
+)
 
-Exec { dotnet restore $solutionFile }
-Exec { dotnet build $solutionFile -t:Rebuild -p:Configuration=Release }
+task Default {
+    $solutionFile = Join-Path $Settings.sources "ServiceModel.Grpc.sln"
+    
+    exec { dotnet restore $solutionFile }
+    
+    exec { 
+        dotnet build $solutionFile `
+            -t:Rebuild `
+            -p:Configuration=Release `
+            -p:ContinuousIntegrationBuild=true `
+            -p:EmbedUntrackedSources=true
+    }
+}

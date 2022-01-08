@@ -69,6 +69,12 @@ namespace ServiceModel.Grpc.TestApi.Domain
         string DuplicateUnary(string value);
 
         [OperationContract]
+        Task UnaryNullableCancellationToken(TimeSpan timeout, CancellationToken? token = default);
+
+        [OperationContract]
+        Task UnaryNullableCallOptions(TimeSpan timeout, CallOptions? options = default);
+
+        [OperationContract]
         IAsyncEnumerable<int> EmptyServerStreaming();
 
         [OperationContract]
@@ -96,7 +102,13 @@ namespace ServiceModel.Grpc.TestApi.Domain
         Task ClientStreamingEmpty(IAsyncEnumerable<int> values);
 
         [OperationContract]
+        ValueTask ClientStreamingEmptyValueTask(IAsyncEnumerable<int> values);
+
+        [OperationContract]
         Task<string> ClientStreamingSumValues(IAsyncEnumerable<int> values, CancellationToken token);
+
+        [OperationContract]
+        ValueTask<string> ClientStreamingSumValuesValueTask(IAsyncEnumerable<int> values, CancellationToken token);
 
         [OperationContract]
         Task<string> ClientStreamingHeaderParameters(IAsyncEnumerable<int> values, int multiplier, string prefix);

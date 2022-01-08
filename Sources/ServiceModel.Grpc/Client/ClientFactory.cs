@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
+using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Interceptors.Internal;
 using ServiceModel.Grpc.Internal;

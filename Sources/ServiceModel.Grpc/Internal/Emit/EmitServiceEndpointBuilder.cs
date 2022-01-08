@@ -24,7 +24,7 @@ using System.Reflection.Emit;
 using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
-using ServiceModel.Grpc.Hosting;
+using ServiceModel.Grpc.Hosting.Internal;
 
 namespace ServiceModel.Grpc.Internal.Emit
 {
@@ -40,20 +40,6 @@ namespace ServiceModel.Grpc.Internal.Emit
         {
             _description = description;
             _uniqueMemberNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        }
-
-        public static bool IsSupportedContextInput(MessageAssembler message)
-        {
-            for (var i = 0; i < message.ContextInput.Length; i++)
-            {
-                var input = message.ContextInput[i];
-                if (!ServerChannelAdapter.TryGetServiceContextOptionMethod(message.Parameters[input].ParameterType))
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
 
         public static Func<object> CreateFactory(Type implementationType)
@@ -96,6 +82,20 @@ namespace ServiceModel.Grpc.Internal.Emit
             _ctor.Emit(OpCodes.Ret);
 
             return _typeBuilder.CreateTypeInfo()!;
+        }
+
+        private static bool IsSupportedContextInput(MessageAssembler message)
+        {
+            for (var i = 0; i < message.ContextInput.Length; i++)
+            {
+                var input = message.ContextInput[i];
+                if (!ServerChannelAdapter.TryGetServiceContextOptionMethod(message.Parameters[input].ParameterType))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void BuildNotSupportedOperation(OperationDescription operation, Type serviceType, string error)

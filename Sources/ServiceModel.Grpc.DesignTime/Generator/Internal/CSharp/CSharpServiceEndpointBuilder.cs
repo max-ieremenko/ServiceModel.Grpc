@@ -454,7 +454,8 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 return;
             }
 
-            if (parameter.TypeSymbol.IsAssignableFrom(typeof(CancellationToken)))
+            if (parameter.TypeSymbol.Is(typeof(CancellationToken))
+                || parameter.TypeSymbol.Is(typeof(CancellationToken?)))
             {
                 Output
                     .Append("context.")
@@ -462,7 +463,8 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 return;
             }
 
-            if (parameter.TypeSymbol.IsAssignableFrom(typeof(CallOptions)))
+            if (parameter.TypeSymbol.Is(typeof(CallOptions))
+                || parameter.TypeSymbol.Is(typeof(CallOptions?)))
             {
                 // new CallOptions(context.RequestHeaders, context.Deadline, context.CancellationToken, context.WriteOptions)
                 Output

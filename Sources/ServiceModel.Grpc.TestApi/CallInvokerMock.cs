@@ -133,13 +133,13 @@ namespace ServiceModel.Grpc.TestApi
                 })
                 .Returns(new AsyncUnaryCall<Message>(
                     Task.FromResult(new Message()),
-                    _ => Task.FromResult(default(Metadata)),
+                    _ => Task.FromResult(default(Metadata)!),
                     _ => default,
-                    _ => default,
+                    _ => default!,
                     _ =>
                     {
                     },
-                    null));
+                    null!));
         }
 
         public static void SetupAsyncUnaryCallOut<TResponse>(this Mock<CallInvoker> invoker, TResponse response, Action<CallOptions>? callOptions = null)
@@ -157,13 +157,13 @@ namespace ServiceModel.Grpc.TestApi
                 })
                 .Returns(new AsyncUnaryCall<Message<TResponse>>(
                     Task.FromResult(new Message<TResponse>(response)),
-                    _ => Task.FromResult(default(Metadata)),
+                    _ => Task.FromResult(default(Metadata)!),
                     _ => default,
-                    _ => default,
+                    _ => default!,
                     _ =>
                     {
                     },
-                    null));
+                    null!));
         }
 
         public static void SetupAsyncUnaryCallIn<TRequest>(this Mock<CallInvoker> invoker, TRequest request, Action<CallOptions>? callOptions = null)
@@ -182,13 +182,13 @@ namespace ServiceModel.Grpc.TestApi
                 })
                 .Returns(new AsyncUnaryCall<Message>(
                     Task.FromResult(new Message()),
-                    _ => Task.FromResult(default(Metadata)),
+                    _ => Task.FromResult(default(Metadata)!),
                     _ => default,
-                    _ => default,
+                    _ => default!,
                     _ =>
                     {
                     },
-                    null));
+                    null!));
         }
 
         public static void SetupAsyncUnaryCallInOut<TRequest1, TRequest2, TRequest3, TResponse>(
@@ -215,13 +215,13 @@ namespace ServiceModel.Grpc.TestApi
                 })
                 .Returns(new AsyncUnaryCall<Message<TResponse>>(
                     Task.FromResult(new Message<TResponse>(response)),
-                    _ => Task.FromResult(default(Metadata)),
+                    _ => Task.FromResult(default(Metadata)!),
                     _ => default,
-                    _ => default,
+                    _ => default!,
                     _ =>
                     {
                     },
-                    null));
+                    null!));
         }
 
         public static void SetupAsyncServerStreamingCall<TResponse>(
@@ -242,13 +242,13 @@ namespace ServiceModel.Grpc.TestApi
                 })
                 .Returns(new AsyncServerStreamingCall<Message<TResponse>>(
                     responseStream,
-                    _ => Task.FromResult(default(Metadata)),
+                    _ => Task.FromResult(default(Metadata)!),
                     _ => default,
-                    _ => default,
+                    _ => default!,
                     _ =>
                     {
                     },
-                    null));
+                    null!));
         }
 
         public static void SetupAsyncServerStreamingCall<TRequest, TResponse>(
@@ -271,13 +271,13 @@ namespace ServiceModel.Grpc.TestApi
                 })
                 .Returns(new AsyncServerStreamingCall<Message<TResponse>>(
                     responseStream,
-                    _ => Task.FromResult(default(Metadata)),
+                    _ => Task.FromResult(default(Metadata)!),
                     _ => default,
-                    _ => default,
+                    _ => default!,
                     _ =>
                     {
                     },
-                    null));
+                    null!));
         }
 
         public static void SetupAsyncServerStreamingCall<TRequest1, TRequest2, TResponse>(
@@ -303,13 +303,13 @@ namespace ServiceModel.Grpc.TestApi
                 })
                 .Returns(new AsyncServerStreamingCall<Message<TResponse>>(
                     responseStream,
-                    _ => Task.FromResult(responseHeaders),
+                    _ => Task.FromResult(responseHeaders!),
                     _ => default,
-                    _ => default,
+                    _ => default!,
                     _ =>
                     {
                     },
-                    null));
+                    null!));
         }
 
         public static void SetupAsyncClientStreamingCall<TRequest>(
@@ -330,13 +330,13 @@ namespace ServiceModel.Grpc.TestApi
                 .Returns(new AsyncClientStreamingCall<Message<TRequest>, Message>(
                     requestStream,
                     Task.FromResult(new Message()),
-                    _ => Task.FromResult(default(Metadata)),
+                    _ => Task.FromResult(default(Metadata)!),
                     _ => default,
-                    _ => default,
+                    _ => default!,
                     _ =>
                     {
                     },
-                    null));
+                    null!));
         }
 
         public static void SetupAsyncClientStreamingCall<TRequest, TResponse>(
@@ -358,13 +358,13 @@ namespace ServiceModel.Grpc.TestApi
                 .Returns(new AsyncClientStreamingCall<Message<TRequest>, Message<TResponse>>(
                     requestStream,
                     Task.FromResult(new Message<TResponse>(response)),
-                    _ => Task.FromResult(default(Metadata)),
+                    _ => Task.FromResult(default(Metadata)!),
                     _ => default,
-                    _ => default,
+                    _ => default!,
                     _ =>
                     {
                     },
-                    null));
+                    null!));
         }
 
         public static void SetupAsyncDuplexStreamingCall<TRequest, TResponse>(
@@ -387,13 +387,13 @@ namespace ServiceModel.Grpc.TestApi
                 .Returns(new AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>>(
                     requestStream,
                     responseStream,
-                    _ => Task.FromResult(responseHeaders),
+                    _ => Task.FromResult(responseHeaders!),
                     _ => default,
-                    _ => default,
+                    _ => default!,
                     _ =>
                     {
                     },
-                    null));
+                    null!));
         }
     }
 }

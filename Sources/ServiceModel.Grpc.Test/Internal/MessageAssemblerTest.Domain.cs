@@ -127,6 +127,15 @@ namespace ServiceModel.Grpc.Internal
             public CallOptions CallOptions() => throw new NotSupportedException();
 
             [OperationContract]
+            public CallOptions? NullableCallOptions() => throw new NotSupportedException();
+
+            [OperationContract]
+            public CancellationToken CancellationToken() => throw new NotSupportedException();
+
+            [OperationContract]
+            public CancellationToken? NullableCancellationToken() => throw new NotSupportedException();
+
+            [OperationContract]
             public ServerCallContext ServerCallContext() => throw new NotSupportedException();
 
             [OperationContract]
@@ -227,6 +236,10 @@ namespace ServiceModel.Grpc.Internal
             public void CallOptions(CallOptions value) => throw new NotSupportedException();
 
             [OperationContract]
+            [ContextInput(new[] { 0 })]
+            public void NullableCallOptions(CallOptions? value) => throw new NotSupportedException();
+
+            [OperationContract]
             [ContextInput(new[] { 1 })]
             public void CallContext(int value1, CallContext value2) => throw new NotSupportedException();
 
@@ -237,6 +250,10 @@ namespace ServiceModel.Grpc.Internal
             [OperationContract]
             [ContextInput(new[] { 0 })]
             public void CancellationToken(CancellationToken value) => throw new NotSupportedException();
+
+            [OperationContract]
+            [ContextInput(new[] { 0 })]
+            public void NullableCancellationToken(CancellationToken? value) => throw new NotSupportedException();
 
             [OperationContract]
             [ContextInput(new[] { 0, 2 })]

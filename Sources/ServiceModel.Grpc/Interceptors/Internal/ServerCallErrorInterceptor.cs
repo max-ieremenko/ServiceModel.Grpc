@@ -46,7 +46,7 @@ namespace ServiceModel.Grpc.Interceptors.Internal
                 return;
             }
 
-            context.ServerCallContext.UserState.Add(VisitMarker, null);
+            context.ServerCallContext.UserState.Add(VisitMarker, string.Empty);
 
             var faultOrIgnore = _errorHandler.ProvideFaultOrIgnore(context, error);
             if (!faultOrIgnore.HasValue)
@@ -69,7 +69,7 @@ namespace ServiceModel.Grpc.Interceptors.Internal
                 metadata.Add(CallContext.HeaderNameErrorDetailType, fault.Detail.GetType().GetShortAssemblyQualifiedName());
             }
 
-            throw new RpcException(status, metadata ?? Metadata.Empty, fault.Message);
+            throw new RpcException(status, metadata ?? Metadata.Empty, status.Detail);
         }
     }
 }

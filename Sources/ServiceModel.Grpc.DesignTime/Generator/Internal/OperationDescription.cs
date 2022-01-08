@@ -81,8 +81,10 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
         {
             return type.IsAssignableFrom(typeof(ServerCallContext))
                    || type.Is(typeof(CancellationToken))
+                   || type.Is(typeof(CancellationToken?))
                    || type.Is(typeof(CallContext))
-                   || type.Is(typeof(CallOptions));
+                   || type.Is(typeof(CallOptions))
+                   || type.Is(typeof(CallOptions?));
         }
 
         private static bool IsDataParameter(ITypeSymbol type)

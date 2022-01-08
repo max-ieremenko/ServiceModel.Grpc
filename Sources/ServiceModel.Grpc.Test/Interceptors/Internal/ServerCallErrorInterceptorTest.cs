@@ -96,7 +96,7 @@ namespace ServiceModel.Grpc.Interceptors.Internal
         [Test]
         public void CheckVisitMarker()
         {
-            _context.ServerCallContext.UserState.Add(ServerCallErrorInterceptor.VisitMarker, null);
+            _context.ServerCallContext.UserState.Add(ServerCallErrorInterceptor.VisitMarker, string.Empty);
 
             _sut.OnError(_context, new NotSupportedException());
         }

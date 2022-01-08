@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -201,6 +201,36 @@ namespace ServiceModel.Grpc.Internal
             return result;
         }
 
+        public static MethodInfo InstanceGenericMethod(this Type type, string name, int genericArgsCount)
+        {
+            var candidates = type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+
+            MethodInfo? result = null;
+            for (var i = 0; i < candidates.Length; i++)
+            {
+                var candidate = candidates[i];
+                if (!name.Equals(candidate.Name, StringComparison.Ordinal)
+                    || candidate.GetGenericArguments().Length != genericArgsCount)
+                {
+                    continue;
+                }
+
+                if (result != null)
+                {
+                    throw new ArgumentOutOfRangeException("{0} implements too many methods {1} with {2} generic arguments.".FormatWith(type.Name, name, genericArgsCount));
+                }
+
+                result = candidate;
+            }
+
+            if (result == null)
+            {
+                throw new ArgumentOutOfRangeException("{0} does not implement method {1} with {2} generic arguments.".FormatWith(type.Name, name, genericArgsCount));
+            }
+
+            return result;
+        }
+
         public static FieldInfo InstanceFiled(this Type type, string name)
         {
             var result = type.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
@@ -220,33 +250,6 @@ namespace ServiceModel.Grpc.Internal
             if (result == null)
             {
                 throw new ArgumentOutOfRangeException("{0} does not implement static method {1}.".FormatWith(type.Name, name));
-            }
-
-            return result;
-        }
-
-        public static MethodInfo StaticMethod(this Type type, string name, int parametersCount)
-        {
-            var methods = type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly);
-
-            MethodInfo? result = null;
-            for (var i = 0; i < methods.Length; i++)
-            {
-                var method = methods[i];
-                if (name.Equals(method.Name, StringComparison.Ordinal) && method.GetParameters().Length == parametersCount)
-                {
-                    if (result != null)
-                    {
-                        throw new ArgumentOutOfRangeException("{0} implements too many methods {1} with {2} parameters.".FormatWith(type.Name, name, parametersCount));
-                    }
-
-                    result = method;
-                }
-            }
-
-            if (result == null)
-            {
-                throw new ArgumentOutOfRangeException("{0} does not implement method {1}.".FormatWith(type.Name, name));
             }
 
             return result;
@@ -284,7 +287,7 @@ namespace ServiceModel.Grpc.Internal
         public static string GetSignature(MethodInfo method)
         {
             var result = new StringBuilder()
-                .Append(typeof(void) == method.ReturnType ? "void" : method.ReturnType.Name)
+                .Append(method.ReturnType.GetUserFriendlyName())
                 .Append(" ")
                 .Append(GetNamespace(method.DeclaringType))
                 .Append(".")
@@ -310,7 +313,7 @@ namespace ServiceModel.Grpc.Internal
                     result.Append("ref ");
                 }
 
-                result.Append(p.ParameterType.Name);
+                result.Append(p.ParameterType.GetUserFriendlyName());
             }
 
             result.Append(")");

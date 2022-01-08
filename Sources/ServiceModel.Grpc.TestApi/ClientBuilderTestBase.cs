@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -165,7 +165,12 @@ namespace ServiceModel.Grpc.TestApi
 
             var options = new CallOptions(deadline: DateTime.Now.AddDays(1));
 
-            CallInvoker.SetupBlockingUnaryCallIn(3);
+            CallInvoker.SetupBlockingUnaryCallIn(
+                3,
+                actual =>
+                {
+                    actual.Deadline.ShouldBe(options.Deadline);
+                });
 
             Factory().OneParameterContext(options, 3);
 
@@ -233,6 +238,42 @@ namespace ServiceModel.Grpc.TestApi
             var actual = Factory().DuplicateUnary("a");
 
             actual.ShouldBe("b");
+            CallInvoker.VerifyAll();
+        }
+
+        [Test]
+        public async Task UnaryNullableCancellationToken()
+        {
+            Console.WriteLine(GetClientInstanceMethod(nameof(IContract.UnaryNullableCancellationToken)).Disassemble());
+
+            CallInvoker.SetupAsyncUnaryCallIn(
+                TimeSpan.FromSeconds(2),
+                options =>
+                {
+                    options.CancellationToken.ShouldBe(TokenSource.Token);
+                });
+
+            await Factory().UnaryNullableCancellationToken(TimeSpan.FromSeconds(2), TokenSource.Token).ConfigureAwait(false);
+
+            CallInvoker.VerifyAll();
+        }
+
+        [Test]
+        public async Task UnaryNullableCallOptions()
+        {
+            Console.WriteLine(GetClientInstanceMethod(nameof(IContract.UnaryNullableCallOptions)).Disassemble());
+
+            var expectedOptions = new CallOptions(cancellationToken: TokenSource.Token);
+
+            CallInvoker.SetupAsyncUnaryCallIn(
+                TimeSpan.FromSeconds(2),
+                options =>
+                {
+                    options.ShouldBe(expectedOptions);
+                });
+
+            await Factory().UnaryNullableCallOptions(TimeSpan.FromSeconds(2), expectedOptions).ConfigureAwait(false);
+
             CallInvoker.VerifyAll();
         }
 
@@ -442,6 +483,28 @@ namespace ServiceModel.Grpc.TestApi
         }
 
         [Test]
+        public async Task ClientStreamingSumValuesValueTask()
+        {
+            Console.WriteLine(GetClientInstanceMethod(nameof(IContract.ClientStreamingSumValuesValueTask)).Disassemble());
+
+            var serverValues = new List<int>();
+
+            var requestStream = new Mock<IClientStreamWriter<Message<int>>>(MockBehavior.Strict);
+            requestStream.Setup(serverValues);
+
+            CallInvoker.SetupAsyncClientStreamingCall(
+                requestStream.Object,
+                "3",
+                o => o.CancellationToken.ShouldBe(TokenSource.Token));
+
+            var actual = await Factory().ClientStreamingSumValuesValueTask(new[] { 1, 2 }.AsAsyncEnumerable(), TokenSource.Token).ConfigureAwait(false);
+
+            actual.ShouldBe("3");
+            serverValues.ShouldBe(new[] { 1, 2 });
+            requestStream.VerifyAll();
+        }
+
+        [Test]
         public async Task ClientStreamingEmpty()
         {
             Console.WriteLine(GetClientInstanceMethod(nameof(IContract.ClientStreamingEmpty)).Disassemble());
@@ -454,6 +517,24 @@ namespace ServiceModel.Grpc.TestApi
             CallInvoker.SetupAsyncClientStreamingCall(requestStream.Object);
 
             await Factory().ClientStreamingEmpty(new[] { 1, 2 }.AsAsyncEnumerable()).ConfigureAwait(false);
+
+            serverValues.ShouldBe(new[] { 1, 2 });
+            requestStream.VerifyAll();
+        }
+
+        [Test]
+        public async Task ClientStreamingEmptyValueTask()
+        {
+            Console.WriteLine(GetClientInstanceMethod(nameof(IContract.ClientStreamingEmptyValueTask)).Disassemble());
+
+            var serverValues = new List<int>();
+
+            var requestStream = new Mock<IClientStreamWriter<Message<int>>>(MockBehavior.Strict);
+            requestStream.Setup(serverValues);
+
+            CallInvoker.SetupAsyncClientStreamingCall(requestStream.Object);
+
+            await Factory().ClientStreamingEmptyValueTask(new[] { 1, 2 }.AsAsyncEnumerable()).ConfigureAwait(false);
 
             serverValues.ShouldBe(new[] { 1, 2 });
             requestStream.VerifyAll();

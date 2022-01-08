@@ -1,74 +1,72 @@
-Task default -Depends Clean, Init, Build, ThirdPartyNotices, UnitTest, Pack, PackTest, SdkTest, Benchmarks
-Task UnitTest -Depends UnitTest461, UnitTestCore31, UnitTestNet50, UnitTestNet60
-Task SdkTest -Depends SdkTestBasic, SdkTestServerFilters, SdkTestMessagePack
+. (Join-Path $PSScriptRoot "scripts/Import-All.ps1")
 
-Task Clean {
-    $dir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\build-out"))
-    if (Test-Path $dir) {
-        Remove-Item -Path $dir -Recurse -Force
+Enter-Build {
+    $settings = @{
+        build      = Get-FullPath $PSScriptRoot;
+        sources    = Get-FullPath (Join-Path $PSScriptRoot "..\Sources");
+        examples   = Get-FullPath (Join-Path $PSScriptRoot "..\Examples");
+        benchmarks = Get-FullPath (Join-Path $PSScriptRoot "..\Benchmarks");
+        buildOut   = Get-FullPath (Join-Path $PSScriptRoot "..\build-out");
+        thirdParty = Get-FullPath (Join-Path $PSScriptRoot "third-party-libraries");
     }
-
-    $dir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\Sources"))
-    Get-ChildItem -Path $dir -Filter bin -Directory -Recurse | Remove-Item -Recurse -Force
-    Get-ChildItem -Path $dir -Filter obj -Directory -Recurse | Remove-Item -Recurse -Force
-
-    $dir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\Examples"))
-    Get-ChildItem -Path $dir -Filter bin -Directory -Recurse | Remove-Item -Recurse -Force
-    Get-ChildItem -Path $dir -Filter obj -Directory -Recurse | Remove-Item -Recurse -Force
-
-    $dir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\Benchmarks"))
-    Get-ChildItem -Path $dir -Filter bin -Directory -Recurse | Remove-Item -Recurse -Force
-    Get-ChildItem -Path $dir -Filter obj -Directory -Recurse | Remove-Item -Recurse -Force
 }
 
-Task Init {
-    $env:GITHUB_SHA = Exec { git rev-parse HEAD }
+task Default Clean, Init, Build, ThirdPartyNotices, UnitTest, Pack, PackTest, SdkTest, Benchmarks
+task UnitTest UnitTest461, UnitTestCore31, UnitTestNet50, UnitTestNet60
+
+task Clean {
+    Remove-DirectoryRecurse -Path $settings.buildOut
+
+    Remove-DirectoryRecurse -Path $settings.sources -Filters "bin", "obj"
+    Remove-DirectoryRecurse -Path $settings.examples -Filters "bin", "obj"
+    Remove-DirectoryRecurse -Path $settings.benchmarks -Filters "bin", "obj"
+
+    Get-ChildItem -Path (Join-Path $env:USERPROFILE ".nuget\packages") -Filter "servicemodel.grpc*" -Directory | Remove-Item -Force -Recurse
 }
 
-Task Build {
-    Exec { .\step-build.ps1 }
+task Init {
+    $env:GITHUB_SHA = exec { git rev-parse HEAD }
 }
 
-Task UnitTest461 {
-    Exec { .\step-unit-test.ps1 -Framework net461 }
+task Build {
+    Invoke-Build -File "step-build.ps1" -Settings $settings
 }
 
-Task UnitTestCore31 {
-    Exec { .\step-unit-test.ps1 -Framework netcoreapp3.1 }
+task UnitTest461 {
+    Invoke-Build -File "step-unit-test.ps1" -Settings $settings -Framework net461
 }
 
-Task UnitTestNet50 {
-    Exec { .\step-unit-test.ps1 -Framework net5.0 }
+task UnitTestCore31 {
+    Invoke-Build -File "step-unit-test.ps1" -Settings $settings -Framework netcoreapp3.1
 }
 
-Task UnitTestNet60 {
-    Exec { .\step-unit-test.ps1 -Framework net6.0 }
+task UnitTestNet50 {
+    Invoke-Build -File "step-unit-test.ps1" -Settings $settings -Framework net5.0
 }
 
-Task ThirdPartyNotices {
-    Exec { .\step-third-party-notices.ps1 }
+task UnitTestNet60 {
+    Invoke-Build -File "step-unit-test.ps1" -Settings $settings -Framework net6.0
 }
 
-Task Pack {
-    Exec { .\step-pack.ps1 }
+task ThirdPartyNotices {
+    Invoke-Build -File "step-third-party-notices.ps1" -Settings $settings
 }
 
-Task PackTest {
-    Exec { .\step-pack-test.ps1 }
+task Pack {
+    Invoke-Build -File "step-pack.ps1" -Settings $settings
 }
 
-Task SdkTestBasic {
-    Exec { .\step-sdk-test-basic-locally.ps1 }
+task PackTest {
+    Invoke-Build -File "step-pack-test.ps1" -Settings $settings
 }
 
-Task SdkTestServerFilters {
-    Exec { .\step-sdk-test-serverfilters-locally.ps1 }
+task SdkTest {
+    $tests = Get-ChildItem -Path (Join-Path $settings.build sdk-test) -Filter "*-locally.ps1" | ForEach-Object {$_.FullName}
+    foreach ($test in $tests) {
+        Invoke-Build -File $test -Settings $settings
+    }
 }
 
-Task SdkTestMessagePack {
-    Exec { .\step-sdk-test-messagepack-locally.ps1 }
-}
-
-Task Benchmarks {
-    Exec { .\step-benchmarks-locally.ps1 }
+task Benchmarks {
+    Invoke-Build -File "step-benchmarks-locally.ps1" -Settings $settings
 }

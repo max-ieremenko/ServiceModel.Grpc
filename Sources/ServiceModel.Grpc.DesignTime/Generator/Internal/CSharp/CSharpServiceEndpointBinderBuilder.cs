@@ -22,7 +22,7 @@ using System.Reflection;
 using Grpc.Core;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using ServiceModel.Grpc.Hosting;
+using ServiceModel.Grpc.Hosting.Internal;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 {

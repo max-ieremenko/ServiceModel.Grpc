@@ -1,15 +1,15 @@
 # Build
 
-The repository is configured to run [CI build](https://github.com/max-ieremenko/test/actions) on any push or pull request into the master branch.
+The repository is configured to run [CI build](https://github.com/max-ieremenko/ServiceModel.Grpc/actions) on any push or pull request into the master/release branch.
 
 ## Local build
 
 To run CI build locally
 
-- install [psake](https://www.powershellgallery.com/packages/psake)
+- install [InvokeBuild](https://www.powershellgallery.com/packages/InvokeBuild)
 
     ``` powershell
-    PS> Install-Module -Name psake -RequiredVersion 4.9.0
+    PS> Install-Module -Name InvokeBuild -RequiredVersion 5.8.6
     ```
 
 - install net6.0 sdk: manual [download](https://dotnet.microsoft.com/download/dotnet/6.0) or

@@ -321,6 +321,8 @@ Grpc.Core.CallOptions
 // contract
 [OperationContract]
 Task Ping(CallOptions context = default);
+[OperationContract]
+Task Ping(CallOptions? context = default);
 
 // client
 await client.Ping(new CallOptions(....));
@@ -328,7 +330,11 @@ await client.Ping(new CallOptions(....));
 // server
 Task Ping(CallOptions context)
 {
-    // context is not available here (default)
+    // the following properties were copied from the current Grpc.Core.ServerCallContext
+    var token = context.CancellationToken;
+    var requestHeaders = context.RequestHeaders;
+    var deadline = context.Deadline;
+    var writeOptions = context.WriteOptions;
 }
 ```
 
@@ -356,6 +362,8 @@ System.Threading.CancellationToken
 // contract
 [OperationContract]
 Task Ping(CancellationToken token = default);
+[OperationContract]
+Task Ping(CancellationToken? token = default);
 
 // client
 var tokenSource = new CancellationTokenSource();
@@ -364,6 +372,7 @@ await client.Ping(tokenSource.Token);
 // server
 Task Ping(CancellationToken token)
 {
+    // the token was copied from the current Grpc.Core.ServerCallContext
     if (!token.IsCancellationRequested)
     {
         // ...
