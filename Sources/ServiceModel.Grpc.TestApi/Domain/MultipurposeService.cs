@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 // limitations under the License.
 // </copyright>
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -46,6 +47,13 @@ namespace ServiceModel.Grpc.TestApi.Domain
             token.Value.CanBeCanceled.ShouldBeTrue();
 
             return new ValueTask<long>(x1 + x2 + x3 + x4 + x5);
+        }
+
+        public string BlockingCall(int x, string y, CancellationToken token) => throw new NotSupportedException();
+
+        public Task<string> BlockingCallAsync(CancellationToken token, int x, string y)
+        {
+            return Task.FromResult(y + x);
         }
 
         public async IAsyncEnumerable<string> RepeatValue(string value, int count, CallContext? context)

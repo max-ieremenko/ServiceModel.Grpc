@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Grpc.Core;
 using NUnit.Framework;
@@ -114,6 +115,17 @@ namespace ServiceModel.Grpc.Internal
             Assert.Throws<NotSupportedException>(() => new MessageAssembler(method));
         }
 
+        [Test]
+        [TestCaseSource(nameof(GetIsCompatibleToCases))]
+        public void IsCompatibleWith(MethodInfo method, MethodInfo other, bool expected)
+        {
+            var sut = new MessageAssembler(method);
+            var otherSut = new MessageAssembler(other);
+
+            sut.IsCompatibleWith(otherSut).ShouldBe(expected);
+            otherSut.IsCompatibleWith(sut).ShouldBe(expected);
+        }
+
         private static IEnumerable<TestCaseData> GetResponseTypeCases()
         {
             foreach (var method in ReflectionTools.GetMethods(typeof(ResponseTypeCases)))
@@ -203,6 +215,41 @@ namespace ServiceModel.Grpc.Internal
             foreach (var method in ReflectionTools.GetMethods(typeof(GenericNotSupportedCases)))
             {
                 yield return new TestCaseData(method) { TestName = method.Name };
+            }
+        }
+
+        private static IEnumerable<TestCaseData> GetIsCompatibleToCases()
+        {
+            var methodByName = ReflectionTools
+                .GetMethods(typeof(IsCompatibleToCases))
+                .ToDictionary(i => i.Name, StringComparer.OrdinalIgnoreCase);
+
+            foreach (var method in methodByName.Values)
+            {
+                yield return new TestCaseData(method, method, true)
+                {
+                    TestName = string.Format("{0} vs {1}", method.Name, method.Name)
+                };
+
+                foreach (var compatibleTo in method.GetCustomAttributes<CompatibleToAttribute>())
+                {
+                    var other = methodByName[compatibleTo.MethodName];
+
+                    yield return new TestCaseData(method, other, true)
+                    {
+                        TestName = string.Format("{0} vs {1}", method.Name, other.Name)
+                    };
+                }
+
+                foreach (var notCompatibleTo in method.GetCustomAttributes<NotCompatibleToAttribute>())
+                {
+                    var other = methodByName[notCompatibleTo.MethodName];
+
+                    yield return new TestCaseData(method, other, false)
+                    {
+                        TestName = string.Format("{0} vs {1}", method.Name, other.Name)
+                    };
+                }
             }
         }
     }

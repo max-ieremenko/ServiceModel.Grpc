@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
 // </copyright>
 
 using System.ServiceModel;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ServiceModel.Grpc.TestApi.Domain
 {
@@ -23,5 +25,11 @@ namespace ServiceModel.Grpc.TestApi.Domain
     {
         [OperationContract]
         T2 Invoke(T1 value, T2 value2);
+
+        // [OperationContract] => BlockingCallAsync
+        T2 BlockingCall(T1 value, T2 value2);
+
+        [OperationContract]
+        Task<T2> BlockingCallAsync(T1 value, T2 value2, CancellationToken token);
     }
 }

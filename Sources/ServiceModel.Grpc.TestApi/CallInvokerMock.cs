@@ -100,7 +100,7 @@ namespace ServiceModel.Grpc.TestApi
             TRequest1 request1,
             TRequest2 request2,
             TResponse response,
-            Action<CallOptions>? callOptions = null)
+            Action<IMethod>? methodValidate = null)
         {
             invoker
                 .Setup(i => i.BlockingUnaryCall(
@@ -111,7 +111,7 @@ namespace ServiceModel.Grpc.TestApi
                 .Callback<Method<Message<TRequest1, TRequest2>, Message<TResponse>>, string, CallOptions, Message<TRequest1, TRequest2>>((method, _, options, request) =>
                 {
                     method.Type.ShouldBe(MethodType.Unary);
-                    callOptions?.Invoke(options);
+                    methodValidate?.Invoke(method);
                     request.Value1.ShouldBe(request1);
                     request.Value2.ShouldBe(request2);
                 })

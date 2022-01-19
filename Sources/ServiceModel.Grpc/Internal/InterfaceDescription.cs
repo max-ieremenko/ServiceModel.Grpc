@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,5 +33,7 @@ namespace ServiceModel.Grpc.Internal
         public IList<OperationDescription> Operations { get; } = new List<OperationDescription>();
 
         public IList<MethodDescription> NotSupportedOperations { get; } = new List<MethodDescription>();
+
+        public List<(MessageAssembler Sync, OperationDescription Async)> SyncOverAsync { get; } = new List<(MessageAssembler Sync, OperationDescription Async)>();
     }
 }

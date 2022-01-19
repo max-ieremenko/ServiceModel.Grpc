@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -59,6 +59,22 @@ namespace ServiceModel.Grpc.TestApi
             var actual = await DomainService.Sum5ValuesAsync(1, 2, 3, 4, 5, default).ConfigureAwait(false);
 
             actual.ShouldBe(15);
+        }
+
+        [Test]
+        public void BlockingCall()
+        {
+            var actual = DomainService.BlockingCall(10, "dummy", default);
+
+            actual.ShouldBe("dummy10");
+        }
+
+        [Test]
+        public async Task BlockingCallAsync()
+        {
+            var actual = await DomainService.BlockingCallAsync(default, 10, "dummy").ConfigureAwait(false);
+
+            actual.ShouldBe("dummy10");
         }
 
         [Test]

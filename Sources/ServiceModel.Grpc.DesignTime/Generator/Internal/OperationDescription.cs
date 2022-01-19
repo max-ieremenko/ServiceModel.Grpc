@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -24,15 +25,16 @@ using Microsoft.CodeAnalysis;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Internal
 {
+    [DebuggerDisplay("{OperationType} {OperationName}")]
     internal sealed class OperationDescription
     {
-        public OperationDescription(IMethodSymbol method, string serviceName)
+        public OperationDescription(IMethodSymbol method, string serviceName, string operationName)
         {
             ServiceName = serviceName;
             Method = new MethodDescription(method);
             ValidateSignature();
 
-            OperationName = ServiceContract.GetServiceOperationName(method);
+            OperationName = operationName;
             (ResponseType, ResponseTypeIndex, HeaderResponseType, HeaderResponseTypeInput) = CreateResponseType(method.ReturnType);
             (RequestType, RequestTypeInput, HeaderRequestType, HeaderRequestTypeInput) = GetRequestType();
             OperationType = GetOperationType();
@@ -76,6 +78,39 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
         public string GrpcMethodInputHeaderName { get; }
 
         public string GrpcMethodOutputHeaderName { get; }
+
+        // implemented only for unary calls
+        public bool IsCompatibleWith(OperationDescription other)
+        {
+            if (OperationType != other.OperationType
+                || RequestType.Properties.Length != other.RequestType.Properties.Length
+                || ResponseType.Properties.Length != other.ResponseType.Properties.Length)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < RequestType.Properties.Length; i++)
+            {
+                var x = RequestType.Properties[i];
+                var y = other.RequestType.Properties[i];
+                if (!x.Equals(y, StringComparison.Ordinal))
+                {
+                    return false;
+                }
+            }
+
+            for (var i = 0; i < ResponseType.Properties.Length; i++)
+            {
+                var x = ResponseType.Properties[i];
+                var y = other.ResponseType.Properties[i];
+                if (!x.Equals(y, StringComparison.Ordinal))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         private static bool IsContextParameter(ITypeSymbol type)
         {

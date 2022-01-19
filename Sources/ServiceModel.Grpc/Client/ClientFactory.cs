@@ -142,7 +142,7 @@ namespace ServiceModel.Grpc.Client
 
             if (userBuilder == null && (!ReflectionTools.IsPublicInterface(contractType) || contractType.IsGenericTypeDefinition))
             {
-                throw new NotSupportedException("{0} is not supported. Client contract must be public non-generic interface.".FormatWith(contractType));
+                throw new NotSupportedException("{0} is not supported. Client contract must be public interface.".FormatWith(contractType));
             }
 
             var options = new ServiceModelGrpcClientOptions

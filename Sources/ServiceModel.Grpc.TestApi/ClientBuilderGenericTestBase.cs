@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,6 +45,25 @@ namespace ServiceModel.Grpc.TestApi
             CallInvoker.SetupBlockingUnaryCallInOut(3, "4", "34");
 
             Factory().Invoke(3, "4").ShouldBe("34");
+
+            CallInvoker.VerifyAll();
+        }
+
+        [Test]
+        public void BlockingCall()
+        {
+            Console.WriteLine(GetClientInstanceMethod(nameof(IGenericContract<int, string>.BlockingCall)).Disassemble());
+
+            CallInvoker.SetupBlockingUnaryCallInOut(
+                3,
+                "4",
+                "34",
+                method =>
+                {
+                    method.Name.ShouldBe(nameof(IGenericContract<int, string>.BlockingCallAsync));
+                });
+
+            Factory().BlockingCall(3, "4").ShouldBe("34");
 
             CallInvoker.VerifyAll();
         }

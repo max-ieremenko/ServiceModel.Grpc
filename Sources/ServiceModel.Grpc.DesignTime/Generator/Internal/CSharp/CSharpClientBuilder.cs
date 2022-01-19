@@ -82,7 +82,13 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
                     foreach (var method in interfaceDescription.Operations)
                     {
-                        ImplementMethod(interfaceDescription.InterfaceTypeName, method);
+                        ImplementMethod(interfaceDescription.InterfaceTypeName, method, null);
+                        Output.AppendLine();
+                    }
+
+                    foreach (var entry in interfaceDescription.SyncOverAsync)
+                    {
+                        ImplementMethod(interfaceDescription.InterfaceTypeName, entry.Sync, entry.Async.GrpcMethodName);
                         Output.AppendLine();
                     }
                 }
@@ -179,7 +185,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .AppendLine();
         }
 
-        private void ImplementMethod(string interfaceType, OperationDescription operation)
+        private void ImplementMethod(string interfaceType, OperationDescription operation, string? grpcMethodName)
         {
             CreateMethodWithSignature(interfaceType, operation.Method);
             Output.AppendLine("{");
@@ -190,7 +196,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 switch (operation.OperationType)
                 {
                     case MethodType.Unary:
-                        BuildUnary(operation);
+                        BuildUnary(operation, grpcMethodName);
                         break;
                     case MethodType.ClientStreaming:
                         BuildClientStreaming(operation);
@@ -211,7 +217,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             adapterBuilder?.Invoke();
         }
 
-        private void BuildUnary(OperationDescription operation)
+        private void BuildUnary(OperationDescription operation, string? grpcMethodName)
         {
             InitializeCallOptionsBuilderVariable(operation);
 
@@ -225,7 +231,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .Append(", ")
                 .Append(operation.ResponseType.ClassName)
                 .Append(">(Contract.")
-                .Append(operation.GrpcMethodName)
+                .Append(grpcMethodName ?? operation.GrpcMethodName)
                 .Append(", CallInvoker, ")
                 .Append(VarCallOptionsBuilder)
                 .AppendLine(")");

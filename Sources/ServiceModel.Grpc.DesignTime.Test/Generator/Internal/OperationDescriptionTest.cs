@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             string[]? headerValueTypeName,
             int? streamIndex)
         {
-            var actual = new OperationDescription(method, "s1");
+            var actual = new OperationDescription(method, "s1", ServiceContract.GetServiceOperationName(method));
 
             actual.ResponseType.ClassName.ShouldBe(className);
             if (valueTypeName == null)
@@ -84,7 +84,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
         [TestCaseSource(nameof(GetOperationTypeCases))]
         public void OperationType(IMethodSymbol method, MethodType expectedType)
         {
-            var actual = new OperationDescription(method, "s1");
+            var actual = new OperationDescription(method, "s1", ServiceContract.GetServiceOperationName(method));
 
             actual.OperationType.ShouldBe(expectedType);
         }
@@ -93,7 +93,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
         [TestCaseSource(nameof(GetNotSupportedResponseTypeCases))]
         public void NotSupportedResponseType(IMethodSymbol method)
         {
-            var ex = Assert.Throws<NotSupportedException>(() => new OperationDescription(method, "s1"));
+            var ex = Assert.Throws<NotSupportedException>(() => new OperationDescription(method, "s1", "dummy"));
 
             ex.ShouldNotBeNull();
             ex.Message.ShouldContain(method.Name);
@@ -110,7 +110,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             int[] headerIndexes,
             string[]? headerValueTypeName)
         {
-            var actual = new OperationDescription(method, "s1");
+            var actual = new OperationDescription(method, "s1", ServiceContract.GetServiceOperationName(method));
 
             actual.RequestType.ClassName.ShouldBe(requestClassName);
             actual.RequestType.Properties.ShouldBe(requestValueTypeName);
@@ -134,7 +134,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
         [TestCaseSource(nameof(GetContextInputCases))]
         public void ContextInput(IMethodSymbol method, int[] indexes)
         {
-            var actual = new OperationDescription(method, "s1");
+            var actual = new OperationDescription(method, "s1", ServiceContract.GetServiceOperationName(method));
 
             actual.ContextInput.ShouldBe(indexes);
         }
@@ -143,7 +143,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
         [TestCaseSource(nameof(GetNotSupportedParametersCases))]
         public void NotSupportedParameters(IMethodSymbol method)
         {
-            var ex = Assert.Throws<NotSupportedException>(() => new OperationDescription(method, "s1"));
+            var ex = Assert.Throws<NotSupportedException>(() => new OperationDescription(method, "s1", "dummy"));
 
             ex.ShouldNotBeNull();
             ex.Message.ShouldContain(method.Name);
@@ -153,10 +153,21 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
         [TestCaseSource(nameof(GetGenericNotSupportedCases))]
         public void GenericNotSupported(IMethodSymbol method)
         {
-            var ex = Assert.Throws<NotSupportedException>(() => new OperationDescription(method, "s1"));
+            var ex = Assert.Throws<NotSupportedException>(() => new OperationDescription(method, "s1", "dummy"));
 
             ex.ShouldNotBeNull();
             ex.Message.ShouldContain(method.Name);
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetIsCompatibleToCases))]
+        public void IsCompatibleWith(IMethodSymbol method, IMethodSymbol other, bool expected)
+        {
+            var sut = new OperationDescription(method, "service", "operation");
+            var otherSut = new OperationDescription(other, "service", "operation");
+
+            sut.IsCompatibleWith(otherSut).ShouldBe(expected);
+            otherSut.IsCompatibleWith(sut).ShouldBe(expected);
         }
 
         private static IEnumerable<TestCaseData> GetResponseTypeCases()
@@ -274,6 +285,48 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             foreach (var method in SyntaxTools.GetInstanceMethods(type))
             {
                 yield return new TestCaseData(method) { TestName = method.Name };
+            }
+        }
+
+        private static IEnumerable<TestCaseData> GetIsCompatibleToCases()
+        {
+            var type = Compilation.GetTypeByMetadataName(typeof(IsCompatibleToCases));
+            type.ShouldNotBeNull();
+
+#pragma warning disable RS1024 // Compare symbols correctly
+            var methodByName = SyntaxTools
+                .GetInstanceMethods(type)
+                .ToDictionary(i => i.Name, StringComparer.OrdinalIgnoreCase);
+#pragma warning restore RS1024 // Compare symbols correctly
+
+            foreach (var method in methodByName.Values)
+            {
+                yield return new TestCaseData(method, method, true)
+                {
+                    TestName = string.Format("{0} vs {1}", method.Name, method.Name)
+                };
+
+                foreach (var compatibleTo in method.GetAttributes().Where(i => i.AttributeClass!.Name == nameof(CompatibleToAttribute)))
+                {
+                    var otherName = (string)compatibleTo.ConstructorArguments[0].Value!;
+                    var other = methodByName[otherName];
+
+                    yield return new TestCaseData(method, other, true)
+                    {
+                        TestName = string.Format("{0} vs {1}", method.Name, other.Name)
+                    };
+                }
+
+                foreach (var notCompatibleTo in method.GetAttributes().Where(i => i.AttributeClass!.Name == nameof(NotCompatibleToAttribute)))
+                {
+                    var otherName = (string)notCompatibleTo.ConstructorArguments[0].Value!;
+                    var other = methodByName[otherName];
+
+                    yield return new TestCaseData(method, other, false)
+                    {
+                        TestName = string.Format("{0} vs {1}", method.Name, other.Name)
+                    };
+                }
             }
         }
     }

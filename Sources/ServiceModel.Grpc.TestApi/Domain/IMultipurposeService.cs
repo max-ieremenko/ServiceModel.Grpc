@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,6 +32,12 @@ namespace ServiceModel.Grpc.TestApi.Domain
 
         [OperationContract]
         ValueTask<long> Sum5ValuesAsync(long x1, int x2, int x3, int x4, int x5, CancellationToken? token);
+
+        // [OperationContract] => BlockingCallAsync
+        string BlockingCall(int x, string y, CancellationToken token);
+
+        [OperationContract]
+        Task<string> BlockingCallAsync(CancellationToken token, int x, string y);
 
         [OperationContract]
         IAsyncEnumerable<string> RepeatValue(string value, int count, CallContext? context = default);
