@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Grpc.Core;
 using Microsoft.CodeAnalysis;
 using ServiceModel.Grpc.Internal;
 
@@ -32,6 +33,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
 
             AnalyzeServiceAndInterfaces(serviceType);
             FindDuplicates();
+            FindSyncOverAsync();
 
             BaseClassName = GetBaseClassName(serviceType);
             ClientClassName = BaseClassName + "Client";
@@ -94,6 +96,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
         private static bool TryCreateOperation(
             IMethodSymbol method,
             string serviceName,
+            string operationName,
             out OperationDescription operation,
             out string error)
         {
@@ -102,7 +105,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
 
             try
             {
-                operation = new OperationDescription(method, serviceName);
+                operation = new OperationDescription(method, serviceName, operationName);
                 return true;
             }
             catch (NotSupportedException ex)
@@ -124,6 +127,24 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             }
 
             return false;
+        }
+
+        private static OperationDescription? TryFindAsyncOperation(IList<OperationDescription> operations, OperationDescription syncOperation)
+        {
+            var asyncMethodName = syncOperation.Method.Name + "Async";
+            for (var i = 0; i < operations.Count; i++)
+            {
+                var operation = operations[i];
+                if (operation.IsAsync
+                    && operation.OperationType == MethodType.Unary
+                    && operation.Method.Name.Equals(asyncMethodName, StringComparison.OrdinalIgnoreCase)
+                    && operation.IsCompatibleWith(syncOperation))
+                {
+                    return operation;
+                }
+            }
+
+            return null;
         }
 
         private void AnalyzeServiceAndInterfaces(INamedTypeSymbol serviceType)
@@ -158,7 +179,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
                         continue;
                     }
 
-                    if (TryCreateOperation(method, serviceName, out var operation, out error))
+                    if (TryCreateOperation(method, serviceName, ServiceContract.GetServiceOperationName(method), out var operation, out error))
                     {
                         interfaceDescription.Operations.Add(operation);
                     }
@@ -214,6 +235,34 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
                 {
                     service.Operations.Remove(operation);
                     service.NotSupportedOperations.Add(new NotSupportedMethodDescription(operation.Method.Source, error));
+                }
+            }
+        }
+
+        private void FindSyncOverAsync()
+        {
+            for (var i = 0; i < Services.Count; i++)
+            {
+                var service = Services[i];
+                var serviceName = ServiceContract.GetServiceName(service.InterfaceType);
+
+                for (var j = 0; j < service.Methods.Count; j++)
+                {
+                    var syncMethod = service.Methods[j];
+                    if (!TryCreateOperation(syncMethod.Method.Source, serviceName, "dummy", out var syncOperation, out _)
+                        || syncOperation.OperationType != MethodType.Unary
+                        || syncOperation.IsAsync)
+                    {
+                        continue;
+                    }
+
+                    var asyncOperation = TryFindAsyncOperation(service.Operations, syncOperation);
+                    if (asyncOperation != null)
+                    {
+                        service.Methods.Remove(syncMethod);
+                        service.SyncOverAsync.Add((syncOperation, asyncOperation));
+                        j--;
+                    }
                 }
             }
         }

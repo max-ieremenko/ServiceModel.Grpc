@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 using System.Runtime.Serialization;
 using System.ServiceModel;
+using System.Threading.Tasks;
 
 namespace ServiceModel.Grpc.Internal
 {
@@ -57,6 +58,15 @@ namespace ServiceModel.Grpc.Internal
         {
             [OperationContract]
             TValue Sum(TValue x, TValue y);
+        }
+
+        [ServiceContract]
+        public interface ISyncOveAsync
+        {
+            void Ping();
+
+            [OperationContract]
+            Task PingAsync();
         }
 
         [DataContract(Name = "Some-Value")]

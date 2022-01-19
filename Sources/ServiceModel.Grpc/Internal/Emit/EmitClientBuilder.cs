@@ -98,7 +98,12 @@ namespace ServiceModel.Grpc.Internal.Emit
 
                 foreach (var operation in interfaceDescription.Operations)
                 {
-                    ImplementMethod(operation);
+                    ImplementMethod(operation.Message, operation);
+                }
+
+                foreach (var entry in interfaceDescription.SyncOverAsync)
+                {
+                    ImplementMethod(entry.Sync, entry.Async);
                 }
             }
 
@@ -131,15 +136,14 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Throw);
         }
 
-        private void ImplementMethod(OperationDescription operation)
+        private void ImplementMethod(MessageAssembler decorator, OperationDescription operation)
         {
-            var message = operation.Message;
-            var body = CreateMethodWithSignature(message.Operation);
+            var body = CreateMethodWithSignature(decorator.Operation);
 
-            switch (message.OperationType)
+            switch (decorator.OperationType)
             {
                 case MethodType.Unary:
-                    BuildUnary(body, operation);
+                    BuildUnary(body, decorator, operation);
                     break;
                 case MethodType.ClientStreaming:
                     BuildClientStreaming(body, operation);
@@ -151,38 +155,38 @@ namespace ServiceModel.Grpc.Internal.Emit
                     BuildDuplexStreaming(body, operation);
                     break;
                 default:
-                    throw new NotImplementedException("{0} operation is not implemented.".FormatWith(message.OperationType));
+                    throw new NotImplementedException("{0} operation is not implemented.".FormatWith(decorator.OperationType));
             }
         }
 
-        private void BuildUnary(ILGenerator body, OperationDescription operation)
+        private void BuildUnary(ILGenerator body, MessageAssembler decorator, OperationDescription operation)
         {
             // optionsBuilder
-            InitializeCallOptionsBuilder(body, operation);
+            InitializeCallOptionsBuilder(body, decorator);
 
             // var call = new UnaryCall<TRequest, TResponse>(method, CallInvoker, optionsBuilder)
             var callType = typeof(UnaryCall<,>)
-                .MakeGenericType(operation.Message.RequestType, operation.Message.ResponseType);
+                .MakeGenericType(decorator.RequestType, decorator.ResponseType);
             InitializeCall(body, operation, callType);
 
             // call.Invoke(message)
             body.Emit(OpCodes.Ldloca_S, 1); // call
-            PushMessage(body, operation.Message.RequestType, operation.Message.RequestTypeInput); // message
+            PushMessage(body, decorator.RequestType, decorator.RequestTypeInput); // message
 
             var invokeMethod = callType.InstanceGenericMethod(
-                operation.Message.IsAsync ? "InvokeAsync" : "Invoke",
-                operation.Message.ResponseType.IsGenericType ? 1 : 0);
-            if (operation.Message.ResponseType.IsGenericType)
+                decorator.IsAsync ? "InvokeAsync" : "Invoke",
+                decorator.ResponseType.IsGenericType ? 1 : 0);
+            if (decorator.ResponseType.IsGenericType)
             {
-                invokeMethod = invokeMethod.MakeGenericMethod(operation.Message.ResponseType.GenericTypeArguments);
+                invokeMethod = invokeMethod.MakeGenericMethod(decorator.ResponseType.GenericTypeArguments);
             }
 
             body.Emit(OpCodes.Call, invokeMethod);
 
             // Task => new ValueTask
-            if (operation.Message.Operation.ReturnType.IsValueTask())
+            if (decorator.Operation.ReturnType.IsValueTask())
             {
-                body.Emit(OpCodes.Newobj, operation.Message.Operation.ReturnType.Constructor(invokeMethod.ReturnType));
+                body.Emit(OpCodes.Newobj, decorator.Operation.ReturnType.Constructor(invokeMethod.ReturnType));
             }
 
             body.Emit(OpCodes.Ret);
@@ -191,7 +195,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         private void BuildServerStreaming(ILGenerator body, OperationDescription operation)
         {
             // optionsBuilder
-            InitializeCallOptionsBuilder(body, operation);
+            InitializeCallOptionsBuilder(body, operation.Message);
 
             // var call = new ServerStreamingCall<TRequest, TResponseHeader, TResponse>(method, CallInvoker, optionsBuilder)
             var callType = typeof(ServerStreamingCall<,,>).MakeGenericType(
@@ -252,7 +256,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         private void BuildClientStreaming(ILGenerator body, OperationDescription operation)
         {
             // optionsBuilder
-            InitializeCallOptionsBuilder(body, operation);
+            InitializeCallOptionsBuilder(body, operation.Message);
 
             // var call = new ClientStreamingCall<TRequestHeader, TRequest, TResponse>(method, CallInvoker, optionsBuilder)
             var callType = typeof(ClientStreamingCall<,,>).MakeGenericType(
@@ -291,7 +295,7 @@ namespace ServiceModel.Grpc.Internal.Emit
         private void BuildDuplexStreaming(ILGenerator body, OperationDescription operation)
         {
             // optionsBuilder
-            InitializeCallOptionsBuilder(body, operation);
+            InitializeCallOptionsBuilder(body, operation.Message);
 
             // var call = DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader, TResponse>(method, CallInvoker, optionsBuilder)
             var callType = typeof(DuplexStreamingCall<,,,>).MakeGenericType(
@@ -310,7 +314,7 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Ret);
         }
 
-        private void InitializeCallOptionsBuilder(ILGenerator body, OperationDescription operation)
+        private void InitializeCallOptionsBuilder(ILGenerator body, MessageAssembler operation)
         {
             // var optionsBuilder = new CallOptionsBuilder(DefaultOptions)
             body.DeclareLocal(typeof(CallOptionsBuilder));
@@ -320,12 +324,12 @@ namespace ServiceModel.Grpc.Internal.Emit
             body.Emit(OpCodes.Stloc_0);
 
             // optionsBuilder = optionsBuilder.With()
-            foreach (var i in operation.Message.ContextInput)
+            foreach (var i in operation.ContextInput)
             {
                 body.Emit(OpCodes.Ldloca_S, 0); // optionsBuilder
                 body.EmitLdarg(i + 1); // parameter
 
-                var parameterType = operation.Message.Parameters[i].ParameterType;
+                var parameterType = operation.Parameters[i].ParameterType;
 
                 Type? nullable = null;
                 if (parameterType.IsValueType)

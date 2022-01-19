@@ -16,6 +16,7 @@
 
 using System.Runtime.Serialization;
 using System.ServiceModel;
+using System.Threading.Tasks;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Internal
 {
@@ -57,6 +58,15 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
         {
             [OperationContract]
             TValue Sum(TValue x, TValue y);
+        }
+
+        [ServiceContract]
+        public interface ISyncOveAsync
+        {
+            void Ping();
+
+            [OperationContract]
+            Task PingAsync();
         }
 
         [DataContract(Name = "Some-Value")]

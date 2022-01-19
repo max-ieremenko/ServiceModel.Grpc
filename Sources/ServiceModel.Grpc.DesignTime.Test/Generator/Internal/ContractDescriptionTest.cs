@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -97,6 +97,26 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             var ping = service.Operations[0];
             ping.OperationName.ShouldBe("Ping");
             ping.ServiceName.ShouldBe("IGenericService-Some-Value");
+        }
+
+        [Test]
+        public void SyncOverAsync()
+        {
+            var symbol = _compilation.GetTypeByMetadataName(typeof(ISyncOveAsync));
+            var sut = new ContractDescription(symbol);
+
+            sut.Interfaces.ShouldBeEmpty();
+
+            sut.Services.Count.ShouldBe(1);
+            sut.Services[0].Methods.ShouldBeEmpty();
+            sut.Services[0].NotSupportedOperations.ShouldBeEmpty();
+
+            sut.Services[0].Operations.Count.ShouldBe(1);
+            sut.Services[0].Operations[0].OperationName.ShouldBe(nameof(ISyncOveAsync.PingAsync));
+
+            sut.Services[0].SyncOverAsync.Count.ShouldBe(1);
+            sut.Services[0].SyncOverAsync[0].Async.ShouldBe(sut.Services[0].Operations[0]);
+            sut.Services[0].SyncOverAsync[0].Sync.Method.Name.ShouldBe(nameof(ISyncOveAsync.Ping));
         }
     }
 }

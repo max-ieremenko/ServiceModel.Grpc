@@ -36,5 +36,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
         public List<OperationDescription> Operations { get; } = new List<OperationDescription>();
 
         public List<NotSupportedMethodDescription> NotSupportedOperations { get; } = new List<NotSupportedMethodDescription>();
+
+        public List<(OperationDescription Sync, OperationDescription Async)> SyncOverAsync { get; } = new List<(OperationDescription Sync, OperationDescription Async)>();
     }
 }
