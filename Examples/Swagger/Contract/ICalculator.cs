@@ -9,6 +9,9 @@ namespace Contract
     public interface ICalculator
     {
         [OperationContract]
+        Task<int> GetRandomNumber();
+
+        [OperationContract]
         Task<long> Sum(long x, int y, int z, CancellationToken token = default);
 
         [OperationContract]
