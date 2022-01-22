@@ -278,6 +278,26 @@ namespace ServiceModel.Grpc.TestApi
         }
 
         [Test]
+        public void BlockingCall()
+        {
+            Console.WriteLine(GetClientInstanceMethod(nameof(IContract.BlockingCall)).Disassemble());
+
+            CallInvoker.SetupBlockingUnaryCallInOut(
+                10,
+                "dummy",
+                "dummy10",
+                method =>
+                {
+                    method.Name.ShouldBe(nameof(IContract.BlockingCallAsync));
+                });
+
+            var actual = Factory().BlockingCall(10, "dummy", TokenSource.Token);
+
+            actual.ShouldBe("dummy10");
+            CallInvoker.VerifyAll();
+        }
+
+        [Test]
         public async Task ServerStreamingRepeatValue()
         {
             Console.WriteLine(GetClientInstanceMethod(nameof(IContract.ServerStreamingRepeatValue)).Disassemble());

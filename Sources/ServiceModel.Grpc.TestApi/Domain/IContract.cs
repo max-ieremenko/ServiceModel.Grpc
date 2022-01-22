@@ -74,6 +74,12 @@ namespace ServiceModel.Grpc.TestApi.Domain
         [OperationContract]
         Task UnaryNullableCallOptions(TimeSpan timeout, CallOptions? options = default);
 
+        // [OperationContract] => BlockingCallAsync
+        string BlockingCall(int x, string y, CancellationToken token);
+
+        [OperationContract]
+        Task<string> BlockingCallAsync(int x, string y, CancellationToken token);
+
         [OperationContract]
         IAsyncEnumerable<int> EmptyServerStreaming();
 

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -86,7 +86,18 @@ namespace ServiceModel.Grpc.AspNetCore.NSwag.Internal
         private static void FixRequestType(OpenApiOperation operation)
         {
             var body = operation.RequestBody;
-            if (body != null && body.Content.TryGetValue(Multipart, out var mediaType))
+            if (body == null && operation.Parameters.Count == 0)
+            {
+                // fix request content type when operation contract has no input
+                operation.RequestBody = new OpenApiRequestBody
+                {
+                    Content =
+                    {
+                        { ProtocolConstants.MediaTypeNameSwaggerRequest, new OpenApiMediaType() }
+                    }
+                };
+            }
+            else if (body != null && body.Content.TryGetValue(Multipart, out var mediaType))
             {
                 body.Content.Remove(Multipart);
                 body.Content.Add(ProtocolConstants.MediaTypeNameSwaggerRequest, mediaType);
