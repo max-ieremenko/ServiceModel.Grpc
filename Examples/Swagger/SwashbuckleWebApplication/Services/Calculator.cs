@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,6 +9,11 @@ namespace SwashbuckleWebApplication.Services
 {
     internal sealed class Calculator : ICalculator
     {
+        public Task<int> GetRandomNumber()
+        {
+            return Task.FromResult(new Random(DateTime.Now.Millisecond).Next());
+        }
+
         public Task<long> Sum(long x, int y, int z, CancellationToken token)
         {
             return Task.FromResult(x + y + z);

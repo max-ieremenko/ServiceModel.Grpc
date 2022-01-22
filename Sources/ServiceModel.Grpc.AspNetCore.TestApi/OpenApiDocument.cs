@@ -65,14 +65,10 @@ namespace ServiceModel.Grpc.AspNetCore.TestApi
             post.ShouldNotBeNull(endpoint);
 
             var body = post.Value<JObject>("requestBody");
-            if (body == null)
-            {
-                return MediaTypeNames.Application.Json + "+servicemodel.grpc";
-            }
+            var contentType = body?.Value<JObject>("content")!.Properties().First().Name;
+            contentType.ShouldBe(MediaTypeNames.Application.Json + "+servicemodel.grpc", "Body is empty or content type is not set.");
 
-            var contentType = body.Value<JObject>("content")!.Properties().First().Name;
-
-            return contentType;
+            return contentType!;
         }
     }
 }
