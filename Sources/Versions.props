@@ -3,7 +3,7 @@
     <ServiceModelGrpcVersion>1.4.2</ServiceModelGrpcVersion>
 
     <GrpcCoreVersion>2.43.0</GrpcCoreVersion>
-    <GrpcNetVersion>2.41.0</GrpcNetVersion>
+    <GrpcNetVersion>2.42.0</GrpcNetVersion>
     <GoogleProtobufVersion>3.19.2</GoogleProtobufVersion>
 
     <SwashbuckleVersion>6.2.3</SwashbuckleVersion>
