@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ using System.Globalization;
 using System.Text;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.OpenApi.Models;
+using ServiceModel.Grpc.AspNetCore.Internal;
 using ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -32,6 +33,7 @@ namespace ServiceModel.Grpc.AspNetCore.Swashbuckle.Internal
                 return;
             }
 
+            FixRequestType(operation);
             UpdateSummary(operation, descriptor);
             UpdateDescription(operation, descriptor);
 
@@ -91,6 +93,21 @@ namespace ServiceModel.Grpc.AspNetCore.Swashbuckle.Internal
                 var metadata = headers[i];
                 var schema = schemaGenerator.GenerateSchema(metadata.Type, schemaRepository);
                 response.Headers.Add(metadata.Name, new OpenApiHeader { Schema = schema });
+            }
+        }
+
+        private static void FixRequestType(OpenApiOperation operation)
+        {
+            if (operation.RequestBody == null && operation.Parameters.Count == 0)
+            {
+                // fix request content type when operation contract has no input
+                operation.RequestBody = new OpenApiRequestBody
+                {
+                    Content =
+                    {
+                        { ProtocolConstants.MediaTypeNameSwaggerRequest, new OpenApiMediaType() }
+                    }
+                };
             }
         }
     }

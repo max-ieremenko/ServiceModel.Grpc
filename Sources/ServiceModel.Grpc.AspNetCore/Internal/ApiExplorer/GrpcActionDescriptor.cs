@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,11 +14,13 @@
 // limitations under the License.
 // </copyright>
 
+using System.Diagnostics;
 using Grpc.Core;
 using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
 {
+    [DebuggerDisplay("{ControllerName}.{ActionName}")]
     internal sealed class GrpcActionDescriptor : ControllerActionDescriptor
     {
         public MethodType MethodType { get; set; }
