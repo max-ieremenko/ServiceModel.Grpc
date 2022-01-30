@@ -147,39 +147,35 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             return null;
         }
 
+        private static NotSupportedMethodDescription CreateNonServiceOperation(INamedTypeSymbol interfaceType, IMethodSymbol method)
+        {
+            var error = "Method {0}.{1}.{2} is not service operation.".FormatWith(
+                SyntaxTools.GetNamespace(interfaceType),
+                interfaceType.Name,
+                method.Name);
+
+            return new NotSupportedMethodDescription(method, error);
+        }
+
         private void AnalyzeServiceAndInterfaces(INamedTypeSymbol serviceType)
         {
-            foreach (var interfaceType in SyntaxTools.ExpandInterface(serviceType))
+            var tree = new InterfaceTree(serviceType);
+
+            for (var i = 0; i < tree.Services.Count; i++)
             {
-                var interfaceDescription = new InterfaceDescription(interfaceType);
+                var service = tree.Services[i];
+                var interfaceDescription = new InterfaceDescription(service.ServiceType);
+                Services.Add(interfaceDescription);
 
-                string? serviceName = null;
-                if (ServiceContract.IsServiceContractInterface(interfaceType))
+                foreach (var method in SyntaxTools.GetInstanceMethods(service.ServiceType))
                 {
-                    serviceName = ServiceContract.GetServiceName(interfaceType);
-                    Services.Add(interfaceDescription);
-                }
-                else
-                {
-                    Interfaces.Add(interfaceDescription);
-                }
-
-                foreach (var method in SyntaxTools.GetInstanceMethods(interfaceType))
-                {
-                    string? error;
-
-                    if (serviceName == null || !ServiceContract.IsServiceOperation(method))
+                    if (!ServiceContract.IsServiceOperation(method))
                     {
-                        error = "Method {0}.{1}.{2} is not service operation.".FormatWith(
-                            SyntaxTools.GetNamespace(interfaceType),
-                            interfaceType.Name,
-                            method.Name);
-
-                        interfaceDescription.Methods.Add(new NotSupportedMethodDescription(method, error));
+                        interfaceDescription.Methods.Add(CreateNonServiceOperation(service.ServiceType, method));
                         continue;
                     }
 
-                    if (TryCreateOperation(method, serviceName, ServiceContract.GetServiceOperationName(method), out var operation, out error))
+                    if (TryCreateOperation(method, service.ServiceName, ServiceContract.GetServiceOperationName(method), out var operation, out var error))
                     {
                         interfaceDescription.Operations.Add(operation);
                     }
@@ -187,6 +183,18 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
                     {
                         interfaceDescription.NotSupportedOperations.Add(new NotSupportedMethodDescription(method, error));
                     }
+                }
+            }
+
+            for (var i = 0; i < tree.Interfaces.Count; i++)
+            {
+                var interfaceType = tree.Interfaces[i];
+                var interfaceDescription = new InterfaceDescription(interfaceType);
+                Interfaces.Add(interfaceDescription);
+
+                foreach (var method in SyntaxTools.GetInstanceMethods(interfaceType))
+                {
+                    interfaceDescription.Methods.Add(CreateNonServiceOperation(interfaceType, method));
                 }
             }
         }
@@ -244,12 +252,11 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             for (var i = 0; i < Services.Count; i++)
             {
                 var service = Services[i];
-                var serviceName = ServiceContract.GetServiceName(service.InterfaceType);
 
                 for (var j = 0; j < service.Methods.Count; j++)
                 {
                     var syncMethod = service.Methods[j];
-                    if (!TryCreateOperation(syncMethod.Method.Source, serviceName, "dummy", out var syncOperation, out _)
+                    if (!TryCreateOperation(syncMethod.Method.Source, "dummy", "dummy", out var syncOperation, out _)
                         || syncOperation.OperationType != MethodType.Unary
                         || syncOperation.IsAsync)
                     {

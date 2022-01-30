@@ -132,42 +132,38 @@ namespace ServiceModel.Grpc.Internal
             return null;
         }
 
+        private static MethodDescription CreateNonServiceOperation(Type interfaceType, MethodInfo method)
+        {
+            var error = "Method {0}.{1}.{2} is not service operation.".FormatWith(
+                ReflectionTools.GetNamespace(interfaceType),
+                interfaceType.Name,
+                method.Name);
+
+            return new MethodDescription(method, error);
+        }
+
         private void AnalyzeServiceAndInterfaces(Type serviceType)
         {
-            foreach (var interfaceType in ReflectionTools.ExpandInterface(serviceType))
+            var tree = new InterfaceTree(serviceType);
+
+            for (var i = 0; i < tree.Services.Count; i++)
             {
-                var interfaceDescription = new InterfaceDescription(interfaceType);
+                var service = tree.Services[i];
+                var interfaceDescription = new InterfaceDescription(service.ServiceType);
+                Services.Add(interfaceDescription);
 
-                string? serviceName = null;
-                if (ServiceContract.IsServiceContractInterface(interfaceType))
+                foreach (var method in ReflectionTools.GetMethods(service.ServiceType))
                 {
-                    serviceName = ServiceContract.GetServiceName(interfaceType);
-                    Services.Add(interfaceDescription);
-                }
-                else
-                {
-                    Interfaces.Add(interfaceDescription);
-                }
-
-                foreach (var method in ReflectionTools.GetMethods(interfaceType))
-                {
-                    string? error;
-
-                    if (serviceName == null || !ServiceContract.IsServiceOperation(method))
+                    if (!ServiceContract.IsServiceOperation(method))
                     {
-                        error = "Method {0}.{1}.{2} is not service operation.".FormatWith(
-                            ReflectionTools.GetNamespace(interfaceType),
-                            interfaceType.Name,
-                            method.Name);
-
-                        interfaceDescription.Methods.Add(new MethodDescription(method, error));
+                        interfaceDescription.Methods.Add(CreateNonServiceOperation(service.ServiceType, method));
                         continue;
                     }
 
-                    if (TryCreateMessage(method, out var message, out error))
+                    if (TryCreateMessage(method, out var message, out var error))
                     {
                         interfaceDescription.Operations.Add(new OperationDescription(
-                            serviceName,
+                            service.ServiceName,
                             ServiceContract.GetServiceOperationName(method),
                             message));
                     }
@@ -175,6 +171,18 @@ namespace ServiceModel.Grpc.Internal
                     {
                         interfaceDescription.NotSupportedOperations.Add(new MethodDescription(method, error));
                     }
+                }
+            }
+
+            for (var i = 0; i < tree.Interfaces.Count; i++)
+            {
+                var interfaceType = tree.Interfaces[i];
+                var interfaceDescription = new InterfaceDescription(interfaceType);
+                Interfaces.Add(interfaceDescription);
+
+                foreach (var method in ReflectionTools.GetMethods(interfaceType))
+                {
+                    interfaceDescription.Methods.Add(CreateNonServiceOperation(interfaceType, method));
                 }
             }
         }
