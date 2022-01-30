@@ -68,3 +68,63 @@ static void Call()
     MyDefaultClientFactory.CreateClient<IScientificCalculator>(channel).Multiply(...);
 }
 ```
+
+## Contract inheritance
+
+Inheritance of interfaces, defined as `ServiceContract`, does not affect operation bindings.
+
+``` c#
+[ServiceContract]
+public interface ICalculator
+{
+    [OperationContract]
+    int Sum(int x, int y);
+}
+
+[ServiceContract]
+public interface IScientificCalculator : ICalculator
+{
+    [OperationContract]
+    int Multiply(int x, int y);
+}
+
+internal sealed class ScientificCalculator : IScientificCalculator
+{
+    // accept POST /ICalculator/Sum
+    public int Sum(int x, int y) { /*...*/ }
+
+    // accept POST /IScientificCalculator/Multiply
+    public int Multiply(int x, int y) { /*...*/ }
+}
+```
+
+## Interface inheritance
+
+If an interface is not marked as `ServiceContract`, the service name for each defined operation comes from the top `ServiceContract` interface.
+
+``` c#
+public interface ICalculator
+{
+    [OperationContract]
+    int Sum(int x, int y);
+}
+
+[ServiceContract]
+public interface IScientificCalculator : ICalculator
+{
+    [OperationContract]
+    int Multiply(int x, int y);
+}
+
+internal sealed class ScientificCalculator : IScientificCalculator
+{
+    // accept POST /IScientificCalculator/Sum
+    public int Sum(int x, int y) { /*...*/ }
+
+    // accept POST /IScientificCalculator/Multiply
+    public int Multiply(int x, int y) { /*...*/ }
+}
+```
+
+[View InterfaceInheritance](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/InterfaceInheritance) example.
+

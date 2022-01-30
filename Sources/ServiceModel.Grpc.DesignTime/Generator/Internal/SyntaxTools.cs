@@ -203,6 +203,24 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             return false;
         }
 
+        public static bool IsAssignableFrom(this ITypeSymbol type, ITypeSymbol expected)
+        {
+            if (SymbolEqualityComparer.Default.Equals(type, expected))
+            {
+                return true;
+            }
+
+            foreach (var i in expected.Interfaces)
+            {
+                if (SymbolEqualityComparer.Default.Equals(i, type))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public static bool IsVoid(ITypeSymbol type) => IsMatch(type, typeof(void));
 
         public static bool IsTask(ITypeSymbol type)
