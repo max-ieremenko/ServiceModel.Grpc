@@ -181,7 +181,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
                 return true;
             }
 
-            foreach (var i in type.Interfaces)
+            foreach (var i in type.AllInterfaces)
             {
                 if (IsMatch(i, expected))
                 {
@@ -198,6 +198,24 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
                 }
 
                 test = test.BaseType;
+            }
+
+            return false;
+        }
+
+        public static bool IsAssignableFrom(this ITypeSymbol type, ITypeSymbol expected)
+        {
+            if (SymbolEqualityComparer.Default.Equals(type, expected))
+            {
+                return true;
+            }
+
+            foreach (var i in expected.AllInterfaces)
+            {
+                if (SymbolEqualityComparer.Default.Equals(i, type))
+                {
+                    return true;
+                }
             }
 
             return false;

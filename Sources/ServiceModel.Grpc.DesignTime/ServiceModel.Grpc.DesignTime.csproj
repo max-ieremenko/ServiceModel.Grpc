@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyTitle>ServiceModel.Grpc.DesignTime</AssemblyTitle>
+    <IsRoslynComponent>true</IsRoslynComponent>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
