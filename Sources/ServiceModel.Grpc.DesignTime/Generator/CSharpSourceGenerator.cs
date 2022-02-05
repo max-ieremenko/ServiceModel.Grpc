@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Threading;
@@ -119,6 +121,8 @@ namespace ServiceModel.Grpc.DesignTime.Generator
             yield return typeof(Message).Namespace!;
             yield return typeof(CompilerGeneratedAttribute).Namespace!;
             yield return typeof(GeneratedCodeAttribute).Namespace!;
+            yield return typeof(ExcludeFromCodeCoverageAttribute).Namespace!;
+            yield return typeof(ObfuscationAttribute).Namespace!;
         }
 
         private static void ShowWarnings(Logger logger, ContractDescription contract, INamedTypeSymbol serviceType)

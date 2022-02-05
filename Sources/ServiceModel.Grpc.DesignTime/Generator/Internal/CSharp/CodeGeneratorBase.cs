@@ -41,7 +41,9 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .Append("[GeneratedCode(\"ServiceModel.Grpc\", \"")
                 .Append(GetType().Assembly.GetName().Version.ToString(3))
                 .AppendLine("\")]")
-                .AppendLine("[CompilerGenerated]");
+                .AppendLine("[CompilerGenerated]")
+                .AppendLine("[ExcludeFromCodeCoverage]")
+                .AppendLine("[Obfuscation(Exclude = true)]");
         }
     }
 }
