@@ -131,5 +131,25 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             {
             }
         }
+
+        public static class TransientGenericInterface
+        {
+            public interface IService1
+            {
+                [OperationContract]
+                void Method1();
+            }
+
+            public interface IService2<T> : IService1
+            {
+                [OperationContract]
+                void Method2(T value);
+            }
+
+            [ServiceContract]
+            public interface IContract<T> : IService2<T>
+            {
+            }
+        }
     }
 }

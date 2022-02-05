@@ -30,6 +30,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
                 nameof(InterfaceTreeTest),
                 references: new[]
                 {
+                    MetadataReference.CreateFromFile(typeof(int).Assembly.Location),
                     MetadataReference.CreateFromFile(typeof(InterfaceTreeTest).Assembly.Location)
                 });
 
@@ -127,6 +128,25 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
 
             sut.Services[1].ServiceName.ShouldBe(nameof(TransientInterface.IContract));
             sut.Services[1].ServiceType.ShouldBe(Compilation.GetTypeByMetadataName(typeof(TransientInterface.IService1)));
+        }
+
+        [Test]
+        public void TransientGenericInterfaceTree()
+        {
+            var rootType = Compilation.GetTypeByMetadataName(typeof(TransientGenericInterface.IContract<int>));
+            var sut = new InterfaceTree(rootType);
+
+            sut.Interfaces.ShouldBeEmpty();
+            sut.Services.Count.ShouldBe(3);
+
+            sut.Services[0].ServiceName.ShouldBe("IContract-Int32");
+            sut.Services[0].ServiceType.ShouldBe(Compilation.GetTypeByMetadataName(typeof(TransientGenericInterface.IContract<int>)));
+
+            sut.Services[1].ServiceName.ShouldBe("IContract-Int32");
+            sut.Services[1].ServiceType.ShouldBe(Compilation.GetTypeByMetadataName(typeof(TransientGenericInterface.IService2<int>)));
+
+            sut.Services[2].ServiceName.ShouldBe("IContract-Int32");
+            sut.Services[2].ServiceType.ShouldBe(Compilation.GetTypeByMetadataName(typeof(TransientGenericInterface.IService1)));
         }
     }
 }
