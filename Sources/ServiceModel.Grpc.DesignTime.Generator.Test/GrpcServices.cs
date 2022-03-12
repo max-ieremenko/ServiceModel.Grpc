@@ -16,18 +16,17 @@
 
 using ServiceModel.Grpc.TestApi.Domain;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Test
+namespace ServiceModel.Grpc.DesignTime.Generator.Test;
+
+[ImportGrpcService(typeof(IMultipurposeService))]
+[ExportGrpcService(typeof(IMultipurposeService))]
+[ImportGrpcService(typeof(IContract))]
+[ImportGrpcService(typeof(IGenericContract<int, string>))]
+[ImportGrpcService(typeof(IGenericContract<string, int>))]
+[ImportGrpcService(typeof(IInvalidContract))]
+[ImportGrpcService(typeof(ISomeService))]
+[ImportGrpcService(typeof(IFilteredService))]
+[ExportGrpcService(typeof(TrackedFilteredService), GenerateAspNetExtensions = true, GenerateSelfHostExtensions = true)]
+public static partial class GrpcServices
 {
-    [ImportGrpcService(typeof(IMultipurposeService))]
-    [ExportGrpcService(typeof(IMultipurposeService))]
-    [ImportGrpcService(typeof(IContract))]
-    [ImportGrpcService(typeof(IGenericContract<int, string>))]
-    [ImportGrpcService(typeof(IGenericContract<string, int>))]
-    [ImportGrpcService(typeof(IInvalidContract))]
-    [ImportGrpcService(typeof(ISomeService))]
-    [ImportGrpcService(typeof(IFilteredService))]
-    [ExportGrpcService(typeof(TrackedFilteredService), GenerateAspNetExtensions = true, GenerateSelfHostExtensions = true)]
-    public static partial class GrpcServices
-    {
-    }
 }

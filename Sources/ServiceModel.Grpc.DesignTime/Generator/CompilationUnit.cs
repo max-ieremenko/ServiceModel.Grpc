@@ -20,6 +20,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
 
@@ -93,17 +94,15 @@ namespace ServiceModel.Grpc.DesignTime.Generator
         {
             var owners = ImmutableArray<string>.Empty;
 
-            foreach (var ancestor in node.Ancestors())
+            foreach (var ancestor in node.AncestorMembers())
             {
-                switch (ancestor)
+                if (ancestor.Kind == SyntaxKind.NamespaceDeclaration)
                 {
-                    case NamespaceDeclarationSyntax ns:
-                        owners = owners.Insert(0, "namespace " + ns.Name.WithoutTrivia());
-                        break;
-
-                    case ClassDeclarationSyntax c:
-                        owners = owners.Insert(0, "partial class " + c.Identifier.WithoutTrivia());
-                        break;
+                    owners = owners.Insert(0, "namespace " + ancestor.Name);
+                }
+                else
+                {
+                    owners = owners.Insert(0, "partial class " + ancestor.Name);
                 }
             }
 
