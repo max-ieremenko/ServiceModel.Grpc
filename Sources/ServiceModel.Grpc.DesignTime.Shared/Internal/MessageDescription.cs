@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,14 +26,11 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
         {
             Properties = properties;
             ClassName = GetClassName(properties);
-            IsBuildIn = properties.Length < 4;
         }
 
         public string ClassName { get; }
 
         public string[] Properties { get; }
-
-        public bool IsBuildIn { get; }
 
         internal static MessageDescription Empty() => new MessageDescription(Array.Empty<string>());
 

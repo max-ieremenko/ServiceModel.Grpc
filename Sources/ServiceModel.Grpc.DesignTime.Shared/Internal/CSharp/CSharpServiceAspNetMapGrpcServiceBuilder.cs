@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,29 +18,31 @@ using System.Collections.Generic;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 {
-    internal sealed class CSharpServiceAspNetAddOptionsBuilder : CodeGeneratorBase
+    internal sealed class CSharpServiceAspNetMapGrpcServiceBuilder : CodeGeneratorBase
     {
         private readonly ContractDescription _contract;
         private readonly bool _isStaticClass;
 
-        public CSharpServiceAspNetAddOptionsBuilder(ContractDescription contract, bool isStaticClass)
+        public CSharpServiceAspNetMapGrpcServiceBuilder(ContractDescription contract, bool isStaticClass)
         {
             _contract = contract;
             _isStaticClass = isStaticClass;
         }
 
-        public override string GetGeneratedMemberName() => "Add" + _contract.BaseClassName + "Options";
+        public override string GetGeneratedMemberName() => "Map" + _contract.BaseClassName;
 
-        public override IEnumerable<string> GetUsing()
+        public override void AddUsing(ICollection<string> imports)
         {
-            yield return "Microsoft.Extensions.DependencyInjection";
+            base.AddUsing(imports);
+            imports.Add("Microsoft.AspNetCore.Routing");
+            imports.Add("Microsoft.AspNetCore.Builder");
         }
 
         protected override void Generate()
         {
             WriteMetadata();
             Output
-                .Append("public static IServiceCollection ")
+                .Append("public static GrpcServiceEndpointConventionBuilder ")
                 .Append(GetGeneratedMemberName())
                 .Append("(");
 
@@ -50,17 +52,18 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             }
 
             Output
-                .Append("IServiceCollection services, Action<ServiceModelGrpcServiceOptions<")
-                .Append(_contract.ContractInterfaceName)
-                .AppendLine(">> configure)")
+                .AppendLine("IEndpointRouteBuilder builder)")
                 .AppendLine("{");
 
             using (Output.Indent())
             {
                 Output
-                    .Append("return services.AddServiceModelGrpcServiceOptions<")
+                    .AppendLine("if (builder == null) throw new ArgumentNullException(\"builder\");")
+                    .Append("return builder.MapGrpcService<")
                     .Append(_contract.ContractInterfaceName)
-                    .AppendLine(">(configure);");
+                    .Append(", ")
+                    .Append(_contract.EndpointBinderClassName)
+                    .AppendLine(">();");
             }
 
             Output.AppendLine("}");

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,8 +14,11 @@
 // limitations under the License.
 // </copyright>
 
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 {
@@ -31,7 +34,13 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
         public abstract string GetGeneratedMemberName();
 
-        public virtual IEnumerable<string> GetUsing() => Enumerable.Empty<string>();
+        public virtual void AddUsing(ICollection<string> imports)
+        {
+            imports.Add(typeof(GeneratedCodeAttribute).Namespace);
+            imports.Add(typeof(CompilerGeneratedAttribute).Namespace);
+            imports.Add(typeof(ExcludeFromCodeCoverageAttribute).Namespace);
+            imports.Add(typeof(ObfuscationAttribute).Namespace);
+        }
 
         protected abstract void Generate();
 

@@ -27,37 +27,34 @@ namespace ServiceModel.Grpc.DesignTime.Generator
 {
     internal sealed class GeneratorContext
     {
-        private readonly GeneratorExecutionContext _executionContext;
+        private readonly Action<Diagnostic> _reportDiagnostic;
+        private readonly Action<string, SourceText> _addSource;
         private readonly HashSet<string> _generatedNames;
 
-        public GeneratorContext(GeneratorExecutionContext executionContext)
+        public GeneratorContext(
+            Compilation compilation,
+            Action<Diagnostic> reportDiagnostic,
+            CancellationToken cancellationToken,
+            Action<string, SourceText> addSource)
         {
-            _executionContext = executionContext;
+            Compilation = compilation;
+            CancellationToken = cancellationToken;
+            _reportDiagnostic = reportDiagnostic;
+            _addSource = addSource;
             _generatedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
-        public CancellationToken CancellationToken => _executionContext.CancellationToken;
+        public CancellationToken CancellationToken { get; }
 
-        public Compilation Compilation => _executionContext.Compilation;
+        public Compilation Compilation { get; }
 
-        public static bool LaunchDebugger(GeneratorExecutionContext context)
-        {
-            if (!context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.servicemodelgrpcdesigntime_launchdebugger", out var value)
-                || string.IsNullOrEmpty(value))
-            {
-                return false;
-            }
-
-            return bool.Parse(value);
-        }
-
-        public void ReportDiagnostic(Diagnostic diagnostic) => _executionContext.ReportDiagnostic(diagnostic);
+        public void ReportDiagnostic(Diagnostic diagnostic) => _reportDiagnostic(diagnostic);
 
         public void AddOutput(ClassDeclarationSyntax node, string hintName, string source)
         {
             var fileName = GetOutputFileName(node, hintName);
             var sourceText = SourceText.From(source, Encoding.UTF8);
-            _executionContext.AddSource(fileName, sourceText);
+            _addSource(fileName, sourceText);
         }
 
         internal string GetOutputFileName(ClassDeclarationSyntax node, string hintName)
@@ -84,7 +81,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator
                 result = name + index.ToString(CultureInfo.InvariantCulture);
             }
 
-            return result;
+            return result + ".g.cs";
         }
     }
 }

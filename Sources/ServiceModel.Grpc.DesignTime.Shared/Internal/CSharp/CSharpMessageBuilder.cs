@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,22 +14,29 @@
 // limitations under the License.
 // </copyright>
 
+using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
+using System.Runtime.Serialization;
 using ServiceModel.Grpc.Channel;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 {
     internal sealed class CSharpMessageBuilder : CodeGeneratorBase
     {
-        private readonly MessageDescription _description;
+        private readonly int _propertiesCount;
 
-        public CSharpMessageBuilder(MessageDescription description)
+        public CSharpMessageBuilder(int propertiesCount)
         {
-            _description = description;
+            _propertiesCount = propertiesCount;
         }
 
-        public override string GetGeneratedMemberName() => "Message_" + _description.Properties.Length.ToString(CultureInfo.InvariantCulture);
+        public override string GetGeneratedMemberName() => "Message_" + _propertiesCount.ToString(CultureInfo.InvariantCulture);
+
+        public override void AddUsing(ICollection<string> imports)
+        {
+            base.AddUsing(imports);
+            imports.Add(typeof(DataContractAttribute).Namespace);
+        }
 
         protected override void Generate()
         {
@@ -41,7 +48,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .Append(nameof(Message))
                 .Append("<");
 
-            for (var i = 0; i < _description.Properties.Length; i++)
+            for (var i = 0; i < _propertiesCount; i++)
             {
                 Output.AppendCommaIf(i != 0);
                 Output.AppendFormat("T{0}", i + 1);
@@ -63,30 +70,6 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             Output.AppendLine("}");
         }
 
-        private static (string Alias, string Name) CreateFlag(string ownerFullName, MessageDescription description)
-        {
-            var aliasName = "__message{0}".FormatWith(description.Properties.Length);
-
-            var typeName = new StringBuilder(ownerFullName)
-                .Append(".")
-                .Append(nameof(Message))
-                .Append("<");
-
-            for (var i = 0; i < description.Properties.Length; i++)
-            {
-                if (i != 0)
-                {
-                    typeName.Append(", ");
-                }
-
-                typeName.Append("object");
-            }
-
-            typeName.Append(">");
-
-            return (aliasName, typeName.ToString());
-        }
-
         private void BuildCtorDefault()
         {
             Output
@@ -104,7 +87,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .Append(nameof(Message))
                 .Append("(");
 
-            for (var i = 0; i < _description.Properties.Length; i++)
+            for (var i = 0; i < _propertiesCount; i++)
             {
                 Output
                     .AppendCommaIf(i != 0)
@@ -117,7 +100,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
             using (Output.Indent())
             {
-                for (var i = 0; i < _description.Properties.Length; i++)
+                for (var i = 0; i < _propertiesCount; i++)
                 {
                     Output
                         .AppendFormat("Value{0} = value{0}", i + 1)
@@ -130,7 +113,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
         private void BuildProperties()
         {
-            for (var i = 0; i < _description.Properties.Length; i++)
+            for (var i = 0; i < _propertiesCount; i++)
             {
                 Output
                     .AppendLine()

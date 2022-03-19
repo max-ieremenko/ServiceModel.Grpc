@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,19 +17,24 @@
 using System;
 using System.IO;
 using System.Reflection;
-using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace ServiceModel.Grpc.DesignTime.Generator
 {
-    // workaround custom dependencies of DesignTime.nupkg
+    // workaround: custom dependencies of DesignTime.nupkg
     internal sealed class AssemblyResolver : IDisposable
     {
         private readonly string _dependenciesLocation;
         private readonly bool _canLockFile;
 
-        public AssemblyResolver(GeneratorExecutionContext context)
+        public AssemblyResolver(AnalyzerConfigOptions globalOptions)
         {
-            (_dependenciesLocation, _canLockFile) = ResolveDependenciesLocation(context);
+            _dependenciesLocation = GetDependenciesLocation(globalOptions);
+            _canLockFile = !IsLocalBuild(globalOptions);
+        }
+
+        public void Initialize()
+        {
             AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
         }
 
@@ -38,18 +43,22 @@ namespace ServiceModel.Grpc.DesignTime.Generator
             AppDomain.CurrentDomain.AssemblyResolve -= AssemblyResolve;
         }
 
-        private static (string Location, bool CanLockFile) ResolveDependenciesLocation(GeneratorExecutionContext context)
+        private static bool IsLocalBuild(AnalyzerConfigOptions globalOptions)
         {
-            context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.servicemodelgrpcdesigntime_dependencies", out var dependencies);
-            context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.servicemodelgrpcdesigntime_localbuild", out var localBuild);
+            globalOptions.TryGetValue("build_property.servicemodelgrpcdesigntime_localbuild", out var localBuild);
+            return string.IsNullOrWhiteSpace(localBuild) || bool.Parse(localBuild);
+        }
+
+        private static string GetDependenciesLocation(AnalyzerConfigOptions globalOptions)
+        {
+            globalOptions.TryGetValue("build_property.servicemodelgrpcdesigntime_dependencies", out var dependencies);
 
             if (string.IsNullOrEmpty(dependencies) || !Directory.Exists(dependencies))
             {
                 throw new InvalidOperationException(string.Format("Dependencies not found in [{0}].", dependencies));
             }
 
-            var canLockFile = string.IsNullOrWhiteSpace(localBuild) || !bool.Parse(localBuild!);
-            return (dependencies!, canLockFile);
+            return dependencies!;
         }
 
         private Assembly? AssemblyResolve(object sender, ResolveEventArgs args)

@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -25,7 +24,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ServiceModel.Grpc.DesignTime.Generator
 {
-    internal static class SyntaxFactoryExtensions
+    internal static partial class SyntaxFactoryExtensions
     {
         public static string GetFullName(this ClassDeclarationSyntax node)
         {
@@ -63,21 +62,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator
                 }
                 else
                 {
-                    var type = ancestor.GetType();
-
-                    // see #73, more elegant fix requires roslyn4.0
-                    // roslyn4.0 does not work on pure .netcore 3.1 sdk
-                    // TODO: support roslyn4.0 and roslyn3.11
-                    if ("FileScopedNamespaceDeclarationSyntax".Equals(type.Name, StringComparison.Ordinal))
-                    {
-                        var nameSyntax = (NameSyntax)ancestor
-                            .GetType()
-                            .GetProperty(nameof(NamespaceDeclarationSyntax.Name), BindingFlags.Public | BindingFlags.Instance)!
-                            .GetValue(ancestor);
-
-                        kind = SyntaxKind.NamespaceDeclaration;
-                        name = nameSyntax.WithoutTrivia().ToString();
-                    }
+                    TryGetAncestorMember(ancestor, ref kind, ref name);
                 }
 
                 if (name != null)

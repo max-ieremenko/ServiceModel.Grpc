@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,6 +46,14 @@ namespace ServiceModel.Grpc.DesignTime.Generator
                 .AddMembers(SyntaxFactory.ClassDeclaration("NestedClass"))
                 .Members[0];
             yield return new TestCaseData(declaration, "Class.NestedClass") { TestName = "Class.NestedClass" };
+
+            declaration = SyntaxFactory
+                .FileScopedNamespaceDeclaration(SyntaxFactory.ParseName("Namespace"))
+                .AddMembers(
+                    SyntaxFactory.ClassDeclaration("Class")
+                        .AddMembers(SyntaxFactory.ClassDeclaration("NestedClass")))
+                .Members[0];
+            yield return new TestCaseData(((ClassDeclarationSyntax)declaration).Members[0], "Namespace.Class.NestedClass") { TestName = "Namespace.Class.NestedClass" };
         }
     }
 }

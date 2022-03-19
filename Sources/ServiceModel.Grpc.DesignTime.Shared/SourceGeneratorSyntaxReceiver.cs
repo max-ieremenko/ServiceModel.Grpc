@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,20 +25,21 @@ namespace ServiceModel.Grpc.DesignTime.Generator
     {
         public IList<ClassDeclarationSyntax> Candidates { get; } = new List<ClassDeclarationSyntax>();
 
+        public static bool IsCandidate(SyntaxNode syntaxNode)
+        {
+            return syntaxNode is ClassDeclarationSyntax owner
+                   && ContainsGrpcServiceAttribute(owner.AttributeLists);
+        }
+
         public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
         {
-            if (!(syntaxNode is ClassDeclarationSyntax owner))
+            if (IsCandidate(syntaxNode))
             {
-                return;
-            }
-
-            if (ContainsGrpcServiceAttribute(owner.AttributeLists))
-            {
-                Candidates.Add(owner);
+                Candidates.Add((ClassDeclarationSyntax)syntaxNode);
             }
         }
 
-        private static bool ContainsGrpcServiceAttribute(SyntaxList<AttributeListSyntax> attributeLists)
+        private static bool ContainsGrpcServiceAttribute(in SyntaxList<AttributeListSyntax> attributeLists)
         {
             for (var i = 0; i < attributeLists.Count; i++)
             {
@@ -57,7 +58,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator
 
         private static bool DoesLookLikeGrpcServiceAttribute(AttributeSyntax attribute)
         {
-            var name = attribute.Name.WithoutTrivia().ToString();
+            var name = attribute.Name.ToString();
             return name.IndexOf("ExportGrpcService", StringComparison.Ordinal) >= 0
                    || name.IndexOf("ImportGrpcService", StringComparison.Ordinal) >= 0;
         }

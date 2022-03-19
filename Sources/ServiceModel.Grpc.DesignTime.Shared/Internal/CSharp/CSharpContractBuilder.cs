@@ -128,22 +128,22 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .Append(",");
 
             Output
-                .Append("\"")
+                .Append(" \"")
                 .Append(operation.ServiceName)
                 .Append("\",");
 
             Output
-                .Append("\"")
+                .Append(" \"")
                 .Append(operation.OperationName)
                 .Append("\",");
 
             Output
-                .Append("marshallerFactory.CreateMarshaller<")
+                .Append(" marshallerFactory.CreateMarshaller<")
                 .Append(operation.RequestType.ClassName)
                 .Append(">(),");
 
             Output
-                .Append("marshallerFactory.CreateMarshaller<")
+                .Append(" marshallerFactory.CreateMarshaller<")
                 .Append(operation.ResponseType.ClassName)
                 .AppendLine(">());");
         }

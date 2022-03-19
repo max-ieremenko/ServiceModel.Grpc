@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,28 +14,34 @@
 // limitations under the License.
 // </copyright>
 
-using ServiceModel.Grpc.Client;
+using System.Collections.Generic;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 {
-    internal sealed class CSharpClientFactoryExtensionBuilder : CodeGeneratorBase
+    internal sealed class CSharpServiceAspNetAddOptionsBuilder : CodeGeneratorBase
     {
         private readonly ContractDescription _contract;
         private readonly bool _isStaticClass;
 
-        public CSharpClientFactoryExtensionBuilder(ContractDescription contract, bool isStaticClass)
+        public CSharpServiceAspNetAddOptionsBuilder(ContractDescription contract, bool isStaticClass)
         {
             _contract = contract;
             _isStaticClass = isStaticClass;
         }
 
-        public override string GetGeneratedMemberName() => "Add" + _contract.ClientClassName;
+        public override string GetGeneratedMemberName() => "Add" + _contract.BaseClassName + "Options";
+
+        public override void AddUsing(ICollection<string> imports)
+        {
+            base.AddUsing(imports);
+            imports.Add("Microsoft.Extensions.DependencyInjection");
+        }
 
         protected override void Generate()
         {
             WriteMetadata();
             Output
-                .Append("public static IClientFactory ")
+                .Append("public static IServiceCollection ")
                 .Append(GetGeneratedMemberName())
                 .Append("(");
 
@@ -45,21 +51,18 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             }
 
             Output
-                .AppendLine("IClientFactory clientFactory,  Action<ServiceModelGrpcClientOptions> configure = null)")
+                .Append("IServiceCollection services, Action<ServiceModelGrpcServiceOptions<")
+                .Append(_contract.ContractInterfaceName)
+                .AppendLine(">> configure)")
                 .AppendLine("{");
 
             using (Output.Indent())
             {
-                Output.AppendLine("if (clientFactory == null) throw new ArgumentNullException(\"clientFactory\");");
-
                 Output
-                    .Append("clientFactory.")
-                    .Append(nameof(IClientFactory.AddClient))
-                    .Append("(new ")
-                    .Append(_contract.ClientBuilderClassName)
-                    .AppendLine("(), configure);");
-
-                Output.AppendLine("return clientFactory;");
+                    .AppendLine("if (services == null) throw new ArgumentNullException(\"services\");")
+                    .Append("return services.AddServiceModelGrpcServiceOptions<")
+                    .Append(_contract.ContractInterfaceName)
+                    .AppendLine(">(configure);");
             }
 
             Output.AppendLine("}");

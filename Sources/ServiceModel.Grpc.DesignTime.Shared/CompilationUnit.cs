@@ -78,14 +78,8 @@ namespace ServiceModel.Grpc.DesignTime.Generator
         {
             text.Insert(0, Environment.NewLine);
 
-            var distinct = new HashSet<string>(StringComparer.Ordinal);
             foreach (var import in imports.OrderByDescending(i => i, StringComparer.Ordinal))
             {
-                if (!distinct.Add(import))
-                {
-                    continue;
-                }
-
                 text.Insert(0, "using " + import + ";" + Environment.NewLine);
             }
         }

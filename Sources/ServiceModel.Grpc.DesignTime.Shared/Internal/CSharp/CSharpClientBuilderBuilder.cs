@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,10 +31,11 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
         public override string GetGeneratedMemberName() => _contract.ClientBuilderClassName;
 
-        public override IEnumerable<string> GetUsing()
+        public override void AddUsing(ICollection<string> imports)
         {
-            yield return typeof(IClientFactory).Namespace!;
-            yield return typeof(CallOptionsBuilder).Namespace!;
+            base.AddUsing(imports);
+            imports.Add(typeof(IClientFactory).Namespace!);
+            imports.Add(typeof(CallOptionsBuilder).Namespace!);
         }
 
         protected override void Generate()
@@ -95,11 +96,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             using (Output.Indent())
             {
                 Output
-                    .AppendLine("if (marshallerFactory == null)");
-                using (Output.Indent())
-                {
-                    Output.AppendLine("throw new ArgumentNullException(\"marshallerFactory\");");
-                }
+                    .AppendLine("if (marshallerFactory == null) throw new ArgumentNullException(\"marshallerFactory\");");
 
                 Output
                     .Append("_contract = new ")
@@ -124,11 +121,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             using (Output.Indent())
             {
                 Output
-                    .AppendLine("if (callInvoker == null)");
-                using (Output.Indent())
-                {
-                    Output.AppendLine("throw new ArgumentNullException(\"callInvoker\");");
-                }
+                    .AppendLine("if (callInvoker == null) throw new ArgumentNullException(\"callInvoker\");");
 
                 Output
                     .Append("return new ")

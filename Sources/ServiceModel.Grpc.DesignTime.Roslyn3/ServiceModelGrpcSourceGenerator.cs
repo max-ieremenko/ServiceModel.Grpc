@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 // </copyright>
 
 using System;
-using System.Diagnostics;
 using Microsoft.CodeAnalysis;
 
 namespace ServiceModel.Grpc.DesignTime.Generator
@@ -30,11 +29,6 @@ namespace ServiceModel.Grpc.DesignTime.Generator
 
         public void Execute(GeneratorExecutionContext context)
         {
-            if (GeneratorContext.LaunchDebugger(context))
-            {
-                Debugger.Launch();
-            }
-
             if (!"C#".Equals(context.ParseOptions.Language, StringComparison.OrdinalIgnoreCase))
             {
                 return;
@@ -46,9 +40,15 @@ namespace ServiceModel.Grpc.DesignTime.Generator
                 return;
             }
 
-            using (new AssemblyResolver(context))
+            using (var assemblyResolver = new AssemblyResolver(context.AnalyzerConfigOptions.GlobalOptions))
             {
-                var outputContext = new GeneratorContext(context);
+                assemblyResolver.Initialize();
+
+                var outputContext = new GeneratorContext(
+                    context.Compilation,
+                    context.ReportDiagnostic,
+                    context.CancellationToken,
+                    context.AddSource);
                 new CSharpSourceGenerator().Execute(outputContext, candidates);
             }
         }

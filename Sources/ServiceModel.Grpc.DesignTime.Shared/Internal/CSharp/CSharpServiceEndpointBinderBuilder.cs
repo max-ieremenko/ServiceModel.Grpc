@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,12 +37,13 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
         public override string GetGeneratedMemberName() => _contract.EndpointBinderClassName;
 
-        public override IEnumerable<string> GetUsing()
+        public override void AddUsing(ICollection<string> imports)
         {
-            yield return typeof(MethodInfo).Namespace!;
-            yield return typeof(Expression).Namespace!;
-            yield return typeof(IServiceMethodBinder<>).Namespace!;
-            yield return typeof(IServiceEndpointBinder<>).Namespace!;
+            base.AddUsing(imports);
+            imports.Add(typeof(MethodInfo).Namespace!);
+            imports.Add(typeof(Expression).Namespace!);
+            imports.Add(typeof(IServiceMethodBinder<>).Namespace!);
+            imports.Add(typeof(IServiceEndpointBinder<>).Namespace!);
         }
 
         internal static void WriteNewAttribute(CodeStringBuilder output, AttributeData attribute)

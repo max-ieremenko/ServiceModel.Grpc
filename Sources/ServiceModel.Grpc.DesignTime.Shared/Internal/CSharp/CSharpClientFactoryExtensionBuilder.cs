@@ -14,34 +14,28 @@
 // limitations under the License.
 // </copyright>
 
-using System.Collections.Generic;
+using ServiceModel.Grpc.Client;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 {
-    internal sealed class CSharpServiceAspNetMapGrpcServiceBuilder : CodeGeneratorBase
+    internal sealed class CSharpClientFactoryExtensionBuilder : CodeGeneratorBase
     {
         private readonly ContractDescription _contract;
         private readonly bool _isStaticClass;
 
-        public CSharpServiceAspNetMapGrpcServiceBuilder(ContractDescription contract, bool isStaticClass)
+        public CSharpClientFactoryExtensionBuilder(ContractDescription contract, bool isStaticClass)
         {
             _contract = contract;
             _isStaticClass = isStaticClass;
         }
 
-        public override string GetGeneratedMemberName() => "Map" + _contract.BaseClassName;
-
-        public override IEnumerable<string> GetUsing()
-        {
-            yield return "Microsoft.AspNetCore.Routing";
-            yield return "Microsoft.AspNetCore.Builder";
-        }
+        public override string GetGeneratedMemberName() => "Add" + _contract.ClientClassName;
 
         protected override void Generate()
         {
             WriteMetadata();
             Output
-                .Append("public static GrpcServiceEndpointConventionBuilder ")
+                .Append("public static IClientFactory ")
                 .Append(GetGeneratedMemberName())
                 .Append("(");
 
@@ -51,17 +45,21 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             }
 
             Output
-                .AppendLine("IEndpointRouteBuilder builder)")
+                .AppendLine("IClientFactory clientFactory, Action<ServiceModelGrpcClientOptions> configure = null)")
                 .AppendLine("{");
 
             using (Output.Indent())
             {
+                Output.AppendLine("if (clientFactory == null) throw new ArgumentNullException(\"clientFactory\");");
+
                 Output
-                    .Append("return builder.MapGrpcService<")
-                    .Append(_contract.ContractInterfaceName)
-                    .Append(", ")
-                    .Append(_contract.EndpointBinderClassName)
-                    .AppendLine(">();");
+                    .Append("clientFactory.")
+                    .Append(nameof(IClientFactory.AddClient))
+                    .Append("(new ")
+                    .Append(_contract.ClientBuilderClassName)
+                    .AppendLine("(), configure);");
+
+                Output.AppendLine("return clientFactory;");
             }
 
             Output.AppendLine("}");
