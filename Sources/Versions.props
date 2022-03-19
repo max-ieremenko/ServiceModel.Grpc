@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <ServiceModelGrpcVersion>1.4.4</ServiceModelGrpcVersion>
+    <ServiceModelGrpcVersion>1.4.5</ServiceModelGrpcVersion>
 
     <GrpcCoreVersion>2.43.0</GrpcCoreVersion>
     <GrpcNetVersion>2.42.0</GrpcNetVersion>
