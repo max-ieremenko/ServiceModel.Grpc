@@ -1,4 +1,4 @@
-Microsoft.CodeAnalysis.Common [3.11.0](https://www.nuget.org/packages/Microsoft.CodeAnalysis.Common/3.11.0)
+Microsoft.CodeAnalysis.Common [4.0.1](https://www.nuget.org/packages/Microsoft.CodeAnalysis.Common/4.0.1)
 --------------------
 
 Used by: DesignTime
@@ -17,19 +17,18 @@ A shared package used by the Microsoft .NET Compiler Platform ("Roslyn").
       Do not install this package manually, it will be added as a prerequisite by other packages that require it.
     
       More details at https://aka.ms/roslyn-packages
-      This package was built from the source at https://github.com/dotnet/roslyn/commit/ae1fff344d46976624e68ae17164e0607ab68b10.
+      This package was built from the source at https://github.com/dotnet/roslyn/commit/b3e69109341a1017423af7981b8b84b646f5bcce.
 
 Remarks
 -----------
 no remarks
 
 
-Dependencies 8
+Dependencies 7
 -----------
 
 |Name|Version|
 |----------|:----|
-|[Microsoft.CodeAnalysis.Analyzers](../../../../packages/nuget.org/microsoft.codeanalysis.analyzers/3.3.3)|3.3.3|
 |[System.Collections.Immutable](../../../../packages/nuget.org/system.collections.immutable/5.0.0)|5.0.0|
 |[System.Memory](../../../../packages/nuget.org/system.memory/4.5.4)|4.5.4|
 |[System.Reflection.Metadata](../../../../packages/nuget.org/system.reflection.metadata/5.0.0)|5.0.0|

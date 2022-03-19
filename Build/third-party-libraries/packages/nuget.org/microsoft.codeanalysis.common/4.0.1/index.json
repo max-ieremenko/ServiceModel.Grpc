@@ -15,10 +15,6 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.CodeAnalysis.Analyzers",
-          "Version": "3.3.3"
-        },
-        {
           "Name": "System.Collections.Immutable",
           "Version": "5.0.0"
         },

@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>Microsoft.CodeAnalysis.CSharp</id>
-    <version>3.11.0</version>
+    <version>4.0.1</version>
     <authors>Microsoft</authors>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <license type="expression">MIT</license>
@@ -12,17 +12,17 @@
     <description>.NET Compiler Platform ("Roslyn") support for C#, Microsoft.CodeAnalysis.CSharp.dll.
     
       More details at https://aka.ms/roslyn-packages
-      This package was built from the source at https://github.com/dotnet/roslyn/commit/ae1fff344d46976624e68ae17164e0607ab68b10.</description>
+      This package was built from the source at https://github.com/dotnet/roslyn/commit/b3e69109341a1017423af7981b8b84b646f5bcce.</description>
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <tags>Roslyn CodeAnalysis Compiler CSharp VB VisualBasic Parser Scanner Lexer Emit CodeGeneration Metadata IL Compilation Scripting Syntax Semantics</tags>
     <serviceable>true</serviceable>
-    <repository type="git" url="https://github.com/dotnet/roslyn" commit="ae1fff344d46976624e68ae17164e0607ab68b10" />
+    <repository type="git" url="https://github.com/dotnet/roslyn" commit="b3e69109341a1017423af7981b8b84b646f5bcce" />
     <dependencies>
       <group targetFramework=".NETCoreApp3.1">
-        <dependency id="Microsoft.CodeAnalysis.Common" version="[3.11.0, 3.11.0]" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.CodeAnalysis.Common" version="[4.0.1, 4.0.1]" exclude="Build,Analyzers" />
       </group>
       <group targetFramework=".NETStandard2.0">
-        <dependency id="Microsoft.CodeAnalysis.Common" version="[3.11.0, 3.11.0]" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.CodeAnalysis.Common" version="[4.0.1, 4.0.1]" exclude="Build,Analyzers" />
       </group>
     </dependencies>
   </metadata>

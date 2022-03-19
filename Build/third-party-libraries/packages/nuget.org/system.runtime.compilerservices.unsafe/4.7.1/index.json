@@ -20,16 +20,10 @@
       "Description": null
     },
     {
-      "Subject": "repository",
-      "Code": "MIT",
-      "HRef": "https://github.com/dotnet/roslyn-analyzers",
-      "Description": null
-    },
-    {
       "Subject": "project",
-      "Code": "MIT",
-      "HRef": "https://github.com/dotnet/roslyn-analyzers",
-      "Description": null
+      "Code": null,
+      "HRef": "https://github.com/dotnet/corefx",
+      "Description": "License should be verified on https://github.com/dotnet/corefx"
     }
   ]
 }
