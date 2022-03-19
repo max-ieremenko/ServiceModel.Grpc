@@ -61,6 +61,8 @@ task DesignTime {
     $appNames = @("DesignTime")
     $sources = @(
         (Join-Path $Settings.sources "ServiceModel.Grpc.DesignTime"),
+        (Join-Path $Settings.sources "ServiceModel.Grpc.DesignTime.Roslyn3"),
+        (Join-Path $Settings.sources "ServiceModel.Grpc.DesignTime.Roslyn4"),
         (Join-Path $Settings.sources "ServiceModel.Grpc.DesignTime.Test"),
         (Join-Path $Settings.sources "ServiceModel.Grpc.DesignTime.Generator.Test")
     )

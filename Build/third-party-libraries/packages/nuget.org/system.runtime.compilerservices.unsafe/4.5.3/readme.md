@@ -1,7 +1,7 @@
 System.Runtime.CompilerServices.Unsafe [4.5.3](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/4.5.3)
 --------------------
 
-Used by: Core, MessagePack, ProtoBuf, SelfHost
+Used by: Core, DesignTime, MessagePack, ProtoBuf, SelfHost
 
 Target frameworks: net461, net5.0, net6.0, netcoreapp3.1, netstandard2.0, netstandard2.1
 
