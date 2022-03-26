@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29920.165
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc", "ServiceModel.Grpc\ServiceModel.Grpc.csproj", "{EF60D342-FA4F-4E00-AB0A-BAEE5FC27725}"
 EndProject
@@ -39,7 +39,20 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.AspNetCor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.AspNetCore.NSwag.Test", "ServiceModel.Grpc.AspNetCore.NSwag.Test\ServiceModel.Grpc.AspNetCore.NSwag.Test.csproj", "{577E1380-3245-4F1E-93F3-AC8A14E5C88F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.DesignTime.Roslyn3", "ServiceModel.Grpc.DesignTime.Roslyn3\ServiceModel.Grpc.DesignTime.Roslyn3.csproj", "{7EB0DD5D-3387-4A60-B334-46EB93F6F3FB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.DesignTime.Roslyn4", "ServiceModel.Grpc.DesignTime.Roslyn4\ServiceModel.Grpc.DesignTime.Roslyn4.csproj", "{B2CE2B41-A3FA-4395-8AAA-B567E10D4653}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ServiceModel.Grpc.DesignTime.Shared", "ServiceModel.Grpc.DesignTime.Shared\ServiceModel.Grpc.DesignTime.Shared.shproj", "{FEF9E10E-9993-44AA-97AC-D5A582AAF755}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DesignTime", "DesignTime", "{BA316DD1-23F6-46B2-BB03-4B2B8057B523}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		ServiceModel.Grpc.DesignTime.Shared\ServiceModel.Grpc.DesignTime.Shared.projitems*{7eb0dd5d-3387-4a60-b334-46eb93f6f3fb}*SharedItemsImports = 5
+		ServiceModel.Grpc.DesignTime.Shared\ServiceModel.Grpc.DesignTime.Shared.projitems*{b2ce2b41-a3fa-4395-8aaa-b567e10d4653}*SharedItemsImports = 5
+		ServiceModel.Grpc.DesignTime.Shared\ServiceModel.Grpc.DesignTime.Shared.projitems*{fef9e10e-9993-44aa-97ac-d5a582aaf755}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -113,6 +126,14 @@ Global
 		{577E1380-3245-4F1E-93F3-AC8A14E5C88F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{577E1380-3245-4F1E-93F3-AC8A14E5C88F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{577E1380-3245-4F1E-93F3-AC8A14E5C88F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EB0DD5D-3387-4A60-B334-46EB93F6F3FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EB0DD5D-3387-4A60-B334-46EB93F6F3FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EB0DD5D-3387-4A60-B334-46EB93F6F3FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EB0DD5D-3387-4A60-B334-46EB93F6F3FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2CE2B41-A3FA-4395-8AAA-B567E10D4653}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2CE2B41-A3FA-4395-8AAA-B567E10D4653}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2CE2B41-A3FA-4395-8AAA-B567E10D4653}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2CE2B41-A3FA-4395-8AAA-B567E10D4653}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -127,6 +148,9 @@ Global
 		{D9B1C523-9684-45C2-90B1-140BE909C03B} = {2B957488-05AA-4B3F-B954-321B3ACE98B7}
 		{92BE9D50-8031-4239-93A5-FA1A0B92AD45} = {2B957488-05AA-4B3F-B954-321B3ACE98B7}
 		{577E1380-3245-4F1E-93F3-AC8A14E5C88F} = {2B957488-05AA-4B3F-B954-321B3ACE98B7}
+		{7EB0DD5D-3387-4A60-B334-46EB93F6F3FB} = {BA316DD1-23F6-46B2-BB03-4B2B8057B523}
+		{B2CE2B41-A3FA-4395-8AAA-B567E10D4653} = {BA316DD1-23F6-46B2-BB03-4B2B8057B523}
+		{FEF9E10E-9993-44AA-97AC-D5A582AAF755} = {BA316DD1-23F6-46B2-BB03-4B2B8057B523}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A48B878D-6D95-484D-9585-1BD5C3A3610B}

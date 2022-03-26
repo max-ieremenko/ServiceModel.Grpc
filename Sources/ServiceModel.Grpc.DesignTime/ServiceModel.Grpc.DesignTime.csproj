@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyTitle>ServiceModel.Grpc.DesignTime</AssemblyTitle>
-    <IsRoslynComponent>true</IsRoslynComponent>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
@@ -12,8 +11,6 @@
 
   <ItemGroup>
     <PackageReference Include="Grpc.Core.Api" Version="$(GrpcCoreVersion)" GeneratePathProperty="true" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.11.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -21,6 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ServiceModel.Grpc.DesignTime.Roslyn3\ServiceModel.Grpc.DesignTime.Roslyn3.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\ServiceModel.Grpc.DesignTime.Roslyn4\ServiceModel.Grpc.DesignTime.Roslyn4.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\ServiceModel.Grpc\ServiceModel.Grpc.csproj" />
   </ItemGroup>
 
@@ -33,8 +32,20 @@
   <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">
     <Content Include="..\..\LICENSE" PackagePath="" />
     <Content Include="..\..\build-out\DesignTimeThirdPartyNotices.txt" PackagePath="ThirdPartyNotices.txt" />
-    <None Include="build\ServiceModel.Grpc.DesignTime.props" Pack="true" PackagePath="build/ServiceModel.Grpc.DesignTime.props" />
-    <Content Include="$(TargetPath)" PackagePath="analyzers/dotnet/cs" Visible="false" />
+
+    <None Include="build\*" Pack="true" PackagePath="build/" />
+    <None Include="buildTransitive\*" Pack="true" PackagePath="buildTransitive/" />
+    <None Include="build\ServiceModel.Grpc.DesignTime.targets" Pack="true" PackagePath="buildTransitive/ServiceModel.Grpc.DesignTime.targets" />
+
+    <None Include="..\ServiceModel.Grpc.DesignTime.Roslyn3\bin\$(Configuration)\ServiceModel.Grpc.DesignTime.Roslyn3.dll"
+          PackagePath="analyzers\dotnet\roslyn3.8\cs"
+          Pack="true"
+          Visible="false" />
+    <None Include="..\ServiceModel.Grpc.DesignTime.Roslyn4\bin\$(Configuration)\ServiceModel.Grpc.DesignTime.Roslyn4.dll"
+          PackagePath="analyzers\dotnet\roslyn4.0\cs"
+          Pack="true"
+          Visible="false" />
+
     <Content Include="$(OutDir)dependencies\*" PackagePath="build/dependencies" Visible="false" />
   </ItemGroup>
 

@@ -7,28 +7,27 @@ Licenses
 |[BSD-2-Clause](licenses/bsd-2-clause)|no|no|1|
 |[BSD-3-Clause](licenses/bsd-3-clause)|no|no|1|
 |[Google.Protobuf](licenses/google.protobuf)|yes|no|1|
-|[MIT](licenses/mit)|no|no|93|
+|[MIT](licenses/mit)|no|no|91|
 |[ms-net-library](licenses/ms-net-library)|no|no|65|
 |[MS-PL](licenses/ms-pl)|no|no|1|
 
 
 
-Packages 174
+Packages 172
 --------
 
 |Name|Version|Source|License|Used by|
 |----------|:----|:----|:----|:----|
-|[Castle.Core](packages/nuget.org/castle.core/4.4.0)|4.4.0|[nuget.org](https://www.nuget.org/packages/Castle.Core/4.4.0)|[Apache-2.0](licenses/apache-2.0)|Core internal|
-|[CompareNETObjects](packages/nuget.org/comparenetobjects/4.74.0)|4.74.0|[nuget.org](https://www.nuget.org/packages/CompareNETObjects/4.74.0)|[MS-PL](licenses/ms-pl)|Core internal|
+|[Castle.Core](packages/nuget.org/castle.core/4.4.1)|4.4.1|[nuget.org](https://www.nuget.org/packages/Castle.Core/4.4.1)|[Apache-2.0](licenses/apache-2.0)|Core internal|
+|[CompareNETObjects](packages/nuget.org/comparenetobjects/4.76.0)|4.76.0|[nuget.org](https://www.nuget.org/packages/CompareNETObjects/4.76.0)|[MS-PL](licenses/ms-pl)|Core internal|
 |[DiffEngine](packages/nuget.org/diffengine/6.4.9)|6.4.9|[nuget.org](https://www.nuget.org/packages/DiffEngine/6.4.9)|[MIT](licenses/mit)|Core internal|
 |[EmptyFiles](packages/nuget.org/emptyfiles/2.3.3)|2.3.3|[nuget.org](https://www.nuget.org/packages/EmptyFiles/2.3.3)|[MIT](licenses/mit)|Core internal|
-|[Google.Protobuf](packages/nuget.org/google.protobuf/3.19.2)|3.19.2|[nuget.org](https://www.nuget.org/packages/Google.Protobuf/3.19.2)|[Google.Protobuf](licenses/google.protobuf)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
-|[Grpc.AspNetCore.Server](packages/nuget.org/grpc.aspnetcore.server/2.42.0)|2.42.0|[nuget.org](https://www.nuget.org/packages/Grpc.AspNetCore.Server/2.42.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore|
-|[Grpc.Core](packages/nuget.org/grpc.core/2.43.0)|2.43.0|[nuget.org](https://www.nuget.org/packages/Grpc.Core/2.43.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, SelfHost|
-|[Grpc.Core.Api](packages/nuget.org/grpc.core.api/2.43.0)|2.43.0|[nuget.org](https://www.nuget.org/packages/Grpc.Core.Api/2.43.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core, DesignTime, SelfHost|
-|[Grpc.Net.Common](packages/nuget.org/grpc.net.common/2.42.0)|2.42.0|[nuget.org](https://www.nuget.org/packages/Grpc.Net.Common/2.42.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore|
-|[Grpc.Tools](packages/nuget.org/grpc.tools/2.43.0)|2.43.0|[nuget.org](https://www.nuget.org/packages/Grpc.Tools/2.43.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
-|[Humanizer.Core](packages/nuget.org/humanizer.core/2.2.0)|2.2.0|[nuget.org](https://www.nuget.org/packages/Humanizer.Core/2.2.0)|[MIT](licenses/mit)|DesignTime|
+|[Google.Protobuf](packages/nuget.org/google.protobuf/3.19.4)|3.19.4|[nuget.org](https://www.nuget.org/packages/Google.Protobuf/3.19.4)|[Google.Protobuf](licenses/google.protobuf)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
+|[Grpc.AspNetCore.Server](packages/nuget.org/grpc.aspnetcore.server/2.44.0)|2.44.0|[nuget.org](https://www.nuget.org/packages/Grpc.AspNetCore.Server/2.44.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore|
+|[Grpc.Core](packages/nuget.org/grpc.core/2.45.0)|2.45.0|[nuget.org](https://www.nuget.org/packages/Grpc.Core/2.45.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, SelfHost|
+|[Grpc.Core.Api](packages/nuget.org/grpc.core.api/2.45.0)|2.45.0|[nuget.org](https://www.nuget.org/packages/Grpc.Core.Api/2.45.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core, DesignTime, SelfHost|
+|[Grpc.Net.Common](packages/nuget.org/grpc.net.common/2.44.0)|2.44.0|[nuget.org](https://www.nuget.org/packages/Grpc.Net.Common/2.44.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore|
+|[Grpc.Tools](packages/nuget.org/grpc.tools/2.45.0)|2.45.0|[nuget.org](https://www.nuget.org/packages/Grpc.Tools/2.45.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
 |[MessagePack](packages/nuget.org/messagepack/2.3.85)|2.3.85|[nuget.org](https://www.nuget.org/packages/MessagePack/2.3.85)|[MIT](licenses/mit)|MessagePack|
 |[MessagePack.Annotations](packages/nuget.org/messagepack.annotations/2.3.85)|2.3.85|[nuget.org](https://www.nuget.org/packages/MessagePack.Annotations/2.3.85)|[MIT](licenses/mit)|MessagePack|
 |[Microsoft.AspNetCore.Authentication.JwtBearer](packages/nuget.org/microsoft.aspnetcore.authentication.jwtbearer/3.1.21)|3.1.21|[nuget.org](https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.JwtBearer/3.1.21)|[Apache-2.0](licenses/apache-2.0)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
@@ -49,13 +48,12 @@ Packages 174
 |[Microsoft.AspNetCore.StaticFiles](packages/nuget.org/microsoft.aspnetcore.staticfiles/1.0.4)|1.0.4|[nuget.org](https://www.nuget.org/packages/Microsoft.AspNetCore.StaticFiles/1.0.4)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
 |[Microsoft.AspNetCore.WebUtilities](packages/nuget.org/microsoft.aspnetcore.webutilities/1.0.4)|1.0.4|[nuget.org](https://www.nuget.org/packages/Microsoft.AspNetCore.WebUtilities/1.0.4)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
 |[Microsoft.Bcl.AsyncInterfaces](packages/nuget.org/microsoft.bcl.asyncinterfaces/1.1.1)|1.1.1|[nuget.org](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/1.1.1)|[MIT](licenses/mit)|Core, MessagePack|
-|[Microsoft.Bcl.AsyncInterfaces](packages/nuget.org/microsoft.bcl.asyncinterfaces/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/5.0.0)|[MIT](licenses/mit)|Core internal, DesignTime|
-|[Microsoft.CodeAnalysis.Analyzers](packages/nuget.org/microsoft.codeanalysis.analyzers/3.3.3)|3.3.3|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeAnalysis.Analyzers/3.3.3)|[MIT](licenses/mit)|DesignTime|
-|[Microsoft.CodeAnalysis.Common](packages/nuget.org/microsoft.codeanalysis.common/3.11.0)|3.11.0|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeAnalysis.Common/3.11.0)|[MIT](licenses/mit)|DesignTime|
-|[Microsoft.CodeAnalysis.CSharp](packages/nuget.org/microsoft.codeanalysis.csharp/3.11.0)|3.11.0|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeAnalysis.CSharp/3.11.0)|[MIT](licenses/mit)|DesignTime|
-|[Microsoft.CodeAnalysis.CSharp.Workspaces](packages/nuget.org/microsoft.codeanalysis.csharp.workspaces/3.11.0)|3.11.0|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeAnalysis.CSharp.Workspaces/3.11.0)|[MIT](licenses/mit)|DesignTime|
-|[Microsoft.CodeAnalysis.Workspaces.Common](packages/nuget.org/microsoft.codeanalysis.workspaces.common/3.11.0)|3.11.0|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeAnalysis.Workspaces.Common/3.11.0)|[MIT](licenses/mit)|DesignTime|
-|[Microsoft.CodeCoverage](packages/nuget.org/microsoft.codecoverage/17.0.0)|17.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeCoverage/17.0.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal|
+|[Microsoft.Bcl.AsyncInterfaces](packages/nuget.org/microsoft.bcl.asyncinterfaces/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/5.0.0)|[MIT](licenses/mit)|Core internal|
+|[Microsoft.CodeAnalysis.Common](packages/nuget.org/microsoft.codeanalysis.common/3.8.0)|3.8.0|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeAnalysis.Common/3.8.0)|[MIT](licenses/mit)|DesignTime|
+|[Microsoft.CodeAnalysis.Common](packages/nuget.org/microsoft.codeanalysis.common/4.0.1)|4.0.1|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeAnalysis.Common/4.0.1)|[MIT](licenses/mit)|DesignTime|
+|[Microsoft.CodeAnalysis.CSharp](packages/nuget.org/microsoft.codeanalysis.csharp/3.8.0)|3.8.0|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeAnalysis.CSharp/3.8.0)|[MIT](licenses/mit)|DesignTime|
+|[Microsoft.CodeAnalysis.CSharp](packages/nuget.org/microsoft.codeanalysis.csharp/4.0.1)|4.0.1|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeAnalysis.CSharp/4.0.1)|[MIT](licenses/mit)|DesignTime|
+|[Microsoft.CodeCoverage](packages/nuget.org/microsoft.codecoverage/17.1.0)|17.1.0|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeCoverage/17.1.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal|
 |[Microsoft.DotNet.InternalAbstractions](packages/nuget.org/microsoft.dotnet.internalabstractions/1.0.0)|1.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.DotNet.InternalAbstractions/1.0.0)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
 |[Microsoft.Extensions.Configuration.Abstractions](packages/nuget.org/microsoft.extensions.configuration.abstractions/1.0.2)|1.0.2|[nuget.org](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Abstractions/1.0.2)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
 |[Microsoft.Extensions.DependencyInjection.Abstractions](packages/nuget.org/microsoft.extensions.dependencyinjection.abstractions/1.0.2)|1.0.2|[nuget.org](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection.Abstractions/1.0.2)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
@@ -85,14 +83,14 @@ Packages 174
 |[Microsoft.IdentityModel.Protocols.OpenIdConnect](packages/nuget.org/microsoft.identitymodel.protocols.openidconnect/5.5.0)|5.5.0|[nuget.org](https://www.nuget.org/packages/Microsoft.IdentityModel.Protocols.OpenIdConnect/5.5.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
 |[Microsoft.IdentityModel.Tokens](packages/nuget.org/microsoft.identitymodel.tokens/5.5.0)|5.5.0|[nuget.org](https://www.nuget.org/packages/Microsoft.IdentityModel.Tokens/5.5.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
 |[Microsoft.Net.Http.Headers](packages/nuget.org/microsoft.net.http.headers/1.0.4)|1.0.4|[nuget.org](https://www.nuget.org/packages/Microsoft.Net.Http.Headers/1.0.4)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
-|[Microsoft.NET.Test.Sdk](packages/nuget.org/microsoft.net.test.sdk/17.0.0)|17.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.Test.Sdk/17.0.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal|
+|[Microsoft.NET.Test.Sdk](packages/nuget.org/microsoft.net.test.sdk/17.1.0)|17.1.0|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.Test.Sdk/17.1.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal|
 |[Microsoft.OpenApi](packages/nuget.org/microsoft.openapi/1.2.3)|1.2.3|[nuget.org](https://www.nuget.org/packages/Microsoft.OpenApi/1.2.3)|[MIT](licenses/mit)|AspNetCoreSwashbuckle|
 |[Microsoft.SourceLink.GitHub](packages/nuget.org/microsoft.sourcelink.github/1.1.1)|1.1.1|[nuget.org](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub/1.1.1)|[MIT](licenses/mit)|AspNetCore, AspNetCoreNSwag, AspNetCoreSwashbuckle, Core, DesignTime, MessagePack, ProtoBuf, SelfHost|
-|[Microsoft.TestPlatform.ObjectModel](packages/nuget.org/microsoft.testplatform.objectmodel/17.0.0)|17.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.TestPlatform.ObjectModel/17.0.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal|
-|[Microsoft.TestPlatform.TestHost](packages/nuget.org/microsoft.testplatform.testhost/17.0.0)|17.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.TestPlatform.TestHost/17.0.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal|
+|[Microsoft.TestPlatform.ObjectModel](packages/nuget.org/microsoft.testplatform.objectmodel/17.1.0)|17.1.0|[nuget.org](https://www.nuget.org/packages/Microsoft.TestPlatform.ObjectModel/17.1.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal|
+|[Microsoft.TestPlatform.TestHost](packages/nuget.org/microsoft.testplatform.testhost/17.1.0)|17.1.0|[nuget.org](https://www.nuget.org/packages/Microsoft.TestPlatform.TestHost/17.1.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal|
 |[Microsoft.Win32.SystemEvents](packages/nuget.org/microsoft.win32.systemevents/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Win32.SystemEvents/5.0.0)|[MIT](licenses/mit)|Core internal|
 |[Mono.Reflection](packages/nuget.org/mono.reflection/2.0.0)|2.0.0|[nuget.org](https://www.nuget.org/packages/Mono.Reflection/2.0.0)|[MIT](licenses/mit)|Core internal|
-|[Moq](packages/nuget.org/moq/4.16.1)|4.16.1|[nuget.org](https://www.nuget.org/packages/Moq/4.16.1)|[BSD-3-Clause](licenses/bsd-3-clause)|Core internal|
+|[Moq](packages/nuget.org/moq/4.17.2)|4.17.2|[nuget.org](https://www.nuget.org/packages/Moq/4.17.2)|[BSD-3-Clause](licenses/bsd-3-clause)|Core internal|
 |[Namotion.Reflection](packages/nuget.org/namotion.reflection/2.0.3)|2.0.3|[nuget.org](https://www.nuget.org/packages/Namotion.Reflection/2.0.3)|[MIT](licenses/mit)|AspNetCoreNSwag|
 |[NETStandard.Library](packages/nuget.org/netstandard.library/2.0.3)|2.0.3|[nuget.org](https://www.nuget.org/packages/NETStandard.Library/2.0.3)|[MIT](licenses/mit)|Core, DesignTime, MessagePack, ProtoBuf, SelfHost|
 |[Newtonsoft.Json](packages/nuget.org/newtonsoft.json/13.0.1)|13.0.1|[nuget.org](https://www.nuget.org/packages/Newtonsoft.Json/13.0.1)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal|
@@ -105,20 +103,20 @@ Packages 174
 |[NSwag.Core.Yaml](packages/nuget.org/nswag.core.yaml/13.14.7)|13.14.7|[nuget.org](https://www.nuget.org/packages/NSwag.Core.Yaml/13.14.7)|[MIT](licenses/mit)|AspNetCoreNSwag|
 |[NSwag.Generation](packages/nuget.org/nswag.generation/13.14.7)|13.14.7|[nuget.org](https://www.nuget.org/packages/NSwag.Generation/13.14.7)|[MIT](licenses/mit)|AspNetCoreNSwag|
 |[NSwag.Generation.AspNetCore](packages/nuget.org/nswag.generation.aspnetcore/13.14.7)|13.14.7|[nuget.org](https://www.nuget.org/packages/NSwag.Generation.AspNetCore/13.14.7)|[MIT](licenses/mit)|AspNetCoreNSwag|
-|[NuGet.Frameworks](packages/nuget.org/nuget.frameworks/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/NuGet.Frameworks/5.0.0%2b42a8779499c1d1ed2488c2e6b9e2ee6ff6107766)|[Apache-2.0](licenses/apache-2.0)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal|
-|[NUnit](packages/nuget.org/nunit/3.13.2)|3.13.2|[nuget.org](https://www.nuget.org/packages/NUnit/3.13.2)|[MIT](licenses/mit)|Core internal|
-|[NUnit3TestAdapter](packages/nuget.org/nunit3testadapter/4.2.0)|4.2.0|[nuget.org](https://www.nuget.org/packages/NUnit3TestAdapter/4.2.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal|
+|[NuGet.Frameworks](packages/nuget.org/nuget.frameworks/5.11.0)|5.11.0|[nuget.org](https://www.nuget.org/packages/NuGet.Frameworks/5.11.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal|
+|[NUnit](packages/nuget.org/nunit/3.13.3)|3.13.3|[nuget.org](https://www.nuget.org/packages/NUnit/3.13.3)|[MIT](licenses/mit)|Core internal|
+|[NUnit3TestAdapter](packages/nuget.org/nunit3testadapter/4.2.1)|4.2.1|[nuget.org](https://www.nuget.org/packages/NUnit3TestAdapter/4.2.1)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal|
 |[protobuf-net](packages/nuget.org/protobuf-net/3.0.101)|3.0.101|[nuget.org](https://www.nuget.org/packages/protobuf-net/3.0.101)|[Apache-2.0](licenses/apache-2.0)|ProtoBuf|
 |[protobuf-net.Core](packages/nuget.org/protobuf-net.core/3.0.101)|3.0.101|[nuget.org](https://www.nuget.org/packages/protobuf-net.Core/3.0.101)|[Apache-2.0](licenses/apache-2.0)|ProtoBuf|
 |[Shouldly](packages/nuget.org/shouldly/4.0.3)|4.0.3|[nuget.org](https://www.nuget.org/packages/Shouldly/4.0.3)|[BSD-2-Clause](licenses/bsd-2-clause)|Core internal|
-|[StyleCop.Analyzers.Unstable](packages/nuget.org/stylecop.analyzers.unstable/1.2.0.376)|1.2.0.376|[nuget.org](https://www.nuget.org/packages/StyleCop.Analyzers.Unstable/1.2.0.376)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, MessagePack internal, ProtoBuf internal, SelfHost internal|
+|[StyleCop.Analyzers.Unstable](packages/nuget.org/stylecop.analyzers.unstable/1.2.0.406)|1.2.0.406|[nuget.org](https://www.nuget.org/packages/StyleCop.Analyzers.Unstable/1.2.0.406)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, MessagePack internal, ProtoBuf internal, SelfHost internal|
 |[Swashbuckle.AspNetCore.Annotations](packages/nuget.org/swashbuckle.aspnetcore.annotations/6.2.3)|6.2.3|[nuget.org](https://www.nuget.org/packages/Swashbuckle.AspNetCore.Annotations/6.2.3)|[MIT](licenses/mit)|AspNetCoreSwashbuckle internal|
 |[Swashbuckle.AspNetCore.Swagger](packages/nuget.org/swashbuckle.aspnetcore.swagger/6.2.3)|6.2.3|[nuget.org](https://www.nuget.org/packages/Swashbuckle.AspNetCore.Swagger/6.2.3)|[MIT](licenses/mit)|AspNetCoreSwashbuckle|
 |[Swashbuckle.AspNetCore.SwaggerGen](packages/nuget.org/swashbuckle.aspnetcore.swaggergen/6.2.3)|6.2.3|[nuget.org](https://www.nuget.org/packages/Swashbuckle.AspNetCore.SwaggerGen/6.2.3)|[MIT](licenses/mit)|AspNetCoreSwashbuckle|
 |[Swashbuckle.AspNetCore.SwaggerUI](packages/nuget.org/swashbuckle.aspnetcore.swaggerui/6.2.3)|6.2.3|[nuget.org](https://www.nuget.org/packages/Swashbuckle.AspNetCore.SwaggerUI/6.2.3)|[MIT](licenses/mit)|AspNetCoreSwashbuckle internal|
 |[System.AppContext](packages/nuget.org/system.appcontext/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.AppContext/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
 |[System.Buffers](packages/nuget.org/system.buffers/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Buffers/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
-|[System.Buffers](packages/nuget.org/system.buffers/4.4.0)|4.4.0|[nuget.org](https://www.nuget.org/packages/System.Buffers/4.4.0)|[MIT](licenses/mit)|Core, MessagePack, SelfHost|
+|[System.Buffers](packages/nuget.org/system.buffers/4.4.0)|4.4.0|[nuget.org](https://www.nuget.org/packages/System.Buffers/4.4.0)|[MIT](licenses/mit)|Core, DesignTime, MessagePack, SelfHost|
 |[System.Buffers](packages/nuget.org/system.buffers/4.5.1)|4.5.1|[nuget.org](https://www.nuget.org/packages/System.Buffers/4.5.1)|[MIT](licenses/mit)|Core internal, DesignTime, ProtoBuf|
 |[System.Collections.Concurrent](packages/nuget.org/system.collections.concurrent/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Collections.Concurrent/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
 |[System.Collections.Immutable](packages/nuget.org/system.collections.immutable/1.5.0)|1.5.0|[nuget.org](https://www.nuget.org/packages/System.Collections.Immutable/1.5.0)|[MIT](licenses/mit)|MessagePack|
@@ -143,10 +141,9 @@ Packages 174
 |[System.Formats.Asn1](packages/nuget.org/system.formats.asn1/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/System.Formats.Asn1/5.0.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal|
 |[System.IdentityModel.Tokens.Jwt](packages/nuget.org/system.identitymodel.tokens.jwt/5.5.0)|5.5.0|[nuget.org](https://www.nuget.org/packages/System.IdentityModel.Tokens.Jwt/5.5.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
 |[System.IO.FileSystem.Primitives](packages/nuget.org/system.io.filesystem.primitives/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.IO.FileSystem.Primitives/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag, Core internal|
-|[System.IO.Pipelines](packages/nuget.org/system.io.pipelines/5.0.1)|5.0.1|[nuget.org](https://www.nuget.org/packages/System.IO.Pipelines/5.0.1)|[MIT](licenses/mit)|DesignTime|
 |[System.Linq](packages/nuget.org/system.linq/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Linq/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag, Core internal|
 |[System.Linq.Expressions](packages/nuget.org/system.linq.expressions/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Linq.Expressions/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag, Core internal|
-|[System.Memory](packages/nuget.org/system.memory/4.5.3)|4.5.3|[nuget.org](https://www.nuget.org/packages/System.Memory/4.5.3)|[MIT](licenses/mit)|Core, MessagePack, SelfHost|
+|[System.Memory](packages/nuget.org/system.memory/4.5.3)|4.5.3|[nuget.org](https://www.nuget.org/packages/System.Memory/4.5.3)|[MIT](licenses/mit)|Core, DesignTime, MessagePack, SelfHost|
 |[System.Memory](packages/nuget.org/system.memory/4.5.4)|4.5.4|[nuget.org](https://www.nuget.org/packages/System.Memory/4.5.4)|[MIT](licenses/mit)|Core internal, DesignTime, ProtoBuf|
 |[System.Net.WebSockets](packages/nuget.org/system.net.websockets/4.0.0)|4.0.0|[nuget.org](https://www.nuget.org/packages/System.Net.WebSockets/4.0.0)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
 |[System.Numerics.Vectors](packages/nuget.org/system.numerics.vectors/4.4.0)|4.4.0|[nuget.org](https://www.nuget.org/packages/System.Numerics.Vectors/4.4.0)|[MIT](licenses/mit)|Core, DesignTime, MessagePack, ProtoBuf, SelfHost|
@@ -164,7 +161,8 @@ Packages 174
 |[System.Reflection.Metadata](packages/nuget.org/system.reflection.metadata/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/System.Reflection.Metadata/5.0.0)|[MIT](licenses/mit)|AspNetCoreNSwag internal, DesignTime|
 |[System.Reflection.TypeExtensions](packages/nuget.org/system.reflection.typeextensions/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Reflection.TypeExtensions/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag, Core internal|
 |[System.Runtime.CompilerServices.Unsafe](packages/nuget.org/system.runtime.compilerservices.unsafe/4.5.2)|4.5.2|[nuget.org](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/4.5.2)|[MIT](licenses/mit)|Core, SelfHost|
-|[System.Runtime.CompilerServices.Unsafe](packages/nuget.org/system.runtime.compilerservices.unsafe/4.5.3)|4.5.3|[nuget.org](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/4.5.3)|[MIT](licenses/mit)|Core, MessagePack, ProtoBuf, SelfHost|
+|[System.Runtime.CompilerServices.Unsafe](packages/nuget.org/system.runtime.compilerservices.unsafe/4.5.3)|4.5.3|[nuget.org](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/4.5.3)|[MIT](licenses/mit)|Core, DesignTime, MessagePack, ProtoBuf, SelfHost|
+|[System.Runtime.CompilerServices.Unsafe](packages/nuget.org/system.runtime.compilerservices.unsafe/4.7.1)|4.7.1|[nuget.org](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/4.7.1)|[MIT](licenses/mit)|DesignTime|
 |[System.Runtime.CompilerServices.Unsafe](packages/nuget.org/system.runtime.compilerservices.unsafe/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/5.0.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, DesignTime|
 |[System.Runtime.CompilerServices.Unsafe](packages/nuget.org/system.runtime.compilerservices.unsafe/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/6.0.0)|[MIT](licenses/mit)|AspNetCoreNSwag, DesignTime internal|
 |[System.Runtime.InteropServices.RuntimeInformation](packages/nuget.org/system.runtime.interopservices.runtimeinformation/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Runtime.InteropServices.RuntimeInformation/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag, Core internal|

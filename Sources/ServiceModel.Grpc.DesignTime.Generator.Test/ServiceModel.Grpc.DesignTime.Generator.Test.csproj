@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <WarningsNotAsErrors>GrpcDesignTime04</WarningsNotAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,13 +14,22 @@
     <PackageReference Include="System.Collections.Immutable" Version="6.0.0" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <ProjectReference Include="..\ServiceModel.Grpc.DesignTime.Roslyn4\ServiceModel.Grpc.DesignTime.Roslyn4.csproj" OutputItemType="Analyzer" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' != 'Debug'">
+    <ProjectReference Include="..\ServiceModel.Grpc.DesignTime.Roslyn3\ServiceModel.Grpc.DesignTime.Roslyn3.csproj" OutputItemType="Analyzer" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\ServiceModel.Grpc.AspNetCore.TestApi\ServiceModel.Grpc.AspNetCore.TestApi.csproj" />
-    <ProjectReference Include="..\ServiceModel.Grpc.DesignTime\ServiceModel.Grpc.DesignTime.csproj" OutputItemType="Analyzer" />
+    <ProjectReference Include="..\ServiceModel.Grpc.DesignTime\ServiceModel.Grpc.DesignTime.csproj" />
     <ProjectReference Include="..\ServiceModel.Grpc.SelfHost\ServiceModel.Grpc.SelfHost.csproj" />
   </ItemGroup>
 
   <Import Project="..\ServiceModel.Grpc.DesignTime\build\ServiceModel.Grpc.DesignTime.props" />
+
   <PropertyGroup>
     <ServiceModelGrpcDesignTime_Dependencies>$(SolutionDir)ServiceModel.Grpc.DesignTime\bin\$(Configuration)\netstandard2.0\dependencies</ServiceModelGrpcDesignTime_Dependencies>
     <ServiceModelGrpcDesignTime_LocalBuild>true</ServiceModelGrpcDesignTime_LocalBuild>

@@ -88,8 +88,7 @@ namespace ServiceModel.Grpc.AspNetCore.TestApi
             var ex = Assert.Throws<RpcException>(() => _domainService.GetCurrentUserName());
 
             ex.ShouldNotBeNull();
-            var status = ex.Trailers.FirstOrDefault(i => i.Key.Equals(":status", StringComparison.OrdinalIgnoreCase))?.Value;
-            status.ShouldBe("401");
+            ex.StatusCode.ShouldBe(StatusCode.Unauthenticated);
         }
 
         [Test]

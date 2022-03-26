@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Moq</id>
+    <version>4.17.2</version>
+    <title>Moq: an enjoyable mocking library</title>
+    <authors>Daniel Cazzulino, kzu</authors>
+    <licenseUrl>https://raw.githubusercontent.com/moq/moq4/main/License.txt</licenseUrl>
+    <icon>moq.png</icon>
+    <projectUrl>https://github.com/moq/moq4</projectUrl>
+    <description>Moq is the most popular and friendly mocking framework for .NET.
+
+Built from https://github.com/moq/moq4/tree/803ad5c99</description>
+    <releaseNotes>A changelog is available at https://github.com/moq/moq4/blob/main/CHANGELOG.md.</releaseNotes>
+    <tags>moq tdd mocking mocks unittesting agile unittest</tags>
+    <repository type="git" url="https://github.com/moq/moq4" commit="803ad5c997f780f3ea64d7b6024dff3c7ff7b2d4" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.5">
+        <dependency id="Castle.Core" version="4.4.1" exclude="Build,Analyzers" />
+        <dependency id="System.Threading.Tasks.Extensions" version="4.5.4" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Castle.Core" version="4.4.1" exclude="Build,Analyzers" />
+        <dependency id="System.Threading.Tasks.Extensions" version="4.5.4" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.1">
+        <dependency id="Castle.Core" version="4.4.1" exclude="Build,Analyzers" />
+        <dependency id="System.Threading.Tasks.Extensions" version="4.5.4" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
