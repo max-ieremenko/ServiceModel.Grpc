@@ -35,7 +35,7 @@ namespace ServiceModel.Grpc.Interceptors.Internal
             _interceptor = interceptor;
         }
 
-        public WriteOptions WriteOptions
+        public WriteOptions? WriteOptions
         {
             get => _original.WriteOptions;
             set => _original.WriteOptions = value;
