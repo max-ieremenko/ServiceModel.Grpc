@@ -22,6 +22,7 @@ using System.Reflection;
 using Grpc.Core;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Hosting.Internal;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
@@ -36,15 +37,6 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
         }
 
         public override string GetGeneratedMemberName() => _contract.EndpointBinderClassName;
-
-        public override void AddUsing(ICollection<string> imports)
-        {
-            base.AddUsing(imports);
-            imports.Add(typeof(MethodInfo).Namespace!);
-            imports.Add(typeof(Expression).Namespace!);
-            imports.Add(typeof(IServiceMethodBinder<>).Namespace!);
-            imports.Add(typeof(IServiceEndpointBinder<>).Namespace!);
-        }
 
         internal static void WriteNewAttribute(CodeStringBuilder output, AttributeData attribute)
         {
@@ -120,8 +112,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .Append("internal sealed partial class ")
                 .Append(GetGeneratedMemberName())
                 .Append(" : ")
-                .Append(nameof(IServiceEndpointBinder<string>))
-                .Append("<")
+                .AppendType(typeof(IServiceEndpointBinder<>))
                 .Append(_contract.ContractInterfaceName)
                 .AppendLine(">");
             Output.AppendLine("{");
@@ -157,15 +148,14 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
         {
             Output
                 .Append("public void Bind(")
-                .Append(nameof(IServiceMethodBinder<string>))
-                .Append("<")
+                .AppendType(typeof(IServiceMethodBinder<>))
                 .Append(_contract.ContractInterfaceName)
                 .AppendLine("> methodBinder)")
                 .AppendLine("{");
 
             using (Output.Indent())
             {
-                Output.AppendLine("if (methodBinder == null) throw new ArgumentNullException(\"methodBinder\");");
+                Output.AppendArgumentNullException("methodBinder");
 
                 Output
                     .Append("var contract = new ")
@@ -191,47 +181,16 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
                         if (method.OperationType == MethodType.ClientStreaming)
                         {
-                            var requestHeaderMarshaller = "(Marshaller<Message>)null";
-                            if (method.HeaderRequestType != null)
-                            {
-                                requestHeaderMarshaller = "contract." + method.GrpcMethodInputHeaderName;
-                            }
-
-                            Output
-                                .Append(", ")
-                                .Append(requestHeaderMarshaller);
+                            WriteHeaderMarshaller(method.HeaderRequestType, method.GrpcMethodInputHeaderName);
                         }
                         else if (method.OperationType == MethodType.ServerStreaming)
                         {
-                            var responseHeaderMarshaller = "(Marshaller<Message>)null";
-                            if (method.HeaderResponseType != null)
-                            {
-                                responseHeaderMarshaller = "contract." + method.GrpcMethodOutputHeaderName;
-                            }
-
-                            Output
-                                .Append(", ")
-                                .Append(responseHeaderMarshaller);
+                            WriteHeaderMarshaller(method.HeaderResponseType, method.GrpcMethodOutputHeaderName);
                         }
                         else if (method.OperationType == MethodType.DuplexStreaming)
                         {
-                            var requestHeaderMarshaller = "(Marshaller<Message>)null";
-                            if (method.HeaderRequestType != null)
-                            {
-                                requestHeaderMarshaller = "contract." + method.GrpcMethodInputHeaderName;
-                            }
-
-                            var responseHeaderMarshaller = "(Marshaller<Message>)null";
-                            if (method.HeaderResponseType != null)
-                            {
-                                responseHeaderMarshaller = "contract." + method.GrpcMethodOutputHeaderName;
-                            }
-
-                            Output
-                                .Append(", ")
-                                .Append(requestHeaderMarshaller)
-                                .Append(", ")
-                                .Append(responseHeaderMarshaller);
+                            WriteHeaderMarshaller(method.HeaderRequestType, method.GrpcMethodInputHeaderName);
+                            WriteHeaderMarshaller(method.HeaderResponseType, method.GrpcMethodOutputHeaderName);
                         }
 
                         Output
@@ -245,6 +204,26 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             }
 
             Output.AppendLine("}");
+        }
+
+        private void WriteHeaderMarshaller(MessageDescription? description, string propertyName)
+        {
+            Output.Append(", ");
+            if (description == null)
+            {
+                // (Marshaller<Message>)null
+                Output
+                    .Append("(")
+                    .AppendType(typeof(Marshaller<>))
+                    .AppendType(typeof(Message))
+                    .Append(">)null");
+            }
+            else
+            {
+                Output
+                    .Append("contract.")
+                    .Append(propertyName);
+            }
         }
 
         private void BuildGetServiceMetadata()
@@ -356,7 +335,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
         {
             Output
                 .Append("private ")
-                .Append(nameof(MethodInfo))
+                .AppendType(typeof(MethodInfo))
                 .Append(" ")
                 .Append(GetMethodDefinitionName(method))
                 .AppendLine("()")
@@ -387,7 +366,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
                 // Expression<Action<IDemoService>> __exp = s => s.Sum(default, default);
                 Output
-                    .Append(nameof(Expression))
+                    .AppendType(typeof(Expression))
                     .Append("<Action<")
                     .Append(interfaceType)
                     .Append(">> __exp = s => s.")
@@ -425,7 +404,10 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
                 Output.AppendLine(");");
 
-                Output.AppendLine("return ((MethodCallExpression)__exp.Body).Method;");
+                Output
+                    .Append("return ((")
+                    .AppendType(typeof(MethodCallExpression))
+                    .AppendLine(")__exp.Body).Method;");
             }
 
             Output.AppendLine("}");

@@ -33,7 +33,9 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
         {
             WriteMetadata();
             Output
-                .Append("public static Server.ServiceDefinitionCollection Add")
+                .Append("public static ")
+                .AppendTypeName("Grpc.Core", "Server.ServiceDefinitionCollection")
+                .Append(" Add")
                 .Append(_contract.BaseClassName)
                 .Append("(");
 
@@ -43,17 +45,19 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             }
 
             Output
-                .Append("Server.ServiceDefinitionCollection services")
-                .Append(", IServiceProvider serviceProvider")
+                .AppendTypeName("Grpc.Core", "Server.ServiceDefinitionCollection")
+                .Append(" services, IServiceProvider serviceProvider")
                 .AppendLine(", Action<global::Grpc.Core.ServiceModelGrpcServiceOptions> configure = default)")
                 .AppendLine("{");
 
             using (Output.Indent())
             {
                 Output
-                    .Append("return services.AddServiceModel<")
+                    .Append("return ")
+                    .AppendTypeName("Grpc.Core", "ServiceDefinitionCollectionExtensions")
+                    .Append(".AddServiceModel<")
                     .Append(_contract.ContractInterfaceName)
-                    .AppendLine(">(serviceProvider, configure);");
+                    .AppendLine(">(services, serviceProvider, configure);");
             }
 
             Output.AppendLine("}");

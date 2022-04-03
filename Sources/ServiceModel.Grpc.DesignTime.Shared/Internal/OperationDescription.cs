@@ -138,7 +138,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
         {
             if (SyntaxTools.IsVoid(returnType))
             {
-                return (MessageDescription.Empty(), 0, null, Array.Empty<int>());
+                return (MessageDescription.Empty, 0, null, Array.Empty<int>());
             }
 
             var responseType = returnType;
@@ -147,7 +147,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
                 var genericArguments = responseType.GenericTypeArguments();
                 if (genericArguments.IsEmpty)
                 {
-                    return (MessageDescription.Empty(), 0, null, Array.Empty<int>());
+                    return (MessageDescription.Empty, 0, null, Array.Empty<int>());
                 }
 
                 responseType = genericArguments[0];
@@ -217,7 +217,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
         {
             if (Method.Parameters.Length == 0)
             {
-                return (MessageDescription.Empty(), Array.Empty<int>(), null, Array.Empty<int>());
+                return (MessageDescription.Empty, Array.Empty<int>(), null, Array.Empty<int>());
             }
 
             var dataParameters = new List<ITypeSymbol>();

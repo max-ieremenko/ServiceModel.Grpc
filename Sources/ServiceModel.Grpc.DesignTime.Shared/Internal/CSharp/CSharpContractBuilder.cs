@@ -16,6 +16,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
@@ -54,14 +55,14 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .Append("public ")
                 .Append(_contract.ContractClassName)
                 .Append("(")
-                .Append(nameof(IMarshallerFactory))
+                .AppendType(typeof(IMarshallerFactory))
                 .AppendLine(" marshallerFactory)");
 
             Output.AppendLine("{");
 
             using (Output.Indent())
             {
-                Output.AppendLine("if (marshallerFactory == null) throw new ArgumentNullException(\"marshallerFactory\");");
+                Output.AppendArgumentNullException("marshallerFactory");
 
                 foreach (var operation in GetAllOperations())
                 {
@@ -79,10 +80,11 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             foreach (var operation in GetAllOperations())
             {
                 Output
-                    .Append("public Method<")
-                    .Append(operation.RequestType.ClassName)
+                    .Append("public ")
+                    .AppendType(typeof(Method<,>))
+                    .AppendMessage(operation.RequestType)
                     .Append(", ")
-                    .Append(operation.ResponseType.ClassName)
+                    .AppendMessage(operation.ResponseType)
                     .Append("> ")
                     .Append(operation.GrpcMethodName)
                     .AppendLine(" { get; }")
@@ -91,8 +93,9 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 if (operation.HeaderRequestType != null)
                 {
                     Output
-                        .Append("public Marshaller<")
-                        .Append(operation.HeaderRequestType.ClassName)
+                        .Append("public ")
+                        .AppendType(typeof(Marshaller<>))
+                        .AppendMessage(operation.HeaderRequestType)
                         .Append("> ")
                         .Append(operation.GrpcMethodInputHeaderName)
                         .AppendLine(" { get; }")
@@ -102,8 +105,9 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 if (operation.HeaderResponseType != null)
                 {
                     Output
-                        .Append("public Marshaller<")
-                        .Append(operation.HeaderResponseType.ClassName)
+                        .Append("public ")
+                        .AppendType(typeof(Marshaller<>))
+                        .AppendMessage(operation.HeaderResponseType)
                         .Append("> ")
                         .Append(operation.GrpcMethodOutputHeaderName)
                         .AppendLine(" { get; }")
@@ -116,14 +120,16 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
         {
             Output
                 .Append(operation.GrpcMethodName)
-                .Append(" = new Method<")
-                .Append(operation.RequestType.ClassName)
+                .Append(" = new ")
+                .AppendType(typeof(Method<,>))
+                .AppendMessage(operation.RequestType)
                 .Append(", ")
-                .Append(operation.ResponseType.ClassName)
+                .AppendMessage(operation.ResponseType)
                 .Append(">(");
 
             Output
-                .Append("MethodType.")
+                .AppendType(typeof(MethodType))
+                .Append(".")
                 .Append(operation.OperationType.ToString())
                 .Append(",");
 
@@ -139,12 +145,12 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
             Output
                 .Append(" marshallerFactory.CreateMarshaller<")
-                .Append(operation.RequestType.ClassName)
+                .AppendMessage(operation.RequestType)
                 .Append(">(),");
 
             Output
                 .Append(" marshallerFactory.CreateMarshaller<")
-                .Append(operation.ResponseType.ClassName)
+                .AppendMessage(operation.ResponseType)
                 .AppendLine(">());");
         }
 
@@ -158,7 +164,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             Output
                 .Append(operation.GrpcMethodInputHeaderName)
                 .Append(" = marshallerFactory.CreateMarshaller<")
-                .Append(operation.HeaderRequestType.ClassName)
+                .AppendMessage(operation.HeaderRequestType)
                 .AppendLine(">();");
         }
 
@@ -172,7 +178,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             Output
                 .Append(operation.GrpcMethodOutputHeaderName)
                 .Append(" = marshallerFactory.CreateMarshaller<")
-                .Append(operation.HeaderResponseType.ClassName)
+                .AppendMessage(operation.HeaderResponseType)
                 .AppendLine(">();");
         }
 

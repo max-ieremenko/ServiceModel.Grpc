@@ -27,34 +27,29 @@ namespace ServiceModel.Grpc.DesignTime.Generator
 {
     internal sealed class GeneratorContext
     {
-        private readonly Action<Diagnostic> _reportDiagnostic;
-        private readonly Action<string, SourceText> _addSource;
+        private readonly IExecutionContext _executionContext;
         private readonly HashSet<string> _generatedNames;
 
         public GeneratorContext(
             Compilation compilation,
-            Action<Diagnostic> reportDiagnostic,
-            CancellationToken cancellationToken,
-            Action<string, SourceText> addSource)
+            IExecutionContext executionContext)
         {
+            _executionContext = executionContext;
             Compilation = compilation;
-            CancellationToken = cancellationToken;
-            _reportDiagnostic = reportDiagnostic;
-            _addSource = addSource;
             _generatedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
-        public CancellationToken CancellationToken { get; }
+        public CancellationToken CancellationToken => _executionContext.CancellationToken;
 
         public Compilation Compilation { get; }
 
-        public void ReportDiagnostic(Diagnostic diagnostic) => _reportDiagnostic(diagnostic);
+        public void ReportDiagnostic(Diagnostic diagnostic) => _executionContext.ReportDiagnostic(diagnostic);
 
         public void AddOutput(ClassDeclarationSyntax node, string hintName, string source)
         {
             var fileName = GetOutputFileName(node, hintName);
             var sourceText = SourceText.From(source, Encoding.UTF8);
-            _addSource(fileName, sourceText);
+            _executionContext.AddSource(fileName, sourceText);
         }
 
         internal string GetOutputFileName(ClassDeclarationSyntax node, string hintName)

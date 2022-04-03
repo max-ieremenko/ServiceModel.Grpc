@@ -15,7 +15,6 @@
 // </copyright>
 
 using System.CodeDom.Compiler;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -34,25 +33,15 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
         public abstract string GetGeneratedMemberName();
 
-        public virtual void AddUsing(ICollection<string> imports)
-        {
-            imports.Add(typeof(GeneratedCodeAttribute).Namespace);
-            imports.Add(typeof(CompilerGeneratedAttribute).Namespace);
-            imports.Add(typeof(ExcludeFromCodeCoverageAttribute).Namespace);
-            imports.Add(typeof(ObfuscationAttribute).Namespace);
-        }
-
         protected abstract void Generate();
 
         protected void WriteMetadata()
         {
             Output
-                .Append("[GeneratedCode(\"ServiceModel.Grpc\", \"")
-                .Append(GetType().Assembly.GetName().Version.ToString(3))
-                .AppendLine("\")]")
-                .AppendLine("[CompilerGenerated]")
-                .AppendLine("[ExcludeFromCodeCoverage]")
-                .AppendLine("[Obfuscation(Exclude = true)]");
+                .AppendAttribute(typeof(GeneratedCodeAttribute), "\"ServiceModel.Grpc\"", "\"" + GetType().Assembly.GetName().Version.ToString(3) + "\"")
+                .AppendAttribute(typeof(CompilerGeneratedAttribute))
+                .AppendAttribute(typeof(ExcludeFromCodeCoverageAttribute))
+                .AppendAttribute(typeof(ObfuscationAttribute), "Exclude = true");
         }
     }
 }
