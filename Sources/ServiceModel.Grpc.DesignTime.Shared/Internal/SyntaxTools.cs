@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using ServiceModel.Grpc.Internal;
 
@@ -55,7 +54,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
         {
             foreach (var attribute in owner.GetAttributes())
             {
-                var fullName = GetFullName(attribute.AttributeClass!);
+                var fullName = attribute.AttributeClass?.ToDisplayString(NullableFlowState.None);
                 if (string.Equals(attributeTypeFullName, fullName, StringComparison.Ordinal))
                 {
                     return attribute;
@@ -76,8 +75,13 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             }
         }
 
-        public static string GetFullName(ITypeSymbol type)
+        public static string GetFullName(ITypeSymbol? type)
         {
+            if (type == null)
+            {
+                return string.Empty;
+            }
+
             if (type.Kind == SymbolKind.TypeParameter)
             {
                 return type.Name;
@@ -91,31 +95,18 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
 
         public static string GetNamespace(ITypeSymbol type)
         {
-            var result = new StringBuilder();
-
-            var test = type;
-            if (test.ContainingType != null)
+            if (type.ContainingType != null)
             {
-                if (result.Length != 0)
-                {
-                    result.Insert(0, '.');
-                }
-
-                result.Insert(0, test.ContainingType.Name);
-                test = test.ContainingType;
+                return type.ContainingType.ToDisplayString();
             }
 
-            foreach (var ns in ExpandNamespace(test.ContainingNamespace))
+            var ns = type.ContainingNamespace;
+            if (ns == null || ns.IsGlobalNamespace)
             {
-                if (result.Length != 0)
-                {
-                    result.Insert(0, '.');
-                }
-
-                result.Insert(0, ns.Name);
+                return string.Empty;
             }
 
-            return result.ToString();
+            return ns.ToDisplayString();
         }
 
         public static ImmutableArray<ITypeSymbol> GenericTypeArguments(this ITypeSymbol type)
@@ -221,27 +212,36 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             return false;
         }
 
-        public static bool IsVoid(ITypeSymbol type) => IsMatch(type, typeof(void));
+        public static bool IsVoid(ITypeSymbol type)
+        {
+            return type.Name.Equals("Void", StringComparison.Ordinal)
+                   && type.GenericTypeArguments().Length == 0
+                   && "System".Equals(GetNamespace(type), StringComparison.Ordinal);
+        }
 
         public static bool IsTask(ITypeSymbol type)
         {
-            return IsMatch(type, typeof(Task))
-                   || IsMatch(type, typeof(Task<>))
-                   || IsValueTask(type);
+            if (type.GenericTypeArguments().Length > 1)
+            {
+                return false;
+            }
+
+            return ("Task".Equals(type.Name, StringComparison.Ordinal)
+                    || "ValueTask".Equals(type.Name, StringComparison.Ordinal))
+                   && "System.Threading.Tasks".Equals(GetNamespace(type), StringComparison.Ordinal);
         }
 
         public static bool IsValueTask(this ITypeSymbol type)
         {
-            return IsMatch(type, typeof(ValueTask))
-                   || IsMatch(type, typeof(ValueTask<>));
+            return type.GenericTypeArguments().Length < 2
+                   && "ValueTask".Equals(type.Name, StringComparison.Ordinal)
+                   && "System.Threading.Tasks".Equals(GetNamespace(type), StringComparison.Ordinal);
         }
 
         public static bool IsAsyncEnumerable(ITypeSymbol type)
         {
-            return type is INamedTypeSymbol named
-                   && named.IsGenericType
-                   && named.TypeArguments.Length == 1
-                   && "IAsyncEnumerable".Equals(named.Name, StringComparison.Ordinal)
+            return type.GenericTypeArguments().Length == 1
+                   && "IAsyncEnumerable".Equals(type.Name, StringComparison.Ordinal)
                    && "System.Collections.Generic".Equals(GetNamespace(type), StringComparison.Ordinal);
         }
 
@@ -322,16 +322,11 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
                    && GenericTypeArguments(type).IsEmpty;
         }
 
-        public static bool IsNullable(ITypeSymbol type) => IsMatch(type, typeof(Nullable<>));
-
-        private static IEnumerable<INamespaceSymbol> ExpandNamespace(INamespaceSymbol? startFrom)
+        public static bool IsNullable(ITypeSymbol type)
         {
-            var ns = startFrom;
-            while (ns != null && !ns.IsGlobalNamespace)
-            {
-                yield return ns;
-                ns = ns.ContainingNamespace;
-            }
+            return type.Name.Equals(nameof(Nullable), StringComparison.Ordinal)
+                   && type.GenericTypeArguments().Length == 1
+                   && "System".Equals(GetNamespace(type), StringComparison.Ordinal);
         }
 
         private static void WriteTypeFullName(ITypeSymbol type, StringBuilder result)
@@ -371,7 +366,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
                 return;
             }
 
-            WriteTypeFullName(GetNamespace(type), type.Name, result);
+            WriteType(type, result);
 
             // System.Tuple`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib
             if (!genericArguments.IsEmpty)
@@ -392,30 +387,30 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             }
         }
 
-        private static void WriteTypeFullName(string? ns, string name, StringBuilder result)
+        private static void WriteType(ITypeSymbol type, StringBuilder result)
         {
+            var ns = GetNamespace(type);
+
             if ("System".Equals(ns, StringComparison.Ordinal))
             {
-                result.Append(SimplifyTypeName(name));
+                result.Append(SimplifyTypeName(type.Name));
                 return;
             }
 
             if ("System.Collections.Generic".Equals(ns, StringComparison.Ordinal)
                 || "System.Threading.Tasks".Equals(ns, StringComparison.Ordinal)
-                || "System.Threading".Equals(ns, StringComparison.Ordinal)
-                || "ServiceModel.Grpc".Equals(ns, StringComparison.Ordinal)
-                || "Grpc.Core".Equals(ns, StringComparison.Ordinal))
+                || "System.Threading".Equals(ns, StringComparison.Ordinal))
             {
-                result.Append(name);
+                result.Append(type.Name);
                 return;
             }
 
             if (!string.IsNullOrEmpty(ns))
             {
-                result.Append(ns).Append(".");
+                result.Append("global::").Append(ns).Append(".");
             }
 
-            result.Append(name);
+            result.Append(type.Name);
         }
 
         private static string SimplifyTypeName(string name)

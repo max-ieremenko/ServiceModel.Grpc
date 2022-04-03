@@ -50,7 +50,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator
                 return false;
             }
 
-            var fullName = SyntaxTools.GetFullName(attributeData.AttributeClass);
+            var fullName = attributeData.AttributeClass.ToDisplayString(NullableFlowState.None);
             var isImport = false;
             if ("ServiceModel.Grpc.DesignTime.ImportGrpcServiceAttribute".Equals(fullName, StringComparison.Ordinal))
             {

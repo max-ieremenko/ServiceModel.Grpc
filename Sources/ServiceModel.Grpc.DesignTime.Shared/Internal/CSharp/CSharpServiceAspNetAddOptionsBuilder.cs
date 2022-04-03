@@ -31,17 +31,13 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
         public override string GetGeneratedMemberName() => "Add" + _contract.BaseClassName + "Options";
 
-        public override void AddUsing(ICollection<string> imports)
-        {
-            base.AddUsing(imports);
-            imports.Add("Microsoft.Extensions.DependencyInjection");
-        }
-
         protected override void Generate()
         {
             WriteMetadata();
             Output
-                .Append("public static IServiceCollection ")
+                .Append("public static ")
+                .AppendTypeName("Microsoft.Extensions.DependencyInjection", "IServiceCollection")
+                .Append(" ")
                 .Append(GetGeneratedMemberName())
                 .Append("(");
 
@@ -51,7 +47,10 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             }
 
             Output
-                .Append("IServiceCollection services, Action<ServiceModelGrpcServiceOptions<")
+                .AppendTypeName("Microsoft.Extensions.DependencyInjection", "IServiceCollection")
+                .Append(" services, Action<")
+                .AppendTypeName("Microsoft.Extensions.DependencyInjection", "ServiceModelGrpcServiceOptions")
+                .Append("<")
                 .Append(_contract.ContractInterfaceName)
                 .AppendLine(">> configure)")
                 .AppendLine("{");
@@ -59,10 +58,12 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             using (Output.Indent())
             {
                 Output
-                    .AppendLine("if (services == null) throw new ArgumentNullException(\"services\");")
-                    .Append("return services.AddServiceModelGrpcServiceOptions<")
+                    .AppendArgumentNullException("services")
+                    .Append("return ")
+                    .AppendTypeName("Microsoft.Extensions.DependencyInjection", "ServiceCollectionExtensions")
+                    .Append(".AddServiceModelGrpcServiceOptions<")
                     .Append(_contract.ContractInterfaceName)
-                    .AppendLine(">(configure);");
+                    .AppendLine(">(services, configure);");
             }
 
             Output.AppendLine("}");

@@ -15,8 +15,10 @@
 // </copyright>
 
 using System.Collections.Immutable;
+using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 
 namespace ServiceModel.Grpc.DesignTime.Generator
 {
@@ -54,12 +56,26 @@ namespace ServiceModel.Grpc.DesignTime.Generator
 
                     var outputContext = new GeneratorContext(
                         source.Compilation,
-                        context.ReportDiagnostic,
-                        context.CancellationToken,
-                        context.AddSource);
+                        new ExecutionContext(context));
                     new CSharpSourceGenerator().Execute(outputContext, source.Candidates);
                 }
             }
+        }
+
+        private sealed class ExecutionContext : IExecutionContext
+        {
+            private readonly SourceProductionContext _context;
+
+            public ExecutionContext(SourceProductionContext context)
+            {
+                _context = context;
+            }
+
+            public CancellationToken CancellationToken => _context.CancellationToken;
+
+            public void ReportDiagnostic(Diagnostic diagnostic) => _context.ReportDiagnostic(diagnostic);
+
+            public void AddSource(string hintName, SourceText sourceText) => _context.AddSource(hintName, sourceText);
         }
     }
 }

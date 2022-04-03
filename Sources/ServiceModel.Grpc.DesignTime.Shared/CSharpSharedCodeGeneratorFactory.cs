@@ -63,11 +63,9 @@ namespace ServiceModel.Grpc.DesignTime.Generator
 
         private static void AddPropertiesCount(SortedSet<int> target, MessageDescription? message)
         {
-            // see ServiceModel.Grpc.Channel.Message.tt
-            var length = message?.Properties.Length ?? 0;
-            if (length > 3)
+            if (message != null && !message.IsBuiltIn)
             {
-                target.Add(length);
+                target.Add(message.Properties.Length);
             }
         }
     }

@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System.Threading;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using Shouldly;
@@ -29,7 +28,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator
         [SetUp]
         public void BeforeEachTest()
         {
-            _sut = new GeneratorContext(null!, null!, CancellationToken.None, null!);
+            _sut = new GeneratorContext(null!, null!);
         }
 
         [Test]

@@ -61,7 +61,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             [DisplayName("int?[]")]
             public int?[] C6() => throw new NotImplementedException();
 
-            [DisplayName("ServiceModel.Grpc.DesignTime.Generator.Internal.SyntaxToolsTest.I1")]
+            [DisplayName("global::ServiceModel.Grpc.DesignTime.Generator.Internal.SyntaxToolsTest.I1")]
             public I1 C7() => throw new NotImplementedException();
 
             [DisplayName("void")]

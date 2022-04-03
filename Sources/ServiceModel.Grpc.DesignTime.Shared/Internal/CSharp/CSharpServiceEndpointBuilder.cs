@@ -19,7 +19,6 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using Grpc.Core;
-using ServiceModel.Grpc.Channel;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 {
@@ -92,12 +91,12 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             }
 
             Output
-                .Append("Task<").Append(operation.ResponseType.ClassName).Append("> ")
+                .Append("Task<").AppendMessage(operation.ResponseType).Append("> ")
                 .Append(operation.OperationName)
                 .Append("(")
                 .Append(interfaceType).Append(" service, ")
-                .Append(operation.RequestType.ClassName).Append(" request, ")
-                .Append(nameof(ServerCallContext)).AppendLine(" context)")
+                .AppendMessage(operation.RequestType).Append(" request, ")
+                .AppendType(typeof(ServerCallContext)).AppendLine(" context)")
                 .AppendLine("{");
 
             using (Output.Indent())
@@ -154,7 +153,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
                 Output
                     .Append("new ")
-                    .Append(operation.ResponseType.ClassName)
+                    .AppendMessage(operation.ResponseType)
                     .Append("(");
 
                 if (operation.ResponseType.Properties.Length > 0)
@@ -179,13 +178,13 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
         {
             // Task<TResponse> Invoke(TService service, TRequestHeader requestHeader, IAsyncEnumerable<TRequest> request, ServerCallContext context)
             Output
-                .Append("public async Task<").Append(operation.ResponseType.ClassName).Append("> ")
+                .Append("public async Task<").AppendMessage(operation.ResponseType).Append("> ")
                 .Append(operation.OperationName)
                 .Append("(")
                 .Append(interfaceType).Append(" service, ")
-                .Append(operation.HeaderRequestType?.ClassName ?? nameof(Message)).Append(" requestHeader, ")
+                .AppendMessageOrDefault(operation.HeaderRequestType).Append(" requestHeader, ")
                 .Append("IAsyncEnumerable<").Append(operation.RequestType.Properties[0]).Append(">").Append(" request, ")
-                .Append(nameof(ServerCallContext)).AppendLine(" context)")
+                .AppendType(typeof(ServerCallContext)).AppendLine(" context)")
                 .AppendLine("{");
 
             using (Output.Indent())
@@ -230,7 +229,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
                 Output
                     .Append("new ")
-                    .Append(operation.ResponseType.ClassName)
+                    .AppendMessage(operation.ResponseType)
                     .Append("(");
 
                 if (operation.ResponseType.Properties.Length > 0)
@@ -251,15 +250,15 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .Append("public")
                 .Append(operation.IsAsync ? " async" : string.Empty)
                 .Append(" ValueTask<(")
-                .Append(operation.HeaderResponseType?.ClassName ?? nameof(Message))
+                .AppendMessageOrDefault(operation.HeaderResponseType)
                 .Append(", IAsyncEnumerable<")
                 .Append(operation.ResponseType.Properties[0])
                 .Append(">)> ")
                 .Append(operation.OperationName)
                 .Append("(")
                 .Append(interfaceType).Append(" service, ")
-                .Append(operation.RequestType.ClassName).Append(" request, ")
-                .Append(nameof(ServerCallContext)).AppendLine(" context)")
+                .AppendMessage(operation.RequestType).Append(" request, ")
+                .AppendType(typeof(ServerCallContext)).AppendLine(" context)")
                 .AppendLine("{");
 
             using (Output.Indent())
@@ -316,16 +315,16 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .Append("public")
                 .Append(operation.IsAsync ? " async" : string.Empty)
                 .Append(" ValueTask<(")
-                .Append(operation.HeaderResponseType?.ClassName ?? nameof(Message))
+                .AppendMessageOrDefault(operation.HeaderResponseType)
                 .Append(", IAsyncEnumerable<")
                 .Append(operation.ResponseType.Properties[0])
                 .Append(">)> ")
                 .Append(operation.OperationName)
                 .Append("(")
                 .Append(interfaceType).Append(" service, ")
-                .Append(operation.HeaderRequestType?.ClassName ?? nameof(Message)).Append(" requestHeader, ")
+                .AppendMessageOrDefault(operation.HeaderRequestType).Append(" requestHeader, ")
                 .Append("IAsyncEnumerable<").Append(operation.RequestType.Properties[0]).Append("> request, ")
-                .Append(nameof(ServerCallContext)).AppendLine(" context)")
+                .AppendType(typeof(ServerCallContext)).AppendLine(" context)")
                 .AppendLine("{");
 
             using (Output.Indent())
@@ -392,7 +391,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             {
                 Output
                     .Append("new ValueTask<(")
-                    .Append(operation.HeaderResponseType?.ClassName ?? nameof(Message))
+                    .AppendMessageOrDefault(operation.HeaderResponseType)
                     .Append(", IAsyncEnumerable<")
                     .Append(operation.ResponseType.Properties[0])
                     .Append(">)>((");
@@ -406,7 +405,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             {
                 Output
                     .Append("new ")
-                    .Append(operation.HeaderResponseType.ClassName)
+                    .AppendMessage(operation.HeaderResponseType)
                     .Append("(");
 
                 for (var i = 0; i < operation.HeaderResponseTypeInput.Length; i++)
@@ -469,7 +468,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 // new CallOptions(context.RequestHeaders, context.Deadline, context.CancellationToken, context.WriteOptions)
                 Output
                     .Append("new ")
-                    .Append(nameof(CallOptions))
+                    .AppendType(typeof(CallOptions))
                     .Append("(")
                     .Append("context.").Append(nameof(ServerCallContext.RequestHeaders))
                     .Append(", context.").Append(nameof(ServerCallContext.Deadline))
