@@ -17,12 +17,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using ServiceModel.Grpc.Channel;
-using ServiceModel.Grpc.Configuration;
 
 namespace ServiceModel.Grpc.DesignTime.Generator
 {
@@ -54,26 +50,11 @@ namespace ServiceModel.Grpc.DesignTime.Generator
             }
         }
 
-        private static ICollection<string> CreateDefaultUsing()
-        {
-            return new HashSet<string>(StringComparer.Ordinal)
-            {
-                typeof(Func<>).Namespace,
-                typeof(IEnumerable<>).Namespace,
-                typeof(CancellationToken).Namespace,
-                typeof(Task).Namespace,
-                "Grpc.Core",
-                typeof(IMarshallerFactory).Namespace,
-                typeof(Message).Namespace
-            };
-        }
-
         private void InvokeGenerator(GeneratorContext context, ICodeGeneratorFactory factory, ClassDeclarationSyntax node)
         {
             var generatedCount = 0;
 
             CompilationUnit unit = default;
-            ICollection<string> imports = null!;
 
             foreach (var generator in factory.GetGenerators())
             {
@@ -84,14 +65,12 @@ namespace ServiceModel.Grpc.DesignTime.Generator
                     if (generatedCount == 0)
                     {
                         unit = new CompilationUnit(node);
-                        imports = CreateDefaultUsing();
                     }
                     else
                     {
                         unit.Output.AppendLine();
                     }
 
-                    generator.AddUsing(imports);
                     generator.GenerateMemberDeclaration(unit.Output);
 
                     generatedCount++;
@@ -101,7 +80,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator
             context.CancellationToken.ThrowIfCancellationRequested();
             if (generatedCount > 0)
             {
-                var source = unit.GetSourceText(imports);
+                var source = unit.GetSourceText();
                 context.AddOutput(node, factory.GetHintName(), source);
             }
         }

@@ -35,7 +35,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Test
 
         protected override MethodInfo GetClientInstanceMethod(string name)
         {
-            return base.GetClientInstanceMethod("ServiceModel.Grpc.TestApi.Domain.IGenericContract<System.Int32,System.String>." + name);
+            return base.GetClientInstanceMethod("global::ServiceModel.Grpc.TestApi.Domain.IGenericContract<System.Int32,System.String>." + name);
         }
     }
 }

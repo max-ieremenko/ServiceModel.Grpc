@@ -37,12 +37,12 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Test
 
         protected override MethodInfo GetClientInstanceMethod(string name)
         {
-            return base.GetClientInstanceMethod(typeof(IContract).FullName + "." + name);
+            return base.GetClientInstanceMethod("global::" + typeof(IContract).FullName + "." + name);
         }
 
         protected override MethodInfo GetClientInstanceMethod(string name, params Type[] parameters)
         {
-            return base.GetClientInstanceMethod(typeof(IContract).FullName + "." + name, parameters);
+            return base.GetClientInstanceMethod("global::" + typeof(IContract).FullName + "." + name, parameters);
         }
     }
 }

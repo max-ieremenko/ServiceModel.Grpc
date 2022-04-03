@@ -35,7 +35,9 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
         {
             WriteMetadata();
             Output
-                .Append("public static IClientFactory ")
+                .Append("public static ")
+                .AppendType(typeof(IClientFactory))
+                .Append(" ")
                 .Append(GetGeneratedMemberName())
                 .Append("(");
 
@@ -45,12 +47,15 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             }
 
             Output
-                .AppendLine("IClientFactory clientFactory, Action<ServiceModelGrpcClientOptions> configure = null)")
+                .AppendType(typeof(IClientFactory))
+                .Append(" clientFactory, Action<")
+                .AppendType(typeof(ServiceModelGrpcClientOptions))
+                .AppendLine("> configure = null)")
                 .AppendLine("{");
 
             using (Output.Indent())
             {
-                Output.AppendLine("if (clientFactory == null) throw new ArgumentNullException(\"clientFactory\");");
+                Output.AppendArgumentNullException("clientFactory");
 
                 Output
                     .Append("clientFactory.")

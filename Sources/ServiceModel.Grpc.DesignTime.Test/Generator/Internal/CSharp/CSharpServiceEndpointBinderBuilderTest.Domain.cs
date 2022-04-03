@@ -84,7 +84,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             private static string FinishCode(string template)
             {
                 return string.Format(
-                    "new {0}.{1}{2}",
+                    "new global::{0}.{1}{2}",
                     typeof(CSharpServiceEndpointBinderBuilderTest).FullName,
                     nameof(MyAttribute),
                     template);

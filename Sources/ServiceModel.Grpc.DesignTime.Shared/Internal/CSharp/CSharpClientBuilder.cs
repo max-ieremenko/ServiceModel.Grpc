@@ -18,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Grpc.Core;
-using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Client.Internal;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
@@ -43,7 +42,8 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             WriteMetadata();
             Output
                 .Append($"internal sealed class {_contract.ClientClassName} : ")
-                .AppendFormat("ClientBase<{0}>, ", _contract.ClientClassName)
+                .AppendType(typeof(ClientBase<>))
+                .AppendFormat("{0}>, ", _contract.ClientClassName)
                 .AppendLine(_contract.ContractInterfaceName);
             Output.AppendLine("{");
 
@@ -105,9 +105,10 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .Append("public ")
                 .Append(_contract.ClientClassName)
                 .Append("(")
-                .Append(nameof(CallInvoker)).Append(" callInvoker, ")
-                .Append(_contract.ContractClassName).Append(" contract, ")
-                .Append("Func<CallOptions> defaultCallOptionsFactory")
+                .AppendType(typeof(CallInvoker)).Append(" callInvoker, ")
+                .Append(_contract.ContractClassName).Append(" contract, Func<")
+                .AppendType(typeof(CallOptions))
+                .Append("> defaultCallOptionsFactory")
                 .AppendLine(")");
 
             using (Output.Indent())
@@ -118,7 +119,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             Output.AppendLine("{");
             using (Output.Indent())
             {
-                Output.AppendLine("if (contract == null) throw new ArgumentNullException(\"contract\");");
+                Output.AppendArgumentNullException("contract");
 
                 Output.AppendLine("Contract = contract;");
                 Output.AppendLine("DefaultCallOptionsFactory = defaultCallOptionsFactory;");
@@ -134,8 +135,9 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .Append(_contract.ClientClassName)
                 .Append("(")
                 .Append("ClientBaseConfiguration configuration, ")
-                .Append(_contract.ContractClassName).Append(" contract, ")
-                .Append("Func<CallOptions> defaultCallOptionsFactory")
+                .Append(_contract.ContractClassName).Append(" contract, Func<")
+                .AppendType(typeof(CallOptions))
+                .Append("> defaultCallOptionsFactory")
                 .AppendLine(")");
 
             using (Output.Indent())
@@ -181,7 +183,9 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .AppendLine();
 
             Output
-                .AppendLine("public Func<CallOptions> DefaultCallOptionsFactory  { get; }")
+                .Append("public Func<")
+                .AppendType(typeof(CallOptions))
+                .AppendLine("> DefaultCallOptionsFactory  { get; }")
                 .AppendLine();
         }
 
@@ -226,10 +230,11 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             // var __response = new UnaryCall<TRequest, TResponse>(method, CallInvoker, __callOptionsBuilder)
             Output
                 .Append(hasReturn ? "var __response = " : string.Empty)
-                .Append("new UnaryCall<")
-                .Append(operation.RequestType.ClassName)
+                .Append("new ")
+                .AppendType(typeof(UnaryCall<,>))
+                .AppendMessage(operation.RequestType)
                 .Append(", ")
-                .Append(operation.ResponseType.ClassName)
+                .AppendMessage(operation.ResponseType)
                 .Append(">(Contract.")
                 .Append(grpcMethodName ?? operation.GrpcMethodName)
                 .Append(", CallInvoker, ")
@@ -282,12 +287,13 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
             // var __response = new ClientStreamingCall<TRequestHeader, TRequest, TResponse>(method, CallInvoker, __callOptionsBuilder)
             Output
-                .Append("var __response = new ClientStreamingCall<")
-                .Append(operation.HeaderRequestType?.ClassName ?? nameof(Message))
+                .Append("var __response = new ")
+                .AppendType(typeof(ClientStreamingCall<,,>))
+                .AppendMessageOrDefault(operation.HeaderRequestType)
                 .Append(", ")
                 .Append(operation.RequestType.Properties[0])
                 .Append(", ")
-                .Append(operation.ResponseType.ClassName)
+                .AppendMessage(operation.ResponseType)
                 .Append(">(Contract.")
                 .Append(operation.GrpcMethodName)
                 .Append(", CallInvoker, ")
@@ -341,10 +347,11 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
             // var __response = new ServerStreamingCall<TRequest, TResponseHeader, TResponse>(method, CallInvoker, __callOptionsBuilder)
             Output
-                .Append("var __response = new ServerStreamingCall<")
-                .Append(operation.RequestType.ClassName)
+                .Append("var __response = new ")
+                .AppendType(typeof(ServerStreamingCall<,,>))
+                .AppendMessage(operation.RequestType)
                 .Append(", ")
-                .Append(operation.HeaderResponseType?.ClassName ?? nameof(Message))
+                .AppendMessageOrDefault(operation.HeaderResponseType)
                 .Append(", ")
                 .Append(operation.ResponseType.Properties[0])
                 .Append(">(Contract.")
@@ -411,7 +418,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .Append(" ")
                 .Append(functionName)
                 .Append("(")
-                .Append(operation.HeaderResponseType!.ClassName)
+                .AppendMessage(operation.HeaderResponseType!)
                 .Append(" header, IAsyncEnumerable<")
                 .Append(operation.ResponseType.Properties[0])
                 .Append(">")
@@ -460,12 +467,13 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
             // var __response = new DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader, TResponse>(method, CallInvoker, __callOptionsBuilder)
             Output
-                .Append("var __response = new DuplexStreamingCall<")
-                .Append(operation.HeaderRequestType?.ClassName ?? nameof(Message))
+                .Append("var __response = new ")
+                .AppendType(typeof(DuplexStreamingCall<,,,>))
+                .AppendMessageOrDefault(operation.HeaderRequestType)
                 .Append(", ")
                 .Append(operation.RequestType.Properties[0])
                 .Append(", ")
-                .Append(operation.HeaderResponseType?.ClassName ?? nameof(Message))
+                .AppendMessageOrDefault(operation.HeaderResponseType)
                 .Append(", ")
                 .Append(operation.ResponseType.Properties[0])
                 .Append(">(Contract.")
@@ -599,7 +607,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .Append("var ")
                 .Append(VarCallOptionsBuilder)
                 .Append(" = new ")
-                .Append(nameof(CallOptionsBuilder))
+                .AppendType(typeof(CallOptionsBuilder))
                 .Append("(DefaultCallOptionsFactory)");
 
             using (Output.Indent())
@@ -607,8 +615,10 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 for (var i = 0; i < operation.ContextInput.Length; i++)
                 {
                     var parameter = operation.Method.Parameters[operation.ContextInput[i]];
-                    Output.AppendLine();
-                    Output.AppendFormat(".With{0}({1})", parameter.GetNonNullableType(), parameter.Name);
+                    var type = SyntaxTools.IsNullable(parameter.TypeSymbol) ? parameter.TypeSymbol.GenericTypeArguments()[0] : parameter.TypeSymbol;
+                    Output
+                        .AppendLine()
+                        .Append(".With").Append(type.Name).Append("(").Append(parameter.Name).Append(")");
                 }
 
                 Output.AppendLine(";");
@@ -619,7 +629,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
         {
             Output
                 .Append("new ")
-                .Append(operation.RequestType.ClassName)
+                .AppendMessage(operation.RequestType)
                 .Append("(");
 
             for (var i = 0; i < operation.RequestTypeInput.Length; i++)
@@ -639,7 +649,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .Append(".WithRequestHeader(Contract.")
                 .Append(operation.GrpcMethodInputHeaderName)
                 .Append(", new ")
-                .Append(operation.HeaderRequestType!.ClassName)
+                .AppendMessage(operation.HeaderRequestType!)
                 .Append("(");
 
             for (var i = 0; i < operation.HeaderRequestTypeInput.Length; i++)

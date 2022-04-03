@@ -15,7 +15,9 @@
 // </copyright>
 
 using System;
+using System.Threading;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 
 namespace ServiceModel.Grpc.DesignTime.Generator
 {
@@ -46,11 +48,25 @@ namespace ServiceModel.Grpc.DesignTime.Generator
 
                 var outputContext = new GeneratorContext(
                     context.Compilation,
-                    context.ReportDiagnostic,
-                    context.CancellationToken,
-                    context.AddSource);
+                    new ExecutionContext(context));
                 new CSharpSourceGenerator().Execute(outputContext, candidates);
             }
+        }
+
+        private sealed class ExecutionContext : IExecutionContext
+        {
+            private readonly GeneratorExecutionContext _context;
+
+            public ExecutionContext(GeneratorExecutionContext context)
+            {
+                _context = context;
+            }
+
+            public CancellationToken CancellationToken => _context.CancellationToken;
+
+            public void ReportDiagnostic(Diagnostic diagnostic) => _context.ReportDiagnostic(diagnostic);
+
+            public void AddSource(string hintName, SourceText sourceText) => _context.AddSource(hintName, sourceText);
         }
     }
 }

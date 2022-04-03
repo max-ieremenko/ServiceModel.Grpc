@@ -31,18 +31,13 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
         public override string GetGeneratedMemberName() => "Map" + _contract.BaseClassName;
 
-        public override void AddUsing(ICollection<string> imports)
-        {
-            base.AddUsing(imports);
-            imports.Add("Microsoft.AspNetCore.Routing");
-            imports.Add("Microsoft.AspNetCore.Builder");
-        }
-
         protected override void Generate()
         {
             WriteMetadata();
             Output
-                .Append("public static GrpcServiceEndpointConventionBuilder ")
+                .Append("public static ")
+                .AppendTypeName("Microsoft.AspNetCore.Builder", "GrpcServiceEndpointConventionBuilder")
+                .Append(" ")
                 .Append(GetGeneratedMemberName())
                 .Append("(");
 
@@ -52,18 +47,21 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             }
 
             Output
-                .AppendLine("IEndpointRouteBuilder builder)")
+                .AppendTypeName("Microsoft.AspNetCore.Routing", "IEndpointRouteBuilder")
+                .AppendLine(" builder)")
                 .AppendLine("{");
 
             using (Output.Indent())
             {
                 Output
-                    .AppendLine("if (builder == null) throw new ArgumentNullException(\"builder\");")
-                    .Append("return builder.MapGrpcService<")
+                    .AppendArgumentNullException("builder")
+                    .Append("return ")
+                    .AppendTypeName("Microsoft.AspNetCore.Builder", "ServiceModelGrpcEndpointRouteBuilderExtensions")
+                    .Append(".MapGrpcService<")
                     .Append(_contract.ContractInterfaceName)
                     .Append(", ")
                     .Append(_contract.EndpointBinderClassName)
-                    .AppendLine(">();");
+                    .AppendLine(">(builder);");
             }
 
             Output.AppendLine("}");

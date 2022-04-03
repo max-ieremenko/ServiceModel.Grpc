@@ -15,8 +15,10 @@
 // </copyright>
 
 using System.Collections.Generic;
+using Grpc.Core;
 using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.Client.Internal;
+using ServiceModel.Grpc.Configuration;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 {
@@ -31,20 +33,14 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
         public override string GetGeneratedMemberName() => _contract.ClientBuilderClassName;
 
-        public override void AddUsing(ICollection<string> imports)
-        {
-            base.AddUsing(imports);
-            imports.Add(typeof(IClientFactory).Namespace!);
-            imports.Add(typeof(CallOptionsBuilder).Namespace!);
-        }
-
         protected override void Generate()
         {
             WriteMetadata();
             Output
                 .Append("public sealed class ")
                 .Append(_contract.ClientBuilderClassName)
-                .Append(" : IClientBuilder<")
+                .Append(" : ")
+                .AppendType(typeof(IClientBuilder<>))
                 .Append(_contract.ContractInterfaceName)
                 .AppendLine(">");
             Output.AppendLine("{");
@@ -84,19 +80,25 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 .AppendLine(" _contract;");
 
             Output
-                .AppendLine("private Func<CallOptions> _defaultCallOptionsFactory;");
+                .AppendLine("private Func<")
+                .AppendType(typeof(CallOptions))
+                .AppendLine("> _defaultCallOptionsFactory;");
         }
 
         private void BuildMethodInitialize()
         {
             Output
-                .AppendLine("public void Initialize(IMarshallerFactory marshallerFactory, Func<CallOptions> defaultCallOptionsFactory)");
+                .Append("public void Initialize(")
+                .AppendType(typeof(IMarshallerFactory))
+                .Append(" marshallerFactory, Func<")
+                .AppendType(typeof(CallOptions))
+                .AppendLine("> defaultCallOptionsFactory)");
 
             Output.AppendLine("{");
             using (Output.Indent())
             {
                 Output
-                    .AppendLine("if (marshallerFactory == null) throw new ArgumentNullException(\"marshallerFactory\");");
+                    .AppendArgumentNullException("marshallerFactory");
 
                 Output
                     .Append("_contract = new ")
@@ -115,13 +117,15 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             Output
                 .Append("public ")
                 .Append(_contract.ContractInterfaceName)
-                .AppendLine(" Build(CallInvoker callInvoker)");
+                .Append(" Build(")
+                .AppendType(typeof(CallInvoker))
+                .AppendLine(" callInvoker)");
 
             Output.AppendLine("{");
             using (Output.Indent())
             {
                 Output
-                    .AppendLine("if (callInvoker == null) throw new ArgumentNullException(\"callInvoker\");");
+                    .AppendArgumentNullException("callInvoker");
 
                 Output
                     .Append("return new ")

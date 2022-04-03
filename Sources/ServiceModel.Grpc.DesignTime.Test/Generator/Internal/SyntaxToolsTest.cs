@@ -180,6 +180,68 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             SyntaxTools.IsValueTuple(symbol).ShouldBe(expected);
         }
 
+        [Test]
+        [TestCase(typeof(I1), false)]
+        [TestCase(typeof(object), false)]
+        [TestCase(typeof(int?), true)]
+        [TestCase(typeof(ValueTask?), true)]
+        public void IsNullable(Type type, bool expected)
+        {
+            var symbol = Compilation.GetTypeByMetadataName(type);
+            symbol.ShouldNotBeNull();
+
+            SyntaxTools.IsNullable(symbol).ShouldBe(expected);
+        }
+
+        [Test]
+        [TestCase(typeof(ValueTuple<string, int>), "string", "int")]
+        [TestCase(typeof(object))]
+        [TestCase(typeof(Task<int>), "int")]
+        public void GenericTypeArguments(Type type, params string[] expected)
+        {
+            var symbol = Compilation.GetTypeByMetadataName(type);
+            var actual = SyntaxTools.GenericTypeArguments(symbol);
+
+            actual.Select(SyntaxTools.GetFullName).ShouldBe(expected);
+        }
+
+        [Test]
+        [TestCase(typeof(Task), true)]
+        [TestCase(typeof(Task<int>), true)]
+        [TestCase(typeof(object), false)]
+        [TestCase(typeof(Task<(int, string)>), true)]
+        [TestCase(typeof(ValueTask), true)]
+        [TestCase(typeof(ValueTask<int>), true)]
+        public void IsTask(Type type, bool expected)
+        {
+            var symbol = Compilation.GetTypeByMetadataName(type);
+
+            SyntaxTools.IsTask(symbol).ShouldBe(expected);
+        }
+
+        [Test]
+        [TestCase(typeof(ValueTask), true)]
+        [TestCase(typeof(ValueTask<int>), true)]
+        [TestCase(typeof(object), false)]
+        [TestCase(typeof(Task), false)]
+        public void IsValueTask(Type type, bool expected)
+        {
+            var symbol = Compilation.GetTypeByMetadataName(type);
+
+            SyntaxTools.IsValueTask(symbol).ShouldBe(expected);
+        }
+
+        [Test]
+        [TestCase(typeof(IAsyncEnumerable<string>), true)]
+        [TestCase(typeof(IAsyncEnumerator<int>), false)]
+        [TestCase(typeof(object), false)]
+        public void IsAsyncEnumerable(Type type, bool expected)
+        {
+            var symbol = Compilation.GetTypeByMetadataName(type);
+
+            SyntaxTools.IsAsyncEnumerable(symbol).ShouldBe(expected);
+        }
+
         private static IEnumerable<TestCaseData> GetFullNameCases()
         {
             var type = Compilation.GetTypeByMetadataName(typeof(FullNameCases));
@@ -192,7 +254,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
                 expected.ShouldNotBeNull();
 
                 yield return new TestCaseData(method.ReturnType, expected) { TestName = "FullName." + method.Name };
-                }
+            }
         }
     }
 }

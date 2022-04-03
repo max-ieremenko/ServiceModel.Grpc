@@ -14,7 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-using System.Collections.Generic;
+using System;
 using System.Globalization;
 using System.Runtime.Serialization;
 using ServiceModel.Grpc.Channel;
@@ -32,18 +32,12 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
         public override string GetGeneratedMemberName() => "Message_" + _propertiesCount.ToString(CultureInfo.InvariantCulture);
 
-        public override void AddUsing(ICollection<string> imports)
-        {
-            base.AddUsing(imports);
-            imports.Add(typeof(DataContractAttribute).Namespace);
-        }
-
         protected override void Generate()
         {
             WriteMetadata();
             Output
-                .AppendLine("[Serializable]")
-                .AppendLine("[DataContract(Name = \"m\", Namespace = \"s\")]")
+                .AppendAttribute(typeof(SerializableAttribute))
+                .AppendAttribute(typeof(DataContractAttribute), "Name = \"m\"", "Namespace = \"s\"")
                 .Append("internal sealed class ")
                 .Append(nameof(Message))
                 .Append("<");
@@ -115,11 +109,12 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
         {
             for (var i = 0; i < _propertiesCount; i++)
             {
+                var order = (i + 1).ToString(CultureInfo.InvariantCulture);
                 Output
                     .AppendLine()
-                    .AppendFormat("[DataMember(Name = \"v{0}\", Order = {0})]", i + 1)
+                    .AppendAttribute(typeof(DataMemberAttribute), string.Format("Name = \"v{0}\"", order), string.Format("Order = {0}", order))
                     .AppendLine()
-                    .AppendFormat("public T{0} Value{0}", i + 1)
+                    .AppendFormat("public T{0} Value{0}", order)
                     .AppendLine(" { get; set; }");
             }
         }

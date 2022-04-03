@@ -28,11 +28,14 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal
             ClassName = GetClassName(properties);
         }
 
+        public static MessageDescription Empty { get; } = new MessageDescription(Array.Empty<string>());
+
         public string ClassName { get; }
 
         public string[] Properties { get; }
 
-        internal static MessageDescription Empty() => new MessageDescription(Array.Empty<string>());
+        // see ServiceModel.Grpc.Channel.Message.tt
+        public bool IsBuiltIn => Properties.Length < 4;
 
         private static string GetClassName(string[] properties)
         {
