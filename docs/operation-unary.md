@@ -43,4 +43,4 @@ Criteria:
 - return type should be exactly the same: TResult vs Task<TResult> or ValueTask<TResult>; void with Task or ValueTask
 - context parameters matching is optional: DoSomething may or may not have CancellationToken
 
-See [SyncOverAsync example](../Examples/SyncOverAsync).
+See [SyncOverAsync example](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/SyncOverAsync).
