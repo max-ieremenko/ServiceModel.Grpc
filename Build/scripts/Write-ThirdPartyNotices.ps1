@@ -1,33 +1,16 @@
 function Write-ThirdPartyNotices {
     param (
-        $appNames, $sources, $repository, $out
+        $appNames, $sources, $repository, $title, $out
     )
     
     $appName = $appNames[0]
-    $generateAppNames = $appNames | ForEach-Object {"-appName", $_}
-    $source = $sources | ForEach-Object {"-source", $_}
     $outTemp = Join-Path $out "Temp"
 
-    exec {
-        ThirdPartyLibraries update `
-            -appName $appName `
-            $source `
-            -repository $repository
-    }
+    Update-ThirdPartyLibrariesRepository -AppName $appName -Source $sources -Repository $repository -InformationAction Continue
 
-    exec {
-        ThirdPartyLibraries validate `
-            -appName $appName `
-            $source `
-            -repository $repository
-    }
+    Test-ThirdPartyLibrariesRepository -AppName $appName -Source $sources -Repository $repository -InformationAction Continue
 
-    exec {
-        ThirdPartyLibraries generate `
-            $generateAppNames `
-            -repository $repository `
-            -to $outTemp
-    }
+    Publish-ThirdPartyNotices -AppName $appNames -Repository $repository -Title $title -To $outTemp -InformationAction Continue
 
     $licenseFile = $appName + "ThirdPartyNotices.txt"
     Move-Item (Join-Path $outTemp "ThirdPartyNotices.txt") (Join-Path $out $licenseFile) -Force

@@ -6,7 +6,7 @@
   "UsedBy": [
     {
       "Name": "Core",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "net461",
         "netstandard2.0",
@@ -15,7 +15,7 @@
     },
     {
       "Name": "AspNetCore",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "netcoreapp3.0",
         "net5.0",
@@ -24,7 +24,7 @@
     },
     {
       "Name": "AspNetCoreSwashbuckle",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "netcoreapp3.0",
         "net5.0",
@@ -33,7 +33,7 @@
     },
     {
       "Name": "AspNetCoreNSwag",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "netcoreapp3.0",
         "net5.0",
@@ -42,14 +42,14 @@
     },
     {
       "Name": "DesignTime",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "netstandard2.0"
       ]
     },
     {
       "Name": "SelfHost",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "net461",
         "netstandard2.0",
@@ -58,7 +58,7 @@
     },
     {
       "Name": "ProtoBuf",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "netcoreapp3.1",
         "net5.0",
@@ -70,7 +70,7 @@
     },
     {
       "Name": "MessagePack",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "netcoreapp3.1",
         "net5.0",

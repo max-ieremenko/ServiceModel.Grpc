@@ -21,7 +21,7 @@ To run CI build locally
 - install ThirdPartyLibraries
 
     ``` powershell
-    PS> dotnet tool install --global ThirdPartyLibraries.GlobalTool
+    PS> Install-Module -Name ThirdPartyLibraries -RequiredVersion 3.1.0
     ```
 
 - switch docker to linux containers
