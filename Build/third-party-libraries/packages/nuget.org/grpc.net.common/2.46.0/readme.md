@@ -1,9 +1,9 @@
 Grpc.Net.Common [2.46.0](https://www.nuget.org/packages/Grpc.Net.Common/2.46.0)
 --------------------
 
-Used by: AspNetCore
+Used by: AspNetCore, Core internal
 
-Target frameworks: net5.0, net6.0, netcoreapp3.0
+Target frameworks: net461, net5.0, net6.0, netcoreapp3.0, netcoreapp3.1
 
 License: [Apache-2.0](../../../../licenses/apache-2.0) 
 
