@@ -47,7 +47,7 @@ namespace ServiceModel.Grpc.Client.Internal
             {
                 await writer.ConfigureAwait(false);
             }
-            catch (RpcException ex) when (ex.StatusCode == StatusCode.OK || token.IsCancellationRequested)
+            catch (RpcException ex) when (ex.StatusCode == StatusCode.OK || ex.StatusCode == StatusCode.Cancelled || token.IsCancellationRequested)
             {
                 // Grpc.Core.RpcException : Status(StatusCode="OK", Detail="")
                 // one of the reasons the server does not read the whole request, see test MultipurposeServiceTestBase.ClientStreamingStopReading

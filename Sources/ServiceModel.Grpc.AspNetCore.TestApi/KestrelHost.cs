@@ -24,7 +24,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ServiceModel.Grpc.Client;
-using GrpcChannel = Grpc.Core.Channel;
+using ServiceModel.Grpc.TestApi;
 
 namespace ServiceModel.Grpc.AspNetCore.TestApi
 {
@@ -33,6 +33,7 @@ namespace ServiceModel.Grpc.AspNetCore.TestApi
         private const int DefaultPort = 8080;
 
         private readonly int _port;
+        private GrpcChannelType _channelType;
         private IHost? _host;
         private ServiceModelGrpcClientOptions? _clientFactoryDefaultOptions;
         private Action<IServiceCollection>? _configureServices;
@@ -42,9 +43,10 @@ namespace ServiceModel.Grpc.AspNetCore.TestApi
         public KestrelHost(int port = DefaultPort)
         {
             _port = port;
+            _channelType = GrpcChannelType.GrpcCore;
         }
 
-        public GrpcChannel Channel { get; private set; } = null!;
+        public ChannelBase Channel { get; private set; } = null!;
 
         public IClientFactory ClientFactory { get; private set; } = null!;
 
@@ -95,6 +97,12 @@ namespace ServiceModel.Grpc.AspNetCore.TestApi
                 _configureEndpoints += configuration;
             }
 
+            return this;
+        }
+
+        public KestrelHost WithChannelType(GrpcChannelType channelType)
+        {
+            _channelType = channelType;
             return this;
         }
 
@@ -150,7 +158,7 @@ namespace ServiceModel.Grpc.AspNetCore.TestApi
             }
 
             ClientFactory = new ClientFactory(_clientFactoryDefaultOptions);
-            Channel = new GrpcChannel("localhost", DefaultPort, ChannelCredentials.Insecure);
+            Channel = GrpcChannelFactory.CreateChannel(_channelType, "localhost", DefaultPort);
 
             return this;
         }

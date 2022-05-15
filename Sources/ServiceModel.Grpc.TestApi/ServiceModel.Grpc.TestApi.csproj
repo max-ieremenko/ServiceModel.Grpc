@@ -14,6 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Grpc.Core" Version="$(GrpcCoreVersion)" />
+    <PackageReference Include="Grpc.Net.Client" Version="$(GrpcNetVersion)" />
     <PackageReference Include="Mono.Reflection" Version="2.0.0" />
     <PackageReference Include="NUnit" Version="$(NUnitVersion)" />
     <PackageReference Include="Moq" Version="$(MoqVersion)" />

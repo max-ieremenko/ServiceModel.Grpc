@@ -3,16 +3,16 @@ Licenses
 	
 |Code|Requires approval|Requires third party notices|Packages count|
 |----------|:----|:----|:----|
-|[Apache-2.0](licenses/apache-2.0)|no|no|12|
+|[Apache-2.0](licenses/apache-2.0)|no|no|14|
 |[BSD-2-Clause](licenses/bsd-2-clause)|no|no|1|
 |[BSD-3-Clause](licenses/bsd-3-clause)|no|no|2|
-|[MIT](licenses/mit)|no|no|92|
+|[MIT](licenses/mit)|no|no|93|
 |[ms-net-library](licenses/ms-net-library)|no|no|62|
 |[MS-PL](licenses/ms-pl)|no|no|1|
 
 
 
-Packages 170
+Packages 173
 --------
 
 |Name|Version|Source|License|Used by|
@@ -23,9 +23,10 @@ Packages 170
 |[EmptyFiles](packages/nuget.org/emptyfiles/2.3.3)|2.3.3|[nuget.org](https://www.nuget.org/packages/EmptyFiles/2.3.3)|[MIT](licenses/mit)|Core internal|
 |[Google.Protobuf](packages/nuget.org/google.protobuf/3.20.1)|3.20.1|[nuget.org](https://www.nuget.org/packages/Google.Protobuf/3.20.1)|[BSD-3-Clause](licenses/bsd-3-clause)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
 |[Grpc.AspNetCore.Server](packages/nuget.org/grpc.aspnetcore.server/2.46.0)|2.46.0|[nuget.org](https://www.nuget.org/packages/Grpc.AspNetCore.Server/2.46.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore|
-|[Grpc.Core](packages/nuget.org/grpc.core/2.46.1)|2.46.1|[nuget.org](https://www.nuget.org/packages/Grpc.Core/2.46.1)|[Apache-2.0](licenses/apache-2.0)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, SelfHost|
-|[Grpc.Core.Api](packages/nuget.org/grpc.core.api/2.46.1)|2.46.1|[nuget.org](https://www.nuget.org/packages/Grpc.Core.Api/2.46.1)|[Apache-2.0](licenses/apache-2.0)|AspNetCore, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core, DesignTime, SelfHost|
-|[Grpc.Net.Common](packages/nuget.org/grpc.net.common/2.46.0)|2.46.0|[nuget.org](https://www.nuget.org/packages/Grpc.Net.Common/2.46.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore|
+|[Grpc.Core](packages/nuget.org/grpc.core/2.46.1)|2.46.1|[nuget.org](https://www.nuget.org/packages/Grpc.Core/2.46.1)|[Apache-2.0](licenses/apache-2.0)|Core internal, SelfHost|
+|[Grpc.Core.Api](packages/nuget.org/grpc.core.api/2.46.1)|2.46.1|[nuget.org](https://www.nuget.org/packages/Grpc.Core.Api/2.46.1)|[Apache-2.0](licenses/apache-2.0)|AspNetCore, Core, DesignTime, SelfHost|
+|[Grpc.Net.Client](packages/nuget.org/grpc.net.client/2.46.0)|2.46.0|[nuget.org](https://www.nuget.org/packages/Grpc.Net.Client/2.46.0)|[Apache-2.0](licenses/apache-2.0)|Core internal|
+|[Grpc.Net.Common](packages/nuget.org/grpc.net.common/2.46.0)|2.46.0|[nuget.org](https://www.nuget.org/packages/Grpc.Net.Common/2.46.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore, Core internal|
 |[Grpc.Tools](packages/nuget.org/grpc.tools/2.46.1)|2.46.1|[nuget.org](https://www.nuget.org/packages/Grpc.Tools/2.46.1)|[Apache-2.0](licenses/apache-2.0)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
 |[MessagePack](packages/nuget.org/messagepack/2.3.85)|2.3.85|[nuget.org](https://www.nuget.org/packages/MessagePack/2.3.85)|[MIT](licenses/mit)|MessagePack|
 |[MessagePack.Annotations](packages/nuget.org/messagepack.annotations/2.3.85)|2.3.85|[nuget.org](https://www.nuget.org/packages/MessagePack.Annotations/2.3.85)|[MIT](licenses/mit)|MessagePack|
@@ -66,6 +67,7 @@ Packages 170
 |[Microsoft.Extensions.FileProviders.Embedded](packages/nuget.org/microsoft.extensions.fileproviders.embedded/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Extensions.FileProviders.Embedded/5.0.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCoreNSwag|
 |[Microsoft.Extensions.FileProviders.Embedded](packages/nuget.org/microsoft.extensions.fileproviders.embedded/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Extensions.FileProviders.Embedded/6.0.0)|[MIT](licenses/mit)|AspNetCoreNSwag|
 |[Microsoft.Extensions.Logging.Abstractions](packages/nuget.org/microsoft.extensions.logging.abstractions/1.0.2)|1.0.2|[nuget.org](https://www.nuget.org/packages/Microsoft.Extensions.Logging.Abstractions/1.0.2)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
+|[Microsoft.Extensions.Logging.Abstractions](packages/nuget.org/microsoft.extensions.logging.abstractions/3.0.3)|3.0.3|[nuget.org](https://www.nuget.org/packages/Microsoft.Extensions.Logging.Abstractions/3.0.3)|[Apache-2.0](licenses/apache-2.0)|Core internal|
 |[Microsoft.Extensions.ObjectPool](packages/nuget.org/microsoft.extensions.objectpool/1.0.1)|1.0.1|[nuget.org](https://www.nuget.org/packages/Microsoft.Extensions.ObjectPool/1.0.1)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
 |[Microsoft.Extensions.ObjectPool](packages/nuget.org/microsoft.extensions.objectpool/5.0.10)|5.0.10|[nuget.org](https://www.nuget.org/packages/Microsoft.Extensions.ObjectPool/5.0.10)|[Apache-2.0](licenses/apache-2.0)|Core internal|
 |[Microsoft.Extensions.Options](packages/nuget.org/microsoft.extensions.options/1.0.2)|1.0.2|[nuget.org](https://www.nuget.org/packages/Microsoft.Extensions.Options/1.0.2)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
@@ -130,6 +132,7 @@ Packages 170
 |[System.ComponentModel.TypeConverter](packages/nuget.org/system.componentmodel.typeconverter/4.1.0)|4.1.0|[nuget.org](https://www.nuget.org/packages/System.ComponentModel.TypeConverter/4.1.0)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
 |[System.Diagnostics.Contracts](packages/nuget.org/system.diagnostics.contracts/4.0.1)|4.0.1|[nuget.org](https://www.nuget.org/packages/System.Diagnostics.Contracts/4.0.1)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
 |[System.Diagnostics.DiagnosticSource](packages/nuget.org/system.diagnostics.diagnosticsource/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
+|[System.Diagnostics.DiagnosticSource](packages/nuget.org/system.diagnostics.diagnosticsource/4.5.1)|4.5.1|[nuget.org](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/4.5.1)|[MIT](licenses/mit)|Core internal|
 |[System.Diagnostics.EventLog](packages/nuget.org/system.diagnostics.eventlog/4.7.0)|4.7.0|[nuget.org](https://www.nuget.org/packages/System.Diagnostics.EventLog/4.7.0)|[MIT](licenses/mit)|Core internal|
 |[System.Diagnostics.EventLog](packages/nuget.org/system.diagnostics.eventlog/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/System.Diagnostics.EventLog/5.0.0)|[MIT](licenses/mit)|Core internal|
 |[System.Diagnostics.EventLog](packages/nuget.org/system.diagnostics.eventlog/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/System.Diagnostics.EventLog/6.0.0)|[MIT](licenses/mit)|Core internal|

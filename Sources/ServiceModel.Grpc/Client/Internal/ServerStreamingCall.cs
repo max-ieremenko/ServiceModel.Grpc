@@ -133,7 +133,10 @@ namespace ServiceModel.Grpc.Client.Internal
                         call.GetTrailers);
                 }
 
-                if (headers != null && headers.Count != 0)
+                // see ExceptionHandlingTest.ThrowApplicationExceptionServerStreamingHeader
+                // gRPC core channel: headers.Count == 0, exception comes on MoveNext
+                // gRPC .net channel: headers contains exception details, provided by server error handler
+                if (CompatibilityTools.ContainsMethodOutputHeader(headers))
                 {
                     header = CompatibilityTools.DeserializeMethodOutputHeader(marshaller, headers);
                 }
