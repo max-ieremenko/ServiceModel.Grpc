@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,15 +23,24 @@ using ServiceModel.Grpc.TestApi.Domain;
 
 namespace ServiceModel.Grpc.SelfHost
 {
-    [TestFixture]
+    [TestFixture(GrpcChannelType.GrpcCore)]
+#if NET5_0_OR_GREATER
+    [TestFixture(GrpcChannelType.GrpcDotNet)]
+#endif
     public class MultipurposeServiceTest : MultipurposeServiceTestBase
     {
+        private readonly GrpcChannelType _channelType;
         private ServerHost _host = null!;
+
+        public MultipurposeServiceTest(GrpcChannelType channelType)
+        {
+            _channelType = channelType;
+        }
 
         [OneTimeSetUp]
         public void BeforeAll()
         {
-            _host = new ServerHost();
+            _host = new ServerHost(_channelType);
 
             _host.Services.AddServiceModelSingleton<IMultipurposeService>(new MultipurposeService());
             DomainService = new ClientFactory().CreateClient<IMultipurposeService>(_host.Channel);

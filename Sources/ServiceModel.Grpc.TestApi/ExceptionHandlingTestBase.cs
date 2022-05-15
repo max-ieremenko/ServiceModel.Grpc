@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,13 @@ namespace ServiceModel.Grpc.TestApi
     public abstract class ExceptionHandlingTestBase
     {
         private CancellationTokenSource _cancellationSource = null!;
+
+        protected ExceptionHandlingTestBase(GrpcChannelType channelType)
+        {
+            ChannelType = channelType;
+        }
+
+        protected GrpcChannelType ChannelType { get; }
 
         protected IErrorService DomainService { get; set; } = null!;
 
@@ -181,11 +188,25 @@ namespace ServiceModel.Grpc.TestApi
         [Test]
         public void ExceptionOnClientSerialize()
         {
-            var ex = Assert.Throws<ApplicationException>(() => DomainService.PassSerializationFail(new DomainObjectSerializationFail { OnSerializedError = "On serialized error" }));
-            Console.WriteLine(ex);
+            if (ChannelType == GrpcChannelType.GrpcCore)
+            {
+                // gRPC core channel: ignores interceptors, exception comes directly to the caller
+                var ex = Assert.Throws<ApplicationException>(() => DomainService.PassSerializationFail(new DomainObjectSerializationFail { OnSerializedError = "On serialized error" }));
+                Console.WriteLine(ex);
 
-            ex.ShouldNotBeNull();
-            ex.Message.ShouldBe("On serialized error");
+                ex.ShouldNotBeNull();
+                ex.Message.ShouldBe("On serialized error");
+            }
+            else
+            {
+                // gRPC .net channel: invokes interceptors
+                var ex = Assert.Throws<RpcException>(() => DomainService.PassSerializationFail(new DomainObjectSerializationFail { OnSerializedError = "On serialized error" }));
+                Console.WriteLine(ex);
+
+                ex.ShouldNotBeNull();
+                ex.Status.DebugException.ShouldBeOfType<ApplicationException>();
+                ex.Status.DebugException.Message.ShouldBe("On serialized error");
+            }
         }
 
         [Test]
@@ -196,7 +217,18 @@ namespace ServiceModel.Grpc.TestApi
 
             ex.ShouldNotBeNull();
             ex.StatusCode.ShouldBe(StatusCode.Internal);
-            ex.Message.ShouldContain("Failed to deserialize response message");
+
+            if (ChannelType == GrpcChannelType.GrpcCore)
+            {
+                ex.Status.Detail.ShouldBe("Failed to deserialize response message.");
+                ex.Status.DebugException.ShouldBeNull();
+            }
+            else
+            {
+                ex.Status.Detail.ShouldBe("Error starting gRPC call. ApplicationException: On deserialized error");
+                ex.Status.DebugException.ShouldBeOfType<ApplicationException>();
+                ex.Status.DebugException.Message.ShouldBe("On deserialized error");
+            }
         }
 
         [Test]
@@ -207,6 +239,7 @@ namespace ServiceModel.Grpc.TestApi
 
             ex.ShouldNotBeNull();
             ex.StatusCode.ShouldBe(StatusCode.Unknown);
+            ex.Status.Detail.ShouldBe("Exception was thrown by handler.");
         }
 
         [Test]

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,15 +19,25 @@ using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using ServiceModel.Grpc.AspNetCore.TestApi;
 using ServiceModel.Grpc.AspNetCore.TestApi.Domain;
+using ServiceModel.Grpc.TestApi;
 
 namespace ServiceModel.Grpc.AspNetCore
 {
-    [TestFixture]
+    [TestFixture(GrpcChannelType.GrpcCore)]
+    [TestFixture(GrpcChannelType.GrpcDotNet)]
     public class AspNetCoreAuthenticationTest : AspNetCoreAuthenticationTestBase
     {
+        private readonly GrpcChannelType _channelType;
+
+        public AspNetCoreAuthenticationTest(GrpcChannelType channelType)
+        {
+            _channelType = channelType;
+        }
+
         protected override void ConfigureKestrelHost(KestrelHost host)
         {
             host
+                .WithChannelType(_channelType)
                 .ConfigureServices(services => services.AddTransient<IServiceWithAuthentication, ServiceWithAuthentication>())
                 .ConfigureEndpoints(endpoints => endpoints.MapGrpcService<IServiceWithAuthentication>());
         }
