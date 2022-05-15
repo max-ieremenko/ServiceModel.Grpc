@@ -27,6 +27,8 @@
 	<Rule Id="SA0001" Action="None" />
 	<!-- Partial elements should be documented -->
 	<Rule Id="SA1601" Action="None" />
+	<!-- Enumeration items should be documented -->
+	<Rule Id="SA1602" Action="None" />
 
   </Rules>
 </RuleSet>
