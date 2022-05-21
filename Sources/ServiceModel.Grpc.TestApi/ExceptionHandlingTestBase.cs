@@ -16,6 +16,7 @@
 
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Grpc.Core;
 using NUnit.Framework;
 using ServiceModel.Grpc.TestApi.Domain;
@@ -132,10 +133,87 @@ namespace ServiceModel.Grpc.TestApi
         }
 
         [Test]
-        public void ThrowApplicationExceptionClientStreaming()
+        public void ThrowApplicationExceptionClientStreamingBeforeRead()
         {
-            var call = DomainService.ThrowApplicationExceptionClientStreaming(new[] { 1, 2 }.AsAsyncEnumerable(), "some text");
+            var channel = System.Threading.Channels.Channel.CreateUnbounded<int>();
+            Task? clientStreamWriter = null;
+
+            var call = DomainService.ThrowApplicationExceptionClientStreaming(
+                channel.Reader.AsAsyncEnumerable(_cancellationSource.Token),
+                0,
+                "some text",
+                new CallContext { TraceClientStreaming = i => clientStreamWriter = i });
+
             var ex = Assert.ThrowsAsync<ServerException>(() => call);
+
+            ex.ShouldNotBeNull();
+            ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
+            ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
+
+            clientStreamWriter.ShouldNotBeNull();
+            Assert.ThrowsAsync<OperationCanceledException>(() => clientStreamWriter);
+        }
+
+        [Test]
+        public async Task ThrowApplicationExceptionClientStreamingOnRead()
+        {
+            var channel = System.Threading.Channels.Channel.CreateUnbounded<int>();
+
+            Task? clientStreamWriter = null;
+
+            var call = DomainService.ThrowApplicationExceptionClientStreaming(
+                channel.Reader.AsAsyncEnumerable(_cancellationSource.Token),
+                1,
+                "some text",
+                new CallContext { TraceClientStreaming = i => clientStreamWriter = i });
+
+            await channel.Writer.WriteAsync(1).ConfigureAwait(false);
+
+            var ex = Assert.ThrowsAsync<ServerException>(() => call);
+
+            ex.ShouldNotBeNull();
+            ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
+            ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
+
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            clientStreamWriter.ShouldNotBeNull();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            Assert.ThrowsAsync<OperationCanceledException>(() => clientStreamWriter);
+        }
+
+        [Test]
+        public async Task ThrowApplicationExceptionClientStreamingAfterRead()
+        {
+            var channel = System.Threading.Channels.Channel.CreateUnbounded<int>();
+
+            Task? clientStreamWriter = null;
+
+            var call = DomainService.ThrowApplicationExceptionClientStreaming(
+                channel.Reader.AsAsyncEnumerable(_cancellationSource.Token),
+                2,
+                "some text",
+                new CallContext { TraceClientStreaming = i => clientStreamWriter = i });
+
+            await channel.Writer.WriteAsync(1).ConfigureAwait(false);
+            channel.Writer.Complete();
+
+            var ex = Assert.ThrowsAsync<ServerException>(() => call);
+
+            ex.ShouldNotBeNull();
+            ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
+            ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
+
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            clientStreamWriter.ShouldNotBeNull();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            await clientStreamWriter.ConfigureAwait(false);
+        }
+
+        [Test]
+        public async Task ThrowApplicationExceptionServerStreamingBeforeRead()
+        {
+            var call = await DomainService.ThrowApplicationExceptionServerStreaming(0, "some text");
+            var ex = Assert.ThrowsAsync<ServerException>(() => call.ToListAsync());
 
             ex.ShouldNotBeNull();
             ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
@@ -143,9 +221,21 @@ namespace ServiceModel.Grpc.TestApi
         }
 
         [Test]
-        public void ThrowApplicationExceptionServerStreaming()
+        public async Task ThrowApplicationExceptionServerStreamingOnRead()
         {
-            var ex = Assert.ThrowsAsync<ServerException>(() => DomainService.ThrowApplicationExceptionServerStreaming("some text").ToListAsync());
+            var call = await DomainService.ThrowApplicationExceptionServerStreaming(1, "some text");
+            var ex = Assert.ThrowsAsync<ServerException>(() => call.ToListAsync());
+
+            ex.ShouldNotBeNull();
+            ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
+            ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
+        }
+
+        [Test]
+        public async Task ThrowApplicationExceptionServerStreamingAfterRead()
+        {
+            var call = await DomainService.ThrowApplicationExceptionServerStreaming(2, "some text");
+            var ex = Assert.ThrowsAsync<ServerException>(() => call.ToListAsync());
 
             ex.ShouldNotBeNull();
             ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
@@ -164,25 +254,152 @@ namespace ServiceModel.Grpc.TestApi
         }
 
         [Test]
-        public void ThrowApplicationExceptionDuplexStreaming()
+        public void ThrowApplicationExceptionDuplexStreamingBeforeRead()
         {
-            var call = DomainService.ThrowApplicationExceptionDuplexStreaming(new[] { 1, 2 }.AsAsyncEnumerable(), "some text").ToListAsync();
+            var channel = System.Threading.Channels.Channel.CreateUnbounded<int>();
+            Task? clientStreamWriter = null;
+
+            var call = DomainService.ThrowApplicationExceptionDuplexStreaming(
+                    channel.Reader.AsAsyncEnumerable(_cancellationSource.Token),
+                    "some text",
+                    0,
+                    new CallContext { TraceClientStreaming = i => clientStreamWriter = i })
+                .ToListAsync();
             var ex = Assert.ThrowsAsync<ServerException>(() => call);
 
             ex.ShouldNotBeNull();
             ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
             ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
+
+            clientStreamWriter.ShouldNotBeNull();
+            Assert.ThrowsAsync<OperationCanceledException>(() => clientStreamWriter);
         }
 
         [Test]
-        public void ThrowApplicationExceptionDuplexStreamingHeader()
+        public async Task ThrowApplicationExceptionDuplexStreamingOnRead()
         {
-            var call = DomainService.ThrowApplicationExceptionDuplexStreamingHeader(new[] { 1, 2 }.AsAsyncEnumerable(), "some text");
+            var channel = System.Threading.Channels.Channel.CreateUnbounded<int>();
+            Task? clientStreamWriter = null;
+
+            var call = DomainService.ThrowApplicationExceptionDuplexStreaming(
+                    channel.Reader.AsAsyncEnumerable(_cancellationSource.Token),
+                    "some text",
+                    1,
+                    new CallContext { TraceClientStreaming = i => clientStreamWriter = i })
+                .ToListAsync();
+
+            await channel.Writer.WriteAsync(1).ConfigureAwait(false);
+
+            var ex = Assert.ThrowsAsync<ServerException>(() => call);
+
+            ex.ShouldNotBeNull();
+            ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
+            ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
+
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            clientStreamWriter.ShouldNotBeNull();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            Assert.ThrowsAsync<OperationCanceledException>(() => clientStreamWriter);
+        }
+
+        [Test]
+        public async Task ThrowApplicationExceptionDuplexStreamingAfterRead()
+        {
+            var channel = System.Threading.Channels.Channel.CreateUnbounded<int>();
+            Task? clientStreamWriter = null;
+
+            var call = DomainService.ThrowApplicationExceptionDuplexStreaming(
+                    channel.Reader.AsAsyncEnumerable(_cancellationSource.Token),
+                    "some text",
+                    1,
+                    new CallContext { TraceClientStreaming = i => clientStreamWriter = i })
+                .ToListAsync();
+
+            channel.Writer.Complete();
+
+            var ex = Assert.ThrowsAsync<ServerException>(() => call);
+
+            ex.ShouldNotBeNull();
+            ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
+            ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
+
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            clientStreamWriter.ShouldNotBeNull();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            await clientStreamWriter.ConfigureAwait(false);
+        }
+
+        [Test]
+        public void ThrowApplicationExceptionDuplexStreamingHeaderBeforeRead()
+        {
+            var channel = System.Threading.Channels.Channel.CreateUnbounded<int>();
+            Task? clientStreamWriter = null;
+
+            var call = DomainService.ThrowApplicationExceptionDuplexStreamingHeader(
+                channel.Reader.AsAsyncEnumerable(_cancellationSource.Token),
+                "some text",
+                0,
+                new CallContext { TraceClientStreaming = i => clientStreamWriter = i });
             var ex = Assert.ThrowsAsync<ServerException>(async () => await call.ConfigureAwait(false));
 
             ex.ShouldNotBeNull();
             ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
             ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
+
+            clientStreamWriter.ShouldNotBeNull();
+            Assert.ThrowsAsync<OperationCanceledException>(() => clientStreamWriter);
+        }
+
+        [Test]
+        public async Task ThrowApplicationExceptionDuplexStreamingHeaderOnRead()
+        {
+            var channel = System.Threading.Channels.Channel.CreateUnbounded<int>();
+            Task? clientStreamWriter = null;
+
+            var call = DomainService.ThrowApplicationExceptionDuplexStreamingHeader(
+                channel.Reader.AsAsyncEnumerable(_cancellationSource.Token),
+                "some text",
+                1,
+                new CallContext { TraceClientStreaming = i => clientStreamWriter = i });
+
+            await channel.Writer.WriteAsync(1).ConfigureAwait(false);
+
+            var ex = Assert.ThrowsAsync<ServerException>(async () => await call.ConfigureAwait(false));
+
+            ex.ShouldNotBeNull();
+            ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
+            ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
+
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            clientStreamWriter.ShouldNotBeNull();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            Assert.ThrowsAsync<OperationCanceledException>(() => clientStreamWriter);
+        }
+
+        [Test]
+        public async Task ThrowApplicationExceptionDuplexStreamingHeaderAfterRead()
+        {
+            var channel = System.Threading.Channels.Channel.CreateUnbounded<int>();
+            Task? clientStreamWriter = null;
+
+            var call = DomainService.ThrowApplicationExceptionDuplexStreamingHeader(
+                channel.Reader.AsAsyncEnumerable(_cancellationSource.Token),
+                "some text",
+                1,
+                new CallContext { TraceClientStreaming = i => clientStreamWriter = i });
+
+            channel.Writer.Complete();
+
+            var ex = Assert.ThrowsAsync<ServerException>(async () => await call.ConfigureAwait(false));
+
+            ex.ShouldNotBeNull();
+            ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
+            ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
+
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            clientStreamWriter.ShouldNotBeNull();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            await clientStreamWriter.ConfigureAwait(false);
         }
 
         [Test]
