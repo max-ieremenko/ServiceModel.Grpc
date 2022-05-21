@@ -79,14 +79,16 @@ namespace ServiceModel.Grpc.Client.Internal
         {
             var call = _callInvoker.AsyncDuplexStreamingCall(_method, null, _callOptions);
 
-            Task writer;
+            ClientStreamWriter<TRequest>? writer = null;
             try
             {
-                writer = ClientChannelAdapter.WriteClientStream(request, call.RequestStream, _callOptions.CancellationToken);
+                writer = new ClientStreamWriter<TRequest>(request, call.RequestStream, _callOptions.CancellationToken);
+                _callContext?.TraceClientStreaming?.Invoke(writer.Task);
             }
             catch
             {
                 call.Dispose();
+                writer?.Dispose();
                 throw;
             }
 
@@ -115,13 +117,15 @@ namespace ServiceModel.Grpc.Client.Internal
             CallContext? context,
             CancellationToken token)
         {
-            Task writer;
+            ClientStreamWriter<TRequest>? writer = null;
             try
             {
-                writer = ClientChannelAdapter.WriteClientStream(request, call.RequestStream, token);
+                writer = new ClientStreamWriter<TRequest>(request, call.RequestStream, token);
 
                 if (context != null && !token.IsCancellationRequested)
                 {
+                    context.TraceClientStreaming?.Invoke(writer.Task);
+
                     var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
                     context.ServerResponse = new ServerResponse(
                         headers,
@@ -132,6 +136,7 @@ namespace ServiceModel.Grpc.Client.Internal
             catch
             {
                 call.Dispose();
+                writer?.Dispose();
                 throw;
             }
 
@@ -147,14 +152,16 @@ namespace ServiceModel.Grpc.Client.Internal
             Func<TResponseHeader, IAsyncEnumerable<TResponse>, TResult> continuationFunction)
         {
             TResponseHeader header = default!;
-            Task writer;
+            ClientStreamWriter<TRequest>? writer = null;
             try
             {
-                writer = ClientChannelAdapter.WriteClientStream(request, call.RequestStream, token);
+                writer = new ClientStreamWriter<TRequest>(request, call.RequestStream, token);
 
                 var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
                 if (context != null)
                 {
+                    context.TraceClientStreaming?.Invoke(writer.Task);
+
                     context.ServerResponse = new ServerResponse(
                         headers,
                         call.GetStatus,
@@ -176,6 +183,7 @@ namespace ServiceModel.Grpc.Client.Internal
             catch
             {
                 call.Dispose();
+                writer?.Dispose();
                 throw;
             }
 
@@ -185,11 +193,12 @@ namespace ServiceModel.Grpc.Client.Internal
 
         private static async IAsyncEnumerable<TResponse> ReadServerStreamAsync(
             AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>> call,
-            Task writer,
+            ClientStreamWriter<TRequest> writer,
             CallContext? context,
             [EnumeratorCancellation] CancellationToken token)
         {
             using (call)
+            using (writer)
             {
                 if (context != null && !context.ServerResponse.HasValue && !token.IsCancellationRequested)
                 {
@@ -213,7 +222,7 @@ namespace ServiceModel.Grpc.Client.Internal
                         call.GetTrailers());
                 }
 
-                await ClientChannelAdapter.WaitForWriter(writer, token).ConfigureAwait(false);
+                await writer.WaitAsync(token).ConfigureAwait(false);
             }
         }
     }

@@ -15,7 +15,6 @@
 // </copyright>
 
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -25,35 +24,6 @@ namespace ServiceModel.Grpc.Client.Internal
 {
     internal static class ClientChannelAdapter
     {
-        internal static async Task WriteClientStream<TRequest>(
-            IAsyncEnumerable<TRequest> request,
-            IClientStreamWriter<Message<TRequest>> stream,
-            CancellationToken token)
-        {
-            await foreach (var i in request.WithCancellation(token).ConfigureAwait(false))
-            {
-                await stream.WriteAsync(new Message<TRequest>(i)).ConfigureAwait(false);
-            }
-
-            if (!token.IsCancellationRequested)
-            {
-                await stream.CompleteAsync().ConfigureAwait(false);
-            }
-        }
-
-        internal static async Task WaitForWriter(Task writer, CancellationToken token)
-        {
-            try
-            {
-                await writer.ConfigureAwait(false);
-            }
-            catch (RpcException ex) when (ex.StatusCode == StatusCode.OK || ex.StatusCode == StatusCode.Cancelled || token.IsCancellationRequested)
-            {
-                // Grpc.Core.RpcException : Status(StatusCode="OK", Detail="")
-                // one of the reasons the server does not read the whole request, see test MultipurposeServiceTestBase.ClientStreamingStopReading
-            }
-        }
-
         internal static async Task WaitForServerStreamExceptionAsync<THeader, TResult>(
             IAsyncStreamReader<Message<TResult>> responseStream,
             Metadata? responseHeaders,
