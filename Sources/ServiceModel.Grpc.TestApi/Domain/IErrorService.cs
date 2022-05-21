@@ -52,18 +52,18 @@ namespace ServiceModel.Grpc.TestApi.Domain
         Task ThrowApplicationExceptionAfterCancelAsync(string message, CancellationToken token);
 
         [OperationContract]
-        Task ThrowApplicationExceptionClientStreaming(IAsyncEnumerable<int> data, string message);
+        Task ThrowApplicationExceptionClientStreaming(IAsyncEnumerable<int> data, int readsCount, string message, CallContext context);
 
         [OperationContract]
-        IAsyncEnumerable<int> ThrowApplicationExceptionServerStreaming(string message);
+        Task<IAsyncEnumerable<int>> ThrowApplicationExceptionServerStreaming(int writesCount, string message);
 
         [OperationContract]
         ValueTask<(IAsyncEnumerable<int> Stream, string Message)> ThrowApplicationExceptionServerStreamingHeader(string message);
 
         [OperationContract]
-        IAsyncEnumerable<int> ThrowApplicationExceptionDuplexStreaming(IAsyncEnumerable<int> data, string message);
+        IAsyncEnumerable<int> ThrowApplicationExceptionDuplexStreaming(IAsyncEnumerable<int> data, string message, int readsCount, CallContext context);
 
         [OperationContract]
-        Task<(IAsyncEnumerable<int> Stream, string Message)> ThrowApplicationExceptionDuplexStreamingHeader(IAsyncEnumerable<int> data, string message);
+        Task<(IAsyncEnumerable<int> Stream, string Message)> ThrowApplicationExceptionDuplexStreamingHeader(IAsyncEnumerable<int> data, string message, int readsCount, CallContext context);
     }
 }

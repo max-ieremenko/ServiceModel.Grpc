@@ -87,11 +87,12 @@ namespace ServiceModel.Grpc.Client.Internal
             CancellationToken token)
         {
             using (call)
+            using (var writer = new ClientStreamWriter<TRequest>(request, call.RequestStream, token))
             {
-                var writer = ClientChannelAdapter.WriteClientStream(request, call.RequestStream, token);
-
                 if (context != null && !token.IsCancellationRequested)
                 {
+                    context.TraceClientStreaming?.Invoke(writer.Task);
+
                     var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
                     context.ServerResponse = new ServerResponse(
                         headers,
@@ -109,7 +110,7 @@ namespace ServiceModel.Grpc.Client.Internal
                         call.GetTrailers());
                 }
 
-                await ClientChannelAdapter.WaitForWriter(writer, token).ConfigureAwait(false);
+                await writer.WaitAsync(token).ConfigureAwait(false);
             }
         }
 
@@ -121,11 +122,12 @@ namespace ServiceModel.Grpc.Client.Internal
         {
             Message<TResult> result;
             using (call)
+            using (var writer = new ClientStreamWriter<TRequest>(request, call.RequestStream, token))
             {
-                var writer = ClientChannelAdapter.WriteClientStream(request, call.RequestStream, token);
-
                 if (context != null && !token.IsCancellationRequested)
                 {
+                    context.TraceClientStreaming?.Invoke(writer.Task);
+
                     var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
                     context.ServerResponse = new ServerResponse(
                         headers,
@@ -143,7 +145,7 @@ namespace ServiceModel.Grpc.Client.Internal
                         call.GetTrailers());
                 }
 
-                await ClientChannelAdapter.WaitForWriter(writer, token).ConfigureAwait(false);
+                await writer.WaitAsync(token).ConfigureAwait(false);
             }
 
             return result.Value1;

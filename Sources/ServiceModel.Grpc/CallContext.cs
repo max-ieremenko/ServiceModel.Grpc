@@ -16,6 +16,7 @@
 
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Client.Internal;
 
@@ -91,6 +92,9 @@ namespace ServiceModel.Grpc
         public Metadata? ResponseTrailers => ServerResponse?.ResponseTrailers;
 
         internal ServerResponse? ServerResponse { get; set; }
+
+        // only for tests
+        internal Action<Task>? TraceClientStreaming { get; set; }
 
         /// <summary>
         /// Crates <see cref="CallOptions"/> based on <see cref="CallContext"/>.CallOptions.

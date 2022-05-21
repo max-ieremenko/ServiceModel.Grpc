@@ -76,17 +76,43 @@ namespace ServiceModel.Grpc.TestApi.Domain
             throw new ApplicationException(message);
         }
 
-        public async Task ThrowApplicationExceptionClientStreaming(IAsyncEnumerable<int> data, string message)
+        public async Task ThrowApplicationExceptionClientStreaming(IAsyncEnumerable<int> data, int readsCount, string message, CallContext context)
         {
-            await foreach (var i in data.ConfigureAwait(false))
+            if (readsCount == 0)
             {
                 throw new ApplicationException(message);
             }
+
+            var counter = 0;
+            await foreach (var i in data.ConfigureAwait(false))
+            {
+                counter++;
+                if (counter == readsCount)
+                {
+                    throw new ApplicationException(message);
+                }
+            }
+
+            throw new ApplicationException(message);
         }
 
-        public IAsyncEnumerable<int> ThrowApplicationExceptionServerStreaming(string message)
+        public async Task<IAsyncEnumerable<int>> ThrowApplicationExceptionServerStreaming(int writesCount, string message)
         {
-            throw new ApplicationException(message);
+            if (writesCount == 0)
+            {
+                throw new ApplicationException(message);
+            }
+
+            var channel = System.Threading.Channels.Channel.CreateUnbounded<int>();
+            await channel.Writer.WriteAsync(1).ConfigureAwait(false);
+
+            if (writesCount > 1)
+            {
+                throw new ApplicationException(message);
+            }
+
+            channel.Writer.Complete(new ApplicationException(message));
+            return channel.Reader.AsAsyncEnumerable(CancellationToken.None);
         }
 
         public ValueTask<(IAsyncEnumerable<int> Stream, string Message)> ThrowApplicationExceptionServerStreamingHeader(string message)
@@ -94,17 +120,46 @@ namespace ServiceModel.Grpc.TestApi.Domain
             throw new ApplicationException(message);
         }
 
-        public async IAsyncEnumerable<int> ThrowApplicationExceptionDuplexStreaming(IAsyncEnumerable<int> data, string message)
+        public async IAsyncEnumerable<int> ThrowApplicationExceptionDuplexStreaming(IAsyncEnumerable<int> data, string message, int readsCount, CallContext context)
         {
-            await foreach (var i in data.ConfigureAwait(false))
+            if (readsCount == 0)
             {
-                yield return i;
                 throw new ApplicationException(message);
             }
+
+            var counter = 0;
+            await foreach (var i in data.ConfigureAwait(false))
+            {
+                counter++;
+                yield return i;
+
+                if (counter == readsCount)
+                {
+                    throw new ApplicationException(message);
+                }
+            }
+
+            throw new ApplicationException(message);
         }
 
-        public Task<(IAsyncEnumerable<int> Stream, string Message)> ThrowApplicationExceptionDuplexStreamingHeader(IAsyncEnumerable<int> data, string message)
+        public async Task<(IAsyncEnumerable<int> Stream, string Message)> ThrowApplicationExceptionDuplexStreamingHeader(IAsyncEnumerable<int> data, string message, int readsCount, CallContext context)
         {
+            if (readsCount == 0)
+            {
+                throw new ApplicationException(message);
+            }
+
+            var counter = 0;
+            await foreach (var i in data.ConfigureAwait(false))
+            {
+                counter++;
+
+                if (counter == readsCount)
+                {
+                    throw new ApplicationException(message);
+                }
+            }
+
             throw new ApplicationException(message);
         }
 
