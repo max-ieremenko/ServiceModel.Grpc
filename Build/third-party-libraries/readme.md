@@ -6,13 +6,13 @@ Licenses
 |[Apache-2.0](licenses/apache-2.0)|no|no|14|
 |[BSD-2-Clause](licenses/bsd-2-clause)|no|no|1|
 |[BSD-3-Clause](licenses/bsd-3-clause)|no|no|2|
-|[MIT](licenses/mit)|no|no|93|
+|[MIT](licenses/mit)|no|no|94|
 |[ms-net-library](licenses/ms-net-library)|no|no|62|
 |[MS-PL](licenses/ms-pl)|no|no|1|
 
 
 
-Packages 173
+Packages 174
 --------
 
 |Name|Version|Source|License|Used by|
@@ -182,6 +182,7 @@ Packages 173
 |[System.Text.Encodings.Web](packages/nuget.org/system.text.encodings.web/4.0.1)|4.0.1|[nuget.org](https://www.nuget.org/packages/System.Text.Encodings.Web/4.0.1)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
 |[System.Text.RegularExpressions](packages/nuget.org/system.text.regularexpressions/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Text.RegularExpressions/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
 |[System.Threading](packages/nuget.org/system.threading/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Threading/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
+|[System.Threading.Channels](packages/nuget.org/system.threading.channels/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/System.Threading.Channels/6.0.0)|[MIT](licenses/mit)|Core internal|
 |[System.Threading.Tasks.Extensions](packages/nuget.org/system.threading.tasks.extensions/4.5.4)|4.5.4|[nuget.org](https://www.nuget.org/packages/System.Threading.Tasks.Extensions/4.5.4)|[MIT](licenses/mit)|Core, DesignTime, MessagePack|
 |[System.ValueTuple](packages/nuget.org/system.valuetuple/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.ValueTuple/4.5.0)|[MIT](licenses/mit)|Core internal|
 |[System.Windows.Extensions](packages/nuget.org/system.windows.extensions/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/System.Windows.Extensions/5.0.0)|[MIT](licenses/mit)|Core internal|
