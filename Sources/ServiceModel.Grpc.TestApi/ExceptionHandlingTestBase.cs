@@ -212,7 +212,7 @@ namespace ServiceModel.Grpc.TestApi
         [Test]
         public async Task ThrowApplicationExceptionServerStreamingBeforeRead()
         {
-            var call = await DomainService.ThrowApplicationExceptionServerStreaming(0, "some text");
+            var call = await DomainService.ThrowApplicationExceptionServerStreaming(0, "some text").ConfigureAwait(false);
             var ex = Assert.ThrowsAsync<ServerException>(() => call.ToListAsync());
 
             ex.ShouldNotBeNull();
@@ -223,7 +223,7 @@ namespace ServiceModel.Grpc.TestApi
         [Test]
         public async Task ThrowApplicationExceptionServerStreamingOnRead()
         {
-            var call = await DomainService.ThrowApplicationExceptionServerStreaming(1, "some text");
+            var call = await DomainService.ThrowApplicationExceptionServerStreaming(1, "some text").ConfigureAwait(false);
             var ex = Assert.ThrowsAsync<ServerException>(() => call.ToListAsync());
 
             ex.ShouldNotBeNull();
@@ -234,7 +234,7 @@ namespace ServiceModel.Grpc.TestApi
         [Test]
         public async Task ThrowApplicationExceptionServerStreamingAfterRead()
         {
-            var call = await DomainService.ThrowApplicationExceptionServerStreaming(2, "some text");
+            var call = await DomainService.ThrowApplicationExceptionServerStreaming(2, "some text").ConfigureAwait(false);
             var ex = Assert.ThrowsAsync<ServerException>(() => call.ToListAsync());
 
             ex.ShouldNotBeNull();

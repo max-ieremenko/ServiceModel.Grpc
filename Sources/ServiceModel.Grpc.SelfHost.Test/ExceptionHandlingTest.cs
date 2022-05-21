@@ -57,7 +57,7 @@ namespace ServiceModel.Grpc.SelfHost
         [OneTimeTearDown]
         public async Task AfterAll()
         {
-            await _host.DisposeAsync();
+            await _host.DisposeAsync().ConfigureAwait(false);
         }
     }
 }
