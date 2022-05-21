@@ -15,6 +15,9 @@
 // </copyright>
 
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace ServiceModel.Grpc.TestApi
@@ -40,6 +43,26 @@ namespace ServiceModel.Grpc.TestApi
             }
 
             return result;
+        }
+
+        public static IAsyncEnumerable<T> AsAsyncEnumerable<T>(this ChannelReader<T> reader, CancellationToken token)
+        {
+#if NETCOREAPP3_0_OR_GREATER
+            return reader.ReadAllAsync(token);
+#else
+            return ReadAllAsync(reader, token);
+#endif
+        }
+
+        private static async IAsyncEnumerable<T> ReadAllAsync<T>(ChannelReader<T> reader, [EnumeratorCancellation] CancellationToken token)
+        {
+            while (await reader.WaitToReadAsync(token).ConfigureAwait(false))
+            {
+                while (reader.TryRead(out var item))
+                {
+                    yield return item;
+                }
+            }
         }
     }
 }

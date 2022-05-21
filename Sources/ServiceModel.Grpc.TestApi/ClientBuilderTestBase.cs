@@ -668,7 +668,7 @@ namespace ServiceModel.Grpc.TestApi
                 responseStream.Object,
                 o => o.CancellationToken.ShouldBe(TokenSource.Token));
 
-            var actual = await Factory().DuplexStreamingConvertAsync(new[] { 1, 2 }.AsAsyncEnumerable(), TokenSource.Token);
+            var actual = await Factory().DuplexStreamingConvertAsync(new[] { 1, 2 }.AsAsyncEnumerable(), TokenSource.Token).ConfigureAwait(false);
 
             var values = await actual.ToListAsync().ConfigureAwait(false);
             values.ShouldBe(new[] { "1", "2" });

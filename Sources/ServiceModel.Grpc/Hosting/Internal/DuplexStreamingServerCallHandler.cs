@@ -114,7 +114,7 @@ namespace ServiceModel.Grpc.Hosting.Internal
             var outputData = (IAsyncEnumerable<TResponse>)rawData!;
             var result = new ValueTask<(TResponseHeader?, IAsyncEnumerable<TResponse>)>((outputHeader, outputData));
 
-            await ServerChannelAdapter.WriteServerStreamingResult(result, _responseHeaderMarshaller, output, context);
+            await ServerChannelAdapter.WriteServerStreamingResult(result, _responseHeaderMarshaller, output, context).ConfigureAwait(false);
         }
 
         private async ValueTask FilterLastAsync(IServerFilterContextInternal context)

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,10 +24,16 @@ using ServiceModel.Grpc.TestApi.Domain;
 
 namespace ServiceModel.Grpc.AspNetCore
 {
-    [TestFixture]
+    [TestFixture(GrpcChannelType.GrpcCore)]
+    [TestFixture(GrpcChannelType.GrpcDotNet)]
     public class ExceptionHandlingTest : ExceptionHandlingTestBase
     {
         private KestrelHost _host = null!;
+
+        public ExceptionHandlingTest(GrpcChannelType channelType)
+            : base(channelType)
+        {
+        }
 
         [OneTimeSetUp]
         public async Task BeforeAll()
@@ -47,6 +53,7 @@ namespace ServiceModel.Grpc.AspNetCore
                 {
                     endpoints.MapGrpcService<ErrorService>();
                 })
+                .WithChannelType(ChannelType)
                 .StartAsync()
                 .ConfigureAwait(false);
 

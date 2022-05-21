@@ -4,6 +4,10 @@ param(
     $Settings
 )
 
+Enter-Build {
+    $releaseVersion = (Select-Xml -Path (Join-Path $Settings.sources "Versions.props") -XPath "Project/PropertyGroup/ServiceModelGrpcVersion").Node.InnerText
+}
+
 task Default Core, AspNetCore, Swashbuckle, NSwag, DesignTime, SelfHost, ProtoBufMarshaller, MessagePackMarshaller
 
 task Core {
@@ -15,7 +19,7 @@ task Core {
         (Join-Path $Settings.sources "ServiceModel.Grpc.TestApi")
     )
 
-    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty $Settings.buildOut
+    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty "ServiceModel.Grpc $releaseVersion" $Settings.buildOut
 }
 
 task AspNetCore {
@@ -27,7 +31,7 @@ task AspNetCore {
         (Join-Path $Settings.sources "ServiceModel.Grpc.AspNetCore.TestApi")
     )
 
-    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty $Settings.buildOut
+    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty "ServiceModel.Grpc.AspNetCore $releaseVersion" $Settings.buildOut
 }
 
 task Swashbuckle {
@@ -40,7 +44,7 @@ task Swashbuckle {
         (Join-Path $Settings.sources "ServiceModel.Grpc.AspNetCore.TestApi")
     )
 
-    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty $Settings.buildOut
+    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty "ServiceModel.Grpc.AspNetCore.Swashbuckle $releaseVersion" $Settings.buildOut
 }
 
 task NSwag {
@@ -53,7 +57,7 @@ task NSwag {
         (Join-Path $Settings.sources "ServiceModel.Grpc.AspNetCore.TestApi")
     )
 
-    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty $Settings.buildOut
+    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty "ServiceModel.Grpc.AspNetCore.NSwag $releaseVersion" $Settings.buildOut
 }
 
 task DesignTime {
@@ -67,7 +71,7 @@ task DesignTime {
         (Join-Path $Settings.sources "ServiceModel.Grpc.DesignTime.Generator.Test")
     )
 
-    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty $Settings.buildOut
+    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty "ServiceModel.Grpc.DesignTime $releaseVersion" $Settings.buildOut
 }
 
 
@@ -79,7 +83,7 @@ task SelfHost {
         (Join-Path $Settings.sources "ServiceModel.Grpc.SelfHost.Test")
     )
 
-    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty $Settings.buildOut
+    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty "ServiceModel.Grpc.SelfHost $releaseVersion" $Settings.buildOut
 }
 
 task ProtoBufMarshaller {
@@ -89,7 +93,7 @@ task ProtoBufMarshaller {
         (Join-Path $Settings.sources "ServiceModel.Grpc.ProtoBufMarshaller")
     )
 
-    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty $Settings.buildOut
+    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty "ServiceModel.Grpc.ProtoBufMarshaller $releaseVersion" $Settings.buildOut
 }
 
 task MessagePackMarshaller {
@@ -99,5 +103,5 @@ task MessagePackMarshaller {
         (Join-Path $Settings.sources "ServiceModel.Grpc.MessagePackMarshaller")
     )
 
-    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty $Settings.buildOut
+    Write-ThirdPartyNotices $appNames $sources $Settings.thirdParty "ServiceModel.Grpc.MessagePackMarshaller $releaseVersion" $Settings.buildOut
 }

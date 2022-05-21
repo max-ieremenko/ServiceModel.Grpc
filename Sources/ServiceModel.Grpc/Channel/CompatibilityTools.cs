@@ -53,6 +53,12 @@ namespace ServiceModel.Grpc.Channel
             return DeserializeHeader(marshaller, responseHeaders, CallContext.HeaderNameMethodOutput);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ContainsMethodOutputHeader(Metadata? responseHeaders)
+        {
+            return responseHeaders.FindHeader(CallContext.HeaderNameMethodOutput, true) != null;
+        }
+
         public static byte[] SerializeValue<T>(Marshaller<T> marshaller, T value)
         {
             byte[] payload;

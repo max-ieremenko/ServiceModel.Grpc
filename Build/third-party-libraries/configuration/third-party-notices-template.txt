@@ -1,5 +1,5 @@
-﻿ServiceModel.Grpc
-*****************
+﻿{{Title}}
+{% for i in (1..Title.size) %}*{% endfor %}
 
 THIRD-PARTY SOFTWARE NOTICES AND INFORMATION
 
@@ -9,9 +9,9 @@ THIRD-PARTY SOFTWARE NOTICES AND INFORMATION
     Authors: {{package.Author}}
 {%- endif -%}
 {%- if package.Copyright -%}
-	Copyright: {{package.Copyright}}
+    Copyright: {{package.Copyright}}
 {%- endif -%}
-	License: {{package.License.FullName}}, full text can be found at{% for i in package.License.HRefs %} {{i}}{% endfor %}
+    License: {{package.PackageLicense.FullName}}, full text can be found at{% for i in package.PackageLicense.HRefs %} {{i}}{% endfor %}
 {%- if package.ThirdPartyNotices -%}
 
 {{package.ThirdPartyNotices}}

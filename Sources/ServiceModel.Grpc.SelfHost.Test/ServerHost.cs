@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 using System;
 using System.Threading.Tasks;
 using Grpc.Core;
-using GrpcChannel = Grpc.Core.Channel;
+using ServiceModel.Grpc.TestApi;
 
 namespace ServiceModel.Grpc.SelfHost
 {
@@ -26,7 +26,7 @@ namespace ServiceModel.Grpc.SelfHost
         private const int Port = 8080;
         private readonly Server _server;
 
-        public ServerHost()
+        public ServerHost(GrpcChannelType channelType = GrpcChannelType.GrpcCore)
         {
             _server = new Server
             {
@@ -36,12 +36,12 @@ namespace ServiceModel.Grpc.SelfHost
                 }
             };
 
-            Channel = new GrpcChannel("localhost", Port, ChannelCredentials.Insecure);
+            Channel = GrpcChannelFactory.CreateChannel(channelType, "localhost", Port);
         }
 
         public Server.ServiceDefinitionCollection Services => _server.Services;
 
-        public GrpcChannel Channel { get; }
+        public ChannelBase Channel { get; }
 
         public void Start()
         {

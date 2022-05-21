@@ -33,8 +33,8 @@ jobs:
       run: dotnet --info
 
     - name: Install ThirdPartyLibraries
-      shell: cmd
-      run: dotnet tool install --global ThirdPartyLibraries.GlobalTool
+      shell: pwsh
+      run: Install-Module -Name ThirdPartyLibraries -RequiredVersion 3.1.0 -Force
 
     - name: Install InvokeBuild
       shell: pwsh

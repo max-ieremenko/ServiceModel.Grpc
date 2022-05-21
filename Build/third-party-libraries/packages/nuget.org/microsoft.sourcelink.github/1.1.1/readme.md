@@ -1,7 +1,7 @@
 Microsoft.SourceLink.GitHub [1.1.1](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub/1.1.1)
 --------------------
 
-Used by: AspNetCore, AspNetCoreNSwag, AspNetCoreSwashbuckle, Core, DesignTime, MessagePack, ProtoBuf, SelfHost
+Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, MessagePack internal, ProtoBuf internal, SelfHost internal
 
 Target frameworks: net461, net5.0, net6.0, netcoreapp3.0, netcoreapp3.1, netstandard2.0, netstandard2.1
 
