@@ -15,7 +15,6 @@
 // </copyright>
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
@@ -26,12 +25,14 @@ using System.Runtime.Serialization;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
+using ServiceModel.Grpc.Channel;
+using ServiceModel.Grpc.TestApi;
 using Shouldly;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
 
 [TestFixture]
-public class CSharpMessageBuilderTest
+public class CSharpMessageBuilderTest : MessageBuilderTestBase
 {
     private AssemblyLoadContext _loadContext = null!;
 
@@ -47,29 +48,15 @@ public class CSharpMessageBuilderTest
         _loadContext.Unload();
     }
 
-    [Test]
-    [TestCaseSource(nameof(GetTestCases))]
-    public void TypeAttributes(int propertiesCount)
+    protected override Type GetMessageType(Type[] typeArguments)
     {
-        var messageType = FindOrCompileMessage(propertiesCount);
-
-        messageType.IsPublic.ShouldBeTrue();
-        messageType.IsClass.ShouldBeTrue();
-        messageType.IsSealed.ShouldBeTrue();
-        messageType.IsGenericTypeDefinition.ShouldBeTrue();
-    }
-
-    private static IEnumerable<TestCaseData> GetTestCases()
-    {
-        yield return new TestCaseData(4)
+        if (typeArguments.Length == 0)
         {
-            TestName = "4 args"
-        };
+            return typeof(Message);
+        }
 
-        yield return new TestCaseData(5)
-        {
-            TestName = "5 args"
-        };
+        var genericType = FindOrCompileMessage(typeArguments.Length);
+        return genericType.MakeGenericType(typeArguments);
     }
 
     private Type FindOrCompileMessage(int propertiesCount)
