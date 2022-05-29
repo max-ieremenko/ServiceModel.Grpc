@@ -38,7 +38,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             Output
                 .AppendAttribute(typeof(SerializableAttribute))
                 .AppendAttribute(typeof(DataContractAttribute), "Name = \"m\"", "Namespace = \"s\"")
-                .Append("internal sealed class ")
+                .Append("public sealed class ")
                 .Append(nameof(Message))
                 .Append("<");
 
