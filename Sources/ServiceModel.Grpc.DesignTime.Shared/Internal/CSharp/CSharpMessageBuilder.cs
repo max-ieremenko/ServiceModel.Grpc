@@ -38,7 +38,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
             Output
                 .AppendAttribute(typeof(SerializableAttribute))
                 .AppendAttribute(typeof(DataContractAttribute), "Name = \"m\"", "Namespace = \"s\"")
-                .Append("internal sealed class ")
+                .Append("public sealed class ")
                 .Append(nameof(Message))
                 .Append("<");
 
@@ -54,6 +54,9 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
 
             using (Output.Indent())
             {
+                BuildFields();
+                Output.AppendLine();
+
                 BuildCtorDefault();
                 Output.AppendLine();
 
@@ -97,12 +100,22 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 for (var i = 0; i < _propertiesCount; i++)
                 {
                     Output
-                        .AppendFormat("Value{0} = value{0}", i + 1)
+                        .AppendFormat("_value{0} = value{0}", i + 1)
                         .AppendLine(";");
                 }
             }
 
             Output.AppendLine("}");
+        }
+
+        private void BuildFields()
+        {
+            for (var i = 0; i < _propertiesCount; i++)
+            {
+                Output
+                    .AppendFormat("private T{0} _value{0};", i + 1)
+                    .AppendLine();
+            }
         }
 
         private void BuildProperties()
@@ -113,9 +126,22 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
                 Output
                     .AppendLine()
                     .AppendAttribute(typeof(DataMemberAttribute), string.Format("Name = \"v{0}\"", order), string.Format("Order = {0}", order))
-                    .AppendLine()
                     .AppendFormat("public T{0} Value{0}", order)
-                    .AppendLine(" { get; set; }");
+                    .AppendLine()
+                    .AppendLine("{");
+
+                using (Output.Indent())
+                {
+                    Output
+                        .Append("get { return _value")
+                        .Append(order)
+                        .AppendLine("; }")
+                        .Append("set { _value")
+                        .Append(order)
+                        .AppendLine(" = value; }");
+                }
+
+                Output.AppendLine("}");
             }
         }
     }
