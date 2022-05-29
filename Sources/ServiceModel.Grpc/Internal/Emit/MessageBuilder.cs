@@ -158,7 +158,7 @@ namespace ServiceModel.Grpc.Internal.Emit
                 property.SetGetMethod(getter);
                 property.SetSetMethod(setter);
 
-                // ValueI = pi
+                // _valueI = pi
                 ctorBody.Emit(OpCodes.Ldarg_0);
                 ctorBody.EmitLdarg(i + 1);
                 ctorBody.Emit(OpCodes.Stfld, field);
