@@ -34,7 +34,7 @@ jobs:
 
     - name: Install ThirdPartyLibraries
       shell: pwsh
-      run: Install-Module -Name ThirdPartyLibraries -RequiredVersion 3.1.0 -Force
+      run: Install-Module -Name ThirdPartyLibraries -RequiredVersion 3.1.2 -Force
 
     - name: Install InvokeBuild
       shell: pwsh
