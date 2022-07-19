@@ -21,7 +21,7 @@ To run CI build locally
 - install ThirdPartyLibraries
 
     ``` powershell
-    PS> Install-Module -Name ThirdPartyLibraries -RequiredVersion 3.1.0
+    PS> Install-Module -Name ThirdPartyLibraries -RequiredVersion 3.1.2
     ```
 
 - switch docker to linux containers
