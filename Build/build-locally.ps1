@@ -1,4 +1,4 @@
-#Requires -Modules @{ ModuleName="InvokeBuild"; RequiredVersion="5.9.9.0" }
+#Requires -Modules @{ ModuleName="InvokeBuild"; RequiredVersion="5.9.10" }
 #Requires -Modules @{ ModuleName="ThirdPartyLibraries"; RequiredVersion="3.1.2" }
 
 $ErrorActionPreference = "Stop"
