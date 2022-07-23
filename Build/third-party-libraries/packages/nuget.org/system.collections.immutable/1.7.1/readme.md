@@ -1,7 +1,7 @@
 System.Collections.Immutable [1.7.1](https://www.nuget.org/packages/System.Collections.Immutable/1.7.1)
 --------------------
 
-Used by: ProtoBuf
+Used by: MessagePack, ProtoBuf
 
 Target frameworks: net461, net5.0, net6.0, netcoreapp3.1, netstandard2.0, netstandard2.1
 

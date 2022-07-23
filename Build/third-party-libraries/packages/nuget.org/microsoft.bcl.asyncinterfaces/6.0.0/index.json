@@ -5,24 +5,6 @@
   },
   "UsedBy": [
     {
-      "Name": "ProtoBuf",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "netcoreapp3.1",
-        "net5.0",
-        "net6.0",
-        "net461",
-        "netstandard2.0",
-        "netstandard2.1"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Memory",
-          "Version": "4.5.4"
-        }
-      ]
-    },
-    {
       "Name": "MessagePack",
       "InternalOnly": false,
       "TargetFrameworks": [
@@ -33,7 +15,7 @@
       ],
       "Dependencies": [
         {
-          "Name": "System.Memory",
+          "Name": "System.Threading.Tasks.Extensions",
           "Version": "4.5.4"
         }
       ]
@@ -47,10 +29,16 @@
       "Description": null
     },
     {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/dotnet/runtime",
+      "Description": null
+    },
+    {
       "Subject": "project",
       "Code": null,
-      "HRef": "https://github.com/dotnet/corefx",
-      "Description": "License should be verified on https://github.com/dotnet/corefx"
+      "HRef": "https://dot.net/",
+      "Description": "License should be verified on https://dot.net/"
     }
   ]
 }

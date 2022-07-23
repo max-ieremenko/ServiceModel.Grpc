@@ -1,14 +1,15 @@
-Microsoft.Bcl.AsyncInterfaces [1.1.1](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/1.1.1)
+Microsoft.Bcl.AsyncInterfaces [6.0.0](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/6.0.0)
 --------------------
 
-Used by: Core
+Used by: MessagePack
 
-Target frameworks: net461, netstandard2.0, netstandard2.1
+Target frameworks: net5.0, net6.0, netcoreapp3.1, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
 - package license: [MIT](https://licenses.nuget.org/MIT) 
-- project license: [Unknown](https://github.com/dotnet/corefx) , License should be verified on https://github.com/dotnet/corefx
+- repository license: [MIT](https://github.com/dotnet/runtime) 
+- project license: [Unknown](https://dot.net/) , License should be verified on https://dot.net/
 
 Description
 -----------
@@ -18,8 +19,6 @@ Commonly Used Types:
 System.IAsyncDisposable
 System.Collections.Generic.IAsyncEnumerable
 System.Collections.Generic.IAsyncEnumerator
- 
-When using NuGet 3.x this package requires at least version 3.4.
 
 Remarks
 -----------
