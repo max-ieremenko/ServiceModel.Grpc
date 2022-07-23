@@ -17,7 +17,7 @@ namespace Client
     {
         public static async Task Main(string[] args)
         {
-#if !NET5_0
+#if NETCOREAPP3_1
             ServiceModel.Grpc.GrpcChannelExtensions.Http2UnencryptedSupport = true;
 #endif
             // 'grpc-internal-encoding-request' is a special metadata value that tells the client to compress the request.
