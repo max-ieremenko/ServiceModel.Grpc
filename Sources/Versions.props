@@ -8,7 +8,7 @@
     <GoogleProtobufVersion>3.21.3</GoogleProtobufVersion>
 
     <SwashbuckleVersion>6.4.0</SwashbuckleVersion>
-    <NSwagVersion>13.14.7</NSwagVersion>
+    <NSwagVersion>13.16.1</NSwagVersion>
 
     <MessagePackVersion>2.4.35</MessagePackVersion>
     <ProtobufVersion>3.0.101</ProtobufVersion>
