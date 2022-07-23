@@ -19,15 +19,15 @@
         },
         {
           "Name": "System.Linq",
-          "Version": "4.3.0"
+          "Version": "4.1.0"
         },
         {
           "Name": "System.Linq.Expressions",
-          "Version": "4.3.0"
+          "Version": "4.1.1"
         },
         {
           "Name": "System.ObjectModel",
-          "Version": "4.3.0"
+          "Version": "4.0.12"
         },
         {
           "Name": "System.Runtime.Serialization.Primitives",
@@ -35,19 +35,19 @@
         },
         {
           "Name": "System.Text.RegularExpressions",
-          "Version": "4.3.0"
+          "Version": "4.1.0"
         },
         {
           "Name": "System.Threading",
-          "Version": "4.3.0"
+          "Version": "4.0.11"
         },
         {
           "Name": "System.Xml.ReaderWriter",
-          "Version": "4.3.0"
+          "Version": "4.0.11"
         },
         {
           "Name": "System.Xml.XDocument",
-          "Version": "4.3.0"
+          "Version": "4.0.11"
         }
       ]
     }
