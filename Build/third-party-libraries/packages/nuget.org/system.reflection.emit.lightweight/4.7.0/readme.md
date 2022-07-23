@@ -1,7 +1,7 @@
 System.Reflection.Emit.Lightweight [4.7.0](https://www.nuget.org/packages/System.Reflection.Emit.Lightweight/4.7.0)
 --------------------
 
-Used by: ProtoBuf
+Used by: MessagePack, ProtoBuf
 
 Target frameworks: net461, net5.0, net6.0, netcoreapp3.1, netstandard2.0, netstandard2.1
 

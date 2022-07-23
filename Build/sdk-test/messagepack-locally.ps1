@@ -16,12 +16,12 @@ task Build {
         -Examples $settings.examples `
         -Packages $settings.buildOut `
         -ExampleName "MessagePackMarshaller" `
-        -DotNet "net5.0"
+        -DotNet "net6.0"
 }
 
 task Run {
     Invoke-ExampleInContainer `
         -Example (Join-Path $settings.examples "MessagePackMarshaller") `
-        -DotNet "net5.0" `
+        -DotNet "net6.0" `
         -Apps "Demo.ServerAspNetCore", "Demo.ServerSelfHost"
 }

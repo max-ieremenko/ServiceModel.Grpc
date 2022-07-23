@@ -20,7 +20,7 @@ task Run {
     foreach ($app in $apps) {
         Write-Output "=== exec $app ==="
 
-        $entryPoint = Join-Path $exampleDir "$app/bin/Release/net5.0/$app.dll"
+        $entryPoint = Join-Path $exampleDir "$app/bin/Release/net6.0/$app.dll"
         exec { dotnet $entryPoint }
     }
 }

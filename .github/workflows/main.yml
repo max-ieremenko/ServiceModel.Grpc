@@ -34,11 +34,11 @@ jobs:
 
     - name: Install ThirdPartyLibraries
       shell: pwsh
-      run: Install-Module -Name ThirdPartyLibraries -RequiredVersion 3.1.0 -Force
+      run: Install-Module -Name ThirdPartyLibraries -RequiredVersion 3.1.2 -Force
 
     - name: Install InvokeBuild
       shell: pwsh
-      run: Install-Module -Name InvokeBuild -RequiredVersion 5.9.9.0 -Force
+      run: Install-Module -Name InvokeBuild -RequiredVersion 5.9.10 -Force
 
     - name: Build
       shell: pwsh
@@ -80,7 +80,7 @@ jobs:
 
     - name: Install InvokeBuild
       shell: pwsh
-      run: Install-Module -Name InvokeBuild -RequiredVersion 5.9.9.0 -Force
+      run: Install-Module -Name InvokeBuild -RequiredVersion 5.9.10 -Force
 
     - name: Test
       shell: pwsh
@@ -113,7 +113,7 @@ jobs:
 
     - name: Install InvokeBuild
       shell: pwsh
-      run: Install-Module -Name InvokeBuild -RequiredVersion 5.9.9.0 -Force
+      run: Install-Module -Name InvokeBuild -RequiredVersion 5.9.10 -Force
 
     - name: Test
       shell: pwsh
@@ -128,7 +128,7 @@ jobs:
 
     - name: Install InvokeBuild
       shell: pwsh
-      run: Install-Module -Name InvokeBuild -RequiredVersion 5.9.9.0 -Force
+      run: Install-Module -Name InvokeBuild -RequiredVersion 5.9.10 -Force
 
     - name: Install dotnet sdk
       shell: pwsh

@@ -9,7 +9,7 @@ To run CI build locally
 - install [InvokeBuild](https://www.powershellgallery.com/packages/InvokeBuild)
 
     ``` powershell
-    PS> Install-Module -Name InvokeBuild -RequiredVersion 5.9.9.0
+    PS> Install-Module -Name InvokeBuild -RequiredVersion 5.9.10
     ```
 
 - install net6.0 sdk: manual [download](https://dotnet.microsoft.com/download/dotnet/6.0) or
@@ -21,7 +21,7 @@ To run CI build locally
 - install ThirdPartyLibraries
 
     ``` powershell
-    PS> Install-Module -Name ThirdPartyLibraries -RequiredVersion 3.1.0
+    PS> Install-Module -Name ThirdPartyLibraries -RequiredVersion 3.1.2
     ```
 
 - switch docker to linux containers

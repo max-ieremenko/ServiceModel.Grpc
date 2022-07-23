@@ -16,7 +16,7 @@ task Build {
         -Examples $settings.examples `
         -Packages $settings.buildOut `
         -ExampleName "Basic" `
-        -DotNet "net5.0"
+        -DotNet "net6.0"
 }
 
 task Run {
