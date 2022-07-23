@@ -1,0 +1,44 @@
+{
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "MessagePack",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "netcoreapp3.1",
+        "net5.0",
+        "net6.0",
+        "netstandard2.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Runtime.CompilerServices.Unsafe",
+          "Version": "5.0.0"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT",
+      "Description": null
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/dotnet/msbuild",
+      "Description": null
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "http://go.microsoft.com/fwlink/?LinkId=624683",
+      "Description": "License should be verified on http://go.microsoft.com/fwlink/?LinkId=624683"
+    }
+  ]
+}
