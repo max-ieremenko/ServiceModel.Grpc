@@ -11,10 +11,10 @@ namespace Contract
         [DataMember(Order = 2)]
         public string MethodName { get; set; }
 
-        [DataMember(Order = 2)]
+        [DataMember(Order = 3)]
         public string ExceptionType { get; set; }
 
-        [DataMember(Order = 3)]
+        [DataMember(Order = 4)]
         public string FullException { get; set; }
     }
 }
