@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>NSwag.AspNetCore</id>
+    <version>13.16.1</version>
+    <authors>Rico Suter</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>NuGetIcon.png</icon>
+    <projectUrl>https://github.com/RicoSuter/NSwag</projectUrl>
+    <description>NSwag: The OpenAPI/Swagger API toolchain for .NET and TypeScript</description>
+    <tags>OpenAPI Swagger AspNetCore Documentation CodeGen TypeScript WebApi AspNet</tags>
+    <repository type="git" url="https://github.com/RicoSuter/NSwag.git" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.5.1">
+        <dependency id="NSwag.Annotations" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Core" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Core.Yaml" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Generation.AspNetCore" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Generation" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Mvc.Core" version="1.0.6" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Mvc.Formatters.Json" version="1.0.6" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.StaticFiles" version="1.0.4" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.ApiDescription.Server" version="6.0.3" />
+        <dependency id="Microsoft.Extensions.FileProviders.Embedded" version="[1.0.1, 6.0.0)" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard1.6">
+        <dependency id="NSwag.Annotations" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Core" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Core.Yaml" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Generation.AspNetCore" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Generation" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Mvc.Core" version="1.0.6" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Mvc.Formatters.Json" version="1.0.6" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.StaticFiles" version="1.0.4" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.ApiDescription.Server" version="6.0.3" />
+        <dependency id="Microsoft.Extensions.FileProviders.Embedded" version="[1.0.1, 6.0.0)" exclude="Build,Analyzers" />
+        <dependency id="NETStandard.Library" version="1.6.1" exclude="Build,Analyzers" />
+        <dependency id="System.IO.FileSystem" version="4.3.0" exclude="Build,Analyzers" />
+        <dependency id="System.Xml.XPath.XDocument" version="4.0.1" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="NSwag.Annotations" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Core" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Core.Yaml" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Generation.AspNetCore" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Generation" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Mvc.Core" version="1.0.6" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Mvc.Formatters.Json" version="1.0.6" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.StaticFiles" version="1.0.4" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.ApiDescription.Server" version="6.0.3" />
+        <dependency id="Microsoft.Extensions.FileProviders.Embedded" version="[1.0.1, 6.0.0)" exclude="Build,Analyzers" />
+        <dependency id="System.IO.FileSystem" version="4.3.0" exclude="Build,Analyzers" />
+        <dependency id="System.Xml.XPath.XDocument" version="4.0.1" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETCoreApp3.1">
+        <dependency id="NSwag.Annotations" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Core" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Core.Yaml" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Generation.AspNetCore" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Generation" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.ApiDescription.Server" version="6.0.3" />
+        <dependency id="Microsoft.Extensions.FileProviders.Embedded" version="[3.1.0, 4.0.0)" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net5.0">
+        <dependency id="NSwag.Annotations" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Core" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Core.Yaml" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Generation.AspNetCore" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Generation" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.ApiDescription.Server" version="6.0.3" />
+        <dependency id="Microsoft.Extensions.FileProviders.Embedded" version="[5.0.0, 6.0.0)" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net6.0">
+        <dependency id="NSwag.Annotations" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Core" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Core.Yaml" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Generation.AspNetCore" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="NSwag.Generation" version="13.16.1" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.ApiDescription.Server" version="6.0.3" />
+        <dependency id="Microsoft.Extensions.FileProviders.Embedded" version="[6.0.0, 7.0.0)" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

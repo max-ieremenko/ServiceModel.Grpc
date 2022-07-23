@@ -19,7 +19,7 @@
         },
         {
           "Name": "System.Collections.Concurrent",
-          "Version": "4.3.0"
+          "Version": "4.0.12"
         },
         {
           "Name": "System.ComponentModel.TypeConverter",
@@ -27,7 +27,7 @@
         },
         {
           "Name": "System.Linq",
-          "Version": "4.3.0"
+          "Version": "4.1.0"
         },
         {
           "Name": "System.Runtime.Serialization.Primitives",
