@@ -6,16 +6,17 @@
   "UsedBy": [
     {
       "Name": "AspNetCoreSwashbuckle",
-      "InternalOnly": true,
+      "InternalOnly": false,
       "TargetFrameworks": [
-        "netcoreapp3.1",
+        "netcoreapp3.0",
         "net5.0",
-        "net6.0"
+        "net6.0",
+        "netcoreapp3.1"
       ],
       "Dependencies": [
         {
-          "Name": "Swashbuckle.AspNetCore.SwaggerGen",
-          "Version": "6.2.3"
+          "Name": "Swashbuckle.AspNetCore.Swagger",
+          "Version": "6.4.0"
         }
       ]
     }

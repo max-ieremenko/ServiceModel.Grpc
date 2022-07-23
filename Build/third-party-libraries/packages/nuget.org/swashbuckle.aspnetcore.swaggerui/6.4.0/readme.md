@@ -1,4 +1,4 @@
-Swashbuckle.AspNetCore.SwaggerUI [6.2.3](https://www.nuget.org/packages/Swashbuckle.AspNetCore.SwaggerUI/6.2.3)
+Swashbuckle.AspNetCore.SwaggerUI [6.4.0](https://www.nuget.org/packages/Swashbuckle.AspNetCore.SwaggerUI/6.4.0)
 --------------------
 
 Used by: AspNetCoreSwashbuckle internal
