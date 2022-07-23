@@ -7,7 +7,7 @@
     <GrpcNetVersion>2.47.0</GrpcNetVersion>
     <GoogleProtobufVersion>3.21.3</GoogleProtobufVersion>
 
-    <SwashbuckleVersion>6.2.3</SwashbuckleVersion>
+    <SwashbuckleVersion>6.4.0</SwashbuckleVersion>
     <NSwagVersion>13.14.7</NSwagVersion>
 
     <MessagePackVersion>2.4.35</MessagePackVersion>
