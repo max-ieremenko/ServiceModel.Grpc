@@ -110,7 +110,9 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
             GrpcMethodMetadata metadata,
             OperationDescription operation)
         {
-            var serviceInstanceMethod = ReflectionTools.ImplementationOfMethod(
+            var serviceInstanceMethod = metadata.ServiceType.IsInterface
+                ? operation.Message.Operation
+                : ReflectionTools.ImplementationOfMethod(
                 metadata.ServiceType,
                 operation.Message.Operation.DeclaringType!,
                 operation.Message.Operation);
