@@ -110,7 +110,9 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
             GrpcMethodMetadata metadata,
             OperationDescription operation)
         {
-            var serviceInstanceMethod = ReflectionTools.ImplementationOfMethod(
+            var serviceInstanceMethod = metadata.ServiceType.IsInterface
+                ? operation.Message.Operation
+                : ReflectionTools.ImplementationOfMethod(
                 metadata.ServiceType,
                 operation.Message.Operation.DeclaringType!,
                 operation.Message.Operation);
@@ -126,7 +128,8 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
                     ["controller"] = metadata.Method.ServiceName
                 },
                 MethodType = metadata.Method.Type,
-                MethodSignature = GetSignature(operation.Message, metadata.Method.Name)
+                MethodSignature = GetSignature(operation.Message, metadata.Method.Name),
+                EndpointMetadata = endpoint.Metadata.ToArray()
             };
 
             var description = new ApiDescription
