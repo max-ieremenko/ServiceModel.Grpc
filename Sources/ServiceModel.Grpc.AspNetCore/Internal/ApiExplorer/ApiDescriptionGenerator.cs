@@ -128,7 +128,8 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
                     ["controller"] = metadata.Method.ServiceName
                 },
                 MethodType = metadata.Method.Type,
-                MethodSignature = GetSignature(operation.Message, metadata.Method.Name)
+                MethodSignature = GetSignature(operation.Message, metadata.Method.Name),
+                EndpointMetadata = endpoint.Metadata.ToArray()
             };
 
             var description = new ApiDescription

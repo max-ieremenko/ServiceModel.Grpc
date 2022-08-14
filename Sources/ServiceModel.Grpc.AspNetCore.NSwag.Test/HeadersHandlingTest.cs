@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,6 +41,8 @@ namespace ServiceModel.Grpc.AspNetCore.NSwag
                     services.AddServiceModelGrpcSwagger();
                     services.AddOpenApiDocument();
                     services.AddMvc();
+
+                    services.AddTransient<IHeadersService, HeadersService>();
                 })
                 .ConfigureApp(app =>
                 {
@@ -52,7 +54,7 @@ namespace ServiceModel.Grpc.AspNetCore.NSwag
                 })
                 .ConfigureEndpoints(endpoints =>
                 {
-                    endpoints.MapGrpcService<HeadersService>();
+                    endpoints.MapGrpcService<IHeadersService>();
                 })
                 .StartAsync(HttpProtocols.Http1)
                 .ConfigureAwait(false);
