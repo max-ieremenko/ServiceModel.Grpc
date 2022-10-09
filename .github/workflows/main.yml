@@ -24,25 +24,17 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Install dotnet sdk
+    - name: Install dependencies
       shell: pwsh
-      run: .\Build\step-install-dotnet.ps1
+      run: ./Build/install-dependencies.ps1
 
     - name: Dotnet info
       shell: pwsh
       run: dotnet --info
 
-    - name: Install ThirdPartyLibraries
-      shell: pwsh
-      run: Install-Module -Name ThirdPartyLibraries -RequiredVersion 3.1.2 -Force
-
-    - name: Install InvokeBuild
-      shell: pwsh
-      run: Install-Module -Name InvokeBuild -RequiredVersion 5.9.10 -Force
-
     - name: Build
       shell: pwsh
-      run: Invoke-Build -File .\Build\ci-win-build-tasks.ps1
+      run: ./Build/invoke-ci-build.ps1
 
     - name: Artifact nuget packages
       uses: actions/upload-artifact@v2
@@ -70,21 +62,17 @@ jobs:
       run: ls -R
       working-directory: build-out
 
-    - name: Install dotnet sdk
+    - name: Install dependencies
       shell: pwsh
-      run: .\Build\step-install-dotnet.ps1
+      run: ./Build/install-dependencies.ps1 ".net", "InvokeBuild"
 
     - name: Dotnet info
       shell: pwsh
       run: dotnet --info
 
-    - name: Install InvokeBuild
-      shell: pwsh
-      run: Install-Module -Name InvokeBuild -RequiredVersion 5.9.10 -Force
-
     - name: Test
       shell: pwsh
-      run: Invoke-Build -File .\Build\ci-linux-sdk-tasks.ps1
+      run: ./Build/invoke-sdk-test.ps1 -Platform "linux"
 
   sdk-test-win:
     name: win-sdk-test
@@ -103,21 +91,17 @@ jobs:
       run: ls -R
       working-directory: build-out
 
-    - name: Install dotnet sdk
+    - name: Install dependencies
       shell: pwsh
-      run: .\Build\step-install-dotnet.ps1
+      run: ./Build/install-dependencies.ps1 ".net", "InvokeBuild"
 
     - name: Dotnet info
       shell: pwsh
       run: dotnet --info
 
-    - name: Install InvokeBuild
-      shell: pwsh
-      run: Install-Module -Name InvokeBuild -RequiredVersion 5.9.10 -Force
-
     - name: Test
       shell: pwsh
-      run: Invoke-Build -File .\Build\ci-win-sdk-tasks.ps1
+      run: ./Build/invoke-sdk-test.ps1 -Platform "win"
 
   benchmarks:
     name: linux-benchmarks
@@ -126,13 +110,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Install InvokeBuild
+    - name: Install dependencies
       shell: pwsh
-      run: Install-Module -Name InvokeBuild -RequiredVersion 5.9.10 -Force
-
-    - name: Install dotnet sdk
-      shell: pwsh
-      run: .\Build\step-install-dotnet.ps1
+      run: ./Build/install-dependencies.ps1 ".net", "InvokeBuild"
 
     - name: Dotnet info
       shell: pwsh
@@ -140,13 +120,13 @@ jobs:
 
     - name: run benchmarks
       shell: pwsh
-      run: Invoke-Build -File .\Build\step-benchmarks-ci.ps1
+      run: ./Build/invoke-benchmarks.ps1 -Configuration "Release"
 
     - name: Artifact results
       uses: actions/upload-artifact@v2
       with:
         name: benchmark-results
         path: |
-          ./BenchmarkDotNet.Artifacts
+          ./build-out/BenchmarkDotNet.Artifacts
         if-no-files-found: error
 

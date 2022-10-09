@@ -1,9 +1,23 @@
-$ErrorActionPreference = "Stop"
-Set-StrictMode -Version Latest
+[CmdletBinding()]
+param (
+    [Parameter(Mandatory)]
+    [string]
+    $Version
+)
+
+$versions = dotnet --list-sdks
+foreach ($installedVersion in $versions) {
+    # 6.0.401 [C:\Program Files\dotnet\sdk]
+    $test = ($installedVersion -split " ")[0]
+
+    if ($test -eq $Version) {
+        Write-Output ".net sdk $version is alredy installed"
+        return
+    }
+}
 
 $installDir = "C:\Program Files\dotnet"
 $installScript = "dotnet-install.ps1"
-$installVersion = (Get-Content -Raw (Join-Path $PSScriptRoot "..\Sources\global.json") | ConvertFrom-Json).sdk.version
 
 if ($IsLinux) {
     $installDir = "/usr/share/dotnet"
@@ -24,5 +38,5 @@ if ($IsLinux) {
     chmod +x $dotnetInstall
 }
 
-"$dotnetInstall -Version $installVersion -InstallDir $installDir"
-& $dotnetInstall -Version $installVersion -InstallDir $installDir
+"$dotnetInstall -Version $Version -InstallDir $installDir"
+& $dotnetInstall -Version $Version -InstallDir $installDir

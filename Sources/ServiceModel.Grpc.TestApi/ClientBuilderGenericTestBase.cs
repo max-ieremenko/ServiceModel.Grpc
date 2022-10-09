@@ -23,54 +23,53 @@ using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
 
-namespace ServiceModel.Grpc.TestApi
+namespace ServiceModel.Grpc.TestApi;
+
+public abstract class ClientBuilderGenericTestBase
 {
-    public abstract class ClientBuilderGenericTestBase
+    protected Func<IGenericContract<int, string>> Factory { get; set; } = null!;
+
+    protected Mock<CallInvoker> CallInvoker { get; private set; } = null!;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        protected Func<IGenericContract<int, string>> Factory { get; set; } = null!;
+        CallInvoker = new Mock<CallInvoker>(MockBehavior.Strict);
+    }
 
-        protected Mock<CallInvoker> CallInvoker { get; private set; } = null!;
+    [Test]
+    public void Invoke()
+    {
+        TestOutput.WriteLine(GetClientInstanceMethod(nameof(IGenericContract<int, string>.Invoke)).Disassemble());
 
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            CallInvoker = new Mock<CallInvoker>(MockBehavior.Strict);
-        }
+        CallInvoker.SetupBlockingUnaryCallInOut(3, "4", "34");
 
-        [Test]
-        public void Invoke()
-        {
-            Console.WriteLine(GetClientInstanceMethod(nameof(IGenericContract<int, string>.Invoke)).Disassemble());
+        Factory().Invoke(3, "4").ShouldBe("34");
 
-            CallInvoker.SetupBlockingUnaryCallInOut(3, "4", "34");
+        CallInvoker.VerifyAll();
+    }
 
-            Factory().Invoke(3, "4").ShouldBe("34");
+    [Test]
+    public void BlockingCall()
+    {
+        TestOutput.WriteLine(GetClientInstanceMethod(nameof(IGenericContract<int, string>.BlockingCall)).Disassemble());
 
-            CallInvoker.VerifyAll();
-        }
+        CallInvoker.SetupBlockingUnaryCallInOut(
+            3,
+            "4",
+            "34",
+            method =>
+            {
+                method.Name.ShouldBe(nameof(IGenericContract<int, string>.BlockingCallAsync));
+            });
 
-        [Test]
-        public void BlockingCall()
-        {
-            Console.WriteLine(GetClientInstanceMethod(nameof(IGenericContract<int, string>.BlockingCall)).Disassemble());
+        Factory().BlockingCall(3, "4").ShouldBe("34");
 
-            CallInvoker.SetupBlockingUnaryCallInOut(
-                3,
-                "4",
-                "34",
-                method =>
-                {
-                    method.Name.ShouldBe(nameof(IGenericContract<int, string>.BlockingCallAsync));
-                });
+        CallInvoker.VerifyAll();
+    }
 
-            Factory().BlockingCall(3, "4").ShouldBe("34");
-
-            CallInvoker.VerifyAll();
-        }
-
-        protected virtual MethodInfo GetClientInstanceMethod(string name)
-        {
-            return Factory().GetType().InstanceMethod(name);
-        }
+    protected virtual MethodInfo GetClientInstanceMethod(string name)
+    {
+        return Factory().GetType().InstanceMethod(name);
     }
 }

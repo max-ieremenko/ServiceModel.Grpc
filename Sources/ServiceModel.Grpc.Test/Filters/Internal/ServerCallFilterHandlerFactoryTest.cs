@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,81 +20,81 @@ using Grpc.Core;
 using Moq;
 using NUnit.Framework;
 using ServiceModel.Grpc.Internal;
+using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Filters.Internal
+namespace ServiceModel.Grpc.Filters.Internal;
+
+[TestFixture]
+public class ServerCallFilterHandlerFactoryTest
 {
-    [TestFixture]
-    public class ServerCallFilterHandlerFactoryTest
+    private Mock<IServiceProvider> _serviceProvider = null!;
+    private MethodInfo _contractMethodDefinition = null!;
+    private Func<IServiceProvider, IServerFilter>[] _filterFactories = null!;
+    private Mock<IMultipurposeService> _service = null!;
+    private Mock<ServerCallContext> _context = null!;
+    private ServerCallFilterHandlerFactory _sut = null!;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private Mock<IServiceProvider> _serviceProvider = null!;
-        private MethodInfo _contractMethodDefinition = null!;
-        private Func<IServiceProvider, IServerFilter>[] _filterFactories = null!;
-        private Mock<IMultipurposeService> _service = null!;
-        private Mock<ServerCallContext> _context = null!;
-        private ServerCallFilterHandlerFactory _sut = null!;
+        _serviceProvider = new Mock<IServiceProvider>(MockBehavior.Strict);
+        _contractMethodDefinition = typeof(IMultipurposeService).InstanceMethod(nameof(IMultipurposeService.GreetAsync));
+        _filterFactories = new Func<IServiceProvider, IServerFilter>[1];
+        _sut = new ServerCallFilterHandlerFactory(_serviceProvider.Object, _contractMethodDefinition, _filterFactories);
 
-        [SetUp]
-        public void BeforeEachTest()
+        _service = new Mock<IMultipurposeService>(MockBehavior.Strict);
+        _context = new Mock<ServerCallContext>(MockBehavior.Strict);
+    }
+
+    [Test]
+    public void CreateHandler()
+    {
+        var filter = new Mock<IServerFilter>(MockBehavior.Strict);
+        _filterFactories[0] = provider =>
         {
-            _serviceProvider = new Mock<IServiceProvider>(MockBehavior.Strict);
-            _contractMethodDefinition = typeof(IMultipurposeService).InstanceMethod(nameof(IMultipurposeService.GreetAsync));
-            _filterFactories = new Func<IServiceProvider, IServerFilter>[1];
-            _sut = new ServerCallFilterHandlerFactory(_serviceProvider.Object, _contractMethodDefinition, _filterFactories);
+            provider.ShouldBe(_serviceProvider.Object);
+            return filter.Object;
+        };
 
-            _service = new Mock<IMultipurposeService>(MockBehavior.Strict);
-            _context = new Mock<ServerCallContext>(MockBehavior.Strict);
-        }
+        var actual = _sut.CreateHandler(_service.Object, _context.Object);
 
-        [Test]
-        public void CreateHandler()
-        {
-            var filter = new Mock<IServerFilter>(MockBehavior.Strict);
-            _filterFactories[0] = provider =>
-            {
-                provider.ShouldBe(_serviceProvider.Object);
-                return filter.Object;
-            };
+        actual.Context.ServerCallContext.ShouldBe(_context.Object);
+        actual.Context.ContractMethodInfo.ShouldBe(_contractMethodDefinition);
+        actual.Context.ServiceMethodInfo.ShouldNotBeNull();
+        actual.Context.ServiceInstance.ShouldBe(_service.Object);
+        actual.Context.ServiceProvider.ShouldBe(_serviceProvider.Object);
 
-            var actual = _sut.CreateHandler(_service.Object, _context.Object);
+        actual.Context.Request.Count.ShouldBe(1);
+        actual.Context.Request.Stream.ShouldBeNull(); // must be set by call handler
 
-            actual.Context.ServerCallContext.ShouldBe(_context.Object);
-            actual.Context.ContractMethodInfo.ShouldBe(_contractMethodDefinition);
-            actual.Context.ServiceMethodInfo.ShouldNotBeNull();
-            actual.Context.ServiceInstance.ShouldBe(_service.Object);
-            actual.Context.ServiceProvider.ShouldBe(_serviceProvider.Object);
+        actual.Context.Response.Count.ShouldBe(1);
+        actual.Context.Response.Stream.ShouldNotBeNull();
 
-            actual.Context.Request.Count.ShouldBe(1);
-            actual.Context.Request.Stream.ShouldBeNull(); // must be set by call handler
+        actual.Filters.Length.ShouldBe(1);
+        actual.Filters[0].ShouldBe(filter.Object);
+    }
 
-            actual.Context.Response.Count.ShouldBe(1);
-            actual.Context.Response.Stream.ShouldNotBeNull();
+    [Test]
+    public void FilterFactoryReturnsNull()
+    {
+        _filterFactories[0] = provider => null!;
 
-            actual.Filters.Length.ShouldBe(1);
-            actual.Filters[0].ShouldBe(filter.Object);
-        }
+        var ex = Assert.Throws<InvalidOperationException>(() => _sut.CreateHandler(_service.Object, _context.Object));
 
-        [Test]
-        public void FilterFactoryReturnsNull()
-        {
-            _filterFactories[0] = provider => null!;
+        TestOutput.WriteLine(ex);
+    }
 
-            var ex = Assert.Throws<InvalidOperationException>(() => _sut.CreateHandler(_service.Object, _context.Object));
+    [Test]
+    public void FilterFactoryThrows()
+    {
+        _filterFactories[0] = provider => throw new NotSupportedException("oops!");
 
-            Console.WriteLine(ex);
-        }
+        var ex = Assert.Throws<InvalidOperationException>(() => _sut.CreateHandler(_service.Object, _context.Object));
 
-        [Test]
-        public void FilterFactoryThrows()
-        {
-            _filterFactories[0] = provider => throw new NotSupportedException("oops!");
-
-            var ex = Assert.Throws<InvalidOperationException>(() => _sut.CreateHandler(_service.Object, _context.Object));
-
-            Console.WriteLine(ex);
-            ex!.InnerException.ShouldBeOfType<NotSupportedException>();
-            ex.InnerException.Message.ShouldContain("oops!");
-        }
+        TestOutput.WriteLine(ex);
+        ex!.InnerException.ShouldBeOfType<NotSupportedException>();
+        ex.InnerException.Message.ShouldContain("oops!");
     }
 }

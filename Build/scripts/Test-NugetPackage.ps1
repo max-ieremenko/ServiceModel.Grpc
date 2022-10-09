@@ -1,73 +1,40 @@
 function Test-NugetPackage {
     param (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateScript({ Test-Path $_ })]
         [string]
-        $PackageFileName,
-
-        [Parameter(Mandatory = $true)]
-        [string]
-        $TempDirectory
+        $Path
     )
 
-    function Test-FileExists {
-        param (
-            [string]$packageName,
-            [string]$directory,
-            [string]$fileName
-        )
-    
-        $path = Join-Path $directory $fileName
-        if (-not (Test-Path $path)) {
-            throw ("File " + $fileName + " not found in " + $name)
-        }
-    }
-    
     function Test-NuGetSpec {
         param (
-            [string]$fileName
+            [string]
+            $Path
         )
         
-        [xml]$nuspec = Get-Content $fileName
+        [xml]$nuspec = Get-Content $Path
         $ns = New-Object -TypeName "Xml.XmlNamespaceManager" -ArgumentList $nuspec.NameTable
         $ns.AddNamespace("n", $nuspec.DocumentElement.NamespaceURI)
     
-        $name = $nuspec.SelectNodes("n:package/n:metadata/n:id", $ns).InnerText
+        $name = $nuspec.SelectSingleNode("n:package/n:metadata/n:id", $ns).InnerText
     
-        $repository = $nuspec.SelectNodes("n:package/n:metadata/n:repository", $ns)
-        if (-not $repository) {
-            throw ("Repository element not found in " + $name)
-        }
+        $repository = $nuspec.SelectSingleNode("n:package/n:metadata/n:repository", $ns)
+        assert $repository "Repository element not found in $name"
     
-        if ([string]::IsNullOrWhiteSpace($nuspec.SelectNodes("n:package/n:metadata/n:repository/@commit", $ns).Value)) {
-            throw ("Repository commit attribute not found in " + $name)
-        }
+        $commit = $nuspec.SelectSingleNode("n:package/n:metadata/n:repository/@commit", $ns)
+        assert ($commit -and $commit.Value) "Repository commit attribute not found in $name"
     }
 
-    Remove-DirectoryRecurse $tempPath
-    New-Item -Path $TempDirectory -ItemType Directory | Out-Null
+    $name = Split-Path $Path -Leaf
 
-    # un-zip package into TempDirectory
-    $tempPackageFileName = Join-Path $TempDirectory "test.zip"
-    Copy-Item -Path $PackageFileName -Destination $tempPackageFileName
-    Expand-Archive -Path $tempPackageFileName -DestinationPath $TempDirectory
-    Remove-Item $tempPackageFileName
-
-    $name = Split-Path $PackageFileName -Leaf
-
-    Test-FileExists $name $TempDirectory "LICENSE"
-    Test-FileExists $name $TempDirectory "ThirdPartyNotices.txt"
+    assert (Test-Path (Join-Path "zf:$Path" "LICENSE")) "LICENSE file not found in name"
+    assert (Test-Path (Join-Path "zf:$Path" "ThirdPartyNotices.txt")) "ThirdPartyNotices.txt file not found in name"
 
     # test .nuspec
-    $nuspecFile = Get-ChildItem -Path $TempDirectory -File -Filter *.nuspec | ForEach-Object {$_.FullName}
+    $nuspecFile = Get-Item (Join-Path "zf:$Path" "*.nuspec")
+    assert $nuspecFile ".nuspec not found in $name"
+    Test-NuGetSpec $nuspecFile.FullName
 
-    if (-not $nuspecFile) {
-        throw (".nuspec not found in " + $name)
-    }
-
-    Test-NuGetSpec $nuspecFile
-
-    $symbolFileName = [System.IO.Path]::ChangeExtension($PackageFileName, ".snupkg")
-    if (-not (Test-Path $symbolFileName)) {
-        throw ("Symbol package " + $symbolFileName + " not found")
-    }
+    $symbolFileName = [System.IO.Path]::ChangeExtension($Path, ".snupkg")
+    assert (Test-Path $symbolFileName) "$symbolFileName not found"
 }

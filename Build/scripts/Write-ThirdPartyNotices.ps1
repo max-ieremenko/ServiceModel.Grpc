@@ -1,18 +1,39 @@
 function Write-ThirdPartyNotices {
     param (
-        $appNames, $sources, $repository, $title, $out
+        [Parameter(Mandatory)]
+        [string[]]
+        $AppNames,
+        
+        [Parameter(Mandatory)]
+        [ValidateScript({ Test-Path $_ })]
+        [string[]]
+        $Sources,
+
+        [Parameter(Mandatory)]
+        [ValidateScript({ Test-Path $_ })]
+        [string]
+        $Repository,
+        
+        [Parameter(Mandatory)]
+        [string]
+        $Title,
+
+        [Parameter(Mandatory)]
+        [ValidateScript({ Test-Path $_ })]
+        [string]
+        $Out
     )
     
-    $appName = $appNames[0]
-    $outTemp = Join-Path $out "Temp"
+    $appName = $AppNames[0]
+    $outTemp = Join-Path $Out "temp"
 
-    Update-ThirdPartyLibrariesRepository -AppName $appName -Source $sources -Repository $repository -InformationAction Continue
+    Update-ThirdPartyLibrariesRepository -AppName $appName -Source $Sources -Repository $Repository -InformationAction Continue
 
-    Test-ThirdPartyLibrariesRepository -AppName $appName -Source $sources -Repository $repository -InformationAction Continue
+    Test-ThirdPartyLibrariesRepository -AppName $appName -Source $Sources -Repository $Repository -InformationAction Continue
 
-    Publish-ThirdPartyNotices -AppName $appNames -Repository $repository -Title $title -To $outTemp -InformationAction Continue
+    Publish-ThirdPartyNotices -AppName $AppNames -Repository $Repository -Title $Title -To $outTemp -InformationAction Continue
 
     $licenseFile = $appName + "ThirdPartyNotices.txt"
-    Move-Item (Join-Path $outTemp "ThirdPartyNotices.txt") (Join-Path $out $licenseFile) -Force
-    Remove-Item -Path $outTemp -Recurse -Force
+    Move-Item (Join-Path $outTemp "ThirdPartyNotices.txt") (Join-Path $Out $licenseFile) -Force
+    Remove-DirectoryRecurse -Path $outTemp
 }

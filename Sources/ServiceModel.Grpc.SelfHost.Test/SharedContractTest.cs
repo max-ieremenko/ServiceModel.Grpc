@@ -21,30 +21,29 @@ using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 
-namespace ServiceModel.Grpc.SelfHost
+namespace ServiceModel.Grpc.SelfHost;
+
+[TestFixture]
+public class SharedContractTest : SharedContractTestBase
 {
-    [TestFixture]
-    public class SharedContractTest : SharedContractTestBase
+    private ServerHost _host = null!;
+
+    [OneTimeSetUp]
+    public void BeforeAll()
     {
-        private ServerHost _host = null!;
+        _host = new ServerHost();
 
-        [OneTimeSetUp]
-        public void BeforeAll()
-        {
-            _host = new ServerHost();
+        _host.Services.AddServiceModelSingleton<IConcreteContract1>(new ConcreteContract1());
+        _host.Services.AddServiceModelSingleton(new ConcreteContract2());
+        _host.Start();
 
-            _host.Services.AddServiceModelSingleton<IConcreteContract1>(new ConcreteContract1());
-            _host.Services.AddServiceModelSingleton(new ConcreteContract2());
-            DomainService1 = new ClientFactory().CreateClient<IConcreteContract1>(_host.Channel);
-            DomainService2 = new ClientFactory().CreateClient<IConcreteContract2>(_host.Channel);
+        DomainService1 = new ClientFactory().CreateClient<IConcreteContract1>(_host.Channel);
+        DomainService2 = new ClientFactory().CreateClient<IConcreteContract2>(_host.Channel);
+    }
 
-            _host.Start();
-        }
-
-        [OneTimeTearDown]
-        public async Task AfterAll()
-        {
-            await _host.DisposeAsync().ConfigureAwait(false);
-        }
+    [OneTimeTearDown]
+    public async Task AfterAll()
+    {
+        await _host.DisposeAsync().ConfigureAwait(false);
     }
 }

@@ -1,9 +1,10 @@
 function Remove-DirectoryRecurse {
     param (
-        [Parameter(Position = 0, Mandatory = $true)]
+        [Parameter(Mandatory)]
+        [string]
         $Path,
 
-        [Parameter(Position = 1, Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $Filters
     )

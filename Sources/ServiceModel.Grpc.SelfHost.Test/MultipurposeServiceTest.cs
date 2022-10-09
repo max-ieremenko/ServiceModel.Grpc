@@ -21,37 +21,36 @@ using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 
-namespace ServiceModel.Grpc.SelfHost
-{
-    [TestFixture(GrpcChannelType.GrpcCore)]
+namespace ServiceModel.Grpc.SelfHost;
+
+[TestFixture(GrpcChannelType.GrpcCore)]
 #if NET5_0_OR_GREATER
-    [TestFixture(GrpcChannelType.GrpcDotNet)]
+[TestFixture(GrpcChannelType.GrpcDotNet)]
 #endif
-    public class MultipurposeServiceTest : MultipurposeServiceTestBase
+public class MultipurposeServiceTest : MultipurposeServiceTestBase
+{
+    private readonly GrpcChannelType _channelType;
+    private ServerHost _host = null!;
+
+    public MultipurposeServiceTest(GrpcChannelType channelType)
     {
-        private readonly GrpcChannelType _channelType;
-        private ServerHost _host = null!;
+        _channelType = channelType;
+    }
 
-        public MultipurposeServiceTest(GrpcChannelType channelType)
-        {
-            _channelType = channelType;
-        }
+    [OneTimeSetUp]
+    public void BeforeAll()
+    {
+        _host = new ServerHost(_channelType);
 
-        [OneTimeSetUp]
-        public void BeforeAll()
-        {
-            _host = new ServerHost(_channelType);
+        _host.Services.AddServiceModelSingleton<IMultipurposeService>(new MultipurposeService());
+        _host.Start();
 
-            _host.Services.AddServiceModelSingleton<IMultipurposeService>(new MultipurposeService());
-            DomainService = new ClientFactory().CreateClient<IMultipurposeService>(_host.Channel);
+        DomainService = new ClientFactory().CreateClient<IMultipurposeService>(_host.Channel);
+    }
 
-            _host.Start();
-        }
-
-        [OneTimeTearDown]
-        public async Task AfterAll()
-        {
-            await _host.DisposeAsync().ConfigureAwait(false);
-        }
+    [OneTimeTearDown]
+    public async Task AfterAll()
+    {
+        await _host.DisposeAsync().ConfigureAwait(false);
     }
 }

@@ -21,43 +21,42 @@ using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 
-namespace ServiceModel.Grpc.SelfHost
-{
-    [TestFixture(GrpcChannelType.GrpcCore)]
+namespace ServiceModel.Grpc.SelfHost;
+
+[TestFixture(GrpcChannelType.GrpcCore)]
 #if NET5_0_OR_GREATER
-    [TestFixture(GrpcChannelType.GrpcDotNet)]
+[TestFixture(GrpcChannelType.GrpcDotNet)]
 #endif
-    public class ExceptionHandlingTest : ExceptionHandlingTestBase
+public class ExceptionHandlingTest : ExceptionHandlingTestBase
+{
+    private ServerHost _host = null!;
+
+    public ExceptionHandlingTest(GrpcChannelType channelType)
+        : base(channelType)
     {
-        private ServerHost _host = null!;
+    }
 
-        public ExceptionHandlingTest(GrpcChannelType channelType)
-            : base(channelType)
-        {
-        }
+    [OneTimeSetUp]
+    public void BeforeAll()
+    {
+        _host = new ServerHost(ChannelType);
 
-        [OneTimeSetUp]
-        public void BeforeAll()
-        {
-            _host = new ServerHost(ChannelType);
+        _host.Services.AddServiceModelSingleton(
+            new ErrorService(),
+            options =>
+            {
+                options.ErrorHandler = new ServerErrorHandler();
+            });
 
-            _host.Services.AddServiceModelSingleton(
-                new ErrorService(),
-                options =>
-                {
-                    options.ErrorHandler = new ServerErrorHandler();
-                });
+        _host.Start();
 
-            DomainService = new ClientFactory(new ServiceModelGrpcClientOptions { ErrorHandler = new ClientErrorHandler() })
-                .CreateClient<IErrorService>(_host.Channel.CreateCallInvoker());
+        DomainService = new ClientFactory(new ServiceModelGrpcClientOptions { ErrorHandler = new ClientErrorHandler() })
+            .CreateClient<IErrorService>(_host.Channel.CreateCallInvoker());
+    }
 
-            _host.Start();
-        }
-
-        [OneTimeTearDown]
-        public async Task AfterAll()
-        {
-            await _host.DisposeAsync().ConfigureAwait(false);
-        }
+    [OneTimeTearDown]
+    public async Task AfterAll()
+    {
+        await _host.DisposeAsync().ConfigureAwait(false);
     }
 }
