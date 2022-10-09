@@ -127,6 +127,6 @@ jobs:
       with:
         name: benchmark-results
         path: |
-          ./BenchmarkDotNet.Artifacts
+          ./build-out/BenchmarkDotNet.Artifacts
         if-no-files-found: error
 
