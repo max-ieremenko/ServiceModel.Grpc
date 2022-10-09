@@ -15,6 +15,7 @@
 // </copyright>
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -26,6 +27,7 @@ using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.TestApi;
 
@@ -144,6 +146,7 @@ public sealed class KestrelHost : IAsyncDisposable
                 }
             })
             .UseKestrel(o => o.Listen(IPAddress.Loopback, 0, l => l.Protocols = protocols))
+            .ConfigureLogging(builder => SuppressLogging(builder))
             .Build();
 
         try
@@ -187,5 +190,11 @@ public sealed class KestrelHost : IAsyncDisposable
 
             _host.Dispose();
         }
+    }
+
+    [Conditional("RELEASE")]
+    private static void SuppressLogging(ILoggingBuilder builder)
+    {
+        builder.ClearProviders();
     }
 }
