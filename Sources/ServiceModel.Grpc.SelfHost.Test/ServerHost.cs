@@ -15,43 +15,45 @@
 // </copyright>
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.TestApi;
 
-namespace ServiceModel.Grpc.SelfHost
+namespace ServiceModel.Grpc.SelfHost;
+
+internal sealed class ServerHost : IAsyncDisposable
 {
-    internal sealed class ServerHost : IAsyncDisposable
+    private readonly GrpcChannelType _channelType;
+    private readonly Server _server;
+
+    public ServerHost(GrpcChannelType channelType = GrpcChannelType.GrpcCore)
     {
-        private const int Port = 8080;
-        private readonly Server _server;
-
-        public ServerHost(GrpcChannelType channelType = GrpcChannelType.GrpcCore)
+        _channelType = channelType;
+        _server = new Server
         {
-            _server = new Server
+            Ports =
             {
-                Ports =
-                {
-                    new ServerPort("localhost", Port, ServerCredentials.Insecure)
-                }
-            };
+                new ServerPort("localhost", 0, ServerCredentials.Insecure)
+            }
+        };
+    }
 
-            Channel = GrpcChannelFactory.CreateChannel(channelType, "localhost", Port);
-        }
+    public Server.ServiceDefinitionCollection Services => _server.Services;
 
-        public Server.ServiceDefinitionCollection Services => _server.Services;
+    public ChannelBase Channel { get; private set; } = null!;
 
-        public ChannelBase Channel { get; }
+    public void Start()
+    {
+        _server.Start();
 
-        public void Start()
-        {
-            _server.Start();
-        }
+        var port = _server.Ports.First().BoundPort;
+        Channel = GrpcChannelFactory.CreateChannel(_channelType, "localhost", port);
+    }
 
-        public async ValueTask DisposeAsync()
-        {
-            await Channel.ShutdownAsync().ConfigureAwait(false);
-            await _server.ShutdownAsync().ConfigureAwait(false);
-        }
+    public async ValueTask DisposeAsync()
+    {
+        await Channel.ShutdownAsync().ConfigureAwait(false);
+        await _server.ShutdownAsync().ConfigureAwait(false);
     }
 }
