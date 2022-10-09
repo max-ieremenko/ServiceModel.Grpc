@@ -5,7 +5,6 @@ param(
     $PathSources,
 
     [Parameter(Mandatory)]
-    [ValidateScript({ Test-Path $_ })]
     [string]
     $PathBuildOut,
 
@@ -19,6 +18,10 @@ task Default Clean, Build, Run, CopyResults
 
 task Clean {
     Remove-DirectoryRecurse -Path $PathSources -Filters "bin", "obj"
+
+    if (-not (Test-Path $PathBuildOut)) {
+        New-Item -Path $PathBuildOut -ItemType Directory | Out-Null
+    }
 }
 
 task Build {
