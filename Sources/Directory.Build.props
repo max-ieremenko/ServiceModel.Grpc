@@ -13,6 +13,7 @@
 
     <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
+    <CheckEolTargetFramework>false</CheckEolTargetFramework>
   </PropertyGroup>
 
   <PropertyGroup>
