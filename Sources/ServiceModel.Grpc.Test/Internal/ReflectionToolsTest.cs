@@ -22,6 +22,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core.Interceptors;
 using NUnit.Framework;
+using ServiceModel.Grpc.TestApi;
 using Shouldly;
 using DescriptionAttribute = System.ComponentModel.DescriptionAttribute;
 
@@ -57,8 +58,8 @@ namespace ServiceModel.Grpc.Internal
         public void GetShortAssemblyQualifiedName(Type type)
         {
             var name = type.GetShortAssemblyQualifiedName();
-            Console.WriteLine();
-            Console.WriteLine(name);
+            TestOutput.WriteLine();
+            TestOutput.WriteLine(name);
 
             var actual = Type.GetType(name, true, false);
             actual.ShouldBe(type);
@@ -69,8 +70,8 @@ namespace ServiceModel.Grpc.Internal
         public void GetUserFriendlyName(Type type, string expected)
         {
             var name = type.GetUserFriendlyName();
-            Console.WriteLine();
-            Console.WriteLine(name);
+            TestOutput.WriteLine();
+            TestOutput.WriteLine(name);
 
             name.ShouldBe(expected);
         }
