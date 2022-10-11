@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <PackageReference Include="Grpc.Core" Version="$(GrpcCoreVersion)" />
-    <PackageReference Include="System.ServiceModel.Primitives" Version="4.9.0" />
   </ItemGroup>
 
   <ItemGroup>
