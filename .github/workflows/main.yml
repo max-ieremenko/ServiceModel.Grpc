@@ -22,7 +22,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Install dependencies
       shell: pwsh
@@ -37,7 +37,7 @@ jobs:
       run: ./Build/invoke-ci-build.ps1
 
     - name: Artifact nuget packages
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: nuget-packages
         path: |
@@ -51,7 +51,7 @@ jobs:
     needs: build
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - uses: actions/download-artifact@v2
       with:
@@ -80,7 +80,7 @@ jobs:
     needs: build
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - uses: actions/download-artifact@v2
       with:
@@ -108,7 +108,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Install dependencies
       shell: pwsh
@@ -123,7 +123,7 @@ jobs:
       run: ./Build/invoke-benchmarks.ps1 -Configuration "Release"
 
     - name: Artifact results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: benchmark-results
         path: |
