@@ -5,37 +5,10 @@
   },
   "UsedBy": [
     {
-      "Name": "AspNetCore",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "netcoreapp3.1",
-        "net5.0",
-        "net6.0"
-      ]
-    },
-    {
       "Name": "DesignTime",
       "InternalOnly": false,
       "TargetFrameworks": [
         "netstandard2.0",
-        "netcoreapp3.1",
-        "net5.0",
-        "net6.0"
-      ]
-    },
-    {
-      "Name": "AspNetCoreSwashbuckle",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "netcoreapp3.1",
-        "net5.0",
-        "net6.0"
-      ]
-    },
-    {
-      "Name": "AspNetCoreNSwag",
-      "InternalOnly": true,
-      "TargetFrameworks": [
         "netcoreapp3.1",
         "net5.0",
         "net6.0"

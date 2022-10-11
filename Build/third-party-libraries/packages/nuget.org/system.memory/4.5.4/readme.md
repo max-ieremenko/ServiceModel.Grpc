@@ -1,7 +1,7 @@
 System.Memory [4.5.4](https://www.nuget.org/packages/System.Memory/4.5.4)
 --------------------
 
-Used by: Core internal, DesignTime, MessagePack, ProtoBuf
+Used by: DesignTime, MessagePack, ProtoBuf
 
 Target frameworks: net461, net5.0, net6.0, netcoreapp3.1, netstandard2.0, netstandard2.1
 

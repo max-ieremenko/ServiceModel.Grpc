@@ -15,8 +15,12 @@
       ],
       "Dependencies": [
         {
+          "Name": "Microsoft.Win32.Registry",
+          "Version": "5.0.0"
+        },
+        {
           "Name": "System.Security.Principal.Windows",
-          "Version": "4.7.0"
+          "Version": "5.0.0"
         }
       ]
     }
