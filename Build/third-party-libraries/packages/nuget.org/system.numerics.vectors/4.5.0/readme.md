@@ -1,7 +1,7 @@
 System.Numerics.Vectors [4.5.0](https://www.nuget.org/packages/System.Numerics.Vectors/4.5.0)
 --------------------
 
-Used by: Core internal, ProtoBuf
+Used by: ProtoBuf
 
 Target frameworks: net461, net5.0, net6.0, netcoreapp3.1, netstandard2.0, netstandard2.1
 

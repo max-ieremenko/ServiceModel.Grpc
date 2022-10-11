@@ -6,11 +6,11 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="$(GoogleProtobufVersion)" />
-    <PackageReference Include="Grpc.Tools" Version="$(GrpcCoreApiVersion)">
+    <PackageReference Include="Grpc.Tools" Version="$(GrpcToolsVersion)">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.ServiceModel.Primitives" Version="4.9.0" />
+    <PackageReference Include="System.ServiceModel.Primitives" Version="$(SystemServiceModelPrimitivesVersion)" />
     <PackageReference Include="ServiceModel.Grpc" Version="$(ServiceModelGrpcVersion)" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
   </ItemGroup>

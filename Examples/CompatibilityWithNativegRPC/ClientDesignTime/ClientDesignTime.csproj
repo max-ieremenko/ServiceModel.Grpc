@@ -8,7 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Grpc.Core" Version="$(GrpcCoreVersion)" />
     <PackageReference Include="ServiceModel.Grpc.DesignTime" Version="$(ServiceModelGrpcVersion)" />
-    <PackageReference Include="System.ServiceModel.Primitives" Version="4.9.0" />
+    <PackageReference Include="System.ServiceModel.Primitives" Version="$(SystemServiceModelPrimitivesVersion)" />
     <PackageReference Include="ServiceModel.Grpc.ProtoBufMarshaller" Version="$(ServiceModelGrpcVersion)" />
   </ItemGroup>
 

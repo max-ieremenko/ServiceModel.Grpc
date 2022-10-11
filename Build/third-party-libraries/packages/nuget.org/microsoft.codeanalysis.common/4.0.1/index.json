@@ -37,10 +37,6 @@
         {
           "Name": "System.Threading.Tasks.Extensions",
           "Version": "4.5.4"
-        },
-        {
-          "Name": "System.Text.Encoding.CodePages",
-          "Version": "5.0.0"
         }
       ]
     }

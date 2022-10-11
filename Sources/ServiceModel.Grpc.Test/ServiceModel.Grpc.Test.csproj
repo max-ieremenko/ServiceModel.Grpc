@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CompareNETObjects" Version="4.77.0" />
+    <PackageReference Include="CompareNETObjects" Version="4.78.0" />
   </ItemGroup>
 
   <ItemGroup>

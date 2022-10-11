@@ -11,10 +11,6 @@
 
   <ItemGroup>
     <PackageReference Include="Grpc.Core.Api" Version="$(GrpcCoreApiVersion)" GeneratePathProperty="true" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
