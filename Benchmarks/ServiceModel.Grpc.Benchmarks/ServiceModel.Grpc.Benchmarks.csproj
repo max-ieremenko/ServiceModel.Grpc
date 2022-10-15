@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,7 +10,7 @@
     <PackageReference Include="Grpc.Net.Client" Version="$(GrpcNetVersion)" />
     <PackageReference Include="MagicOnion" Version="4.5.2" />
     <PackageReference Include="MagicOnion.Server" Version="4.5.2" />
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.10" />
     <PackageReference Include="protobuf-net.Grpc" Version="1.0.177" />
     <PackageReference Include="protobuf-net.Grpc.AspNetCore" Version="1.0.177" />
     <PackageReference Include="System.ServiceModel.Primitives" Version="$(SystemServiceModelPrimitivesVersion)" />
