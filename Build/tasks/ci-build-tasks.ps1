@@ -20,6 +20,8 @@ task Clean {
     Remove-DirectoryRecurse -Path $PathBuildOut
     Remove-DirectoryRecurse -Path $PathSources -Filters "bin", "obj"
 
+    Clear-NugetCache
+    
     New-Item -Path $PathBuildOut -ItemType Directory | Out-Null
 }
 

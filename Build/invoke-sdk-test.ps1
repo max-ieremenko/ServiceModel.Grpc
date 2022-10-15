@@ -5,13 +5,14 @@
 param (
     [Parameter()]
     [ValidateSet("win", "linux")] 
-    [string[]]
+    [string]
     $Platform
 )
 
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
+. (Join-Path $PSScriptRoot "scripts" "Clear-NugetCache.ps1")
 . (Join-Path $PSScriptRoot "scripts" "Get-FullPath.ps1")
 . (Join-Path $PSScriptRoot "scripts" "Remove-DirectoryRecurse.ps1")
 
