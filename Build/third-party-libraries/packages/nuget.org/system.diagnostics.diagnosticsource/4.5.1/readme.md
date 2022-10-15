@@ -3,7 +3,7 @@ System.Diagnostics.DiagnosticSource [4.5.1](https://www.nuget.org/packages/Syste
 
 Used by: Core internal
 
-Target frameworks: net461, net5.0, net6.0, netcoreapp3.1
+Target frameworks: net461, net5.0, net6.0, net7.0, netcoreapp3.1
 
 License: [MIT](../../../../licenses/mit) 
 

@@ -3,7 +3,7 @@ Grpc.Tools [2.49.1](https://www.nuget.org/packages/Grpc.Tools/2.49.1)
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal
 
-Target frameworks: net5.0, net6.0, netcoreapp3.1
+Target frameworks: net5.0, net6.0, net7.0, netcoreapp3.1
 
 License: [Apache-2.0](../../../../licenses/apache-2.0) 
 

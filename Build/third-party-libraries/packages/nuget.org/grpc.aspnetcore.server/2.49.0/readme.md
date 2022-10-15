@@ -3,7 +3,7 @@ Grpc.AspNetCore.Server [2.49.0](https://www.nuget.org/packages/Grpc.AspNetCore.S
 
 Used by: AspNetCore
 
-Target frameworks: net5.0, net6.0, netcoreapp3.0
+Target frameworks: net5.0, net6.0, net7.0, netcoreapp3.0
 
 License: [Apache-2.0](../../../../licenses/apache-2.0) 
 
