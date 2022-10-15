@@ -27,11 +27,11 @@ function Write-ThirdPartyNotices {
     $appName = $AppNames[0]
     $outTemp = Join-Path $Out "temp"
 
-    Update-ThirdPartyLibrariesRepository -AppName $appName -Source $Sources -Repository $Repository -InformationAction Continue
+    Update-ThirdPartyLibrariesRepository -AppName $appName -Source $Sources -Repository $Repository
 
-    Test-ThirdPartyLibrariesRepository -AppName $appName -Source $Sources -Repository $Repository -InformationAction Continue
+    Test-ThirdPartyLibrariesRepository -AppName $appName -Source $Sources -Repository $Repository
 
-    Publish-ThirdPartyNotices -AppName $AppNames -Repository $Repository -Title $Title -To $outTemp -InformationAction Continue
+    Publish-ThirdPartyNotices -AppName $AppNames -Repository $Repository -Title $Title -To $outTemp
 
     $licenseFile = $appName + "ThirdPartyNotices.txt"
     Move-Item (Join-Path $outTemp "ThirdPartyNotices.txt") (Join-Path $Out $licenseFile) -Force
