@@ -5,16 +5,20 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
     
+	<!-- 
+	https://github.com/dotnet/roslyn/issues/64754
+	CS9057 The analyzer assembly 'C:\Program Files\dotnet\packs\Microsoft.AspNetCore.App.Ref\7.0.0-rc.2.22476.2\analyzers\dotnet\roslyn4.4\cs\Microsoft.Extensions.Logging.Generators.dll' references version '4.4.0.0' of the compiler, which is newer than the currently running version '4.3.0.0'
+	-->
+    <NoWarn>$(NoWarn);CS9057</NoWarn>
+	
     <CodeAnalysisRuleSet>..\..\Sources\StyleCope.ruleset</CodeAnalysisRuleSet>
 
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>latest</LangVersion>
+	<SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StyleCop.Analyzers.Unstable" Version="$(StyleCopVersion)">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="StyleCop.Analyzers.Unstable" Version="$(StyleCopVersion)" PrivateAssets="All" />
   </ItemGroup>
   
 </Project>

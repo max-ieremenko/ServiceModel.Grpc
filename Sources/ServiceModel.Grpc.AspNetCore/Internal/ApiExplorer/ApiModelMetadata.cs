@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,108 +19,107 @@ using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
-#if NET6_0
+#if NET6_0_OR_GREATER
 using PropertySetterType = System.Action<object, object?>;
 #else
 using PropertySetterType = System.Action<object, object>;
 #endif
 
-namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
+namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer;
+
+internal sealed class ApiModelMetadata : ModelMetadata
 {
-    internal sealed class ApiModelMetadata : ModelMetadata
+    public ApiModelMetadata(ModelMetadataIdentity identity)
+        : base(identity)
     {
-        public ApiModelMetadata(ModelMetadataIdentity identity)
-            : base(identity)
-        {
-        }
+    }
 
-        public override IReadOnlyDictionary<object, object> AdditionalValues { get; } = null!;
+    public override IReadOnlyDictionary<object, object> AdditionalValues { get; } = null!;
 
-        public override string BinderModelName { get; } = null!;
+    public override string BinderModelName { get; } = null!;
 
-        public override Type BinderType { get; } = null!;
+    public override Type BinderType { get; } = null!;
 
-        public override BindingSource BindingSource { get; } = null!;
+    public override BindingSource BindingSource { get; } = null!;
 
-        public override bool ConvertEmptyStringToNull { get; }
+    public override bool ConvertEmptyStringToNull { get; }
 
-        public override string DataTypeName { get; } = null!;
+    public override string DataTypeName { get; } = null!;
 
-        public override string Description { get; } = null!;
+    public override string Description { get; } = null!;
 
-        public override string DisplayFormatString { get; } = null!;
+    public override string DisplayFormatString { get; } = null!;
 
-        public override string DisplayName { get; } = null!;
+    public override string DisplayName { get; } = null!;
 
-        public override string EditFormatString { get; } = null!;
+    public override string EditFormatString { get; } = null!;
 
-        public override ModelMetadata ElementMetadata { get; } = null!;
+    public override ModelMetadata ElementMetadata { get; } = null!;
 
-        public override IEnumerable<KeyValuePair<EnumGroupAndName, string>> EnumGroupedDisplayNamesAndValues { get; } = null!;
+    public override IEnumerable<KeyValuePair<EnumGroupAndName, string>> EnumGroupedDisplayNamesAndValues { get; } = null!;
 
-        public override IReadOnlyDictionary<string, string> EnumNamesAndValues { get; } = null!;
+    public override IReadOnlyDictionary<string, string> EnumNamesAndValues { get; } = null!;
 
-        public override bool HasNonDefaultEditFormat { get; }
+    public override bool HasNonDefaultEditFormat { get; }
 
-        public override bool HideSurroundingHtml { get; }
+    public override bool HideSurroundingHtml { get; }
 
-        public override bool HtmlEncode { get; }
+    public override bool HtmlEncode { get; }
 
-        public override bool IsBindingAllowed => true;
+    public override bool IsBindingAllowed => true;
 
-        public override bool IsBindingRequired { get; }
+    public override bool IsBindingRequired { get; }
 
-        public override bool IsEnum { get; }
+    public override bool IsEnum { get; }
 
-        public override bool IsFlagsEnum { get; }
+    public override bool IsFlagsEnum { get; }
 
-        public override bool IsReadOnly { get; }
+    public override bool IsReadOnly { get; }
 
-        public override bool IsRequired { get; }
+    public override bool IsRequired { get; }
 
-        public override ModelBindingMessageProvider ModelBindingMessageProvider { get; } = null!;
+    public override ModelBindingMessageProvider ModelBindingMessageProvider { get; } = null!;
 
-        public override string NullDisplayText { get; } = null!;
+    public override string NullDisplayText { get; } = null!;
 
-        public override int Order { get; }
+    public override int Order { get; }
 
-        public override string Placeholder { get; } = null!;
+    public override string Placeholder { get; } = null!;
 
-        public override ModelPropertyCollection Properties { get; } = null!;
+    public override ModelPropertyCollection Properties { get; } = null!;
 
-        public override IPropertyFilterProvider PropertyFilterProvider { get; } = null!;
+    public override IPropertyFilterProvider PropertyFilterProvider { get; } = null!;
 
-        public override Func<object, object> PropertyGetter { get; } = null!;
+    public override Func<object, object> PropertyGetter { get; } = null!;
 
-        public override PropertySetterType PropertySetter { get; } = null!;
+    public override PropertySetterType PropertySetter { get; } = null!;
 
-        public override bool ShowForDisplay { get; }
+    public override bool ShowForDisplay { get; }
 
-        public override bool ShowForEdit { get; }
+    public override bool ShowForEdit { get; }
 
-        public override string SimpleDisplayProperty { get; } = null!;
+    public override string SimpleDisplayProperty { get; } = null!;
 
-        public override string TemplateHint { get; } = null!;
+    public override string TemplateHint { get; } = null!;
 
-        public override bool ValidateChildren { get; }
+    public override bool ValidateChildren { get; }
 
-        public override IReadOnlyList<object> ValidatorMetadata { get; } = null!;
+    public override IReadOnlyList<object> ValidatorMetadata { get; } = null!;
 
-        internal (Type Type, string Name)[]? Headers { get; set; }
+    internal (Type Type, string Name)[]? Headers { get; set; }
 
-        public static ApiModelMetadata ForType(Type type)
-        {
-            return new ApiModelMetadata(ModelMetadataIdentity.ForType(type));
-        }
+    public static ApiModelMetadata ForType(Type type)
+    {
+        return new ApiModelMetadata(ModelMetadataIdentity.ForType(type));
+    }
 
-        public static ApiModelMetadata ForParameter(ParameterInfo parameter)
-        {
-            return new ApiModelMetadata(ModelMetadataIdentity.ForParameter(parameter));
-        }
+    public static ApiModelMetadata ForParameter(ParameterInfo parameter)
+    {
+        return new ApiModelMetadata(ModelMetadataIdentity.ForParameter(parameter));
+    }
 
-        public static ApiModelMetadata ForParameter(ParameterInfo parameter, Type modelType)
-        {
-            return new ApiModelMetadata(ModelMetadataIdentity.ForParameter(parameter, modelType));
-        }
+    public static ApiModelMetadata ForParameter(ParameterInfo parameter, Type modelType)
+    {
+        return new ApiModelMetadata(ModelMetadataIdentity.ForParameter(parameter, modelType));
     }
 }

@@ -16,11 +16,18 @@ param(
 
 task Default Clean, Build, Run, CopyResults
 
+Enter-Build {
+    $pathApp = Join-Path $PathSources "ServiceModel.Grpc.Benchmarks/bin" $Configuration "net7.0"
+    $pathBuildOutArtifacts = Join-Path $PathBuildOut "BenchmarkDotNet.Artifacts"
+}
+
 task Clean {
     Remove-DirectoryRecurse -Path $PathSources -Filters "bin", "obj"
 
     if (-not (Test-Path $PathBuildOut)) {
         New-Item -Path $PathBuildOut -ItemType Directory | Out-Null
+    } else {
+        Remove-DirectoryRecurse $pathBuildOutArtifacts
     }
 }
 
@@ -30,16 +37,13 @@ task Build {
 }
 
 task Run {
-    $app = Join-Path $PathSources "ServiceModel.Grpc.Benchmarks/bin" $Configuration "net6.0"
-
-    Set-Location -Path $app
+    Set-Location -Path $pathApp
     exec { dotnet "ServiceModel.Grpc.Benchmarks.dll" --filter *UnaryCall* }
 }
 
 task CopyResults {
     if ($Configuration -eq "Release") {
-        $source = Join-Path $PathSources "ServiceModel.Grpc.Benchmarks/bin/Release/net6.0" "BenchmarkDotNet.Artifacts/results"
-        $dest = Join-Path $PathBuildOut "BenchmarkDotNet.Artifacts"
-        Move-Item -Path $source $dest -Force
+        $source = Join-Path $pathApp "BenchmarkDotNet.Artifacts/results"
+        Move-Item -Path $source $pathBuildOutArtifacts -Force
     }
 }

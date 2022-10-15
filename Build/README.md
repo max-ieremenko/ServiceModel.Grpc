@@ -6,9 +6,9 @@ Because of the dependency on net461, the build runs on Windows.
 
 - install dependencies
 
-[net6.0 sdk](https://dotnet.microsoft.com/download/dotnet/6.0), 
+[net7.0 sdk](https://dotnet.microsoft.com/download/dotnet/7.0), 
 [InvokeBuild](https://www.powershellgallery.com/packages/InvokeBuild/5.9.12), 
-[ThirdPartyLibraries](https://www.powershellgallery.com/packages/ThirdPartyLibraries/3.1.2)
+[ThirdPartyLibraries](https://www.powershellgallery.com/packages/ThirdPartyLibraries/3.1.2),
 [ZipAsFolder](https://www.powershellgallery.com/packages/ZipAsFolder/0.0.1)
 
     ``` powershell

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,40 +22,39 @@ using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Interceptors;
 using ServiceModel.Grpc.Interceptors.Internal;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
+namespace ServiceModel.Grpc.AspNetCore.Internal.Binding;
+
+internal sealed class PostConfigureGrpcServiceOptions : IPostConfigureOptions<GrpcServiceOptions>
 {
-    internal sealed class PostConfigureGrpcServiceOptions : IPostConfigureOptions<GrpcServiceOptions>
+    private readonly IOptions<ServiceModelGrpcServiceOptions> _serviceModelOptions;
+
+    public PostConfigureGrpcServiceOptions(IOptions<ServiceModelGrpcServiceOptions> serviceModelOptions)
     {
-        private readonly IOptions<ServiceModelGrpcServiceOptions> _serviceModelOptions;
+        serviceModelOptions.AssertNotNull(nameof(serviceModelOptions));
 
-        public PostConfigureGrpcServiceOptions(IOptions<ServiceModelGrpcServiceOptions> serviceModelOptions)
+        _serviceModelOptions = serviceModelOptions;
+    }
+
+    public void PostConfigure(string? name, GrpcServiceOptions options)
+    {
+        AddErrorHandler(
+            options.Interceptors,
+            _serviceModelOptions.Value.DefaultErrorHandlerFactory,
+            _serviceModelOptions.Value.DefaultMarshallerFactory);
+    }
+
+    internal static void AddErrorHandler(
+        InterceptorCollection interceptors,
+        Func<IServiceProvider, IServerErrorHandler>? errorHandlerFactory,
+        IMarshallerFactory? marshallerFactory)
+    {
+        if (errorHandlerFactory != null)
         {
-            serviceModelOptions.AssertNotNull(nameof(serviceModelOptions));
+            var factory = new ErrorHandlerServerCallInterceptorFactory(
+                marshallerFactory.ThisOrDefault(),
+                errorHandlerFactory);
 
-            _serviceModelOptions = serviceModelOptions;
-        }
-
-        public void PostConfigure(string name, GrpcServiceOptions options)
-        {
-            AddErrorHandler(
-                options.Interceptors,
-                _serviceModelOptions.Value.DefaultErrorHandlerFactory,
-                _serviceModelOptions.Value.DefaultMarshallerFactory);
-        }
-
-        internal static void AddErrorHandler(
-            InterceptorCollection interceptors,
-            Func<IServiceProvider, IServerErrorHandler>? errorHandlerFactory,
-            IMarshallerFactory? marshallerFactory)
-        {
-            if (errorHandlerFactory != null)
-            {
-                var factory = new ErrorHandlerServerCallInterceptorFactory(
-                    marshallerFactory.ThisOrDefault(),
-                    errorHandlerFactory);
-
-                interceptors.Add<ServerNativeInterceptor>(factory);
-            }
+            interceptors.Add<ServerNativeInterceptor>(factory);
         }
     }
 }

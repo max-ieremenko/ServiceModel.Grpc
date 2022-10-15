@@ -1,9 +1,9 @@
-NUnit3TestAdapter [4.2.1](https://www.nuget.org/packages/NUnit3TestAdapter/4.2.1)
+NUnit3TestAdapter [4.3.0-alpha-net7.4](https://www.nuget.org/packages/NUnit3TestAdapter/4.3.0-alpha-net7.4)
 --------------------
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal
 
-Target frameworks: net461, net5.0, net6.0, netcoreapp3.1
+Target frameworks: net461, net5.0, net6.0, net7.0, netcoreapp3.1
 
 License: [MIT](../../../../licenses/mit) 
 

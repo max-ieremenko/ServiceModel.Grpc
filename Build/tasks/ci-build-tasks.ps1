@@ -34,6 +34,7 @@ task UnitTest {
         @{ File = "task-unit-test.ps1"; Sources = $PathSources; Framework = "netcoreapp3.1" }
         @{ File = "task-unit-test.ps1"; Sources = $PathSources; Framework = "net5.0" }
         @{ File = "task-unit-test.ps1"; Sources = $PathSources; Framework = "net6.0" }
+        @{ File = "task-unit-test.ps1"; Sources = $PathSources; Framework = "net7.0" }
     )
     
     Build-Parallel $builds -ShowParameter Framework -MaximumBuilds 4

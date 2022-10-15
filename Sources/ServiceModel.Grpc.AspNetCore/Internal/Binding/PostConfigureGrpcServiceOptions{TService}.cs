@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,33 +18,32 @@ using Grpc.AspNetCore.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
+namespace ServiceModel.Grpc.AspNetCore.Internal.Binding;
+
+internal sealed class PostConfigureGrpcServiceOptions<TService> : IPostConfigureOptions<GrpcServiceOptions<TService>>
+    where TService : class
 {
-    internal sealed class PostConfigureGrpcServiceOptions<TService> : IPostConfigureOptions<GrpcServiceOptions<TService>>
-        where TService : class
+    private readonly IOptions<ServiceModelGrpcServiceOptions> _rootConfiguration;
+    private readonly IOptions<ServiceModelGrpcServiceOptions<TService>> _serviceConfiguration;
+
+    public PostConfigureGrpcServiceOptions(
+        IOptions<ServiceModelGrpcServiceOptions> rootConfiguration,
+        IOptions<ServiceModelGrpcServiceOptions<TService>> serviceConfiguration)
     {
-        private readonly IOptions<ServiceModelGrpcServiceOptions> _rootConfiguration;
-        private readonly IOptions<ServiceModelGrpcServiceOptions<TService>> _serviceConfiguration;
+        rootConfiguration.AssertNotNull(nameof(rootConfiguration));
+        serviceConfiguration.AssertNotNull(nameof(serviceConfiguration));
 
-        public PostConfigureGrpcServiceOptions(
-            IOptions<ServiceModelGrpcServiceOptions> rootConfiguration,
-            IOptions<ServiceModelGrpcServiceOptions<TService>> serviceConfiguration)
-        {
-            rootConfiguration.AssertNotNull(nameof(rootConfiguration));
-            serviceConfiguration.AssertNotNull(nameof(serviceConfiguration));
+        _rootConfiguration = rootConfiguration;
+        _serviceConfiguration = serviceConfiguration;
+    }
 
-            _rootConfiguration = rootConfiguration;
-            _serviceConfiguration = serviceConfiguration;
-        }
+    public void PostConfigure(string? name, GrpcServiceOptions<TService> options)
+    {
+        var marshallerFactory = _serviceConfiguration.Value.MarshallerFactory ?? _rootConfiguration.Value.DefaultMarshallerFactory;
 
-        public void PostConfigure(string name, GrpcServiceOptions<TService> options)
-        {
-            var marshallerFactory = _serviceConfiguration.Value.MarshallerFactory ?? _rootConfiguration.Value.DefaultMarshallerFactory;
-
-            PostConfigureGrpcServiceOptions.AddErrorHandler(
-                options.Interceptors,
-                _serviceConfiguration.Value.ErrorHandlerFactory,
-                marshallerFactory);
-        }
+        PostConfigureGrpcServiceOptions.AddErrorHandler(
+            options.Interceptors,
+            _serviceConfiguration.Value.ErrorHandlerFactory,
+            marshallerFactory);
     }
 }
