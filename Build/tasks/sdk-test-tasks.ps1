@@ -12,11 +12,13 @@ param(
 task Default Clean, BuildParallel, BuildSequential, Run
 
 Enter-Build {
+    Clear-NugetCache
     exec { dotnet nuget add source -n "ServiceModel.Grpc" $PathBuildArtifacts }
 }
 
 Exit-Build {
     exec { dotnet nuget remove source "ServiceModel.Grpc" }
+    Clear-NugetCache
 }
 
 task Clean {
