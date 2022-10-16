@@ -4,6 +4,7 @@
  */
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Contract;
@@ -29,8 +30,11 @@ namespace Client
 
             await ServerStreamingCallExample(client);
 
-            Console.WriteLine("Press any key to exit...");
-            Console.ReadLine();
+            if (Debugger.IsAttached)
+            {
+                Console.WriteLine("Press any key to exit...");
+                Console.ReadLine();
+            }
         }
 
         private static async Task UnaryCallExample(IGreeterService client)
