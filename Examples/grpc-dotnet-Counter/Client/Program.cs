@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Contract;
 using Grpc.Net.Client;
@@ -33,8 +34,11 @@ namespace Client
 
             await ServerStreamingCallExample(client);
 
-            Console.WriteLine("Press any key to exit...");
-            Console.ReadLine();
+            if (Debugger.IsAttached)
+            {
+                Console.WriteLine("Press any key to exit...");
+                Console.ReadLine();
+            }
         }
 
         private static async Task UnaryCallExample(ICounterService client)
