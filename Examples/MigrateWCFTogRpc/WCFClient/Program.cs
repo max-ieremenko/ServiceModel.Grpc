@@ -17,8 +17,11 @@ namespace WCFClient
                 await CallGetAll(proxy);
             }
 
-            Console.WriteLine("...");
-            Console.ReadLine();
+            if (Debugger.IsAttached)
+            {
+                Console.WriteLine("...");
+                Console.ReadLine();
+            }
         }
 
         private static async Task CallGet(IPersonService proxy)
