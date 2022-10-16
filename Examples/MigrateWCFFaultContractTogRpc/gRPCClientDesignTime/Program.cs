@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.ServiceModel;
 using System.Threading.Tasks;
 using Contract;
@@ -35,8 +36,11 @@ namespace gRPCClientDesignTime
             await CallThrowApplicationException(proxy);
             await CallThrowInvalidOperationException(proxy);
 
-            Console.WriteLine("...");
-            Console.ReadLine();
+            if (Debugger.IsAttached)
+            {
+                Console.WriteLine("...");
+                Console.ReadLine();
+            }
         }
 
         private static async Task CallThrowApplicationException(IDebugService proxy)
