@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Contract;
@@ -18,34 +19,30 @@ namespace Client
 
         public static async Task Main(string[] args)
         {
-            try
+            var nativeChannel = new Channel("localhost", ServiceConfiguration.ServiceNativeGrpcPort, ChannelCredentials.Insecure);
+            var serviceModelChannel = new Channel("localhost", ServiceConfiguration.ServiceModelGrpcPort, ChannelCredentials.Insecure);
+
+            Console.WriteLine();
+            Console.WriteLine("Invoke ThrowApplicationException on ServerAspNetHost");
+            await InvokeThrowApplicationException(serviceModelChannel);
+
+            Console.WriteLine();
+            Console.WriteLine("Invoke ThrowApplicationException on ServerNativeHost");
+            await InvokeThrowApplicationException(nativeChannel);
+
+            Console.WriteLine();
+            Console.WriteLine("Invoke ThrowRandomException on ServerAspNetHost");
+            await InvokeThrowRandomException(serviceModelChannel);
+
+            Console.WriteLine();
+            Console.WriteLine("Invoke ThrowRandomException on ServerNativeHost");
+            await InvokeThrowRandomException(nativeChannel);
+
+            if (Debugger.IsAttached)
             {
-                var nativeChannel = new Channel("localhost", ServiceConfiguration.ServiceNativeGrpcPort, ChannelCredentials.Insecure);
-                var serviceModelChannel = new Channel("localhost", ServiceConfiguration.ServiceModelGrpcPort, ChannelCredentials.Insecure);
-
-                Console.WriteLine();
-                Console.WriteLine("Invoke ThrowApplicationException on ServerAspNetHost");
-                await InvokeThrowApplicationException(serviceModelChannel);
-
-                Console.WriteLine();
-                Console.WriteLine("Invoke ThrowApplicationException on ServerNativeHost");
-                await InvokeThrowApplicationException(nativeChannel);
-
-                Console.WriteLine();
-                Console.WriteLine("Invoke ThrowRandomException on ServerAspNetHost");
-                await InvokeThrowRandomException(serviceModelChannel);
-
-                Console.WriteLine();
-                Console.WriteLine("Invoke ThrowRandomException on ServerNativeHost");
-                await InvokeThrowRandomException(nativeChannel);
+                Console.WriteLine("...");
+                Console.ReadLine();
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-
-            Console.WriteLine("...");
-            Console.ReadLine();
         }
 
         private static async Task InvokeThrowApplicationException(ChannelBase channel)
