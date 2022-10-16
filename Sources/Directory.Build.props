@@ -21,9 +21,9 @@
     <Nullable>enable</Nullable>
 
     <CheckEolTargetFramework>false</CheckEolTargetFramework>
-	<SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
-	<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
-	<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
 
   <PropertyGroup>

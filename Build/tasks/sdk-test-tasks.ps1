@@ -5,37 +5,52 @@ param(
     $PathBuildArtifacts,
 
     [Parameter(Mandatory)]
-    [hashtable[]]
-    $Solutions
+    [object[]]
+    $Examples
 )
 
 task Default Clean, BuildParallel, BuildSequential, Run
 
 Enter-Build {
     Clear-NugetCache
-    exec { dotnet nuget add source -n "ServiceModel.Grpc" $PathBuildArtifacts }
+
+    $ownSource = $true
+    $sources = exec { dotnet nuget list source --format short }
+    foreach ($source in $sources) {
+        if ($source.Contains($PathBuildArtifacts, "OrdinalIgnoreCase")) {
+            $ownSource = $false
+            break
+        }
+    }
+
+    if ($ownSource) {
+        exec { dotnet nuget add source -n "ServiceModel.Grpc" $PathBuildArtifacts }
+    }
 }
 
 Exit-Build {
-    exec { dotnet nuget remove source "ServiceModel.Grpc" }
+    if ($ownSource) {
+        exec { dotnet nuget remove source "ServiceModel.Grpc" }
+    }
+
     Clear-NugetCache
 }
 
 task Clean {
-    foreach ($solution in $solutions) {
-        $path = Split-Path $solution.Path -Parent
+    foreach ($example in $Examples) {
+        $path = Split-Path $example.Solution -Parent
         Remove-DirectoryRecurse -Path $path -Filters "bin", "obj"
     }
 }
 
 task BuildParallel {
     $builds = @()
-    foreach ($solution in $solutions) {
-        if ($solution.BuildParallelizable) {
+    foreach ($example in $Examples) {
+        if ($example.BuildParallelizable) {
             $builds += @{ 
-                File          = "task-build.ps1";
-                Path          = $solution.Path;
-                Configuration = $solution.Configuration
+                File          = "task-build.ps1"
+                Path          = $example.Solution
+                Configuration = $example.Configuration
             }
         }
     }
@@ -45,12 +60,12 @@ task BuildParallel {
 
 task BuildSequential {
     $builds = @()
-    foreach ($solution in $solutions) {
-        if (-not $solution.BuildParallelizable) {
+    foreach ($example in $Examples) {
+        if (-not $example.BuildParallelizable) {
             $builds += @{ 
-                File          = "task-build.ps1";
-                Path          = $solution.Path;
-                Configuration = $solution.Configuration
+                File          = "task-build.ps1"
+                Path          = $example.Solution
+                Configuration = $example.Configuration
             }
         }
     }
@@ -60,18 +75,17 @@ task BuildSequential {
 
 task Run {
     $builds = @()
-    foreach ($solution in $solutions) {
-        $root = Split-Path $solution.Path -Parent
-        
-        foreach ($app in $solution.Apps) {
-            $path = Join-Path $root $app "bin" $solution.Configuration $solution.Framework "$app.dll"
+    foreach ($example in $Examples) {
+
+        foreach ($test in $example.Tests) {
             $builds += @{ 
-                File = "task-dotnet-run.ps1";
-                Path = $path;
-            }
+                File = "task-run-sdk-test.ps1"
+                Name = $test[0].App
+                Apps = $test
+            }   
         }
     }
 
     # only one app at a time: ports conflict
-    Build-Parallel $builds -ShowParameter Path -MaximumBuilds 1
+    Build-Parallel $builds -ShowParameter Name -MaximumBuilds 1
 }
