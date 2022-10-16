@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Contract;
 using Grpc.Core;
@@ -12,17 +13,13 @@ namespace Client
 
         public static async Task Main(string[] args)
         {
-            try
-            {
-                await Run();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
+            await Run();
 
-            Console.WriteLine("...");
-            Console.ReadLine();
+            if (Debugger.IsAttached)
+            {
+                Console.WriteLine("...");
+                Console.ReadLine();
+            }
         }
 
         private static async Task Run()
