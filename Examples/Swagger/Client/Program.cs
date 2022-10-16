@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Contract;
 using Grpc.Core;
@@ -48,8 +49,11 @@ namespace Client
                 Console.WriteLine("Area is {0}", area);
             }
 
-            Console.WriteLine("...");
-            Console.ReadLine();
+            if (Debugger.IsAttached)
+            {
+                Console.WriteLine("...");
+                Console.ReadLine();
+            }
         }
 
         private static async IAsyncEnumerable<FigureBase> AsAsyncEnumerable(params FigureBase[] figures)
