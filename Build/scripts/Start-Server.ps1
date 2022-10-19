@@ -12,13 +12,8 @@ function Start-Server {
     
     $name = Split-Path $Path -Leaf
     $output = Join-Path ([System.IO.Path]::GetTempPath()) "smgrpc-sdk-$name.txt"
-    $errorOutput = Join-Path ([System.IO.Path]::GetTempPath()) "smgrpc-sdk-$name-error.txt"
     if (Test-Path $output) {
         Remove-Item $output -Force
-    }
-
-    if (Test-Path $errorOutput) {
-        Remove-Item $errorOutput -Force
     }
 
     if ($name.EndsWith(".exe", "OrdinalIgnoreCase")) {
@@ -54,12 +49,7 @@ function Start-Server {
                 $logs = Get-Content -Path $output -Raw
             }
 
-            if (Test-Path $errorOutput) {
-                $logs += " "
-                $logs += Get-Content -Path $errorOutput -Raw
-            }
-
-            throw "$Name exited unexpectedly $($timer.Elapsed). $logs"        
+            throw "$Name exited unexpectedly with exit code $($process.ExitCode), $($timer.Elapsed). $logs"        
         }
     }
 

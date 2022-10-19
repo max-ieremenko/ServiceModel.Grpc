@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,7 +10,7 @@ namespace ServerSelfHost
 {
     public static class Program
     {
-        public static void Main(string[] args)
+        public static void Main()
         {
             var server = new Server
             {
@@ -32,8 +33,15 @@ namespace ServerSelfHost
 
                 server.Start();
 
-                Console.WriteLine("Press enter to exit . . .");
-                Console.ReadLine();
+                var cancellationSource = new CancellationTokenSource();
+                Console.CancelKeyPress += (_, e) =>
+                {
+                    e.Cancel = true;
+                    cancellationSource.Cancel();
+                };
+
+                Console.WriteLine("Press CTRL+C for exit...");
+                cancellationSource.Token.WaitHandle.WaitOne();
             }
         }
 
