@@ -21,8 +21,7 @@ function Start-Server {
             -FilePath $Path `
             -PassThru `
             -NoNewWindow `
-            -RedirectStandardOutput $output `
-            -RedirectStandardError $errorOutput
+            -RedirectStandardOutput $output
     }
     else {
         $process = Start-Process `
@@ -30,8 +29,7 @@ function Start-Server {
             -PassThru `
             -NoNewWindow `
             -ArgumentList $Path `
-            -RedirectStandardOutput $output `
-            -RedirectStandardError $errorOutput
+            -RedirectStandardOutput $output
     }
 
     $timer = [System.Diagnostics.Stopwatch]::StartNew()
