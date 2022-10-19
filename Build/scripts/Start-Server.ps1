@@ -42,7 +42,12 @@ function Start-Server {
 
         $process.Refresh()
         if ($process.HasExited) {
-            throw "$Name exited unexpectedly $($timer.Elapsed)"        
+            $logs = ""
+            if (Test-Path $output) {
+                $logs = Get-Content -Path $output -Raw
+            }
+
+            throw "$Name exited unexpectedly $($timer.Elapsed). $logs"        
         }
     }
 
