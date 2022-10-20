@@ -27,7 +27,7 @@ namespace Benchmarks
         [GlobalSetup]
         public void GlobalSetup()
         {
-            _serverSelfHost = ServerSelfHost.Program.BuildServer(UseCompression);
+            _serverSelfHost = ServerSelfHost.ServerHostedService.BuildServer(UseCompression);
             _serverSelfHost.Start();
 
             var factory = ClientCallsFactory
