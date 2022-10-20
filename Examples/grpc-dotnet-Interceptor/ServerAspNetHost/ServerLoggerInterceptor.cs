@@ -10,83 +10,82 @@ using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Microsoft.Extensions.Logging;
 
-namespace ServerAspNetHost
+namespace ServerAspNetHost;
+
+internal sealed class ServerLoggerInterceptor : Interceptor
 {
-    internal sealed class ServerLoggerInterceptor : Interceptor
+    private readonly ILogger<ServerLoggerInterceptor> _logger;
+
+    public ServerLoggerInterceptor(ILogger<ServerLoggerInterceptor> logger)
     {
-        private readonly ILogger<ServerLoggerInterceptor> _logger;
+        _logger = logger;
+    }
 
-        public ServerLoggerInterceptor(ILogger<ServerLoggerInterceptor> logger)
+    public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(
+        TRequest request,
+        ServerCallContext context,
+        UnaryServerMethod<TRequest, TResponse> continuation)
+    {
+        LogCall<TRequest, TResponse>(MethodType.Unary, context);
+
+        try
         {
-            _logger = logger;
+            return await continuation(request, context);
         }
-
-        public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(
-            TRequest request,
-            ServerCallContext context,
-            UnaryServerMethod<TRequest, TResponse> continuation)
+        catch (Exception ex)
         {
-            LogCall<TRequest, TResponse>(MethodType.Unary, context);
+            // This is an example from grpc-dotnet repository as it is.
+            // ServiceModel.Grpc: for exception handling please check (error handling ServiceModel.Grpc)[https://max-ieremenko.github.io/ServiceModel.Grpc/global-error-handling.html]
 
-            try
-            {
-                return await continuation(request, context);
-            }
-            catch (Exception ex)
-            {
-                // This is an example from grpc-dotnet repository as it is.
-                // ServiceModel.Grpc: for exception handling please check (error handling ServiceModel.Grpc)[https://max-ieremenko.github.io/ServiceModel.Grpc/global-error-handling.html]
+            // Note: The gRPC framework also logs exceptions thrown by handlers to .NET Core logging.
+            _logger.LogError(ex, $"Error thrown by {context.Method}.");
 
-                // Note: The gRPC framework also logs exceptions thrown by handlers to .NET Core logging.
-                _logger.LogError(ex, $"Error thrown by {context.Method}.");
-
-                throw;
-            }
+            throw;
         }
+    }
 
-        public override Task<TResponse> ClientStreamingServerHandler<TRequest, TResponse>(
-            IAsyncStreamReader<TRequest> requestStream,
-            ServerCallContext context,
-            ClientStreamingServerMethod<TRequest, TResponse> continuation)
+    public override Task<TResponse> ClientStreamingServerHandler<TRequest, TResponse>(
+        IAsyncStreamReader<TRequest> requestStream,
+        ServerCallContext context,
+        ClientStreamingServerMethod<TRequest, TResponse> continuation)
+    {
+        LogCall<TRequest, TResponse>(MethodType.ClientStreaming, context);
+        return base.ClientStreamingServerHandler(requestStream, context, continuation);
+    }
+
+    public override Task ServerStreamingServerHandler<TRequest, TResponse>(
+        TRequest request,
+        IServerStreamWriter<TResponse> responseStream,
+        ServerCallContext context,
+        ServerStreamingServerMethod<TRequest, TResponse> continuation)
+    {
+        LogCall<TRequest, TResponse>(MethodType.ServerStreaming, context);
+        return base.ServerStreamingServerHandler(request, responseStream, context, continuation);
+    }
+
+    public override Task DuplexStreamingServerHandler<TRequest, TResponse>(
+        IAsyncStreamReader<TRequest> requestStream,
+        IServerStreamWriter<TResponse> responseStream,
+        ServerCallContext context,
+        DuplexStreamingServerMethod<TRequest, TResponse> continuation)
+    {
+        LogCall<TRequest, TResponse>(MethodType.DuplexStreaming, context);
+        return base.DuplexStreamingServerHandler(requestStream, responseStream, context, continuation);
+    }
+
+    private void LogCall<TRequest, TResponse>(MethodType methodType, ServerCallContext context)
+        where TRequest : class
+        where TResponse : class
+    {
+        _logger.LogWarning($"Starting call. Type: {methodType}. Request: {typeof(TRequest)}. Response: {typeof(TResponse)}");
+        WriteMetadata(context.RequestHeaders, "caller-user");
+        WriteMetadata(context.RequestHeaders, "caller-machine");
+        WriteMetadata(context.RequestHeaders, "caller-os");
+
+        void WriteMetadata(Metadata headers, string key)
         {
-            LogCall<TRequest, TResponse>(MethodType.ClientStreaming, context);
-            return base.ClientStreamingServerHandler(requestStream, context, continuation);
-        }
-
-        public override Task ServerStreamingServerHandler<TRequest, TResponse>(
-            TRequest request,
-            IServerStreamWriter<TResponse> responseStream,
-            ServerCallContext context,
-            ServerStreamingServerMethod<TRequest, TResponse> continuation)
-        {
-            LogCall<TRequest, TResponse>(MethodType.ServerStreaming, context);
-            return base.ServerStreamingServerHandler(request, responseStream, context, continuation);
-        }
-
-        public override Task DuplexStreamingServerHandler<TRequest, TResponse>(
-            IAsyncStreamReader<TRequest> requestStream,
-            IServerStreamWriter<TResponse> responseStream,
-            ServerCallContext context,
-            DuplexStreamingServerMethod<TRequest, TResponse> continuation)
-        {
-            LogCall<TRequest, TResponse>(MethodType.DuplexStreaming, context);
-            return base.DuplexStreamingServerHandler(requestStream, responseStream, context, continuation);
-        }
-
-        private void LogCall<TRequest, TResponse>(MethodType methodType, ServerCallContext context)
-            where TRequest : class
-            where TResponse : class
-        {
-            _logger.LogWarning($"Starting call. Type: {methodType}. Request: {typeof(TRequest)}. Response: {typeof(TResponse)}");
-            WriteMetadata(context.RequestHeaders, "caller-user");
-            WriteMetadata(context.RequestHeaders, "caller-machine");
-            WriteMetadata(context.RequestHeaders, "caller-os");
-
-            void WriteMetadata(Metadata headers, string key)
-            {
-                var headerValue = headers.SingleOrDefault(h => h.Key == key)?.Value;
-                _logger.LogWarning($"{key}: {headerValue ?? "(unknown)"}");
-            }
+            var headerValue = headers.SingleOrDefault(h => h.Key == key)?.Value;
+            _logger.LogWarning($"{key}: {headerValue ?? "(unknown)"}");
         }
     }
 }

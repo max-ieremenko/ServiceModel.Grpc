@@ -5,26 +5,25 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Hosting;
 using Unity.Microsoft.DependencyInjection;
 
-namespace AspNetServiceHost
+namespace AspNetServiceHost;
+
+public static class Program
 {
-    public static class Program
+    public static Task Main()
     {
-        public static Task Main()
-        {
-            return Host
-                .CreateDefaultBuilder()
-                .UseUnityServiceProvider()
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
+        return Host
+            .CreateDefaultBuilder()
+            .UseUnityServiceProvider()
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
 
-                    webBuilder.UseKestrel(o => o.ListenLocalhost(
-                        SharedConfiguration.AspNetgRPCDebugServicePort,
-                        l => l.Protocols = HttpProtocols.Http2));
+                webBuilder.UseKestrel(o => o.ListenLocalhost(
+                    SharedConfiguration.AspNetgRPCDebugServicePort,
+                    l => l.Protocols = HttpProtocols.Http2));
 
-                })
-                .Build()
-                .RunAsync();
-        }
+            })
+            .Build()
+            .RunAsync();
     }
 }

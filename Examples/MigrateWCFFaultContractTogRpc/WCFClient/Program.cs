@@ -3,50 +3,49 @@ using System.ServiceModel;
 using System.Threading.Tasks;
 using Contract;
 
-namespace WCFClient
+namespace WCFClient;
+
+public static class Program
 {
-    public static class Program
+    public static async Task Main()
     {
-        public static async Task Main()
+        using (var factory = new ChannelFactory<IDebugService>(new BasicHttpBinding(), SharedConfiguration.WCFDebugServiceLocation))
         {
-            using (var factory = new ChannelFactory<IDebugService>(new BasicHttpBinding(), SharedConfiguration.WCFDebugServiceLocation))
-            {
-                var proxy = factory.CreateChannel();
-                await CallThrowApplicationException(proxy);
-                await CallThrowInvalidOperationException(proxy);
-            }
-
-            Console.WriteLine("...");
-            Console.ReadLine();
+            var proxy = factory.CreateChannel();
+            await CallThrowApplicationException(proxy);
+            await CallThrowInvalidOperationException(proxy);
         }
 
-        private static async Task CallThrowApplicationException(IDebugService proxy)
-        {
-            Console.WriteLine("WCF call ThrowApplicationException");
+        Console.WriteLine("...");
+        Console.ReadLine();
+    }
 
-            try
-            {
-                await proxy.ThrowApplicationException("some message");
-            }
-            catch (FaultException<ApplicationExceptionFaultDetail> ex)
-            {
-                Console.WriteLine("  Error message: {0}", ex.Detail.Message);
-            }
+    private static async Task CallThrowApplicationException(IDebugService proxy)
+    {
+        Console.WriteLine("WCF call ThrowApplicationException");
+
+        try
+        {
+            await proxy.ThrowApplicationException("some message");
         }
-
-        private static async Task CallThrowInvalidOperationException(IDebugService proxy)
+        catch (FaultException<ApplicationExceptionFaultDetail> ex)
         {
-            Console.WriteLine("WCF call ThrowInvalidOperationException");
+            Console.WriteLine("  Error message: {0}", ex.Detail.Message);
+        }
+    }
 
-            try
-            {
-                await proxy.ThrowInvalidOperationException("some message");
-            }
-            catch (FaultException<InvalidOperationExceptionFaultDetail> ex)
-            {
-                Console.WriteLine("  Error message: {0}", ex.Detail.Message);
-                Console.WriteLine("  StackTrace: {0}", ex.Detail.StackTrace);
-            }
+    private static async Task CallThrowInvalidOperationException(IDebugService proxy)
+    {
+        Console.WriteLine("WCF call ThrowInvalidOperationException");
+
+        try
+        {
+            await proxy.ThrowInvalidOperationException("some message");
+        }
+        catch (FaultException<InvalidOperationExceptionFaultDetail> ex)
+        {
+            Console.WriteLine("  Error message: {0}", ex.Detail.Message);
+            Console.WriteLine("  StackTrace: {0}", ex.Detail.StackTrace);
         }
     }
 }

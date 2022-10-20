@@ -9,67 +9,66 @@ using Contract;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 
-namespace ServerAspNetHost.Controllers
+namespace ServerAspNetHost.Controllers;
+
+[Route("api/[controller]")]
+public sealed class FileServiceController : Controller
 {
-    [Route("api/[controller]")]
-    public sealed class FileServiceController : Controller
+    [HttpPost("upload")]
+    [DisableFormValueModelBinding]
+    public async Task<FileMetadata> UploadAsync([FromQuery] int bufferSize, CancellationToken token)
     {
-        [HttpPost("upload")]
-        [DisableFormValueModelBinding]
-        public async Task<FileMetadata> UploadAsync([FromQuery] int bufferSize, CancellationToken token)
+        var fileName = new ContentDisposition(HttpContext.Request.Headers[HeaderNames.ContentDisposition]).FileName;
+
+        long fileSize;
+        var tempFileName = Path.GetTempFileName();
+        using (var tempFile = new FileStream(tempFileName, FileMode.Create, FileAccess.ReadWrite))
         {
-            var fileName = new ContentDisposition(HttpContext.Request.Headers[HeaderNames.ContentDisposition]).FileName;
+            var source = HttpContext.Request.Body;
 
-            long fileSize;
-            var tempFileName = Path.GetTempFileName();
-            using (var tempFile = new FileStream(tempFileName, FileMode.Create, FileAccess.ReadWrite))
+            var encoding = HttpContext.Request.Headers[HeaderNames.ContentEncoding];
+            if (encoding.Contains(CompressionSettings.Algorithm))
             {
-                var source = HttpContext.Request.Body;
-
-                var encoding = HttpContext.Request.Headers[HeaderNames.ContentEncoding];
-                if (encoding.Contains(CompressionSettings.Algorithm))
+                using (var zip = new GZipStream(source, CompressionMode.Decompress, true))
                 {
-                    using (var zip = new GZipStream(source, CompressionMode.Decompress, true))
-                    {
-                        await zip.CopyToAsync(tempFile, bufferSize, token);
-                    }
+                    await zip.CopyToAsync(tempFile, bufferSize, token);
                 }
-                else
-                {
-                    await source.CopyToAsync(tempFile, bufferSize, token);
-                }
-
-                fileSize = tempFile.Length;
+            }
+            else
+            {
+                await source.CopyToAsync(tempFile, bufferSize, token);
             }
 
-            var metadata = new FileMetadata(fileName, fileSize);
-            System.IO.File.Delete(tempFileName);
-
-            return metadata;
+            fileSize = tempFile.Length;
         }
 
-        [HttpGet("download")]
-        public IActionResult DownloadAsync([FromQuery] string filePath, [FromQuery] int bufferSize)
+        var metadata = new FileMetadata(fileName, fileSize);
+        System.IO.File.Delete(tempFileName);
+
+        return metadata;
+    }
+
+    [HttpGet("download")]
+    public IActionResult DownloadAsync([FromQuery] string filePath, [FromQuery] int bufferSize)
+    {
+        ////var provider = new FileExtensionContentTypeProvider();
+        ////if (!provider.TryGetContentType(filePath, out var contentType))
+        ////{
+        ////    contentType = MediaTypeNames.Application.Octet;
+        ////}
+
+        // see Startup, ResponseCompressionOptions.MimeTypes
+        var contentType = MediaTypeNames.Application.Octet;
+
+        var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+        Response.Headers.Add("X-Content-Length", stream.Length.ToString(CultureInfo.InvariantCulture));
+
+        return new FileStreamResultWithBufferSize(
+            stream,
+            contentType,
+            bufferSize)
         {
-            ////var provider = new FileExtensionContentTypeProvider();
-            ////if (!provider.TryGetContentType(filePath, out var contentType))
-            ////{
-            ////    contentType = MediaTypeNames.Application.Octet;
-            ////}
-
-            // see Startup, ResponseCompressionOptions.MimeTypes
-            var contentType = MediaTypeNames.Application.Octet;
-
-            var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            Response.Headers.Add("X-Content-Length", stream.Length.ToString(CultureInfo.InvariantCulture));
-
-            return new FileStreamResultWithBufferSize(
-                stream,
-                contentType,
-                bufferSize)
-            {
-                FileDownloadName = Path.GetFileName(filePath)
-            };
-        }
+            FileDownloadName = Path.GetFileName(filePath)
+        };
     }
 }

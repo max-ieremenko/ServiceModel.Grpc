@@ -12,50 +12,49 @@ using Grpc.Core.Interceptors;
 using Grpc.Net.Client;
 using ServiceModel.Grpc.Client;
 
-namespace Client
+namespace Client;
+
+public static class Program
 {
-    public static class Program
+    public static async Task Main(string[] args)
     {
-        public static async Task Main(string[] args)
-        {
-            var clientFactory = new ClientFactory();
+        var clientFactory = new ClientFactory();
 
-            using var channel = GrpcChannel.ForAddress("http://localhost:5000", new GrpcChannelOptions());
-            var invoker = channel.Intercept(new ClientLoggerInterceptor());
+        using var channel = GrpcChannel.ForAddress("http://localhost:5000", new GrpcChannelOptions());
+        var invoker = channel.Intercept(new ClientLoggerInterceptor());
 
-            var client = clientFactory.CreateClient<IGreeterService>(invoker);
+        var client = clientFactory.CreateClient<IGreeterService>(invoker);
             
-            await UnaryCallExample(client);
+        await UnaryCallExample(client);
 
-            await ServerStreamingCallExample(client);
+        await ServerStreamingCallExample(client);
 
-            Console.WriteLine("Press any key to exit...");
-            Console.ReadLine();
-        }
+        Console.WriteLine("Press any key to exit...");
+        Console.ReadLine();
+    }
 
-        private static async Task UnaryCallExample(IGreeterService client)
+    private static async Task UnaryCallExample(IGreeterService client)
+    {
+        var reply = await client.SayHelloAsync("GreeterClient");
+        Console.WriteLine("Greeting: " + reply);
+    }
+
+    private static async Task ServerStreamingCallExample(IGreeterService client)
+    {
+        using var tokenSource = new CancellationTokenSource();
+        tokenSource.CancelAfter(TimeSpan.FromSeconds(5));
+
+        try
         {
-            var reply = await client.SayHelloAsync("GreeterClient");
-            Console.WriteLine("Greeting: " + reply);
+            await foreach (var reply in client.SayHellosAsync("GreeterClient", tokenSource.Token))
+            {
+                Console.WriteLine("Greeting: " + reply);
+            }
         }
-
-        private static async Task ServerStreamingCallExample(IGreeterService client)
+        catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
         {
-            using var tokenSource = new CancellationTokenSource();
-            tokenSource.CancelAfter(TimeSpan.FromSeconds(5));
-
-            try
-            {
-                await foreach (var reply in client.SayHellosAsync("GreeterClient", tokenSource.Token))
-                {
-                    Console.WriteLine("Greeting: " + reply);
-                }
-            }
-            catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
-            {
-                // handle Status(StatusCode="Cancelled", Detail="Call canceled by the client.")
-                Console.WriteLine("Call canceled by the client.");
-            }
+            // handle Status(StatusCode="Cancelled", Detail="Call canceled by the client.")
+            Console.WriteLine("Call canceled by the client.");
         }
     }
 }

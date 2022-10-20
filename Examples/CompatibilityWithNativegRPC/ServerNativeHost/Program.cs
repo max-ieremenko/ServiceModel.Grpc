@@ -2,26 +2,25 @@
 using Contract;
 using Grpc.Core;
 
-namespace ServerNativeHost
+namespace ServerNativeHost;
+
+public static class Program
 {
-    public static class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        var server = new Server
         {
-            var server = new Server
+            Ports =
             {
-                Ports =
-                {
-                    new ServerPort("localhost", ServiceConfiguration.ServiceNativeGrpcPort, ServerCredentials.Insecure)
-                }
-            };
+                new ServerPort("localhost", ServiceConfiguration.ServiceNativeGrpcPort, ServerCredentials.Insecure)
+            }
+        };
 
-            server.Services.Add(CalculatorNative.BindService(new CalculatorService()));
+        server.Services.Add(CalculatorNative.BindService(new CalculatorService()));
 
-            server.Start();
+        server.Start();
 
-            Console.WriteLine("Press enter for exit...");
-            Console.ReadLine();
-        }
+        Console.WriteLine("Press enter for exit...");
+        Console.ReadLine();
     }
 }

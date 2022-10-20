@@ -1,12 +1,11 @@
 ﻿using System.ServiceModel;
 using System.Threading.Tasks;
 
-namespace Contract
+namespace Contract;
+
+[ServiceContract]
+public interface IDoubleCalculator : ICalculator<double>
 {
-    [ServiceContract]
-    public interface IDoubleCalculator : ICalculator<double>
-    {
-        [OperationContract]
-        ValueTask<double> GetRandomValue();
-    }
+    [OperationContract]
+    ValueTask<double> GetRandomValue();
 }

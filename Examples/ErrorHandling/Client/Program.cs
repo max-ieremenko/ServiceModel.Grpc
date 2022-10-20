@@ -6,77 +6,76 @@ using Grpc.Core;
 using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.Interceptors;
 
-namespace Client
+namespace Client;
+
+public static class Program
 {
-    public static class Program
+    private static readonly IClientFactory DefaultClientFactory = new ClientFactory(new ServiceModelGrpcClientOptions
     {
-        private static readonly IClientFactory DefaultClientFactory = new ClientFactory(new ServiceModelGrpcClientOptions
+        // combine application and unexpected handlers into one handler
+        ErrorHandler = new ClientErrorHandlerCollection(new ApplicationExceptionClientHandler(), new UnexpectedExceptionClientHandler())
+    });
+
+    public static async Task Main(string[] args)
+    {
+        try
         {
-            // combine application and unexpected handlers into one handler
-            ErrorHandler = new ClientErrorHandlerCollection(new ApplicationExceptionClientHandler(), new UnexpectedExceptionClientHandler())
-        });
+            var nativeChannel = new Channel("localhost", ServiceConfiguration.ServiceNativeGrpcPort, ChannelCredentials.Insecure);
+            var serviceModelChannel = new Channel("localhost", ServiceConfiguration.ServiceModelGrpcPort, ChannelCredentials.Insecure);
 
-        public static async Task Main(string[] args)
+            Console.WriteLine();
+            Console.WriteLine("Invoke ThrowApplicationException on ServerAspNetHost");
+            await InvokeThrowApplicationException(serviceModelChannel);
+
+            Console.WriteLine();
+            Console.WriteLine("Invoke ThrowApplicationException on ServerNativeHost");
+            await InvokeThrowApplicationException(nativeChannel);
+
+            Console.WriteLine();
+            Console.WriteLine("Invoke ThrowRandomException on ServerAspNetHost");
+            await InvokeThrowRandomException(serviceModelChannel);
+
+            Console.WriteLine();
+            Console.WriteLine("Invoke ThrowRandomException on ServerNativeHost");
+            await InvokeThrowRandomException(nativeChannel);
+        }
+        catch (Exception ex)
         {
-            try
-            {
-                var nativeChannel = new Channel("localhost", ServiceConfiguration.ServiceNativeGrpcPort, ChannelCredentials.Insecure);
-                var serviceModelChannel = new Channel("localhost", ServiceConfiguration.ServiceModelGrpcPort, ChannelCredentials.Insecure);
-
-                Console.WriteLine();
-                Console.WriteLine("Invoke ThrowApplicationException on ServerAspNetHost");
-                await InvokeThrowApplicationException(serviceModelChannel);
-
-                Console.WriteLine();
-                Console.WriteLine("Invoke ThrowApplicationException on ServerNativeHost");
-                await InvokeThrowApplicationException(nativeChannel);
-
-                Console.WriteLine();
-                Console.WriteLine("Invoke ThrowRandomException on ServerAspNetHost");
-                await InvokeThrowRandomException(serviceModelChannel);
-
-                Console.WriteLine();
-                Console.WriteLine("Invoke ThrowRandomException on ServerNativeHost");
-                await InvokeThrowRandomException(nativeChannel);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-
-            Console.WriteLine("...");
-            Console.ReadLine();
+            Console.WriteLine(ex);
         }
 
-        private static async Task InvokeThrowApplicationException(ChannelBase channel)
-        {
-            var client = DefaultClientFactory.CreateClient<IDebugService>(channel);
+        Console.WriteLine("...");
+        Console.ReadLine();
+    }
 
-            try
-            {
-                await client.ThrowApplicationException("  application error occur");
-            }
-            catch (ApplicationException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+    private static async Task InvokeThrowApplicationException(ChannelBase channel)
+    {
+        var client = DefaultClientFactory.CreateClient<IDebugService>(channel);
+
+        try
+        {
+            await client.ThrowApplicationException("  application error occur");
         }
-
-        private static async Task InvokeThrowRandomException(ChannelBase channel)
+        catch (ApplicationException ex)
         {
-            var client = DefaultClientFactory.CreateClient<IDebugService>(channel);
+            Console.WriteLine(ex.Message);
+        }
+    }
 
-            try
-            {
-                await client.ThrowRandomException("random error occur");
-            }
-            catch (UnexpectedErrorException ex)
-            {
-                Console.WriteLine("  Message: {0}", ex.Detail.Message);
-                Console.WriteLine("  ExceptionType: {0}", ex.Detail.ExceptionType);
-                Console.WriteLine("  MethodName: {0}", ex.Detail.MethodName);
-                Console.WriteLine("  FullException: {0} ...", new StringReader(ex.Detail.FullException).ReadLine());
-            }
+    private static async Task InvokeThrowRandomException(ChannelBase channel)
+    {
+        var client = DefaultClientFactory.CreateClient<IDebugService>(channel);
+
+        try
+        {
+            await client.ThrowRandomException("random error occur");
+        }
+        catch (UnexpectedErrorException ex)
+        {
+            Console.WriteLine("  Message: {0}", ex.Detail.Message);
+            Console.WriteLine("  ExceptionType: {0}", ex.Detail.ExceptionType);
+            Console.WriteLine("  MethodName: {0}", ex.Detail.MethodName);
+            Console.WriteLine("  FullException: {0} ...", new StringReader(ex.Detail.FullException).ReadLine());
         }
     }
 }

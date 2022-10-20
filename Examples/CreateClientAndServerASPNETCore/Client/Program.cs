@@ -4,42 +4,41 @@ using Contract;
 using Grpc.Core;
 using ServiceModel.Grpc.Client;
 
-namespace Client
+namespace Client;
+
+public static class Program
 {
-    public static class Program
+    private static readonly IClientFactory DefaultClientFactory = new ClientFactory();
+
+    public static async Task Main(string[] args)
     {
-        private static readonly IClientFactory DefaultClientFactory = new ClientFactory();
-
-        public static async Task Main(string[] args)
+        try
         {
-            try
-            {
-                await Run();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-
-            Console.WriteLine("...");
-            Console.ReadLine();
+            await Run();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
         }
 
-        private static async Task Run()
-        {
-            // create gRPC channel
-            var channel = new Channel("localhost", 5000, ChannelCredentials.Insecure);
+        Console.WriteLine("...");
+        Console.ReadLine();
+    }
 
-            // create IGreeter client proxy
-            var client = DefaultClientFactory.CreateClient<IGreeter>(channel);
+    private static async Task Run()
+    {
+        // create gRPC channel
+        var channel = new Channel("localhost", 5000, ChannelCredentials.Insecure);
 
-            var person = new Person { FirstName = "John", SecondName = "X" };
+        // create IGreeter client proxy
+        var client = DefaultClientFactory.CreateClient<IGreeter>(channel);
+
+        var person = new Person { FirstName = "John", SecondName = "X" };
             
-            var greet1 = await client.SayHelloAsync(person.FirstName, person.SecondName);
-            Console.WriteLine(greet1);
+        var greet1 = await client.SayHelloAsync(person.FirstName, person.SecondName);
+        Console.WriteLine(greet1);
 
-            var greet2 = await client.SayHelloToAsync(person);
-            Console.WriteLine(greet2);
-        }
+        var greet2 = await client.SayHelloToAsync(person);
+        Console.WriteLine(greet2);
     }
 }

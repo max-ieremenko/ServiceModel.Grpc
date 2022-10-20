@@ -3,29 +3,28 @@ using System.Diagnostics;
 using Contract;
 using ServiceModel.Grpc.Interceptors;
 
-namespace Service
+namespace Service;
+
+// this handler is responsible to process InvalidOperationException and NotSupportedException on server-side
+public sealed class UnexpectedExceptionServerHandler : IServerErrorHandler
 {
-    // this handler is responsible to process InvalidOperationException and NotSupportedException on server-side
-    public sealed class UnexpectedExceptionServerHandler : IServerErrorHandler
+    public ServerFaultDetail? ProvideFaultOrIgnore(ServerCallInterceptorContext context, Exception error)
     {
-        public ServerFaultDetail? ProvideFaultOrIgnore(ServerCallInterceptorContext context, Exception error)
+        if (error is NotSupportedException || error is InvalidOperationException)
         {
-            if (error is NotSupportedException || error is InvalidOperationException)
+            // provide detailed information for the client error handler
+            var detail = new UnexpectedErrorDetail
             {
-                // provide detailed information for the client error handler
-                var detail = new UnexpectedErrorDetail
-                {
-                    Message = error.Message,
-                    ExceptionType = error.GetType().FullName,
-                    FullException = error.ToString(),
-                    MethodName = Process.GetCurrentProcess().ProcessName
-                };
+                Message = error.Message,
+                ExceptionType = error.GetType().FullName,
+                FullException = error.ToString(),
+                MethodName = Process.GetCurrentProcess().ProcessName
+            };
 
-                return new ServerFaultDetail { Detail = detail };
-            }
-
-            // ignore other exceptions
-            return null;
+            return new ServerFaultDetail { Detail = detail };
         }
+
+        // ignore other exceptions
+        return null;
     }
 }

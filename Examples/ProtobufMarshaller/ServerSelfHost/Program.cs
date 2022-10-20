@@ -3,32 +3,31 @@ using Contract;
 using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
 
-namespace ServerSelfHost
+namespace ServerSelfHost;
+
+public static class Program
 {
-    public static class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        var server = new Server
         {
-            var server = new Server
+            Ports =
             {
-                Ports =
-                {
-                    new ServerPort("localhost", ServiceConfiguration.SelfHostPort, ServerCredentials.Insecure)
-                }
-            };
+                new ServerPort("localhost", ServiceConfiguration.SelfHostPort, ServerCredentials.Insecure)
+            }
+        };
 
-            server.Services.AddServiceModelSingleton(
-                new PersonService(),
-                options =>
-                {
-                    // set ProtobufMarshaller as default Marshaller
-                    options.MarshallerFactory = ProtobufMarshallerFactory.Default;
-                });
+        server.Services.AddServiceModelSingleton(
+            new PersonService(),
+            options =>
+            {
+                // set ProtobufMarshaller as default Marshaller
+                options.MarshallerFactory = ProtobufMarshallerFactory.Default;
+            });
 
-            server.Start();
+        server.Start();
 
-            Console.WriteLine("Press enter for exit...");
-            Console.ReadLine();
-        }
+        Console.WriteLine("Press enter for exit...");
+        Console.ReadLine();
     }
 }

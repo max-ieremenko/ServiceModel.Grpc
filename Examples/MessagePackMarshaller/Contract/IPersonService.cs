@@ -2,12 +2,11 @@
 using System.ServiceModel;
 using System.Threading.Tasks;
 
-namespace Contract
+namespace Contract;
+
+[ServiceContract]
+public interface IPersonService
 {
-    [ServiceContract]
-    public interface IPersonService
-    {
-        [OperationContract]
-        Task<Person> CreatePerson(string name, DateTime birthDay);
-    }
+    [OperationContract]
+    Task<Person> CreatePerson(string name, DateTime birthDay);
 }

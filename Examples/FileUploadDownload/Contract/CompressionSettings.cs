@@ -1,11 +1,10 @@
 ﻿using System.IO.Compression;
 
-namespace Contract
-{
-    public static class CompressionSettings
-    {
-        public const CompressionLevel Level = CompressionLevel.Fastest;
+namespace Contract;
 
-        public const string Algorithm = "gzip";
-    }
+public static class CompressionSettings
+{
+    public const CompressionLevel Level = CompressionLevel.Fastest;
+
+    public const string Algorithm = "gzip";
 }

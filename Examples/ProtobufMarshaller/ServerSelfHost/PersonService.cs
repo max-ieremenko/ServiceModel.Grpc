@@ -2,18 +2,17 @@
 using System.Threading.Tasks;
 using Contract;
 
-namespace ServerSelfHost
+namespace ServerSelfHost;
+
+internal sealed class PersonService : IPersonService
 {
-    internal sealed class PersonService : IPersonService
+    public Task<Person> CreatePerson(string name, DateTime birthDay)
     {
-        public Task<Person> CreatePerson(string name, DateTime birthDay)
+        return Task.FromResult(new Person
         {
-            return Task.FromResult(new Person
-            {
-                Name = name,
-                BirthDay = birthDay,
-                CreatedBy = "ServerSelfHost"
-            });
-        }
+            Name = name,
+            BirthDay = birthDay,
+            CreatedBy = "ServerSelfHost"
+        });
     }
 }

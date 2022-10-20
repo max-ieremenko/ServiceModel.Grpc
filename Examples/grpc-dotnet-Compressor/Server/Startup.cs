@@ -10,34 +10,33 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Server.Services;
 
-namespace Server
+namespace Server;
+
+internal sealed class Startup
 {
-    internal sealed class Startup
+    public void ConfigureServices(IServiceCollection services)
     {
-        public void ConfigureServices(IServiceCollection services)
+        services.AddGrpc(options =>
         {
-            services.AddGrpc(options =>
-            {
-                options.ResponseCompressionLevel = CompressionLevel.Optimal;
-                options.ResponseCompressionAlgorithm = "gzip";
-            });
+            options.ResponseCompressionLevel = CompressionLevel.Optimal;
+            options.ResponseCompressionAlgorithm = "gzip";
+        });
 
-            services.AddServiceModelGrpc();
+        services.AddServiceModelGrpc();
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        app.UseRouting();
+
+        app.UseEndpoints(endpoints =>
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapGrpcService<GreeterService>();
-            });
-        }
+            endpoints.MapGrpcService<GreeterService>();
+        });
     }
 }
