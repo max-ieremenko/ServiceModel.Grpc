@@ -10,38 +10,37 @@ using System.Threading.Tasks;
 using Contract;
 using Microsoft.Extensions.Logging;
 
-namespace Service
+namespace Service;
+
+public sealed class GreeterService : IGreeterService
 {
-    public sealed class GreeterService : IGreeterService
+    private readonly ILogger _logger;
+
+    public GreeterService(ILoggerFactory loggerFactory)
     {
-        private readonly ILogger _logger;
+        _logger = loggerFactory.CreateLogger(nameof(GreeterService));
+    }
 
-        public GreeterService(ILoggerFactory loggerFactory)
+    public Task<string> SayHelloAsync(string name)
+    {
+        _logger.LogInformation($"Sending hello to {name}");
+
+        return Task.FromResult("Hello " + name);
+        ////throw new InvalidOperationException("test!!!");
+    }
+
+    public async IAsyncEnumerable<string> SayHellosAsync(string name, [EnumeratorCancellation] CancellationToken token)
+    {
+        var i = 0;
+        while (!token.IsCancellationRequested)
         {
-            _logger = loggerFactory.CreateLogger(nameof(GreeterService));
-        }
+            var message = $"How are you {name}? {++i}";
+            _logger.LogInformation($"Sending greeting {message}.");
 
-        public Task<string> SayHelloAsync(string name)
-        {
-            _logger.LogInformation($"Sending hello to {name}");
+            yield return message;
 
-            return Task.FromResult("Hello " + name);
-            ////throw new InvalidOperationException("test!!!");
-        }
-
-        public async IAsyncEnumerable<string> SayHellosAsync(string name, [EnumeratorCancellation] CancellationToken token)
-        {
-            var i = 0;
-            while (!token.IsCancellationRequested)
-            {
-                var message = $"How are you {name}? {++i}";
-                _logger.LogInformation($"Sending greeting {message}.");
-
-                yield return message;
-
-                // Gotta look busy
-                await Task.Delay(1000, token);
-            }
+            // Gotta look busy
+            await Task.Delay(1000, token);
         }
     }
 }

@@ -1,14 +1,13 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Contract
-{
-    [DataContract]
-    public class Person
-    {
-        [DataMember]
-        public string FirstName { get; set; }
+namespace Contract;
 
-        [DataMember]
-        public string SecondName { get; set; }
-    }
+[DataContract]
+public class Person
+{
+    [DataMember]
+    public string FirstName { get; set; }
+
+    [DataMember]
+    public string SecondName { get; set; }
 }

@@ -1,18 +1,17 @@
 ﻿using System;
 using MessagePack;
 
-namespace Contract
+namespace Contract;
+
+[MessagePackObject]
+public class Person
 {
-    [MessagePackObject]
-    public class Person
-    {
-        [Key(1)]
-        public string Name { get; set; }
+    [Key(1)]
+    public string Name { get; set; }
 
-        [Key(2)]
-        public DateTime BirthDay { get; set; }
+    [Key(2)]
+    public DateTime BirthDay { get; set; }
 
-        [Key(3)]
-        public string CreatedBy { get; set; }
-    }
+    [Key(3)]
+    public string CreatedBy { get; set; }
 }

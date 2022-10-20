@@ -2,12 +2,11 @@
 
 using System.ServiceModel;
 
-namespace Contract
+namespace Contract;
+
+// remove [ServiceContract]
+public interface IRemoteService
 {
-    // remove [ServiceContract]
-    public interface IRemoteService
-    {
-        [OperationContract]
-        string Touch();
-    }
+    [OperationContract]
+    string Touch();
 }

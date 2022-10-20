@@ -6,58 +6,57 @@ using ConsoleClient.Internal;
 using Contract;
 using Microsoft.Extensions.Hosting;
 
-namespace Benchmarks
+namespace Benchmarks;
+
+[Config(typeof(BenchmarkConfig))]
+public abstract class CoreVsNetChannelBenchmarkBase
 {
-    [Config(typeof(BenchmarkConfig))]
-    public abstract class CoreVsNetChannelBenchmarkBase
+    private IHost _serverAspNetHost;
+
+    [BufferSizeParams]
+    public int BufferSize { get; set; }
+
+    [CompressionParams]
+    public bool UseCompression { get; set; }
+
+    protected IClientCalls CallsCoreChannel { get; private set; }
+
+    protected IClientCalls CallsNetChannel { get; private set; }
+
+    protected IClientCalls CallsHttpClient { get; private set; }
+
+    protected string FilePath { get; private set; }
+
+    [GlobalSetup]
+    public async Task GlobalSetup()
     {
-        private IHost _serverAspNetHost;
+        _serverAspNetHost = ServerAspNetHost.Program.BuildHost(UseCompression);
+        await _serverAspNetHost.StartAsync();
 
-        [BufferSizeParams]
-        public int BufferSize { get; set; }
+        CallsCoreChannel = ClientCallsFactory
+            .ForChannel(Hosts.ServerAspNetHostHttp2, ChannelType.GrpcCore)
+            .WithCompression(UseCompression)
+            .CreateFileServiceRentedArray();
 
-        [CompressionParams]
-        public bool UseCompression { get; set; }
+        CallsNetChannel = ClientCallsFactory
+            .ForChannel(Hosts.ServerAspNetHostHttp2, ChannelType.GrpcNet)
+            .WithCompression(UseCompression)
+            .CreateFileServiceRentedArray();
 
-        protected IClientCalls CallsCoreChannel { get; private set; }
+        CallsHttpClient = ClientCallsFactory.CreateHttpClient(UseCompression);
 
-        protected IClientCalls CallsNetChannel { get; private set; }
+        FilePath = ConsoleClient.Program.FindDemoFile();
+        ProgressBar.Disable();
+    }
 
-        protected IClientCalls CallsHttpClient { get; private set; }
+    [GlobalCleanup]
+    public async Task GlobalCleanup()
+    {
+        await CallsCoreChannel.DisposeAsync();
+        await CallsNetChannel.DisposeAsync();
+        await CallsHttpClient.DisposeAsync();
 
-        protected string FilePath { get; private set; }
-
-        [GlobalSetup]
-        public async Task GlobalSetup()
-        {
-            _serverAspNetHost = ServerAspNetHost.Program.BuildHost(UseCompression);
-            await _serverAspNetHost.StartAsync();
-
-            CallsCoreChannel = ClientCallsFactory
-                .ForChannel(Hosts.ServerAspNetHostHttp2, ChannelType.GrpcCore)
-                .WithCompression(UseCompression)
-                .CreateFileServiceRentedArray();
-
-            CallsNetChannel = ClientCallsFactory
-                .ForChannel(Hosts.ServerAspNetHostHttp2, ChannelType.GrpcNet)
-                .WithCompression(UseCompression)
-                .CreateFileServiceRentedArray();
-
-            CallsHttpClient = ClientCallsFactory.CreateHttpClient(UseCompression);
-
-            FilePath = ConsoleClient.Program.FindDemoFile();
-            ProgressBar.Disable();
-        }
-
-        [GlobalCleanup]
-        public async Task GlobalCleanup()
-        {
-            await CallsCoreChannel.DisposeAsync();
-            await CallsNetChannel.DisposeAsync();
-            await CallsHttpClient.DisposeAsync();
-
-            await _serverAspNetHost.StopAsync();
-            _serverAspNetHost.Dispose();
-        }
+        await _serverAspNetHost.StopAsync();
+        _serverAspNetHost.Dispose();
     }
 }

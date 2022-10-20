@@ -4,31 +4,30 @@ using Microsoft.Extensions.DependencyInjection;
 using Service;
 using Unity;
 
-namespace AspNetServiceHost
+namespace AspNetServiceHost;
+
+internal sealed class Startup
 {
-    internal sealed class Startup
+    public void ConfigureContainer(IUnityContainer container)
     {
-        public void ConfigureContainer(IUnityContainer container)
-        {
-            // configure container
-            PersonModule.ConfigureContainer(container);
-        }
+        // configure container
+        PersonModule.ConfigureContainer(container);
+    }
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-            // enable ServiceModel.Grpc
-            services.AddServiceModelGrpc();
-        }
+    public void ConfigureServices(IServiceCollection services)
+    {
+        // enable ServiceModel.Grpc
+        services.AddServiceModelGrpc();
+    }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            app.UseRouting();
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
-            {
-                // host PersonService
-                endpoints.MapGrpcService<PersonService>();
-            });
-        }
+        app.UseEndpoints(endpoints =>
+        {
+            // host PersonService
+            endpoints.MapGrpcService<PersonService>();
+        });
     }
 }

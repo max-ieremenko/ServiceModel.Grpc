@@ -4,47 +4,46 @@ using System.Threading.Tasks;
 using Contract;
 using ServiceModel.Grpc.Filters;
 
-namespace Service.Filters
-{
-    internal sealed class ValidateParameterFilterAttribute : ServerFilterRegistrationAttribute
-    {
-        public ValidateParameterFilterAttribute(int order)
-            : base(order)
-        {
-        }
+namespace Service.Filters;
 
-        public override IServerFilter CreateFilter(IServiceProvider serviceProvider)
-        {
-            return new ValidateParameterFilter();
-        }
+internal sealed class ValidateParameterFilterAttribute : ServerFilterRegistrationAttribute
+{
+    public ValidateParameterFilterAttribute(int order)
+        : base(order)
+    {
     }
 
-    internal sealed class ValidateParameterFilter : IServerFilter
+    public override IServerFilter CreateFilter(IServiceProvider serviceProvider)
     {
-        public ValueTask InvokeAsync(IServerFilterContext context, Func<ValueTask> next)
+        return new ValidateParameterFilter();
+    }
+}
+
+internal sealed class ValidateParameterFilter : IServerFilter
+{
+    public ValueTask InvokeAsync(IServerFilterContext context, Func<ValueTask> next)
+    {
+        var result = new DivideByResult { IsSuccess = true };
+
+        // invoke ValidateParameterAttribute.Validate for marked method parameters
+        var parameters = context.ServiceMethodInfo.GetParameters();
+        for (var i = 0; i < parameters.Length; i++)
         {
-            var result = new DivideByResult { IsSuccess = true };
-
-            // invoke ValidateParameterAttribute.Validate for marked method parameters
-            var parameters = context.ServiceMethodInfo.GetParameters();
-            for (var i = 0; i < parameters.Length; i++)
+            var parameter = parameters[i];
+            foreach (var attribute in parameter.GetCustomAttributes<ValidateParameterAttribute>())
             {
-                var parameter = parameters[i];
-                foreach (var attribute in parameter.GetCustomAttributes<ValidateParameterAttribute>())
-                {
-                    attribute.Validate(context.Request[i], parameter.Name, result);
-                }
+                attribute.Validate(context.Request[i], parameter.Name, result);
             }
-
-            if (!result.IsSuccess)
-            {
-                // skip the method: pass non-success result to the client
-                context.Response[0] = result;
-                return new ValueTask(Task.CompletedTask);
-            }
-
-            // call the method
-            return next();
         }
+
+        if (!result.IsSuccess)
+        {
+            // skip the method: pass non-success result to the client
+            context.Response[0] = result;
+            return new ValueTask(Task.CompletedTask);
+        }
+
+        // call the method
+        return next();
     }
 }

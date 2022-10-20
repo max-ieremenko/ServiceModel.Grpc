@@ -3,32 +3,31 @@ using System.Threading;
 using System.Threading.Tasks;
 using Contract;
 
-namespace Service
+namespace Service;
+
+public sealed class PersonService : IPersonService
 {
-    public sealed class PersonService : IPersonService
+    // method Create is not an operation contract
+    Person IPersonService.Create(string name, DateTime birthDay) => throw new NotSupportedException();
+
+    public async Task<Person> CreateAsync(string name, DateTime birthDay)
     {
-        // method Create is not an operation contract
-        Person IPersonService.Create(string name, DateTime birthDay) => throw new NotSupportedException();
+        await Task.Delay(100);
 
-        public async Task<Person> CreateAsync(string name, DateTime birthDay)
+        return new Person
         {
-            await Task.Delay(100);
+            Name = name,
+            BirthDay = birthDay
+        };
+    }
 
-            return new Person
-            {
-                Name = name,
-                BirthDay = birthDay
-            };
-        }
+    // method Update is not an operation contract
+    Person IPersonService.Update(Person person, string newName, DateTime newBirthDay) => throw new NotSupportedException();
 
-        // method Update is not an operation contract
-        Person IPersonService.Update(Person person, string newName, DateTime newBirthDay) => throw new NotSupportedException();
-
-        public ValueTask<Person> UpdateAsync(Person person, string newName, DateTime newBirthDay, CancellationToken token)
-        {
-            person.Name = newName;
-            person.BirthDay = newBirthDay;
-            return new ValueTask<Person>(person);
-        }
+    public ValueTask<Person> UpdateAsync(Person person, string newName, DateTime newBirthDay, CancellationToken token)
+    {
+        person.Name = newName;
+        person.BirthDay = newBirthDay;
+        return new ValueTask<Person>(person);
     }
 }

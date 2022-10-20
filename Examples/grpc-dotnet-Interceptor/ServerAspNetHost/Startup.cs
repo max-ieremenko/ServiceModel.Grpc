@@ -9,42 +9,41 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ServerAspNetHost.Services;
 
-namespace ServerAspNetHost
+namespace ServerAspNetHost;
+
+internal sealed class Startup
 {
-    internal sealed class Startup
+    public void ConfigureServices(IServiceCollection services)
     {
-        public void ConfigureServices(IServiceCollection services)
+        // register ServerLoggerInterceptor globally (for all hosted services)
+        services.AddGrpc(options =>
         {
-            // register ServerLoggerInterceptor globally (for all hosted services)
-            services.AddGrpc(options =>
-            {
-                options.Interceptors.Add<ServerLoggerInterceptor>();
-            });
+            options.Interceptors.Add<ServerLoggerInterceptor>();
+        });
 
-            // register ServerLoggerInterceptor only for GreeterService
-            ////services
-            ////    .AddGrpc()
-            ////    .AddServiceOptions<GreeterService>(options =>
-            ////    {
-            ////        options.Interceptors.Add<ServerLoggerInterceptor>();
-            ////    });
+        // register ServerLoggerInterceptor only for GreeterService
+        ////services
+        ////    .AddGrpc()
+        ////    .AddServiceOptions<GreeterService>(options =>
+        ////    {
+        ////        options.Interceptors.Add<ServerLoggerInterceptor>();
+        ////    });
 
-            services.AddServiceModelGrpc();
+        services.AddServiceModelGrpc();
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        app.UseRouting();
+
+        app.UseEndpoints(endpoints =>
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapGrpcService<GreeterService>();
-            });
-        }
+            endpoints.MapGrpcService<GreeterService>();
+        });
     }
 }

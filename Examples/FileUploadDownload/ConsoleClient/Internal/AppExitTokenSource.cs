@@ -1,29 +1,28 @@
 ﻿using System;
 using System.Threading;
 
-namespace ConsoleClient.Internal
+namespace ConsoleClient.Internal;
+
+internal sealed class AppExitTokenSource : IDisposable
 {
-    internal sealed class AppExitTokenSource : IDisposable
+    private readonly CancellationTokenSource _tokenSource;
+
+    public AppExitTokenSource()
     {
-        private readonly CancellationTokenSource _tokenSource;
+        _tokenSource = new CancellationTokenSource();
+        Console.CancelKeyPress += ConsoleCancelKeyPress;
+    }
 
-        public AppExitTokenSource()
-        {
-            _tokenSource = new CancellationTokenSource();
-            Console.CancelKeyPress += ConsoleCancelKeyPress;
-        }
+    public CancellationToken Token => _tokenSource.Token;
 
-        public CancellationToken Token => _tokenSource.Token;
+    public void Dispose()
+    {
+        Console.CancelKeyPress -= ConsoleCancelKeyPress;
+        _tokenSource.Dispose();
+    }
 
-        public void Dispose()
-        {
-            Console.CancelKeyPress -= ConsoleCancelKeyPress;
-            _tokenSource.Dispose();
-        }
-
-        private void ConsoleCancelKeyPress(object sender, ConsoleCancelEventArgs e)
-        {
-            _tokenSource.Cancel();
-        }
+    private void ConsoleCancelKeyPress(object sender, ConsoleCancelEventArgs e)
+    {
+        _tokenSource.Cancel();
     }
 }

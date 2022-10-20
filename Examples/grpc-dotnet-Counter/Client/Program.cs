@@ -10,62 +10,61 @@ using Contract;
 using Grpc.Net.Client;
 using ServiceModel.Grpc.Client;
 
-namespace Client
-{
-    public static class Program
-    {
-        private static readonly Random Random = new Random();
-        private static readonly IClientFactory ClientFactory = new ClientFactory();
+namespace Client;
 
-        public static async Task Main(string[] args)
-        {
+public static class Program
+{
+    private static readonly Random Random = new Random();
+    private static readonly IClientFactory ClientFactory = new ClientFactory();
+
+    public static async Task Main(string[] args)
+    {
 #if NETCOREAPP3_1
-            ServiceModel.Grpc.GrpcChannelExtensions.Http2UnencryptedSupport = true;
+        ServiceModel.Grpc.GrpcChannelExtensions.Http2UnencryptedSupport = true;
 #endif
 
-            using var channel = GrpcChannel.ForAddress("http://localhost:5000");
+        using var channel = GrpcChannel.ForAddress("http://localhost:5000");
 
-            var client = ClientFactory.CreateClient<ICounterService>(channel);
+        var client = ClientFactory.CreateClient<ICounterService>(channel);
             
-            await UnaryCallExample(client);
+        await UnaryCallExample(client);
 
-            await ClientStreamingCallExample(client);
+        await ClientStreamingCallExample(client);
 
-            await ServerStreamingCallExample(client);
+        await ServerStreamingCallExample(client);
 
-            Console.WriteLine("Press any key to exit...");
-            Console.ReadLine();
-        }
+        Console.WriteLine("Press any key to exit...");
+        Console.ReadLine();
+    }
 
-        private static async Task UnaryCallExample(ICounterService client)
+    private static async Task UnaryCallExample(ICounterService client)
+    {
+        var reply = await client.IncrementCountAsync();
+        Console.WriteLine("Count: " + reply);
+    }
+
+    private static async Task ClientStreamingCallExample(ICounterService client)
+    {
+        var count = await client.AccumulateCountAsync(GetAccumulateCountAmounts());
+        Console.WriteLine($"Count: {count}");
+    }
+
+    private static async Task ServerStreamingCallExample(ICounterService client)
+    {
+        await foreach (var count in client.CountdownAsync())
         {
-            var reply = await client.IncrementCountAsync();
-            Console.WriteLine("Count: " + reply);
+            Console.WriteLine($"Countdown: {count}");
         }
+    }
 
-        private static async Task ClientStreamingCallExample(ICounterService client)
+    private static async IAsyncEnumerable<int> GetAccumulateCountAmounts()
+    {
+        for (var i = 0; i < 3; i++)
         {
-            var count = await client.AccumulateCountAsync(GetAccumulateCountAmounts());
-            Console.WriteLine($"Count: {count}");
-        }
-
-        private static async Task ServerStreamingCallExample(ICounterService client)
-        {
-            await foreach (var count in client.CountdownAsync())
-            {
-                Console.WriteLine($"Countdown: {count}");
-            }
-        }
-
-        private static async IAsyncEnumerable<int> GetAccumulateCountAmounts()
-        {
-            for (var i = 0; i < 3; i++)
-            {
-                var count = Random.Next(5);
-                Console.WriteLine($"Accumulating with {count}");
-                yield return i;
-                await Task.Delay(TimeSpan.FromSeconds(2));
-            }
+            var count = Random.Next(5);
+            Console.WriteLine($"Accumulating with {count}");
+            yield return i;
+            await Task.Delay(TimeSpan.FromSeconds(2));
         }
     }
 }

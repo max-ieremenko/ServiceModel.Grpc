@@ -7,55 +7,54 @@ using System.Threading;
 using System.Threading.Tasks;
 using Contract;
 
-namespace ConsoleClient.Internal
+namespace ConsoleClient.Internal;
+
+internal sealed class StreamContentWithProgress : StreamContent
 {
-    internal sealed class StreamContentWithProgress : StreamContent
+    private readonly Stream _content;
+    private readonly int _bufferSize;
+    private readonly bool _useCompression;
+    private readonly Action<long> _onProgress;
+
+    public StreamContentWithProgress(
+        Stream content,
+        int bufferSize,
+        bool useCompression,
+        Action<long> onProgress)
+        : base(content)
     {
-        private readonly Stream _content;
-        private readonly int _bufferSize;
-        private readonly bool _useCompression;
-        private readonly Action<long> _onProgress;
+        _content = content;
+        _bufferSize = bufferSize;
+        _useCompression = useCompression;
+        _onProgress = onProgress;
 
-        public StreamContentWithProgress(
-            Stream content,
-            int bufferSize,
-            bool useCompression,
-            Action<long> onProgress)
-            : base(content)
+        if (useCompression)
         {
-            _content = content;
-            _bufferSize = bufferSize;
-            _useCompression = useCompression;
-            _onProgress = onProgress;
+            Headers.ContentEncoding.Add(CompressionSettings.Algorithm);
+            Headers.ContentLength = null;
+        }
+    }
 
-            if (useCompression)
-            {
-                Headers.ContentEncoding.Add(CompressionSettings.Algorithm);
-                Headers.ContentLength = null;
-            }
+    protected override void SerializeToStream(Stream stream, TransportContext context, CancellationToken cancellationToken)
+    {
+        throw new NotSupportedException();
+    }
+
+    protected override Task SerializeToStreamAsync(Stream stream, TransportContext context, CancellationToken cancellationToken)
+    {
+        if (_useCompression)
+        {
+            return SerializeCompressedToStreamAsync(stream, cancellationToken);
         }
 
-        protected override void SerializeToStream(Stream stream, TransportContext context, CancellationToken cancellationToken)
-        {
-            throw new NotSupportedException();
-        }
+        return _content.CopyToAsync(stream, _bufferSize, cancellationToken, _onProgress);
+    }
 
-        protected override Task SerializeToStreamAsync(Stream stream, TransportContext context, CancellationToken cancellationToken)
+    private async Task SerializeCompressedToStreamAsync(Stream stream, CancellationToken cancellationToken)
+    {
+        using (var zip = new GZipStream(stream, CompressionLevel.Optimal, true))
         {
-            if (_useCompression)
-            {
-                return SerializeCompressedToStreamAsync(stream, cancellationToken);
-            }
-
-            return _content.CopyToAsync(stream, _bufferSize, cancellationToken, _onProgress);
-        }
-
-        private async Task SerializeCompressedToStreamAsync(Stream stream, CancellationToken cancellationToken)
-        {
-            using (var zip = new GZipStream(stream, CompressionLevel.Optimal, true))
-            {
-                await _content.CopyToAsync(zip, _bufferSize, cancellationToken, _onProgress);
-            }
+            await _content.CopyToAsync(zip, _bufferSize, cancellationToken, _onProgress);
         }
     }
 }

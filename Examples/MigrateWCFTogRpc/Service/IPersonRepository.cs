@@ -2,12 +2,11 @@
 using System.Threading.Tasks;
 using Contract;
 
-namespace Service
-{
-    public interface IPersonRepository
-    {
-        Task<Person> LoadByIdAsync(int id);
+namespace Service;
 
-        Task<IList<Person>> LoadAllAsync();
-    }
+public interface IPersonRepository
+{
+    Task<Person> LoadByIdAsync(int id);
+
+    Task<IList<Person>> LoadAllAsync();
 }

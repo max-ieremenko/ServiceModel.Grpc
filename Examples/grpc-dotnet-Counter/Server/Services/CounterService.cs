@@ -9,45 +9,44 @@ using System.Threading.Tasks;
 using Contract;
 using Microsoft.Extensions.Logging;
 
-namespace Server.Services
+namespace Server.Services;
+
+internal sealed class CounterService : ICounterService
 {
-    internal sealed class CounterService : ICounterService
+    private readonly IncrementingCounter _counter;
+    private readonly ILogger _logger;
+
+    public CounterService(IncrementingCounter counter, ILoggerFactory loggerFactory)
     {
-        private readonly IncrementingCounter _counter;
-        private readonly ILogger _logger;
+        _counter = counter;
+        _logger = loggerFactory.CreateLogger(nameof(CounterService));
+    }
 
-        public CounterService(IncrementingCounter counter, ILoggerFactory loggerFactory)
+    public ValueTask<long> IncrementCountAsync()
+    {
+        _logger.LogInformation("Incrementing count by 1");
+        var result = _counter.Increment(1);
+
+        return new ValueTask<long>(result);
+    }
+
+    public async ValueTask<long> AccumulateCountAsync(IAsyncEnumerable<int> amounts)
+    {
+        await foreach (var amount in amounts)
         {
-            _counter = counter;
-            _logger = loggerFactory.CreateLogger(nameof(CounterService));
+            _logger.LogInformation($"Incrementing count by {amount}");
+            _counter.Increment(amount);
         }
 
-        public ValueTask<long> IncrementCountAsync()
+        return _counter.Count;
+    }
+
+    public async IAsyncEnumerable<long> CountdownAsync()
+    {
+        for (var i = _counter.Count; i >= 0; i--)
         {
-            _logger.LogInformation("Incrementing count by 1");
-            var result = _counter.Increment(1);
-
-            return new ValueTask<long>(result);
-        }
-
-        public async ValueTask<long> AccumulateCountAsync(IAsyncEnumerable<int> amounts)
-        {
-            await foreach (var amount in amounts)
-            {
-                _logger.LogInformation($"Incrementing count by {amount}");
-                _counter.Increment(amount);
-            }
-
-            return _counter.Count;
-        }
-
-        public async IAsyncEnumerable<long> CountdownAsync()
-        {
-            for (var i = _counter.Count; i >= 0; i--)
-            {
-                yield return i;
-                await Task.Delay(TimeSpan.FromSeconds(1));
-            }
+            yield return i;
+            await Task.Delay(TimeSpan.FromSeconds(1));
         }
     }
 }

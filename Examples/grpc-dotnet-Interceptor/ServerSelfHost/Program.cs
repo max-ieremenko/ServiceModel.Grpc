@@ -5,48 +5,47 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Service;
 
-namespace ServerSelfHost
+namespace ServerSelfHost;
+
+public static class Program
 {
-    public static class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        var server = new Server
         {
-            var server = new Server
-            {
-                Ports = { new ServerPort("localhost", 5000, ServerCredentials.Insecure) }
-            };
+            Ports = { new ServerPort("localhost", 5000, ServerCredentials.Insecure) }
+        };
 
-            using (var serviceProvider = BuildServiceProvider())
-            {
-                // host GreeterService
-                server.Services.AddServiceModel<GreeterService>(
-                    serviceProvider,
-                    options =>
+        using (var serviceProvider = BuildServiceProvider())
+        {
+            // host GreeterService
+            server.Services.AddServiceModel<GreeterService>(
+                serviceProvider,
+                options =>
+                {
+                    options.ConfigureServiceDefinition = definition =>
                     {
-                        options.ConfigureServiceDefinition = definition =>
-                        {
-                            var interceptor = options.ServiceProvider!.GetRequiredService<ServerLoggerInterceptor>();
-                            return definition.Intercept(interceptor);
-                        };
-                    });
+                        var interceptor = options.ServiceProvider!.GetRequiredService<ServerLoggerInterceptor>();
+                        return definition.Intercept(interceptor);
+                    };
+                });
 
-                server.Start();
+            server.Start();
 
-                Console.WriteLine("Press enter to exit . . .");
-                Console.ReadLine();
-            }
+            Console.WriteLine("Press enter to exit . . .");
+            Console.ReadLine();
         }
+    }
 
-        private static ServiceProvider BuildServiceProvider()
-        {
-            var services = new ServiceCollection();
+    private static ServiceProvider BuildServiceProvider()
+    {
+        var services = new ServiceCollection();
 
-            services.AddTransient<GreeterService>();
-            services.AddTransient<ServerLoggerInterceptor>();
+        services.AddTransient<GreeterService>();
+        services.AddTransient<ServerLoggerInterceptor>();
 
-            services.AddLogging(configure => configure.AddConsole());
+        services.AddLogging(configure => configure.AddConsole());
 
-            return services.BuildServiceProvider();
-        }
+        return services.BuildServiceProvider();
     }
 }

@@ -1,12 +1,11 @@
 ﻿using System.ServiceModel;
 using System.Threading.Tasks;
 
-namespace Contract
+namespace Contract;
+
+[ServiceContract]
+public interface IGenericCalculator<TValue> : ICalculator<TValue>
 {
-    [ServiceContract]
-    public interface IGenericCalculator<TValue> : ICalculator<TValue>
-    {
-        [OperationContract]
-        ValueTask<TValue> GetRandomValue();
-    }
+    [OperationContract]
+    ValueTask<TValue> GetRandomValue();
 }

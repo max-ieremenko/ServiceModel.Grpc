@@ -2,17 +2,16 @@
 using System.Threading.Tasks;
 using Contract;
 
-namespace Service
+namespace Service;
+
+public sealed class PersonService : IPersonService
 {
-    public sealed class PersonService : IPersonService
+    public Task<Person> CreatePerson(string name, DateTime birthDay)
     {
-        public Task<Person> CreatePerson(string name, DateTime birthDay)
+        return Task.FromResult(new Person
         {
-            return Task.FromResult(new Person
-            {
-                Name = name,
-                BirthDay = birthDay
-            });
-        }
+            Name = name,
+            BirthDay = birthDay
+        });
     }
 }
