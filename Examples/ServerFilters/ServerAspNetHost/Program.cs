@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Client;
@@ -31,7 +30,7 @@ public static class Program
     {
         var host = Host
             .CreateDefaultBuilder()
-            .ConfigureAppConfiguration(builder => builder.AddJsonFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json"), false, false))
+            .ConfigureAppConfiguration(builder => builder.SetBasePath(AppContext.BaseDirectory))
             .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>())
             .Build();
 
