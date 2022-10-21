@@ -1,5 +1,6 @@
+using System;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 namespace Service;
@@ -12,14 +13,14 @@ public class Program
     }
 
     public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
+        Host
+            .CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration(builder =>
+            {
+                builder.SetBasePath(AppContext.BaseDirectory);
+            })
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseStartup<Startup>();
-                webBuilder.UseKestrel(options =>
-                {
-                    // set http2 protocol
-                    options.ConfigureEndpointDefaults(endpoints => endpoints.Protocols = HttpProtocols.Http2);
-                });
             });
 }
