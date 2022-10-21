@@ -12,4 +12,7 @@
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
   
+  <PropertyGroup>
+    <MicrosoftBclVersion>6.0.0</MicrosoftBclVersion>
+  </PropertyGroup>
 </Project>
