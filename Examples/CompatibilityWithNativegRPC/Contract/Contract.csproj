@@ -12,7 +12,7 @@
     </PackageReference>
     <PackageReference Include="System.ServiceModel.Primitives" Version="$(SystemServiceModelPrimitivesVersion)" />
     <PackageReference Include="ServiceModel.Grpc" Version="$(ServiceModelGrpcVersion)" />
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="$(MicrosoftBclVersion)" />
   </ItemGroup>
 
   <ItemGroup>

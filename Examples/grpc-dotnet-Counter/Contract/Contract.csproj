@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.ServiceModel.Primitives" Version="$(SystemServiceModelPrimitivesVersion)" />
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="$(MicrosoftBclVersion)" />
   </ItemGroup>
 
 </Project>
