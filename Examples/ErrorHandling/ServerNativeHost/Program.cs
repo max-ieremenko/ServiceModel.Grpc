@@ -1,36 +1,17 @@
-﻿using System;
-using Contract;
-using Grpc.Core;
-using Service;
-using ServiceModel.Grpc.Interceptors;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace ServerNativeHost;
 
 public static class Program
 {
-    public static void Main(string[] args)
+    public static Task Main(string[] args)
     {
-        var server = new Server
-        {
-            Ports =
-            {
-                new ServerPort("localhost", ServiceConfiguration.ServiceNativeGrpcPort, ServerCredentials.Insecure)
-            }
-        };
-
-        server.Services.AddServiceModelSingleton(
-            new DebugService(),
-            options =>
-            {
-                // combine application and unexpected handlers into one handler
-                options.ErrorHandler = new ServerErrorHandlerCollection(
-                    new ApplicationExceptionServerHandler(),
-                    new UnexpectedExceptionServerHandler());
-            });
-
-        server.Start();
-
-        Console.WriteLine("Press enter for exit...");
-        Console.ReadLine();
+        return Host
+            .CreateDefaultBuilder(args)
+            .ConfigureServices(services => services.AddHostedService<ServerHost>())
+            .Build()
+            .RunAsync();
     }
 }

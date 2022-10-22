@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Contract;
 using Grpc.Core;
@@ -10,22 +11,7 @@ public static class Program
 {
     private static readonly IClientFactory DefaultClientFactory = new ClientFactory();
 
-    public static async Task Main(string[] args)
-    {
-        try
-        {
-            await Run();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-        }
-
-        Console.WriteLine("...");
-        Console.ReadLine();
-    }
-
-    private static async Task Run()
+    public static async Task Main()
     {
         // create gRPC channel
         var channel = new Channel("localhost", 5000, ChannelCredentials.Insecure);
@@ -43,5 +29,11 @@ public static class Program
 
         var greet2 = await client.SayHelloToAsync(person);
         Console.WriteLine(greet2);
+
+        if (Debugger.IsAttached)
+        {
+            Console.WriteLine("...");
+            Console.ReadLine();
+        }
     }
 }

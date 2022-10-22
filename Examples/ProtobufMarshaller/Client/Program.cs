@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Contract;
 using Grpc.Core;
@@ -15,23 +16,19 @@ public static class Program
         MarshallerFactory = ProtobufMarshallerFactory.Default
     });
 
-    public static async Task Main(string[] args)
+    public static async Task Main()
     {
-        try
-        {
-            Console.WriteLine("Call ServerAspNetCore");
-            await Run(new Channel("localhost", ServiceConfiguration.AspNetCorePort, ChannelCredentials.Insecure));
+        Console.WriteLine("Call ServerAspNetCore");
+        await Run(new Channel("localhost", ServiceConfiguration.AspNetCorePort, ChannelCredentials.Insecure));
 
-            Console.WriteLine("Call ServerSelfHost");
-            await Run(new Channel("localhost", ServiceConfiguration.SelfHostPort, ChannelCredentials.Insecure));
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-        }
+        Console.WriteLine("Call ServerSelfHost");
+        await Run(new Channel("localhost", ServiceConfiguration.SelfHostPort, ChannelCredentials.Insecure));
 
-        Console.WriteLine("...");
-        Console.ReadLine();
+        if (Debugger.IsAttached)
+        {
+            Console.WriteLine("...");
+            Console.ReadLine();
+        }
     }
 
     private static async Task Run(ChannelBase channel)

@@ -27,7 +27,7 @@ public abstract class SelfHostBenchmarkBase
     [GlobalSetup]
     public void GlobalSetup()
     {
-        _serverSelfHost = ServerSelfHost.Program.BuildServer(UseCompression);
+        _serverSelfHost = ServerSelfHost.ServerHost.BuildServer(UseCompression);
         _serverSelfHost.Start();
 
         var factory = ClientCallsFactory

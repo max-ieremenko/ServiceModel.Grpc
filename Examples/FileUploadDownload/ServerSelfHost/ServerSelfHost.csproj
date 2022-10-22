@@ -7,6 +7,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="ServiceModel.Grpc.SelfHost" Version="$(ServiceModelGrpcVersion)" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftExtensionsHostingVersion)" />
 	</ItemGroup>
 
 	<ItemGroup>
