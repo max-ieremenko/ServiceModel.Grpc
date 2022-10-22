@@ -1,45 +1,23 @@
-﻿using System;
-using System.Linq;
-using System.ServiceModel;
-using System.Threading.Tasks;
-using Contract;
-using Grpc.Core;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Service;
-using Unity;
 
 namespace NativeServiceHost;
 
 public static class Program
 {
-    public static async Task Main(string[] args)
+    public static Task Main(string[] args)
     {
-        var container = new UnityContainer();
-        PersonModule.ConfigureContainer(container);
-
-        var server = new Server
-        {
-            Ports =
+        return Host
+            .CreateDefaultBuilder(args)
+            .ConfigureServices(services =>
             {
-                new ServerPort("localhost", SharedConfiguration.NativegRPCPersonServicePort, ServerCredentials.Insecure)
-            }
-        };
+                PersonModule.ConfigureServices(services);
 
-        server.Services.AddServiceModelTransient(container.Resolve<Func<PersonService>>());
-
-        try
-        {
-            server.Start();
-
-            Console.WriteLine("gRPC host is listening http:/localhost:{0}", server.Ports.First().Port);
-            Console.WriteLine("Press enter to exit...");
-            Console.ReadLine();
-        }
-        finally
-        {
-            await server.ShutdownAsync();
-        }
-
-        Console.WriteLine("Press enter for exit...");
-        Console.ReadLine();
+                services.AddHostedService(serviceProvider => new ServerHost(serviceProvider));
+            })
+            .Build()
+            .RunAsync();
     }
 }
