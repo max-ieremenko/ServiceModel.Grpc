@@ -4,6 +4,7 @@
  */
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Contract;
@@ -17,9 +18,6 @@ public static class Program
 {
     public static async Task Main(string[] args)
     {
-#if NETCOREAPP3_1
-            ServiceModel.Grpc.GrpcChannelExtensions.Http2UnencryptedSupport = true;
-#endif
         // 'grpc-internal-encoding-request' is a special metadata value that tells the client to compress the request.
         // This metadata is only used in the client is not sent as a header to the server.
         // The client sends 'Grpc-Encoding: gzip' header to the server
@@ -42,8 +40,11 @@ public static class Program
 
         await ServerStreamingCallExample(client);
 
-        Console.WriteLine("Press any key to exit...");
-        Console.ReadLine();
+        if (Debugger.IsAttached)
+        {
+            Console.WriteLine("Press any key to exit...");
+            Console.ReadLine();
+        }
     }
 
     private static async Task UnaryCallExample(IGreeterService client)

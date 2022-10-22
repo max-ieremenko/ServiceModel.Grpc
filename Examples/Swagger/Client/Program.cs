@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Contract;
 using Grpc.Core;
@@ -9,7 +10,7 @@ namespace Client;
 
 public static class Program
 {
-    public static async Task Main(string[] args)
+    public static async Task Main()
     {
         ServiceModel.Grpc.GrpcChannelExtensions.Http2UnencryptedSupport = true;
         var channel = new Channel("localhost", 5001, ChannelCredentials.Insecure);
@@ -48,8 +49,11 @@ public static class Program
             Console.WriteLine("Area is {0}", area);
         }
 
-        Console.WriteLine("...");
-        Console.ReadLine();
+        if (Debugger.IsAttached)
+        {
+            Console.WriteLine("...");
+            Console.ReadLine();
+        }
     }
 
     private static async IAsyncEnumerable<FigureBase> AsAsyncEnumerable(params FigureBase[] figures)

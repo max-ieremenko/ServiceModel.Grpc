@@ -10,7 +10,7 @@ public sealed class DebugService : IDebugService
     public Task ThrowApplicationException(string message)
     {
         var detail = new ApplicationExceptionFaultDetail { Message = message };
-        throw new FaultException<ApplicationExceptionFaultDetail>(detail);
+        throw new FaultException<ApplicationExceptionFaultDetail>(detail, new FaultReason("demo"));
     }
 
     public Task ThrowInvalidOperationException(string message)
@@ -21,6 +21,6 @@ public sealed class DebugService : IDebugService
             StackTrace = new StackTrace().ToString()
         };
 
-        throw new FaultException<InvalidOperationExceptionFaultDetail>(detail);
+        throw new FaultException<InvalidOperationExceptionFaultDetail>(detail, new FaultReason("demo"));
     }
 }

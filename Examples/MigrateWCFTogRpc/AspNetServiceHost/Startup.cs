@@ -2,20 +2,15 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Service;
-using Unity;
 
 namespace AspNetServiceHost;
 
 internal sealed class Startup
 {
-    public void ConfigureContainer(IUnityContainer container)
-    {
-        // configure container
-        PersonModule.ConfigureContainer(container);
-    }
-
     public void ConfigureServices(IServiceCollection services)
     {
+        PersonModule.ConfigureServices(services);
+
         // enable ServiceModel.Grpc
         services.AddServiceModelGrpc();
     }

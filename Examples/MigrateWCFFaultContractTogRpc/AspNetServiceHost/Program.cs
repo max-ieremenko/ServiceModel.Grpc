@@ -3,7 +3,6 @@ using Contract;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Hosting;
-using Unity.Microsoft.DependencyInjection;
 
 namespace AspNetServiceHost;
 
@@ -13,7 +12,6 @@ public static class Program
     {
         return Host
             .CreateDefaultBuilder()
-            .UseUnityServiceProvider()
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseStartup<Startup>();

@@ -1,33 +1,20 @@
-﻿using System;
-using System.Linq;
-using System.ServiceModel.Channels;
-using Contract;
-using Service;
-using Unity;
-using Unity.Wcf;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace WCFServiceHost;
 
 public static class Program
 {
-    public static void Main()
+    public static Task Main(string[] args)
     {
-        using (var container = new UnityContainer())
-        using (var host = new UnityServiceHost(container, typeof(DebugService), new Uri(SharedConfiguration.WCFDebugServiceLocation)))
-        {
-            DebugModule.ConfigureContainer(container);
-            OpenHost(host);
-
-            Console.WriteLine("WCF host is listening {0}", host.BaseAddresses.First());
-            Console.WriteLine("Press enter to exit...");
-            Console.ReadLine();
-        }
-    }
-
-    private static void OpenHost(CommunicationObject host)
-    {
-        // if receive System.ServiceModel.AddressAccessDeniedException on start-up
-        // re-start your visual studio with administrator permissions "Run as administrator"
-        host.Open();
+        return Host
+            .CreateDefaultBuilder(args)
+            .ConfigureServices(services =>
+            {
+                services.AddHostedService<WcfHost>();
+            })
+            .Build()
+            .RunAsync();
     }
 }

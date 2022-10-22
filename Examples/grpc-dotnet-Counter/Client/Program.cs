@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Contract;
 using Grpc.Net.Client;
@@ -17,12 +18,8 @@ public static class Program
     private static readonly Random Random = new Random();
     private static readonly IClientFactory ClientFactory = new ClientFactory();
 
-    public static async Task Main(string[] args)
+    public static async Task Main()
     {
-#if NETCOREAPP3_1
-        ServiceModel.Grpc.GrpcChannelExtensions.Http2UnencryptedSupport = true;
-#endif
-
         using var channel = GrpcChannel.ForAddress("http://localhost:5000");
 
         var client = ClientFactory.CreateClient<ICounterService>(channel);
@@ -33,8 +30,11 @@ public static class Program
 
         await ServerStreamingCallExample(client);
 
-        Console.WriteLine("Press any key to exit...");
-        Console.ReadLine();
+        if (Debugger.IsAttached)
+        {
+            Console.WriteLine("Press any key to exit...");
+            Console.ReadLine();
+        }
     }
 
     private static async Task UnaryCallExample(ICounterService client)
