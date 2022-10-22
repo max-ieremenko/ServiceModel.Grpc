@@ -11,8 +11,16 @@ param (
     $SkipLinuxSdk,
 
     [Parameter()]
+    [string]
+    $LinuxSdkFilter,
+
+    [Parameter()]
     [switch]
     $SkipWinSdk,
+
+    [Parameter()]
+    [string]
+    $WinSdkFilter,
 
     [Parameter()]
     [switch]
@@ -37,6 +45,10 @@ if (-not $SkipBuild) {
 if (-not $SkipLinuxSdk) {
     $repository = Join-Path $PSScriptRoot "../"
     $invokeBuild = Resolve-ModulePath -Name InvokeBuild -Version (Get-ModuleVersion -Name InvokeBuild)
+    if (-not $LinuxSdkFilter) {
+        $LinuxSdkFilter = " "
+    }
+    
     docker run `
         -it `
         --rm `
@@ -45,11 +57,12 @@ if (-not $SkipLinuxSdk) {
         -v "$($repository):/repository" `
         mcr.microsoft.com/dotnet/sdk:6.0.401-jammy `
         "/repository/Build/invoke-sdk-test.ps1" `
-        -Platform "linux"
+        -Platform "linux" `
+        -Filter $LinuxSdkFilter
 }
 
 if (-not $SkipWinSdk) {
-    & (Join-Path $PSScriptRoot "invoke-sdk-test.ps1") -Platform "win"
+    & (Join-Path $PSScriptRoot "invoke-sdk-test.ps1") -Platform "win" -Filter $WinSdkFilter
 }
 
 # benchmarks
