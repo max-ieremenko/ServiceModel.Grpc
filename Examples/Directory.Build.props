@@ -7,7 +7,14 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
     
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>latest</LangVersion>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
   
+  <PropertyGroup>
+    <MicrosoftBclVersion>6.0.0</MicrosoftBclVersion>
+	<MicrosoftExtensionsHostingVersion>6.0.0</MicrosoftExtensionsHostingVersion>
+	<MicrosoftDependencyInjectionVersion>6.0.0</MicrosoftDependencyInjectionVersion>
+  </PropertyGroup>
 </Project>

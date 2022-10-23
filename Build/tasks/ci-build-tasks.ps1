@@ -1,0 +1,51 @@
+param(
+    [Parameter(Mandatory)]
+    [ValidateScript({ Test-Path $_ })]
+    [string]
+    $PathSources,
+
+    [Parameter(Mandatory)]
+    [ValidateScript({ Test-Path $_ })]
+    [string]
+    $PathThirdParty,
+
+    [Parameter(Mandatory)]
+    [string]
+    $PathBuildOut
+)
+
+task Default Clean, Build, UnitTest, ThirdPartyNotices, Pack
+
+task Clean {
+    Remove-DirectoryRecurse -Path $PathBuildOut
+    Remove-DirectoryRecurse -Path $PathSources -Filters "bin", "obj"
+
+    Clear-NugetCache
+    
+    New-Item -Path $PathBuildOut -ItemType Directory | Out-Null
+}
+
+task Build {
+    $solutionFile = Join-Path $PathSources "ServiceModel.Grpc.sln"
+    Invoke-Build -File "task-build.ps1" -Path $solutionFile
+}
+
+task UnitTest {
+    $builds = @(
+        @{ File = "task-unit-test.ps1"; Sources = $PathSources; Framework = "net461" }
+        @{ File = "task-unit-test.ps1"; Sources = $PathSources; Framework = "netcoreapp3.1" }
+        @{ File = "task-unit-test.ps1"; Sources = $PathSources; Framework = "net5.0" }
+        @{ File = "task-unit-test.ps1"; Sources = $PathSources; Framework = "net6.0" }
+        @{ File = "task-unit-test.ps1"; Sources = $PathSources; Framework = "net7.0" }
+    )
+    
+    Build-Parallel $builds -ShowParameter Framework -MaximumBuilds 4
+}
+
+task ThirdPartyNotices {
+    Invoke-Build -File "task-third-party-notices.ps1" -Sources $PathSources -Repository $PathThirdParty -BuildOut $PathBuildOut
+}
+
+task Pack {
+    Invoke-Build -File "task-pack.ps1" -Sources $PathSources -BuildOut $PathBuildOut
+}

@@ -1,11 +1,10 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Contract
+namespace Contract;
+
+[DataContract]
+public class ApplicationErrorDetail
 {
-    [DataContract]
-    public class ApplicationErrorDetail
-    {
-        [DataMember]
-        public string Message { get; set; }
-    }
+    [DataMember]
+    public string Message { get; set; }
 }

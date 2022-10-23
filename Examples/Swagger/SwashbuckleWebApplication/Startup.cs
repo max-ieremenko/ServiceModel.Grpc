@@ -5,54 +5,53 @@ using Microsoft.OpenApi.Models;
 using SwashbuckleWebApplication.Configuration;
 using SwashbuckleWebApplication.Services;
 
-namespace SwashbuckleWebApplication
+namespace SwashbuckleWebApplication;
+
+public sealed class Startup
 {
-    public sealed class Startup
+    public void ConfigureServices(IServiceCollection services)
     {
-        public void ConfigureServices(IServiceCollection services)
+        // enable detailed errors in gRPC response
+        services.AddGrpc(options => options.EnableDetailedErrors = true);
+
+        // Swashbuckle.AspNetCore
+        services.AddMvc();
+        services.AddSwaggerGen(c =>
         {
-            // enable detailed errors in gRPC response
-            services.AddGrpc(options => options.EnableDetailedErrors = true);
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "1.0" });
+            c.EnableAnnotations(true, true);
+            c.UseAllOfForInheritance();
+            c.SchemaGeneratorOptions.SubTypesSelector = SwaggerTools.GetDataContractKnownTypes;
+        });
 
-            // Swashbuckle.AspNetCore
-            services.AddMvc();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "1.0" });
-                c.EnableAnnotations(true, true);
-                c.UseAllOfForInheritance();
-                c.SchemaGeneratorOptions.SubTypesSelector = SwaggerTools.GetDataContractKnownTypes;
-            });
+        // enable ServiceModel.Grpc
+        services.AddServiceModelGrpc();
 
-            // enable ServiceModel.Grpc
-            services.AddServiceModelGrpc();
+        // enable ServiceModel.Grpc integration for Swashbuckle.AspNetCore
+        services.AddServiceModelGrpcSwagger();
+    }
 
-            // enable ServiceModel.Grpc integration for Swashbuckle.AspNetCore
-            services.AddServiceModelGrpcSwagger();
-        }
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        app.UseRouting();
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        // Swashbuckle.AspNetCore
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
         {
-            app.UseRouting();
+            c.SwaggerEndpoint("v1/swagger.json", "1.0");
+        });
 
-            // Swashbuckle.AspNetCore
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("v1/swagger.json", "1.0");
-            });
+        // Enable ServiceModel.Grpc HTTP/1.1 JSON gateway for Swagger UI, button "Try it out"
+        app.UseServiceModelGrpcSwaggerGateway();
 
-            // Enable ServiceModel.Grpc HTTP/1.1 JSON gateway for Swagger UI, button "Try it out"
-            app.UseServiceModelGrpcSwaggerGateway();
+        app.UseEndpoints(endpoints =>
+        {
+            // host FigureService, gRPC endpoint will be generated at runtime by ServiceModel.Grpc
+            endpoints.MapGrpcService<FigureService>();
 
-            app.UseEndpoints(endpoints =>
-            {
-                // host FigureService, gRPC endpoint will be generated at runtime by ServiceModel.Grpc
-                endpoints.MapGrpcService<FigureService>();
-
-                // host Calculator, gRPC endpoint will be generated at runtime by ServiceModel.Grpc
-                endpoints.MapGrpcService<Calculator>();
-            });
-        }
+            // host Calculator, gRPC endpoint will be generated at runtime by ServiceModel.Grpc
+            endpoints.MapGrpcService<Calculator>();
+        });
     }
 }

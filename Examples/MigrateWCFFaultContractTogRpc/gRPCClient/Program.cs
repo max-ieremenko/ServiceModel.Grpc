@@ -1,68 +1,71 @@
 ﻿using System;
+using System.Diagnostics;
 using System.ServiceModel;
 using System.Threading.Tasks;
 using Contract;
 using Grpc.Core;
 using ServiceModel.Grpc.Client;
 
-namespace gRPCClient
+namespace gRPCClient;
+
+public static class Program
 {
-    public static class Program
+    private static readonly IClientFactory DefaultClientFactory = new ClientFactory(new ServiceModelGrpcClientOptions
     {
-        private static readonly IClientFactory DefaultClientFactory = new ClientFactory(new ServiceModelGrpcClientOptions
+        // register client error handler
+        ErrorHandler = new FaultExceptionClientHandler()
+    });
+
+    public static async Task Main()
+    {
+        var aspNetCoreChannel = new Channel("localhost", SharedConfiguration.AspNetgRPCDebugServicePort, ChannelCredentials.Insecure);
+        var proxy = DefaultClientFactory.CreateClient<IDebugService>(aspNetCoreChannel);
+
+        Console.WriteLine("-- call AspNetServiceHost --");
+        await CallThrowApplicationException(proxy);
+        await CallThrowInvalidOperationException(proxy);
+
+        var nativeChannel = new Channel("localhost", SharedConfiguration.NativegRPCDebugServicePort, ChannelCredentials.Insecure);
+        proxy = DefaultClientFactory.CreateClient<IDebugService>(nativeChannel);
+
+        Console.WriteLine();
+        Console.WriteLine("-- call NativeServiceHost --");
+        await CallThrowApplicationException(proxy);
+        await CallThrowInvalidOperationException(proxy);
+
+        if (Debugger.IsAttached)
         {
-            // register client error handler
-            ErrorHandler = new FaultExceptionClientHandler()
-        });
-
-        public static async Task Main()
-        {
-            var aspNetCoreChannel = new Channel("localhost", SharedConfiguration.AspNetgRPCDebugServicePort, ChannelCredentials.Insecure);
-            var proxy = DefaultClientFactory.CreateClient<IDebugService>(aspNetCoreChannel);
-
-            Console.WriteLine("-- call AspNetServiceHost --");
-            await CallThrowApplicationException(proxy);
-            await CallThrowInvalidOperationException(proxy);
-
-            var nativeChannel = new Channel("localhost", SharedConfiguration.NativegRPCDebugServicePort, ChannelCredentials.Insecure);
-            proxy = DefaultClientFactory.CreateClient<IDebugService>(nativeChannel);
-
-            Console.WriteLine();
-            Console.WriteLine("-- call NativeServiceHost --");
-            await CallThrowApplicationException(proxy);
-            await CallThrowInvalidOperationException(proxy);
-
             Console.WriteLine("...");
             Console.ReadLine();
         }
+    }
 
-        private static async Task CallThrowApplicationException(IDebugService proxy)
+    private static async Task CallThrowApplicationException(IDebugService proxy)
+    {
+        Console.WriteLine("gRPC call ThrowApplicationException");
+
+        try
         {
-            Console.WriteLine("gRPC call ThrowApplicationException");
-
-            try
-            {
-                await proxy.ThrowApplicationException("some message");
-            }
-            catch (FaultException<ApplicationExceptionFaultDetail> ex)
-            {
-                Console.WriteLine("  Error message: {0}", ex.Detail.Message);
-            }
+            await proxy.ThrowApplicationException("some message");
         }
-
-        private static async Task CallThrowInvalidOperationException(IDebugService proxy)
+        catch (FaultException<ApplicationExceptionFaultDetail> ex)
         {
-            Console.WriteLine("gRPC call ThrowApplicationException");
+            Console.WriteLine("  Error message: {0}", ex.Detail.Message);
+        }
+    }
 
-            try
-            {
-                await proxy.ThrowInvalidOperationException("some message");
-            }
-            catch (FaultException<InvalidOperationExceptionFaultDetail> ex)
-            {
-                Console.WriteLine("  Error message: {0}", ex.Detail.Message);
-                Console.WriteLine("  StackTrace: {0}", ex.Detail.StackTrace);
-            }
+    private static async Task CallThrowInvalidOperationException(IDebugService proxy)
+    {
+        Console.WriteLine("gRPC call ThrowApplicationException");
+
+        try
+        {
+            await proxy.ThrowInvalidOperationException("some message");
+        }
+        catch (FaultException<InvalidOperationExceptionFaultDetail> ex)
+        {
+            Console.WriteLine("  Error message: {0}", ex.Detail.Message);
+            Console.WriteLine("  StackTrace: {0}", ex.Detail.StackTrace);
         }
     }
 }

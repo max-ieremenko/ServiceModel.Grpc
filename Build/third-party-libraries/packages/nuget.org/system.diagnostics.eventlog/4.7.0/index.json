@@ -11,12 +11,17 @@
         "netcoreapp3.1",
         "net5.0",
         "net6.0",
+        "net7.0",
         "net461"
       ],
       "Dependencies": [
         {
+          "Name": "Microsoft.Win32.Registry",
+          "Version": "5.0.0"
+        },
+        {
           "Name": "System.Security.Principal.Windows",
-          "Version": "4.7.0"
+          "Version": "5.0.0"
         }
       ]
     }

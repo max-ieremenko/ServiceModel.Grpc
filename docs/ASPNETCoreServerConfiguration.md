@@ -2,7 +2,7 @@
 
 ## Startup.cs
 
-To configure services use ConfigureServices method.
+To configure services use the ConfigureServices method.
 To bind service use Grpc.AspNetCore.Server binding in Configure method.
 
 ``` c#
@@ -14,6 +14,7 @@ public class Startup
         services.AddGrpc(options =>
         {
             options.ResponseCompressionLevel = CompressionLevel.Optimal;
+            // ...
         });
 
         // enable ServiceModel.Grpc
@@ -54,44 +55,57 @@ public class Startup
 - Func<IServiceProvider, IServerErrorHandler> DefaultErrorHandlerFactory: by default is null (error handling by gRPC API)
 - FilterCollection\<IServerFilter\> Filters: list of global server filters
 
-## Bind a service via contract or abstract class
+## Service binding
 
 ``` c#
 // contract
 [ServiceContract]
 public interface IMyService { }
 
-// implementation 1
-[Authorize]
-internal sealed class MyService1 : IMyService {}
-
-// implementation 2
-[AllowAnonymous]
-internal sealed class MyService2 : IMyService {}
+// implementation
+// [Authorize]
+// [AllowAnonymous]
+internal sealed class MyService : IMyService {}
 ```
 
-To bind and configure the service:
-
-- register `IMyService` implementation in your current dependency injection framework
-- to register a configuration use the interface `IMyService`
-- to bind the service use the interface `IMyService`
+There are two options to bind a service:
+- option 1: via implementation `MyService`
+- option 2: via interface `IMyService`
 
 ``` c#
 public class Startup
 {
+    // option 1: via implementation `MyService`
     public void ConfigureServices(IServiceCollection services)
     {
-        // dependency injection registration
-        if (...)
-        {
-            services.AddTransient<IMyService, MyService1>();
-        }
-        else
-        {
-            services.AddTransient<IMyService, MyService2>();
-        }
+        // dependency injection
+        services.AddTransient<MyService>();
 
-        // optional configuration, use interface
+        // optional configuration
+        services
+            .AddServiceModelGrpcServiceOptions<MyService>(options =>
+            {
+                // ...
+            });
+    }
+
+    // option 1: via implementation `MyService`
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        app.UseEndpoints(endpoints =>
+        {
+            // bind the service
+            endpoints.MapGrpcService<MyService>();
+        });
+    }
+
+    // option 2: via interface `IMyService`
+    public void ConfigureServices(IServiceCollection services)
+    {
+        // dependency injection
+        services.AddTransient<IMyService, MyService>();
+
+        // optional configuration
         services
             .AddServiceModelGrpcServiceOptions<IMyService>(options =>
             {
@@ -99,6 +113,7 @@ public class Startup
             });
     }
 
+    // option 2: via interface `IMyService`
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         app.UseEndpoints(endpoints =>
@@ -110,28 +125,9 @@ public class Startup
 }
 ```
 
-At runtime, on gRPC service binding, ServiceModel.Grpc resolves the implementation of `IMyService` via current `IServiceProvider` in order to get the implementation type:
+In the case of option 2, at runtime, ServiceModel.Grpc resolves the implementation of `IMyService` via the current `IServiceProvider` in order to get the implementation type:
 
 ``` c#
 IServiceProvider currentProvider;
 Type implementationType = currentProvider.GetRequiredService<IMyService>().GetType();
-```
-
-The implementation type is used for service binding.
-
-## Silent proxy generation (Reflection.Emit)
-
-In this example SumAsync and Dispose will be ignored during the service binding, use log output to see warnings:
-
-``` c#
-[ServiceContract]
-public interface IContract
-{
-    [OperationContract]
-    Task<T> SumAsync<T>(T x, T y);
-
-    void Dispose();
-}
-
-internal sealed class Service : IContract { }
 ```

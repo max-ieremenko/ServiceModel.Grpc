@@ -9,66 +9,65 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using WebApplication.Services;
 
-namespace WebApplication
+namespace WebApplication;
+
+internal sealed class Startup
 {
-    internal sealed class Startup
+    public Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
+        Configuration = configuration;
+    }
+
+    public IConfiguration Configuration { get; }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        // enable ServiceModel.Grpc
+        services.AddServiceModelGrpc();
+
+        services.AddHttpContextAccessor();
+
+        services.AddAuthorization(options =>
         {
-            Configuration = configuration;
-        }
+            options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
+        });
 
-        public IConfiguration Configuration { get; }
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            // enable ServiceModel.Grpc
-            services.AddServiceModelGrpc();
-
-            services.AddHttpContextAccessor();
-
-            services.AddAuthorization(options =>
+        services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
             {
-                options.FallbackPolicy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build();
-            });
-
-            services
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+                options.RequireHttpsMetadata = false; // WARN: insecure connection should be used only in development environments
+                options.SaveToken = false;
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    options.RequireHttpsMetadata = false; // WARN: insecure connection should be used only in development environments
-                    options.SaveToken = false;
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateLifetime = false,
-                        ValidateAudience = false,
-                        ValidateIssuer = false,
-                        ValidateActor = false,
-                        IssuerSigningKey = new SymmetricSecurityKey(Guid.Empty.ToByteArray())
-                    };
-                });
-        }
-
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseRouting();
-
-            app
-                .UseAuthentication()
-                .UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                // host DemoService, gRPC endpoint will be generated at runtime by ServiceModel.Grpc
-                endpoints.MapGrpcService<DemoService>();
+                    ValidateLifetime = false,
+                    ValidateAudience = false,
+                    ValidateIssuer = false,
+                    ValidateActor = false,
+                    IssuerSigningKey = new SymmetricSecurityKey(Guid.Empty.ToByteArray())
+                };
             });
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
         }
+
+        app.UseRouting();
+
+        app
+            .UseAuthentication()
+            .UseAuthorization();
+
+        app.UseEndpoints(endpoints =>
+        {
+            // host DemoService, gRPC endpoint will be generated at runtime by ServiceModel.Grpc
+            endpoints.MapGrpcService<DemoService>();
+        });
     }
 }

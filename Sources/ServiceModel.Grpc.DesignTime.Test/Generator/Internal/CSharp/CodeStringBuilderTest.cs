@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,41 +14,40 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using NUnit.Framework;
+using ServiceModel.Grpc.TestApi;
 using Shouldly;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
-{
-    [TestFixture]
-    public class CodeStringBuilderTest
-    {
-        private CodeStringBuilder _sut = null!;
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
 
-        [SetUp]
-        public void BeforeEachTest()
+[TestFixture]
+public class CodeStringBuilderTest
+{
+    private CodeStringBuilder _sut = null!;
+
+    [SetUp]
+    public void BeforeEachTest()
+    {
+        _sut = new CodeStringBuilder();
+    }
+
+    [Test]
+    public void Indent1()
+    {
+        _sut.AppendLine("{");
+
+        using (_sut.Indent())
         {
-            _sut = new CodeStringBuilder();
+            _sut.Append("x").Append(" = ").AppendLine("1;");
         }
 
-        [Test]
-        public void Indent1()
-        {
-            _sut.AppendLine("{");
+        _sut.Append("}");
 
-            using (_sut.Indent())
-            {
-                _sut.Append("x").Append(" = ").AppendLine("1;");
-            }
-
-            _sut.Append("}");
-
-            Console.WriteLine("----------");
-            Console.WriteLine(_sut.ToString());
-            Console.WriteLine("----------");
-            _sut.AsStringBuilder().ToString().ShouldBe(@"{
+        TestOutput.WriteLine("----------");
+        TestOutput.WriteLine(_sut.ToString());
+        TestOutput.WriteLine("----------");
+        _sut.AsStringBuilder().ToString().ShouldBe(@"{
     x = 1;
 }");
-        }
     }
 }

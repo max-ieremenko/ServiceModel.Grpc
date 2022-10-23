@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,83 +20,83 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
+using ServiceModel.Grpc.TestApi;
 using Shouldly;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
+namespace ServiceModel.Grpc.AspNetCore.Internal.Binding;
+
+[TestFixture]
+public partial class ServiceModelServiceMethodProviderTest
 {
-    [TestFixture]
-    public partial class ServiceModelServiceMethodProviderTest
+    private Mock<IServiceProvider> _serviceProvider = null!;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private Mock<IServiceProvider> _serviceProvider = null!;
+        _serviceProvider = new Mock<IServiceProvider>(MockBehavior.Strict);
+    }
 
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            _serviceProvider = new Mock<IServiceProvider>(MockBehavior.Strict);
-        }
+    [Test]
+    public void GetServiceInstanceTypeAsIs()
+    {
+        var sut = CreateSut<Service>();
 
-        [Test]
-        public void GetServiceInstanceTypeAsIs()
-        {
-            var sut = CreateSut<Service>();
+        sut.GetServiceInstanceType().ShouldBe(typeof(Service));
+    }
 
-            sut.GetServiceInstanceType().ShouldBe(typeof(Service));
-        }
+    [Test]
+    public void GetServiceInstanceTypeResolve()
+    {
+        var sut = CreateSut<IService>();
 
-        [Test]
-        public void GetServiceInstanceTypeResolve()
-        {
-            var sut = CreateSut<IService>();
+        _serviceProvider
+            .Setup(s => s.GetService(typeof(IService)))
+            .Returns(new Service());
 
-            _serviceProvider
-                .Setup(s => s.GetService(typeof(IService)))
-                .Returns(new Service());
+        sut.GetServiceInstanceType().ShouldBe(typeof(Service));
 
-            sut.GetServiceInstanceType().ShouldBe(typeof(Service));
+        _serviceProvider.VerifyAll();
+    }
 
-            _serviceProvider.VerifyAll();
-        }
+    [Test]
+    public void GetServiceInstanceTypeResolveFailed()
+    {
+        var sut = CreateSut<IService>();
 
-        [Test]
-        public void GetServiceInstanceTypeResolveFailed()
-        {
-            var sut = CreateSut<IService>();
+        var fail = new NotSupportedException();
 
-            var fail = new NotSupportedException();
+        _serviceProvider
+            .Setup(s => s.GetService(typeof(IService)))
+            .Throws(fail);
 
-            _serviceProvider
-                .Setup(s => s.GetService(typeof(IService)))
-                .Throws(fail);
+        var ex = Assert.Throws<InvalidOperationException>(() => sut.GetServiceInstanceType());
 
-            var ex = Assert.Throws<InvalidOperationException>(() => sut.GetServiceInstanceType());
+        TestOutput.WriteLine(ex);
 
-            Console.WriteLine(ex);
+        _serviceProvider.VerifyAll();
+        ex.ShouldNotBeNull();
+        ex.InnerException.ShouldBe(fail);
+    }
 
-            _serviceProvider.VerifyAll();
-            ex.ShouldNotBeNull();
-            ex.InnerException.ShouldBe(fail);
-        }
+    private ServiceModelServiceMethodProvider<TService> CreateSut<TService>()
+        where TService : class
+    {
+        var rootConfiguration = new Mock<IOptions<ServiceModelGrpcServiceOptions>>(MockBehavior.Strict);
+        rootConfiguration
+            .SetupGet(c => c.Value)
+            .Returns(new ServiceModelGrpcServiceOptions());
 
-        private ServiceModelServiceMethodProvider<TService> CreateSut<TService>()
-            where TService : class
-        {
-            var rootConfiguration = new Mock<IOptions<ServiceModelGrpcServiceOptions>>(MockBehavior.Strict);
-            rootConfiguration
-                .SetupGet(c => c.Value)
-                .Returns(new ServiceModelGrpcServiceOptions());
+        var serviceConfiguration = new Mock<IOptions<ServiceModelGrpcServiceOptions<TService>>>(MockBehavior.Strict);
+        serviceConfiguration
+            .SetupGet(c => c.Value)
+            .Returns(new ServiceModelGrpcServiceOptions<TService>());
 
-            var serviceConfiguration = new Mock<IOptions<ServiceModelGrpcServiceOptions<TService>>>(MockBehavior.Strict);
-            serviceConfiguration
-                .SetupGet(c => c.Value)
-                .Returns(new ServiceModelGrpcServiceOptions<TService>());
+        var logger = new Mock<ILogger<ServiceModelServiceMethodProvider<TService>>>(MockBehavior.Strict);
 
-            var logger = new Mock<ILogger<ServiceModelServiceMethodProvider<TService>>>(MockBehavior.Strict);
-
-            return new ServiceModelServiceMethodProvider<TService>(
-                rootConfiguration.Object,
-                serviceConfiguration.Object,
-                logger.Object,
-                _serviceProvider.Object);
-        }
+        return new ServiceModelServiceMethodProvider<TService>(
+            rootConfiguration.Object,
+            serviceConfiguration.Object,
+            logger.Object,
+            _serviceProvider.Object);
     }
 }

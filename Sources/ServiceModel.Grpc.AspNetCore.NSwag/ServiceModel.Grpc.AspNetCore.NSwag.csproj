@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.0;net5.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0;net5.0;net6.0;net7.0</TargetFrameworks>
     <OutputType>Library</OutputType>
     <AssemblyTitle>ServiceModel.Grpc.AspNetCore.NSwag</AssemblyTitle>
   </PropertyGroup>
@@ -12,10 +12,6 @@
 
   <ItemGroup>
     <PackageReference Include="NSwag.AspNetCore" Version="$(NSwagVersion)" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">

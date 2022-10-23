@@ -9,29 +9,28 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Server.Services;
 
-namespace Server
+namespace Server;
+
+internal sealed class Startup
 {
-    internal sealed class Startup
+    public void ConfigureServices(IServiceCollection services)
     {
-        public void ConfigureServices(IServiceCollection services)
+        services.AddServiceModelGrpc();
+        services.AddSingleton<IncrementingCounter>();
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
         {
-            services.AddServiceModelGrpc();
-            services.AddSingleton<IncrementingCounter>();
+            app.UseDeveloperExceptionPage();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        app.UseRouting();
+
+        app.UseEndpoints(endpoints =>
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapGrpcService<CounterService>();
-            });
-        }
+            endpoints.MapGrpcService<CounterService>();
+        });
     }
 }

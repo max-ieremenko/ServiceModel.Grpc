@@ -5,27 +5,26 @@ using CustomMarshaller;
 using Grpc.Core;
 using ServiceModel.Grpc.Client;
 
-namespace Client
+namespace Client;
+
+public sealed class ClientCalls
 {
-    public sealed class ClientCalls
+    public static async Task Run(int serverPort)
     {
-        public static async Task Run(int serverPort)
+        var clientFactory = new ClientFactory(new ServiceModelGrpcClientOptions
         {
-            var clientFactory = new ClientFactory(new ServiceModelGrpcClientOptions
-            {
-                // set JsonMarshallerFactory as default Marshaller
-                MarshallerFactory = JsonMarshallerFactory.Default
-            });
+            // set JsonMarshallerFactory as default Marshaller
+            MarshallerFactory = JsonMarshallerFactory.Default
+        });
 
-            var channel = new Channel("localhost", serverPort, ChannelCredentials.Insecure);
-            var personService = clientFactory.CreateClient<IPersonService>(channel);
+        var channel = new Channel("localhost", serverPort, ChannelCredentials.Insecure);
+        var personService = clientFactory.CreateClient<IPersonService>(channel);
 
-            Console.WriteLine("Invoke CreatePerson");
+        Console.WriteLine("Invoke CreatePerson");
 
-            var person = await personService.CreatePerson("John X", DateTime.Today.AddYears(-20));
+        var person = await personService.CreatePerson("John X", DateTime.Today.AddYears(-20));
 
-            Console.WriteLine("  Name: {0}", person.Name);
-            Console.WriteLine("  BirthDay: {0}", person.BirthDay);
-        }
+        Console.WriteLine("  Name: {0}", person.Name);
+        Console.WriteLine("  BirthDay: {0}", person.BirthDay);
     }
 }

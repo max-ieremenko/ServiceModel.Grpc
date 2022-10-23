@@ -2,15 +2,14 @@
 using System.ServiceModel;
 using System.Threading.Tasks;
 
-namespace Contract
-{
-    [ServiceContract]
-    public interface IPersonService
-    {
-        [OperationContract]
-        Task<Person> Get(int personId);
+namespace Contract;
 
-        [OperationContract]
-        Task<IList<Person>> GetAll();
-    }
+[ServiceContract]
+public interface IPersonService
+{
+    [OperationContract]
+    Task<Person> Get(int personId);
+
+    [OperationContract]
+    Task<IList<Person>> GetAll();
 }

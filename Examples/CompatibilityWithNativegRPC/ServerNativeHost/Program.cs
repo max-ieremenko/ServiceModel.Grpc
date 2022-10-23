@@ -1,27 +1,17 @@
-﻿using System;
-using Contract;
-using Grpc.Core;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
-namespace ServerNativeHost
+namespace ServerNativeHost;
+
+public static class Program
 {
-    public static class Program
+    public static Task Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            var server = new Server
-            {
-                Ports =
-                {
-                    new ServerPort("localhost", ServiceConfiguration.ServiceNativeGrpcPort, ServerCredentials.Insecure)
-                }
-            };
-
-            server.Services.Add(CalculatorNative.BindService(new CalculatorService()));
-
-            server.Start();
-
-            Console.WriteLine("Press enter for exit...");
-            Console.ReadLine();
-        }
+        return Host
+            .CreateDefaultBuilder(args)
+            .ConfigureServices(services => services.AddHostedService<ServerHost>())
+            .Build()
+            .RunAsync();
     }
 }

@@ -3,7 +3,7 @@ System.Dynamic.Runtime [4.0.11](https://www.nuget.org/packages/System.Dynamic.Ru
 
 Used by: AspNetCoreNSwag
 
-Target frameworks: net5.0, net6.0, netcoreapp3.0
+Target frameworks: net5.0, net6.0, net7.0, netcoreapp3.0
 
 License: [ms-net-library](../../../../licenses/ms-net-library) 
 

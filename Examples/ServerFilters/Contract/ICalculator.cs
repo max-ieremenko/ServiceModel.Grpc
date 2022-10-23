@@ -3,18 +3,17 @@ using System.ServiceModel;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Contract
+namespace Contract;
+
+[ServiceContract]
+public interface ICalculator
 {
-    [ServiceContract]
-    public interface ICalculator
-    {
-        [OperationContract]
-        ValueTask<int> SumAsync(int x, int y, CancellationToken token);
+    [OperationContract]
+    ValueTask<int> SumAsync(int x, int y, CancellationToken token);
 
-        [OperationContract]
-        ValueTask<DivideByResult> DivideByAsync(int value, int divider, CancellationToken token);
+    [OperationContract]
+    ValueTask<DivideByResult> DivideByAsync(int value, int divider, CancellationToken token);
 
-        [OperationContract]
-        ValueTask<(IAsyncEnumerable<int> Values, int Multiplier)> MultiplyByAsync(IAsyncEnumerable<int> values, int multiplier, CancellationToken token);
-    }
+    [OperationContract]
+    ValueTask<(IAsyncEnumerable<int> Values, int Multiplier)> MultiplyByAsync(IAsyncEnumerable<int> values, int multiplier, CancellationToken token);
 }

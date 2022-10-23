@@ -8,12 +8,20 @@
       "Name": "DesignTime",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "netstandard2.0"
+        "netstandard2.0",
+        "netcoreapp3.1",
+        "net5.0",
+        "net6.0",
+        "net7.0"
       ],
       "Dependencies": [
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
           "Version": "4.7.1"
+        },
+        {
+          "Name": "System.Runtime.CompilerServices.Unsafe",
+          "Version": "5.0.0"
         }
       ]
     }

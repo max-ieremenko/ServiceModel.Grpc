@@ -1,6 +1,6 @@
 # ServiceModel.Grpc service and operation bindings
 
-Only interface implementations are used to bind a list of gRPC operations.
+Interface methods are a list of gRPC operations.
 
 ``` c#
 [ServiceContract]
@@ -18,7 +18,7 @@ public interface IScientificCalculator
 }
 ```
 
-## hosting on server-side
+## hosting on the server-side
 
 In the following example on a server start-up there will be 2 gRPC services available `IStandardCalculator` and `IScientificCalculator`.
 `IDisposable` is ignored as it is not a service contract.
@@ -26,10 +26,10 @@ In the following example on a server start-up there will be 2 gRPC services avai
 ``` c#
 internal sealed class CalculatorService : IStandardCalculator, IScientificCalculator, IDisposable
 {
-    // accept POST /IStandardCalculator/Sum
+    // POST /IStandardCalculator/Sum
     public int Sum(int x, int y) { /*...*/ }
 
-    // accept POST /IScientificCalculator/Multiply
+    // POST /IScientificCalculator/Multiply
     public int Multiply(int x, int y) { /*...*/ }
 }
 
@@ -52,7 +52,7 @@ internal sealed class Startup
 }
 ```
 
-## call from client-side
+## call from the client-side
 
 ``` c#
 static readonly IClientFactory MyDefaultClientFactory = new ClientFactory(...);
@@ -90,10 +90,10 @@ public interface IScientificCalculator : ICalculator
 
 internal sealed class ScientificCalculator : IScientificCalculator
 {
-    // accept POST /ICalculator/Sum
+    // POST /ICalculator/Sum
     public int Sum(int x, int y) { /*...*/ }
 
-    // accept POST /IScientificCalculator/Multiply
+    // POST /IScientificCalculator/Multiply
     public int Multiply(int x, int y) { /*...*/ }
 }
 ```
@@ -118,10 +118,10 @@ public interface IScientificCalculator : ICalculator
 
 internal sealed class ScientificCalculator : IScientificCalculator
 {
-    // accept POST /IScientificCalculator/Sum
+    // POST /IScientificCalculator/Sum
     public int Sum(int x, int y) { /*...*/ }
 
-    // accept POST /IScientificCalculator/Multiply
+    // POST /IScientificCalculator/Multiply
     public int Multiply(int x, int y) { /*...*/ }
 }
 ```

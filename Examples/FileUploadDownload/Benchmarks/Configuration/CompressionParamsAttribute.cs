@@ -1,12 +1,11 @@
 ﻿using BenchmarkDotNet.Attributes;
 
-namespace Benchmarks.Configuration
+namespace Benchmarks.Configuration;
+
+public class CompressionParamsAttribute : ParamsAttribute
 {
-    public class CompressionParamsAttribute : ParamsAttribute
+    public CompressionParamsAttribute()
+        : base(true, false)
     {
-        public CompressionParamsAttribute()
-            : base(true, false)
-        {
-        }
     }
 }

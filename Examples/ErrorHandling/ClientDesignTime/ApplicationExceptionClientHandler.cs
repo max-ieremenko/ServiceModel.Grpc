@@ -1,18 +1,17 @@
 ﻿using System;
 using ServiceModel.Grpc.Interceptors;
 
-namespace ClientDesignTime
+namespace ClientDesignTime;
+
+internal sealed class ApplicationExceptionClientHandler : IClientErrorHandler
 {
-    internal sealed class ApplicationExceptionClientHandler : IClientErrorHandler
+    public void ThrowOrIgnore(ClientCallInterceptorContext context, ClientFaultDetail detail)
     {
-        public void ThrowOrIgnore(ClientCallInterceptorContext context, ClientFaultDetail detail)
+        // if marker is ApplicationException
+        if ((detail.Detail is string name) && name == "ApplicationException")
         {
-            // if marker is ApplicationException
-            if ((detail.Detail is string name) && name == "ApplicationException")
-            {
-                // throw custom exception
-                throw new ApplicationException(detail.OriginalError.Status.Detail);
-            }
+            // throw custom exception
+            throw new ApplicationException(detail.OriginalError.Status.Detail);
         }
     }
 }

@@ -2,8 +2,6 @@
 
 ## ClientFactory
 
-ClientFactory does not have any static methods as usually default configuration is good only for "hello world" project.
-
 ``` c#
 public static class Program
 {
@@ -28,7 +26,7 @@ public static class Program
 
 #### IClientFactory.AddClient\<TContract\>(Action\<ServiceModelGrpcClientOptions\>?)
 
-The method generates a proxy for `IMyContract` via Reflection.Emit and applies the configuration for proxy.
+The method generates a proxy for `IMyContract` via Reflection.Emit and applies the configuration for the proxy.
 
 ``` c#
 DefaultClientFactory.AddClient<IMyContract>(options =>
@@ -40,7 +38,7 @@ DefaultClientFactory.AddClient<IMyContract>(options =>
 
 #### IClientFactory.AddClient\<TContract\>(IClientBuilder\<TContract\>, Action\<ServiceModelGrpcClientOptions\>?)
 
-The method registers a specific proxy builder for `IMyContract` and applies the configuration for proxy. The method is used by source code generator.
+The method registers a specific proxy builder for `IMyContract` and applies the configuration for the proxy. This method is used by the source code generator.
 
 Configure ServiceModel.Grpc.DesignTime to generate a source code of `IMyContract` proxy:
 
@@ -65,7 +63,7 @@ DefaultClientFactory.AddMyContractClient(options =>
 
 #### IClientFactory.CreateClient\<TContract\>()
 
-`CreateClient` creates an new instance of a specific client with previously assigned configuration.
+`CreateClient` creates a new instance of a specific client with a previously assigned configuration.
 
 ## Silent proxy generation (Reflection.Emit)
 

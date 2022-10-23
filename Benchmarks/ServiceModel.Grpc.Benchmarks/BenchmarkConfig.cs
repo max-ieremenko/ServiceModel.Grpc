@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,32 +19,28 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Environments;
-using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Jobs;
 using ServiceModel.Grpc.Benchmarks.Api;
 
-namespace ServiceModel.Grpc.Benchmarks
+namespace ServiceModel.Grpc.Benchmarks;
+
+internal sealed class BenchmarkConfig : ManualConfig
 {
-    internal sealed class BenchmarkConfig : ManualConfig
+    public BenchmarkConfig()
     {
-        public BenchmarkConfig()
-        {
-            AddJob(Job
-                .ShortRun
-                .WithLaunchCount(1)
-                .WithWarmupCount(3)
-                .WithIterationCount(15)
-                .WithStrategy(RunStrategy.Throughput)
-                .WithGcForce(true)
-                .WithGcServer(false)
-                .WithPlatform(Platform.X64));
+        AddJob(Job
+            .ShortRun
+            .WithLaunchCount(1)
+            .WithWarmupCount(3)
+            .WithIterationCount(15)
+            .WithStrategy(RunStrategy.Throughput)
+            .WithGcForce(true)
+            .WithGcServer(false)
+            .WithPlatform(Platform.X64));
 
-            AddExporter(MarkdownExporter.GitHub);
+        AddDiagnoser(MemoryDiagnoser.Default);
 
-            AddDiagnoser(MemoryDiagnoser.Default);
-
-            AddColumnProvider(DefaultColumnProviders.Instance);
-            AddColumn(StatisticColumn.OperationsPerSecond, new PayloadSizeColumn());
-        }
+        AddColumnProvider(DefaultColumnProviders.Instance);
+        AddColumn(StatisticColumn.OperationsPerSecond, new PayloadSizeColumn());
     }
 }

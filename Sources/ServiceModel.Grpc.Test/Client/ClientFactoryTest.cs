@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,238 +27,237 @@ using ServiceModel.Grpc.Internal.Emit;
 using ServiceModel.Grpc.TestApi;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Client
+namespace ServiceModel.Grpc.Client;
+
+[TestFixture]
+public partial class ClientFactoryTest
 {
-    [TestFixture]
-    public partial class ClientFactoryTest
+    private Mock<IClientBuilder<IDisposable>> _emitClientBuilder = null!;
+    private ServiceModelGrpcClientOptions _defaultOptions = null!;
+    private Mock<CallInvoker> _callInvoker = null!;
+    private IClientErrorHandler _globalErrorHandler = null!;
+    private IClientErrorHandler _localErrorHandler = null!;
+    private Mock<IEmitGenerator> _generator = null!;
+    private ClientFactory _sut = null!;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private Mock<IClientBuilder<IDisposable>> _emitClientBuilder = null!;
-        private ServiceModelGrpcClientOptions _defaultOptions = null!;
-        private Mock<CallInvoker> _callInvoker = null!;
-        private IClientErrorHandler _globalErrorHandler = null!;
-        private IClientErrorHandler _localErrorHandler = null!;
-        private Mock<IEmitGenerator> _generator = null!;
-        private ClientFactory _sut = null!;
+        _emitClientBuilder = new Mock<IClientBuilder<IDisposable>>(MockBehavior.Strict);
 
-        [SetUp]
-        public void BeforeEachTest()
+        _defaultOptions = new ServiceModelGrpcClientOptions();
+
+        _callInvoker = new Mock<CallInvoker>(MockBehavior.Strict);
+
+        _globalErrorHandler = new Mock<IClientErrorHandler>(MockBehavior.Strict).Object;
+        _localErrorHandler = new Mock<IClientErrorHandler>(MockBehavior.Strict).Object;
+
+        _generator = new Mock<IEmitGenerator>(MockBehavior.Strict);
+        _generator.SetupProperty(g => g.Logger, null);
+        _generator
+            .Setup(g => g.GenerateClientBuilder<IDisposable>())
+            .Returns(_emitClientBuilder.Object);
+
+        _sut = new ClientFactory(_generator.Object, _defaultOptions);
+    }
+
+    [Test]
+    public void AddClientDefaultOptions()
+    {
+        _emitClientBuilder
+            .Setup(b => b.Initialize(DataContractMarshallerFactory.Default, null));
+
+        _sut.AddClient<IDisposable>();
+
+        _emitClientBuilder.VerifyAll();
+    }
+
+    [Test]
+    public void AddClientCustomOptions()
+    {
+        var marshaller = new Mock<IMarshallerFactory>(MockBehavior.Strict);
+        Func<CallOptions> callOptions = () => throw new NotSupportedException();
+
+        _emitClientBuilder
+            .Setup(b => b.Initialize(marshaller.Object, callOptions));
+
+        _sut.AddClient<IDisposable>(o =>
         {
-            _emitClientBuilder = new Mock<IClientBuilder<IDisposable>>(MockBehavior.Strict);
+            o.DefaultCallOptionsFactory = callOptions;
+            o.MarshallerFactory = marshaller.Object;
+        });
 
-            _defaultOptions = new ServiceModelGrpcClientOptions();
+        _emitClientBuilder.VerifyAll();
+    }
 
-            _callInvoker = new Mock<CallInvoker>(MockBehavior.Strict);
+    [Test]
+    public void AddClientWithBuilder()
+    {
+        var instance = new Mock<ISomeContract>(MockBehavior.Strict);
 
-            _globalErrorHandler = new Mock<IClientErrorHandler>(MockBehavior.Strict).Object;
-            _localErrorHandler = new Mock<IClientErrorHandler>(MockBehavior.Strict).Object;
-
-            _generator = new Mock<IEmitGenerator>(MockBehavior.Strict);
-            _generator.SetupProperty(g => g.Logger, null);
-            _generator
-                .Setup(g => g.GenerateClientBuilder<IDisposable>())
-                .Returns(_emitClientBuilder.Object);
-
-            _sut = new ClientFactory(_generator.Object, _defaultOptions);
-        }
-
-        [Test]
-        public void AddClientDefaultOptions()
+        var builder = new ManualClientBuilder
         {
-            _emitClientBuilder
-                .Setup(b => b.Initialize(DataContractMarshallerFactory.Default, null));
-
-            _sut.AddClient<IDisposable>();
-
-            _emitClientBuilder.VerifyAll();
-        }
-
-        [Test]
-        public void AddClientCustomOptions()
-        {
-            var marshaller = new Mock<IMarshallerFactory>(MockBehavior.Strict);
-            Func<CallOptions> callOptions = () => throw new NotSupportedException();
-
-            _emitClientBuilder
-                .Setup(b => b.Initialize(marshaller.Object, callOptions));
-
-            _sut.AddClient<IDisposable>(o =>
+            OnBuild = invoker =>
             {
-                o.DefaultCallOptionsFactory = callOptions;
-                o.MarshallerFactory = marshaller.Object;
-            });
+                invoker.ShouldBe(_callInvoker.Object);
+                return instance.Object;
+            }
+        };
 
-            _emitClientBuilder.VerifyAll();
-        }
+        _sut.AddClient(builder);
+        _sut.CreateClient<ISomeContract>(_callInvoker.Object).ShouldBe(instance.Object);
 
-        [Test]
-        public void AddClientWithBuilder()
-        {
-            var instance = new Mock<ISomeContract>(MockBehavior.Strict);
+        builder.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
+        builder.DefaultCallOptionsFactory.ShouldBeNull();
+    }
 
-            var builder = new ManualClientBuilder
+    [Test]
+    public void AddClientGenericInterface()
+    {
+        var clientBuilder = new Mock<IClientBuilder<IComparable<int>>>(MockBehavior.Strict);
+        clientBuilder
+            .Setup(b => b.Initialize(DataContractMarshallerFactory.Default, null));
+
+        _generator
+            .Setup(g => g.GenerateClientBuilder<IComparable<int>>())
+            .Returns(clientBuilder.Object)
+            .Verifiable();
+
+        _sut.AddClient<IComparable<int>>();
+
+        _generator.Verify();
+        clientBuilder.VerifyAll();
+    }
+
+    [Test]
+    public void CreateClientWithoutRegistration()
+    {
+        var instance = new Mock<IDisposable>(MockBehavior.Strict);
+
+        _emitClientBuilder
+            .Setup(b => b.Initialize(DataContractMarshallerFactory.Default, null));
+
+        _emitClientBuilder
+            .Setup(b => b.Build(_callInvoker.Object))
+            .Returns(instance.Object);
+
+        _sut.CreateClient<IDisposable>(_callInvoker.Object).ShouldBe(instance.Object);
+    }
+
+    [Test]
+    public void DoubleClientRegistration()
+    {
+        _emitClientBuilder
+            .Setup(b => b.Initialize(DataContractMarshallerFactory.Default, null));
+
+        _sut.AddClient<IDisposable>();
+
+        Assert.Throws<InvalidOperationException>(() => _sut.AddClient<IDisposable>());
+    }
+
+    [Test]
+    [TestCase(typeof(object))] // class
+    [TestCase(typeof(IEmitGenerator))] // not public
+    public void InvalidContracts(Type contractType)
+    {
+        var addClient = (Action<Action<ServiceModelGrpcClientOptions>?>)_sut
+            .GetType()
+            .InstanceMethod(nameof(_sut.AddClient), typeof(Action<ServiceModelGrpcClientOptions>))
+            .MakeGenericMethod(contractType)
+            .CreateDelegate(typeof(Action<Action<ServiceModelGrpcClientOptions>?>), _sut);
+
+        var ex = Assert.Throws<NotSupportedException>(() => addClient(null));
+
+        TestOutput.WriteLine(ex);
+    }
+
+    [Test]
+    public void GlobalErrorHandler()
+    {
+        _defaultOptions.ErrorHandler = _globalErrorHandler;
+
+        _emitClientBuilder
+            .Setup(b => b.Initialize(DataContractMarshallerFactory.Default, null));
+
+        _emitClientBuilder
+            .Setup(b => b.Build(It.IsNotNull<CallInvoker>()))
+            .Callback<CallInvoker>(i =>
             {
-                OnBuild = invoker =>
-                {
-                    invoker.ShouldBe(_callInvoker.Object);
-                    return instance.Object;
-                }
-            };
+                var (interceptor, callInvoker) = i.ShouldBeIntercepted();
 
-            _sut.AddClient(builder);
-            _sut.CreateClient<ISomeContract>(_callInvoker.Object).ShouldBe(instance.Object);
+                interceptor
+                    .ShouldBeOfType<ClientNativeInterceptor>()
+                    .CallInterceptor
+                    .ShouldBeOfType<ClientCallErrorInterceptor>()
+                    .ErrorHandler
+                    .ShouldBe(_globalErrorHandler);
 
-            builder.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
-            builder.DefaultCallOptionsFactory.ShouldBeNull();
-        }
+                callInvoker.ShouldBe(_callInvoker.Object);
+            })
+            .Returns(new Mock<IDisposable>(MockBehavior.Strict).Object);
 
-        [Test]
-        public void AddClientGenericInterface()
-        {
-            var clientBuilder = new Mock<IClientBuilder<IComparable<int>>>(MockBehavior.Strict);
-            clientBuilder
-                .Setup(b => b.Initialize(DataContractMarshallerFactory.Default, null));
+        _sut.CreateClient<IDisposable>(_callInvoker.Object);
 
-            _generator
-                .Setup(g => g.GenerateClientBuilder<IComparable<int>>())
-                .Returns(clientBuilder.Object)
-                .Verifiable();
+        _emitClientBuilder.VerifyAll();
+    }
 
-            _sut.AddClient<IComparable<int>>();
+    [Test]
+    public void ServiceErrorHandler()
+    {
+        _emitClientBuilder
+            .Setup(b => b.Initialize(DataContractMarshallerFactory.Default, null));
 
-            _generator.Verify();
-            clientBuilder.VerifyAll();
-        }
+        _emitClientBuilder
+            .Setup(b => b.Build(It.IsNotNull<CallInvoker>()))
+            .Callback<CallInvoker>(i =>
+            {
+                var (interceptor, callInvoker) = i.ShouldBeIntercepted();
 
-        [Test]
-        public void CreateClientWithoutRegistration()
-        {
-            var instance = new Mock<IDisposable>(MockBehavior.Strict);
+                interceptor
+                    .ShouldBeOfType<ClientNativeInterceptor>()
+                    .CallInterceptor
+                    .ShouldBeOfType<ClientCallErrorInterceptor>()
+                    .ErrorHandler
+                    .ShouldBe(_localErrorHandler);
 
-            _emitClientBuilder
-                .Setup(b => b.Initialize(DataContractMarshallerFactory.Default, null));
+                callInvoker.ShouldBe(_callInvoker.Object);
+            })
+            .Returns(new Mock<IDisposable>(MockBehavior.Strict).Object);
 
-            _emitClientBuilder
-                .Setup(b => b.Build(_callInvoker.Object))
-                .Returns(instance.Object);
+        _sut.AddClient<IDisposable>(options => options.ErrorHandler = _localErrorHandler);
+        _sut.CreateClient<IDisposable>(_callInvoker.Object);
 
-            _sut.CreateClient<IDisposable>(_callInvoker.Object).ShouldBe(instance.Object);
-        }
+        _emitClientBuilder.VerifyAll();
+    }
 
-        [Test]
-        public void DoubleClientRegistration()
-        {
-            _emitClientBuilder
-                .Setup(b => b.Initialize(DataContractMarshallerFactory.Default, null));
+    [Test]
+    public void ServiceErrorHandlerOverrideGlobal()
+    {
+        _defaultOptions.ErrorHandler = _globalErrorHandler;
 
-            _sut.AddClient<IDisposable>();
+        _emitClientBuilder
+            .Setup(b => b.Initialize(DataContractMarshallerFactory.Default, null));
 
-            Assert.Throws<InvalidOperationException>(() => _sut.AddClient<IDisposable>());
-        }
+        _emitClientBuilder
+            .Setup(b => b.Build(It.IsNotNull<CallInvoker>()))
+            .Callback<CallInvoker>(i =>
+            {
+                var (interceptor, callInvoker) = i.ShouldBeIntercepted();
 
-        [Test]
-        [TestCase(typeof(object))] // class
-        [TestCase(typeof(IEmitGenerator))] // not public
-        public void InvalidContracts(Type contractType)
-        {
-            var addClient = (Action<Action<ServiceModelGrpcClientOptions>?>)_sut
-                .GetType()
-                .InstanceMethod(nameof(_sut.AddClient), typeof(Action<ServiceModelGrpcClientOptions>))
-                .MakeGenericMethod(contractType)
-                .CreateDelegate(typeof(Action<Action<ServiceModelGrpcClientOptions>?>), _sut);
+                interceptor
+                    .ShouldBeOfType<ClientNativeInterceptor>()
+                    .CallInterceptor
+                    .ShouldBeOfType<ClientCallErrorInterceptor>()
+                    .ErrorHandler
+                    .ShouldBe(_localErrorHandler);
 
-            var ex = Assert.Throws<NotSupportedException>(() => addClient(null));
+                callInvoker.ShouldBe(_callInvoker.Object);
+            })
+            .Returns(new Mock<IDisposable>(MockBehavior.Strict).Object);
 
-            Console.WriteLine(ex);
-        }
+        _sut.AddClient<IDisposable>(options => options.ErrorHandler = _localErrorHandler);
+        _sut.CreateClient<IDisposable>(_callInvoker.Object);
 
-        [Test]
-        public void GlobalErrorHandler()
-        {
-            _defaultOptions.ErrorHandler = _globalErrorHandler;
-
-            _emitClientBuilder
-                .Setup(b => b.Initialize(DataContractMarshallerFactory.Default, null));
-
-            _emitClientBuilder
-                .Setup(b => b.Build(It.IsNotNull<CallInvoker>()))
-                .Callback<CallInvoker>(i =>
-                {
-                    var (interceptor, callInvoker) = i.ShouldBeIntercepted();
-
-                    interceptor
-                        .ShouldBeOfType<ClientNativeInterceptor>()
-                        .CallInterceptor
-                        .ShouldBeOfType<ClientCallErrorInterceptor>()
-                        .ErrorHandler
-                        .ShouldBe(_globalErrorHandler);
-
-                    callInvoker.ShouldBe(_callInvoker.Object);
-                })
-                .Returns(new Mock<IDisposable>(MockBehavior.Strict).Object);
-
-            _sut.CreateClient<IDisposable>(_callInvoker.Object);
-
-            _emitClientBuilder.VerifyAll();
-        }
-
-        [Test]
-        public void ServiceErrorHandler()
-        {
-            _emitClientBuilder
-                .Setup(b => b.Initialize(DataContractMarshallerFactory.Default, null));
-
-            _emitClientBuilder
-                .Setup(b => b.Build(It.IsNotNull<CallInvoker>()))
-                .Callback<CallInvoker>(i =>
-                {
-                    var (interceptor, callInvoker) = i.ShouldBeIntercepted();
-
-                    interceptor
-                        .ShouldBeOfType<ClientNativeInterceptor>()
-                        .CallInterceptor
-                        .ShouldBeOfType<ClientCallErrorInterceptor>()
-                        .ErrorHandler
-                        .ShouldBe(_localErrorHandler);
-
-                    callInvoker.ShouldBe(_callInvoker.Object);
-                })
-                .Returns(new Mock<IDisposable>(MockBehavior.Strict).Object);
-
-            _sut.AddClient<IDisposable>(options => options.ErrorHandler = _localErrorHandler);
-            _sut.CreateClient<IDisposable>(_callInvoker.Object);
-
-            _emitClientBuilder.VerifyAll();
-        }
-
-        [Test]
-        public void ServiceErrorHandlerOverrideGlobal()
-        {
-            _defaultOptions.ErrorHandler = _globalErrorHandler;
-
-            _emitClientBuilder
-                .Setup(b => b.Initialize(DataContractMarshallerFactory.Default, null));
-
-            _emitClientBuilder
-                .Setup(b => b.Build(It.IsNotNull<CallInvoker>()))
-                .Callback<CallInvoker>(i =>
-                {
-                    var (interceptor, callInvoker) = i.ShouldBeIntercepted();
-
-                    interceptor
-                        .ShouldBeOfType<ClientNativeInterceptor>()
-                        .CallInterceptor
-                        .ShouldBeOfType<ClientCallErrorInterceptor>()
-                        .ErrorHandler
-                        .ShouldBe(_localErrorHandler);
-
-                    callInvoker.ShouldBe(_callInvoker.Object);
-                })
-                .Returns(new Mock<IDisposable>(MockBehavior.Strict).Object);
-
-            _sut.AddClient<IDisposable>(options => options.ErrorHandler = _localErrorHandler);
-            _sut.CreateClient<IDisposable>(_callInvoker.Object);
-
-            _emitClientBuilder.VerifyAll();
-        }
+        _emitClientBuilder.VerifyAll();
     }
 }

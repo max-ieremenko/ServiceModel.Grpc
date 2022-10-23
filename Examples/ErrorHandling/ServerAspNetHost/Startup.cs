@@ -4,37 +4,36 @@ using Microsoft.Extensions.DependencyInjection;
 using Service;
 using ServiceModel.Grpc.Interceptors;
 
-namespace ServerAspNetHost
+namespace ServerAspNetHost;
+
+internal sealed class Startup
 {
-    internal sealed class Startup
+    public void ConfigureServices(IServiceCollection services)
     {
-        public void ConfigureServices(IServiceCollection services)
+        services.AddSingleton<IServerErrorHandler>(_ =>
         {
-            services.AddSingleton<IServerErrorHandler>(_ =>
+            // combine application and unexpected handlers into one handler
+            var collection = new ServerErrorHandlerCollection(
+                new ApplicationExceptionServerHandler(),
+                new UnexpectedExceptionServerHandler());
+
+            return collection;
+        });
+
+        services
+            .AddServiceModelGrpc(options =>
             {
-                // combine application and unexpected handlers into one handler
-                var collection = new ServerErrorHandlerCollection(
-                    new ApplicationExceptionServerHandler(),
-                    new UnexpectedExceptionServerHandler());
-
-                return collection;
+                options.DefaultErrorHandlerFactory = serviceProvider => serviceProvider.GetRequiredService<IServerErrorHandler>();
             });
+    }
 
-            services
-                .AddServiceModelGrpc(options =>
-                {
-                    options.DefaultErrorHandlerFactory = serviceProvider => serviceProvider.GetRequiredService<IServerErrorHandler>();
-                });
-        }
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        app.UseRouting();
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        app.UseEndpoints(endpoints =>
         {
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapGrpcService<DebugService>();
-            });
-        }
+            endpoints.MapGrpcService<DebugService>();
+        });
     }
 }

@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\Test.csproj.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>net461;netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>net461;netcoreapp3.1;net5.0;net6.0;net7.0</TargetFrameworks>
     <RootNamespace>ServiceModel.Grpc</RootNamespace>
     <AssemblyTitle>ServiceModel.Grpc.Test</AssemblyTitle>
   </PropertyGroup>
@@ -12,12 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CompareNETObjects" Version="4.77.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTestSdkVersion)" />
-    <PackageReference Include="NUnit3TestAdapter" Version="$(NUnitAdapterVersion)">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="CompareNETObjects" Version="4.78.0" />
   </ItemGroup>
 
   <ItemGroup>

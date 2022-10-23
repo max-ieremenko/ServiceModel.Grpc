@@ -1,27 +1,18 @@
 # Build
 
-The repository is configured to run [CI build](https://github.com/max-ieremenko/ServiceModel.Grpc/actions) on any push or pull request into the master/release branch.
+## To run local build
 
-## Local build
+Because of the dependency on net461, the build runs on Windows.
 
-To run CI build locally
+- install dependencies
 
-- install [InvokeBuild](https://www.powershellgallery.com/packages/InvokeBuild)
-
-    ``` powershell
-    PS> Install-Module -Name InvokeBuild -RequiredVersion 5.9.10
-    ```
-
-- install net6.0 sdk: manual [download](https://dotnet.microsoft.com/download/dotnet/6.0) or
+[net7.0 sdk](https://dotnet.microsoft.com/download/dotnet/7.0), 
+[InvokeBuild](https://www.powershellgallery.com/packages/InvokeBuild/5.9.12), 
+[ThirdPartyLibraries](https://www.powershellgallery.com/packages/ThirdPartyLibraries/3.1.2),
+[ZipAsFolder](https://www.powershellgallery.com/packages/ZipAsFolder/0.0.1)
 
     ``` powershell
-    PS> .\Build\step-install-dotnet.ps1
-    ```
-
-- install ThirdPartyLibraries
-
-    ``` powershell
-    PS> Install-Module -Name ThirdPartyLibraries -RequiredVersion 3.1.2
+    PS> ./Build/install-dependencies.ps1
     ```
 
 - switch docker to linux containers
@@ -29,5 +20,5 @@ To run CI build locally
 - run build
 
     ``` powershell
-    PS> .\Build\build-locally.ps1
+    PS> ./Build/build-locally.ps1
     ```

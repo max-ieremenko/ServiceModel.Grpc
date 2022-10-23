@@ -1,18 +1,14 @@
-﻿using Contract;
+﻿using Microsoft.Extensions.DependencyInjection;
 using ServiceModel.Grpc.Interceptors;
-using Unity;
-using Unity.Lifetime;
 
-namespace Service
+namespace Service;
+
+public static class DebugModule
 {
-    public static class DebugModule
+    public static void ConfigureServices(IServiceCollection services)
     {
-        public static void ConfigureContainer(IUnityContainer container)
-        {
-            container.RegisterType<IDebugService, DebugService>(new TransientLifetimeManager());
-            container.RegisterType<DebugService>(new TransientLifetimeManager());
+        services.AddSingleton<DebugService>();
 
-            container.RegisterType<IServerErrorHandler, FaultExceptionServerHandler>(new ContainerControlledLifetimeManager());
-        }
+        services.AddSingleton<IServerErrorHandler, FaultExceptionServerHandler>();
     }
 }

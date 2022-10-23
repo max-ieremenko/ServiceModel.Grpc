@@ -2,7 +2,7 @@
 
 ## Reflection.Emit by default
 
-By default all proxies requested from ClientFactory are generating on demand via Reflection.Emit.
+By default, all proxies requested from ClientFactory are generated on demand via Reflection.Emit.
 Reflection.Emit proxy class is generated only once for the specific contract, no matter how many ClientFactory instances exist.
 
 example 1:
@@ -35,12 +35,10 @@ clientFactory.CreateClient<IMyContract>(...);
 
 To enable source code generation:
 
-- make sure [.NET 5.0 SDK](https://dotnet.microsoft.com/download/dotnet/5.0) is installed
 - add reference to the package [ServiceModel.Grpc.DesignTime](https://www.nuget.org/packages/ServiceModel.Grpc.DesignTime)
-- create a static partial class, the name doesn't matter
+- create a static partial class, name doesn't matter
 - the class is a placeholder for generated source code
-- configure which proxies have to be generated via `ImportGrpcServiceAttribute`
-- build the project to trigger the source code generation
+- configure which proxies should be generated via `ImportGrpcServiceAttribute`
 
 ``` c#
 [ImportGrpcService(typeof(IMyContract1))]

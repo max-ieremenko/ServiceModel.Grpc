@@ -1,9 +1,8 @@
-﻿namespace Contract
-{
-    public static class ServiceConfiguration
-    {
-        public const int ServiceModelGrpcPort = 5000;
+﻿namespace Contract;
 
-        public const int ServiceNativeGrpcPort = 5050;
-    }
+public static class ServiceConfiguration
+{
+    public const int ServiceModelGrpcPort = 5000;
+
+    public const int ServiceNativeGrpcPort = 5050;
 }

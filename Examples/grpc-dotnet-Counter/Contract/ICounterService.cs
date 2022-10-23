@@ -2,18 +2,17 @@
 using System.ServiceModel;
 using System.Threading.Tasks;
 
-namespace Contract
+namespace Contract;
+
+[ServiceContract]
+public interface ICounterService
 {
-    [ServiceContract]
-    public interface ICounterService
-    {
-        [OperationContract]
-        ValueTask<long> IncrementCountAsync();
+    [OperationContract]
+    ValueTask<long> IncrementCountAsync();
 
-        [OperationContract]
-        ValueTask<long> AccumulateCountAsync(IAsyncEnumerable<int> amounts);
+    [OperationContract]
+    ValueTask<long> AccumulateCountAsync(IAsyncEnumerable<int> amounts);
 
-        [OperationContract]
-        IAsyncEnumerable<long> CountdownAsync();
-    }
+    [OperationContract]
+    IAsyncEnumerable<long> CountdownAsync();
 }

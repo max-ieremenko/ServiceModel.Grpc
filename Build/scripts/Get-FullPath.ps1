@@ -1,6 +1,7 @@
 function Get-FullPath {
     param (
-        [Parameter(Position = 0, Mandatory = $true)]
+        [Parameter(Mandatory)]
+        [string]
         $Path
     )
     

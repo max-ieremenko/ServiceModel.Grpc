@@ -3,51 +3,50 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using NSwagWebApplication.Services;
 
-namespace NSwagWebApplication
+namespace NSwagWebApplication;
+
+public sealed class Startup
 {
-    public sealed class Startup
+    public void ConfigureServices(IServiceCollection services)
     {
-        public void ConfigureServices(IServiceCollection services)
+        // enable detailed errors in gRPC response
+        services.AddGrpc(options => options.EnableDetailedErrors = true);
+
+        // NSwag.AspNetCore
+        services.AddMvc();
+        services.AddOpenApiDocument(settings =>
         {
-            // enable detailed errors in gRPC response
-            services.AddGrpc(options => options.EnableDetailedErrors = true);
+            settings.DocumentName = "v1";
+            settings.Title = "My API";
+            settings.Version = "1.0";
+        });
 
-            // NSwag.AspNetCore
-            services.AddMvc();
-            services.AddOpenApiDocument(settings =>
-            {
-                settings.DocumentName = "v1";
-                settings.Title = "My API";
-                settings.Version = "1.0";
-            });
+        // enable ServiceModel.Grpc
+        services.AddServiceModelGrpc();
 
-            // enable ServiceModel.Grpc
-            services.AddServiceModelGrpc();
+        // enable ServiceModel.Grpc integration for Swashbuckle.AspNetCore
+        services.AddServiceModelGrpcSwagger();
+    }
 
-            // enable ServiceModel.Grpc integration for Swashbuckle.AspNetCore
-            services.AddServiceModelGrpcSwagger();
-        }
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        app.UseRouting();
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        // NSwag.AspNetCore
+        app.UseOpenApi();
+        app.UseSwaggerUi3();
+        app.UseReDoc();
+
+        // Enable ServiceModel.Grpc HTTP/1.1 JSON gateway for Swagger UI, button "Try it out"
+        app.UseServiceModelGrpcSwaggerGateway();
+
+        app.UseEndpoints(endpoints =>
         {
-            app.UseRouting();
+            // host FigureService, gRPC endpoint will be generated at runtime by ServiceModel.Grpc
+            endpoints.MapGrpcService<FigureService>();
 
-            // NSwag.AspNetCore
-            app.UseOpenApi();
-            app.UseSwaggerUi3();
-            app.UseReDoc();
-
-            // Enable ServiceModel.Grpc HTTP/1.1 JSON gateway for Swagger UI, button "Try it out"
-            app.UseServiceModelGrpcSwaggerGateway();
-
-            app.UseEndpoints(endpoints =>
-            {
-                // host FigureService, gRPC endpoint will be generated at runtime by ServiceModel.Grpc
-                endpoints.MapGrpcService<FigureService>();
-
-                // host Calculator, gRPC endpoint will be generated at runtime by ServiceModel.Grpc
-                endpoints.MapGrpcService<Calculator>();
-            });
-        }
+            // host Calculator, gRPC endpoint will be generated at runtime by ServiceModel.Grpc
+            endpoints.MapGrpcService<Calculator>();
+        });
     }
 }

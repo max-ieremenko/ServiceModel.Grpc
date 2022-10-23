@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,34 +23,34 @@ using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 
-namespace ServiceModel.Grpc.SelfHost
+namespace ServiceModel.Grpc.SelfHost;
+
+[TestFixture]
+public class MockedFilteredServiceTest : MockedFilteredServiceTestBase
 {
-    [TestFixture]
-    public class MockedFilteredServiceTest : MockedFilteredServiceTestBase
+    private ServerHost _host = null!;
+
+    [OneTimeSetUp]
+    public void BeforeAll()
     {
-        private ServerHost _host = null!;
+        _host = new ServerHost();
 
-        [OneTimeSetUp]
-        public void BeforeAll()
-        {
-            _host = new ServerHost();
+        _host.Services.AddServiceModelSingleton(
+            new TrackedFilteredService(),
+            options =>
+            {
+                options.ServiceProvider = new Mock<IServiceProvider>().Object;
+                options.Filters.Add(1, _ => new MockServerFilter());
+            });
 
-            _host.Services.AddServiceModelSingleton(
-                new TrackedFilteredService(),
-                options =>
-                {
-                    options.ServiceProvider = new Mock<IServiceProvider>().Object;
-                    options.Filters.Add(1, _ => new MockServerFilter());
-                });
-            DomainService = new ClientFactory().CreateClient<IFilteredService>(_host.Channel);
+        _host.Start();
 
-            _host.Start();
-        }
+        DomainService = new ClientFactory().CreateClient<IFilteredService>(_host.Channel);
+    }
 
-        [OneTimeTearDown]
-        public async Task AfterAll()
-        {
-            await _host.DisposeAsync().ConfigureAwait(false);
-        }
+    [OneTimeTearDown]
+    public async Task AfterAll()
+    {
+        await _host.DisposeAsync().ConfigureAwait(false);
     }
 }

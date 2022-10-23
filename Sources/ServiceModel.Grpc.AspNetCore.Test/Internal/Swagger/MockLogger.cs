@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,25 +18,29 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger
+namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger;
+
+internal sealed class MockLogger : Microsoft.Extensions.Logging.ILogger
 {
-    internal sealed class MockLogger : Microsoft.Extensions.Logging.ILogger
+    public IList<string> Output { get; } = new List<string>();
+
+#if NET7_0
+    public IDisposable? BeginScope<TState>(TState state)
+        where TState : notnull
+#else
+    public IDisposable BeginScope<TState>(TState state)
+#endif
     {
-        public IList<string> Output { get; } = new List<string>();
+        throw new NotSupportedException();
+    }
 
-        public IDisposable BeginScope<TState>(TState state)
-        {
-            throw new NotSupportedException();
-        }
+    public bool IsEnabled(LogLevel logLevel)
+    {
+        throw new NotSupportedException();
+    }
 
-        public bool IsEnabled(LogLevel logLevel)
-        {
-            throw new NotSupportedException();
-        }
-
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
-        {
-            Output.Add("{0}: {1}".FormatWith(logLevel, state));
-        }
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+    {
+        Output.Add("{0}: {1}".FormatWith(logLevel, state));
     }
 }

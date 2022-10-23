@@ -14,10 +14,10 @@
 [ValueTask<TResult>|ValueTask] OperationName(IAsyncEnumerable<TData> stream, [T1 arg1, T2 arg2, ..., TN argN], [CancellationToken|CallContext context]);
 ```
 
-The gRPC protocol does not support input parameters. The only way to pass them to server is by using request headers.
+The gRPC protocol does not support input parameters. The only way to pass them to a server is by using HTTP request headers.
 In case the operation contains external input ([T1 arg1, T2 arg2, ..., TN argN]), ServiceModel.Grpc framework will automatically:
 
-- serialize them with current IMarshallerFactory
+- serialize them with the current IMarshallerFactory
 - pass data in the binary request header
 
 for example:

@@ -1,6 +1,6 @@
 # ServiceModel.Grpc server filters
 
-Server filter is a hook for service method invocation, it can work together with gRPC server interceptors, but it is not interceptor.
+The server filter is a hook for service method invocation, it can work together with gRPC server interceptors, but it is not an interceptor.
 
 see [example](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/ServerFilters)
 
@@ -332,7 +332,7 @@ internal sealed class SumAsyncServerFilterAttribute : ServerFilterAttribute
 }
 ```
 
-In the following "HappyDebugging" example, the filter hacks the service method.\
+In the following "HappyDebugging" example, the filter hacks the service method.
 Client call: `MultiplyBy(values: { 1, 2 }, multiplier: 3)`.\
 Response for client: `values: { 11, 16 }, multiplier: 5`
 

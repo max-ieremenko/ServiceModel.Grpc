@@ -1,17 +1,12 @@
-﻿using Contract;
-using Unity;
-using Unity.Lifetime;
+﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace Service
+namespace Service;
+
+public static class PersonModule
 {
-    public static class PersonModule
+    public static void ConfigureServices(IServiceCollection services)
     {
-        public static void ConfigureContainer(IUnityContainer container)
-        {
-            container.RegisterType<IPersonService, PersonService>(new TransientLifetimeManager());
-            container.RegisterType<PersonService>(new TransientLifetimeManager());
-
-            container.RegisterType<IPersonRepository, PersonRepository>(new TransientLifetimeManager());
-        }
+        services.AddTransient<PersonService>();
+        services.AddTransient<IPersonRepository, PersonRepository>();
     }
 }

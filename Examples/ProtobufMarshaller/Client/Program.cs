@@ -1,47 +1,43 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Contract;
 using Grpc.Core;
 using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.Configuration;
 
-namespace Client
+namespace Client;
+
+public static class Program
 {
-    public static class Program
+    private static readonly IClientFactory DefaultClientFactory = new ClientFactory(new ServiceModelGrpcClientOptions
     {
-        private static readonly IClientFactory DefaultClientFactory = new ClientFactory(new ServiceModelGrpcClientOptions
+        // set ProtobufMarshaller as default Marshaller
+        MarshallerFactory = ProtobufMarshallerFactory.Default
+    });
+
+    public static async Task Main()
+    {
+        Console.WriteLine("Call ServerAspNetCore");
+        await Run(new Channel("localhost", ServiceConfiguration.AspNetCorePort, ChannelCredentials.Insecure));
+
+        Console.WriteLine("Call ServerSelfHost");
+        await Run(new Channel("localhost", ServiceConfiguration.SelfHostPort, ChannelCredentials.Insecure));
+
+        if (Debugger.IsAttached)
         {
-            // set ProtobufMarshaller as default Marshaller
-            MarshallerFactory = ProtobufMarshallerFactory.Default
-        });
-
-        public static async Task Main(string[] args)
-        {
-            try
-            {
-                Console.WriteLine("Call ServerAspNetCore");
-                await Run(new Channel("localhost", ServiceConfiguration.AspNetCorePort, ChannelCredentials.Insecure));
-
-                Console.WriteLine("Call ServerSelfHost");
-                await Run(new Channel("localhost", ServiceConfiguration.SelfHostPort, ChannelCredentials.Insecure));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-
             Console.WriteLine("...");
             Console.ReadLine();
         }
+    }
 
-        private static async Task Run(ChannelBase channel)
-        {
-            var personService = DefaultClientFactory.CreateClient<IPersonService>(channel);
-            var person = await personService.CreatePerson("John X", DateTime.Today.AddYears(-20));
+    private static async Task Run(ChannelBase channel)
+    {
+        var personService = DefaultClientFactory.CreateClient<IPersonService>(channel);
+        var person = await personService.CreatePerson("John X", DateTime.Today.AddYears(-20));
 
-            Console.WriteLine("  Name: {0}", person.Name);
-            Console.WriteLine("  BirthDay: {0}", person.BirthDay);
-            Console.WriteLine("  CreatedBy: {0}", person.CreatedBy);
-        }
+        Console.WriteLine("  Name: {0}", person.Name);
+        Console.WriteLine("  BirthDay: {0}", person.BirthDay);
+        Console.WriteLine("  CreatedBy: {0}", person.CreatedBy);
     }
 }

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,55 +21,54 @@ using NUnit.Framework;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
 
-namespace ServiceModel.Grpc.TestApi
+namespace ServiceModel.Grpc.TestApi;
+
+public abstract class ClientBuilderNotSupportedTestBase
 {
-    public abstract class ClientBuilderNotSupportedTestBase
+    private IInvalidContract _contract = null!;
+
+    protected Func<IInvalidContract> Factory { get; set; } = null!;
+
+    protected Mock<CallInvoker> CallInvoker { get; private set; } = null!;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private IInvalidContract _contract = null!;
+        CallInvoker = new Mock<CallInvoker>(MockBehavior.Strict);
+        _contract = Factory();
+    }
 
-        protected Func<IInvalidContract> Factory { get; set; } = null!;
+    [Test]
+    public void InvalidSignature()
+    {
+        var x = 0;
+        var ex = Assert.Throws<NotSupportedException>(() => _contract.InvalidSignature(ref x, out _));
 
-        protected Mock<CallInvoker> CallInvoker { get; private set; } = null!;
+        ex.ShouldNotBeNull();
+        TestOutput.WriteLine(ex.Message);
 
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            CallInvoker = new Mock<CallInvoker>(MockBehavior.Strict);
-            _contract = Factory();
-        }
+        ex.Message.ShouldContain(nameof(IInvalidContract.InvalidSignature));
+    }
 
-        [Test]
-        public void InvalidSignature()
-        {
-            var x = 0;
-            var ex = Assert.Throws<NotSupportedException>(() => _contract.InvalidSignature(ref x, out _));
+    [Test]
+    public void GenericMethod()
+    {
+        var ex = Assert.Throws<NotSupportedException>(() => _contract.Generic<int, string>(2));
 
-            ex.ShouldNotBeNull();
-            Console.WriteLine(ex.Message);
+        ex.ShouldNotBeNull();
+        TestOutput.WriteLine(ex.Message);
 
-            ex.Message.ShouldContain(nameof(IInvalidContract.InvalidSignature));
-        }
+        ex.Message.ShouldContain(nameof(IInvalidContract.Generic));
+    }
 
-        [Test]
-        public void GenericMethod()
-        {
-            var ex = Assert.Throws<NotSupportedException>(() => _contract.Generic<int, string>(2));
+    [Test]
+    public void DisposableIsNotServiceContract()
+    {
+        var ex = Assert.Throws<NotSupportedException>(() => _contract.Dispose());
 
-            ex.ShouldNotBeNull();
-            Console.WriteLine(ex.Message);
+        ex.ShouldNotBeNull();
+        TestOutput.WriteLine(ex.Message);
 
-            ex.Message.ShouldContain(nameof(IInvalidContract.Generic));
-        }
-
-        [Test]
-        public void DisposableIsNotServiceContract()
-        {
-            var ex = Assert.Throws<NotSupportedException>(() => _contract.Dispose());
-
-            ex.ShouldNotBeNull();
-            Console.WriteLine(ex.Message);
-
-            ex.Message.ShouldContain(typeof(IDisposable).FullName!);
-        }
+        ex.Message.ShouldContain(typeof(IDisposable).FullName!);
     }
 }

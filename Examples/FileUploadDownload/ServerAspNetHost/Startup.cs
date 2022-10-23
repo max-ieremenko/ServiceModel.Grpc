@@ -9,80 +9,79 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
 using Service;
 
-namespace ServerAspNetHost
+namespace ServerAspNetHost;
+
+internal sealed class Startup
 {
-    internal sealed class Startup
+    public Startup(bool useResponseCompression)
     {
-        public Startup(bool useResponseCompression)
-        {
-            UseResponseCompression = useResponseCompression;
-        }
+        UseResponseCompression = useResponseCompression;
+    }
         
-        public bool UseResponseCompression { get; }
+    public bool UseResponseCompression { get; }
 
-        public void ConfigureServices(IServiceCollection services)
+    public void ConfigureServices(IServiceCollection services)
+    {
+        if (UseResponseCompression)
         {
-            if (UseResponseCompression)
-            {
-                // enable response compression for gRPC
-                services
-                    .AddGrpc()
-                    .AddServiceOptions<FileService>(options =>
-                    {
-                        options.ResponseCompressionLevel = CompressionSettings.Level;
-                        options.ResponseCompressionAlgorithm = CompressionSettings.Algorithm;
-                    })
-                    .AddServiceOptions<FileServiceRentedArray>(options =>
-                    {
-                        options.ResponseCompressionLevel = CompressionSettings.Level;
-                        options.ResponseCompressionAlgorithm = CompressionSettings.Algorithm;
-                    });
-
-                // enable response compression for asp.net
-                services.AddResponseCompression(options =>
-                {
-                    options.Providers.Clear();
-                    options.Providers.Add<GzipCompressionProvider>();
-
-                    // see FileServiceController.DownloadAsync
-                    options.MimeTypes = new HashSet<string>(ResponseCompressionDefaults.MimeTypes, StringComparer.OrdinalIgnoreCase)
-                    {
-                        MediaTypeNames.Application.Octet
-                    };
-                });
-
-                // the same as for gRPC
-                services.Configure<GzipCompressionProviderOptions>(options =>
-                {
-                    options.Level = CompressionSettings.Level;
-                });
-            }
-
+            // enable response compression for gRPC
             services
-                .AddServiceModelGrpc()
-                .AddServiceModelGrpcServiceOptions<FileService>(options => options.MarshallerFactory = DemoMarshallerFactory.Default)
-                .AddServiceModelGrpcServiceOptions<FileServiceRentedArray>(options => options.MarshallerFactory = DemoMarshallerFactory.Default);
+                .AddGrpc()
+                .AddServiceOptions<FileService>(options =>
+                {
+                    options.ResponseCompressionLevel = CompressionSettings.Level;
+                    options.ResponseCompressionAlgorithm = CompressionSettings.Algorithm;
+                })
+                .AddServiceOptions<FileServiceRentedArray>(options =>
+                {
+                    options.ResponseCompressionLevel = CompressionSettings.Level;
+                    options.ResponseCompressionAlgorithm = CompressionSettings.Algorithm;
+                });
 
-            services.AddControllers();
-        }
-
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (UseResponseCompression)
+            // enable response compression for asp.net
+            services.AddResponseCompression(options =>
             {
-                app.UseResponseCompression();
-            }
+                options.Providers.Clear();
+                options.Providers.Add<GzipCompressionProvider>();
 
-            app.UseRouting();
-            app.UseGrpcWeb();
+                // see FileServiceController.DownloadAsync
+                options.MimeTypes = new HashSet<string>(ResponseCompressionDefaults.MimeTypes, StringComparer.OrdinalIgnoreCase)
+                {
+                    MediaTypeNames.Application.Octet
+                };
+            });
 
-            app.UseEndpoints(endpoints =>
+            // the same as for gRPC
+            services.Configure<GzipCompressionProviderOptions>(options =>
             {
-                endpoints.MapControllers();
-
-                endpoints.MapGrpcService<FileService>().EnableGrpcWeb();
-                endpoints.MapGrpcService<FileServiceRentedArray>().EnableGrpcWeb();
+                options.Level = CompressionSettings.Level;
             });
         }
+
+        services
+            .AddServiceModelGrpc()
+            .AddServiceModelGrpcServiceOptions<FileService>(options => options.MarshallerFactory = DemoMarshallerFactory.Default)
+            .AddServiceModelGrpcServiceOptions<FileServiceRentedArray>(options => options.MarshallerFactory = DemoMarshallerFactory.Default);
+
+        services.AddControllers();
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (UseResponseCompression)
+        {
+            app.UseResponseCompression();
+        }
+
+        app.UseRouting();
+        app.UseGrpcWeb();
+
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+
+            endpoints.MapGrpcService<FileService>().EnableGrpcWeb();
+            endpoints.MapGrpcService<FileServiceRentedArray>().EnableGrpcWeb();
+        });
     }
 }

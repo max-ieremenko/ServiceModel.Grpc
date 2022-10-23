@@ -42,7 +42,7 @@ namespace ServiceModel.Grpc.AspNetCore
                 .StartAsync()
                 .ConfigureAwait(false);
 
-            _serviceModelHost = await new KestrelHost(8081)
+            _serviceModelHost = await new KestrelHost()
                 .ConfigureClientFactory(options => options.MarshallerFactory = ProtobufMarshallerFactory.Default)
                 .ConfigureEndpoints(endpoints => endpoints.MapGrpcService<DomainGreeterService>())
                 .StartAsync()

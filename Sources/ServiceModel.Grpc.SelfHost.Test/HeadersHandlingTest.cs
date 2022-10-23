@@ -21,39 +21,37 @@ using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 
-namespace ServiceModel.Grpc.SelfHost
-{
-    [TestFixture(GrpcChannelType.GrpcCore)]
+namespace ServiceModel.Grpc.SelfHost;
+
+[TestFixture(GrpcChannelType.GrpcCore)]
 #if NET5_0_OR_GREATER
-    [TestFixture(GrpcChannelType.GrpcDotNet)]
+[TestFixture(GrpcChannelType.GrpcDotNet)]
 #endif
-    public class HeadersHandlingTest : HeadersHandlingTestBase
+public class HeadersHandlingTest : HeadersHandlingTestBase
+{
+    private readonly GrpcChannelType _channelType;
+    private ServerHost _host = null!;
+
+    public HeadersHandlingTest(GrpcChannelType channelType)
     {
-        private readonly GrpcChannelType _channelType;
-        private ServerHost _host = null!;
+        _channelType = channelType;
+    }
 
-        public HeadersHandlingTest(GrpcChannelType channelType)
-        {
-            _channelType = channelType;
-        }
+    [OneTimeSetUp]
+    public void BeforeAll()
+    {
+        _host = new ServerHost(_channelType);
 
-        [OneTimeSetUp]
-        public void BeforeAll()
-        {
-            _host = new ServerHost(_channelType);
+        _host.Services.AddServiceModelSingleton(new HeadersService());
+        _host.Start();
 
-            _host.Services.AddServiceModelSingleton(new HeadersService());
+        var options = new ServiceModelGrpcClientOptions { DefaultCallOptionsFactory = () => new CallOptions(DefaultMetadata) };
+        DomainService = new ClientFactory(options).CreateClient<IHeadersService>(_host.Channel);
+    }
 
-            var options = new ServiceModelGrpcClientOptions { DefaultCallOptionsFactory = () => new CallOptions(DefaultMetadata) };
-            DomainService = new ClientFactory(options).CreateClient<IHeadersService>(_host.Channel);
-
-            _host.Start();
-        }
-
-        [OneTimeTearDown]
-        public async Task AfterAll()
-        {
-            await _host.DisposeAsync().ConfigureAwait(false);
-        }
+    [OneTimeTearDown]
+    public async Task AfterAll()
+    {
+        await _host.DisposeAsync().ConfigureAwait(false);
     }
 }

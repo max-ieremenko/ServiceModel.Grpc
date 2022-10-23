@@ -9,57 +9,56 @@ using Microsoft.Extensions.Logging;
 using Service;
 using Service.Filters;
 
-namespace ServerSelfHost
+namespace ServerSelfHost;
+
+public static class Program
 {
-    public static class Program
+    public static async Task Main()
     {
-        public static async Task Main()
+        var server = new Server
         {
-            var server = new Server
-            {
-                Ports = { new ServerPort("localhost", 8081, ServerCredentials.Insecure) }
-            };
+            Ports = { new ServerPort("localhost", 8081, ServerCredentials.Insecure) }
+        };
 
-            using (var serviceProvider = BuildServiceProvider())
-            {
-                // host Calculator
-                server.Services.AddServiceModel<Calculator>(
-                    serviceProvider,
-                    options =>
-                    {
-                        options.Filters.Add(1, provider => provider.GetRequiredService<LoggingServerFilter>());
-                    });
-
-                server.Start();
-
-                try
+        using (var serviceProvider = BuildServiceProvider())
+        {
+            // host Calculator
+            server.Services.AddServiceModel<Calculator>(
+                serviceProvider,
+                options =>
                 {
-                    await ClientCalls.CallCalculator(new Uri("http://localhost:8081"), CancellationToken.None).ConfigureAwait(false);
-                }
-                finally
-                {
-                    await server.ShutdownAsync().ConfigureAwait(false);
-                }
+                    options.Filters.Add(1, provider => provider.GetRequiredService<LoggingServerFilter>());
+                });
+
+            server.Start();
+
+            try
+            {
+                await ClientCalls.CallCalculator(new Uri("http://localhost:8081"), CancellationToken.None).ConfigureAwait(false);
             }
-
-            if (Debugger.IsAttached)
+            finally
             {
-                Console.WriteLine("...");
-                Console.ReadLine();
+                await server.ShutdownAsync().ConfigureAwait(false);
             }
         }
 
-        private static ServiceProvider BuildServiceProvider()
+        if (Debugger.IsAttached)
         {
-            var services = new ServiceCollection();
-
-            services.AddTransient<Calculator>();
-
-            services.AddTransient<LoggingServerFilter>();
-
-            services.AddLogging(configure => configure.AddConsole());
-
-            return services.BuildServiceProvider();
+            Console.WriteLine("...");
+            Console.ReadLine();
         }
+    }
+
+    private static ServiceProvider BuildServiceProvider()
+    {
+        var services = new ServiceCollection();
+
+        services.AddTransient<Calculator>();
+
+        services.AddTransient<LoggingServerFilter>();
+
+        services.AddLogging(configure => configure.AddConsole());
+
+        return services.BuildServiceProvider();
     }
 }
