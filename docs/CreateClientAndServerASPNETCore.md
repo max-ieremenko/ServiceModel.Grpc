@@ -1,7 +1,7 @@
 # ServiceModel.Grpc Create a gRPC client and server in ASP.NET Core
 
 This tutorial shows how to create a .NET client and an ASP.NET Core Server.
-At the end, you'll have a gRPC client that communicates with the gRPC Greeter service.
+In the end, you'll have a gRPC client that communicates with the gRPC Greeter service.
 
 [View sample code](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/CreateClientAndServerASPNETCore).
 
@@ -227,4 +227,4 @@ Run "Service" and then "Client"
 
 ## What is next
 
-Configure custom [error handling](global-error-handling.md).
+Customize [error handling](global-error-handling.md).

@@ -26,10 +26,10 @@ Task<(IAsyncEnumerable<TData> Stream, T1 arg1, T2 arg2, ..., TN argN)> Operation
 ValueTask<(T1 arg1, T2 arg2, ..., TN argN, IAsyncEnumerable<TData> Stream)> OperationName(...);
 ```
 
-The gRPC protocol does not support external data in the response. The only way to pass it to client is by using response headers.
+The gRPC protocol does not support external data in the response. The only way to pass it to a client is by using HTTP response headers.
 In case the operation contains external data in the response, ServiceModel.Grpc framework will automatically:
 
-- serialize it with current IMarshallerFactory
+- serialize it with the current IMarshallerFactory
 - pass data in the binary response header
 
 for example:

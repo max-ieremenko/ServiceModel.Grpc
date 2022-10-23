@@ -3,10 +3,10 @@
 ServiceModel.Grpc does not handle any errors by default.
 The general information about error handling is [here](error-handling-general.md).
 
-This tutorial shows how to implement custom gRPC exception handling with the following behavior:
+This page shows how to implement custom gRPC exception handling with the following behavior:
 
-- if server throws an ApplicationException, on client i want to catch ApplicationException
-- UnexpectedErrorException is defined in client. If server throws InvalidOperationException or NotSupportedException i want to catch UnexpectedErrorException and see detailed information from server, such as full exception `ex.ToString()`, exception type, gRPC method name etc.
+- if the server throws an ApplicationException, on the client I want to catch ApplicationException
+- UnexpectedErrorException is defined in the client. If the server throws InvalidOperationException or NotSupportedException I want to catch UnexpectedErrorException and see detailed information from the server, such as full exception `ex.ToString()`, exception type, gRPC method name, etc.
 - all other exceptions must be handled by gRPC API.
 
 [View sample code](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/ErrorHandling).
@@ -19,17 +19,17 @@ The service contract:
 [ServiceContract]
 public interface IDebugService
 {
-    // always throws ApplicationException with a specific message
+    // always throws ApplicationException
     [OperationContract]
     Task ThrowApplicationException(string message);
 
-    // randomly throws InvalidOperationException or NotSupportedException with a specific message
+    // randomly throws InvalidOperationException or NotSupportedException
     [OperationContract]
     Task ThrowRandomException(string message);
 }
 ```
 
-UnexpectedErrorDetail is a data contract and caries detailed information about InvalidOperationException or NotSupportedException from server to client.
+UnexpectedErrorDetail is a data contract that carries detailed information about InvalidOperationException or NotSupportedException from server to client.
 
 ``` c#
 [DataContract]
@@ -107,7 +107,7 @@ catch (UnexpectedErrorException ex)
 ## Create server error handlers
 
 A server-side error handler is an implementation of interface `IServerErrorHandler` with one method `ProvideFaultOrIgnore`.
-If the method returns `null`, the exception is processed by gRPC API, otherwise ServiceModel.Grpc throws an `RpcException` based on `ServerFaultDetail`.
+If the method returns `null`, the exception is processed by gRPC API, otherwise ServiceModel.Grpc throws a `RpcException` based on `ServerFaultDetail`.
 
 To meet the requirements we implement two error handlers. The first one `ApplicationExceptionServerHandler` is responsible to process `ApplicationException`.
 
@@ -155,14 +155,14 @@ public sealed class UnexpectedExceptionServerHandler : IServerErrorHandler
 }
 ```
 
-All other exceptions are handled by gRPC.
+All other exceptions are handled by gRPC API.
 
 ## Create client error handlers
 
 A client-side error handler is an implementation of interface `IClientErrorHandler` with one method `ThrowOrIgnore`.
-The method can ignore original `RpcException`, provided by gRPC API, or throws a custom exception to pass it to the caller.
+The method can ignore the original `RpcException`, provided by gRPC API, or throws a custom exception to pass it to the caller.
 
-To meet the requirements we implement two error handlers. The first one `ApplicationExceptionClientHandler` is responsible to process marker `ApplicationException` provided by the server error handler.
+To meet the requirements we implement two error handlers. The first one `ApplicationExceptionClientHandler` is responsible to process the marker `ApplicationException` provided by the server error handler.
 
 ``` c#
 internal sealed class ApplicationExceptionClientHandler : IClientErrorHandler
@@ -179,7 +179,7 @@ internal sealed class ApplicationExceptionClientHandler : IClientErrorHandler
 }
 ```
 
-The second one `UnexpectedExceptionClientHandler` is responsible to process marker `UnexpectedErrorDetail` provided by server error handler.
+The second one `UnexpectedExceptionClientHandler` is responsible to process the marker `UnexpectedErrorDetail` provided by the server error handler.
 
 ``` c#
 // custom exception with detailed information from server
@@ -208,7 +208,7 @@ internal sealed class UnexpectedExceptionClientHandler : IClientErrorHandler
 }
 ```
 
-All other exceptions are handled by gRPC.
+All other exceptions are handled by gRPC API.
 
 ## Configure global error handling in asp.net core server
 
@@ -240,7 +240,7 @@ public void ConfigureServices(IServiceCollection services)
 
 In case there is a global error handler and a handler for a specific service. The global one is ignored.
 
-In this example we register a global error handler.
+In this example, we register a global error handler.
 
 ``` c#
 public void ConfigureServices(IServiceCollection services)
@@ -303,9 +303,9 @@ factory.AddClient<IDebugService>(options =>
 });
 ```
 
-In case there is a global error handler and a handler for a specific proxy. The global one is ignored.
+In case there is a global error handler and a handler for a specific service. The global one is ignored.
 
-In this example we register a global error handler.
+In this example, we register a global error handler.
 
 ``` c#
 private static readonly IClientFactory DefaultClientFactory = new ClientFactory(new ServiceModelGrpcClientOptions

@@ -29,10 +29,10 @@ Define the contract in the following manner:
 - the sync method is a decoration and is not a contract
 
 ``` c#
-// blocking unary call is not operation contract
+// blocking unary call is not an operation contract
 TResult DoSomething(T1 arg1, T2 arg2, CancellationToken token);
 
-// async unary call is operation contract
+// async unary call is the operation contract
 [OperationContract]
 Task<TResult> DoSomethingAsync(T1 arg1, T2 arg2, CancellationToken token);
 ```

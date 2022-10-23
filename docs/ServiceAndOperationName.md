@@ -1,34 +1,34 @@
 # ServiceModel.Grpc service and operation names
 
-By default a contract interface name is a gRPC service name and contract method name is gRPC method name, namespace and assembly name of interface does not matter:
+By default, a contract interface name is a gRPC service name and a contract method name is gRPC operation name, namespace and assembly name of the interface does not matter:
 
 ``` c#
 // service name: ICalculator
 [ServiceContract]
 public interface ICalculator
 {
-    // method: POST /ICalculator/Sum
+    // operation: POST /ICalculator/Sum
     [OperationContract]
     int Sum(int x, int y);
 
-    // method: POST /ICalculator/SumAsync
+    // operation: POST /ICalculator/SumAsync
     [OperationContract]
     Task<int> SumAsync(int x, int y);
 }
 ```
 
-in some cases it may lead to a naming conflicts. In the following example there are 2 methods with gRPC method name `/ICalculator/Sum`:
+in some cases, it may lead to naming conflicts. In the following example there are 2 methods with gRPC method name `/ICalculator/Sum`:
 
 ``` c#
 // service name: ICalculator
 [ServiceContract]
 public interface ICalculator
 {
-    // method: POST /ICalculator/Sum
+    // operation: POST /ICalculator/Sum
     [OperationContract]
     int Sum(int x, int y);
 
-    // method: POST /ICalculator/Sum
+    // operation: POST /ICalculator/Sum
     [OperationContract]
     int Sum(int x, int y, int z);
 }
@@ -41,11 +41,11 @@ To resolve the conflict use `OperationContractAttribute.Name`:
 [ServiceContract]
 public interface ICalculator
 {
-    // method: POST /ICalculator/Sum2Values
+    // operation: POST /ICalculator/Sum2Values
     [OperationContract(Name = "Sum2Values")]
     int Sum(int x, int y);
 
-    // method: POST /ICalculator/Sum3Values
+    // operation: POST /ICalculator/Sum3Values
     [OperationContract(Name = "Sum3Values")]
     int Sum(int x, int y, int z);
 }
@@ -118,7 +118,7 @@ internal sealed class CalculatorNullableInt32 : ICalculator<int?>
 
 `ICalculator<int?>` interface has gRPC service name `ICalculator-Nullable-Int32`.
 
-The name of generic argument is 'DataContractAttribute.Name', if is defined, or type name:
+The name of the generic argument is 'DataContractAttribute.Name', if defined, or type name:
 
 ``` c#
 [DataContract(Name = "MyValue")]

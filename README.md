@@ -1,6 +1,6 @@
 # ServiceModel.Grpc
 
-`ServiceModel.Grpc` enables applications to communicate with gRPC services using code-first approach (no .proto files), helps to get around some limitations of gRPC protocol like "only reference types", "exact one input", "no nulls/value-types". Provides exception handling. Helps to migrate existing WCF solution to gRPC with minimum effort.
+`ServiceModel.Grpc` enables applications to communicate with gRPC services using a code-first approach (no .proto files), helps to get around limitations of gRPC protocol like "only reference types", "exact one input", "no nulls", "no value-types". Provides exception handling. Helps to migrate existing WCF solution to gRPC with minimum effort.
 
 The library supports lightweight runtime proxy generation via Reflection.Emit and C# source code generation.
 
@@ -24,15 +24,12 @@ The solution is built on top of [gRPC C#](https://github.com/grpc/grpc/tree/mast
     - [duplex streaming](https://max-ieremenko.github.io/ServiceModel.Grpc/operation-duplex-streaming.html)
   - [ASP.NET Core server configuration](https://max-ieremenko.github.io/ServiceModel.Grpc/ASPNETCoreServerConfiguration.html)
   - [Grpc.Core server configuration](https://max-ieremenko.github.io/ServiceModel.Grpc/GrpcCoreServerConfiguration.html)
-  - error handler general [information](https://max-ieremenko.github.io/ServiceModel.Grpc/error-handling-general.html)
-  - global error handling [tutorial](https://max-ieremenko.github.io/ServiceModel.Grpc/global-error-handling.html)
+  - [exception handling general information](https://max-ieremenko.github.io/ServiceModel.Grpc/error-handling-general.html)
+  - [global exception handling](https://max-ieremenko.github.io/ServiceModel.Grpc/global-error-handling.html)
   - [server filters](https://max-ieremenko.github.io/ServiceModel.Grpc/server-filters.html)
-  - getting started [tutorial](https://max-ieremenko.github.io/ServiceModel.Grpc/CreateClientAndServerASPNETCore.html) create a gRPC client and server
   - [compatibility with native gRPC](https://max-ieremenko.github.io/ServiceModel.Grpc/CompatibilityWithNativegRPC.html)
-  - migrate from WCF to a gRPC [tutorial](https://max-ieremenko.github.io/ServiceModel.Grpc/MigrateWCFServiceTogRPC.html)
-  - migrate from WCF FaultContract to a gRPC global error handling [tutorial](https://max-ieremenko.github.io/ServiceModel.Grpc/migrate-wcf-faultcontract-to-global-error-handling.html)
-  - [example](Examples/MessagePackMarshaller) MessagePack marshaller
-  - [example](Examples/ProtobufMarshaller) protobuf marshaller
+  - [migrate from WCF to a gRPC](https://max-ieremenko.github.io/ServiceModel.Grpc/MigrateWCFServiceTogRPC.html)
+  - [migrate from WCF FaultContract to a gRPC global error handling](https://max-ieremenko.github.io/ServiceModel.Grpc/migrate-wcf-faultcontract-to-global-error-handling.html)
 - [examples](Examples)
 
 ## ServiceModel.Grpc at a glance <a name="intro"></a>
@@ -53,7 +50,7 @@ public interface ICalculator
 
 ### Client call (Reflection.Emit)
 
-A proxy for ICalculator service will be generated on demand via `Reflection.Emit`.
+A proxy for the ICalculator service will be generated on demand via `Reflection.Emit`.
 
 ```powershell
 PS> Install-Package ServiceModel.Grpc
@@ -78,7 +75,7 @@ var (multiplier, values) = await calculator.MultiplyBy(new[] {1, 2, 3}, 2);
 
 ### Client call (source code generation)
 
-A proxy for ICalculator service will be generated in the source code.
+A proxy for the ICalculator service will be generated in the source code.
 
 ```powershell
 PS> Install-Package ServiceModel.Grpc.DesignTime
@@ -112,8 +109,6 @@ var sum = await calculator.Sum(1, 2, 3);
 var (multiplier, values) = await calculator.MultiplyBy(new[] {1, 2, 3}, 2);
 ```
 
-> ServiceModel.Grpc.DesignTime uses roslyn [source generators](https://github.com/dotnet/roslyn/blob/master/docs/features/source-generators.md), which requires [net5.0 sdk](https://dotnet.microsoft.com/download/dotnet/5.0).
-
 ### Implement a service
 
 ``` c#
@@ -137,7 +132,7 @@ internal sealed class Calculator : ICalculator
 }
 ```
 
-### Host the service in asp.net core application
+### Host the service in the asp.net core application
 
 ```powershell
 PS> Install-Package ServiceModel.Grpc.AspNetCore
@@ -260,7 +255,7 @@ ServiceModel.Grpc.ProtoBufMarshaller | [![Version](https://img.shields.io/nuget/
 
 ## Benchmarks
 
-ServiceModel.Grpc is a tiny layer on top of gRPC C# and grpc-dotnet, helps to adapt code-first to gRPC protocol. A serializer makes performance picture.
+ServiceModel.Grpc is a tiny layer on top of grpc-dotnet, which helps to adapt code-first to gRPC protocol. A serializer makes a picture of the performance.
 
 Benchmark code is available [here](/Benchmarks).
 
@@ -289,7 +284,7 @@ value = new SomeObject
 - `ServiceModelGrpc.DataContract` test uses DataContractSerializer
 - `ServiceModelGrpc.Protobuf` test uses protobuf-net serializer
 - `ServiceModelGrpc.MessagePack` test uses MessagePack serializer
-- `ServiceModelGrpc.proto-emulation` test uses Google protobuf serialization, the same as `grpc-dotnet`. This test is designed to compare numbers between `ServiceModelGrpc` and `grpc-dotnet` without influence of serializer.
+- `ServiceModelGrpc.proto-emulation` test uses Google protobuf serialization, the same as `grpc-dotnet`. This test is designed to compare numbers between `ServiceModelGrpc` and `grpc-dotnet` without the influence of a serializer.
 
 - `grpc-dotnet` is a baseline:
 

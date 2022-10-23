@@ -4,7 +4,7 @@ To make ServiceModel.Grpc calls compatible with native gRPC:
 
 - configure to use protobuf serialization for data marshalling
 - service and method names must match
-- serialization contracts of .net objects must be compatible with .proto contract
+- .net object serialization contracts must be compatible with the .proto contract.
 
 ## Demo app
 
@@ -27,7 +27,7 @@ message SumResponse {
 
 // service name: Calculator
 service Calculator {
-    // method name Sum
+    // operation name Sum
     rpc Sum (SumRequest) returns (SumResponse);
 }
 ```
@@ -35,10 +35,13 @@ service Calculator {
 ServiceModel.Grpc contract
 
 ``` c#
-[ServiceContract(Name = "Calculator")] // service name: Calculator
+// service name: Calculator
+[ServiceContract(Name = "Calculator")]
 public interface ICalculator
 {
-    [OperationContract(Name = "Sum")] // method name: Sum
+    // operation name: Sum
+    // parameter names don't matter, order and types matter
+    [OperationContract(Name = "Sum")]
     Task<long> SumAsync(int x, int y);
 }
 ```

@@ -1,6 +1,6 @@
 # Migrate from WCF FaultContract to a gRPC global error handling with ServiceModel.Grpc
 
-This tutorial proposes a solution how to migrate an existing WCF FaultContract exception handling to gRPC error handling with minimum effort.
+This page proposes a solution how to migrate an existing WCF FaultContract exception handling to gRPC error handling with minimum effort.
 
 How to migrate an existing WCF service and client is described [here](MigrateWCFServiceTogRPC.md).
 
@@ -66,7 +66,7 @@ The goal is to migrate to gRPC without any changes in existing service and clien
 
 ## Create server error handler
 
-In order to provide fault detail from server to client via gRPC, an server error handler is required. The handler processes only 2 specific exceptions and ignores others:
+To provide fault detail from server to client via gRPC, a server error handler is required. The handler processes only 2 specific exceptions and ignores others:
 
 ``` c#
 internal sealed class FaultExceptionServerHandler : ServerErrorHandlerBase
@@ -101,7 +101,7 @@ internal sealed class FaultExceptionServerHandler : ServerErrorHandlerBase
 
 ## Create client error handler
 
-In order to pass FaultException<> to existing client implementation, an client error handler is required. The handler processes only 2 specific details, provided by server error handler an ignores other exceptions:
+To provide fault detail from server to client via gRPC, a server error handler is required. The handler processes only 2 specific exceptions and ignores others:
 
 ``` c#
 internal sealed class FaultExceptionClientHandler : ClientErrorHandlerBase
