@@ -22,53 +22,52 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace ServiceModel.Grpc.DesignTime.Generator
+namespace ServiceModel.Grpc.DesignTime.Generator;
+
+internal static partial class SyntaxFactoryExtensions
 {
-    internal static partial class SyntaxFactoryExtensions
+    public static string GetFullName(this ClassDeclarationSyntax node)
     {
-        public static string GetFullName(this ClassDeclarationSyntax node)
+        var result = new StringBuilder(node.Identifier.WithoutTrivia().ToString());
+        foreach (var ancestor in node.AncestorMembers())
         {
-            var result = new StringBuilder(node.Identifier.WithoutTrivia().ToString());
-            foreach (var ancestor in node.AncestorMembers())
+            result.Insert(0, ".");
+            result.Insert(0, ancestor.Name);
+        }
+
+        return result.ToString();
+    }
+
+    public static bool IsStatic(this ClassDeclarationSyntax node)
+    {
+        return node.Modifiers.Any(i => "static".Equals(i.ToString(), StringComparison.Ordinal));
+    }
+
+    public static IEnumerable<(SyntaxKind Kind, string Name)> AncestorMembers(this ClassDeclarationSyntax node)
+    {
+        foreach (var ancestor in node.Ancestors().OfType<MemberDeclarationSyntax>())
+        {
+            string? name = null;
+            var kind = default(SyntaxKind);
+
+            if (ancestor is NamespaceDeclarationSyntax ns)
             {
-                result.Insert(0, ".");
-                result.Insert(0, ancestor.Name);
+                kind = SyntaxKind.NamespaceDeclaration;
+                name = ns.Name.WithoutTrivia().ToString();
+            }
+            else if (ancestor is ClassDeclarationSyntax c)
+            {
+                kind = SyntaxKind.ClassDeclaration;
+                name = c.Identifier.WithoutTrivia().ToString();
+            }
+            else
+            {
+                TryGetAncestorMember(ancestor, ref kind, ref name);
             }
 
-            return result.ToString();
-        }
-
-        public static bool IsStatic(this ClassDeclarationSyntax node)
-        {
-            return node.Modifiers.Any(i => "static".Equals(i.ToString(), StringComparison.Ordinal));
-        }
-
-        public static IEnumerable<(SyntaxKind Kind, string Name)> AncestorMembers(this ClassDeclarationSyntax node)
-        {
-            foreach (var ancestor in node.Ancestors().OfType<MemberDeclarationSyntax>())
+            if (name != null)
             {
-                string? name = null;
-                var kind = default(SyntaxKind);
-
-                if (ancestor is NamespaceDeclarationSyntax ns)
-                {
-                    kind = SyntaxKind.NamespaceDeclaration;
-                    name = ns.Name.WithoutTrivia().ToString();
-                }
-                else if (ancestor is ClassDeclarationSyntax c)
-                {
-                    kind = SyntaxKind.ClassDeclaration;
-                    name = c.Identifier.WithoutTrivia().ToString();
-                }
-                else
-                {
-                    TryGetAncestorMember(ancestor, ref kind, ref name);
-                }
-
-                if (name != null)
-                {
-                    yield return (kind, name);
-                }
+                yield return (kind, name);
             }
         }
     }

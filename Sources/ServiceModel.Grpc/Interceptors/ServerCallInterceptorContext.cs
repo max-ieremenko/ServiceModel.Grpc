@@ -16,25 +16,24 @@
 
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Interceptors
+namespace ServiceModel.Grpc.Interceptors;
+
+/// <summary>
+/// Carries along the context associated with intercepted invocations on the server side.
+/// </summary>
+public readonly struct ServerCallInterceptorContext
 {
     /// <summary>
-    /// Carries along the context associated with intercepted invocations on the server side.
+    /// Initializes a new instance of the <see cref="ServerCallInterceptorContext"/> struct with the specified <see cref="ServerCallContext"/>.
     /// </summary>
-    public readonly struct ServerCallInterceptorContext
+    /// <param name="serverCallContext">A <see cref="ServerCallContext"/> instance containing the context of the current call.</param>
+    public ServerCallInterceptorContext(ServerCallContext serverCallContext)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ServerCallInterceptorContext"/> struct with the specified <see cref="ServerCallContext"/>.
-        /// </summary>
-        /// <param name="serverCallContext">A <see cref="ServerCallContext"/> instance containing the context of the current call.</param>
-        public ServerCallInterceptorContext(ServerCallContext serverCallContext)
-        {
-            ServerCallContext = serverCallContext;
-        }
-
-        /// <summary>
-        /// Gets the <see cref="ServerCallContext"/> instance containing the context of the current call.
-        /// </summary>
-        public ServerCallContext ServerCallContext { get; }
+        ServerCallContext = serverCallContext;
     }
+
+    /// <summary>
+    /// Gets the <see cref="ServerCallContext"/> instance containing the context of the current call.
+    /// </summary>
+    public ServerCallContext ServerCallContext { get; }
 }

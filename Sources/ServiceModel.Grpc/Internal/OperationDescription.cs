@@ -16,31 +16,30 @@
 
 using System.Diagnostics;
 
-namespace ServiceModel.Grpc.Internal
+namespace ServiceModel.Grpc.Internal;
+
+[DebuggerDisplay("{ServiceName}/{OperationName}")]
+internal sealed class OperationDescription
 {
-    [DebuggerDisplay("{ServiceName}/{OperationName}")]
-    internal sealed class OperationDescription
+    public OperationDescription(string serviceName, string operationName, MessageAssembler message)
     {
-        public OperationDescription(string serviceName, string operationName, MessageAssembler message)
-        {
-            ServiceName = serviceName;
-            OperationName = operationName;
-            Message = message;
-            GrpcMethodName = "Method" + OperationName;
-            GrpcMethodInputHeaderName = "MethodHeader" + OperationName;
-            GrpcMethodOutputHeaderName = "MethodOutputHeader" + OperationName;
-        }
-
-        public string ServiceName { get; }
-
-        public string OperationName { get; }
-
-        public MessageAssembler Message { get; }
-
-        public string GrpcMethodName { get; }
-
-        public string GrpcMethodInputHeaderName { get; }
-
-        public string GrpcMethodOutputHeaderName { get; }
+        ServiceName = serviceName;
+        OperationName = operationName;
+        Message = message;
+        GrpcMethodName = "Method" + OperationName;
+        GrpcMethodInputHeaderName = "MethodHeader" + OperationName;
+        GrpcMethodOutputHeaderName = "MethodOutputHeader" + OperationName;
     }
+
+    public string ServiceName { get; }
+
+    public string OperationName { get; }
+
+    public MessageAssembler Message { get; }
+
+    public string GrpcMethodName { get; }
+
+    public string GrpcMethodInputHeaderName { get; }
+
+    public string GrpcMethodOutputHeaderName { get; }
 }

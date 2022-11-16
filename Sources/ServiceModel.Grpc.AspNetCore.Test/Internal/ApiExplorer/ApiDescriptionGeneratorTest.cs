@@ -21,65 +21,64 @@ using NUnit.Framework;
 using ServiceModel.Grpc.Internal;
 using Shouldly;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
+namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer;
+
+[TestFixture]
+public partial class ApiDescriptionGeneratorTest
 {
-    [TestFixture]
-    public partial class ApiDescriptionGeneratorTest
+    [Test]
+    [TestCaseSource(nameof(GetTestCases))]
+    public void GetRequestType(MethodInfo method)
     {
-        [Test]
-        [TestCaseSource(nameof(GetTestCases))]
-        public void GetRequestType(MethodInfo method)
+        var expected = method.GetCustomAttribute<RequestMetadataAttribute>();
+        var message = new MessageAssembler(method);
+
+        var parameters = ApiDescriptionGenerator.GetRequestParameters(message).ToArray();
+        var headerParameters = ApiDescriptionGenerator.GetRequestHeaderParameters(message).ToArray();
+
+        parameters.Length.ShouldBe(expected!.Parameters.Length);
+        headerParameters.Length.ShouldBe(expected.HeaderParameters.Length);
+
+        for (var i = 0; i < expected.Parameters.Length; i++)
         {
-            var expected = method.GetCustomAttribute<RequestMetadataAttribute>();
-            var message = new MessageAssembler(method);
-
-            var parameters = ApiDescriptionGenerator.GetRequestParameters(message).ToArray();
-            var headerParameters = ApiDescriptionGenerator.GetRequestHeaderParameters(message).ToArray();
-
-            parameters.Length.ShouldBe(expected!.Parameters.Length);
-            headerParameters.Length.ShouldBe(expected.HeaderParameters.Length);
-
-            for (var i = 0; i < expected.Parameters.Length; i++)
-            {
-                parameters[i].ShouldBe(message.Parameters[expected.Parameters[i]]);
-            }
-
-            for (var i = 0; i < expected.HeaderParameters.Length; i++)
-            {
-                headerParameters[i].ShouldBe(message.Parameters[expected.HeaderParameters[i]]);
-            }
+            parameters[i].ShouldBe(message.Parameters[expected.Parameters[i]]);
         }
 
-        [Test]
-        [TestCaseSource(nameof(GetTestCases))]
-        public void GetResponseType(MethodInfo method)
+        for (var i = 0; i < expected.HeaderParameters.Length; i++)
         {
-            var expected = method.GetCustomAttribute<ResponseMetadataAttribute>();
-            var message = new MessageAssembler(method);
-
-            var responseType = ApiDescriptionGenerator.GetResponseType(message);
-            var responseHeaders = ApiDescriptionGenerator.GetResponseHeaderParameters(message);
-
-            responseType.Type.ShouldBe(expected!.Type);
-            responseType.Parameter.ShouldBe(method.ReturnParameter);
-
-            responseHeaders.Length.ShouldBe(expected.HeaderTypes.Length);
-            for (var i = 0; i < expected.HeaderTypes.Length; i++)
-            {
-                responseHeaders[i].Type.ShouldBe(expected.HeaderTypes[i]);
-                responseHeaders[i].Name.ShouldBe(expected.HeaderNames[i]);
-            }
+            headerParameters[i].ShouldBe(message.Parameters[expected.HeaderParameters[i]]);
         }
+    }
 
-        private static IEnumerable<TestCaseData> GetTestCases()
+    [Test]
+    [TestCaseSource(nameof(GetTestCases))]
+    public void GetResponseType(MethodInfo method)
+    {
+        var expected = method.GetCustomAttribute<ResponseMetadataAttribute>();
+        var message = new MessageAssembler(method);
+
+        var responseType = ApiDescriptionGenerator.GetResponseType(message);
+        var responseHeaders = ApiDescriptionGenerator.GetResponseHeaderParameters(message);
+
+        responseType.Type.ShouldBe(expected!.Type);
+        responseType.Parameter.ShouldBe(method.ReturnParameter);
+
+        responseHeaders.Length.ShouldBe(expected.HeaderTypes.Length);
+        for (var i = 0; i < expected.HeaderTypes.Length; i++)
         {
-            foreach (var method in ReflectionTools.GetMethods(typeof(TestCases)))
+            responseHeaders[i].Type.ShouldBe(expected.HeaderTypes[i]);
+            responseHeaders[i].Name.ShouldBe(expected.HeaderNames[i]);
+        }
+    }
+
+    private static IEnumerable<TestCaseData> GetTestCases()
+    {
+        foreach (var method in ReflectionTools.GetMethods(typeof(TestCases)))
+        {
+            yield return new TestCaseData(method)
             {
-                yield return new TestCaseData(method)
-                {
-                    TestName = method.Name
-                };
-            }
+                TestName = method.Name
+            };
         }
     }
 }

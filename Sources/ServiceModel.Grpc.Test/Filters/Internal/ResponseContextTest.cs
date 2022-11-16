@@ -20,55 +20,54 @@ using NUnit.Framework;
 using ServiceModel.Grpc.Channel;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Filters.Internal
+namespace ServiceModel.Grpc.Filters.Internal;
+
+[TestFixture]
+public class ResponseContextTest
 {
-    [TestFixture]
-    public class ResponseContextTest
+    [Test]
+    public void CreateResponseByUserRequest()
     {
-        [Test]
-        public void CreateResponseByUserRequest()
-        {
-            var sut = new ResponseContext(new MessageProxy(new[] { "p1" }, typeof(Message<int>)), new StreamProxy(typeof(string)));
+        var sut = new ResponseContext(new MessageProxy(new[] { "p1" }, typeof(Message<int>)), new StreamProxy(typeof(string)));
 
-            sut["p1"].ShouldBe(0);
-            sut.Stream.ShouldBeAssignableTo<IAsyncEnumerable<string>>();
-        }
+        sut["p1"].ShouldBe(0);
+        sut.Stream.ShouldBeAssignableTo<IAsyncEnumerable<string>>();
+    }
 
-        [Test]
-        public void CreateResponseByHandlerRequest()
-        {
-            var sut = new ResponseContext(new MessageProxy(new[] { "p1" }, typeof(Message<int>)), new StreamProxy(typeof(string)));
+    [Test]
+    public void CreateResponseByHandlerRequest()
+    {
+        var sut = new ResponseContext(new MessageProxy(new[] { "p1" }, typeof(Message<int>)), new StreamProxy(typeof(string)));
 
-            var (response, stream) = sut.GetRaw();
+        var (response, stream) = sut.GetRaw();
 
-            response.ShouldBeOfType<Message<int>>();
-            stream.ShouldBeAssignableTo<IAsyncEnumerable<string>>();
-        }
+        response.ShouldBeOfType<Message<int>>();
+        stream.ShouldBeAssignableTo<IAsyncEnumerable<string>>();
+    }
 
-        [Test]
-        public void ListProperties()
-        {
-            var sut = new ResponseContext(new MessageProxy(new[] { "p1", "p2" }, typeof(Message<int, string>)), null);
+    [Test]
+    public void ListProperties()
+    {
+        var sut = new ResponseContext(new MessageProxy(new[] { "p1", "p2" }, typeof(Message<int, string>)), null);
 
-            var actual = sut.ToArray();
+        var actual = sut.ToArray();
 
-            actual.Length.ShouldBe(2);
-            actual[0].Key.ShouldBe("p1");
-            actual[0].Value.ShouldBe(0);
-            actual[1].Key.ShouldBe("p2");
-            actual[1].Value.ShouldBeNull();
-        }
+        actual.Length.ShouldBe(2);
+        actual[0].Key.ShouldBe("p1");
+        actual[0].Value.ShouldBe(0);
+        actual[1].Key.ShouldBe("p2");
+        actual[1].Value.ShouldBeNull();
+    }
 
-        [Test]
-        public void ResponseIsProvided()
-        {
-            var sut = new ResponseContext(new MessageProxy(new[] { "p1" }, typeof(Message<int>)), null);
+    [Test]
+    public void ResponseIsProvided()
+    {
+        var sut = new ResponseContext(new MessageProxy(new[] { "p1" }, typeof(Message<int>)), null);
 
-            sut.IsProvided.ShouldBeFalse();
+        sut.IsProvided.ShouldBeFalse();
 
-            sut.SetRaw(new Message<int>(), null);
+        sut.SetRaw(new Message<int>(), null);
 
-            sut.IsProvided.ShouldBeTrue();
-        }
+        sut.IsProvided.ShouldBeTrue();
     }
 }

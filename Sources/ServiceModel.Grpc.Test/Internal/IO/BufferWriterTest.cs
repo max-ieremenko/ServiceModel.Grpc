@@ -17,56 +17,55 @@
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Internal.IO
+namespace ServiceModel.Grpc.Internal.IO;
+
+[TestFixture]
+public class BufferWriterTest
 {
-    [TestFixture]
-    public class BufferWriterTest
+    private BufferWriter<int> _sut = null!;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private BufferWriter<int> _sut = null!;
+        _sut = new BufferWriter<int>(1);
+    }
 
-        [SetUp]
-        public void BeforeEachTest()
+    [TearDown]
+    public void AfterEachTest()
+    {
+        _sut.Dispose();
+    }
+
+    [Test]
+    public void Empty()
+    {
+        _sut.ToArray().ShouldBeEmpty();
+    }
+
+    [Test]
+    public void WriteByte()
+    {
+        var span = _sut.GetSpan(1);
+        span[0] = 10;
+        _sut.Advance(1);
+
+        var actual = _sut.ToArray();
+
+        actual.Length.ShouldBe(1);
+        actual[0].ShouldBe(10);
+    }
+
+    [Test]
+    public void Write()
+    {
+        var span = _sut.GetSpan(10);
+        for (var i = 0; i < 10; i++)
         {
-            _sut = new BufferWriter<int>(1);
+            span[i] = i;
         }
 
-        [TearDown]
-        public void AfterEachTest()
-        {
-            _sut.Dispose();
-        }
+        _sut.Advance(5);
 
-        [Test]
-        public void Empty()
-        {
-            _sut.ToArray().ShouldBeEmpty();
-        }
-
-        [Test]
-        public void WriteByte()
-        {
-            var span = _sut.GetSpan(1);
-            span[0] = 10;
-            _sut.Advance(1);
-
-            var actual = _sut.ToArray();
-
-            actual.Length.ShouldBe(1);
-            actual[0].ShouldBe(10);
-        }
-
-        [Test]
-        public void Write()
-        {
-            var span = _sut.GetSpan(10);
-            for (var i = 0; i < 10; i++)
-            {
-                span[i] = i;
-            }
-
-            _sut.Advance(5);
-
-            _sut.ToArray().ShouldBe(new[] { 0, 1, 2, 3, 4 });
-        }
+        _sut.ToArray().ShouldBe(new[] { 0, 1, 2, 3, 4 });
     }
 }

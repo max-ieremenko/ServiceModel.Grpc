@@ -19,39 +19,38 @@ using Moq;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Internal
+namespace ServiceModel.Grpc.Internal;
+
+[TestFixture]
+public class ServiceProviderExtensionsTest
 {
-    [TestFixture]
-    public class ServiceProviderExtensionsTest
+    private Mock<IServiceProvider> _serviceProvider = null!;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private Mock<IServiceProvider> _serviceProvider = null!;
+        _serviceProvider = new Mock<IServiceProvider>(MockBehavior.Strict);
+    }
 
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            _serviceProvider = new Mock<IServiceProvider>(MockBehavior.Strict);
-        }
+    [Test]
+    public void ResolveFromProvider()
+    {
+        var service = new Mock<IDisposable>(MockBehavior.Strict);
 
-        [Test]
-        public void ResolveFromProvider()
-        {
-            var service = new Mock<IDisposable>(MockBehavior.Strict);
+        _serviceProvider
+            .Setup(p => p.GetService(typeof(IDisposable)))
+            .Returns(service.Object);
 
-            _serviceProvider
-                .Setup(p => p.GetService(typeof(IDisposable)))
-                .Returns(service.Object);
+        _serviceProvider.Object.GetServiceRequired(typeof(IDisposable)).ShouldBe(service.Object);
+    }
 
-            _serviceProvider.Object.GetServiceRequired(typeof(IDisposable)).ShouldBe(service.Object);
-        }
+    [Test]
+    public void FailToResolve()
+    {
+        _serviceProvider
+            .Setup(p => p.GetService(typeof(IDisposable)))
+            .Returns(null);
 
-        [Test]
-        public void FailToResolve()
-        {
-            _serviceProvider
-                .Setup(p => p.GetService(typeof(IDisposable)))
-                .Returns(null);
-
-            Assert.Throws<InvalidOperationException>(() => _serviceProvider.Object.GetServiceRequired(typeof(IDisposable)));
-        }
+        Assert.Throws<InvalidOperationException>(() => _serviceProvider.Object.GetServiceRequired(typeof(IDisposable)));
     }
 }

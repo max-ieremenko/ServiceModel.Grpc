@@ -17,40 +17,39 @@
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Routing;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
+namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer;
+
+internal sealed class ApiDescriptionProvider : IApiDescriptionProvider
 {
-    internal sealed class ApiDescriptionProvider : IApiDescriptionProvider
+    private readonly EndpointDataSource _endpointDataSource;
+
+    public ApiDescriptionProvider(EndpointDataSource endpointDataSource)
     {
-        private readonly EndpointDataSource _endpointDataSource;
+        _endpointDataSource = endpointDataSource;
+    }
 
-        public ApiDescriptionProvider(EndpointDataSource endpointDataSource)
+    public int Order => 0;
+
+    public void OnProvidersExecuted(ApiDescriptionProviderContext context)
+    {
+        var endpoints = _endpointDataSource.Endpoints;
+
+        for (var i = 0; i < endpoints.Count; i++)
         {
-            _endpointDataSource = endpointDataSource;
-        }
-
-        public int Order => 0;
-
-        public void OnProvidersExecuted(ApiDescriptionProviderContext context)
-        {
-            var endpoints = _endpointDataSource.Endpoints;
-
-            for (var i = 0; i < endpoints.Count; i++)
+            if (!(endpoints[i] is RouteEndpoint routeEndpoint))
             {
-                if (!(endpoints[i] is RouteEndpoint routeEndpoint))
-                {
-                    continue;
-                }
+                continue;
+            }
 
-                var apiDescription = ApiDescriptionGenerator.TryCreateApiDescription(routeEndpoint);
-                if (apiDescription != null)
-                {
-                    context.Results.Add(apiDescription);
-                }
+            var apiDescription = ApiDescriptionGenerator.TryCreateApiDescription(routeEndpoint);
+            if (apiDescription != null)
+            {
+                context.Results.Add(apiDescription);
             }
         }
+    }
 
-        public void OnProvidersExecuting(ApiDescriptionProviderContext context)
-        {
-        }
+    public void OnProvidersExecuting(ApiDescriptionProviderContext context)
+    {
     }
 }

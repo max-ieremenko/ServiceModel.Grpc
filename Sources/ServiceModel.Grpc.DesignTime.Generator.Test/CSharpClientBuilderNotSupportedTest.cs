@@ -18,18 +18,17 @@ using NUnit.Framework;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.TestApi;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Test
-{
-    [TestFixture]
-    public class CSharpClientBuilderNotSupportedTest : ClientBuilderNotSupportedTestBase
-    {
-        [OneTimeSetUp]
-        public void BeforeAllTests()
-        {
-            var builder = new GrpcServices.InvalidContractClientBuilder();
-            builder.Initialize(DataContractMarshallerFactory.Default, null);
+namespace ServiceModel.Grpc.DesignTime.Generator.Test;
 
-            Factory = () => builder.Build(CallInvoker.Object);
-        }
+[TestFixture]
+public class CSharpClientBuilderNotSupportedTest : ClientBuilderNotSupportedTestBase
+{
+    [OneTimeSetUp]
+    public void BeforeAllTests()
+    {
+        var builder = new GrpcServices.InvalidContractClientBuilder();
+        builder.Initialize(DataContractMarshallerFactory.Default, null);
+
+        Factory = () => builder.Build(CallInvoker.Object);
     }
 }

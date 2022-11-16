@@ -23,44 +23,43 @@ using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 using GrpcChannel = Grpc.Core.Channel;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Test.SelfHost
+namespace ServiceModel.Grpc.DesignTime.Generator.Test.SelfHost;
+
+[TestFixture]
+[ExportGrpcService(typeof(HeadersService), GenerateSelfHostExtensions = true)]
+[ImportGrpcService(typeof(IHeadersService))]
+public partial class HeadersHandlingTest : HeadersHandlingTestBase
 {
-    [TestFixture]
-    [ExportGrpcService(typeof(HeadersService), GenerateSelfHostExtensions = true)]
-    [ImportGrpcService(typeof(IHeadersService))]
-    public partial class HeadersHandlingTest : HeadersHandlingTestBase
+    private const int Port = 8080;
+    private Server _server = null!;
+    private GrpcChannel _channel = null!;
+
+    [OneTimeSetUp]
+    public void BeforeAll()
     {
-        private const int Port = 8080;
-        private Server _server = null!;
-        private GrpcChannel _channel = null!;
+        var provider = new ServiceCollection().AddTransient<HeadersService>().BuildServiceProvider();
 
-        [OneTimeSetUp]
-        public void BeforeAll()
+        _server = new Server
         {
-            var provider = new ServiceCollection().AddTransient<HeadersService>().BuildServiceProvider();
+            Ports = { new ServerPort("localhost", Port, ServerCredentials.Insecure) }
+        };
 
-            _server = new Server
-            {
-                Ports = { new ServerPort("localhost", Port, ServerCredentials.Insecure) }
-            };
+        _channel = new GrpcChannel("localhost", Port, ChannelCredentials.Insecure);
 
-            _channel = new GrpcChannel("localhost", Port, ChannelCredentials.Insecure);
+        AddHeadersService(_server.Services, provider);
 
-            AddHeadersService(_server.Services, provider);
+        var clientFactory = new ClientFactory();
+        AddHeadersServiceClient(clientFactory, options => options.DefaultCallOptionsFactory = () => new CallOptions(DefaultMetadata));
 
-            var clientFactory = new ClientFactory();
-            AddHeadersServiceClient(clientFactory, options => options.DefaultCallOptionsFactory = () => new CallOptions(DefaultMetadata));
+        DomainService = clientFactory.CreateClient<IHeadersService>(_channel);
 
-            DomainService = clientFactory.CreateClient<IHeadersService>(_channel);
+        _server.Start();
+    }
 
-            _server.Start();
-        }
-
-        [OneTimeTearDown]
-        public async Task AfterAll()
-        {
-            await _channel.ShutdownAsync().ConfigureAwait(false);
-            await _server.ShutdownAsync().ConfigureAwait(false);
-        }
+    [OneTimeTearDown]
+    public async Task AfterAll()
+    {
+        await _channel.ShutdownAsync().ConfigureAwait(false);
+        await _server.ShutdownAsync().ConfigureAwait(false);
     }
 }

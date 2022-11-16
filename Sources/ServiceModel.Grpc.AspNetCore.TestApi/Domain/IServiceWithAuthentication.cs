@@ -16,15 +16,14 @@
 
 using System.ServiceModel;
 
-namespace ServiceModel.Grpc.AspNetCore.TestApi.Domain
-{
-    [ServiceContract]
-    public interface IServiceWithAuthentication
-    {
-        [OperationContract]
-        string? GetCurrentUserName(CallContext? context = default);
+namespace ServiceModel.Grpc.AspNetCore.TestApi.Domain;
 
-        [OperationContract]
-        string? TryGetCurrentUserName(CallContext? context = default);
-    }
+[ServiceContract]
+public interface IServiceWithAuthentication
+{
+    [OperationContract]
+    string? GetCurrentUserName(CallContext? context = default);
+
+    [OperationContract]
+    string? TryGetCurrentUserName(CallContext? context = default);
 }

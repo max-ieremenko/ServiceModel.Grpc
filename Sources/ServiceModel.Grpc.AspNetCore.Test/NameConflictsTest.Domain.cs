@@ -16,31 +16,30 @@
 
 using System.ServiceModel;
 
-namespace ServiceModel.Grpc.AspNetCore
-{
-    public partial class NameConflictsTest
-    {
-        [ServiceContract]
-        public interface ICalculator
-        {
-            [OperationContract(Name = "Sum2")]
-            int Sum(int x, int y);
+namespace ServiceModel.Grpc.AspNetCore;
 
-            [OperationContract(Name = "Sum3")]
-            int Sum(int x, int y, int z);
+public partial class NameConflictsTest
+{
+    [ServiceContract]
+    public interface ICalculator
+    {
+        [OperationContract(Name = "Sum2")]
+        int Sum(int x, int y);
+
+        [OperationContract(Name = "Sum3")]
+        int Sum(int x, int y, int z);
+    }
+
+    private sealed class Calculator : ICalculator
+    {
+        public int Sum(int x, int y)
+        {
+            return x + y + 1;
         }
 
-        private sealed class Calculator : ICalculator
+        public int Sum(int x, int y, int z)
         {
-            public int Sum(int x, int y)
-            {
-                return x + y + 1;
-            }
-
-            public int Sum(int x, int y, int z)
-            {
-                return x + y + z - 1;
-            }
+            return x + y + z - 1;
         }
     }
 }

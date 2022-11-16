@@ -23,67 +23,66 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceModel.Grpc.Benchmarks.Domain;
 
-namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Combined
+namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Combined;
+
+internal sealed class NativeGrpcCombinedCallTest : IUnaryCallTest
 {
-    internal sealed class NativeGrpcCombinedCallTest : IUnaryCallTest
+    private readonly TestServer _server;
+    private readonly HttpClient _client;
+    private readonly GrpcChannel _channel;
+    private readonly SomeObjectProto _payload;
+    private readonly TestServiceNative.TestServiceNativeClient _proxy;
+
+    public NativeGrpcCombinedCallTest(SomeObject payload)
     {
-        private readonly TestServer _server;
-        private readonly HttpClient _client;
-        private readonly GrpcChannel _channel;
-        private readonly SomeObjectProto _payload;
-        private readonly TestServiceNative.TestServiceNativeClient _proxy;
+        _payload = DomainExtensions.CopyToProto(payload);
+        _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
+        _client = _server.CreateClient();
 
-        public NativeGrpcCombinedCallTest(SomeObject payload)
+        _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpClient = _client });
+
+        _proxy = new TestServiceNative.TestServiceNativeClient(_channel);
+    }
+
+    public async Task PingPongAsync()
+    {
+        using (var call = _proxy.PingPongAsync(_payload))
         {
-            _payload = DomainExtensions.CopyToProto(payload);
-            _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
-            _client = _server.CreateClient();
+            await call;
+        }
+    }
 
-            _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpClient = _client });
+    public ValueTask<long> GetPingPongPayloadSize()
+    {
+        return StubHttpMessageHandler.GetPayloadSize(channel =>
+        {
+            var proxy = new TestServiceNative.TestServiceNativeClient(channel);
+            return proxy.PingPongAsync(_payload).ResponseAsync;
+        });
+    }
 
-            _proxy = new TestServiceNative.TestServiceNativeClient(_channel);
+    public void Dispose()
+    {
+        _channel.Dispose();
+        _client.Dispose();
+        _server.Dispose();
+    }
+
+    private sealed class Startup
+    {
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddGrpc();
         }
 
-        public async Task PingPongAsync()
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            using (var call = _proxy.PingPongAsync(_payload))
-            {
-                await call;
-            }
-        }
+            app.UseRouting();
 
-        public ValueTask<long> GetPingPongPayloadSize()
-        {
-            return StubHttpMessageHandler.GetPayloadSize(channel =>
+            app.UseEndpoints(endpoints =>
             {
-                var proxy = new TestServiceNative.TestServiceNativeClient(channel);
-                return proxy.PingPongAsync(_payload).ResponseAsync;
+                endpoints.MapGrpcService<TestServiceNativeStub>();
             });
-        }
-
-        public void Dispose()
-        {
-            _channel.Dispose();
-            _client.Dispose();
-            _server.Dispose();
-        }
-
-        private sealed class Startup
-        {
-            public void ConfigureServices(IServiceCollection services)
-            {
-                services.AddGrpc();
-            }
-
-            public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-            {
-                app.UseRouting();
-
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.MapGrpcService<TestServiceNativeStub>();
-                });
-            }
         }
     }
 }

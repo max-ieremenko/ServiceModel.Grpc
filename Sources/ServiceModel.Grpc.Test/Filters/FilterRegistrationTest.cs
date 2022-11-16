@@ -18,33 +18,32 @@ using System;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Filters
-{
-    [TestFixture]
-    public class FilterRegistrationTest
-    {
-        [Test]
-        [TestCase(1, 1, 0)]
-        [TestCase(2, 1, 1)]
-        [TestCase(1, 2, -1)]
-        public void CompareTo(int xOrder, int yOrder, int expected)
-        {
-            var x = new FilterRegistration<IDisposable>(xOrder, _ => throw new NotImplementedException());
-            var y = new FilterRegistration<IDisposable>(yOrder, _ => throw new NotImplementedException());
+namespace ServiceModel.Grpc.Filters;
 
-            var actual = x.CompareTo(y);
-            if (expected == 0)
-            {
-                actual.ShouldBe(expected);
-            }
-            else if (expected > 0)
-            {
-                actual.ShouldBeGreaterThan(0);
-            }
-            else
-            {
-                actual.ShouldBeLessThan(0);
-            }
+[TestFixture]
+public class FilterRegistrationTest
+{
+    [Test]
+    [TestCase(1, 1, 0)]
+    [TestCase(2, 1, 1)]
+    [TestCase(1, 2, -1)]
+    public void CompareTo(int xOrder, int yOrder, int expected)
+    {
+        var x = new FilterRegistration<IDisposable>(xOrder, _ => throw new NotImplementedException());
+        var y = new FilterRegistration<IDisposable>(yOrder, _ => throw new NotImplementedException());
+
+        var actual = x.CompareTo(y);
+        if (expected == 0)
+        {
+            actual.ShouldBe(expected);
+        }
+        else if (expected > 0)
+        {
+            actual.ShouldBeGreaterThan(0);
+        }
+        else
+        {
+            actual.ShouldBeLessThan(0);
         }
     }
 }

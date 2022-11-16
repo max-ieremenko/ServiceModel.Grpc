@@ -19,97 +19,96 @@ using NUnit.Framework;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
 
-namespace ServiceModel.Grpc.TestApi
+namespace ServiceModel.Grpc.TestApi;
+
+public abstract class TrackedFilteredServiceTestBase
 {
-    public abstract class TrackedFilteredServiceTestBase
+    protected IFilteredService DomainService { get; set; } = null!;
+
+    [Test]
+    public async Task UnaryAsync()
     {
-        protected IFilteredService DomainService { get; set; } = null!;
-
-        [Test]
-        public async Task UnaryAsync()
+        var track = await DomainService.UnaryAsync(new[] { "client-call" }).ConfigureAwait(false);
+        track.ShouldBe(new[]
         {
-            var track = await DomainService.UnaryAsync(new[] { "client-call" }).ConfigureAwait(false);
-            track.ShouldBe(new[]
-            {
-                "client-call",
-                "global-before",
-                "service-options-before",
-                "service-before",
-                "method-before",
-                "implementation",
-                "method-after",
-                "service-after",
-                "service-options-after",
-                "global-after"
-            });
-        }
+            "client-call",
+            "global-before",
+            "service-options-before",
+            "service-before",
+            "method-before",
+            "implementation",
+            "method-after",
+            "service-after",
+            "service-options-after",
+            "global-after"
+        });
+    }
 
-        [Test]
-        public async Task ClientStreamAsync()
+    [Test]
+    public async Task ClientStreamAsync()
+    {
+        var stream = new[] { 1, 2, 3 }.AsAsyncEnumerable();
+        var track = await DomainService.ClientStreamAsync(stream, new[] { "client-call" }).ConfigureAwait(false);
+
+        track.ShouldBe(new[]
         {
-            var stream = new[] { 1, 2, 3 }.AsAsyncEnumerable();
-            var track = await DomainService.ClientStreamAsync(stream, new[] { "client-call" }).ConfigureAwait(false);
+            "client-call",
+            "global-before",
+            "service-options-before",
+            "service-before",
+            "method-before",
+            "implementation 6",
+            "method-after",
+            "service-after",
+            "service-options-after",
+            "global-after"
+        });
+    }
 
-            track.ShouldBe(new[]
-            {
-                "client-call",
-                "global-before",
-                "service-options-before",
-                "service-before",
-                "method-before",
-                "implementation 6",
-                "method-after",
-                "service-after",
-                "service-options-after",
-                "global-after"
-            });
-        }
+    [Test]
+    public async Task ServerStreamAsync()
+    {
+        var (stream, track) = await DomainService.ServerStreamAsync(new[] { "client-call" }).ConfigureAwait(false);
 
-        [Test]
-        public async Task ServerStreamAsync()
+        var data = await stream.ToListAsync().ConfigureAwait(false);
+        data.ShouldBe(new[] { 3, 2, 1 });
+
+        track.ShouldBe(new[]
         {
-            var (stream, track) = await DomainService.ServerStreamAsync(new[] { "client-call" }).ConfigureAwait(false);
+            "client-call",
+            "global-before",
+            "service-options-before",
+            "service-before",
+            "method-before",
+            "implementation",
+            "method-after",
+            "service-after",
+            "service-options-after",
+            "global-after"
+        });
+    }
 
-            var data = await stream.ToListAsync().ConfigureAwait(false);
-            data.ShouldBe(new[] { 3, 2, 1 });
+    [Test]
+    public async Task DuplexStreamAsync()
+    {
+        var inputStream = new[] { 1, 2, 3 }.AsAsyncEnumerable();
+        var (outStream, track) = await DomainService.DuplexStreamAsync(inputStream, new[] { "client-call" }).ConfigureAwait(false);
 
-            track.ShouldBe(new[]
-            {
-                "client-call",
-                "global-before",
-                "service-options-before",
-                "service-before",
-                "method-before",
-                "implementation",
-                "method-after",
-                "service-after",
-                "service-options-after",
-                "global-after"
-            });
-        }
+        var data = await outStream.ToListAsync().ConfigureAwait(false);
+        data.ShouldBe(new[] { 3, 2, 1 });
 
-        [Test]
-        public async Task DuplexStreamAsync()
+        track.ShouldBe(new[]
         {
-            var inputStream = new[] { 1, 2, 3 }.AsAsyncEnumerable();
-            var (outStream, track) = await DomainService.DuplexStreamAsync(inputStream, new[] { "client-call" }).ConfigureAwait(false);
-
-            var data = await outStream.ToListAsync().ConfigureAwait(false);
-            data.ShouldBe(new[] { 3, 2, 1 });
-
-            track.ShouldBe(new[]
-            {
-                "client-call",
-                "global-before",
-                "service-options-before",
-                "service-before",
-                "method-before",
-                "implementation 6",
-                "method-after",
-                "service-after",
-                "service-options-after",
-                "global-after"
-            });
-        }
+            "client-call",
+            "global-before",
+            "service-options-before",
+            "service-before",
+            "method-before",
+            "implementation 6",
+            "method-after",
+            "service-after",
+            "service-options-after",
+            "global-after"
+        });
     }
 }

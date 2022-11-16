@@ -19,57 +19,56 @@ using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Internal;
 
-namespace ServiceModel.Grpc.Interceptors.Internal
+namespace ServiceModel.Grpc.Interceptors.Internal;
+
+internal sealed class ServerCallErrorInterceptor : IServerCallInterceptor
 {
-    internal sealed class ServerCallErrorInterceptor : IServerCallInterceptor
+    internal const string VisitMarker = nameof(ServerCallErrorInterceptor);
+
+    private readonly IServerErrorHandler _errorHandler;
+    private readonly IMarshallerFactory _marshallerFactory;
+
+    public ServerCallErrorInterceptor(
+        IServerErrorHandler errorHandler,
+        IMarshallerFactory marshallerFactory)
     {
-        internal const string VisitMarker = nameof(ServerCallErrorInterceptor);
+        errorHandler.AssertNotNull(nameof(errorHandler));
+        marshallerFactory.AssertNotNull(nameof(marshallerFactory));
 
-        private readonly IServerErrorHandler _errorHandler;
-        private readonly IMarshallerFactory _marshallerFactory;
+        _errorHandler = errorHandler;
+        _marshallerFactory = marshallerFactory;
+    }
 
-        public ServerCallErrorInterceptor(
-            IServerErrorHandler errorHandler,
-            IMarshallerFactory marshallerFactory)
+    public void OnError(ServerCallInterceptorContext context, Exception error)
+    {
+        if (context.ServerCallContext.UserState.TryGetValue(VisitMarker, out _))
         {
-            errorHandler.AssertNotNull(nameof(errorHandler));
-            marshallerFactory.AssertNotNull(nameof(marshallerFactory));
-
-            _errorHandler = errorHandler;
-            _marshallerFactory = marshallerFactory;
+            return;
         }
 
-        public void OnError(ServerCallInterceptorContext context, Exception error)
+        context.ServerCallContext.UserState.Add(VisitMarker, string.Empty);
+
+        var faultOrIgnore = _errorHandler.ProvideFaultOrIgnore(context, error);
+        if (!faultOrIgnore.HasValue)
         {
-            if (context.ServerCallContext.UserState.TryGetValue(VisitMarker, out _))
-            {
-                return;
-            }
-
-            context.ServerCallContext.UserState.Add(VisitMarker, string.Empty);
-
-            var faultOrIgnore = _errorHandler.ProvideFaultOrIgnore(context, error);
-            if (!faultOrIgnore.HasValue)
-            {
-                return;
-            }
-
-            var fault = faultOrIgnore.Value;
-
-            var status = new Status(fault.StatusCode ?? StatusCode.Internal, fault.Message ?? error.Message);
-            var metadata = fault.Trailers;
-            if (fault.Detail != null)
-            {
-                if (metadata == null)
-                {
-                    metadata = new Metadata();
-                }
-
-                metadata.Add(CallContext.HeaderNameErrorDetail, _marshallerFactory.SerializeHeader(fault.Detail));
-                metadata.Add(CallContext.HeaderNameErrorDetailType, fault.Detail.GetType().GetShortAssemblyQualifiedName());
-            }
-
-            throw new RpcException(status, metadata ?? Metadata.Empty, status.Detail);
+            return;
         }
+
+        var fault = faultOrIgnore.Value;
+
+        var status = new Status(fault.StatusCode ?? StatusCode.Internal, fault.Message ?? error.Message);
+        var metadata = fault.Trailers;
+        if (fault.Detail != null)
+        {
+            if (metadata == null)
+            {
+                metadata = new Metadata();
+            }
+
+            metadata.Add(CallContext.HeaderNameErrorDetail, _marshallerFactory.SerializeHeader(fault.Detail));
+            metadata.Add(CallContext.HeaderNameErrorDetailType, fault.Detail.GetType().GetShortAssemblyQualifiedName());
+        }
+
+        throw new RpcException(status, metadata ?? Metadata.Empty, status.Detail);
     }
 }

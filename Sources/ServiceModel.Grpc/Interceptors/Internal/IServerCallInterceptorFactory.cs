@@ -16,10 +16,9 @@
 
 using System;
 
-namespace ServiceModel.Grpc.Interceptors.Internal
+namespace ServiceModel.Grpc.Interceptors.Internal;
+
+internal interface IServerCallInterceptorFactory
 {
-    internal interface IServerCallInterceptorFactory
-    {
-        IServerCallInterceptor CreateInterceptor(IServiceProvider serviceProvider);
-    }
+    IServerCallInterceptor CreateInterceptor(IServiceProvider serviceProvider);
 }

@@ -24,78 +24,77 @@ using ServiceModel.Grpc.Interceptors.Internal;
 using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.Internal.Emit;
 
-namespace ServiceModel.Grpc.SelfHost.Internal
+namespace ServiceModel.Grpc.SelfHost.Internal;
+
+internal sealed class ServerServiceDefinitionProvider<TService>
 {
-    internal sealed class ServerServiceDefinitionProvider<TService>
+    private readonly Func<TService> _serviceFactory;
+    private readonly IServiceEndpointBinder<TService>? _endpointBinder;
+    private readonly ServiceModelGrpcServiceOptions? _options;
+
+    public ServerServiceDefinitionProvider(
+        Func<TService> serviceFactory,
+        IServiceEndpointBinder<TService>? endpointBinder,
+        ServiceModelGrpcServiceOptions? options)
     {
-        private readonly Func<TService> _serviceFactory;
-        private readonly IServiceEndpointBinder<TService>? _endpointBinder;
-        private readonly ServiceModelGrpcServiceOptions? _options;
+        _serviceFactory = serviceFactory;
+        _endpointBinder = endpointBinder;
+        _options = options;
+    }
 
-        public ServerServiceDefinitionProvider(
-            Func<TService> serviceFactory,
-            IServiceEndpointBinder<TService>? endpointBinder,
-            ServiceModelGrpcServiceOptions? options)
+    public ServerServiceDefinition CreateDefinition()
+    {
+        var result = CreateServiceDefinition();
+
+        if (_options?.ConfigureServiceDefinition != null)
         {
-            _serviceFactory = serviceFactory;
-            _endpointBinder = endpointBinder;
-            _options = options;
+            result = _options.ConfigureServiceDefinition(result);
         }
 
-        public ServerServiceDefinition CreateDefinition()
+        if (_options?.ErrorHandler != null)
         {
-            var result = CreateServiceDefinition();
-
-            if (_options?.ConfigureServiceDefinition != null)
-            {
-                result = _options.ConfigureServiceDefinition(result);
-            }
-
-            if (_options?.ErrorHandler != null)
-            {
-                result = result.Intercept(new ServerNativeInterceptor(new ServerCallErrorInterceptor(
-                    _options.ErrorHandler,
-                    _options.MarshallerFactory.ThisOrDefault())));
-            }
-
-            return result;
+            result = result.Intercept(new ServerNativeInterceptor(new ServerCallErrorInterceptor(
+                _options.ErrorHandler,
+                _options.MarshallerFactory.ThisOrDefault())));
         }
 
-        private ServerServiceDefinition CreateServiceDefinition()
+        return result;
+    }
+
+    private ServerServiceDefinition CreateServiceDefinition()
+    {
+        var definitionBuilder = ServerServiceDefinition.CreateBuilder();
+        var endpointBinder = GetOrCreateEndpointBinder();
+
+        // SelfHostBinder must check ServiceProvider availability
+        var filterRegistration = new ServiceMethodFilterRegistration(_options?.ServiceProvider!);
+        filterRegistration.Add(_options?.GetFilters());
+
+        var binder = new SelfHostServiceMethodBinder<TService>(
+            (_options?.MarshallerFactory).ThisOrDefault(),
+            WithLoggerFactory<TService>.Wrap(_serviceFactory, _options?.Logger),
+            filterRegistration,
+            definitionBuilder);
+        endpointBinder.Bind(binder);
+
+        return definitionBuilder.Build();
+    }
+
+    private IServiceEndpointBinder<TService> GetOrCreateEndpointBinder()
+    {
+        if (_endpointBinder != null)
         {
-            var definitionBuilder = ServerServiceDefinition.CreateBuilder();
-            var endpointBinder = GetOrCreateEndpointBinder();
-
-            // SelfHostBinder must check ServiceProvider availability
-            var filterRegistration = new ServiceMethodFilterRegistration(_options?.ServiceProvider!);
-            filterRegistration.Add(_options?.GetFilters());
-
-            var binder = new SelfHostServiceMethodBinder<TService>(
-                (_options?.MarshallerFactory).ThisOrDefault(),
-                WithLoggerFactory<TService>.Wrap(_serviceFactory, _options?.Logger),
-                filterRegistration,
-                definitionBuilder);
-            endpointBinder.Bind(binder);
-
-            return definitionBuilder.Build();
+            return _endpointBinder;
         }
 
-        private IServiceEndpointBinder<TService> GetOrCreateEndpointBinder()
+        var logger = new LogAdapter(_options?.Logger);
+
+        var serviceInstanceType = typeof(TService);
+        if (!ServiceContract.IsServiceInstanceType(serviceInstanceType))
         {
-            if (_endpointBinder != null)
-            {
-                return _endpointBinder;
-            }
-
-            var logger = new LogAdapter(_options?.Logger);
-
-            var serviceInstanceType = typeof(TService);
-            if (!ServiceContract.IsServiceInstanceType(serviceInstanceType))
-            {
-                serviceInstanceType = null;
-            }
-
-            return new EmitGenerator { Logger = logger }.GenerateServiceEndpointBinder<TService>(serviceInstanceType);
+            serviceInstanceType = null;
         }
+
+        return new EmitGenerator { Logger = logger }.GenerateServiceEndpointBinder<TService>(serviceInstanceType);
     }
 }

@@ -19,39 +19,38 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Internal
+namespace ServiceModel.Grpc.Internal;
+
+public partial class ServiceContractTest
 {
-    public partial class ServiceContractTest
+    [ServiceContract]
+    public interface IServiceContract
     {
-        [ServiceContract]
-        public interface IServiceContract
-        {
-            [OperationContract]
-            void Empty();
+        [OperationContract]
+        void Empty();
 
-            void Ignore();
-        }
+        void Ignore();
+    }
 
-        [ServiceContract]
-        public interface IGenericServiceContract<T>
-        {
-            [OperationContract]
-            void Invoke(T value);
-        }
+    [ServiceContract]
+    public interface IGenericServiceContract<T>
+    {
+        [OperationContract]
+        void Invoke(T value);
+    }
 
-        [BindServiceMethod(typeof(NativeGrpcService), nameof(BindService))]
-        public abstract class NativeGrpcService
-        {
-            public static void BindService() => throw new NotImplementedException();
-        }
+    [BindServiceMethod(typeof(NativeGrpcService), nameof(BindService))]
+    public abstract class NativeGrpcService
+    {
+        public static void BindService() => throw new NotImplementedException();
+    }
 
-        public sealed class NativeGrpcServiceImplementation : NativeGrpcService
-        {
-        }
+    public sealed class NativeGrpcServiceImplementation : NativeGrpcService
+    {
+    }
 
-        [DataContract(Name = "Some-Data")]
-        public sealed class SomeData
-        {
-        }
+    [DataContract(Name = "Some-Data")]
+    public sealed class SomeData
+    {
     }
 }

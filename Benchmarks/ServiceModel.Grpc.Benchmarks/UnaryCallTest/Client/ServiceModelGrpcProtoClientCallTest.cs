@@ -21,40 +21,39 @@ using ServiceModel.Grpc.Benchmarks.Domain;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Client;
 
-namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Client
+namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Client;
+
+internal sealed class ServiceModelGrpcProtoClientCallTest : IUnaryCallTest
 {
-    internal sealed class ServiceModelGrpcProtoClientCallTest : IUnaryCallTest
+    private readonly SomeObjectProto _payload;
+    private readonly StubHttpMessageHandler _httpHandler;
+    private readonly GrpcChannel _channel;
+    private readonly ITestService _proxy;
+
+    public ServiceModelGrpcProtoClientCallTest(SomeObject payload)
     {
-        private readonly SomeObjectProto _payload;
-        private readonly StubHttpMessageHandler _httpHandler;
-        private readonly GrpcChannel _channel;
-        private readonly ITestService _proxy;
+        _payload = DomainExtensions.CopyToProto(payload);
+        _httpHandler = new StubHttpMessageHandler(GoogleProtoMarshallerFactory.Default, new Message<SomeObjectProto>(_payload));
+        _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpHandler = _httpHandler });
 
-        public ServiceModelGrpcProtoClientCallTest(SomeObject payload)
-        {
-            _payload = DomainExtensions.CopyToProto(payload);
-            _httpHandler = new StubHttpMessageHandler(GoogleProtoMarshallerFactory.Default, new Message<SomeObjectProto>(_payload));
-            _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpHandler = _httpHandler });
+        var clientFactory = new ClientFactory(new ServiceModelGrpcClientOptions { MarshallerFactory = GoogleProtoMarshallerFactory.Default });
+        _proxy = clientFactory.CreateClient<ITestService>(_channel);
+    }
 
-            var clientFactory = new ClientFactory(new ServiceModelGrpcClientOptions { MarshallerFactory = GoogleProtoMarshallerFactory.Default });
-            _proxy = clientFactory.CreateClient<ITestService>(_channel);
-        }
+    public Task PingPongAsync()
+    {
+        return _proxy.PingPongProto(_payload);
+    }
 
-        public Task PingPongAsync()
-        {
-            return _proxy.PingPongProto(_payload);
-        }
+    public async ValueTask<long> GetPingPongPayloadSize()
+    {
+        await PingPongAsync().ConfigureAwait(false);
+        return _httpHandler.PayloadSize;
+    }
 
-        public async ValueTask<long> GetPingPongPayloadSize()
-        {
-            await PingPongAsync().ConfigureAwait(false);
-            return _httpHandler.PayloadSize;
-        }
-
-        public void Dispose()
-        {
-            _channel.Dispose();
-            _httpHandler.Dispose();
-        }
+    public void Dispose()
+    {
+        _channel.Dispose();
+        _httpHandler.Dispose();
     }
 }

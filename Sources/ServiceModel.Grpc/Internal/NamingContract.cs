@@ -17,41 +17,40 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ServiceModel.Grpc.Internal
+namespace ServiceModel.Grpc.Internal;
+
+internal static class NamingContract
 {
-    internal static class NamingContract
+    public static string GetServiceName(
+        string serviceTypeName,
+        string? serviceContractAttributeNamespace,
+        string? serviceContractAttributeName,
+        IList<string> serviceGenericEnding)
     {
-        public static string GetServiceName(
-            string serviceTypeName,
-            string? serviceContractAttributeNamespace,
-            string? serviceContractAttributeName,
-            IList<string> serviceGenericEnding)
+        var result = new StringBuilder();
+        if (!string.IsNullOrWhiteSpace(serviceContractAttributeNamespace))
         {
-            var result = new StringBuilder();
-            if (!string.IsNullOrWhiteSpace(serviceContractAttributeNamespace))
-            {
-                result
-                    .Append(serviceContractAttributeNamespace)
-                    .Append('.');
-            }
-
-            if (string.IsNullOrWhiteSpace(serviceContractAttributeName))
-            {
-                result.Append(serviceTypeName);
-            }
-            else
-            {
-                result.Append(serviceContractAttributeName);
-            }
-
-            for (var i = 0; i < serviceGenericEnding.Count; i++)
-            {
-                result
-                    .Append('-')
-                    .Append(serviceGenericEnding[i]);
-            }
-
-            return result.ToString();
+            result
+                .Append(serviceContractAttributeNamespace)
+                .Append('.');
         }
+
+        if (string.IsNullOrWhiteSpace(serviceContractAttributeName))
+        {
+            result.Append(serviceTypeName);
+        }
+        else
+        {
+            result.Append(serviceContractAttributeName);
+        }
+
+        for (var i = 0; i < serviceGenericEnding.Count; i++)
+        {
+            result
+                .Append('-')
+                .Append(serviceGenericEnding[i]);
+        }
+
+        return result.ToString();
     }
 }

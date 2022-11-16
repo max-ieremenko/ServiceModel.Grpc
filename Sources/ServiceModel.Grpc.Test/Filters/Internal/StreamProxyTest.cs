@@ -21,45 +21,44 @@ using NUnit.Framework;
 using ServiceModel.Grpc.TestApi;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Filters.Internal
+namespace ServiceModel.Grpc.Filters.Internal;
+
+[TestFixture]
+public class StreamProxyTest
 {
-    [TestFixture]
-    public class StreamProxyTest
+    private StreamProxy _sut = null!;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private StreamProxy _sut = null!;
+        _sut = new StreamProxy(typeof(int));
+    }
 
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            _sut = new StreamProxy(typeof(int));
-        }
+    [Test]
+    public async Task CreateDefault()
+    {
+        var actual = _sut.CreateDefault();
 
-        [Test]
-        public async Task CreateDefault()
-        {
-            var actual = _sut.CreateDefault();
+        var stream = actual.ShouldBeAssignableTo<IAsyncEnumerable<int>>()!;
+        var items = await stream.ToListAsync().ConfigureAwait(false);
+        items.ShouldBeEmpty();
+    }
 
-            var stream = actual.ShouldBeAssignableTo<IAsyncEnumerable<int>>()!;
-            var items = await stream.ToListAsync().ConfigureAwait(false);
-            items.ShouldBeEmpty();
-        }
+    [Test]
+    public void AssignValue()
+    {
+        var value = new[] { 1 }.AsAsyncEnumerable();
 
-        [Test]
-        public void AssignValue()
-        {
-            var value = new[] { 1 }.AsAsyncEnumerable();
+        _sut.AssignValue(out var target, value);
 
-            _sut.AssignValue(out var target, value);
+        target.ShouldBe(value);
+    }
 
-            target.ShouldBe(value);
-        }
+    [Test]
+    public void AssignInvalidValue()
+    {
+        var value = new[] { 1.0 }.AsAsyncEnumerable();
 
-        [Test]
-        public void AssignInvalidValue()
-        {
-            var value = new[] { 1.0 }.AsAsyncEnumerable();
-
-            Assert.Throws<InvalidCastException>(() => _sut.AssignValue(out _, value));
-        }
+        Assert.Throws<InvalidCastException>(() => _sut.AssignValue(out _, value));
     }
 }

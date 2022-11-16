@@ -19,52 +19,51 @@ using System.Collections.Generic;
 using System.Reflection;
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Filters
+namespace ServiceModel.Grpc.Filters;
+
+/// <summary>
+/// A context for server filters, specifically <see cref="IServerFilter.InvokeAsync"/>.
+/// </summary>
+public interface IServerFilterContext
 {
     /// <summary>
-    /// A context for server filters, specifically <see cref="IServerFilter.InvokeAsync"/>.
+    /// Gets the service instance.
     /// </summary>
-    public interface IServerFilterContext
-    {
-        /// <summary>
-        /// Gets the service instance.
-        /// </summary>
-        object ServiceInstance { get; }
+    object ServiceInstance { get; }
 
-        /// <summary>
-        /// Gets an instance of <see cref="ServerCallContext" /> representing the gRPC context of the invocation.
-        /// </summary>
-        ServerCallContext ServerCallContext { get; }
+    /// <summary>
+    /// Gets an instance of <see cref="ServerCallContext" /> representing the gRPC context of the invocation.
+    /// </summary>
+    ServerCallContext ServerCallContext { get; }
 
-        /// <summary>
-        /// Gets the current service provider.
-        /// </summary>
-        IServiceProvider ServiceProvider { get; }
+    /// <summary>
+    /// Gets the current service provider.
+    /// </summary>
+    IServiceProvider ServiceProvider { get; }
 
-        /// <summary>
-        /// Gets a dictionary that can be used by the various interceptors and handlers of this call to store arbitrary state.
-        /// The reference to <see cref="ServerCallContext"/>.UserState.
-        /// </summary>
-        IDictionary<object, object> UserState { get; }
+    /// <summary>
+    /// Gets a dictionary that can be used by the various interceptors and handlers of this call to store arbitrary state.
+    /// The reference to <see cref="ServerCallContext"/>.UserState.
+    /// </summary>
+    IDictionary<object, object> UserState { get; }
 
-        /// <summary>
-        /// Gets the <see cref="MethodInfo"/> for the contract method declaration.
-        /// </summary>
-        MethodInfo ContractMethodInfo { get; }
+    /// <summary>
+    /// Gets the <see cref="MethodInfo"/> for the contract method declaration.
+    /// </summary>
+    MethodInfo ContractMethodInfo { get; }
 
-        /// <summary>
-        /// Gets the <see cref="MethodInfo"/> for the service method declaration.
-        /// </summary>
-        MethodInfo ServiceMethodInfo { get; }
+    /// <summary>
+    /// Gets the <see cref="MethodInfo"/> for the service method declaration.
+    /// </summary>
+    MethodInfo ServiceMethodInfo { get; }
 
-        /// <summary>
-        /// Gets the control of the incoming request.
-        /// </summary>
-        IRequestContext Request { get; }
+    /// <summary>
+    /// Gets the control of the incoming request.
+    /// </summary>
+    IRequestContext Request { get; }
 
-        /// <summary>
-        /// Gets the control of the outgoing response.
-        /// </summary>
-        IResponseContext Response { get; }
-    }
+    /// <summary>
+    /// Gets the control of the outgoing response.
+    /// </summary>
+    IResponseContext Response { get; }
 }

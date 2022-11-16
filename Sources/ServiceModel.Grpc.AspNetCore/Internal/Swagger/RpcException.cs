@@ -16,22 +16,21 @@
 
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger
+namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger;
+
+internal sealed class RpcException
 {
-    internal sealed class RpcException
+    public RpcException()
     {
-        public RpcException()
-        {
-        }
-
-        public RpcException(Status status)
-        {
-            StatusCode = status.StatusCode.ToString();
-            Detail = status.Detail;
-        }
-
-        public string StatusCode { get; set; } = null!;
-
-        public string? Detail { get; set; }
     }
+
+    public RpcException(Status status)
+    {
+        StatusCode = status.StatusCode.ToString();
+        Detail = status.Detail;
+    }
+
+    public string StatusCode { get; set; } = null!;
+
+    public string? Detail { get; set; }
 }

@@ -16,12 +16,11 @@
 
 using ServiceModel.Grpc.Client.Internal;
 
-namespace ServiceModel.Grpc.Internal.Emit
-{
-    internal interface IEmitGenerator
-    {
-        ILogger? Logger { get; set; }
+namespace ServiceModel.Grpc.Internal.Emit;
 
-        IClientBuilder<TContract> GenerateClientBuilder<TContract>();
-    }
+internal interface IEmitGenerator
+{
+    ILogger? Logger { get; set; }
+
+    IClientBuilder<TContract> GenerateClientBuilder<TContract>();
 }

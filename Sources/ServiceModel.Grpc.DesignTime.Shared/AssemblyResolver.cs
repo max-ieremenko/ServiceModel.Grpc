@@ -19,68 +19,67 @@ using System.IO;
 using System.Reflection;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace ServiceModel.Grpc.DesignTime.Generator
+namespace ServiceModel.Grpc.DesignTime.Generator;
+
+// workaround: custom dependencies of DesignTime.nupkg
+internal sealed class AssemblyResolver : IDisposable
 {
-    // workaround: custom dependencies of DesignTime.nupkg
-    internal sealed class AssemblyResolver : IDisposable
+    private readonly string _dependenciesLocation;
+    private readonly bool _canLockFile;
+
+    public AssemblyResolver(AnalyzerConfigOptions globalOptions)
     {
-        private readonly string _dependenciesLocation;
-        private readonly bool _canLockFile;
+        _dependenciesLocation = GetDependenciesLocation(globalOptions);
+        _canLockFile = !IsLocalBuild(globalOptions);
+    }
 
-        public AssemblyResolver(AnalyzerConfigOptions globalOptions)
+    public void Initialize()
+    {
+        AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
+    }
+
+    public void Dispose()
+    {
+        AppDomain.CurrentDomain.AssemblyResolve -= AssemblyResolve;
+    }
+
+    private static bool IsLocalBuild(AnalyzerConfigOptions globalOptions)
+    {
+        globalOptions.TryGetValue("build_property.servicemodelgrpcdesigntime_localbuild", out var localBuild);
+        return string.IsNullOrWhiteSpace(localBuild) || bool.Parse(localBuild);
+    }
+
+    private static string GetDependenciesLocation(AnalyzerConfigOptions globalOptions)
+    {
+        globalOptions.TryGetValue("build_property.servicemodelgrpcdesigntime_dependencies", out var dependencies);
+
+        if (string.IsNullOrEmpty(dependencies) || !Directory.Exists(dependencies))
         {
-            _dependenciesLocation = GetDependenciesLocation(globalOptions);
-            _canLockFile = !IsLocalBuild(globalOptions);
+            throw new InvalidOperationException(string.Format("Dependencies not found in [{0}].", dependencies));
         }
 
-        public void Initialize()
+        return dependencies!;
+    }
+
+    private Assembly? AssemblyResolve(object sender, ResolveEventArgs args)
+    {
+        var name = new AssemblyName(args.Name);
+        return ResolveDependency(name.Name + ".dll");
+    }
+
+    private Assembly? ResolveDependency(string fileName)
+    {
+        var location = Path.Combine(_dependenciesLocation, fileName);
+        if (!File.Exists(location))
         {
-            AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
+            return null;
         }
 
-        public void Dispose()
+        if (_canLockFile)
         {
-            AppDomain.CurrentDomain.AssemblyResolve -= AssemblyResolve;
+            return Assembly.LoadFrom(location);
         }
 
-        private static bool IsLocalBuild(AnalyzerConfigOptions globalOptions)
-        {
-            globalOptions.TryGetValue("build_property.servicemodelgrpcdesigntime_localbuild", out var localBuild);
-            return string.IsNullOrWhiteSpace(localBuild) || bool.Parse(localBuild);
-        }
-
-        private static string GetDependenciesLocation(AnalyzerConfigOptions globalOptions)
-        {
-            globalOptions.TryGetValue("build_property.servicemodelgrpcdesigntime_dependencies", out var dependencies);
-
-            if (string.IsNullOrEmpty(dependencies) || !Directory.Exists(dependencies))
-            {
-                throw new InvalidOperationException(string.Format("Dependencies not found in [{0}].", dependencies));
-            }
-
-            return dependencies!;
-        }
-
-        private Assembly? AssemblyResolve(object sender, ResolveEventArgs args)
-        {
-            var name = new AssemblyName(args.Name);
-            return ResolveDependency(name.Name + ".dll");
-        }
-
-        private Assembly? ResolveDependency(string fileName)
-        {
-            var location = Path.Combine(_dependenciesLocation, fileName);
-            if (!File.Exists(location))
-            {
-                return null;
-            }
-
-            if (_canLockFile)
-            {
-                return Assembly.LoadFrom(location);
-            }
-
-            return Assembly.Load(File.ReadAllBytes(location));
-        }
+        return Assembly.Load(File.ReadAllBytes(location));
     }
 }

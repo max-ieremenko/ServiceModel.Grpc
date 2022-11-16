@@ -18,80 +18,79 @@ using System;
 using System.Runtime.CompilerServices;
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Channel
-{
-    internal static class MetadataExtensions
-    {
-        public static bool ContainsHeader(this Metadata metadata, Metadata.Entry entry)
-        {
-            for (var i = 0; i < metadata.Count; i++)
-            {
-                if (HeadersAreEqual(metadata[i], entry))
-                {
-                    return true;
-                }
-            }
+namespace ServiceModel.Grpc.Channel;
 
-            return false;
+internal static class MetadataExtensions
+{
+    public static bool ContainsHeader(this Metadata metadata, Metadata.Entry entry)
+    {
+        for (var i = 0; i < metadata.Count; i++)
+        {
+            if (HeadersAreEqual(metadata[i], entry))
+            {
+                return true;
+            }
         }
 
-        public static Metadata.Entry? FindHeader(this Metadata? metadata, string key, bool isBinary)
+        return false;
+    }
+
+    public static Metadata.Entry? FindHeader(this Metadata? metadata, string key, bool isBinary)
+    {
+        if (metadata == null)
         {
-            if (metadata == null)
-            {
-                return null;
-            }
-
-            for (var i = 0; i < metadata.Count; i++)
-            {
-                var entry = metadata[i];
-                if (entry.Equals(key, isBinary))
-                {
-                    return entry;
-                }
-            }
-
             return null;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool Equals(this Metadata.Entry entry, string key, bool isBinary)
+        for (var i = 0; i < metadata.Count; i++)
         {
-            return entry.IsBinary == isBinary && string.Equals(key, entry.Key, StringComparison.OrdinalIgnoreCase);
+            var entry = metadata[i];
+            if (entry.Equals(key, isBinary))
+            {
+                return entry;
+            }
         }
 
-        private static bool HeadersAreEqual(Metadata.Entry x, Metadata.Entry y)
+        return null;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Equals(this Metadata.Entry entry, string key, bool isBinary)
+    {
+        return entry.IsBinary == isBinary && string.Equals(key, entry.Key, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool HeadersAreEqual(Metadata.Entry x, Metadata.Entry y)
+    {
+        if (!string.Equals(x.Key, y.Key, StringComparison.OrdinalIgnoreCase)
+            || x.IsBinary != y.IsBinary)
         {
-            if (!string.Equals(x.Key, y.Key, StringComparison.OrdinalIgnoreCase)
-                || x.IsBinary != y.IsBinary)
+            return false;
+        }
+
+        if (x.IsBinary)
+        {
+            return SequenceEqual(x.ValueBytes, y.ValueBytes);
+        }
+
+        return string.Equals(x.Value, y.Value, StringComparison.Ordinal);
+    }
+
+    private static bool SequenceEqual(byte[] x, byte[] y)
+    {
+        if (x.Length != y.Length)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < x.Length; i++)
+        {
+            if (x[i] != y[i])
             {
                 return false;
             }
-
-            if (x.IsBinary)
-            {
-                return SequenceEqual(x.ValueBytes, y.ValueBytes);
-            }
-
-            return string.Equals(x.Value, y.Value, StringComparison.Ordinal);
         }
 
-        private static bool SequenceEqual(byte[] x, byte[] y)
-        {
-            if (x.Length != y.Length)
-            {
-                return false;
-            }
-
-            for (var i = 0; i < x.Length; i++)
-            {
-                if (x[i] != y[i])
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
+        return true;
     }
 }

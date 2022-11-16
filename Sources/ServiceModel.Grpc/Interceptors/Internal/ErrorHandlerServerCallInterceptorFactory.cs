@@ -17,29 +17,28 @@
 using System;
 using ServiceModel.Grpc.Configuration;
 
-namespace ServiceModel.Grpc.Interceptors.Internal
+namespace ServiceModel.Grpc.Interceptors.Internal;
+
+internal sealed class ErrorHandlerServerCallInterceptorFactory : IServerCallInterceptorFactory
 {
-    internal sealed class ErrorHandlerServerCallInterceptorFactory : IServerCallInterceptorFactory
+    private readonly IMarshallerFactory _marshallerFactory;
+    private readonly Func<IServiceProvider, IServerErrorHandler> _errorHandlerFactory;
+
+    public ErrorHandlerServerCallInterceptorFactory(
+        IMarshallerFactory marshallerFactory,
+        Func<IServiceProvider, IServerErrorHandler> errorHandlerFactory)
     {
-        private readonly IMarshallerFactory _marshallerFactory;
-        private readonly Func<IServiceProvider, IServerErrorHandler> _errorHandlerFactory;
+        marshallerFactory.AssertNotNull(nameof(marshallerFactory));
 
-        public ErrorHandlerServerCallInterceptorFactory(
-            IMarshallerFactory marshallerFactory,
-            Func<IServiceProvider, IServerErrorHandler> errorHandlerFactory)
-        {
-            marshallerFactory.AssertNotNull(nameof(marshallerFactory));
+        _marshallerFactory = marshallerFactory;
+        _errorHandlerFactory = errorHandlerFactory;
+    }
 
-            _marshallerFactory = marshallerFactory;
-            _errorHandlerFactory = errorHandlerFactory;
-        }
+    public IServerCallInterceptor CreateInterceptor(IServiceProvider serviceProvider)
+    {
+        serviceProvider.AssertNotNull(nameof(serviceProvider));
 
-        public IServerCallInterceptor CreateInterceptor(IServiceProvider serviceProvider)
-        {
-            serviceProvider.AssertNotNull(nameof(serviceProvider));
-
-            var errorHandler = _errorHandlerFactory(serviceProvider);
-            return new ServerCallErrorInterceptor(errorHandler, _marshallerFactory);
-        }
+        var errorHandler = _errorHandlerFactory(serviceProvider);
+        return new ServerCallErrorInterceptor(errorHandler, _marshallerFactory);
     }
 }

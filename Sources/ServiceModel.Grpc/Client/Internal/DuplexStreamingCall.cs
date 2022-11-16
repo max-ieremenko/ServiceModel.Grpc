@@ -29,201 +29,200 @@ using ServiceModel.Grpc.Channel;
 #pragma warning disable SA1615 // Element return value should be documented
 #pragma warning disable SA1618 // Generic type parameters should be documented
 
-namespace ServiceModel.Grpc.Client.Internal
+namespace ServiceModel.Grpc.Client.Internal;
+
+/// <summary>
+/// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+/// This API may change or be removed in future releases.
+/// </summary>
+public ref struct DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader, TResponse>
+    where TRequestHeader : class
+    where TResponseHeader : class
 {
-    /// <summary>
-    /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
-    /// This API may change or be removed in future releases.
-    /// </summary>
-    public ref struct DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader, TResponse>
-        where TRequestHeader : class
-        where TResponseHeader : class
+    private readonly Method<Message<TRequest>, Message<TResponse>> _method;
+    private readonly CallInvoker _callInvoker;
+
+    private readonly CallContext? _callContext;
+    private CallOptions _callOptions;
+    private Marshaller<TResponseHeader>? _responseHeaderMarshaller;
+
+    public DuplexStreamingCall(
+        Method<Message<TRequest>, Message<TResponse>> method,
+        CallInvoker callInvoker,
+        in CallOptionsBuilder callOptionsBuilder)
     {
-        private readonly Method<Message<TRequest>, Message<TResponse>> _method;
-        private readonly CallInvoker _callInvoker;
+        _method = method;
+        _callInvoker = callInvoker;
 
-        private readonly CallContext? _callContext;
-        private CallOptions _callOptions;
-        private Marshaller<TResponseHeader>? _responseHeaderMarshaller;
+        _callContext = callOptionsBuilder.CallContext;
+        _callOptions = callOptionsBuilder.Build();
+        _responseHeaderMarshaller = null;
+    }
 
-        public DuplexStreamingCall(
-            Method<Message<TRequest>, Message<TResponse>> method,
-            CallInvoker callInvoker,
-            in CallOptionsBuilder callOptionsBuilder)
+    public DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader, TResponse> WithRequestHeader(
+        Marshaller<TRequestHeader> marshaller,
+        TRequestHeader header)
+    {
+        var metadata = CompatibilityTools.SerializeMethodInputHeader(marshaller, header);
+        _callOptions = CallOptionsBuilder.MergeCallOptions(_callOptions, new CallOptions(metadata));
+        return this;
+    }
+
+    public DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader, TResponse> WithResponseHeader(
+        Marshaller<TResponseHeader> marshaller)
+    {
+        _responseHeaderMarshaller = marshaller;
+        return this;
+    }
+
+    public IAsyncEnumerable<TResponse> Invoke(IAsyncEnumerable<TRequest> request)
+    {
+        var call = _callInvoker.AsyncDuplexStreamingCall(_method, null, _callOptions);
+
+        ClientStreamWriter<TRequest>? writer = null;
+        try
         {
-            _method = method;
-            _callInvoker = callInvoker;
-
-            _callContext = callOptionsBuilder.CallContext;
-            _callOptions = callOptionsBuilder.Build();
-            _responseHeaderMarshaller = null;
+            writer = new ClientStreamWriter<TRequest>(request, call.RequestStream, _callOptions.CancellationToken);
+            _callContext?.TraceClientStreaming?.Invoke(writer.Task);
+        }
+        catch
+        {
+            call.Dispose();
+            writer?.Dispose();
+            throw;
         }
 
-        public DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader, TResponse> WithRequestHeader(
-            Marshaller<TRequestHeader> marshaller,
-            TRequestHeader header)
-        {
-            var metadata = CompatibilityTools.SerializeMethodInputHeader(marshaller, header);
-            _callOptions = CallOptionsBuilder.MergeCallOptions(_callOptions, new CallOptions(metadata));
-            return this;
-        }
+        return ReadServerStreamAsync(call, writer, _callContext, _callOptions.CancellationToken);
+    }
 
-        public DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader, TResponse> WithResponseHeader(
-            Marshaller<TResponseHeader> marshaller)
-        {
-            _responseHeaderMarshaller = marshaller;
-            return this;
-        }
+    public Task<IAsyncEnumerable<TResponse>> InvokeAsync(IAsyncEnumerable<TRequest> request)
+    {
+        var call = _callInvoker.AsyncDuplexStreamingCall(_method, null, _callOptions);
 
-        public IAsyncEnumerable<TResponse> Invoke(IAsyncEnumerable<TRequest> request)
-        {
-            var call = _callInvoker.AsyncDuplexStreamingCall(_method, null, _callOptions);
+        return CallAsync(call, request, _callContext, _callOptions.CancellationToken);
+    }
 
-            ClientStreamWriter<TRequest>? writer = null;
-            try
+    public Task<TResult> InvokeAsync<TResult>(
+        IAsyncEnumerable<TRequest> request,
+        Func<TResponseHeader, IAsyncEnumerable<TResponse>, TResult> continuationFunction)
+    {
+        var call = _callInvoker.AsyncDuplexStreamingCall(_method, null, _callOptions);
+
+        return CallAsync(call, request, _callContext, _callOptions.CancellationToken, _responseHeaderMarshaller!, continuationFunction);
+    }
+
+    private static async Task<IAsyncEnumerable<TResponse>> CallAsync(
+        AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>> call,
+        IAsyncEnumerable<TRequest> request,
+        CallContext? context,
+        CancellationToken token)
+    {
+        ClientStreamWriter<TRequest>? writer = null;
+        try
+        {
+            writer = new ClientStreamWriter<TRequest>(request, call.RequestStream, token);
+
+            if (context != null && !token.IsCancellationRequested)
             {
-                writer = new ClientStreamWriter<TRequest>(request, call.RequestStream, _callOptions.CancellationToken);
-                _callContext?.TraceClientStreaming?.Invoke(writer.Task);
-            }
-            catch
-            {
-                call.Dispose();
-                writer?.Dispose();
-                throw;
-            }
-
-            return ReadServerStreamAsync(call, writer, _callContext, _callOptions.CancellationToken);
-        }
-
-        public Task<IAsyncEnumerable<TResponse>> InvokeAsync(IAsyncEnumerable<TRequest> request)
-        {
-            var call = _callInvoker.AsyncDuplexStreamingCall(_method, null, _callOptions);
-
-            return CallAsync(call, request, _callContext, _callOptions.CancellationToken);
-        }
-
-        public Task<TResult> InvokeAsync<TResult>(
-            IAsyncEnumerable<TRequest> request,
-            Func<TResponseHeader, IAsyncEnumerable<TResponse>, TResult> continuationFunction)
-        {
-            var call = _callInvoker.AsyncDuplexStreamingCall(_method, null, _callOptions);
-
-            return CallAsync(call, request, _callContext, _callOptions.CancellationToken, _responseHeaderMarshaller!, continuationFunction);
-        }
-
-        private static async Task<IAsyncEnumerable<TResponse>> CallAsync(
-            AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>> call,
-            IAsyncEnumerable<TRequest> request,
-            CallContext? context,
-            CancellationToken token)
-        {
-            ClientStreamWriter<TRequest>? writer = null;
-            try
-            {
-                writer = new ClientStreamWriter<TRequest>(request, call.RequestStream, token);
-
-                if (context != null && !token.IsCancellationRequested)
-                {
-                    context.TraceClientStreaming?.Invoke(writer.Task);
-
-                    var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
-                    context.ServerResponse = new ServerResponse(
-                        headers,
-                        call.GetStatus,
-                        call.GetTrailers);
-                }
-            }
-            catch
-            {
-                call.Dispose();
-                writer?.Dispose();
-                throw;
-            }
-
-            return ReadServerStreamAsync(call, writer, context, token);
-        }
-
-        private static async Task<TResult> CallAsync<TResult>(
-            AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>> call,
-            IAsyncEnumerable<TRequest> request,
-            CallContext? context,
-            CancellationToken token,
-            Marshaller<TResponseHeader> marshaller,
-            Func<TResponseHeader, IAsyncEnumerable<TResponse>, TResult> continuationFunction)
-        {
-            TResponseHeader header = default!;
-            ClientStreamWriter<TRequest>? writer = null;
-            try
-            {
-                writer = new ClientStreamWriter<TRequest>(request, call.RequestStream, token);
+                context.TraceClientStreaming?.Invoke(writer.Task);
 
                 var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
-                if (context != null)
-                {
-                    context.TraceClientStreaming?.Invoke(writer.Task);
-
-                    context.ServerResponse = new ServerResponse(
-                        headers,
-                        call.GetStatus,
-                        call.GetTrailers);
-                }
-
-                // see ExceptionHandlingTest.ThrowApplicationExceptionDuplexStreamingHeader
-                // gRPC core channel: headers.Count == 0, exception comes on MoveNext
-                // gRPC .net channel: headers contains exception details, provided by server error handler
-                if (CompatibilityTools.ContainsMethodOutputHeader(headers))
-                {
-                    header = CompatibilityTools.DeserializeMethodOutputHeader(marshaller, headers);
-                }
-                else
-                {
-                    await ClientChannelAdapter.WaitForServerStreamExceptionAsync(call.ResponseStream, headers, marshaller, token).ConfigureAwait(false);
-                }
+                context.ServerResponse = new ServerResponse(
+                    headers,
+                    call.GetStatus,
+                    call.GetTrailers);
             }
-            catch
-            {
-                call.Dispose();
-                writer?.Dispose();
-                throw;
-            }
-
-            var stream = ReadServerStreamAsync(call, writer, context, token);
-            return continuationFunction(header, stream);
+        }
+        catch
+        {
+            call.Dispose();
+            writer?.Dispose();
+            throw;
         }
 
-        private static async IAsyncEnumerable<TResponse> ReadServerStreamAsync(
-            AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>> call,
-            ClientStreamWriter<TRequest> writer,
-            CallContext? context,
-            [EnumeratorCancellation] CancellationToken token)
+        return ReadServerStreamAsync(call, writer, context, token);
+    }
+
+    private static async Task<TResult> CallAsync<TResult>(
+        AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>> call,
+        IAsyncEnumerable<TRequest> request,
+        CallContext? context,
+        CancellationToken token,
+        Marshaller<TResponseHeader> marshaller,
+        Func<TResponseHeader, IAsyncEnumerable<TResponse>, TResult> continuationFunction)
+    {
+        TResponseHeader header = default!;
+        ClientStreamWriter<TRequest>? writer = null;
+        try
         {
-            using (call)
-            using (writer)
+            writer = new ClientStreamWriter<TRequest>(request, call.RequestStream, token);
+
+            var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
+            if (context != null)
             {
-                if (context != null && !context.ServerResponse.HasValue && !token.IsCancellationRequested)
-                {
-                    var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
-                    context.ServerResponse = new ServerResponse(
-                        headers,
-                        call.GetStatus,
-                        call.GetTrailers);
-                }
+                context.TraceClientStreaming?.Invoke(writer.Task);
 
-                while (await call.ResponseStream.MoveNext(token).ConfigureAwait(false))
-                {
-                    yield return call.ResponseStream.Current.Value1;
-                }
-
-                if (context != null && !token.IsCancellationRequested)
-                {
-                    context.ServerResponse = new ServerResponse(
-                        context.ResponseHeaders!,
-                        call.GetStatus(),
-                        call.GetTrailers());
-                }
-
-                await writer.WaitAsync(token).ConfigureAwait(false);
+                context.ServerResponse = new ServerResponse(
+                    headers,
+                    call.GetStatus,
+                    call.GetTrailers);
             }
+
+            // see ExceptionHandlingTest.ThrowApplicationExceptionDuplexStreamingHeader
+            // gRPC core channel: headers.Count == 0, exception comes on MoveNext
+            // gRPC .net channel: headers contains exception details, provided by server error handler
+            if (CompatibilityTools.ContainsMethodOutputHeader(headers))
+            {
+                header = CompatibilityTools.DeserializeMethodOutputHeader(marshaller, headers);
+            }
+            else
+            {
+                await ClientChannelAdapter.WaitForServerStreamExceptionAsync(call.ResponseStream, headers, marshaller, token).ConfigureAwait(false);
+            }
+        }
+        catch
+        {
+            call.Dispose();
+            writer?.Dispose();
+            throw;
+        }
+
+        var stream = ReadServerStreamAsync(call, writer, context, token);
+        return continuationFunction(header, stream);
+    }
+
+    private static async IAsyncEnumerable<TResponse> ReadServerStreamAsync(
+        AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>> call,
+        ClientStreamWriter<TRequest> writer,
+        CallContext? context,
+        [EnumeratorCancellation] CancellationToken token)
+    {
+        using (call)
+        using (writer)
+        {
+            if (context != null && !context.ServerResponse.HasValue && !token.IsCancellationRequested)
+            {
+                var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
+                context.ServerResponse = new ServerResponse(
+                    headers,
+                    call.GetStatus,
+                    call.GetTrailers);
+            }
+
+            while (await call.ResponseStream.MoveNext(token).ConfigureAwait(false))
+            {
+                yield return call.ResponseStream.Current.Value1;
+            }
+
+            if (context != null && !token.IsCancellationRequested)
+            {
+                context.ServerResponse = new ServerResponse(
+                    context.ResponseHeaders!,
+                    call.GetStatus(),
+                    call.GetTrailers());
+            }
+
+            await writer.WaitAsync(token).ConfigureAwait(false);
         }
     }
 }

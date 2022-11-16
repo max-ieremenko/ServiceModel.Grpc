@@ -20,154 +20,153 @@ using System.Globalization;
 using Microsoft.CodeAnalysis;
 using ServiceModel.Grpc.Internal;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal;
+
+internal static class ServiceContract
 {
-    internal static class ServiceContract
+    public static bool IsServiceContractInterface(INamedTypeSymbol type)
     {
-        public static bool IsServiceContractInterface(INamedTypeSymbol type)
+        return SyntaxTools.IsInterface(type)
+               && !type.IsUnboundGenericType
+               && GetServiceContractAttribute(type) != null;
+    }
+
+    public static bool IsServiceOperation(IMethodSymbol method)
+    {
+        return GetOperationContractAttribute(method) != null;
+    }
+
+    public static string GetServiceName(INamedTypeSymbol serviceType)
+    {
+        var (typeName, attributeNamespace, attributeName) = GetServiceNonGenericName(serviceType);
+        var genericEnding = GetServiceGenericEnding(serviceType);
+
+        return NamingContract.GetServiceName(typeName, attributeNamespace, attributeName, genericEnding);
+    }
+
+    public static IList<string> GetServiceGenericEnding(INamedTypeSymbol serviceType)
+    {
+        var result = new List<string>();
+        GetServiceGenericEnding(serviceType, result);
+
+        return result;
+    }
+
+    public static string GetServiceOperationName(IMethodSymbol method)
+    {
+        var attribute = GetOperationContractAttribute(method);
+        if (attribute == null)
         {
-            return SyntaxTools.IsInterface(type)
-                   && !type.IsUnboundGenericType
-                   && GetServiceContractAttribute(type) != null;
+            throw new ArgumentOutOfRangeException(nameof(method));
         }
 
-        public static bool IsServiceOperation(IMethodSymbol method)
+        string? name = null;
+
+        foreach (var pair in attribute.NamedArguments)
         {
-            return GetOperationContractAttribute(method) != null;
-        }
-
-        public static string GetServiceName(INamedTypeSymbol serviceType)
-        {
-            var (typeName, attributeNamespace, attributeName) = GetServiceNonGenericName(serviceType);
-            var genericEnding = GetServiceGenericEnding(serviceType);
-
-            return NamingContract.GetServiceName(typeName, attributeNamespace, attributeName, genericEnding);
-        }
-
-        public static IList<string> GetServiceGenericEnding(INamedTypeSymbol serviceType)
-        {
-            var result = new List<string>();
-            GetServiceGenericEnding(serviceType, result);
-
-            return result;
-        }
-
-        public static string GetServiceOperationName(IMethodSymbol method)
-        {
-            var attribute = GetOperationContractAttribute(method);
-            if (attribute == null)
+            if ("Name".Equals(pair.Key, StringComparison.Ordinal))
             {
-                throw new ArgumentOutOfRangeException(nameof(method));
+                name = (string?)pair.Value.Value;
+                break;
+            }
+        }
+
+        return string.IsNullOrWhiteSpace(name) ? method.Name : name!;
+    }
+
+    private static AttributeData? GetServiceContractAttribute(ITypeSymbol type)
+    {
+        return SyntaxTools.GetCustomAttribute(type, "System.ServiceModel.ServiceContractAttribute");
+    }
+
+    private static AttributeData? GetOperationContractAttribute(IMethodSymbol method)
+    {
+        return SyntaxTools.GetCustomAttribute(method, "System.ServiceModel.OperationContractAttribute");
+    }
+
+    private static void GetServiceGenericEnding(ITypeSymbol serviceType, IList<string> result)
+    {
+        var args = serviceType.GenericTypeArguments();
+        for (var i = 0; i < args.Length; i++)
+        {
+            var type = args[i];
+
+            if (type is IArrayTypeSymbol array)
+            {
+                var (elementType, prefix) = ExpandArray(array);
+                type = elementType;
+                if (array.Rank > 1)
+                {
+                    prefix += array.Rank.ToString(CultureInfo.InvariantCulture);
+                }
+
+                result.Add(prefix + GetDataContainerName(type));
+            }
+            else
+            {
+                result.Add(GetDataContainerName(type));
             }
 
-            string? name = null;
+            GetServiceGenericEnding(type, result);
+        }
+    }
 
-            foreach (var pair in attribute.NamedArguments)
+    private static (string TypeName, string? AttributeNamespace, string? AttributeName) GetServiceNonGenericName(ITypeSymbol serviceType)
+    {
+        var attribute = GetServiceContractAttribute(serviceType);
+        if (attribute == null)
+        {
+            throw new ArgumentOutOfRangeException(nameof(serviceType));
+        }
+
+        string? name = null;
+        string? @namespace = null;
+
+        foreach (var pair in attribute.NamedArguments)
+        {
+            if ("Namespace".Equals(pair.Key, StringComparison.Ordinal))
             {
-                if ("Name".Equals(pair.Key, StringComparison.Ordinal))
+                @namespace = (string?)pair.Value.Value;
+            }
+            else if ("Name".Equals(pair.Key, StringComparison.Ordinal))
+            {
+                name = (string?)pair.Value.Value;
+            }
+        }
+
+        return (serviceType.Name, @namespace, name);
+    }
+
+    private static string GetDataContainerName(ITypeSymbol type)
+    {
+        var attribute = SyntaxTools.GetCustomAttribute(type, "System.Runtime.Serialization.DataContractAttribute");
+        string? attributeName = null;
+
+        if (attribute != null)
+        {
+            for (var i = 0; i < attribute.NamedArguments.Length; i++)
+            {
+                var pair = attribute.NamedArguments[i];
+                if ("Name".Equals(pair.Key))
                 {
-                    name = (string?)pair.Value.Value;
+                    attributeName = (string?)pair.Value.Value;
                     break;
                 }
             }
-
-            return string.IsNullOrWhiteSpace(name) ? method.Name : name!;
         }
 
-        private static AttributeData? GetServiceContractAttribute(ITypeSymbol type)
+        return string.IsNullOrWhiteSpace(attributeName) ? type.Name : attributeName!;
+    }
+
+    private static (ITypeSymbol ElementType, string Prefix) ExpandArray(IArrayTypeSymbol array)
+    {
+        var prefix = "Array";
+        while (array.ElementType is IArrayTypeSymbol subArray)
         {
-            return SyntaxTools.GetCustomAttribute(type, "System.ServiceModel.ServiceContractAttribute");
+            prefix += "Array";
+            array = subArray;
         }
 
-        private static AttributeData? GetOperationContractAttribute(IMethodSymbol method)
-        {
-            return SyntaxTools.GetCustomAttribute(method, "System.ServiceModel.OperationContractAttribute");
-        }
-
-        private static void GetServiceGenericEnding(ITypeSymbol serviceType, IList<string> result)
-        {
-            var args = serviceType.GenericTypeArguments();
-            for (var i = 0; i < args.Length; i++)
-            {
-                var type = args[i];
-
-                if (type is IArrayTypeSymbol array)
-                {
-                    var (elementType, prefix) = ExpandArray(array);
-                    type = elementType;
-                    if (array.Rank > 1)
-                    {
-                        prefix += array.Rank.ToString(CultureInfo.InvariantCulture);
-                    }
-
-                    result.Add(prefix + GetDataContainerName(type));
-                }
-                else
-                {
-                    result.Add(GetDataContainerName(type));
-                }
-
-                GetServiceGenericEnding(type, result);
-            }
-        }
-
-        private static (string TypeName, string? AttributeNamespace, string? AttributeName) GetServiceNonGenericName(ITypeSymbol serviceType)
-        {
-            var attribute = GetServiceContractAttribute(serviceType);
-            if (attribute == null)
-            {
-                throw new ArgumentOutOfRangeException(nameof(serviceType));
-            }
-
-            string? name = null;
-            string? @namespace = null;
-
-            foreach (var pair in attribute.NamedArguments)
-            {
-                if ("Namespace".Equals(pair.Key, StringComparison.Ordinal))
-                {
-                    @namespace = (string?)pair.Value.Value;
-                }
-                else if ("Name".Equals(pair.Key, StringComparison.Ordinal))
-                {
-                    name = (string?)pair.Value.Value;
-                }
-            }
-
-            return (serviceType.Name, @namespace, name);
-        }
-
-        private static string GetDataContainerName(ITypeSymbol type)
-        {
-            var attribute = SyntaxTools.GetCustomAttribute(type, "System.Runtime.Serialization.DataContractAttribute");
-            string? attributeName = null;
-
-            if (attribute != null)
-            {
-                for (var i = 0; i < attribute.NamedArguments.Length; i++)
-                {
-                    var pair = attribute.NamedArguments[i];
-                    if ("Name".Equals(pair.Key))
-                    {
-                        attributeName = (string?)pair.Value.Value;
-                        break;
-                    }
-                }
-            }
-
-            return string.IsNullOrWhiteSpace(attributeName) ? type.Name : attributeName!;
-        }
-
-        private static (ITypeSymbol ElementType, string Prefix) ExpandArray(IArrayTypeSymbol array)
-        {
-            var prefix = "Array";
-            while (array.ElementType is IArrayTypeSymbol subArray)
-            {
-                prefix += "Array";
-                array = subArray;
-            }
-
-            return (array.ElementType, prefix);
-        }
+        return (array.ElementType, prefix);
     }
 }

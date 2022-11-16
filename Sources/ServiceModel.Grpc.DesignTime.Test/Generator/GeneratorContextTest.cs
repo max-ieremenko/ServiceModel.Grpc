@@ -18,30 +18,29 @@ using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.DesignTime.Generator
+namespace ServiceModel.Grpc.DesignTime.Generator;
+
+[TestFixture]
+public class GeneratorContextTest
 {
-    [TestFixture]
-    public class GeneratorContextTest
+    private GeneratorContext _sut = null!;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private GeneratorContext _sut = null!;
+        _sut = new GeneratorContext(null!, null!);
+    }
 
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            _sut = new GeneratorContext(null!, null!);
-        }
+    [Test]
+    public void GetOutputFileName()
+    {
+        var node = SyntaxFactory.ClassDeclaration("ClassName");
 
-        [Test]
-        public void GetOutputFileName()
-        {
-            var node = SyntaxFactory.ClassDeclaration("ClassName");
+        var actual = _sut.GetOutputFileName(node, "HintName");
+        actual.ShouldBe("ClassName.HintName.g.cs");
 
-            var actual = _sut.GetOutputFileName(node, "HintName");
-            actual.ShouldBe("ClassName.HintName.g.cs");
-
-            // duplicate
-            actual = _sut.GetOutputFileName(node, "HintName");
-            actual.ShouldBe("ClassName.HintName1.g.cs");
-        }
+        // duplicate
+        actual = _sut.GetOutputFileName(node, "HintName");
+        actual.ShouldBe("ClassName.HintName1.g.cs");
     }
 }

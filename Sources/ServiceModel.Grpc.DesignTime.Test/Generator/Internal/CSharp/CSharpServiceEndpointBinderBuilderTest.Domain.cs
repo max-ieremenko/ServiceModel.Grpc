@@ -20,75 +20,74 @@ using System.Reflection;
 #pragma warning disable SA1411 // Attribute constructor should not use unnecessary parenthesis
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
+
+public partial class CSharpServiceEndpointBinderBuilderTest
 {
-    public partial class CSharpServiceEndpointBinderBuilderTest
+    [AttributeUsage(AttributeTargets.All)]
+    public class MyAttribute : Attribute
     {
-        [AttributeUsage(AttributeTargets.All)]
-        public class MyAttribute : Attribute
+        public MyAttribute()
         {
-            public MyAttribute()
-            {
-            }
-
-            public MyAttribute(string? value1)
-            {
-                Value1 = value1;
-            }
-
-            public MyAttribute(BindingFlags value2)
-            {
-                Value2 = value2;
-            }
-
-            public MyAttribute(string? value1, BindingFlags value2)
-            {
-                Value1 = value1;
-                Value2 = value2;
-            }
-
-            public string? Value1 { get; set; }
-
-            public BindingFlags Value2 { get; set; }
         }
 
-        public class WriteNewAttributeCases
+        public MyAttribute(string? value1)
         {
-            [My()]
-            public string Case1() => FinishCode("()");
+            Value1 = value1;
+        }
 
-            [My]
-            public string Case2() => FinishCode("()");
+        public MyAttribute(BindingFlags value2)
+        {
+            Value2 = value2;
+        }
 
-            [My]
-            public string Case3() => FinishCode("()");
+        public MyAttribute(string? value1, BindingFlags value2)
+        {
+            Value1 = value1;
+            Value2 = value2;
+        }
 
-            [My("abc")]
-            public string Case4() => FinishCode("(\"abc\")");
+        public string? Value1 { get; set; }
 
-            [My("abc")]
-            public string Case5() => FinishCode("(\"abc\")");
+        public BindingFlags Value2 { get; set; }
+    }
 
-            [My(null)]
-            public string Case6() => FinishCode("(null)");
+    public class WriteNewAttributeCases
+    {
+        [My()]
+        public string Case1() => FinishCode("()");
 
-            [My(BindingFlags.Instance)]
-            public string Case7() => FinishCode("(System.Reflection.BindingFlags.Instance)");
+        [My]
+        public string Case2() => FinishCode("()");
 
-            [My(Value2 = BindingFlags.Instance)]
-            public string Case8() => FinishCode(" { Value2 = System.Reflection.BindingFlags.Instance }");
+        [My]
+        public string Case3() => FinishCode("()");
 
-            [My("abc", BindingFlags.Instance, Value1 = null, Value2 = BindingFlags.Instance)]
-            public string Case9() => FinishCode("(\"abc\", System.Reflection.BindingFlags.Instance) { Value1 = null, Value2 = System.Reflection.BindingFlags.Instance }");
+        [My("abc")]
+        public string Case4() => FinishCode("(\"abc\")");
 
-            private static string FinishCode(string template)
-            {
-                return string.Format(
-                    "new global::{0}.{1}{2}",
-                    typeof(CSharpServiceEndpointBinderBuilderTest).FullName,
-                    nameof(MyAttribute),
-                    template);
-            }
+        [My("abc")]
+        public string Case5() => FinishCode("(\"abc\")");
+
+        [My(null)]
+        public string Case6() => FinishCode("(null)");
+
+        [My(BindingFlags.Instance)]
+        public string Case7() => FinishCode("(System.Reflection.BindingFlags.Instance)");
+
+        [My(Value2 = BindingFlags.Instance)]
+        public string Case8() => FinishCode(" { Value2 = System.Reflection.BindingFlags.Instance }");
+
+        [My("abc", BindingFlags.Instance, Value1 = null, Value2 = BindingFlags.Instance)]
+        public string Case9() => FinishCode("(\"abc\", System.Reflection.BindingFlags.Instance) { Value1 = null, Value2 = System.Reflection.BindingFlags.Instance }");
+
+        private static string FinishCode(string template)
+        {
+            return string.Format(
+                "new global::{0}.{1}{2}",
+                typeof(CSharpServiceEndpointBinderBuilderTest).FullName,
+                nameof(MyAttribute),
+                template);
         }
     }
 }

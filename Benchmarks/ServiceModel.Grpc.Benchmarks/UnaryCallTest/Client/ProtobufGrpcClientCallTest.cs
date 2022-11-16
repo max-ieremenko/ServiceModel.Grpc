@@ -20,39 +20,38 @@ using ProtoBuf.Grpc.Client;
 using ServiceModel.Grpc.Benchmarks.Domain;
 using ServiceModel.Grpc.Configuration;
 
-namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Client
+namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Client;
+
+internal sealed class ProtobufGrpcClientCallTest : IUnaryCallTest
 {
-    internal sealed class ProtobufGrpcClientCallTest : IUnaryCallTest
+    private readonly SomeObject _payload;
+    private readonly StubHttpMessageHandler _httpHandler;
+    private readonly GrpcChannel _channel;
+    private readonly ITestService _proxy;
+
+    public ProtobufGrpcClientCallTest(SomeObject payload)
     {
-        private readonly SomeObject _payload;
-        private readonly StubHttpMessageHandler _httpHandler;
-        private readonly GrpcChannel _channel;
-        private readonly ITestService _proxy;
+        _payload = payload;
+        _httpHandler = new StubHttpMessageHandler(ProtobufMarshallerFactory.Default, _payload);
+        _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpHandler = _httpHandler });
 
-        public ProtobufGrpcClientCallTest(SomeObject payload)
-        {
-            _payload = payload;
-            _httpHandler = new StubHttpMessageHandler(ProtobufMarshallerFactory.Default, _payload);
-            _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpHandler = _httpHandler });
+        _proxy = _channel.CreateGrpcService<ITestService>();
+    }
 
-            _proxy = _channel.CreateGrpcService<ITestService>();
-        }
+    public Task PingPongAsync()
+    {
+        return _proxy.PingPong(_payload);
+    }
 
-        public Task PingPongAsync()
-        {
-            return _proxy.PingPong(_payload);
-        }
+    public async ValueTask<long> GetPingPongPayloadSize()
+    {
+        await PingPongAsync().ConfigureAwait(false);
+        return _httpHandler.PayloadSize;
+    }
 
-        public async ValueTask<long> GetPingPongPayloadSize()
-        {
-            await PingPongAsync().ConfigureAwait(false);
-            return _httpHandler.PayloadSize;
-        }
-
-        public void Dispose()
-        {
-            _channel.Dispose();
-            _httpHandler.Dispose();
-        }
+    public void Dispose()
+    {
+        _channel.Dispose();
+        _httpHandler.Dispose();
     }
 }

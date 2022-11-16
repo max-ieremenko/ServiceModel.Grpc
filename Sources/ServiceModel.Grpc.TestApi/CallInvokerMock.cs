@@ -21,379 +21,378 @@ using Moq;
 using ServiceModel.Grpc.Channel;
 using Shouldly;
 
-namespace ServiceModel.Grpc.TestApi
+namespace ServiceModel.Grpc.TestApi;
+
+public static class CallInvokerMock
 {
-    public static class CallInvokerMock
+    public static void SetupBlockingUnaryCall(this Mock<CallInvoker> invoker, Action<CallOptions>? callOptions = null)
     {
-        public static void SetupBlockingUnaryCall(this Mock<CallInvoker> invoker, Action<CallOptions>? callOptions = null)
-        {
-            invoker
-                .Setup(i => i.BlockingUnaryCall(
-                    It.IsNotNull<Method<Message, Message>>(),
-                    null,
-                    It.IsAny<CallOptions>(),
-                    It.IsNotNull<Message>()))
-                .Callback<Method<Message, Message>, string, CallOptions, Message>((method, _, options, request) =>
-                {
-                    method.Type.ShouldBe(MethodType.Unary);
-                    callOptions?.Invoke(options);
-                })
-                .Returns(new Message());
-        }
+        invoker
+            .Setup(i => i.BlockingUnaryCall(
+                It.IsNotNull<Method<Message, Message>>(),
+                null,
+                It.IsAny<CallOptions>(),
+                It.IsNotNull<Message>()))
+            .Callback<Method<Message, Message>, string, CallOptions, Message>((method, _, options, request) =>
+            {
+                method.Type.ShouldBe(MethodType.Unary);
+                callOptions?.Invoke(options);
+            })
+            .Returns(new Message());
+    }
 
-        public static void SetupBlockingUnaryCallOut<TResponse>(this Mock<CallInvoker> invoker, TResponse response, Action<CallOptions>? callOptions = null)
-        {
-            invoker
-                .Setup(i => i.BlockingUnaryCall(
-                    It.IsNotNull<Method<Message, Message<TResponse>>>(),
-                    null,
-                    It.IsAny<CallOptions>(),
-                    It.IsNotNull<Message>()))
-                .Callback<Method<Message, Message<TResponse>>, string, CallOptions, Message>((method, _, options, request) =>
-                {
-                    method.Type.ShouldBe(MethodType.Unary);
-                    callOptions?.Invoke(options);
-                })
-                .Returns(new Message<TResponse>(response));
-        }
+    public static void SetupBlockingUnaryCallOut<TResponse>(this Mock<CallInvoker> invoker, TResponse response, Action<CallOptions>? callOptions = null)
+    {
+        invoker
+            .Setup(i => i.BlockingUnaryCall(
+                It.IsNotNull<Method<Message, Message<TResponse>>>(),
+                null,
+                It.IsAny<CallOptions>(),
+                It.IsNotNull<Message>()))
+            .Callback<Method<Message, Message<TResponse>>, string, CallOptions, Message>((method, _, options, request) =>
+            {
+                method.Type.ShouldBe(MethodType.Unary);
+                callOptions?.Invoke(options);
+            })
+            .Returns(new Message<TResponse>(response));
+    }
 
-        public static void SetupBlockingUnaryCallIn<TRequest>(this Mock<CallInvoker> invoker, TRequest request, Action<CallOptions>? callOptions = null)
-        {
-            invoker
-                .Setup(i => i.BlockingUnaryCall(
-                    It.IsNotNull<Method<Message<TRequest>, Message>>(),
-                    null,
-                    It.IsAny<CallOptions>(),
-                    It.IsNotNull<Message<TRequest>>()))
-                .Callback<Method<Message<TRequest>, Message>, string, CallOptions, Message<TRequest>>((method, _, options, r) =>
-                {
-                    method.Type.ShouldBe(MethodType.Unary);
-                    callOptions?.Invoke(options);
-                    r.Value1.ShouldBe(request);
-                })
-                .Returns(new Message());
-        }
+    public static void SetupBlockingUnaryCallIn<TRequest>(this Mock<CallInvoker> invoker, TRequest request, Action<CallOptions>? callOptions = null)
+    {
+        invoker
+            .Setup(i => i.BlockingUnaryCall(
+                It.IsNotNull<Method<Message<TRequest>, Message>>(),
+                null,
+                It.IsAny<CallOptions>(),
+                It.IsNotNull<Message<TRequest>>()))
+            .Callback<Method<Message<TRequest>, Message>, string, CallOptions, Message<TRequest>>((method, _, options, r) =>
+            {
+                method.Type.ShouldBe(MethodType.Unary);
+                callOptions?.Invoke(options);
+                r.Value1.ShouldBe(request);
+            })
+            .Returns(new Message());
+    }
 
-        public static void SetupBlockingUnaryCallInOut<TRequest, TResponse>(
-            this Mock<CallInvoker> invoker,
-            TRequest request,
-            TResponse response,
-            Action<CallOptions>? callOptions = null)
-        {
-            invoker
-                .Setup(i => i.BlockingUnaryCall(
-                    It.IsNotNull<Method<Message<TRequest>, Message<TResponse>>>(),
-                    null,
-                    It.IsAny<CallOptions>(),
-                    It.IsNotNull<Message<TRequest>>()))
-                .Callback<Method<Message<TRequest>, Message<TResponse>>, string, CallOptions, Message<TRequest>>((method, _, options, message) =>
-                {
-                    method.Type.ShouldBe(MethodType.Unary);
-                    callOptions?.Invoke(options);
-                    message.Value1.ShouldBe(request);
-                })
-                .Returns(new Message<TResponse>(response));
-        }
+    public static void SetupBlockingUnaryCallInOut<TRequest, TResponse>(
+        this Mock<CallInvoker> invoker,
+        TRequest request,
+        TResponse response,
+        Action<CallOptions>? callOptions = null)
+    {
+        invoker
+            .Setup(i => i.BlockingUnaryCall(
+                It.IsNotNull<Method<Message<TRequest>, Message<TResponse>>>(),
+                null,
+                It.IsAny<CallOptions>(),
+                It.IsNotNull<Message<TRequest>>()))
+            .Callback<Method<Message<TRequest>, Message<TResponse>>, string, CallOptions, Message<TRequest>>((method, _, options, message) =>
+            {
+                method.Type.ShouldBe(MethodType.Unary);
+                callOptions?.Invoke(options);
+                message.Value1.ShouldBe(request);
+            })
+            .Returns(new Message<TResponse>(response));
+    }
 
-        public static void SetupBlockingUnaryCallInOut<TRequest1, TRequest2, TResponse>(
-            this Mock<CallInvoker> invoker,
-            TRequest1 request1,
-            TRequest2 request2,
-            TResponse response,
-            Action<IMethod>? methodValidate = null)
-        {
-            invoker
-                .Setup(i => i.BlockingUnaryCall(
-                    It.IsNotNull<Method<Message<TRequest1, TRequest2>, Message<TResponse>>>(),
-                    null,
-                    It.IsAny<CallOptions>(),
-                    It.IsNotNull<Message<TRequest1, TRequest2>>()))
-                .Callback<Method<Message<TRequest1, TRequest2>, Message<TResponse>>, string, CallOptions, Message<TRequest1, TRequest2>>((method, _, options, request) =>
-                {
-                    method.Type.ShouldBe(MethodType.Unary);
-                    methodValidate?.Invoke(method);
-                    request.Value1.ShouldBe(request1);
-                    request.Value2.ShouldBe(request2);
-                })
-                .Returns(new Message<TResponse>(response));
-        }
+    public static void SetupBlockingUnaryCallInOut<TRequest1, TRequest2, TResponse>(
+        this Mock<CallInvoker> invoker,
+        TRequest1 request1,
+        TRequest2 request2,
+        TResponse response,
+        Action<IMethod>? methodValidate = null)
+    {
+        invoker
+            .Setup(i => i.BlockingUnaryCall(
+                It.IsNotNull<Method<Message<TRequest1, TRequest2>, Message<TResponse>>>(),
+                null,
+                It.IsAny<CallOptions>(),
+                It.IsNotNull<Message<TRequest1, TRequest2>>()))
+            .Callback<Method<Message<TRequest1, TRequest2>, Message<TResponse>>, string, CallOptions, Message<TRequest1, TRequest2>>((method, _, options, request) =>
+            {
+                method.Type.ShouldBe(MethodType.Unary);
+                methodValidate?.Invoke(method);
+                request.Value1.ShouldBe(request1);
+                request.Value2.ShouldBe(request2);
+            })
+            .Returns(new Message<TResponse>(response));
+    }
 
-        public static void SetupAsyncUnaryCall(this Mock<CallInvoker> invoker, Action<CallOptions>? callOptions = null)
-        {
-            invoker
-                .Setup(i => i.AsyncUnaryCall(
-                    It.IsNotNull<Method<Message, Message>>(),
-                    null,
-                    It.IsAny<CallOptions>(),
-                    It.IsNotNull<Message>()))
-                .Callback<Method<Message, Message>, string, CallOptions, Message>((method, _, options, request) =>
+    public static void SetupAsyncUnaryCall(this Mock<CallInvoker> invoker, Action<CallOptions>? callOptions = null)
+    {
+        invoker
+            .Setup(i => i.AsyncUnaryCall(
+                It.IsNotNull<Method<Message, Message>>(),
+                null,
+                It.IsAny<CallOptions>(),
+                It.IsNotNull<Message>()))
+            .Callback<Method<Message, Message>, string, CallOptions, Message>((method, _, options, request) =>
+            {
+                method.Type.ShouldBe(MethodType.Unary);
+                callOptions?.Invoke(options);
+            })
+            .Returns(new AsyncUnaryCall<Message>(
+                Task.FromResult(new Message()),
+                _ => Task.FromResult(default(Metadata)!),
+                _ => default,
+                _ => default!,
+                _ =>
                 {
-                    method.Type.ShouldBe(MethodType.Unary);
-                    callOptions?.Invoke(options);
-                })
-                .Returns(new AsyncUnaryCall<Message>(
-                    Task.FromResult(new Message()),
-                    _ => Task.FromResult(default(Metadata)!),
-                    _ => default,
-                    _ => default!,
-                    _ =>
-                    {
-                    },
-                    null!));
-        }
+                },
+                null!));
+    }
 
-        public static void SetupAsyncUnaryCallOut<TResponse>(this Mock<CallInvoker> invoker, TResponse response, Action<CallOptions>? callOptions = null)
-        {
-            invoker
-                .Setup(i => i.AsyncUnaryCall(
-                    It.IsNotNull<Method<Message, Message<TResponse>>>(),
-                    null,
-                    It.IsAny<CallOptions>(),
-                    It.IsNotNull<Message>()))
-                .Callback<Method<Message, Message<TResponse>>, string, CallOptions, Message>((method, _, options, request) =>
+    public static void SetupAsyncUnaryCallOut<TResponse>(this Mock<CallInvoker> invoker, TResponse response, Action<CallOptions>? callOptions = null)
+    {
+        invoker
+            .Setup(i => i.AsyncUnaryCall(
+                It.IsNotNull<Method<Message, Message<TResponse>>>(),
+                null,
+                It.IsAny<CallOptions>(),
+                It.IsNotNull<Message>()))
+            .Callback<Method<Message, Message<TResponse>>, string, CallOptions, Message>((method, _, options, request) =>
+            {
+                method.Type.ShouldBe(MethodType.Unary);
+                callOptions?.Invoke(options);
+            })
+            .Returns(new AsyncUnaryCall<Message<TResponse>>(
+                Task.FromResult(new Message<TResponse>(response)),
+                _ => Task.FromResult(default(Metadata)!),
+                _ => default,
+                _ => default!,
+                _ =>
                 {
-                    method.Type.ShouldBe(MethodType.Unary);
-                    callOptions?.Invoke(options);
-                })
-                .Returns(new AsyncUnaryCall<Message<TResponse>>(
-                    Task.FromResult(new Message<TResponse>(response)),
-                    _ => Task.FromResult(default(Metadata)!),
-                    _ => default,
-                    _ => default!,
-                    _ =>
-                    {
-                    },
-                    null!));
-        }
+                },
+                null!));
+    }
 
-        public static void SetupAsyncUnaryCallIn<TRequest>(this Mock<CallInvoker> invoker, TRequest request, Action<CallOptions>? callOptions = null)
-        {
-            invoker
-                .Setup(i => i.AsyncUnaryCall(
-                    It.IsNotNull<Method<Message<TRequest>, Message>>(),
-                    null,
-                    It.IsAny<CallOptions>(),
-                    It.IsNotNull<Message<TRequest>>()))
-                .Callback<Method<Message<TRequest>, Message>, string, CallOptions, Message<TRequest>>((method, _, options, r) =>
+    public static void SetupAsyncUnaryCallIn<TRequest>(this Mock<CallInvoker> invoker, TRequest request, Action<CallOptions>? callOptions = null)
+    {
+        invoker
+            .Setup(i => i.AsyncUnaryCall(
+                It.IsNotNull<Method<Message<TRequest>, Message>>(),
+                null,
+                It.IsAny<CallOptions>(),
+                It.IsNotNull<Message<TRequest>>()))
+            .Callback<Method<Message<TRequest>, Message>, string, CallOptions, Message<TRequest>>((method, _, options, r) =>
+            {
+                method.Type.ShouldBe(MethodType.Unary);
+                callOptions?.Invoke(options);
+                r.Value1.ShouldBe(request);
+            })
+            .Returns(new AsyncUnaryCall<Message>(
+                Task.FromResult(new Message()),
+                _ => Task.FromResult(default(Metadata)!),
+                _ => default,
+                _ => default!,
+                _ =>
                 {
-                    method.Type.ShouldBe(MethodType.Unary);
-                    callOptions?.Invoke(options);
-                    r.Value1.ShouldBe(request);
-                })
-                .Returns(new AsyncUnaryCall<Message>(
-                    Task.FromResult(new Message()),
-                    _ => Task.FromResult(default(Metadata)!),
-                    _ => default,
-                    _ => default!,
-                    _ =>
-                    {
-                    },
-                    null!));
-        }
+                },
+                null!));
+    }
 
-        public static void SetupAsyncUnaryCallInOut<TRequest1, TRequest2, TRequest3, TResponse>(
-            this Mock<CallInvoker> invoker,
-            TRequest1 request1,
-            TRequest2 request2,
-            TRequest3 request3,
-            TResponse response,
-            Action<CallOptions>? callOptions = null)
-        {
-            invoker
-                .Setup(i => i.AsyncUnaryCall(
-                    It.IsNotNull<Method<Message<TRequest1, TRequest2, TRequest3>, Message<TResponse>>>(),
-                    null,
-                    It.IsAny<CallOptions>(),
-                    It.IsNotNull<Message<TRequest1, TRequest2, TRequest3>>()))
-                .Callback<Method<Message<TRequest1, TRequest2, TRequest3>, Message<TResponse>>, string, CallOptions, Message<TRequest1, TRequest2, TRequest3>>((method, _, options, r) =>
+    public static void SetupAsyncUnaryCallInOut<TRequest1, TRequest2, TRequest3, TResponse>(
+        this Mock<CallInvoker> invoker,
+        TRequest1 request1,
+        TRequest2 request2,
+        TRequest3 request3,
+        TResponse response,
+        Action<CallOptions>? callOptions = null)
+    {
+        invoker
+            .Setup(i => i.AsyncUnaryCall(
+                It.IsNotNull<Method<Message<TRequest1, TRequest2, TRequest3>, Message<TResponse>>>(),
+                null,
+                It.IsAny<CallOptions>(),
+                It.IsNotNull<Message<TRequest1, TRequest2, TRequest3>>()))
+            .Callback<Method<Message<TRequest1, TRequest2, TRequest3>, Message<TResponse>>, string, CallOptions, Message<TRequest1, TRequest2, TRequest3>>((method, _, options, r) =>
+            {
+                method.Type.ShouldBe(MethodType.Unary);
+                callOptions?.Invoke(options);
+                r.Value1.ShouldBe(request1);
+                r.Value2.ShouldBe(request2);
+                r.Value3.ShouldBe(request3);
+            })
+            .Returns(new AsyncUnaryCall<Message<TResponse>>(
+                Task.FromResult(new Message<TResponse>(response)),
+                _ => Task.FromResult(default(Metadata)!),
+                _ => default,
+                _ => default!,
+                _ =>
                 {
-                    method.Type.ShouldBe(MethodType.Unary);
-                    callOptions?.Invoke(options);
-                    r.Value1.ShouldBe(request1);
-                    r.Value2.ShouldBe(request2);
-                    r.Value3.ShouldBe(request3);
-                })
-                .Returns(new AsyncUnaryCall<Message<TResponse>>(
-                    Task.FromResult(new Message<TResponse>(response)),
-                    _ => Task.FromResult(default(Metadata)!),
-                    _ => default,
-                    _ => default!,
-                    _ =>
-                    {
-                    },
-                    null!));
-        }
+                },
+                null!));
+    }
 
-        public static void SetupAsyncServerStreamingCall<TResponse>(
-            this Mock<CallInvoker> invoker,
-            IAsyncStreamReader<Message<TResponse>> responseStream,
-            Action<CallOptions>? callOptions = null)
-        {
-            invoker
-                .Setup(i => i.AsyncServerStreamingCall(
-                    It.IsNotNull<Method<Message, Message<TResponse>>>(),
-                    null,
-                    It.IsAny<CallOptions>(),
-                    It.IsNotNull<Message>()))
-                .Callback<Method<Message, Message<TResponse>>, string, CallOptions, Message>((method, _, options, r) =>
+    public static void SetupAsyncServerStreamingCall<TResponse>(
+        this Mock<CallInvoker> invoker,
+        IAsyncStreamReader<Message<TResponse>> responseStream,
+        Action<CallOptions>? callOptions = null)
+    {
+        invoker
+            .Setup(i => i.AsyncServerStreamingCall(
+                It.IsNotNull<Method<Message, Message<TResponse>>>(),
+                null,
+                It.IsAny<CallOptions>(),
+                It.IsNotNull<Message>()))
+            .Callback<Method<Message, Message<TResponse>>, string, CallOptions, Message>((method, _, options, r) =>
+            {
+                method.Type.ShouldBe(MethodType.ServerStreaming);
+                callOptions?.Invoke(options);
+            })
+            .Returns(new AsyncServerStreamingCall<Message<TResponse>>(
+                responseStream,
+                _ => Task.FromResult(default(Metadata)!),
+                _ => default,
+                _ => default!,
+                _ =>
                 {
-                    method.Type.ShouldBe(MethodType.ServerStreaming);
-                    callOptions?.Invoke(options);
-                })
-                .Returns(new AsyncServerStreamingCall<Message<TResponse>>(
-                    responseStream,
-                    _ => Task.FromResult(default(Metadata)!),
-                    _ => default,
-                    _ => default!,
-                    _ =>
-                    {
-                    },
-                    null!));
-        }
+                },
+                null!));
+    }
 
-        public static void SetupAsyncServerStreamingCall<TRequest, TResponse>(
-            this Mock<CallInvoker> invoker,
-            TRequest request,
-            IAsyncStreamReader<Message<TResponse>> responseStream,
-            Action<CallOptions>? callOptions = null)
-        {
-            invoker
-                .Setup(i => i.AsyncServerStreamingCall(
-                    It.IsNotNull<Method<Message<TRequest>, Message<TResponse>>>(),
-                    null,
-                    It.IsAny<CallOptions>(),
-                    It.IsNotNull<Message<TRequest>>()))
-                .Callback<Method<Message<TRequest>, Message<TResponse>>, string, CallOptions, Message<TRequest>>((method, _, options, r) =>
+    public static void SetupAsyncServerStreamingCall<TRequest, TResponse>(
+        this Mock<CallInvoker> invoker,
+        TRequest request,
+        IAsyncStreamReader<Message<TResponse>> responseStream,
+        Action<CallOptions>? callOptions = null)
+    {
+        invoker
+            .Setup(i => i.AsyncServerStreamingCall(
+                It.IsNotNull<Method<Message<TRequest>, Message<TResponse>>>(),
+                null,
+                It.IsAny<CallOptions>(),
+                It.IsNotNull<Message<TRequest>>()))
+            .Callback<Method<Message<TRequest>, Message<TResponse>>, string, CallOptions, Message<TRequest>>((method, _, options, r) =>
+            {
+                method.Type.ShouldBe(MethodType.ServerStreaming);
+                callOptions?.Invoke(options);
+                r.Value1.ShouldBe(request);
+            })
+            .Returns(new AsyncServerStreamingCall<Message<TResponse>>(
+                responseStream,
+                _ => Task.FromResult(default(Metadata)!),
+                _ => default,
+                _ => default!,
+                _ =>
                 {
-                    method.Type.ShouldBe(MethodType.ServerStreaming);
-                    callOptions?.Invoke(options);
-                    r.Value1.ShouldBe(request);
-                })
-                .Returns(new AsyncServerStreamingCall<Message<TResponse>>(
-                    responseStream,
-                    _ => Task.FromResult(default(Metadata)!),
-                    _ => default,
-                    _ => default!,
-                    _ =>
-                    {
-                    },
-                    null!));
-        }
+                },
+                null!));
+    }
 
-        public static void SetupAsyncServerStreamingCall<TRequest1, TRequest2, TResponse>(
-            this Mock<CallInvoker> invoker,
-            TRequest1 request1,
-            TRequest2 request2,
-            IAsyncStreamReader<Message<TResponse>> responseStream,
-            Action<CallOptions>? callOptions = null,
-            Metadata? responseHeaders = null)
-        {
-            invoker
-                .Setup(i => i.AsyncServerStreamingCall(
-                    It.IsNotNull<Method<Message<TRequest1, TRequest2>, Message<TResponse>>>(),
-                    null,
-                    It.IsAny<CallOptions>(),
-                    It.IsNotNull<Message<TRequest1, TRequest2>>()))
-                .Callback<Method<Message<TRequest1, TRequest2>, Message<TResponse>>, string, CallOptions, Message<TRequest1, TRequest2>>((method, _, options, r) =>
+    public static void SetupAsyncServerStreamingCall<TRequest1, TRequest2, TResponse>(
+        this Mock<CallInvoker> invoker,
+        TRequest1 request1,
+        TRequest2 request2,
+        IAsyncStreamReader<Message<TResponse>> responseStream,
+        Action<CallOptions>? callOptions = null,
+        Metadata? responseHeaders = null)
+    {
+        invoker
+            .Setup(i => i.AsyncServerStreamingCall(
+                It.IsNotNull<Method<Message<TRequest1, TRequest2>, Message<TResponse>>>(),
+                null,
+                It.IsAny<CallOptions>(),
+                It.IsNotNull<Message<TRequest1, TRequest2>>()))
+            .Callback<Method<Message<TRequest1, TRequest2>, Message<TResponse>>, string, CallOptions, Message<TRequest1, TRequest2>>((method, _, options, r) =>
+            {
+                method.Type.ShouldBe(MethodType.ServerStreaming);
+                callOptions?.Invoke(options);
+                r.Value1.ShouldBe(request1);
+                r.Value2.ShouldBe(request2);
+            })
+            .Returns(new AsyncServerStreamingCall<Message<TResponse>>(
+                responseStream,
+                _ => Task.FromResult(responseHeaders!),
+                _ => default,
+                _ => default!,
+                _ =>
                 {
-                    method.Type.ShouldBe(MethodType.ServerStreaming);
-                    callOptions?.Invoke(options);
-                    r.Value1.ShouldBe(request1);
-                    r.Value2.ShouldBe(request2);
-                })
-                .Returns(new AsyncServerStreamingCall<Message<TResponse>>(
-                    responseStream,
-                    _ => Task.FromResult(responseHeaders!),
-                    _ => default,
-                    _ => default!,
-                    _ =>
-                    {
-                    },
-                    null!));
-        }
+                },
+                null!));
+    }
 
-        public static void SetupAsyncClientStreamingCall<TRequest>(
-            this Mock<CallInvoker> invoker,
-            IClientStreamWriter<Message<TRequest>> requestStream,
-            Action<CallOptions>? callOptions = null)
-        {
-            invoker
-                .Setup(i => i.AsyncClientStreamingCall(
-                    It.IsNotNull<Method<Message<TRequest>, Message>>(),
-                    null,
-                    It.IsAny<CallOptions>()))
-                .Callback<Method<Message<TRequest>, Message>, string, CallOptions>((method, _, options) =>
+    public static void SetupAsyncClientStreamingCall<TRequest>(
+        this Mock<CallInvoker> invoker,
+        IClientStreamWriter<Message<TRequest>> requestStream,
+        Action<CallOptions>? callOptions = null)
+    {
+        invoker
+            .Setup(i => i.AsyncClientStreamingCall(
+                It.IsNotNull<Method<Message<TRequest>, Message>>(),
+                null,
+                It.IsAny<CallOptions>()))
+            .Callback<Method<Message<TRequest>, Message>, string, CallOptions>((method, _, options) =>
+            {
+                method.Type.ShouldBe(MethodType.ClientStreaming);
+                callOptions?.Invoke(options);
+            })
+            .Returns(new AsyncClientStreamingCall<Message<TRequest>, Message>(
+                requestStream,
+                Task.FromResult(new Message()),
+                _ => Task.FromResult(default(Metadata)!),
+                _ => default,
+                _ => default!,
+                _ =>
                 {
-                    method.Type.ShouldBe(MethodType.ClientStreaming);
-                    callOptions?.Invoke(options);
-                })
-                .Returns(new AsyncClientStreamingCall<Message<TRequest>, Message>(
-                    requestStream,
-                    Task.FromResult(new Message()),
-                    _ => Task.FromResult(default(Metadata)!),
-                    _ => default,
-                    _ => default!,
-                    _ =>
-                    {
-                    },
-                    null!));
-        }
+                },
+                null!));
+    }
 
-        public static void SetupAsyncClientStreamingCall<TRequest, TResponse>(
-            this Mock<CallInvoker> invoker,
-            IClientStreamWriter<Message<TRequest>> requestStream,
-            TResponse response,
-            Action<CallOptions>? callOptions = null)
-        {
-            invoker
-                .Setup(i => i.AsyncClientStreamingCall(
-                    It.IsNotNull<Method<Message<TRequest>, Message<TResponse>>>(),
-                    null,
-                    It.IsAny<CallOptions>()))
-                .Callback<Method<Message<TRequest>, Message<TResponse>>, string, CallOptions>((method, _, options) =>
+    public static void SetupAsyncClientStreamingCall<TRequest, TResponse>(
+        this Mock<CallInvoker> invoker,
+        IClientStreamWriter<Message<TRequest>> requestStream,
+        TResponse response,
+        Action<CallOptions>? callOptions = null)
+    {
+        invoker
+            .Setup(i => i.AsyncClientStreamingCall(
+                It.IsNotNull<Method<Message<TRequest>, Message<TResponse>>>(),
+                null,
+                It.IsAny<CallOptions>()))
+            .Callback<Method<Message<TRequest>, Message<TResponse>>, string, CallOptions>((method, _, options) =>
+            {
+                method.Type.ShouldBe(MethodType.ClientStreaming);
+                callOptions?.Invoke(options);
+            })
+            .Returns(new AsyncClientStreamingCall<Message<TRequest>, Message<TResponse>>(
+                requestStream,
+                Task.FromResult(new Message<TResponse>(response)),
+                _ => Task.FromResult(default(Metadata)!),
+                _ => default,
+                _ => default!,
+                _ =>
                 {
-                    method.Type.ShouldBe(MethodType.ClientStreaming);
-                    callOptions?.Invoke(options);
-                })
-                .Returns(new AsyncClientStreamingCall<Message<TRequest>, Message<TResponse>>(
-                    requestStream,
-                    Task.FromResult(new Message<TResponse>(response)),
-                    _ => Task.FromResult(default(Metadata)!),
-                    _ => default,
-                    _ => default!,
-                    _ =>
-                    {
-                    },
-                    null!));
-        }
+                },
+                null!));
+    }
 
-        public static void SetupAsyncDuplexStreamingCall<TRequest, TResponse>(
-            this Mock<CallInvoker> invoker,
-            IClientStreamWriter<Message<TRequest>> requestStream,
-            IAsyncStreamReader<Message<TResponse>> responseStream,
-            Action<CallOptions>? callOptions = null,
-            Metadata? responseHeaders = null)
-        {
-            invoker
-                .Setup(i => i.AsyncDuplexStreamingCall(
-                    It.IsNotNull<Method<Message<TRequest>, Message<TResponse>>>(),
-                    null,
-                    It.IsAny<CallOptions>()))
-                .Callback<Method<Message<TRequest>, Message<TResponse>>, string, CallOptions>((method, _, options) =>
+    public static void SetupAsyncDuplexStreamingCall<TRequest, TResponse>(
+        this Mock<CallInvoker> invoker,
+        IClientStreamWriter<Message<TRequest>> requestStream,
+        IAsyncStreamReader<Message<TResponse>> responseStream,
+        Action<CallOptions>? callOptions = null,
+        Metadata? responseHeaders = null)
+    {
+        invoker
+            .Setup(i => i.AsyncDuplexStreamingCall(
+                It.IsNotNull<Method<Message<TRequest>, Message<TResponse>>>(),
+                null,
+                It.IsAny<CallOptions>()))
+            .Callback<Method<Message<TRequest>, Message<TResponse>>, string, CallOptions>((method, _, options) =>
+            {
+                method.Type.ShouldBe(MethodType.DuplexStreaming);
+                callOptions?.Invoke(options);
+            })
+            .Returns(new AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>>(
+                requestStream,
+                responseStream,
+                _ => Task.FromResult(responseHeaders!),
+                _ => default,
+                _ => default!,
+                _ =>
                 {
-                    method.Type.ShouldBe(MethodType.DuplexStreaming);
-                    callOptions?.Invoke(options);
-                })
-                .Returns(new AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>>(
-                    requestStream,
-                    responseStream,
-                    _ => Task.FromResult(responseHeaders!),
-                    _ => default,
-                    _ => default!,
-                    _ =>
-                    {
-                    },
-                    null!));
-        }
+                },
+                null!));
     }
 }

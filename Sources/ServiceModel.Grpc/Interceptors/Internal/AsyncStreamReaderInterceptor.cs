@@ -18,37 +18,36 @@ using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Interceptors.Internal
+namespace ServiceModel.Grpc.Interceptors.Internal;
+
+internal sealed class AsyncStreamReaderInterceptor<TResponse> : IAsyncStreamReader<TResponse>
 {
-    internal sealed class AsyncStreamReaderInterceptor<TResponse> : IAsyncStreamReader<TResponse>
+    private readonly IAsyncStreamReader<TResponse> _original;
+    private readonly ClientCallInterceptorContext _context;
+    private readonly IClientCallInterceptor _interceptor;
+
+    public AsyncStreamReaderInterceptor(
+        IAsyncStreamReader<TResponse> original,
+        ClientCallInterceptorContext context,
+        IClientCallInterceptor interceptor)
     {
-        private readonly IAsyncStreamReader<TResponse> _original;
-        private readonly ClientCallInterceptorContext _context;
-        private readonly IClientCallInterceptor _interceptor;
+        _original = original;
+        _context = context;
+        _interceptor = interceptor;
+    }
 
-        public AsyncStreamReaderInterceptor(
-            IAsyncStreamReader<TResponse> original,
-            ClientCallInterceptorContext context,
-            IClientCallInterceptor interceptor)
+    public TResponse Current => _original.Current;
+
+    public async Task<bool> MoveNext(CancellationToken token)
+    {
+        try
         {
-            _original = original;
-            _context = context;
-            _interceptor = interceptor;
+            return await _original.MoveNext(token).ConfigureAwait(false);
         }
-
-        public TResponse Current => _original.Current;
-
-        public async Task<bool> MoveNext(CancellationToken token)
+        catch (RpcException ex)
         {
-            try
-            {
-                return await _original.MoveNext(token).ConfigureAwait(false);
-            }
-            catch (RpcException ex)
-            {
-                _interceptor.OnError(_context, ex);
-                throw;
-            }
+            _interceptor.OnError(_context, ex);
+            throw;
         }
     }
 }

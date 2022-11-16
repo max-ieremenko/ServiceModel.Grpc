@@ -17,94 +17,93 @@
 using System;
 using ServiceModel.Grpc.Channel;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
+
+internal static class CodeStringBuilderExtensions
 {
-    internal static class CodeStringBuilderExtensions
+    public static CodeStringBuilder AppendAttribute(this CodeStringBuilder code, Type attributeType, params string[] args)
     {
-        public static CodeStringBuilder AppendAttribute(this CodeStringBuilder code, Type attributeType, params string[] args)
+        var name = attributeType.Name;
+        if (name.EndsWith("Attribute", StringComparison.Ordinal))
         {
-            var name = attributeType.Name;
-            if (name.EndsWith("Attribute", StringComparison.Ordinal))
+            name = name.Substring(0, attributeType.Name.Length - 9);
+        }
+
+        code
+            .Append("[")
+            .AppendTypeName(attributeType.Namespace, name);
+
+        if (args.Length > 0)
+        {
+            code.Append("(");
+            for (var i = 0; i < args.Length; i++)
             {
-                name = name.Substring(0, attributeType.Name.Length - 9);
+                code
+                    .AppendCommaIf(i != 0)
+                    .Append(args[i]);
             }
 
+            code.Append(")");
+        }
+
+        return code.AppendLine("]");
+    }
+
+    public static CodeStringBuilder AppendArgumentNullException(this CodeStringBuilder code, string paramName)
+    {
+        return code
+            .Append("if (")
+            .Append(paramName)
+            .Append(" == null) throw new ArgumentNullException(\"")
+            .Append(paramName)
+            .AppendLine("\");");
+    }
+
+    public static CodeStringBuilder AppendTypeName(this CodeStringBuilder code, string? typeNamespace, string name)
+    {
+        if (typeNamespace != null)
+        {
             code
-                .Append("[")
-                .AppendTypeName(attributeType.Namespace, name);
-
-            if (args.Length > 0)
-            {
-                code.Append("(");
-                for (var i = 0; i < args.Length; i++)
-                {
-                    code
-                        .AppendCommaIf(i != 0)
-                        .Append(args[i]);
-                }
-
-                code.Append(")");
-            }
-
-            return code.AppendLine("]");
+                .Append("global::")
+                .Append(typeNamespace)
+                .Append(".");
         }
 
-        public static CodeStringBuilder AppendArgumentNullException(this CodeStringBuilder code, string paramName)
+        var index = name.IndexOf('`');
+        if (index > 0)
         {
-            return code
-                .Append("if (")
-                .Append(paramName)
-                .Append(" == null) throw new ArgumentNullException(\"")
-                .Append(paramName)
-                .AppendLine("\");");
+            code.Append(name.Substring(0, index));
+            code.Append("<");
         }
-
-        public static CodeStringBuilder AppendTypeName(this CodeStringBuilder code, string? typeNamespace, string name)
+        else
         {
-            if (typeNamespace != null)
-            {
-                code
-                    .Append("global::")
-                    .Append(typeNamespace)
-                    .Append(".");
-            }
-
-            var index = name.IndexOf('`');
-            if (index > 0)
-            {
-                code.Append(name.Substring(0, index));
-                code.Append("<");
-            }
-            else
-            {
-                code.Append(name);
-            }
-
-            return code;
+            code.Append(name);
         }
 
-        public static CodeStringBuilder AppendType(this CodeStringBuilder code, Type type)
+        return code;
+    }
+
+    public static CodeStringBuilder AppendType(this CodeStringBuilder code, Type type)
+    {
+        return AppendTypeName(code, type.Namespace, type.Name);
+    }
+
+    public static CodeStringBuilder AppendMessage(this CodeStringBuilder code, MessageDescription message)
+    {
+        if (message.IsBuiltIn)
         {
-            return AppendTypeName(code, type.Namespace, type.Name);
+            code
+                .Append("global::")
+                .Append(typeof(Message).Namespace)
+                .Append(".");
         }
 
-        public static CodeStringBuilder AppendMessage(this CodeStringBuilder code, MessageDescription message)
-        {
-            if (message.IsBuiltIn)
-            {
-                code
-                    .Append("global::")
-                    .Append(typeof(Message).Namespace)
-                    .Append(".");
-            }
+        code.Append(message.ClassName);
+        return code;
+    }
 
-            code.Append(message.ClassName);
-            return code;
-        }
-
-        public static CodeStringBuilder AppendMessageOrDefault(this CodeStringBuilder code, MessageDescription? message)
-        {
-            return AppendMessage(code, message ?? MessageDescription.Empty);
-        }
+    public static CodeStringBuilder AppendMessageOrDefault(this CodeStringBuilder code, MessageDescription? message)
+    {
+        return AppendMessage(code, message ?? MessageDescription.Empty);
     }
 }

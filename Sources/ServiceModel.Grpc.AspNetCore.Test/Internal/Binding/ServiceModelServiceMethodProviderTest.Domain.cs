@@ -14,16 +14,15 @@
 // limitations under the License.
 // </copyright>
 
-namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
-{
-    public partial class ServiceModelServiceMethodProviderTest
-    {
-        internal interface IService
-        {
-        }
+namespace ServiceModel.Grpc.AspNetCore.Internal.Binding;
 
-        internal sealed class Service : IService
-        {
-        }
+public partial class ServiceModelServiceMethodProviderTest
+{
+    internal interface IService
+    {
+    }
+
+    internal sealed class Service : IService
+    {
     }
 }

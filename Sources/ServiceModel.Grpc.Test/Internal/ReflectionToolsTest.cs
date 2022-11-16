@@ -26,140 +26,139 @@ using ServiceModel.Grpc.TestApi;
 using Shouldly;
 using DescriptionAttribute = System.ComponentModel.DescriptionAttribute;
 
-namespace ServiceModel.Grpc.Internal
+namespace ServiceModel.Grpc.Internal;
+
+[TestFixture]
+public partial class ReflectionToolsTest
 {
-    [TestFixture]
-    public partial class ReflectionToolsTest
+    [Test]
+    [TestCase(typeof(Task), true)]
+    [TestCase(typeof(Task<int>), true)]
+    [TestCase(typeof(ValueTask), true)]
+    [TestCase(typeof(ValueTask<bool>), true)]
+    [TestCase(typeof(IAsyncEnumerable<int>), false)]
+    public void IsTask(Type type, bool expected)
     {
-        [Test]
-        [TestCase(typeof(Task), true)]
-        [TestCase(typeof(Task<int>), true)]
-        [TestCase(typeof(ValueTask), true)]
-        [TestCase(typeof(ValueTask<bool>), true)]
-        [TestCase(typeof(IAsyncEnumerable<int>), false)]
-        public void IsTask(Type type, bool expected)
+        ReflectionTools.IsTask(type).ShouldBe(expected);
+    }
+
+    [Test]
+    [TestCaseSource(nameof(GetImplementationOfMethodCases))]
+    public void ImplementationOfMethod(Type declaringType, MethodInfo method, string expected)
+    {
+        var actual = ReflectionTools.ImplementationOfMethod(typeof(Implementation), declaringType, method);
+
+        actual.ShouldNotBeNull();
+
+        actual.GetCustomAttribute<DescriptionAttribute>()!.Description.ShouldBe(expected);
+    }
+
+    [Test]
+    [TestCaseSource(nameof(GetShortAssemblyQualifiedNameTestCases))]
+    public void GetShortAssemblyQualifiedName(Type type)
+    {
+        var name = type.GetShortAssemblyQualifiedName();
+        TestOutput.WriteLine();
+        TestOutput.WriteLine(name);
+
+        var actual = Type.GetType(name, true, false);
+        actual.ShouldBe(type);
+    }
+
+    [Test]
+    [TestCaseSource(nameof(GetUserFriendlyNameTestCases))]
+    public void GetUserFriendlyName(Type type, string expected)
+    {
+        var name = type.GetUserFriendlyName();
+        TestOutput.WriteLine();
+        TestOutput.WriteLine(name);
+
+        name.ShouldBe(expected);
+    }
+
+    [Test]
+    [TestCase(typeof(ValueTuple<string>), true)]
+    [TestCase(typeof((string, string)), true)]
+    [TestCase(typeof((string, string, int)), true)]
+    [TestCase(typeof(ValueTuple), false)]
+    [TestCase(typeof(Tuple<string, string>), false)]
+    [TestCase(typeof(object), false)]
+    [TestCase(typeof((string, string)?), false)]
+    public void IsValueTuple(Type type, bool expected)
+    {
+        ReflectionTools.IsValueTuple(type).ShouldBe(expected);
+    }
+
+    private static IEnumerable<TestCaseData> GetImplementationOfMethodCases()
+    {
+        var i1 = typeof(I1);
+        yield return new TestCaseData(
+            i1,
+            i1.GetMethod(nameof(I1.Overload), Array.Empty<Type>()),
+            "I1.Overload");
+
+        yield return new TestCaseData(
+            i1,
+            i1.GetMethod(nameof(I1.Overload), new[] { typeof(int) }),
+            "I1.Overload(int)");
+
+        var i2 = typeof(I2);
+        yield return new TestCaseData(
+            i2,
+            i2.GetMethod(nameof(I2.Overload), new[] { typeof(int) }),
+            "I2.Overload(int)");
+    }
+
+    private static IEnumerable<TestCaseData> GetShortAssemblyQualifiedNameTestCases()
+    {
+        var cases = new[]
         {
-            ReflectionTools.IsTask(type).ShouldBe(expected);
-        }
+            typeof(int),
+            typeof(int[]),
+            typeof(string),
+            typeof(string[]),
+            typeof(byte[]),
+            typeof(Guid),
+            typeof(ReflectionToolsTest),
+            typeof(ReflectionToolsTest[]),
+            typeof(Tuple<int>),
+            typeof(Tuple<int>[]),
+            typeof(Tuple<int[]>),
+            typeof(Tuple<Tuple<int, long>, string>),
+            typeof(Tuple<Tuple<int, long>, string>[]),
+            typeof(ValueTuple<int>),
+            typeof(ValueTuple<Tuple<int, long>, string>),
+            typeof(Interceptor.AsyncClientStreamingCallContinuation<Tuple<object>, string>),
+            typeof(Interceptor.AsyncClientStreamingCallContinuation<Tuple<object>, string>[])
+        };
 
-        [Test]
-        [TestCaseSource(nameof(GetImplementationOfMethodCases))]
-        public void ImplementationOfMethod(Type declaringType, MethodInfo method, string expected)
+        return cases.Select(i => new TestCaseData(i));
+    }
+
+    private static IEnumerable<TestCaseData> GetUserFriendlyNameTestCases()
+    {
+        var cases = new Dictionary<Type, string>
         {
-            var actual = ReflectionTools.ImplementationOfMethod(typeof(Implementation), declaringType, method);
+            { typeof(void), "void" },
+            { typeof(int), "Int32" },
+            { typeof(int[]), "Int32[]" },
+            { typeof(string), "String" },
+            { typeof(string[]), "String[]" },
+            { typeof(byte[]), "Byte[]" },
+            { typeof(Guid), "Guid" },
+            { typeof(CancellationToken), "CancellationToken" },
+            { typeof(CancellationToken?), "CancellationToken?" },
+            { typeof(Tuple<int>), "Tuple<Int32>" },
+            { typeof(Tuple<int[]>), "Tuple<Int32[]>" },
+            { typeof(Tuple<int>[]), "Tuple<Int32>[]" },
+            { typeof(Tuple<Tuple<int, long>, string>), "Tuple<Tuple<Int32, Int64>, String>" },
+            { typeof(Tuple<Tuple<int, long>, string>[]), "Tuple<Tuple<Int32, Int64>, String>[]" },
+            { typeof(ValueTuple<int>), "ValueTuple<Int32>" },
+            { typeof(ValueTuple<Tuple<int, long>, string>), "ValueTuple<Tuple<Int32, Int64>, String>" },
+            { typeof(Interceptor.AsyncClientStreamingCallContinuation<Tuple<object>, string>), "Interceptor.AsyncClientStreamingCallContinuation<Tuple<Object>, String>" },
+            { typeof(Interceptor.AsyncClientStreamingCallContinuation<Tuple<object>, string>[]), "Interceptor.AsyncClientStreamingCallContinuation<Tuple<Object>, String>[]" }
+        };
 
-            actual.ShouldNotBeNull();
-
-            actual.GetCustomAttribute<DescriptionAttribute>()!.Description.ShouldBe(expected);
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetShortAssemblyQualifiedNameTestCases))]
-        public void GetShortAssemblyQualifiedName(Type type)
-        {
-            var name = type.GetShortAssemblyQualifiedName();
-            TestOutput.WriteLine();
-            TestOutput.WriteLine(name);
-
-            var actual = Type.GetType(name, true, false);
-            actual.ShouldBe(type);
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetUserFriendlyNameTestCases))]
-        public void GetUserFriendlyName(Type type, string expected)
-        {
-            var name = type.GetUserFriendlyName();
-            TestOutput.WriteLine();
-            TestOutput.WriteLine(name);
-
-            name.ShouldBe(expected);
-        }
-
-        [Test]
-        [TestCase(typeof(ValueTuple<string>), true)]
-        [TestCase(typeof((string, string)), true)]
-        [TestCase(typeof((string, string, int)), true)]
-        [TestCase(typeof(ValueTuple), false)]
-        [TestCase(typeof(Tuple<string, string>), false)]
-        [TestCase(typeof(object), false)]
-        [TestCase(typeof((string, string)?), false)]
-        public void IsValueTuple(Type type, bool expected)
-        {
-            ReflectionTools.IsValueTuple(type).ShouldBe(expected);
-        }
-
-        private static IEnumerable<TestCaseData> GetImplementationOfMethodCases()
-        {
-            var i1 = typeof(I1);
-            yield return new TestCaseData(
-                i1,
-                i1.GetMethod(nameof(I1.Overload), Array.Empty<Type>()),
-                "I1.Overload");
-
-            yield return new TestCaseData(
-                i1,
-                i1.GetMethod(nameof(I1.Overload), new[] { typeof(int) }),
-                "I1.Overload(int)");
-
-            var i2 = typeof(I2);
-            yield return new TestCaseData(
-                i2,
-                i2.GetMethod(nameof(I2.Overload), new[] { typeof(int) }),
-                "I2.Overload(int)");
-        }
-
-        private static IEnumerable<TestCaseData> GetShortAssemblyQualifiedNameTestCases()
-        {
-            var cases = new[]
-            {
-                typeof(int),
-                typeof(int[]),
-                typeof(string),
-                typeof(string[]),
-                typeof(byte[]),
-                typeof(Guid),
-                typeof(ReflectionToolsTest),
-                typeof(ReflectionToolsTest[]),
-                typeof(Tuple<int>),
-                typeof(Tuple<int>[]),
-                typeof(Tuple<int[]>),
-                typeof(Tuple<Tuple<int, long>, string>),
-                typeof(Tuple<Tuple<int, long>, string>[]),
-                typeof(ValueTuple<int>),
-                typeof(ValueTuple<Tuple<int, long>, string>),
-                typeof(Interceptor.AsyncClientStreamingCallContinuation<Tuple<object>, string>),
-                typeof(Interceptor.AsyncClientStreamingCallContinuation<Tuple<object>, string>[])
-            };
-
-            return cases.Select(i => new TestCaseData(i));
-        }
-
-        private static IEnumerable<TestCaseData> GetUserFriendlyNameTestCases()
-        {
-            var cases = new Dictionary<Type, string>
-            {
-                { typeof(void), "void" },
-                { typeof(int), "Int32" },
-                { typeof(int[]), "Int32[]" },
-                { typeof(string), "String" },
-                { typeof(string[]), "String[]" },
-                { typeof(byte[]), "Byte[]" },
-                { typeof(Guid), "Guid" },
-                { typeof(CancellationToken), "CancellationToken" },
-                { typeof(CancellationToken?), "CancellationToken?" },
-                { typeof(Tuple<int>), "Tuple<Int32>" },
-                { typeof(Tuple<int[]>), "Tuple<Int32[]>" },
-                { typeof(Tuple<int>[]), "Tuple<Int32>[]" },
-                { typeof(Tuple<Tuple<int, long>, string>), "Tuple<Tuple<Int32, Int64>, String>" },
-                { typeof(Tuple<Tuple<int, long>, string>[]), "Tuple<Tuple<Int32, Int64>, String>[]" },
-                { typeof(ValueTuple<int>), "ValueTuple<Int32>" },
-                { typeof(ValueTuple<Tuple<int, long>, string>), "ValueTuple<Tuple<Int32, Int64>, String>" },
-                { typeof(Interceptor.AsyncClientStreamingCallContinuation<Tuple<object>, string>), "Interceptor.AsyncClientStreamingCallContinuation<Tuple<Object>, String>" },
-                { typeof(Interceptor.AsyncClientStreamingCallContinuation<Tuple<object>, string>[]), "Interceptor.AsyncClientStreamingCallContinuation<Tuple<Object>, String>[]" }
-            };
-
-            return cases.Select(i => new TestCaseData(i.Key, i.Value) { TestName = i.Value });
-        }
+        return cases.Select(i => new TestCaseData(i.Key, i.Value) { TestName = i.Value });
     }
 }

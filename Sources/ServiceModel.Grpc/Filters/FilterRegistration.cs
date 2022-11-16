@@ -17,53 +17,52 @@
 using System;
 using System.Globalization;
 
-namespace ServiceModel.Grpc.Filters
+namespace ServiceModel.Grpc.Filters;
+
+/// <summary>
+/// Representation of a registration of the filter in the pipeline.
+/// </summary>
+/// <typeparam name="TFilter">The filter type.</typeparam>
+public sealed class FilterRegistration<TFilter> : IComparable<FilterRegistration<TFilter>>
+    where TFilter : class
 {
     /// <summary>
-    /// Representation of a registration of the filter in the pipeline.
+    /// Initializes a new instance of the <see cref="FilterRegistration{TFilter}"/> class.
     /// </summary>
-    /// <typeparam name="TFilter">The filter type.</typeparam>
-    public sealed class FilterRegistration<TFilter> : IComparable<FilterRegistration<TFilter>>
-        where TFilter : class
+    /// <param name="order">The order value for determining the order of execution of filters.</param>
+    /// <param name="factory">The filter factory.</param>
+    public FilterRegistration(int order, Func<IServiceProvider, TFilter> factory)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FilterRegistration{TFilter}"/> class.
-        /// </summary>
-        /// <param name="order">The order value for determining the order of execution of filters.</param>
-        /// <param name="factory">The filter factory.</param>
-        public FilterRegistration(int order, Func<IServiceProvider, TFilter> factory)
-        {
-            factory.AssertNotNull(nameof(factory));
+        factory.AssertNotNull(nameof(factory));
 
-            Order = order;
-            Factory = factory;
+        Order = order;
+        Factory = factory;
+    }
+
+    /// <summary>
+    /// Gets the order value for determining the order of execution of filters.
+    /// </summary>
+    public int Order { get; }
+
+    /// <summary>
+    /// Gets the filter factory.
+    /// </summary>
+    public Func<IServiceProvider, TFilter> Factory { get; }
+
+    /// <inheritdoc />
+    public int CompareTo(FilterRegistration<TFilter>? other)
+    {
+        if (other == null)
+        {
+            return 1;
         }
 
-        /// <summary>
-        /// Gets the order value for determining the order of execution of filters.
-        /// </summary>
-        public int Order { get; }
+        return Order.CompareTo(other.Order);
+    }
 
-        /// <summary>
-        /// Gets the filter factory.
-        /// </summary>
-        public Func<IServiceProvider, TFilter> Factory { get; }
-
-        /// <inheritdoc />
-        public int CompareTo(FilterRegistration<TFilter>? other)
-        {
-            if (other == null)
-            {
-                return 1;
-            }
-
-            return Order.CompareTo(other.Order);
-        }
-
-        /// <inheritdoc />
-        public override string ToString()
-        {
-            return "{0}: {1}".FormatWith(Order.ToString(CultureInfo.InvariantCulture), typeof(TFilter).Name);
-        }
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return "{0}: {1}".FormatWith(Order.ToString(CultureInfo.InvariantCulture), typeof(TFilter).Name);
     }
 }

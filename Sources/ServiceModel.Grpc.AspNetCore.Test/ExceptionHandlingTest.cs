@@ -22,48 +22,47 @@ using ServiceModel.Grpc.AspNetCore.TestApi;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 
-namespace ServiceModel.Grpc.AspNetCore
+namespace ServiceModel.Grpc.AspNetCore;
+
+[TestFixture(GrpcChannelType.GrpcCore)]
+[TestFixture(GrpcChannelType.GrpcDotNet)]
+public class ExceptionHandlingTest : ExceptionHandlingTestBase
 {
-    [TestFixture(GrpcChannelType.GrpcCore)]
-    [TestFixture(GrpcChannelType.GrpcDotNet)]
-    public class ExceptionHandlingTest : ExceptionHandlingTestBase
+    private KestrelHost _host = null!;
+
+    public ExceptionHandlingTest(GrpcChannelType channelType)
+        : base(channelType)
     {
-        private KestrelHost _host = null!;
+    }
 
-        public ExceptionHandlingTest(GrpcChannelType channelType)
-            : base(channelType)
-        {
-        }
+    [OneTimeSetUp]
+    public async Task BeforeAll()
+    {
+        _host = await new KestrelHost()
+            .ConfigureClientFactory(options => options.ErrorHandler = new ClientErrorHandler())
+            .ConfigureServices(services =>
+            {
+                services.AddScoped<ServerErrorHandler>();
 
-        [OneTimeSetUp]
-        public async Task BeforeAll()
-        {
-            _host = await new KestrelHost()
-                .ConfigureClientFactory(options => options.ErrorHandler = new ClientErrorHandler())
-                .ConfigureServices(services =>
+                services.AddServiceModelGrpc(options =>
                 {
-                    services.AddScoped<ServerErrorHandler>();
+                    options.DefaultErrorHandlerFactory = p => p.GetRequiredService<ServerErrorHandler>();
+                });
+            })
+            .ConfigureEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<ErrorService>();
+            })
+            .WithChannelType(ChannelType)
+            .StartAsync()
+            .ConfigureAwait(false);
 
-                    services.AddServiceModelGrpc(options =>
-                    {
-                        options.DefaultErrorHandlerFactory = p => p.GetRequiredService<ServerErrorHandler>();
-                    });
-                })
-                .ConfigureEndpoints(endpoints =>
-                {
-                    endpoints.MapGrpcService<ErrorService>();
-                })
-                .WithChannelType(ChannelType)
-                .StartAsync()
-                .ConfigureAwait(false);
+        DomainService = _host.ClientFactory.CreateClient<IErrorService>(_host.Channel);
+    }
 
-            DomainService = _host.ClientFactory.CreateClient<IErrorService>(_host.Channel);
-        }
-
-        [OneTimeTearDown]
-        public async Task AfterAll()
-        {
-            await _host.DisposeAsync().ConfigureAwait(false);
-        }
+    [OneTimeTearDown]
+    public async Task AfterAll()
+    {
+        await _host.DisposeAsync().ConfigureAwait(false);
     }
 }

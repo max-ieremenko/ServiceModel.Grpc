@@ -19,25 +19,24 @@ using System.Threading.Tasks;
 
 //// ReSharper disable OperationContractWithoutServiceContract
 
-namespace ServiceModel.Grpc.TestApi.Domain
+namespace ServiceModel.Grpc.TestApi.Domain;
+
+public interface ISharedContract
 {
-    public interface ISharedContract
-    {
-        [OperationContract]
-        Task<string> GetName();
-    }
+    [OperationContract]
+    Task<string> GetName();
+}
 
-    [ServiceContract]
-    public interface IConcreteContract1 : ISharedContract
-    {
-        [OperationContract]
-        Task<string> GetConcreteName();
-    }
+[ServiceContract]
+public interface IConcreteContract1 : ISharedContract
+{
+    [OperationContract]
+    Task<string> GetConcreteName();
+}
 
-    [ServiceContract]
-    public interface IConcreteContract2 : ISharedContract
-    {
-        [OperationContract]
-        Task<string> GetConcreteName();
-    }
+[ServiceContract]
+public interface IConcreteContract2 : ISharedContract
+{
+    [OperationContract]
+    Task<string> GetConcreteName();
 }

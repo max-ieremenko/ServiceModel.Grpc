@@ -22,40 +22,39 @@ using ServiceModel.Grpc.AspNetCore.TestApi;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 
-namespace ServiceModel.Grpc.AspNetCore
+namespace ServiceModel.Grpc.AspNetCore;
+
+[TestFixture]
+public class MockedFilteredServiceTest : MockedFilteredServiceTestBase
 {
-    [TestFixture]
-    public class MockedFilteredServiceTest : MockedFilteredServiceTestBase
+    private KestrelHost _host = null!;
+
+    [OneTimeSetUp]
+    public async Task BeforeAll()
     {
-        private KestrelHost _host = null!;
+        _host = await new KestrelHost()
+            .ConfigureServices(services =>
+            {
+                services.AddTransient<TrackingServerFilter>();
 
-        [OneTimeSetUp]
-        public async Task BeforeAll()
-        {
-            _host = await new KestrelHost()
-                .ConfigureServices(services =>
+                services.AddServiceModelGrpc(options =>
                 {
-                    services.AddTransient<TrackingServerFilter>();
+                    options.Filters.Add(1, _ => new MockServerFilter());
+                });
+            })
+            .ConfigureEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<TrackedFilteredService>();
+            })
+            .StartAsync()
+            .ConfigureAwait(false);
 
-                    services.AddServiceModelGrpc(options =>
-                    {
-                        options.Filters.Add(1, _ => new MockServerFilter());
-                    });
-                })
-                .ConfigureEndpoints(endpoints =>
-                {
-                    endpoints.MapGrpcService<TrackedFilteredService>();
-                })
-                .StartAsync()
-                .ConfigureAwait(false);
+        DomainService = _host.ClientFactory.CreateClient<IFilteredService>(_host.Channel);
+    }
 
-            DomainService = _host.ClientFactory.CreateClient<IFilteredService>(_host.Channel);
-        }
-
-        [OneTimeTearDown]
-        public async Task AfterAll()
-        {
-            await _host.DisposeAsync().ConfigureAwait(false);
-        }
+    [OneTimeTearDown]
+    public async Task AfterAll()
+    {
+        await _host.DisposeAsync().ConfigureAwait(false);
     }
 }

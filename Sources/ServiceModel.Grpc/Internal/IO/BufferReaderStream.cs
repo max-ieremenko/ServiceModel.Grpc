@@ -20,119 +20,118 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ServiceModel.Grpc.Internal.IO
+namespace ServiceModel.Grpc.Internal.IO;
+
+internal sealed class BufferReaderStream : Stream
 {
-    internal sealed class BufferReaderStream : Stream
+    private readonly ReadOnlySequence<byte> _sequence;
+    private SequencePosition _offset;
+
+    public BufferReaderStream(ReadOnlySequence<byte> sequence)
     {
-        private readonly ReadOnlySequence<byte> _sequence;
-        private SequencePosition _offset;
+        _sequence = sequence;
+        _offset = sequence.Start;
+    }
 
-        public BufferReaderStream(ReadOnlySequence<byte> sequence)
+    public override bool CanRead => true;
+
+    public override bool CanSeek => false;
+
+    public override bool CanWrite => false;
+
+    public override long Length => throw new NotSupportedException();
+
+    public override long Position
+    {
+        get => throw new NotSupportedException();
+        set => throw new NotSupportedException();
+    }
+
+    public override void Flush() => throw new NotSupportedException();
+
+    public override Task FlushAsync(CancellationToken token) => throw new NotSupportedException();
+
+    public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+
+    public override void SetLength(long value) => throw new NotSupportedException();
+
+    public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+
+    public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => throw new NotSupportedException();
+
+    public override void WriteByte(byte value) => throw new NotSupportedException();
+
+    public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state) => throw new NotSupportedException();
+
+    public override void EndWrite(IAsyncResult asyncResult) => throw new NotSupportedException();
+
+    public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken token) => throw new NotSupportedException();
+
+    public override int Read(byte[] buffer, int offset, int count)
+    {
+        buffer.AssertNotNull(nameof(buffer));
+
+        if (offset < 0)
         {
-            _sequence = sequence;
-            _offset = sequence.Start;
+            throw new ArgumentOutOfRangeException(nameof(offset));
         }
 
-        public override bool CanRead => true;
-
-        public override bool CanSeek => false;
-
-        public override bool CanWrite => false;
-
-        public override long Length => throw new NotSupportedException();
-
-        public override long Position
+        if (count < 0)
         {
-            get => throw new NotSupportedException();
-            set => throw new NotSupportedException();
+            throw new ArgumentOutOfRangeException(nameof(count));
         }
 
-        public override void Flush() => throw new NotSupportedException();
-
-        public override Task FlushAsync(CancellationToken token) => throw new NotSupportedException();
-
-        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
-
-        public override void SetLength(long value) => throw new NotSupportedException();
-
-        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
-
-        public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => throw new NotSupportedException();
-
-        public override void WriteByte(byte value) => throw new NotSupportedException();
-
-        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state) => throw new NotSupportedException();
-
-        public override void EndWrite(IAsyncResult asyncResult) => throw new NotSupportedException();
-
-        public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken token) => throw new NotSupportedException();
-
-        public override int Read(byte[] buffer, int offset, int count)
+        if (buffer.Length - offset < count)
         {
-            buffer.AssertNotNull(nameof(buffer));
-
-            if (offset < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            }
-
-            if (count < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(count));
-            }
-
-            if (buffer.Length - offset < count)
-            {
-                throw new ArgumentException();
-            }
-
-            if (count == 0)
-            {
-                return 0;
-            }
-
-            var source = _sequence.Slice(_offset);
-            source = source.Slice(0, Math.Min(count, source.Length));
-            _offset = source.End;
-
-            source.CopyTo(buffer.AsSpan(offset, count));
-            return (int)source.Length;
+            throw new ArgumentException();
         }
 
-        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token)
+        if (count == 0)
         {
-            var result = Read(buffer, offset, count);
-            return Task.FromResult(result);
+            return 0;
         }
 
-        public override int ReadByte()
-        {
-            var source = _sequence.Slice(_offset);
-            if (source.Length == 0)
-            {
-                return -1;
-            }
+        var source = _sequence.Slice(_offset);
+        source = source.Slice(0, Math.Min(count, source.Length));
+        _offset = source.End;
 
-            _offset = source.GetPosition(1, _offset);
-            return source.First.Span[0];
+        source.CopyTo(buffer.AsSpan(offset, count));
+        return (int)source.Length;
+    }
+
+    public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token)
+    {
+        var result = Read(buffer, offset, count);
+        return Task.FromResult(result);
+    }
+
+    public override int ReadByte()
+    {
+        var source = _sequence.Slice(_offset);
+        if (source.Length == 0)
+        {
+            return -1;
         }
+
+        _offset = source.GetPosition(1, _offset);
+        return source.First.Span[0];
+    }
 
 #if NETSTANDARD2_1
-        public override int Read(Span<byte> buffer)
-        {
-            var source = _sequence.Slice(_offset);
-            source = source.Slice(0, Math.Min(buffer.Length, source.Length));
-            _offset = source.End;
+    public override int Read(Span<byte> buffer)
+    {
+        var source = _sequence.Slice(_offset);
+        source = source.Slice(0, Math.Min(buffer.Length, source.Length));
+        _offset = source.End;
 
-            source.CopyTo(buffer);
-            return (int)source.Length;
-        }
-
-        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
-        {
-            var result = Read(buffer.Span);
-            return new ValueTask<int>(result);
-        }
-#endif
+        source.CopyTo(buffer);
+        return (int)source.Length;
     }
+
+    public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+    {
+        var result = Read(buffer.Span);
+        return new ValueTask<int>(result);
+    }
+#endif
 }

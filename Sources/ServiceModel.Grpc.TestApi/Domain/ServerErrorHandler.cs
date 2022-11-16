@@ -17,17 +17,16 @@
 using System;
 using ServiceModel.Grpc.Interceptors;
 
-namespace ServiceModel.Grpc.TestApi.Domain
+namespace ServiceModel.Grpc.TestApi.Domain;
+
+public sealed class ServerErrorHandler : ServerErrorHandlerBase
 {
-    public sealed class ServerErrorHandler : ServerErrorHandlerBase
+    protected override ServerFaultDetail? ProvideFaultOrIgnoreCore(ServerCallInterceptorContext context, Exception error)
     {
-        protected override ServerFaultDetail? ProvideFaultOrIgnoreCore(ServerCallInterceptorContext context, Exception error)
+        return new ServerFaultDetail
         {
-            return new ServerFaultDetail
-            {
-                Message = error.Message,
-                Detail = new ExceptionDetail(error)
-            };
-        }
+            Message = error.Message,
+            Detail = new ExceptionDetail(error)
+        };
     }
 }

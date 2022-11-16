@@ -20,165 +20,164 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ServiceModel.Grpc.TestApi.Domain
+namespace ServiceModel.Grpc.TestApi.Domain;
+
+public sealed class ErrorService : IErrorService
 {
-    public sealed class ErrorService : IErrorService
+    public void ThrowApplicationException(string message)
     {
-        public void ThrowApplicationException(string message)
+        throw new ApplicationException(message);
+    }
+
+    public Task ThrowApplicationExceptionAsync(string message)
+    {
+        throw new ApplicationException(message);
+    }
+
+    public void ThrowOperationCanceledException()
+    {
+        throw new OperationCanceledException();
+    }
+
+    public void PassSerializationFail(DomainObjectSerializationFail fail)
+    {
+    }
+
+    public DomainObjectSerializationFail ReturnSerializationFail(string? onDeserializedError, string? onSerializedError)
+    {
+        return new DomainObjectSerializationFail
+        {
+            OnDeserializedError = onDeserializedError,
+            OnSerializedError = onSerializedError
+        };
+    }
+
+    public void CancelOperation(CancellationToken token)
+    {
+        WaitForCancel(token);
+        token.ThrowIfCancellationRequested();
+    }
+
+    public async Task CancelOperationAsync(CancellationToken token)
+    {
+        await WaitForCancelAsync(token).ConfigureAwait(false);
+        token.ThrowIfCancellationRequested();
+    }
+
+    public void ThrowApplicationExceptionAfterCancel(string message, CancellationToken token)
+    {
+        WaitForCancel(token);
+        throw new ApplicationException(message);
+    }
+
+    public async Task ThrowApplicationExceptionAfterCancelAsync(string message, CancellationToken token)
+    {
+        await WaitForCancelAsync(token).ConfigureAwait(false);
+        throw new ApplicationException(message);
+    }
+
+    public async Task ThrowApplicationExceptionClientStreaming(IAsyncEnumerable<int> data, int readsCount, string message, CallContext context)
+    {
+        if (readsCount == 0)
         {
             throw new ApplicationException(message);
         }
 
-        public Task ThrowApplicationExceptionAsync(string message)
+        var counter = 0;
+        await foreach (var i in data.ConfigureAwait(false))
         {
-            throw new ApplicationException(message);
-        }
-
-        public void ThrowOperationCanceledException()
-        {
-            throw new OperationCanceledException();
-        }
-
-        public void PassSerializationFail(DomainObjectSerializationFail fail)
-        {
-        }
-
-        public DomainObjectSerializationFail ReturnSerializationFail(string? onDeserializedError, string? onSerializedError)
-        {
-            return new DomainObjectSerializationFail
-            {
-                OnDeserializedError = onDeserializedError,
-                OnSerializedError = onSerializedError
-            };
-        }
-
-        public void CancelOperation(CancellationToken token)
-        {
-            WaitForCancel(token);
-            token.ThrowIfCancellationRequested();
-        }
-
-        public async Task CancelOperationAsync(CancellationToken token)
-        {
-            await WaitForCancelAsync(token).ConfigureAwait(false);
-            token.ThrowIfCancellationRequested();
-        }
-
-        public void ThrowApplicationExceptionAfterCancel(string message, CancellationToken token)
-        {
-            WaitForCancel(token);
-            throw new ApplicationException(message);
-        }
-
-        public async Task ThrowApplicationExceptionAfterCancelAsync(string message, CancellationToken token)
-        {
-            await WaitForCancelAsync(token).ConfigureAwait(false);
-            throw new ApplicationException(message);
-        }
-
-        public async Task ThrowApplicationExceptionClientStreaming(IAsyncEnumerable<int> data, int readsCount, string message, CallContext context)
-        {
-            if (readsCount == 0)
+            counter++;
+            if (counter == readsCount)
             {
                 throw new ApplicationException(message);
             }
-
-            var counter = 0;
-            await foreach (var i in data.ConfigureAwait(false))
-            {
-                counter++;
-                if (counter == readsCount)
-                {
-                    throw new ApplicationException(message);
-                }
-            }
-
-            throw new ApplicationException(message);
         }
 
-        public async Task<IAsyncEnumerable<int>> ThrowApplicationExceptionServerStreaming(int writesCount, string message)
-        {
-            if (writesCount == 0)
-            {
-                throw new ApplicationException(message);
-            }
+        throw new ApplicationException(message);
+    }
 
-            var channel = System.Threading.Channels.Channel.CreateUnbounded<int>();
-            await channel.Writer.WriteAsync(1).ConfigureAwait(false);
-
-            if (writesCount > 1)
-            {
-                throw new ApplicationException(message);
-            }
-
-            channel.Writer.Complete(new ApplicationException(message));
-            return channel.Reader.AsAsyncEnumerable(CancellationToken.None);
-        }
-
-        public ValueTask<(IAsyncEnumerable<int> Stream, string Message)> ThrowApplicationExceptionServerStreamingHeader(string message)
+    public async Task<IAsyncEnumerable<int>> ThrowApplicationExceptionServerStreaming(int writesCount, string message)
+    {
+        if (writesCount == 0)
         {
             throw new ApplicationException(message);
         }
 
-        public async IAsyncEnumerable<int> ThrowApplicationExceptionDuplexStreaming(IAsyncEnumerable<int> data, string message, int readsCount, CallContext context)
+        var channel = System.Threading.Channels.Channel.CreateUnbounded<int>();
+        await channel.Writer.WriteAsync(1).ConfigureAwait(false);
+
+        if (writesCount > 1)
         {
-            if (readsCount == 0)
-            {
-                throw new ApplicationException(message);
-            }
-
-            var counter = 0;
-            await foreach (var i in data.ConfigureAwait(false))
-            {
-                counter++;
-                yield return i;
-
-                if (counter == readsCount)
-                {
-                    throw new ApplicationException(message);
-                }
-            }
-
             throw new ApplicationException(message);
         }
 
-        public async Task<(IAsyncEnumerable<int> Stream, string Message)> ThrowApplicationExceptionDuplexStreamingHeader(IAsyncEnumerable<int> data, string message, int readsCount, CallContext context)
+        channel.Writer.Complete(new ApplicationException(message));
+        return channel.Reader.AsAsyncEnumerable(CancellationToken.None);
+    }
+
+    public ValueTask<(IAsyncEnumerable<int> Stream, string Message)> ThrowApplicationExceptionServerStreamingHeader(string message)
+    {
+        throw new ApplicationException(message);
+    }
+
+    public async IAsyncEnumerable<int> ThrowApplicationExceptionDuplexStreaming(IAsyncEnumerable<int> data, string message, int readsCount, CallContext context)
+    {
+        if (readsCount == 0)
         {
-            if (readsCount == 0)
-            {
-                throw new ApplicationException(message);
-            }
-
-            var counter = 0;
-            await foreach (var i in data.ConfigureAwait(false))
-            {
-                counter++;
-
-                if (counter == readsCount)
-                {
-                    throw new ApplicationException(message);
-                }
-            }
-
             throw new ApplicationException(message);
         }
 
-        private static void WaitForCancel(CancellationToken token)
+        var counter = 0;
+        await foreach (var i in data.ConfigureAwait(false))
         {
-            var timeout = Stopwatch.StartNew();
-            while (!token.IsCancellationRequested && timeout.Elapsed < TimeSpan.FromSeconds(10))
+            counter++;
+            yield return i;
+
+            if (counter == readsCount)
             {
-                Thread.Sleep(300);
+                throw new ApplicationException(message);
             }
         }
 
-        private static async Task WaitForCancelAsync(CancellationToken token)
+        throw new ApplicationException(message);
+    }
+
+    public async Task<(IAsyncEnumerable<int> Stream, string Message)> ThrowApplicationExceptionDuplexStreamingHeader(IAsyncEnumerable<int> data, string message, int readsCount, CallContext context)
+    {
+        if (readsCount == 0)
         {
-            var timeout = Stopwatch.StartNew();
-            while (!token.IsCancellationRequested && timeout.Elapsed < TimeSpan.FromSeconds(10))
+            throw new ApplicationException(message);
+        }
+
+        var counter = 0;
+        await foreach (var i in data.ConfigureAwait(false))
+        {
+            counter++;
+
+            if (counter == readsCount)
             {
-                await Task.Delay(300, token).ConfigureAwait(false);
+                throw new ApplicationException(message);
             }
+        }
+
+        throw new ApplicationException(message);
+    }
+
+    private static void WaitForCancel(CancellationToken token)
+    {
+        var timeout = Stopwatch.StartNew();
+        while (!token.IsCancellationRequested && timeout.Elapsed < TimeSpan.FromSeconds(10))
+        {
+            Thread.Sleep(300);
+        }
+    }
+
+    private static async Task WaitForCancelAsync(CancellationToken token)
+    {
+        var timeout = Stopwatch.StartNew();
+        while (!token.IsCancellationRequested && timeout.Elapsed < TimeSpan.FromSeconds(10))
+        {
+            await Task.Delay(300, token).ConfigureAwait(false);
         }
     }
 }

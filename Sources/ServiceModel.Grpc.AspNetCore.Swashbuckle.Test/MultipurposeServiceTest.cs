@@ -27,112 +27,111 @@ using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
 using OpenApiDocument = ServiceModel.Grpc.AspNetCore.TestApi.OpenApiDocument;
 
-namespace ServiceModel.Grpc.AspNetCore.Swashbuckle
+namespace ServiceModel.Grpc.AspNetCore.Swashbuckle;
+
+[TestFixture]
+public class MultipurposeServiceTest
 {
-    [TestFixture]
-    public class MultipurposeServiceTest
+    private KestrelHost _host = null!;
+    private SwaggerUiClient _client = null!;
+
+    [OneTimeSetUp]
+    public async Task BeforeAll()
     {
-        private KestrelHost _host = null!;
-        private SwaggerUiClient _client = null!;
-
-        [OneTimeSetUp]
-        public async Task BeforeAll()
-        {
-            _host = await new KestrelHost()
-                .ConfigureServices(services =>
+        _host = await new KestrelHost()
+            .ConfigureServices(services =>
+            {
+                services.AddGrpc(options =>
                 {
-                    services.AddGrpc(options =>
-                    {
-                        options.ResponseCompressionAlgorithm = options.CompressionProviders[0].EncodingName;
-                        options.ResponseCompressionLevel = CompressionLevel.Optimal;
-                    });
-                    services.AddServiceModelGrpcSwagger();
-                    services.AddSwaggerGen(c =>
-                    {
-                        c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
-                        c.EnableAnnotations(true, true);
-                    });
-                    services.AddMvc();
-                })
-                .ConfigureApp(app =>
+                    options.ResponseCompressionAlgorithm = options.CompressionProviders[0].EncodingName;
+                    options.ResponseCompressionLevel = CompressionLevel.Optimal;
+                });
+                services.AddServiceModelGrpcSwagger();
+                services.AddSwaggerGen(c =>
                 {
-                    app.UseSwagger();
-                    app.UseSwaggerUI(c =>
-                    {
-                        c.SwaggerEndpoint("v1/swagger.json", "My API V1");
-                    });
-
-                    app.UseServiceModelGrpcSwaggerGateway();
-                })
-                .ConfigureEndpoints(endpoints =>
+                    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+                    c.EnableAnnotations(true, true);
+                });
+                services.AddMvc();
+            })
+            .ConfigureApp(app =>
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
                 {
-                    endpoints.MapGrpcService<MultipurposeService>();
-                })
-                .StartAsync(HttpProtocols.Http1)
-                .ConfigureAwait(false);
+                    c.SwaggerEndpoint("v1/swagger.json", "My API V1");
+                });
 
-            var document = await OpenApiDocument
-                .DownloadAsync(_host.GetLocation("swagger/v1/swagger.json"))
-                .ConfigureAwait(false);
+                app.UseServiceModelGrpcSwaggerGateway();
+            })
+            .ConfigureEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<MultipurposeService>();
+            })
+            .StartAsync(HttpProtocols.Http1)
+            .ConfigureAwait(false);
 
-            _client = new SwaggerUiClient(document, nameof(IMultipurposeService), _host.GetLocation());
-        }
+        var document = await OpenApiDocument
+            .DownloadAsync(_host.GetLocation("swagger/v1/swagger.json"))
+            .ConfigureAwait(false);
 
-        [OneTimeTearDown]
-        public async Task AfterAll()
+        _client = new SwaggerUiClient(document, nameof(IMultipurposeService), _host.GetLocation());
+    }
+
+    [OneTimeTearDown]
+    public async Task AfterAll()
+    {
+        await _host.DisposeAsync().ConfigureAwait(false);
+    }
+
+    [Test]
+    public async Task Concat()
+    {
+        var headers = new Dictionary<string, string>
         {
-            await _host.DisposeAsync().ConfigureAwait(false);
-        }
-
-        [Test]
-        public async Task Concat()
+            { "value", "b" }
+        };
+        var parameters = new Dictionary<string, object>
         {
-            var headers = new Dictionary<string, string>
-            {
-                { "value", "b" }
-            };
-            var parameters = new Dictionary<string, object>
-            {
-                { "value", "a" }
-            };
+            { "value", "a" }
+        };
 
-            var actual = await _client.InvokeAsync<string>(nameof(IMultipurposeService.Concat), parameters, headers).ConfigureAwait(false);
+        var actual = await _client.InvokeAsync<string>(nameof(IMultipurposeService.Concat), parameters, headers).ConfigureAwait(false);
 
-            actual.ShouldBe("ab");
-        }
+        actual.ShouldBe("ab");
+    }
 
-        [Test]
-        public async Task ConcatAsync()
+    [Test]
+    public async Task ConcatAsync()
+    {
+        var headers = new Dictionary<string, string>
         {
-            var headers = new Dictionary<string, string>
-            {
-                { "value", "b" }
-            };
-            var parameters = new Dictionary<string, object>
-            {
-                { "value", "a" }
-            };
-
-            var actual = await _client.InvokeAsync<string>(nameof(IMultipurposeService.ConcatAsync), parameters, headers).ConfigureAwait(false);
-
-            actual.ShouldBe("ab");
-        }
-
-        [Test]
-        public async Task Sum5ValuesAsync()
+            { "value", "b" }
+        };
+        var parameters = new Dictionary<string, object>
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "x1", 1 },
-                { "x2", 2 },
-                { "x3", 3 },
-                { "x4", 4 },
-                { "x5", 5 }
-            };
+            { "value", "a" }
+        };
 
-            var actual = await _client.InvokeAsync<int>(nameof(IMultipurposeService.Sum5ValuesAsync), parameters).ConfigureAwait(false);
+        var actual = await _client.InvokeAsync<string>(nameof(IMultipurposeService.ConcatAsync), parameters, headers).ConfigureAwait(false);
 
-            actual.ShouldBe(15);
-        }
+        actual.ShouldBe("ab");
+    }
+
+    [Test]
+    public async Task Sum5ValuesAsync()
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "x1", 1 },
+            { "x2", 2 },
+            { "x3", 3 },
+            { "x4", 4 },
+            { "x5", 5 }
+        };
+
+        var actual = await _client.InvokeAsync<int>(nameof(IMultipurposeService.Sum5ValuesAsync), parameters).ConfigureAwait(false);
+
+        actual.ShouldBe(15);
     }
 }

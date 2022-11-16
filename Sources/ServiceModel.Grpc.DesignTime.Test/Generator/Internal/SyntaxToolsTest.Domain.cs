@@ -19,74 +19,73 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ServiceModel;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal;
+
+public partial class SyntaxToolsTest
 {
-    public partial class SyntaxToolsTest
+    [ServiceContract]
+    private interface I1 : IDisposable
     {
-        [ServiceContract]
-        private interface I1 : IDisposable
-        {
-            [OperationContract]
-            string Overload();
+        [OperationContract]
+        string Overload();
 
-            string Overload(int x);
-        }
+        string Overload(int x);
+    }
 
-        private sealed class S1 : I1
-        {
-            public void Dispose() => throw new NotImplementedException();
+    private sealed class S1 : I1
+    {
+        public void Dispose() => throw new NotImplementedException();
 
-            string I1.Overload() => throw new NotImplementedException();
+        string I1.Overload() => throw new NotImplementedException();
 
-            public string Overload(int x) => throw new NotImplementedException();
-        }
+        public string Overload(int x) => throw new NotImplementedException();
+    }
 
-        private sealed class FullNameCases
-        {
-            [DisplayName("int")]
-            public int C1() => throw new NotImplementedException();
+    private sealed class FullNameCases
+    {
+        [DisplayName("int")]
+        public int C1() => throw new NotImplementedException();
 
-            [DisplayName("string")]
-            public string C2() => throw new NotImplementedException();
+        [DisplayName("string")]
+        public string C2() => throw new NotImplementedException();
 
-            [DisplayName("int?")]
-            public int? C3() => throw new NotImplementedException();
+        [DisplayName("int?")]
+        public int? C3() => throw new NotImplementedException();
 
-            [DisplayName("IAsyncEnumerable<int>")]
-            public IAsyncEnumerable<int> C4() => throw new NotImplementedException();
+        [DisplayName("IAsyncEnumerable<int>")]
+        public IAsyncEnumerable<int> C4() => throw new NotImplementedException();
 
-            [DisplayName("int[]")]
-            public int[] C5() => throw new NotImplementedException();
+        [DisplayName("int[]")]
+        public int[] C5() => throw new NotImplementedException();
 
-            [DisplayName("int?[]")]
-            public int?[] C6() => throw new NotImplementedException();
+        [DisplayName("int?[]")]
+        public int?[] C6() => throw new NotImplementedException();
 
-            [DisplayName("global::ServiceModel.Grpc.DesignTime.Generator.Internal.SyntaxToolsTest.I1")]
-            public I1 C7() => throw new NotImplementedException();
+        [DisplayName("global::ServiceModel.Grpc.DesignTime.Generator.Internal.SyntaxToolsTest.I1")]
+        public I1 C7() => throw new NotImplementedException();
 
-            [DisplayName("void")]
-            public void C8() => throw new NotImplementedException();
+        [DisplayName("void")]
+        public void C8() => throw new NotImplementedException();
 
-            [DisplayName("int[][]")]
-            public int[][] C9() => throw new NotImplementedException();
+        [DisplayName("int[][]")]
+        public int[][] C9() => throw new NotImplementedException();
 
-            [DisplayName("int[,]")]
-            public int[,] C10() => throw new NotImplementedException();
+        [DisplayName("int[,]")]
+        public int[,] C10() => throw new NotImplementedException();
 
-            [DisplayName("int[,][,,,]")]
-            public int[,][,,,] C11() => throw new NotImplementedException();
+        [DisplayName("int[,][,,,]")]
+        public int[,][,,,] C11() => throw new NotImplementedException();
 
-            [DisplayName("IList<int?[]>")]
-            public IList<int?[]> C12() => throw new NotImplementedException();
+        [DisplayName("IList<int?[]>")]
+        public IList<int?[]> C12() => throw new NotImplementedException();
 
-            [DisplayName("IList<int?[,]>")]
-            public IList<int?[,]> C13() => throw new NotImplementedException();
+        [DisplayName("IList<int?[,]>")]
+        public IList<int?[,]> C13() => throw new NotImplementedException();
 
-            [DisplayName("IList<int?[,,][]>")]
-            public IList<int?[,,][]> C14() => throw new NotImplementedException();
+        [DisplayName("IList<int?[,,][]>")]
+        public IList<int?[,,][]> C14() => throw new NotImplementedException();
 
-            [DisplayName("T2")]
-            public T2 Generic1<T1, T2>(T1 value) => throw new NotImplementedException();
-        }
+        [DisplayName("T2")]
+        public T2 Generic1<T1, T2>(T1 value) => throw new NotImplementedException();
     }
 }

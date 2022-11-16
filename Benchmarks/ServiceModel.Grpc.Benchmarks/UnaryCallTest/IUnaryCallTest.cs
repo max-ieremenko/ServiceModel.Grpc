@@ -17,12 +17,11 @@
 using System;
 using System.Threading.Tasks;
 
-namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest
-{
-    internal interface IUnaryCallTest : IDisposable
-    {
-        Task PingPongAsync();
+namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest;
 
-        ValueTask<long> GetPingPongPayloadSize();
-    }
+internal interface IUnaryCallTest : IDisposable
+{
+    Task PingPongAsync();
+
+    ValueTask<long> GetPingPongPayloadSize();
 }

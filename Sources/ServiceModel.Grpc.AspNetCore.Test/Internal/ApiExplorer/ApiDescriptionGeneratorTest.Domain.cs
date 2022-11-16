@@ -21,63 +21,62 @@ using System.Threading.Tasks;
 
 #pragma warning disable SA1414 // Tuple types in signatures should have element names
 
-namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
+namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer;
+
+public partial class ApiDescriptionGeneratorTest
 {
-    public partial class ApiDescriptionGeneratorTest
+    [ServiceContract]
+    private sealed class TestCases
     {
-        [ServiceContract]
-        private sealed class TestCases
+        [OperationContract]
+        [RequestMetadata(new int[0], new int[0])]
+        [ResponseMetadata(null, new Type[0], new string[0])]
+        public void Void() => throw new NotSupportedException();
+
+        [OperationContract]
+        [RequestMetadata(new int[0], new int[0])]
+        [ResponseMetadata(typeof(IAsyncEnumerable<string>), new[] { typeof(string), typeof(int) }, new[] { "Value1", "Value2" })]
+        public Task<(string Value1, IAsyncEnumerable<string> Stream, int Value2)> ServerStreamingWithHeaders() => throw new NotSupportedException();
+
+        [OperationContract]
+        [RequestMetadata(new[] { 0 }, new int[0])]
+        [ResponseMetadata(typeof(IAsyncEnumerable<string>), new[] { typeof(string), typeof(int) }, new[] { "Value1", "Item2" })]
+        public Task<(string Value1, IAsyncEnumerable<string>, int)> ServerStreamingWithMixedHeaderNames(string data) => throw new NotSupportedException();
+
+        [OperationContract]
+        [RequestMetadata(new[] { 0 }, new[] { 1 })]
+        [ResponseMetadata(typeof(IAsyncEnumerable<string>), new[] { typeof(string), typeof(int) }, new[] { "Item1", "Item2" })]
+        public Task<(string, IAsyncEnumerable<string>, int)> DuplexStreamingWithHeaders(IAsyncEnumerable<int> data1, string data2) => throw new NotSupportedException();
+    }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    private sealed class ResponseMetadataAttribute : Attribute
+    {
+        public ResponseMetadataAttribute(Type? type, Type[] headerTypes, string[] headerNames)
         {
-            [OperationContract]
-            [RequestMetadata(new int[0], new int[0])]
-            [ResponseMetadata(null, new Type[0], new string[0])]
-            public void Void() => throw new NotSupportedException();
-
-            [OperationContract]
-            [RequestMetadata(new int[0], new int[0])]
-            [ResponseMetadata(typeof(IAsyncEnumerable<string>), new[] { typeof(string), typeof(int) }, new[] { "Value1", "Value2" })]
-            public Task<(string Value1, IAsyncEnumerable<string> Stream, int Value2)> ServerStreamingWithHeaders() => throw new NotSupportedException();
-
-            [OperationContract]
-            [RequestMetadata(new[] { 0 }, new int[0])]
-            [ResponseMetadata(typeof(IAsyncEnumerable<string>), new[] { typeof(string), typeof(int) }, new[] { "Value1", "Item2" })]
-            public Task<(string Value1, IAsyncEnumerable<string>, int)> ServerStreamingWithMixedHeaderNames(string data) => throw new NotSupportedException();
-
-            [OperationContract]
-            [RequestMetadata(new[] { 0 }, new[] { 1 })]
-            [ResponseMetadata(typeof(IAsyncEnumerable<string>), new[] { typeof(string), typeof(int) }, new[] { "Item1", "Item2" })]
-            public Task<(string, IAsyncEnumerable<string>, int)> DuplexStreamingWithHeaders(IAsyncEnumerable<int> data1, string data2) => throw new NotSupportedException();
+            Type = type;
+            HeaderTypes = headerTypes;
+            HeaderNames = headerNames;
         }
 
-        [AttributeUsage(AttributeTargets.Method)]
-        private sealed class ResponseMetadataAttribute : Attribute
+        public Type? Type { get; }
+
+        public Type[] HeaderTypes { get; }
+
+        public string[] HeaderNames { get; }
+    }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    private sealed class RequestMetadataAttribute : Attribute
+    {
+        public RequestMetadataAttribute(int[] parameters, int[] headerParameters)
         {
-            public ResponseMetadataAttribute(Type? type, Type[] headerTypes, string[] headerNames)
-            {
-                Type = type;
-                HeaderTypes = headerTypes;
-                HeaderNames = headerNames;
-            }
-
-            public Type? Type { get; }
-
-            public Type[] HeaderTypes { get; }
-
-            public string[] HeaderNames { get; }
+            Parameters = parameters;
+            HeaderParameters = headerParameters;
         }
 
-        [AttributeUsage(AttributeTargets.Method)]
-        private sealed class RequestMetadataAttribute : Attribute
-        {
-            public RequestMetadataAttribute(int[] parameters, int[] headerParameters)
-            {
-                Parameters = parameters;
-                HeaderParameters = headerParameters;
-            }
+        public int[] Parameters { get; }
 
-            public int[] Parameters { get; }
-
-            public int[] HeaderParameters { get; }
-        }
+        public int[] HeaderParameters { get; }
     }
 }

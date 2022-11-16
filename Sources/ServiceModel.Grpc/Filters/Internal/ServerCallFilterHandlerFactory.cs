@@ -19,92 +19,91 @@ using System.Reflection;
 using Grpc.Core;
 using ServiceModel.Grpc.Internal;
 
-namespace ServiceModel.Grpc.Filters.Internal
+namespace ServiceModel.Grpc.Filters.Internal;
+
+internal sealed class ServerCallFilterHandlerFactory
 {
-    internal sealed class ServerCallFilterHandlerFactory
+    private readonly Func<object, MethodInfo> _getServiceMethodInfo;
+    private readonly MessageProxy _requestMessageProxy;
+    private readonly MessageProxy _responseMessageProxy;
+    private readonly StreamProxy? _requestStreamProxy;
+    private readonly StreamProxy? _responseStreamProxy;
+    private MethodInfo? _serviceMethodInfo;
+
+    public ServerCallFilterHandlerFactory(
+        IServiceProvider serviceProvider,
+        MethodInfo contractMethodDefinition,
+        Func<IServiceProvider, IServerFilter>[] filterFactories)
     {
-        private readonly Func<object, MethodInfo> _getServiceMethodInfo;
-        private readonly MessageProxy _requestMessageProxy;
-        private readonly MessageProxy _responseMessageProxy;
-        private readonly StreamProxy? _requestStreamProxy;
-        private readonly StreamProxy? _responseStreamProxy;
-        private MethodInfo? _serviceMethodInfo;
+        ServiceProvider = serviceProvider;
+        ContractMethodDefinition = contractMethodDefinition;
+        FilterFactories = filterFactories;
+        _getServiceMethodInfo = GetServiceMethodInfo;
 
-        public ServerCallFilterHandlerFactory(
-            IServiceProvider serviceProvider,
-            MethodInfo contractMethodDefinition,
-            Func<IServiceProvider, IServerFilter>[] filterFactories)
+        var proxyFactory = new ProxyFactory(contractMethodDefinition);
+        _requestMessageProxy = proxyFactory.RequestProxy;
+        _responseMessageProxy = proxyFactory.ResponseProxy;
+        _requestStreamProxy = proxyFactory.RequestStreamProxy;
+        _responseStreamProxy = proxyFactory.ResponseStreamProxy;
+    }
+
+    public IServiceProvider ServiceProvider { get; }
+
+    public MethodInfo ContractMethodDefinition { get; }
+
+    public Func<IServiceProvider, IServerFilter>[] FilterFactories { get; }
+
+    public ServerCallFilterHandler CreateHandler(object service, ServerCallContext context)
+    {
+        var filters = new IServerFilter[FilterFactories.Length];
+        for (var i = 0; i < FilterFactories.Length; i++)
         {
-            ServiceProvider = serviceProvider;
-            ContractMethodDefinition = contractMethodDefinition;
-            FilterFactories = filterFactories;
-            _getServiceMethodInfo = GetServiceMethodInfo;
-
-            var proxyFactory = new ProxyFactory(contractMethodDefinition);
-            _requestMessageProxy = proxyFactory.RequestProxy;
-            _responseMessageProxy = proxyFactory.ResponseProxy;
-            _requestStreamProxy = proxyFactory.RequestStreamProxy;
-            _responseStreamProxy = proxyFactory.ResponseStreamProxy;
+            filters[i] = CreateFilter(FilterFactories[i]);
         }
 
-        public IServiceProvider ServiceProvider { get; }
+        var filterContext = new ServerFilterContext(
+            service,
+            context,
+            ServiceProvider,
+            ContractMethodDefinition,
+            _getServiceMethodInfo,
+            new RequestContext(_requestMessageProxy, _requestStreamProxy),
+            new ResponseContext(_responseMessageProxy, _responseStreamProxy));
 
-        public MethodInfo ContractMethodDefinition { get; }
+        return new ServerCallFilterHandler(filterContext, filters);
+    }
 
-        public Func<IServiceProvider, IServerFilter>[] FilterFactories { get; }
-
-        public ServerCallFilterHandler CreateHandler(object service, ServerCallContext context)
+    private IServerFilter CreateFilter(Func<IServiceProvider, IServerFilter> factory)
+    {
+        IServerFilter? filter;
+        try
         {
-            var filters = new IServerFilter[FilterFactories.Length];
-            for (var i = 0; i < FilterFactories.Length; i++)
-            {
-                filters[i] = CreateFilter(FilterFactories[i]);
-            }
-
-            var filterContext = new ServerFilterContext(
-                service,
-                context,
-                ServiceProvider,
-                ContractMethodDefinition,
-                _getServiceMethodInfo,
-                new RequestContext(_requestMessageProxy, _requestStreamProxy),
-                new ResponseContext(_responseMessageProxy, _responseStreamProxy));
-
-            return new ServerCallFilterHandler(filterContext, filters);
+            filter = factory(ServiceProvider);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("Failed to create a server filter: {0}. Please check server filter registrations.".FormatWith(ex.Message), ex);
         }
 
-        private IServerFilter CreateFilter(Func<IServiceProvider, IServerFilter> factory)
+        if (filter == null)
         {
-            IServerFilter? filter;
-            try
-            {
-                filter = factory(ServiceProvider);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException("Failed to create a server filter: {0}. Please check server filter registrations.".FormatWith(ex.Message), ex);
-            }
-
-            if (filter == null)
-            {
-                throw new InvalidOperationException("Server filter factory must not return null. Please check server filter registrations.");
-            }
-
-            return filter;
+            throw new InvalidOperationException("Server filter factory must not return null. Please check server filter registrations.");
         }
 
-        private MethodInfo GetServiceMethodInfo(object service)
-        {
-            if (_serviceMethodInfo != null)
-            {
-                return _serviceMethodInfo;
-            }
+        return filter;
+    }
 
-            _serviceMethodInfo = ReflectionTools.ImplementationOfMethod(
-                service.GetType(),
-                ContractMethodDefinition.DeclaringType,
-                ContractMethodDefinition);
+    private MethodInfo GetServiceMethodInfo(object service)
+    {
+        if (_serviceMethodInfo != null)
+        {
             return _serviceMethodInfo;
         }
+
+        _serviceMethodInfo = ReflectionTools.ImplementationOfMethod(
+            service.GetType(),
+            ContractMethodDefinition.DeclaringType,
+            ContractMethodDefinition);
+        return _serviceMethodInfo;
     }
 }

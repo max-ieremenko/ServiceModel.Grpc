@@ -23,67 +23,66 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceModel.Grpc.Benchmarks.Domain;
 
-namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Combined
+namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Combined;
+
+internal sealed class MagicOnionCombinedCallTest : IUnaryCallTest
 {
-    internal sealed class MagicOnionCombinedCallTest : IUnaryCallTest
+    private readonly SomeObject _payload;
+    private readonly TestServer _server;
+    private readonly HttpClient _client;
+    private readonly GrpcChannel _channel;
+    private readonly ITestServiceMagicOnion _proxy;
+
+    public MagicOnionCombinedCallTest(SomeObject payload)
     {
-        private readonly SomeObject _payload;
-        private readonly TestServer _server;
-        private readonly HttpClient _client;
-        private readonly GrpcChannel _channel;
-        private readonly ITestServiceMagicOnion _proxy;
+        _payload = payload;
+        _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
+        _client = _server.CreateClient();
 
-        public MagicOnionCombinedCallTest(SomeObject payload)
+        _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpClient = _client });
+        _proxy = MagicOnion.Client.MagicOnionClient.Create<ITestServiceMagicOnion>(_channel);
+    }
+
+    public async Task PingPongAsync()
+    {
+        var call = _proxy.PingPong(_payload);
+        await call;
+        call.Dispose();
+    }
+
+    public ValueTask<long> GetPingPongPayloadSize()
+    {
+        return StubHttpMessageHandler.GetPayloadSize(async channel =>
         {
-            _payload = payload;
-            _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
-            _client = _server.CreateClient();
-
-            _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpClient = _client });
-            _proxy = MagicOnion.Client.MagicOnionClient.Create<ITestServiceMagicOnion>(_channel);
-        }
-
-        public async Task PingPongAsync()
-        {
-            var call = _proxy.PingPong(_payload);
+            var proxy = MagicOnion.Client.MagicOnionClient.Create<ITestServiceMagicOnion>(channel);
+            var call = proxy.PingPong(_payload);
             await call;
-            call.Dispose();
+        });
+    }
+
+    public void Dispose()
+    {
+        _channel.Dispose();
+        _client.Dispose();
+        _server.Dispose();
+    }
+
+    private sealed class Startup
+    {
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddGrpc();
+            services.AddMagicOnion();
         }
 
-        public ValueTask<long> GetPingPongPayloadSize()
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            return StubHttpMessageHandler.GetPayloadSize(async channel =>
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
             {
-                var proxy = MagicOnion.Client.MagicOnionClient.Create<ITestServiceMagicOnion>(channel);
-                var call = proxy.PingPong(_payload);
-                await call;
+                endpoints.MapMagicOnionService();
             });
-        }
-
-        public void Dispose()
-        {
-            _channel.Dispose();
-            _client.Dispose();
-            _server.Dispose();
-        }
-
-        private sealed class Startup
-        {
-            public void ConfigureServices(IServiceCollection services)
-            {
-                services.AddGrpc();
-                services.AddMagicOnion();
-            }
-
-            public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-            {
-                app.UseRouting();
-
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.MapMagicOnionService();
-                });
-            }
         }
     }
 }

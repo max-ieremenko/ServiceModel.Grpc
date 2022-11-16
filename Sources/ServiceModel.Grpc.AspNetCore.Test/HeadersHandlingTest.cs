@@ -22,40 +22,39 @@ using ServiceModel.Grpc.AspNetCore.TestApi;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 
-namespace ServiceModel.Grpc.AspNetCore
+namespace ServiceModel.Grpc.AspNetCore;
+
+[TestFixture(GrpcChannelType.GrpcCore)]
+[TestFixture(GrpcChannelType.GrpcDotNet)]
+public class HeadersHandlingTest : HeadersHandlingTestBase
 {
-    [TestFixture(GrpcChannelType.GrpcCore)]
-    [TestFixture(GrpcChannelType.GrpcDotNet)]
-    public class HeadersHandlingTest : HeadersHandlingTestBase
+    private readonly GrpcChannelType _channelType;
+    private KestrelHost _host = null!;
+
+    public HeadersHandlingTest(GrpcChannelType channelType)
     {
-        private readonly GrpcChannelType _channelType;
-        private KestrelHost _host = null!;
+        _channelType = channelType;
+    }
 
-        public HeadersHandlingTest(GrpcChannelType channelType)
-        {
-            _channelType = channelType;
-        }
+    [OneTimeSetUp]
+    public async Task BeforeAll()
+    {
+        _host = await new KestrelHost()
+            .ConfigureClientFactory(options => options.DefaultCallOptionsFactory = () => new CallOptions(DefaultMetadata))
+            .ConfigureEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<HeadersService>();
+            })
+            .WithChannelType(_channelType)
+            .StartAsync()
+            .ConfigureAwait(false);
 
-        [OneTimeSetUp]
-        public async Task BeforeAll()
-        {
-            _host = await new KestrelHost()
-                .ConfigureClientFactory(options => options.DefaultCallOptionsFactory = () => new CallOptions(DefaultMetadata))
-                .ConfigureEndpoints(endpoints =>
-                {
-                    endpoints.MapGrpcService<HeadersService>();
-                })
-                .WithChannelType(_channelType)
-                .StartAsync()
-                .ConfigureAwait(false);
+        DomainService = _host.ClientFactory.CreateClient<IHeadersService>(_host.Channel);
+    }
 
-            DomainService = _host.ClientFactory.CreateClient<IHeadersService>(_host.Channel);
-        }
-
-        [OneTimeTearDown]
-        public async Task AfterAll()
-        {
-            await _host.DisposeAsync().ConfigureAwait(false);
-        }
+    [OneTimeTearDown]
+    public async Task AfterAll()
+    {
+        await _host.DisposeAsync().ConfigureAwait(false);
     }
 }

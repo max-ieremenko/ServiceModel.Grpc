@@ -18,35 +18,34 @@ using System.IO;
 using Grpc.Core;
 using ServiceModel.Grpc.Internal.IO;
 
-namespace ServiceModel.Grpc.Configuration
+namespace ServiceModel.Grpc.Configuration;
+
+/// <summary>
+/// Provides set of helpers for <see cref="SerializationContext"/> and <see cref="DeserializationContext"/>.
+/// </summary>
+public static class SerializationContextExtensions
 {
     /// <summary>
-    /// Provides set of helpers for <see cref="SerializationContext"/> and <see cref="DeserializationContext"/>.
+    /// Creates a writable <see cref="Stream"/> that can be used to write data into <see cref="SerializationContext"/>.
     /// </summary>
-    public static class SerializationContextExtensions
+    /// <param name="context">Serialization context.</param>
+    /// <returns>Writable <see cref="Stream"/>.</returns>
+    public static Stream AsStream(this SerializationContext context)
     {
-        /// <summary>
-        /// Creates a writable <see cref="Stream"/> that can be used to write data into <see cref="SerializationContext"/>.
-        /// </summary>
-        /// <param name="context">Serialization context.</param>
-        /// <returns>Writable <see cref="Stream"/>.</returns>
-        public static Stream AsStream(this SerializationContext context)
-        {
-            context.AssertNotNull(nameof(context));
+        context.AssertNotNull(nameof(context));
 
-            return new BufferWriterStream(context.GetBufferWriter());
-        }
+        return new BufferWriterStream(context.GetBufferWriter());
+    }
 
-        /// <summary>
-        /// Creates a readable <see cref="Stream"/> that can be used to read data from <see cref="DeserializationContext"/>.
-        /// </summary>
-        /// <param name="context">Deserialization context.</param>
-        /// <returns>Readable <see cref="Stream"/>.</returns>
-        public static Stream AsStream(this DeserializationContext context)
-        {
-            context.AssertNotNull(nameof(context));
+    /// <summary>
+    /// Creates a readable <see cref="Stream"/> that can be used to read data from <see cref="DeserializationContext"/>.
+    /// </summary>
+    /// <param name="context">Deserialization context.</param>
+    /// <returns>Readable <see cref="Stream"/>.</returns>
+    public static Stream AsStream(this DeserializationContext context)
+    {
+        context.AssertNotNull(nameof(context));
 
-            return new BufferReaderStream(context.PayloadAsReadOnlySequence());
-        }
+        return new BufferReaderStream(context.PayloadAsReadOnlySequence());
     }
 }

@@ -18,89 +18,88 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace ServiceModel.Grpc.Filters.Internal
+namespace ServiceModel.Grpc.Filters.Internal;
+
+internal sealed class ServiceMethodFilterRegistration
 {
-    internal sealed class ServiceMethodFilterRegistration
+    private readonly IServiceProvider _serviceProvider;
+    private List<FilterRegistration<IServerFilter>>? _registrations;
+
+    public ServiceMethodFilterRegistration(IServiceProvider serviceProvider)
     {
-        private readonly IServiceProvider _serviceProvider;
-        private List<FilterRegistration<IServerFilter>>? _registrations;
+        _serviceProvider = serviceProvider;
+    }
 
-        public ServiceMethodFilterRegistration(IServiceProvider serviceProvider)
+    public void Add(IList<FilterRegistration<IServerFilter>>? registrations)
+    {
+        if (registrations == null || registrations.Count == 0)
         {
-            _serviceProvider = serviceProvider;
+            return;
         }
 
-        public void Add(IList<FilterRegistration<IServerFilter>>? registrations)
+        if (_registrations == null)
         {
-            if (registrations == null || registrations.Count == 0)
-            {
-                return;
-            }
-
-            if (_registrations == null)
-            {
-                _registrations = new List<FilterRegistration<IServerFilter>>();
-            }
-
-            _registrations.AddRange(registrations);
+            _registrations = new List<FilterRegistration<IServerFilter>>();
         }
 
-        public ServerCallFilterHandlerFactory? CreateHandlerFactory(IList<object> metadata, Func<MethodInfo> resolveContractMethodDefinition)
+        _registrations.AddRange(registrations);
+    }
+
+    public ServerCallFilterHandlerFactory? CreateHandlerFactory(IList<object> metadata, Func<MethodInfo> resolveContractMethodDefinition)
+    {
+        var registrations = CombineRegistrations(metadata);
+        if (registrations == null)
         {
-            var registrations = CombineRegistrations(metadata);
-            if (registrations == null)
-            {
-                return null;
-            }
-
-            registrations.Sort();
-
-            var filterFactories = new Func<IServiceProvider, IServerFilter>[registrations.Count];
-            for (var i = 0; i < registrations.Count; i++)
-            {
-                filterFactories[i] = registrations[i].Factory;
-            }
-
-            return new ServerCallFilterHandlerFactory(_serviceProvider, resolveContractMethodDefinition(), filterFactories);
+            return null;
         }
 
-        private List<FilterRegistration<IServerFilter>>? CombineRegistrations(IList<object> metadata)
+        registrations.Sort();
+
+        var filterFactories = new Func<IServiceProvider, IServerFilter>[registrations.Count];
+        for (var i = 0; i < registrations.Count; i++)
         {
-            if (_registrations == null && metadata.Count == 0)
+            filterFactories[i] = registrations[i].Factory;
+        }
+
+        return new ServerCallFilterHandlerFactory(_serviceProvider, resolveContractMethodDefinition(), filterFactories);
+    }
+
+    private List<FilterRegistration<IServerFilter>>? CombineRegistrations(IList<object> metadata)
+    {
+        if (_registrations == null && metadata.Count == 0)
+        {
+            return null;
+        }
+
+        List<FilterRegistration<IServerFilter>>? result = null;
+        for (var i = 0; i < metadata.Count; i++)
+        {
+            FilterRegistration<IServerFilter>? registration = null;
+
+            if (metadata[i] is ServerFilterAttribute filterAttribute)
             {
-                return null;
+                registration = new FilterRegistration<IServerFilter>(filterAttribute.Order, _ => filterAttribute);
+            }
+            else if (metadata[i] is ServerFilterRegistrationAttribute registrationAttribute)
+            {
+                registration = new FilterRegistration<IServerFilter>(registrationAttribute.Order, registrationAttribute.CreateFilter);
             }
 
-            List<FilterRegistration<IServerFilter>>? result = null;
-            for (var i = 0; i < metadata.Count; i++)
+            if (registration != null)
             {
-                FilterRegistration<IServerFilter>? registration = null;
-
-                if (metadata[i] is ServerFilterAttribute filterAttribute)
+                if (result == null)
                 {
-                    registration = new FilterRegistration<IServerFilter>(filterAttribute.Order, _ => filterAttribute);
-                }
-                else if (metadata[i] is ServerFilterRegistrationAttribute registrationAttribute)
-                {
-                    registration = new FilterRegistration<IServerFilter>(registrationAttribute.Order, registrationAttribute.CreateFilter);
-                }
-
-                if (registration != null)
-                {
-                    if (result == null)
+                    result = new List<FilterRegistration<IServerFilter>>((_registrations?.Count ?? 0) + 4);
+                    if (_registrations != null)
                     {
-                        result = new List<FilterRegistration<IServerFilter>>((_registrations?.Count ?? 0) + 4);
-                        if (_registrations != null)
-                        {
-                            result.AddRange(_registrations);
-                        }
+                        result.AddRange(_registrations);
                     }
-
-                    result.Add(registration);
                 }
-            }
 
-            return result ?? _registrations;
+                result.Add(registration);
+            }
         }
+
+        return result ?? _registrations;
     }
 }

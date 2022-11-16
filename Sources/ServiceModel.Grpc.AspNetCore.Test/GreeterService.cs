@@ -19,31 +19,30 @@ using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.TestApi;
 
-namespace ServiceModel.Grpc.AspNetCore
+namespace ServiceModel.Grpc.AspNetCore;
+
+internal sealed class GreeterService : Greeter.GreeterBase
 {
-    internal sealed class GreeterService : Greeter.GreeterBase
+    public override Task<HelloResult> Unary(HelloRequest request, ServerCallContext context)
     {
-        public override Task<HelloResult> Unary(HelloRequest request, ServerCallContext context)
+        return Task.FromResult(new HelloResult
         {
-            return Task.FromResult(new HelloResult
-            {
-                Message = "Hello " + request.Name + "!"
-            });
-        }
+            Message = "Hello " + request.Name + "!"
+        });
+    }
 
-        public override async Task DuplexStreaming(
-            IAsyncStreamReader<HelloRequest> requestStream,
-            IServerStreamWriter<HelloResult> responseStream,
-            ServerCallContext context)
+    public override async Task DuplexStreaming(
+        IAsyncStreamReader<HelloRequest> requestStream,
+        IServerStreamWriter<HelloResult> responseStream,
+        ServerCallContext context)
+    {
+        var greet = CompatibilityToolsTestExtensions.DeserializeMethodInput<string>(ProtobufMarshallerFactory.Default, context.RequestHeaders);
+        await context.WriteResponseHeadersAsync(CompatibilityToolsTestExtensions.SerializeMethodOutput(ProtobufMarshallerFactory.Default, greet)).ConfigureAwait(false);
+
+        while (await requestStream.MoveNext(context.CancellationToken).ConfigureAwait(false))
         {
-            var greet = CompatibilityToolsTestExtensions.DeserializeMethodInput<string>(ProtobufMarshallerFactory.Default, context.RequestHeaders);
-            await context.WriteResponseHeadersAsync(CompatibilityToolsTestExtensions.SerializeMethodOutput(ProtobufMarshallerFactory.Default, greet)).ConfigureAwait(false);
-
-            while (await requestStream.MoveNext(context.CancellationToken).ConfigureAwait(false))
-            {
-                var message = greet + " " + requestStream.Current.Name + "!";
-                await responseStream.WriteAsync(new HelloResult { Message = message }).ConfigureAwait(false);
-            }
+            var message = greet + " " + requestStream.Current.Name + "!";
+            await responseStream.WriteAsync(new HelloResult { Message = message }).ConfigureAwait(false);
         }
     }
 }

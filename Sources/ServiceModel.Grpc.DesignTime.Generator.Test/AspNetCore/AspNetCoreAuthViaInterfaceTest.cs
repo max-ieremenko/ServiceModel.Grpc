@@ -21,31 +21,30 @@ using NUnit.Framework;
 using ServiceModel.Grpc.AspNetCore.TestApi;
 using ServiceModel.Grpc.AspNetCore.TestApi.Domain;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Test.AspNetCore
+namespace ServiceModel.Grpc.DesignTime.Generator.Test.AspNetCore;
+
+[TestFixture]
+[ExportGrpcService(typeof(IServiceWithAuthentication), GenerateAspNetExtensions = true)]
+public partial class AspNetCoreAuthViaInterfaceTest : AspNetCoreAuthenticationTestBase
 {
-    [TestFixture]
-    [ExportGrpcService(typeof(IServiceWithAuthentication), GenerateAspNetExtensions = true)]
-    public partial class AspNetCoreAuthViaInterfaceTest : AspNetCoreAuthenticationTestBase
+    protected override void ConfigureKestrelHost(KestrelHost host)
     {
-        protected override void ConfigureKestrelHost(KestrelHost host)
+        host
+            .ConfigureServices(services => services.AddTransient<IServiceWithAuthentication, ServiceWithAuthentication>())
+            .ConfigureEndpoints(endpoints => MapServiceWithAuthentication(endpoints));
+    }
+
+    // add attributes manually
+    internal partial class ServiceWithAuthenticationEndpointBinder
+    {
+        partial void ServiceGetMetadataOverride(IList<object> metadata)
         {
-            host
-                .ConfigureServices(services => services.AddTransient<IServiceWithAuthentication, ServiceWithAuthentication>())
-                .ConfigureEndpoints(endpoints => MapServiceWithAuthentication(endpoints));
+            metadata.Add(new AuthorizeAttribute());
         }
 
-        // add attributes manually
-        internal partial class ServiceWithAuthenticationEndpointBinder
+        partial void MethodTryGetCurrentUserNameGetMetadataOverride(IList<object> metadata)
         {
-            partial void ServiceGetMetadataOverride(IList<object> metadata)
-            {
-                metadata.Add(new AuthorizeAttribute());
-            }
-
-            partial void MethodTryGetCurrentUserNameGetMetadataOverride(IList<object> metadata)
-            {
-                metadata.Add(new AllowAnonymousAttribute());
-            }
+            metadata.Add(new AllowAnonymousAttribute());
         }
     }
 }

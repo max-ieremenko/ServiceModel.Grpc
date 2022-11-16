@@ -17,67 +17,66 @@
 using System;
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Client.Internal
+namespace ServiceModel.Grpc.Client.Internal;
+
+internal readonly struct ServerResponse
 {
-    internal readonly struct ServerResponse
+    private readonly Status _responseStatus;
+    private readonly Metadata? _responseTrailers;
+    private readonly Func<Status>? _getResponseStatus;
+    private readonly Func<Metadata>? _getResponseTrailers;
+
+    public ServerResponse(Metadata responseHeaders, Status responseStatus, Metadata responseTrailers)
     {
-        private readonly Status _responseStatus;
-        private readonly Metadata? _responseTrailers;
-        private readonly Func<Status>? _getResponseStatus;
-        private readonly Func<Metadata>? _getResponseTrailers;
+        responseHeaders.AssertNotNull(nameof(responseHeaders));
 
-        public ServerResponse(Metadata responseHeaders, Status responseStatus, Metadata responseTrailers)
+        ResponseHeaders = responseHeaders;
+        _responseStatus = responseStatus;
+        _responseTrailers = responseTrailers;
+
+        _getResponseStatus = default;
+        _getResponseTrailers = default;
+    }
+
+    public ServerResponse(Metadata responseHeaders, Func<Status> getResponseStatus, Func<Metadata> getResponseTrailers)
+    {
+        responseHeaders.AssertNotNull(nameof(responseHeaders));
+        getResponseStatus.AssertNotNull(nameof(getResponseStatus));
+        getResponseTrailers.AssertNotNull(nameof(getResponseTrailers));
+
+        ResponseHeaders = responseHeaders;
+        _getResponseStatus = getResponseStatus;
+        _getResponseTrailers = getResponseTrailers;
+
+        _responseStatus = default;
+        _responseTrailers = default;
+    }
+
+    public Metadata ResponseHeaders { get; }
+
+    public Status ResponseStatus
+    {
+        get
         {
-            responseHeaders.AssertNotNull(nameof(responseHeaders));
-
-            ResponseHeaders = responseHeaders;
-            _responseStatus = responseStatus;
-            _responseTrailers = responseTrailers;
-
-            _getResponseStatus = default;
-            _getResponseTrailers = default;
-        }
-
-        public ServerResponse(Metadata responseHeaders, Func<Status> getResponseStatus, Func<Metadata> getResponseTrailers)
-        {
-            responseHeaders.AssertNotNull(nameof(responseHeaders));
-            getResponseStatus.AssertNotNull(nameof(getResponseStatus));
-            getResponseTrailers.AssertNotNull(nameof(getResponseTrailers));
-
-            ResponseHeaders = responseHeaders;
-            _getResponseStatus = getResponseStatus;
-            _getResponseTrailers = getResponseTrailers;
-
-            _responseStatus = default;
-            _responseTrailers = default;
-        }
-
-        public Metadata ResponseHeaders { get; }
-
-        public Status ResponseStatus
-        {
-            get
+            if (_getResponseStatus == null)
             {
-                if (_getResponseStatus == null)
-                {
-                    return _responseStatus;
-                }
-
-                return _getResponseStatus();
+                return _responseStatus;
             }
+
+            return _getResponseStatus();
         }
+    }
 
-        public Metadata ResponseTrailers
+    public Metadata ResponseTrailers
+    {
+        get
         {
-            get
+            if (_getResponseTrailers == null)
             {
-                if (_getResponseTrailers == null)
-                {
-                    return _responseTrailers!;
-                }
-
-                return _getResponseTrailers();
+                return _responseTrailers!;
             }
+
+            return _getResponseTrailers();
         }
     }
 }

@@ -23,60 +23,59 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace ServiceModel.Grpc.DesignTime.Generator
+namespace ServiceModel.Grpc.DesignTime.Generator;
+
+internal sealed class GeneratorContext
 {
-    internal sealed class GeneratorContext
+    private readonly IExecutionContext _executionContext;
+    private readonly HashSet<string> _generatedNames;
+
+    public GeneratorContext(
+        Compilation compilation,
+        IExecutionContext executionContext)
     {
-        private readonly IExecutionContext _executionContext;
-        private readonly HashSet<string> _generatedNames;
+        _executionContext = executionContext;
+        Compilation = compilation;
+        _generatedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    }
 
-        public GeneratorContext(
-            Compilation compilation,
-            IExecutionContext executionContext)
+    public CancellationToken CancellationToken => _executionContext.CancellationToken;
+
+    public Compilation Compilation { get; }
+
+    public void ReportDiagnostic(Diagnostic diagnostic) => _executionContext.ReportDiagnostic(diagnostic);
+
+    public void AddOutput(ClassDeclarationSyntax node, string hintName, string source)
+    {
+        var fileName = GetOutputFileName(node, hintName);
+        var sourceText = SourceText.From(source, Encoding.UTF8);
+        _executionContext.AddSource(fileName, sourceText);
+    }
+
+    internal string GetOutputFileName(ClassDeclarationSyntax node, string hintName)
+    {
+        var name = new StringBuilder()
+            .Append(node.Identifier.WithoutTrivia().ToString())
+            .Append(".")
+            .Append(hintName)
+            .Replace('=', '-')
+            .Replace('+', '-')
+            .Replace('/', '-')
+            .Replace('\\', '-')
+            .Replace('<', '-')
+            .Replace('>', '-')
+            .Replace('{', '-')
+            .Replace('}', '-')
+            .ToString();
+
+        var result = name;
+        var index = 0;
+        while (!_generatedNames.Add(result))
         {
-            _executionContext = executionContext;
-            Compilation = compilation;
-            _generatedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            index++;
+            result = name + index.ToString(CultureInfo.InvariantCulture);
         }
 
-        public CancellationToken CancellationToken => _executionContext.CancellationToken;
-
-        public Compilation Compilation { get; }
-
-        public void ReportDiagnostic(Diagnostic diagnostic) => _executionContext.ReportDiagnostic(diagnostic);
-
-        public void AddOutput(ClassDeclarationSyntax node, string hintName, string source)
-        {
-            var fileName = GetOutputFileName(node, hintName);
-            var sourceText = SourceText.From(source, Encoding.UTF8);
-            _executionContext.AddSource(fileName, sourceText);
-        }
-
-        internal string GetOutputFileName(ClassDeclarationSyntax node, string hintName)
-        {
-            var name = new StringBuilder()
-                .Append(node.Identifier.WithoutTrivia().ToString())
-                .Append(".")
-                .Append(hintName)
-                .Replace('=', '-')
-                .Replace('+', '-')
-                .Replace('/', '-')
-                .Replace('\\', '-')
-                .Replace('<', '-')
-                .Replace('>', '-')
-                .Replace('{', '-')
-                .Replace('}', '-')
-                .ToString();
-
-            var result = name;
-            var index = 0;
-            while (!_generatedNames.Add(result))
-            {
-                index++;
-                result = name + index.ToString(CultureInfo.InvariantCulture);
-            }
-
-            return result + ".g.cs";
-        }
+        return result + ".g.cs";
     }
 }

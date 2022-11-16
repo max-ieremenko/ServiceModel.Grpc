@@ -21,42 +21,41 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger
+namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger;
+
+internal sealed class ApiDescriptionAdapter : IApiDescriptionAdapter
 {
-    internal sealed class ApiDescriptionAdapter : IApiDescriptionAdapter
+    private readonly IApiDescriptionGroupCollectionProvider _apiDescriptionProvider;
+
+    public ApiDescriptionAdapter(IApiDescriptionGroupCollectionProvider apiDescriptionProvider)
     {
-        private readonly IApiDescriptionGroupCollectionProvider _apiDescriptionProvider;
+        _apiDescriptionProvider = apiDescriptionProvider;
+    }
 
-        public ApiDescriptionAdapter(IApiDescriptionGroupCollectionProvider apiDescriptionProvider)
+    public ApiDescription? FindApiDescription(string requestPath)
+    {
+        var path = ProtocolConstants.NormalizeRelativePath(requestPath);
+
+        var groups = _apiDescriptionProvider.ApiDescriptionGroups.Items;
+
+        for (var i = 0; i < groups.Count; i++)
         {
-            _apiDescriptionProvider = apiDescriptionProvider;
-        }
-
-        public ApiDescription? FindApiDescription(string requestPath)
-        {
-            var path = ProtocolConstants.NormalizeRelativePath(requestPath);
-
-            var groups = _apiDescriptionProvider.ApiDescriptionGroups.Items;
-
-            for (var i = 0; i < groups.Count; i++)
+            var group = groups[i];
+            for (var j = 0; j < group.Items.Count; j++)
             {
-                var group = groups[i];
-                for (var j = 0; j < group.Items.Count; j++)
+                var item = group.Items[j];
+                if (string.Equals(item.RelativePath, path, StringComparison.OrdinalIgnoreCase))
                 {
-                    var item = group.Items[j];
-                    if (string.Equals(item.RelativePath, path, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return item.ActionDescriptor is GrpcActionDescriptor ? item : null;
-                    }
+                    return item.ActionDescriptor is GrpcActionDescriptor ? item : null;
                 }
             }
-
-            return null;
         }
 
-        public IMethod? GetMethod(HttpContext context)
-        {
-            return context.GetEndpoint()?.Metadata.GetMetadata<GrpcMethodMetadata>()?.Method;
-        }
+        return null;
+    }
+
+    public IMethod? GetMethod(HttpContext context)
+    {
+        return context.GetEndpoint()?.Metadata.GetMetadata<GrpcMethodMetadata>()?.Method;
     }
 }

@@ -16,27 +16,26 @@
 
 using System;
 
-namespace ServiceModel.Grpc.Internal
+namespace ServiceModel.Grpc.Internal;
+
+internal static class ServiceProviderExtensions
 {
-    internal static class ServiceProviderExtensions
+    public static object GetServiceRequired(this IServiceProvider provider, Type serviceType)
     {
-        public static object GetServiceRequired(this IServiceProvider provider, Type serviceType)
+        provider.AssertNotNull(nameof(provider));
+        serviceType.AssertNotNull(nameof(serviceType));
+
+        var service = provider.GetService(serviceType);
+        if (service == null)
         {
-            provider.AssertNotNull(nameof(provider));
-            serviceType.AssertNotNull(nameof(serviceType));
-
-            var service = provider.GetService(serviceType);
-            if (service == null)
-            {
-                throw new InvalidOperationException("No service for type '{0}' has been registered.".FormatWith(serviceType.FullName));
-            }
-
-            return service;
+            throw new InvalidOperationException("No service for type '{0}' has been registered.".FormatWith(serviceType.FullName));
         }
 
-        public static TService GetServiceRequired<TService>(this IServiceProvider provider)
-        {
-            return (TService)GetServiceRequired(provider, typeof(TService));
-        }
+        return service;
+    }
+
+    public static TService GetServiceRequired<TService>(this IServiceProvider provider)
+    {
+        return (TService)GetServiceRequired(provider, typeof(TService));
     }
 }

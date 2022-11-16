@@ -16,58 +16,57 @@
 
 using ServiceModel.Grpc.Client;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
+
+internal sealed class CSharpClientFactoryExtensionBuilder : CodeGeneratorBase
 {
-    internal sealed class CSharpClientFactoryExtensionBuilder : CodeGeneratorBase
+    private readonly ContractDescription _contract;
+    private readonly bool _isStaticClass;
+
+    public CSharpClientFactoryExtensionBuilder(ContractDescription contract, bool isStaticClass)
     {
-        private readonly ContractDescription _contract;
-        private readonly bool _isStaticClass;
+        _contract = contract;
+        _isStaticClass = isStaticClass;
+    }
 
-        public CSharpClientFactoryExtensionBuilder(ContractDescription contract, bool isStaticClass)
+    public override string GetGeneratedMemberName() => "Add" + _contract.ClientClassName;
+
+    protected override void Generate()
+    {
+        WriteMetadata();
+        Output
+            .Append("public static ")
+            .AppendType(typeof(IClientFactory))
+            .Append(" ")
+            .Append(GetGeneratedMemberName())
+            .Append("(");
+
+        if (_isStaticClass)
         {
-            _contract = contract;
-            _isStaticClass = isStaticClass;
+            Output.Append("this ");
         }
 
-        public override string GetGeneratedMemberName() => "Add" + _contract.ClientClassName;
+        Output
+            .AppendType(typeof(IClientFactory))
+            .Append(" clientFactory, Action<")
+            .AppendType(typeof(ServiceModelGrpcClientOptions))
+            .AppendLine("> configure = null)")
+            .AppendLine("{");
 
-        protected override void Generate()
+        using (Output.Indent())
         {
-            WriteMetadata();
-            Output
-                .Append("public static ")
-                .AppendType(typeof(IClientFactory))
-                .Append(" ")
-                .Append(GetGeneratedMemberName())
-                .Append("(");
-
-            if (_isStaticClass)
-            {
-                Output.Append("this ");
-            }
+            Output.AppendArgumentNullException("clientFactory");
 
             Output
-                .AppendType(typeof(IClientFactory))
-                .Append(" clientFactory, Action<")
-                .AppendType(typeof(ServiceModelGrpcClientOptions))
-                .AppendLine("> configure = null)")
-                .AppendLine("{");
+                .Append("clientFactory.")
+                .Append(nameof(IClientFactory.AddClient))
+                .Append("(new ")
+                .Append(_contract.ClientBuilderClassName)
+                .AppendLine("(), configure);");
 
-            using (Output.Indent())
-            {
-                Output.AppendArgumentNullException("clientFactory");
-
-                Output
-                    .Append("clientFactory.")
-                    .Append(nameof(IClientFactory.AddClient))
-                    .Append("(new ")
-                    .Append(_contract.ClientBuilderClassName)
-                    .AppendLine("(), configure);");
-
-                Output.AppendLine("return clientFactory;");
-            }
-
-            Output.AppendLine("}");
+            Output.AppendLine("return clientFactory;");
         }
+
+        Output.AppendLine("}");
     }
 }

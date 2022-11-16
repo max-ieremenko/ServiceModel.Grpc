@@ -16,16 +16,15 @@
 
 using ServiceModel.Grpc.Interceptors;
 
-namespace ServiceModel.Grpc.TestApi.Domain
+namespace ServiceModel.Grpc.TestApi.Domain;
+
+public sealed class ClientErrorHandler : ClientErrorHandlerBase
 {
-    public sealed class ClientErrorHandler : ClientErrorHandlerBase
+    protected override void ThrowOrIgnoreCore(ClientCallInterceptorContext context, ClientFaultDetail detail)
     {
-        protected override void ThrowOrIgnoreCore(ClientCallInterceptorContext context, ClientFaultDetail detail)
+        if (detail.Detail is ExceptionDetail error)
         {
-            if (detail.Detail is ExceptionDetail error)
-            {
-                throw new ServerException(error, detail.OriginalError);
-            }
+            throw new ServerException(error, detail.OriginalError);
         }
     }
 }

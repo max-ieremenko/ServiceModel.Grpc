@@ -18,67 +18,66 @@ using System;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Internal.IO
+namespace ServiceModel.Grpc.Internal.IO;
+
+[TestFixture]
+public class BufferWriterStreamTest
 {
-    [TestFixture]
-    public class BufferWriterStreamTest
+    private BufferWriter<byte> _writer = null!;
+    private BufferWriterStream _sut = null!;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private BufferWriter<byte> _writer = null!;
-        private BufferWriterStream _sut = null!;
+        _writer = new BufferWriter<byte>(1);
+        _sut = new BufferWriterStream(_writer);
+    }
 
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            _writer = new BufferWriter<byte>(1);
-            _sut = new BufferWriterStream(_writer);
-        }
+    [TearDown]
+    public void AfterEachTest()
+    {
+        _sut.Dispose();
+        _writer.Dispose();
+    }
 
-        [TearDown]
-        public void AfterEachTest()
-        {
-            _sut.Dispose();
-            _writer.Dispose();
-        }
+    [Test]
+    [TestCase(new byte[] { 1, 2, 3 }, 0, 3, new byte[] { 1, 2, 3 })]
+    [TestCase(new byte[] { 1, 2, 3 }, 1, 2, new byte[] { 2, 3 })]
+    [TestCase(new byte[] { 1, 2, 3 }, 0, 0, new byte[0])]
+    [TestCase(new byte[] { 1, 2, 3 }, 2, 1, new byte[] { 3 })]
+    public void Write(byte[] buffer, int offset, int count, byte[] expected)
+    {
+        _sut.Write(buffer, offset, count);
 
-        [Test]
-        [TestCase(new byte[] { 1, 2, 3 }, 0, 3, new byte[] { 1, 2, 3 })]
-        [TestCase(new byte[] { 1, 2, 3 }, 1, 2, new byte[] { 2, 3 })]
-        [TestCase(new byte[] { 1, 2, 3 }, 0, 0, new byte[0])]
-        [TestCase(new byte[] { 1, 2, 3 }, 2, 1, new byte[] { 3 })]
-        public void Write(byte[] buffer, int offset, int count, byte[] expected)
-        {
-            _sut.Write(buffer, offset, count);
-
-            var actual = _writer.ToArray();
-            actual.Length.ShouldBe(expected.Length);
-            actual.ShouldBe(expected);
-        }
+        var actual = _writer.ToArray();
+        actual.Length.ShouldBe(expected.Length);
+        actual.ShouldBe(expected);
+    }
 
 #if !NET461
-        [Test]
-        [TestCase(new byte[] { 1, 2, 3 }, 0, 3, new byte[] { 1, 2, 3 })]
-        [TestCase(new byte[] { 1, 2, 3 }, 1, 2, new byte[] { 2, 3 })]
-        [TestCase(new byte[] { 1, 2, 3 }, 0, 0, new byte[0])]
-        [TestCase(new byte[] { 1, 2, 3 }, 2, 1, new byte[] { 3 })]
-        public void WriteSpan(byte[] buffer, int offset, int count, byte[] expected)
-        {
-            var span = new ReadOnlySpan<byte>(buffer, offset, count);
-            _sut.Write(span);
+    [Test]
+    [TestCase(new byte[] { 1, 2, 3 }, 0, 3, new byte[] { 1, 2, 3 })]
+    [TestCase(new byte[] { 1, 2, 3 }, 1, 2, new byte[] { 2, 3 })]
+    [TestCase(new byte[] { 1, 2, 3 }, 0, 0, new byte[0])]
+    [TestCase(new byte[] { 1, 2, 3 }, 2, 1, new byte[] { 3 })]
+    public void WriteSpan(byte[] buffer, int offset, int count, byte[] expected)
+    {
+        var span = new ReadOnlySpan<byte>(buffer, offset, count);
+        _sut.Write(span);
 
-            var actual = _writer.ToArray();
-            actual.Length.ShouldBe(expected.Length);
-            actual.ShouldBe(expected);
-        }
+        var actual = _writer.ToArray();
+        actual.Length.ShouldBe(expected.Length);
+        actual.ShouldBe(expected);
+    }
 #endif
 
-        [Test]
-        public void WriteByte()
-        {
-            _sut.WriteByte(1);
+    [Test]
+    public void WriteByte()
+    {
+        _sut.WriteByte(1);
 
-            var actual = _writer.ToArray();
-            actual.Length.ShouldBe(1);
-            actual.ShouldBe(new byte[] { 1 });
-        }
+        var actual = _writer.ToArray();
+        actual.Length.ShouldBe(1);
+        actual.ShouldBe(new byte[] { 1 });
     }
 }

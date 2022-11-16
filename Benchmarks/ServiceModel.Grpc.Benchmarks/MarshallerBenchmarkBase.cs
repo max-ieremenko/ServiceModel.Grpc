@@ -20,57 +20,56 @@ using ServiceModel.Grpc.Benchmarks.Domain;
 using ServiceModel.Grpc.Benchmarks.MarshallerTest;
 using ServiceModel.Grpc.Channel;
 
-namespace ServiceModel.Grpc.Benchmarks
+namespace ServiceModel.Grpc.Benchmarks;
+
+[Config(typeof(BenchmarkConfig))]
+public abstract class MarshallerBenchmarkBase
 {
-    [Config(typeof(BenchmarkConfig))]
-    public abstract class MarshallerBenchmarkBase
+    private StubSerializationContext _serializationContext;
+    private StubDeserializationContext _deserializationContext;
+
+    private Marshaller<Message<SomeObject>> _asStreamMarshaller;
+    private Marshaller<Message<SomeObject>> _defaultMarshaller;
+    private Message<SomeObject> _payload;
+
+    [GlobalSetup]
+    public void GlobalSetup()
     {
-        private StubSerializationContext _serializationContext;
-        private StubDeserializationContext _deserializationContext;
+        _asStreamMarshaller = CreateStreamMarshaller<Message<SomeObject>>();
+        _defaultMarshaller = CreateDefaultMarshaller<Message<SomeObject>>();
+        _payload = new Message<SomeObject>(DomainExtensions.CreateSomeObject());
 
-        private Marshaller<Message<SomeObject>> _asStreamMarshaller;
-        private Marshaller<Message<SomeObject>> _defaultMarshaller;
-        private Message<SomeObject> _payload;
-
-        [GlobalSetup]
-        public void GlobalSetup()
-        {
-            _asStreamMarshaller = CreateStreamMarshaller<Message<SomeObject>>();
-            _defaultMarshaller = CreateDefaultMarshaller<Message<SomeObject>>();
-            _payload = new Message<SomeObject>(DomainExtensions.CreateSomeObject());
-
-            _serializationContext = new StubSerializationContext();
-            _deserializationContext = new StubDeserializationContext(Serialize(_payload));
-        }
-
-        [Benchmark]
-        public void DefaultSerializer()
-        {
-            _defaultMarshaller.ContextualSerializer(_payload, _serializationContext);
-        }
-
-        [Benchmark]
-        public void DefaultDeserializer()
-        {
-            _defaultMarshaller.ContextualDeserializer(_deserializationContext);
-        }
-
-        [Benchmark]
-        public void StreamSerializer()
-        {
-            _asStreamMarshaller.ContextualSerializer(_payload, _serializationContext);
-        }
-
-        [Benchmark]
-        public void StreamDeserializer()
-        {
-            _asStreamMarshaller.ContextualDeserializer(_deserializationContext);
-        }
-
-        internal abstract Marshaller<T> CreateDefaultMarshaller<T>();
-
-        internal abstract Marshaller<T> CreateStreamMarshaller<T>();
-
-        internal abstract byte[] Serialize<T>(T value);
+        _serializationContext = new StubSerializationContext();
+        _deserializationContext = new StubDeserializationContext(Serialize(_payload));
     }
+
+    [Benchmark]
+    public void DefaultSerializer()
+    {
+        _defaultMarshaller.ContextualSerializer(_payload, _serializationContext);
+    }
+
+    [Benchmark]
+    public void DefaultDeserializer()
+    {
+        _defaultMarshaller.ContextualDeserializer(_deserializationContext);
+    }
+
+    [Benchmark]
+    public void StreamSerializer()
+    {
+        _asStreamMarshaller.ContextualSerializer(_payload, _serializationContext);
+    }
+
+    [Benchmark]
+    public void StreamDeserializer()
+    {
+        _asStreamMarshaller.ContextualDeserializer(_deserializationContext);
+    }
+
+    internal abstract Marshaller<T> CreateDefaultMarshaller<T>();
+
+    internal abstract Marshaller<T> CreateStreamMarshaller<T>();
+
+    internal abstract byte[] Serialize<T>(T value);
 }

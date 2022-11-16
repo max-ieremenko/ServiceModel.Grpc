@@ -18,30 +18,29 @@ using System.Collections.Generic;
 using System.ServiceModel;
 using System.Threading.Tasks;
 
-namespace ServiceModel.Grpc.TestApi.Domain
+namespace ServiceModel.Grpc.TestApi.Domain;
+
+[ServiceContract]
+public interface IHeadersService
 {
-    [ServiceContract]
-    public interface IHeadersService
-    {
-        [OperationContract]
-        void UnaryCall(CallContext context);
+    [OperationContract]
+    void UnaryCall(CallContext context);
 
-        [OperationContract]
-        Task UnaryCallAsync(CallContext context);
+    [OperationContract]
+    Task UnaryCallAsync(CallContext context);
 
-        [OperationContract]
-        IAsyncEnumerable<int> ServerStreamingCall(CallContext context);
+    [OperationContract]
+    IAsyncEnumerable<int> ServerStreamingCall(CallContext context);
 
-        [OperationContract]
-        Task<IAsyncEnumerable<int>> ServerStreamingCallAsync(CallContext context);
+    [OperationContract]
+    Task<IAsyncEnumerable<int>> ServerStreamingCallAsync(CallContext context);
 
-        [OperationContract]
-        Task ClientStreamingCall(IAsyncEnumerable<int> stream, CallContext context);
+    [OperationContract]
+    Task ClientStreamingCall(IAsyncEnumerable<int> stream, CallContext context);
 
-        [OperationContract]
-        IAsyncEnumerable<int> DuplexStreamingCall(IAsyncEnumerable<int> stream, CallContext context);
+    [OperationContract]
+    IAsyncEnumerable<int> DuplexStreamingCall(IAsyncEnumerable<int> stream, CallContext context);
 
-        [OperationContract]
-        Task<IAsyncEnumerable<int>> DuplexStreamingCallAsync(IAsyncEnumerable<int> stream, CallContext context);
-    }
+    [OperationContract]
+    Task<IAsyncEnumerable<int>> DuplexStreamingCallAsync(IAsyncEnumerable<int> stream, CallContext context);
 }

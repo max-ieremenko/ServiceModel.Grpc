@@ -21,25 +21,24 @@ using ServiceModel.Grpc.AspNetCore.TestApi;
 using ServiceModel.Grpc.AspNetCore.TestApi.Domain;
 using ServiceModel.Grpc.TestApi;
 
-namespace ServiceModel.Grpc.AspNetCore
+namespace ServiceModel.Grpc.AspNetCore;
+
+[TestFixture(GrpcChannelType.GrpcCore)]
+[TestFixture(GrpcChannelType.GrpcDotNet)]
+public class AspNetCoreAuthenticationTest : AspNetCoreAuthenticationTestBase
 {
-    [TestFixture(GrpcChannelType.GrpcCore)]
-    [TestFixture(GrpcChannelType.GrpcDotNet)]
-    public class AspNetCoreAuthenticationTest : AspNetCoreAuthenticationTestBase
+    private readonly GrpcChannelType _channelType;
+
+    public AspNetCoreAuthenticationTest(GrpcChannelType channelType)
     {
-        private readonly GrpcChannelType _channelType;
+        _channelType = channelType;
+    }
 
-        public AspNetCoreAuthenticationTest(GrpcChannelType channelType)
-        {
-            _channelType = channelType;
-        }
-
-        protected override void ConfigureKestrelHost(KestrelHost host)
-        {
-            host
-                .WithChannelType(_channelType)
-                .ConfigureServices(services => services.AddTransient<IServiceWithAuthentication, ServiceWithAuthentication>())
-                .ConfigureEndpoints(endpoints => endpoints.MapGrpcService<IServiceWithAuthentication>());
-        }
+    protected override void ConfigureKestrelHost(KestrelHost host)
+    {
+        host
+            .WithChannelType(_channelType)
+            .ConfigureServices(services => services.AddTransient<IServiceWithAuthentication, ServiceWithAuthentication>())
+            .ConfigureEndpoints(endpoints => endpoints.MapGrpcService<IServiceWithAuthentication>());
     }
 }

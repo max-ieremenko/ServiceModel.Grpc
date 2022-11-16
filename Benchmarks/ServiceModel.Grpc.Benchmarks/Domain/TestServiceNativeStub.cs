@@ -17,13 +17,12 @@
 using System.Threading.Tasks;
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Benchmarks.Domain
+namespace ServiceModel.Grpc.Benchmarks.Domain;
+
+internal sealed class TestServiceNativeStub : TestServiceNative.TestServiceNativeBase
 {
-    internal sealed class TestServiceNativeStub : TestServiceNative.TestServiceNativeBase
+    public override Task<SomeObjectProto> PingPong(SomeObjectProto request, ServerCallContext context)
     {
-        public override Task<SomeObjectProto> PingPong(SomeObjectProto request, ServerCallContext context)
-        {
-            return Task.FromResult(request);
-        }
+        return Task.FromResult(request);
     }
 }

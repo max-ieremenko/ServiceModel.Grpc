@@ -24,45 +24,44 @@ using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 using GrpcChannel = Grpc.Core.Channel;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Test.SelfHost
+namespace ServiceModel.Grpc.DesignTime.Generator.Test.SelfHost;
+
+[TestFixture]
+public class MockedFilteredServiceTest : MockedFilteredServiceTestBase
 {
-    [TestFixture]
-    public class MockedFilteredServiceTest : MockedFilteredServiceTestBase
+    private const int Port = 8080;
+    private Server _server = null!;
+    private GrpcChannel _channel = null!;
+
+    [OneTimeSetUp]
+    public void BeforeAll()
     {
-        private const int Port = 8080;
-        private Server _server = null!;
-        private GrpcChannel _channel = null!;
-
-        [OneTimeSetUp]
-        public void BeforeAll()
+        _server = new Server
         {
-            _server = new Server
+            Ports = { new ServerPort("localhost", Port, ServerCredentials.Insecure) }
+        };
+
+        _server.Services.AddTrackedFilteredService(
+            new TrackedFilteredService(),
+            options =>
             {
-                Ports = { new ServerPort("localhost", Port, ServerCredentials.Insecure) }
-            };
+                options.ServiceProvider = new Mock<IServiceProvider>().Object;
+                options.Filters.Add(1, _ => new MockServerFilter());
+            });
 
-            _server.Services.AddTrackedFilteredService(
-                new TrackedFilteredService(),
-                options =>
-                {
-                    options.ServiceProvider = new Mock<IServiceProvider>().Object;
-                    options.Filters.Add(1, _ => new MockServerFilter());
-                });
+        var clientFactory = new ClientFactory();
+        clientFactory.AddFilteredServiceClient();
 
-            var clientFactory = new ClientFactory();
-            clientFactory.AddFilteredServiceClient();
+        _channel = new GrpcChannel("localhost", Port, ChannelCredentials.Insecure);
+        DomainService = clientFactory.CreateClient<IFilteredService>(_channel);
 
-            _channel = new GrpcChannel("localhost", Port, ChannelCredentials.Insecure);
-            DomainService = clientFactory.CreateClient<IFilteredService>(_channel);
+        _server.Start();
+    }
 
-            _server.Start();
-        }
-
-        [OneTimeTearDown]
-        public async Task AfterAll()
-        {
-            await _channel.ShutdownAsync().ConfigureAwait(false);
-            await _server.ShutdownAsync().ConfigureAwait(false);
-        }
+    [OneTimeTearDown]
+    public async Task AfterAll()
+    {
+        await _channel.ShutdownAsync().ConfigureAwait(false);
+        await _server.ShutdownAsync().ConfigureAwait(false);
     }
 }

@@ -18,41 +18,40 @@ using Grpc.Core;
 using MessagePack;
 using ServiceModel.Grpc.Configuration;
 
-namespace ServiceModel.Grpc.Benchmarks.MarshallerTest
+namespace ServiceModel.Grpc.Benchmarks.MarshallerTest;
+
+internal static class MessagePackTest
 {
-    internal static class MessagePackTest
+    public static Marshaller<T> CreateDefaultMarshaller<T>() => new Marshaller<T>(SerializeDefault, DeserializeDefault<T>);
+
+    public static Marshaller<T> CreateStreamMarshaller<T>() => new Marshaller<T>(SerializeStream, DeserializeStream<T>);
+
+    private static void SerializeStream<T>(T value, SerializationContext context)
     {
-        public static Marshaller<T> CreateDefaultMarshaller<T>() => new Marshaller<T>(SerializeDefault, DeserializeDefault<T>);
-
-        public static Marshaller<T> CreateStreamMarshaller<T>() => new Marshaller<T>(SerializeStream, DeserializeStream<T>);
-
-        private static void SerializeStream<T>(T value, SerializationContext context)
+        using (var stream = context.AsStream())
         {
-            using (var stream = context.AsStream())
-            {
-                MessagePackSerializer.Serialize(stream, value);
-            }
-
-            context.Complete();
+            MessagePackSerializer.Serialize(stream, value);
         }
 
-        private static T DeserializeStream<T>(DeserializationContext context)
-        {
-            using (var stream = context.AsStream())
-            {
-                return MessagePackSerializer.Deserialize<T>(stream);
-            }
-        }
+        context.Complete();
+    }
 
-        private static void SerializeDefault<T>(T value, SerializationContext context)
+    private static T DeserializeStream<T>(DeserializationContext context)
+    {
+        using (var stream = context.AsStream())
         {
-            MessagePackSerializer.Serialize(context.GetBufferWriter(), value, MessagePackSerializer.DefaultOptions);
-            context.Complete();
+            return MessagePackSerializer.Deserialize<T>(stream);
         }
+    }
 
-        private static T DeserializeDefault<T>(DeserializationContext context)
-        {
-            return MessagePackSerializer.Deserialize<T>(context.PayloadAsReadOnlySequence(), MessagePackSerializer.DefaultOptions);
-        }
+    private static void SerializeDefault<T>(T value, SerializationContext context)
+    {
+        MessagePackSerializer.Serialize(context.GetBufferWriter(), value, MessagePackSerializer.DefaultOptions);
+        context.Complete();
+    }
+
+    private static T DeserializeDefault<T>(DeserializationContext context)
+    {
+        return MessagePackSerializer.Deserialize<T>(context.PayloadAsReadOnlySequence(), MessagePackSerializer.DefaultOptions);
     }
 }

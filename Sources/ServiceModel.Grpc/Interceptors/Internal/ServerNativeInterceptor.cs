@@ -19,91 +19,90 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 
-namespace ServiceModel.Grpc.Interceptors.Internal
+namespace ServiceModel.Grpc.Interceptors.Internal;
+
+internal sealed class ServerNativeInterceptor : Interceptor
 {
-    internal sealed class ServerNativeInterceptor : Interceptor
+    private readonly IServerCallInterceptor _interceptor;
+
+    public ServerNativeInterceptor(IServiceProvider serviceProvider, IServerCallInterceptorFactory callInterceptorFactory)
     {
-        private readonly IServerCallInterceptor _interceptor;
+        serviceProvider.AssertNotNull(nameof(serviceProvider));
+        callInterceptorFactory.AssertNotNull(nameof(callInterceptorFactory));
 
-        public ServerNativeInterceptor(IServiceProvider serviceProvider, IServerCallInterceptorFactory callInterceptorFactory)
+        _interceptor = callInterceptorFactory.CreateInterceptor(serviceProvider);
+    }
+
+    internal ServerNativeInterceptor(IServerCallInterceptor interceptor)
+    {
+        interceptor.AssertNotNull(nameof(interceptor));
+
+        _interceptor = interceptor;
+    }
+
+    public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(
+        TRequest request,
+        ServerCallContext context,
+        UnaryServerMethod<TRequest, TResponse> continuation)
+    {
+        try
         {
-            serviceProvider.AssertNotNull(nameof(serviceProvider));
-            callInterceptorFactory.AssertNotNull(nameof(callInterceptorFactory));
-
-            _interceptor = callInterceptorFactory.CreateInterceptor(serviceProvider);
+            return await base.UnaryServerHandler(request, context, continuation).ConfigureAwait(false);
         }
-
-        internal ServerNativeInterceptor(IServerCallInterceptor interceptor)
+        catch (Exception ex)
         {
-            interceptor.AssertNotNull(nameof(interceptor));
-
-            _interceptor = interceptor;
+            _interceptor.OnError(new ServerCallInterceptorContext(context), ex);
+            throw;
         }
+    }
 
-        public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(
-            TRequest request,
-            ServerCallContext context,
-            UnaryServerMethod<TRequest, TResponse> continuation)
+    public override async Task<TResponse> ClientStreamingServerHandler<TRequest, TResponse>(
+        IAsyncStreamReader<TRequest> requestStream,
+        ServerCallContext context,
+        ClientStreamingServerMethod<TRequest, TResponse> continuation)
+    {
+        try
         {
-            try
-            {
-                return await base.UnaryServerHandler(request, context, continuation).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                _interceptor.OnError(new ServerCallInterceptorContext(context), ex);
-                throw;
-            }
+            return await base.ClientStreamingServerHandler(requestStream, context, continuation).ConfigureAwait(false);
         }
-
-        public override async Task<TResponse> ClientStreamingServerHandler<TRequest, TResponse>(
-            IAsyncStreamReader<TRequest> requestStream,
-            ServerCallContext context,
-            ClientStreamingServerMethod<TRequest, TResponse> continuation)
+        catch (Exception ex)
         {
-            try
-            {
-                return await base.ClientStreamingServerHandler(requestStream, context, continuation).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                _interceptor.OnError(new ServerCallInterceptorContext(context), ex);
-                throw;
-            }
+            _interceptor.OnError(new ServerCallInterceptorContext(context), ex);
+            throw;
         }
+    }
 
-        public override async Task ServerStreamingServerHandler<TRequest, TResponse>(
-            TRequest request,
-            IServerStreamWriter<TResponse> responseStream,
-            ServerCallContext context,
-            ServerStreamingServerMethod<TRequest, TResponse> continuation)
+    public override async Task ServerStreamingServerHandler<TRequest, TResponse>(
+        TRequest request,
+        IServerStreamWriter<TResponse> responseStream,
+        ServerCallContext context,
+        ServerStreamingServerMethod<TRequest, TResponse> continuation)
+    {
+        try
         {
-            try
-            {
-                await base.ServerStreamingServerHandler(request, responseStream, context, continuation).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                _interceptor.OnError(new ServerCallInterceptorContext(context), ex);
-                throw;
-            }
+            await base.ServerStreamingServerHandler(request, responseStream, context, continuation).ConfigureAwait(false);
         }
-
-        public override async Task DuplexStreamingServerHandler<TRequest, TResponse>(
-            IAsyncStreamReader<TRequest> requestStream,
-            IServerStreamWriter<TResponse> responseStream,
-            ServerCallContext context,
-            DuplexStreamingServerMethod<TRequest, TResponse> continuation)
+        catch (Exception ex)
         {
-            try
-            {
-                await base.DuplexStreamingServerHandler(requestStream, responseStream, context, continuation).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                _interceptor.OnError(new ServerCallInterceptorContext(context), ex);
-                throw;
-            }
+            _interceptor.OnError(new ServerCallInterceptorContext(context), ex);
+            throw;
+        }
+    }
+
+    public override async Task DuplexStreamingServerHandler<TRequest, TResponse>(
+        IAsyncStreamReader<TRequest> requestStream,
+        IServerStreamWriter<TResponse> responseStream,
+        ServerCallContext context,
+        DuplexStreamingServerMethod<TRequest, TResponse> continuation)
+    {
+        try
+        {
+            await base.DuplexStreamingServerHandler(requestStream, responseStream, context, continuation).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _interceptor.OnError(new ServerCallInterceptorContext(context), ex);
+            throw;
         }
     }
 }

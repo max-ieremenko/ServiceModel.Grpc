@@ -17,33 +17,32 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace ServiceModel.Grpc.TestApi.Domain
+namespace ServiceModel.Grpc.TestApi.Domain;
+
+[DataContract]
+public class DomainObjectSerializationFail
 {
-    [DataContract]
-    public class DomainObjectSerializationFail
+    [DataMember]
+    public string? OnDeserializedError { get; set; }
+
+    [DataMember]
+    public string? OnSerializedError { get; set; }
+
+    [OnDeserialized]
+    private void OnDeserialized(StreamingContext context)
     {
-        [DataMember]
-        public string? OnDeserializedError { get; set; }
-
-        [DataMember]
-        public string? OnSerializedError { get; set; }
-
-        [OnDeserialized]
-        private void OnDeserialized(StreamingContext context)
+        if (!string.IsNullOrEmpty(OnDeserializedError))
         {
-            if (!string.IsNullOrEmpty(OnDeserializedError))
-            {
-                throw new ApplicationException(OnDeserializedError);
-            }
+            throw new ApplicationException(OnDeserializedError);
         }
+    }
 
-        [OnSerialized]
-        private void OnSerialized(StreamingContext context)
+    [OnSerialized]
+    private void OnSerialized(StreamingContext context)
+    {
+        if (!string.IsNullOrEmpty(OnSerializedError))
         {
-            if (!string.IsNullOrEmpty(OnSerializedError))
-            {
-                throw new ApplicationException(OnSerializedError);
-            }
+            throw new ApplicationException(OnSerializedError);
         }
     }
 }

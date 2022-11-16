@@ -20,41 +20,40 @@ using ServiceModel.Grpc.AspNetCore.TestApi;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Test.AspNetCore
+namespace ServiceModel.Grpc.DesignTime.Generator.Test.AspNetCore;
+
+[TestFixture]
+[ExportGrpcService(typeof(MultipurposeService), GenerateAspNetExtensions = true)]
+public partial class MultipurposeServiceTest : MultipurposeServiceTestBase
 {
-    [TestFixture]
-    [ExportGrpcService(typeof(MultipurposeService), GenerateAspNetExtensions = true)]
-    public partial class MultipurposeServiceTest : MultipurposeServiceTestBase
+    private KestrelHost _host = null!;
+
+    [OneTimeSetUp]
+    public async Task BeforeAll()
     {
-        private KestrelHost _host = null!;
+        _host = new KestrelHost()
+            .ConfigureServices(services =>
+            {
+                AddMultipurposeServiceOptions(
+                    services,
+                    o =>
+                    {
+                    });
+            })
+            .ConfigureEndpoints(endpoints =>
+            {
+                MapMultipurposeService(endpoints);
+            });
 
-        [OneTimeSetUp]
-        public async Task BeforeAll()
-        {
-            _host = new KestrelHost()
-                .ConfigureServices(services =>
-                {
-                    AddMultipurposeServiceOptions(
-                        services,
-                        o =>
-                        {
-                        });
-                })
-                .ConfigureEndpoints(endpoints =>
-                {
-                    MapMultipurposeService(endpoints);
-                });
+        await _host.StartAsync().ConfigureAwait(false);
 
-            await _host.StartAsync().ConfigureAwait(false);
+        _host.ClientFactory.AddMultipurposeServiceClient();
+        DomainService = _host.ClientFactory.CreateClient<IMultipurposeService>(_host.Channel);
+    }
 
-            _host.ClientFactory.AddMultipurposeServiceClient();
-            DomainService = _host.ClientFactory.CreateClient<IMultipurposeService>(_host.Channel);
-        }
-
-        [OneTimeTearDown]
-        public async Task AfterAll()
-        {
-            await _host.DisposeAsync().ConfigureAwait(false);
-        }
+    [OneTimeTearDown]
+    public async Task AfterAll()
+    {
+        await _host.DisposeAsync().ConfigureAwait(false);
     }
 }

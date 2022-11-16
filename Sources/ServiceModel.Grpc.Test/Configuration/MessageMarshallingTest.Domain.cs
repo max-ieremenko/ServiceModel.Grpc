@@ -23,121 +23,120 @@ using Grpc.Core;
 using Newtonsoft.Json;
 using ProtoBuf;
 
-namespace ServiceModel.Grpc.Configuration
+namespace ServiceModel.Grpc.Configuration;
+
+public partial class MessageMarshallingTest
 {
-    public partial class MessageMarshallingTest
+    [DataContract]
+    public class Person
     {
-        [DataContract]
-        public class Person
-        {
-            [DataMember(Order = 1)]
-            public string? Name { get; set; }
+        [DataMember(Order = 1)]
+        public string? Name { get; set; }
 
-            [DataMember(Order = 2)]
-            public PersonAddress? Address { get; set; }
+        [DataMember(Order = 2)]
+        public PersonAddress? Address { get; set; }
+    }
+
+    [DataContract]
+    public class PersonAddress
+    {
+        [DataMember(Order = 1)]
+        public string? Street { get; set; }
+    }
+
+    [DataContract]
+    [KnownType(typeof(Sword))]
+    [KnownType(typeof(Knife))]
+    [ProtoInclude(3, typeof(Sword))]
+    [ProtoInclude(4, typeof(Knife))]
+    public abstract class Weapon
+    {
+        [DataMember(Order = 1)]
+        public int HitDamage { get; set; }
+    }
+
+    [DataContract]
+    public class Sword : Weapon
+    {
+        [DataMember(Order = 1)]
+        public int Length { get; set; }
+    }
+
+    [DataContract]
+    public class Knife : Weapon
+    {
+    }
+
+    [DataContract]
+    ////[KnownType(typeof(DynamicObject))]
+    public class DynamicObject
+    {
+        [DataMember(Order = 1)]
+        public List<object> Values { get; private set; } = new List<object>();
+    }
+
+    [Serializable]
+    public class TheContainer<T> : ISerializable
+    {
+        public TheContainer()
+        {
         }
 
-        [DataContract]
-        public class PersonAddress
+        public TheContainer(T value)
         {
-            [DataMember(Order = 1)]
-            public string? Street { get; set; }
+            Value = value;
         }
 
-        [DataContract]
-        [KnownType(typeof(Sword))]
-        [KnownType(typeof(Knife))]
-        [ProtoInclude(3, typeof(Sword))]
-        [ProtoInclude(4, typeof(Knife))]
-        public abstract class Weapon
+        private TheContainer(SerializationInfo info, StreamingContext context)
         {
-            [DataMember(Order = 1)]
-            public int HitDamage { get; set; }
+            Value = (T)info.GetValue(nameof(Value), typeof(T))!;
         }
 
-        [DataContract]
-        public class Sword : Weapon
+        public T Value { get; set; } = default!;
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            [DataMember(Order = 1)]
-            public int Length { get; set; }
+            info.AddValue(nameof(Value), Value);
         }
 
-        [DataContract]
-        public class Knife : Weapon
+        public override bool Equals(object? obj)
         {
-        }
-
-        [DataContract]
-        ////[KnownType(typeof(DynamicObject))]
-        public class DynamicObject
-        {
-            [DataMember(Order = 1)]
-            public List<object> Values { get; private set; } = new List<object>();
-        }
-
-        [Serializable]
-        public class TheContainer<T> : ISerializable
-        {
-            public TheContainer()
+            if (obj is TheContainer<T> other)
             {
+                return EqualityComparer<T>.Default.Equals(Value, other.Value);
             }
 
-            public TheContainer(T value)
-            {
-                Value = value;
-            }
-
-            private TheContainer(SerializationInfo info, StreamingContext context)
-            {
-                Value = (T)info.GetValue(nameof(Value), typeof(T))!;
-            }
-
-            public T Value { get; set; } = default!;
-
-            public void GetObjectData(SerializationInfo info, StreamingContext context)
-            {
-                info.AddValue(nameof(Value), Value);
-            }
-
-            public override bool Equals(object? obj)
-            {
-                if (obj is TheContainer<T> other)
-                {
-                    return EqualityComparer<T>.Default.Equals(Value, other.Value);
-                }
-
-                return false;
-            }
-
-            public override int GetHashCode() => Value == null ? 0 : Value.GetHashCode();
+            return false;
         }
 
-        public sealed class JsonMarshaller<T>
+        public override int GetHashCode() => Value == null ? 0 : Value.GetHashCode();
+    }
+
+    public sealed class JsonMarshaller<T>
+    {
+        public static readonly Marshaller<T> Default = new Marshaller<T>(Serialize, Deserialize);
+
+        private static byte[] Serialize(T value)
         {
-            public static readonly Marshaller<T> Default = new Marshaller<T>(Serialize, Deserialize);
-
-            private static byte[] Serialize(T value)
+            using (var buffer = new MemoryStream())
             {
-                using (var buffer = new MemoryStream())
-                {
-                    using (var writer = new StreamWriter(buffer, Encoding.Unicode, 1024, true))
-                    {
-                        var serializer = JsonSerializer.CreateDefault(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
-                        serializer.Serialize(writer, value);
-                    }
-
-                    return buffer.ToArray();
-                }
-            }
-
-            private static T Deserialize(byte[] value)
-            {
-                using (var buffer = new MemoryStream(value))
-                using (var reader = new JsonTextReader(new StreamReader(buffer)))
+                using (var writer = new StreamWriter(buffer, Encoding.Unicode, 1024, true))
                 {
                     var serializer = JsonSerializer.CreateDefault(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
-                    return serializer.Deserialize<T>(reader)!;
+                    serializer.Serialize(writer, value);
                 }
+
+                return buffer.ToArray();
+            }
+        }
+
+        private static T Deserialize(byte[] value)
+        {
+            using (var buffer = new MemoryStream(value))
+            using (var reader = new JsonTextReader(new StreamReader(buffer)))
+            {
+                var serializer = JsonSerializer.CreateDefault(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+                return serializer.Deserialize<T>(reader)!;
             }
         }
     }

@@ -16,10 +16,9 @@
 
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Interceptors.Internal
+namespace ServiceModel.Grpc.Interceptors.Internal;
+
+internal interface IClientCallInterceptor
 {
-    internal interface IClientCallInterceptor
-    {
-        void OnError(ClientCallInterceptorContext context, RpcException error);
-    }
+    void OnError(ClientCallInterceptorContext context, RpcException error);
 }

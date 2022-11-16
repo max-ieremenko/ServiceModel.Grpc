@@ -19,21 +19,20 @@ using Grpc.Core;
 using ProtoBuf.Meta;
 using ServiceModel.Grpc.Benchmarks.MarshallerTest;
 
-namespace ServiceModel.Grpc.Benchmarks
+namespace ServiceModel.Grpc.Benchmarks;
+
+public class ProtobufMarshallerBenchmark : MarshallerBenchmarkBase
 {
-    public class ProtobufMarshallerBenchmark : MarshallerBenchmarkBase
+    internal override Marshaller<T> CreateDefaultMarshaller<T>() => ProtobufTest.CreateDefaultMarshaller<T>();
+
+    internal override Marshaller<T> CreateStreamMarshaller<T>() => ProtobufTest.CreateStreamMarshaller<T>();
+
+    internal override byte[] Serialize<T>(T value)
     {
-        internal override Marshaller<T> CreateDefaultMarshaller<T>() => ProtobufTest.CreateDefaultMarshaller<T>();
-
-        internal override Marshaller<T> CreateStreamMarshaller<T>() => ProtobufTest.CreateStreamMarshaller<T>();
-
-        internal override byte[] Serialize<T>(T value)
+        using (var buffer = new MemoryStream())
         {
-            using (var buffer = new MemoryStream())
-            {
-                RuntimeTypeModel.Default.Serialize(buffer, value);
-                return buffer.ToArray();
-            }
+            RuntimeTypeModel.Default.Serialize(buffer, value);
+            return buffer.ToArray();
         }
     }
 }

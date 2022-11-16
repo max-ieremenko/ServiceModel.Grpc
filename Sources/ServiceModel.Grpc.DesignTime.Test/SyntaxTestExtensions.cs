@@ -18,44 +18,43 @@ using System;
 using Microsoft.CodeAnalysis;
 using Shouldly;
 
-namespace ServiceModel.Grpc.DesignTime
+namespace ServiceModel.Grpc.DesignTime;
+
+internal static class SyntaxTestExtensions
 {
-    internal static class SyntaxTestExtensions
+    public static INamedTypeSymbol GetTypeByMetadataName(this Compilation compilation, Type metadata)
     {
-        public static INamedTypeSymbol GetTypeByMetadataName(this Compilation compilation, Type metadata)
+        return (INamedTypeSymbol)GetTypeByMetadataNameCore(compilation, metadata);
+    }
+
+    private static ITypeSymbol GetTypeByMetadataNameCore(Compilation compilation, Type metadata)
+    {
+        ITypeSymbol? symbol;
+        if (metadata.IsGenericType && !metadata.IsGenericTypeDefinition)
         {
-            return (INamedTypeSymbol)GetTypeByMetadataNameCore(compilation, metadata);
+            var unbound = compilation.GetTypeByMetadataName(metadata.GetGenericTypeDefinition());
+            var unboundArgs = metadata.GetGenericArguments();
+
+            var args = new ITypeSymbol[unboundArgs.Length];
+            for (var i = 0; i < unboundArgs.Length; i++)
+            {
+                args[i] = GetTypeByMetadataNameCore(compilation, unboundArgs[i]);
+            }
+
+            symbol = unbound.Construct(args);
+        }
+        else if (metadata.IsArray)
+        {
+            var unbound = metadata.GetElementType()!;
+            var elementType = GetTypeByMetadataNameCore(compilation, unbound);
+            symbol = compilation.CreateArrayTypeSymbol(elementType, metadata.GetArrayRank());
+        }
+        else
+        {
+            symbol = compilation.GetTypeByMetadataName(metadata.FullName!);
         }
 
-        private static ITypeSymbol GetTypeByMetadataNameCore(Compilation compilation, Type metadata)
-        {
-            ITypeSymbol? symbol;
-            if (metadata.IsGenericType && !metadata.IsGenericTypeDefinition)
-            {
-                var unbound = compilation.GetTypeByMetadataName(metadata.GetGenericTypeDefinition());
-                var unboundArgs = metadata.GetGenericArguments();
-
-                var args = new ITypeSymbol[unboundArgs.Length];
-                for (var i = 0; i < unboundArgs.Length; i++)
-                {
-                    args[i] = GetTypeByMetadataNameCore(compilation, unboundArgs[i]);
-                }
-
-                symbol = unbound.Construct(args);
-            }
-            else if (metadata.IsArray)
-            {
-                var unbound = metadata.GetElementType()!;
-                var elementType = GetTypeByMetadataNameCore(compilation, unbound);
-                symbol = compilation.CreateArrayTypeSymbol(elementType, metadata.GetArrayRank());
-            }
-            else
-            {
-                symbol = compilation.GetTypeByMetadataName(metadata.FullName!);
-            }
-
-            symbol.ShouldNotBeNull();
-            return symbol;
-        }
+        symbol.ShouldNotBeNull();
+        return symbol;
     }
 }

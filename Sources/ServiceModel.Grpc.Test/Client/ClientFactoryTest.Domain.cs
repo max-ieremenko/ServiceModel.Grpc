@@ -19,32 +19,31 @@ using Grpc.Core;
 using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
 
-namespace ServiceModel.Grpc.Client
+namespace ServiceModel.Grpc.Client;
+
+public partial class ClientFactoryTest
 {
-    public partial class ClientFactoryTest
+    public interface ISomeContract
     {
-        public interface ISomeContract
+    }
+
+    private sealed class ManualClientBuilder : IClientBuilder<ISomeContract>
+    {
+        public IMarshallerFactory MarshallerFactory { get; private set; } = null!;
+
+        public Func<CallOptions>? DefaultCallOptionsFactory { get; private set; }
+
+        public Func<CallInvoker, ISomeContract> OnBuild { get; set; } = null!;
+
+        public void Initialize(IMarshallerFactory marshallerFactory, Func<CallOptions>? defaultCallOptionsFactory)
         {
+            MarshallerFactory = marshallerFactory;
+            DefaultCallOptionsFactory = defaultCallOptionsFactory;
         }
 
-        private sealed class ManualClientBuilder : IClientBuilder<ISomeContract>
+        public ISomeContract Build(CallInvoker callInvoker)
         {
-            public IMarshallerFactory MarshallerFactory { get; private set; } = null!;
-
-            public Func<CallOptions>? DefaultCallOptionsFactory { get; private set; }
-
-            public Func<CallInvoker, ISomeContract> OnBuild { get; set; } = null!;
-
-            public void Initialize(IMarshallerFactory marshallerFactory, Func<CallOptions>? defaultCallOptionsFactory)
-            {
-                MarshallerFactory = marshallerFactory;
-                DefaultCallOptionsFactory = defaultCallOptionsFactory;
-            }
-
-            public ISomeContract Build(CallInvoker callInvoker)
-            {
-                return OnBuild(callInvoker);
-            }
+            return OnBuild(callInvoker);
         }
     }
 }

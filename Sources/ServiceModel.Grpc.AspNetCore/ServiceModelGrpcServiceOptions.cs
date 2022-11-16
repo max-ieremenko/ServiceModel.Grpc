@@ -21,44 +21,43 @@ using ServiceModel.Grpc.Filters;
 using ServiceModel.Grpc.Interceptors;
 
 //// ReSharper disable CheckNamespace
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
 //// ReSharper restore CheckNamespace
+
+/// <summary>
+/// Provides a default configuration for all ServiceModel.Grpc services.
+/// </summary>
+public sealed class ServiceModelGrpcServiceOptions
 {
+    private FilterCollection<IServerFilter>? _filters;
+
     /// <summary>
-    /// Provides a default configuration for all ServiceModel.Grpc services.
+    /// Gets or sets default factory for serializing and deserializing messages.
     /// </summary>
-    public sealed class ServiceModelGrpcServiceOptions
+    public IMarshallerFactory? DefaultMarshallerFactory { get; set; }
+
+    /// <summary>
+    /// Gets or sets default factory for server call error handler.
+    /// </summary>
+    public Func<IServiceProvider, IServerErrorHandler>? DefaultErrorHandlerFactory { get; set; }
+
+    /// <summary>
+    /// Gets the collection of globally registered server filters.
+    /// </summary>
+    public FilterCollection<IServerFilter> Filters
     {
-        private FilterCollection<IServerFilter>? _filters;
-
-        /// <summary>
-        /// Gets or sets default factory for serializing and deserializing messages.
-        /// </summary>
-        public IMarshallerFactory? DefaultMarshallerFactory { get; set; }
-
-        /// <summary>
-        /// Gets or sets default factory for server call error handler.
-        /// </summary>
-        public Func<IServiceProvider, IServerErrorHandler>? DefaultErrorHandlerFactory { get; set; }
-
-        /// <summary>
-        /// Gets the collection of globally registered server filters.
-        /// </summary>
-        public FilterCollection<IServerFilter> Filters
+        get
         {
-            get
+            if (_filters == null)
             {
-                if (_filters == null)
-                {
-                    _filters = new FilterCollection<IServerFilter>();
-                }
-
-                return _filters;
+                _filters = new FilterCollection<IServerFilter>();
             }
+
+            return _filters;
         }
-
-        internal bool IsApiDescriptionRequested { get; set; }
-
-        internal IList<FilterRegistration<IServerFilter>>? GetFilters() => _filters;
     }
+
+    internal bool IsApiDescriptionRequested { get; set; }
+
+    internal IList<FilterRegistration<IServerFilter>>? GetFilters() => _filters;
 }

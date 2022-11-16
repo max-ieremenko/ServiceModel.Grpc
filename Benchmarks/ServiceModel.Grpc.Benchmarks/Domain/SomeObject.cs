@@ -20,46 +20,45 @@ using System.Runtime.Serialization;
 using MessagePack;
 using ProtoBuf;
 
-namespace ServiceModel.Grpc.Benchmarks.Domain
+namespace ServiceModel.Grpc.Benchmarks.Domain;
+
+[DataContract]
+[ProtoContract]
+[MessagePackObject]
+public class SomeObject
 {
-    [DataContract]
-    [ProtoContract]
-    [MessagePackObject]
-    public class SomeObject
-    {
-        [DataMember]
-        [ProtoMember(1)]
-        [Key(1)]
-        public string StringScalar { get; set; }
+    [DataMember]
+    [ProtoMember(1)]
+    [Key(1)]
+    public string StringScalar { get; set; }
 
-        [DataMember]
-        [ProtoMember(2)]
-        [Key(2)]
-        public DateTime DateScalar { get; set; }
+    [DataMember]
+    [ProtoMember(2)]
+    [Key(2)]
+    public DateTime DateScalar { get; set; }
 
-        [DataMember]
-        [ProtoMember(3)]
-        [Key(3)]
-        public float SingleScalar { get; set; }
+    [DataMember]
+    [ProtoMember(3)]
+    [Key(3)]
+    public float SingleScalar { get; set; }
 
-        [DataMember]
-        [ProtoMember(4)]
-        [Key(4)]
-        public int Int32Scalar { get; set; }
+    [DataMember]
+    [ProtoMember(4)]
+    [Key(4)]
+    public int Int32Scalar { get; set; }
 
-        [DataMember(EmitDefaultValue = false)]
-        [ProtoMember(5, IsPacked = true)]
-        [Key(5)]
-        public float[] SingleArray { get; set; }
+    [DataMember(EmitDefaultValue = false)]
+    [ProtoMember(5, IsPacked = true)]
+    [Key(5)]
+    public float[] SingleArray { get; set; }
 
-        [DataMember(EmitDefaultValue = false)]
-        [ProtoMember(6, IsPacked = true)]
-        [Key(6)]
-        public int[] Int32Array { get; set; }
+    [DataMember(EmitDefaultValue = false)]
+    [ProtoMember(6, IsPacked = true)]
+    [Key(6)]
+    public int[] Int32Array { get; set; }
 
-        [DataMember(EmitDefaultValue = false)]
-        [ProtoMember(7, IsPacked = true)]
-        [Key(7)]
-        public double[] DoubleArray { get; set; }
-    }
+    [DataMember(EmitDefaultValue = false)]
+    [ProtoMember(7, IsPacked = true)]
+    [Key(7)]
+    public double[] DoubleArray { get; set; }
 }

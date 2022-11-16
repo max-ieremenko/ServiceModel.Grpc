@@ -16,67 +16,66 @@
 
 using System;
 
-namespace ServiceModel.Grpc.Benchmarks.Domain
+namespace ServiceModel.Grpc.Benchmarks.Domain;
+
+internal static class DomainExtensions
 {
-    internal static class DomainExtensions
+    public static SomeObject CreateSomeObject()
     {
-        public static SomeObject CreateSomeObject()
+        var someObject = new SomeObject
         {
-            var someObject = new SomeObject
-            {
-                StringScalar = "some meaningful text",
-                Int32Scalar = 1,
-                DateScalar = DateTime.UtcNow,
-                SingleScalar = 1.1f,
-                Int32Array = CreateArray(100, x => x),
-                SingleArray = CreateArray<float>(100, x => x),
-                DoubleArray = CreateArray<double>(100, x => x)
-            };
+            StringScalar = "some meaningful text",
+            Int32Scalar = 1,
+            DateScalar = DateTime.UtcNow,
+            SingleScalar = 1.1f,
+            Int32Array = CreateArray(100, x => x),
+            SingleArray = CreateArray<float>(100, x => x),
+            DoubleArray = CreateArray<double>(100, x => x)
+        };
 
-            return someObject;
+        return someObject;
+    }
+
+    public static SomeObjectProto CopyToProto(SomeObject value)
+    {
+        var result = new SomeObjectProto
+        {
+            DateScalar = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(value.DateScalar),
+            Int32Scalar = value.Int32Scalar,
+            SingleScalar = value.SingleScalar
+        };
+
+        if (value.StringScalar != null)
+        {
+            result.StringScalar = value.StringScalar;
         }
 
-        public static SomeObjectProto CopyToProto(SomeObject value)
+        if (value.SingleArray != null)
         {
-            var result = new SomeObjectProto
-            {
-                DateScalar = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(value.DateScalar),
-                Int32Scalar = value.Int32Scalar,
-                SingleScalar = value.SingleScalar
-            };
-
-            if (value.StringScalar != null)
-            {
-                result.StringScalar = value.StringScalar;
-            }
-
-            if (value.SingleArray != null)
-            {
-                result.SingleArray.Add(value.SingleArray);
-            }
-
-            if (value.Int32Array != null)
-            {
-                result.Int32Array.Add(value.Int32Array);
-            }
-
-            if (value.DoubleArray != null)
-            {
-                result.DoubleArray.Add(value.DoubleArray);
-            }
-
-            return result;
+            result.SingleArray.Add(value.SingleArray);
         }
 
-        private static T[] CreateArray<T>(int size, Func<int, T> value)
+        if (value.Int32Array != null)
         {
-            var result = new T[size];
-            for (var i = 0; i < size; i++)
-            {
-                result[i] = value(i);
-            }
-
-            return result;
+            result.Int32Array.Add(value.Int32Array);
         }
+
+        if (value.DoubleArray != null)
+        {
+            result.DoubleArray.Add(value.DoubleArray);
+        }
+
+        return result;
+    }
+
+    private static T[] CreateArray<T>(int size, Func<int, T> value)
+    {
+        var result = new T[size];
+        for (var i = 0; i < size; i++)
+        {
+            result[i] = value(i);
+        }
+
+        return result;
     }
 }

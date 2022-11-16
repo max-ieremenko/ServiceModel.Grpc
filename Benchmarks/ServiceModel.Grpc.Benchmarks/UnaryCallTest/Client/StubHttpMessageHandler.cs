@@ -25,52 +25,51 @@ using Google.Protobuf;
 using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
 
-namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Client
+namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Client;
+
+internal sealed class StubHttpMessageHandler : HttpMessageHandler
 {
-    internal sealed class StubHttpMessageHandler : HttpMessageHandler
+    private readonly byte[] _responsePayload;
+
+    public StubHttpMessageHandler(IMarshallerFactory marshallerFactory, object response)
     {
-        private readonly byte[] _responsePayload;
+        _responsePayload = MessageSerializer.Create(marshallerFactory, response);
+    }
 
-        public StubHttpMessageHandler(IMarshallerFactory marshallerFactory, object response)
+    public StubHttpMessageHandler(IMessage response)
+    {
+        _responsePayload = MessageSerializer.Create(response);
+    }
+
+    public long PayloadSize { get; private set; }
+
+    protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        throw new NotSupportedException();
+    }
+
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        await using var stream = await request.Content!.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        await stream.CopyToAsync(Stream.Null, cancellationToken).ConfigureAwait(false);
+        PayloadSize = stream.Length;
+
+        return CreateResponse();
+    }
+
+    private HttpResponseMessage CreateResponse()
+    {
+        var content = new ByteArrayContent(_responsePayload);
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/grpc");
+
+        return new HttpResponseMessage(HttpStatusCode.OK)
         {
-            _responsePayload = MessageSerializer.Create(marshallerFactory, response);
-        }
-
-        public StubHttpMessageHandler(IMessage response)
-        {
-            _responsePayload = MessageSerializer.Create(response);
-        }
-
-        public long PayloadSize { get; private set; }
-
-        protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            throw new NotSupportedException();
-        }
-
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            await using var stream = await request.Content!.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-            await stream.CopyToAsync(Stream.Null, cancellationToken).ConfigureAwait(false);
-            PayloadSize = stream.Length;
-
-            return CreateResponse();
-        }
-
-        private HttpResponseMessage CreateResponse()
-        {
-            var content = new ByteArrayContent(_responsePayload);
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/grpc");
-
-            return new HttpResponseMessage(HttpStatusCode.OK)
+            Content = content,
+            Version = new Version(2, 0),
+            TrailingHeaders =
             {
-                Content = content,
-                Version = new Version(2, 0),
-                TrailingHeaders =
-                {
-                    { "grpc-status", StatusCode.OK.ToString("D") }
-                }
-            };
-        }
+                { "grpc-status", StatusCode.OK.ToString("D") }
+            }
+        };
     }
 }

@@ -29,168 +29,167 @@ using Moq;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger
+namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger;
+
+[TestFixture]
+public class SwaggerUiMiddlewareTest
 {
-    [TestFixture]
-    public class SwaggerUiMiddlewareTest
+    private IList<string> _loggerOutput = null!;
+    private Mock<HttpContext> _httpContext = null!;
+    private Mock<HttpRequest> _httpRequest = null!;
+    private Mock<HttpResponse> _httpResponse = null!;
+    private Mock<IApiDescriptionAdapter> _apiAdapter = null!;
+    private Mock<ISwaggerUiRequestHandler> _requestHandler = null!;
+    private bool _isNextCalled;
+    private ApiDescription _apiDescription = null!;
+    private Mock<IMethod> _method = null!;
+    private SwaggerUiMiddleware _sut = null!;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private IList<string> _loggerOutput = null!;
-        private Mock<HttpContext> _httpContext = null!;
-        private Mock<HttpRequest> _httpRequest = null!;
-        private Mock<HttpResponse> _httpResponse = null!;
-        private Mock<IApiDescriptionAdapter> _apiAdapter = null!;
-        private Mock<ISwaggerUiRequestHandler> _requestHandler = null!;
-        private bool _isNextCalled;
-        private ApiDescription _apiDescription = null!;
-        private Mock<IMethod> _method = null!;
-        private SwaggerUiMiddleware _sut = null!;
+        var logger = new MockLogger();
+        _loggerOutput = logger.Output;
 
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            var logger = new MockLogger();
-            _loggerOutput = logger.Output;
+        var loggerFactory = new Mock<ILoggerFactory>(MockBehavior.Strict);
+        loggerFactory
+            .Setup(f => f.CreateLogger("ServiceModel.Grpc.SwaggerUIGateway"))
+            .Returns(logger);
 
-            var loggerFactory = new Mock<ILoggerFactory>(MockBehavior.Strict);
-            loggerFactory
-                .Setup(f => f.CreateLogger("ServiceModel.Grpc.SwaggerUIGateway"))
-                .Returns(logger);
+        _apiAdapter = new Mock<IApiDescriptionAdapter>(MockBehavior.Strict);
+        _requestHandler = new Mock<ISwaggerUiRequestHandler>(MockBehavior.Strict);
 
-            _apiAdapter = new Mock<IApiDescriptionAdapter>(MockBehavior.Strict);
-            _requestHandler = new Mock<ISwaggerUiRequestHandler>(MockBehavior.Strict);
+        var serviceProvider = new Mock<IServiceProvider>(MockBehavior.Strict);
+        serviceProvider
+            .Setup(p => p.GetService(typeof(IApiDescriptionAdapter)))
+            .Returns(_apiAdapter.Object);
+        serviceProvider
+            .Setup(p => p.GetService(typeof(ISwaggerUiRequestHandler)))
+            .Returns(_requestHandler.Object);
 
-            var serviceProvider = new Mock<IServiceProvider>(MockBehavior.Strict);
-            serviceProvider
-                .Setup(p => p.GetService(typeof(IApiDescriptionAdapter)))
-                .Returns(_apiAdapter.Object);
-            serviceProvider
-                .Setup(p => p.GetService(typeof(ISwaggerUiRequestHandler)))
-                .Returns(_requestHandler.Object);
+        _httpRequest = new Mock<HttpRequest>(MockBehavior.Strict);
+        _httpRequest
+            .SetupGet(r => r.Protocol)
+            .Returns(ProtocolConstants.Http2);
+        _httpRequest
+            .SetupGet(r => r.ContentType)
+            .Returns(ProtocolConstants.MediaTypeNameSwaggerRequest);
+        _httpRequest
+            .SetupGet(r => r.Path)
+            .Returns("/request/path");
+        _httpRequest
+            .SetupGet(r => r.BodyReader)
+            .Returns(new Mock<PipeReader>(MockBehavior.Strict).Object);
 
-            _httpRequest = new Mock<HttpRequest>(MockBehavior.Strict);
-            _httpRequest
-                .SetupGet(r => r.Protocol)
-                .Returns(ProtocolConstants.Http2);
-            _httpRequest
-                .SetupGet(r => r.ContentType)
-                .Returns(ProtocolConstants.MediaTypeNameSwaggerRequest);
-            _httpRequest
-                .SetupGet(r => r.Path)
-                .Returns("/request/path");
-            _httpRequest
-                .SetupGet(r => r.BodyReader)
-                .Returns(new Mock<PipeReader>(MockBehavior.Strict).Object);
+        _httpResponse = new Mock<HttpResponse>(MockBehavior.Strict);
+        _httpResponse
+            .SetupProperty(r => r.StatusCode, 0);
+        _httpResponse
+            .SetupGet(r => r.BodyWriter)
+            .Returns(new Mock<PipeWriter>(MockBehavior.Strict).Object);
 
-            _httpResponse = new Mock<HttpResponse>(MockBehavior.Strict);
-            _httpResponse
-                .SetupProperty(r => r.StatusCode, 0);
-            _httpResponse
-                .SetupGet(r => r.BodyWriter)
-                .Returns(new Mock<PipeWriter>(MockBehavior.Strict).Object);
+        _httpContext = new Mock<HttpContext>(MockBehavior.Strict);
+        _httpContext
+            .SetupGet(c => c.RequestAborted)
+            .Returns(new CancellationTokenSource().Token);
+        _httpContext
+            .SetupGet(c => c.Request)
+            .Returns(_httpRequest.Object);
+        _httpContext
+            .SetupGet(c => c.Response)
+            .Returns(_httpResponse.Object);
 
-            _httpContext = new Mock<HttpContext>(MockBehavior.Strict);
-            _httpContext
-                .SetupGet(c => c.RequestAborted)
-                .Returns(new CancellationTokenSource().Token);
-            _httpContext
-                .SetupGet(c => c.Request)
-                .Returns(_httpRequest.Object);
-            _httpContext
-                .SetupGet(c => c.Response)
-                .Returns(_httpResponse.Object);
+        _isNextCalled = false;
 
-            _isNextCalled = false;
+        _apiDescription = new ApiDescription();
 
-            _apiDescription = new ApiDescription();
+        _method = new Mock<IMethod>(MockBehavior.Strict);
+        _method
+            .SetupGet(m => m.Type)
+            .Returns(MethodType.Unary);
 
-            _method = new Mock<IMethod>(MockBehavior.Strict);
-            _method
-                .SetupGet(m => m.Type)
-                .Returns(MethodType.Unary);
+        _sut = new SwaggerUiMiddleware(
+            loggerFactory.Object,
+            serviceProvider.Object,
+            c =>
+            {
+                c.ShouldBe(_httpContext.Object);
+                _isNextCalled.ShouldBe(false);
+                _isNextCalled = true;
+                return Task.CompletedTask;
+            });
+    }
 
-            _sut = new SwaggerUiMiddleware(
-                loggerFactory.Object,
-                serviceProvider.Object,
-                c =>
-                {
-                    c.ShouldBe(_httpContext.Object);
-                    _isNextCalled.ShouldBe(false);
-                    _isNextCalled = true;
-                    return Task.CompletedTask;
-                });
-        }
+    [Test]
+    public async Task IgnoreNonSwaggerUiRequest()
+    {
+        _httpRequest
+            .SetupGet(r => r.ContentType)
+            .Returns(MediaTypeNames.Application.Json);
 
-        [Test]
-        public async Task IgnoreNonSwaggerUiRequest()
-        {
-            _httpRequest
-                .SetupGet(r => r.ContentType)
-                .Returns(MediaTypeNames.Application.Json);
+        await _sut.Invoke(_httpContext.Object).ConfigureAwait(false);
 
-            await _sut.Invoke(_httpContext.Object).ConfigureAwait(false);
+        _isNextCalled.ShouldBeTrue();
+        _loggerOutput.ShouldBeEmpty();
+    }
 
-            _isNextCalled.ShouldBeTrue();
-            _loggerOutput.ShouldBeEmpty();
-        }
+    [Test]
+    public async Task ApiDescriptionNotFound()
+    {
+        _apiAdapter
+            .Setup(a => a.FindApiDescription(_httpRequest.Object.Path))
+            .Returns((ApiDescription?)null);
 
-        [Test]
-        public async Task ApiDescriptionNotFound()
-        {
-            _apiAdapter
-                .Setup(a => a.FindApiDescription(_httpRequest.Object.Path))
-                .Returns((ApiDescription?)null);
+        await _sut.Invoke(_httpContext.Object).ConfigureAwait(false);
 
-            await _sut.Invoke(_httpContext.Object).ConfigureAwait(false);
+        _isNextCalled.ShouldBeTrue();
+        _apiAdapter.VerifyAll();
+        _loggerOutput.Count.ShouldBe(2);
+        _loggerOutput[1].ShouldStartWith("Warning: ");
+    }
 
-            _isNextCalled.ShouldBeTrue();
-            _apiAdapter.VerifyAll();
-            _loggerOutput.Count.ShouldBe(2);
-            _loggerOutput[1].ShouldStartWith("Warning: ");
-        }
+    [Test]
+    public async Task MethodNotFound()
+    {
+        _apiAdapter
+            .Setup(a => a.FindApiDescription(_httpRequest.Object.Path))
+            .Returns(_apiDescription);
+        _apiAdapter
+            .Setup(a => a.GetMethod(_httpContext.Object))
+            .Returns((IMethod?)null);
 
-        [Test]
-        public async Task MethodNotFound()
-        {
-            _apiAdapter
-                .Setup(a => a.FindApiDescription(_httpRequest.Object.Path))
-                .Returns(_apiDescription);
-            _apiAdapter
-                .Setup(a => a.GetMethod(_httpContext.Object))
-                .Returns((IMethod?)null);
+        await _sut.Invoke(_httpContext.Object).ConfigureAwait(false);
 
-            await _sut.Invoke(_httpContext.Object).ConfigureAwait(false);
+        _isNextCalled.ShouldBeTrue();
+        _apiAdapter.VerifyAll();
+        _loggerOutput.Count.ShouldBe(2);
+        _loggerOutput[1].ShouldStartWith("Warning: ");
+    }
 
-            _isNextCalled.ShouldBeTrue();
-            _apiAdapter.VerifyAll();
-            _loggerOutput.Count.ShouldBe(2);
-            _loggerOutput[1].ShouldStartWith("Warning: ");
-        }
+    [Test]
+    [TestCase(MethodType.ServerStreaming)]
+    [TestCase(MethodType.DuplexStreaming)]
+    [TestCase(MethodType.ClientStreaming)]
+    public async Task NonUnaryMethodIsNotSupported(MethodType methodType)
+    {
+        _method
+            .SetupGet(m => m.Type)
+            .Returns(methodType);
 
-        [Test]
-        [TestCase(MethodType.ServerStreaming)]
-        [TestCase(MethodType.DuplexStreaming)]
-        [TestCase(MethodType.ClientStreaming)]
-        public async Task NonUnaryMethodIsNotSupported(MethodType methodType)
-        {
-            _method
-                .SetupGet(m => m.Type)
-                .Returns(methodType);
+        _apiAdapter
+            .Setup(a => a.FindApiDescription(_httpRequest.Object.Path))
+            .Returns(_apiDescription);
+        _apiAdapter
+            .Setup(a => a.GetMethod(_httpContext.Object))
+            .Returns(_method.Object);
 
-            _apiAdapter
-                .Setup(a => a.FindApiDescription(_httpRequest.Object.Path))
-                .Returns(_apiDescription);
-            _apiAdapter
-                .Setup(a => a.GetMethod(_httpContext.Object))
-                .Returns(_method.Object);
+        await _sut.Invoke(_httpContext.Object).ConfigureAwait(false);
 
-            await _sut.Invoke(_httpContext.Object).ConfigureAwait(false);
+        _httpResponse.Object.StatusCode.ShouldBe((int)HttpStatusCode.NotImplemented);
 
-            _httpResponse.Object.StatusCode.ShouldBe((int)HttpStatusCode.NotImplemented);
-
-            _isNextCalled.ShouldBeFalse();
-            _apiAdapter.VerifyAll();
-            _loggerOutput.Count.ShouldBe(2);
-            _loggerOutput[1].ShouldStartWith("Error: ");
-        }
+        _isNextCalled.ShouldBeFalse();
+        _apiAdapter.VerifyAll();
+        _loggerOutput.Count.ShouldBe(2);
+        _loggerOutput[1].ShouldStartWith("Error: ");
     }
 }

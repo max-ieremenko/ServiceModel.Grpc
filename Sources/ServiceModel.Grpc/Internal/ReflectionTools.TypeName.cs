@@ -17,200 +17,199 @@
 using System;
 using System.Text;
 
-namespace ServiceModel.Grpc.Internal
+namespace ServiceModel.Grpc.Internal;
+
+internal static partial class ReflectionTools
 {
-    internal static partial class ReflectionTools
+    private readonly ref struct TypeUserFriendlyBuilder
     {
-        private readonly ref struct TypeUserFriendlyBuilder
+        private readonly Type _type;
+        private readonly StringBuilder _result;
+
+        public TypeUserFriendlyBuilder(Type type)
         {
-            private readonly Type _type;
-            private readonly StringBuilder _result;
+            _type = type;
+            _result = new StringBuilder();
+        }
 
-            public TypeUserFriendlyBuilder(Type type)
+        public string Build()
+        {
+            WriteShortAssemblyQualifiedName(_type);
+            return _result.ToString();
+        }
+
+        private void WriteShortAssemblyQualifiedName(Type type)
+        {
+            var isArray = type.IsArray;
+            if (isArray)
             {
-                _type = type;
-                _result = new StringBuilder();
+                type = type.GetElementType()!;
             }
 
-            public string Build()
+            var nullable = Nullable.GetUnderlyingType(type);
+            if (nullable != null)
             {
-                WriteShortAssemblyQualifiedName(_type);
-                return _result.ToString();
+                type = nullable;
             }
 
-            private void WriteShortAssemblyQualifiedName(Type type)
+            WriteTypeFullName(type);
+
+            if (type.IsGenericType)
             {
-                var isArray = type.IsArray;
-                if (isArray)
+                // System.Tuple`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib
+                _result.Append("<");
+
+                var args = type.GetGenericArguments();
+                for (var i = 0; i < args.Length; i++)
                 {
-                    type = type.GetElementType()!;
-                }
-
-                var nullable = Nullable.GetUnderlyingType(type);
-                if (nullable != null)
-                {
-                    type = nullable;
-                }
-
-                WriteTypeFullName(type);
-
-                if (type.IsGenericType)
-                {
-                    // System.Tuple`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib
-                    _result.Append("<");
-
-                    var args = type.GetGenericArguments();
-                    for (var i = 0; i < args.Length; i++)
+                    if (i > 0)
                     {
-                        if (i > 0)
-                        {
-                            _result.Append(", ");
-                        }
-
-                        WriteShortAssemblyQualifiedName(args[i]);
+                        _result.Append(", ");
                     }
 
-                    _result.Append(">");
+                    WriteShortAssemblyQualifiedName(args[i]);
                 }
 
-                // System.Private.CoreLib, mscorlib
-                if (isArray)
-                {
-                    _result.Append("[]");
-                }
-
-                if (nullable != null)
-                {
-                    _result.Append("?");
-                }
+                _result.Append(">");
             }
 
-            private void WriteTypeFullName(Type type)
+            // System.Private.CoreLib, mscorlib
+            if (isArray)
             {
-                if (type == typeof(void))
-                {
-                    _result.Append("void");
-                    return;
-                }
+                _result.Append("[]");
+            }
 
-                var index = type.Name.IndexOf('`');
-                var count = type.Name.Length;
-                if (index > 0)
-                {
-                    count = index;
-                }
-
-                if (type.IsNested)
-                {
-                    WriteTypeFullName(type.DeclaringType);
-                    _result
-                        .Append(".")
-                        .Append(type.Name, 0, count);
-                }
-                else
-                {
-                    _result.Append(type.Name, 0, count);
-                }
+            if (nullable != null)
+            {
+                _result.Append("?");
             }
         }
 
-        private readonly ref struct TypeFullNameBuilder
+        private void WriteTypeFullName(Type type)
         {
-            private readonly Type _type;
-            private readonly StringBuilder _result;
-
-            public TypeFullNameBuilder(Type type)
+            if (type == typeof(void))
             {
-                _type = type;
-                _result = new StringBuilder();
+                _result.Append("void");
+                return;
             }
 
-            public string Build()
+            var index = type.Name.IndexOf('`');
+            var count = type.Name.Length;
+            if (index > 0)
             {
-                WriteShortAssemblyQualifiedName(_type);
-                return _result.ToString();
+                count = index;
             }
 
-            private void WriteShortAssemblyQualifiedName(Type type)
+            if (type.IsNested)
             {
-                var isArray = type.IsArray;
-                if (isArray)
+                WriteTypeFullName(type.DeclaringType);
+                _result
+                    .Append(".")
+                    .Append(type.Name, 0, count);
+            }
+            else
+            {
+                _result.Append(type.Name, 0, count);
+            }
+        }
+    }
+
+    private readonly ref struct TypeFullNameBuilder
+    {
+        private readonly Type _type;
+        private readonly StringBuilder _result;
+
+        public TypeFullNameBuilder(Type type)
+        {
+            _type = type;
+            _result = new StringBuilder();
+        }
+
+        public string Build()
+        {
+            WriteShortAssemblyQualifiedName(_type);
+            return _result.ToString();
+        }
+
+        private void WriteShortAssemblyQualifiedName(Type type)
+        {
+            var isArray = type.IsArray;
+            if (isArray)
+            {
+                type = type.GetElementType()!;
+            }
+
+            WriteTypeFullName(type);
+
+            // System.Tuple`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib
+            if (type.IsGenericType)
+            {
+                _result.Append("[");
+
+                var args = type.GetGenericArguments();
+                for (var i = 0; i < args.Length; i++)
                 {
-                    type = type.GetElementType()!;
-                }
-
-                WriteTypeFullName(type);
-
-                // System.Tuple`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib
-                if (type.IsGenericType)
-                {
-                    _result.Append("[");
-
-                    var args = type.GetGenericArguments();
-                    for (var i = 0; i < args.Length; i++)
+                    if (i > 0)
                     {
-                        if (i > 0)
-                        {
-                            _result.Append(", ");
-                        }
-
-                        _result.Append("[");
-                        WriteShortAssemblyQualifiedName(args[i]);
-                        _result.Append("]");
+                        _result.Append(", ");
                     }
 
+                    _result.Append("[");
+                    WriteShortAssemblyQualifiedName(args[i]);
                     _result.Append("]");
                 }
 
-                // System.Private.CoreLib, mscorlib
-                if (isArray)
-                {
-                    _result.Append("[]");
-                }
-
-                WriteAssemblyName(type);
+                _result.Append("]");
             }
 
-            private void WriteTypeFullName(Type type)
+            // System.Private.CoreLib, mscorlib
+            if (isArray)
             {
-                if (type.IsNested)
-                {
-                    WriteTypeFullName(type.DeclaringType);
-                    _result
-                        .Append("+")
-                        .Append(type.Name);
-                }
-                else
-                {
-                    _result
-                        .Append(type.Namespace)
-                        .Append(".")
-                        .Append(type.Name);
-                }
+                _result.Append("[]");
             }
 
-            private void WriteAssemblyName(Type type)
+            WriteAssemblyName(type);
+        }
+
+        private void WriteTypeFullName(Type type)
+        {
+            if (type.IsNested)
             {
-                if (type.IsPrimitive)
-                {
-                    return;
-                }
-
-                var assemblyName = type.Assembly.GetName().Name;
-                if ("System.Private.CoreLib".Equals(assemblyName, StringComparison.OrdinalIgnoreCase))
-                {
-                    return;
-                }
-
-                if ("mscorlib".Equals(assemblyName, StringComparison.OrdinalIgnoreCase))
-                {
-                    return;
-                }
-
+                WriteTypeFullName(type.DeclaringType);
                 _result
-                    .Append(", ")
-                    .Append(assemblyName);
+                    .Append("+")
+                    .Append(type.Name);
             }
+            else
+            {
+                _result
+                    .Append(type.Namespace)
+                    .Append(".")
+                    .Append(type.Name);
+            }
+        }
+
+        private void WriteAssemblyName(Type type)
+        {
+            if (type.IsPrimitive)
+            {
+                return;
+            }
+
+            var assemblyName = type.Assembly.GetName().Name;
+            if ("System.Private.CoreLib".Equals(assemblyName, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            if ("mscorlib".Equals(assemblyName, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            _result
+                .Append(", ")
+                .Append(assemblyName);
         }
     }
 }

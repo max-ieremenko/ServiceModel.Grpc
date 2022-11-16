@@ -20,40 +20,39 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.DesignTime.Generator
+namespace ServiceModel.Grpc.DesignTime.Generator;
+
+[TestFixture]
+public class SyntaxFactoryExtensionsTest
 {
-    [TestFixture]
-    public class SyntaxFactoryExtensionsTest
+    [Test]
+    [TestCaseSource(nameof(GetFullNameCases))]
+    public void GetFullName(ClassDeclarationSyntax declaration, string expected)
     {
-        [Test]
-        [TestCaseSource(nameof(GetFullNameCases))]
-        public void GetFullName(ClassDeclarationSyntax declaration, string expected)
-        {
-            declaration.GetFullName().ShouldBe(expected);
-        }
+        declaration.GetFullName().ShouldBe(expected);
+    }
 
-        private static IEnumerable<TestCaseData> GetFullNameCases()
-        {
-            yield return new TestCaseData(SyntaxFactory.ClassDeclaration("Class"), "Class") { TestName = "Class" };
+    private static IEnumerable<TestCaseData> GetFullNameCases()
+    {
+        yield return new TestCaseData(SyntaxFactory.ClassDeclaration("Class"), "Class") { TestName = "Class" };
 
-            var declaration = SyntaxFactory
-                .NamespaceDeclaration(SyntaxFactory.ParseName("Namespace"))
-                .AddMembers(SyntaxFactory.ClassDeclaration("Class"))
-                .Members[0];
-            yield return new TestCaseData(declaration, "Namespace.Class") { TestName = "Namespace.Class" };
+        var declaration = SyntaxFactory
+            .NamespaceDeclaration(SyntaxFactory.ParseName("Namespace"))
+            .AddMembers(SyntaxFactory.ClassDeclaration("Class"))
+            .Members[0];
+        yield return new TestCaseData(declaration, "Namespace.Class") { TestName = "Namespace.Class" };
 
-            declaration = SyntaxFactory.ClassDeclaration("Class")
-                .AddMembers(SyntaxFactory.ClassDeclaration("NestedClass"))
-                .Members[0];
-            yield return new TestCaseData(declaration, "Class.NestedClass") { TestName = "Class.NestedClass" };
+        declaration = SyntaxFactory.ClassDeclaration("Class")
+            .AddMembers(SyntaxFactory.ClassDeclaration("NestedClass"))
+            .Members[0];
+        yield return new TestCaseData(declaration, "Class.NestedClass") { TestName = "Class.NestedClass" };
 
-            declaration = SyntaxFactory
-                .FileScopedNamespaceDeclaration(SyntaxFactory.ParseName("Namespace"))
-                .AddMembers(
-                    SyntaxFactory.ClassDeclaration("Class")
-                        .AddMembers(SyntaxFactory.ClassDeclaration("NestedClass")))
-                .Members[0];
-            yield return new TestCaseData(((ClassDeclarationSyntax)declaration).Members[0], "Namespace.Class.NestedClass") { TestName = "Namespace.Class.NestedClass" };
-        }
+        declaration = SyntaxFactory
+            .FileScopedNamespaceDeclaration(SyntaxFactory.ParseName("Namespace"))
+            .AddMembers(
+                SyntaxFactory.ClassDeclaration("Class")
+                    .AddMembers(SyntaxFactory.ClassDeclaration("NestedClass")))
+            .Members[0];
+        yield return new TestCaseData(((ClassDeclarationSyntax)declaration).Members[0], "Namespace.Class.NestedClass") { TestName = "Namespace.Class.NestedClass" };
     }
 }
