@@ -45,6 +45,7 @@ if (-not $SkipBuild) {
 if (-not $SkipLinuxSdk) {
     $repository = Join-Path $PSScriptRoot "../"
     $invokeBuild = Resolve-ModulePath -Name InvokeBuild -Version (Get-ModuleVersion -Name InvokeBuild)
+    $nugetCache = Join-Path $HOME .nuget\packages
     if (-not $LinuxSdkFilter) {
         $LinuxSdkFilter = " "
     }
@@ -53,9 +54,10 @@ if (-not $SkipLinuxSdk) {
         -it `
         --rm `
         --entrypoint pwsh `
-        -v "${invokeBuild}:/root/.local/share/powershell/Modules/InvokeBuild" `
+        -v "$($invokeBuild):/root/.local/share/powershell/Modules/InvokeBuild" `
+        -v "$($nugetCache):/root/.nuget/packages" `
         -v "$($repository):/repository" `
-        mcr.microsoft.com/dotnet/sdk:6.0.401-jammy `
+        mcr.microsoft.com/dotnet/sdk:7.0.100-jammy `
         "/repository/Build/invoke-sdk-test.ps1" `
         -Platform "linux" `
         -Filter $LinuxSdkFilter

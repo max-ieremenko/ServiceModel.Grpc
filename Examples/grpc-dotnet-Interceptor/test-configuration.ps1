@@ -6,17 +6,17 @@
     Tests         = @(
         @( 
             @{
-                App  = "ServerAspNetHost/bin/Release/net6.0/ServerAspNetHost.dll"
+                App  = "ServerAspNetHost/bin/Release/net7.0/ServerAspNetHost.dll"
                 Port = 5000
             }
-            @{ App = "Client/bin/Release/net6.0/Client.dll" }
+            @{ App = "Client/bin/Release/net7.0/Client.dll" }
         ),
         @( 
             @{
-                App  = "ServerSelfHost/bin/Release/net6.0/ServerSelfHost.dll"
+                App  = "ServerSelfHost/bin/Release/net7.0/ServerSelfHost.dll"
                 Port = 5000
             }
-            @{ App = "Client/bin/Release/net6.0/Client.dll" }
+            @{ App = "Client/bin/Release/net7.0/Client.dll" }
         )
     )
 }

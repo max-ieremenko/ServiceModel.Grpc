@@ -6,11 +6,11 @@
     Tests         = @(
         , @( 
             @{
-                App  = "Service/bin/Release/net6.0/Service.dll"
+                App  = "Service/bin/Release/net7.0/Service.dll"
                 Port = 5000
             }
-            @{ App = "Client/bin/Release/net6.0/Client.dll" }
-            @{ App = "ClientDesignTime/bin/Release/net6.0/ClientDesignTime.dll" }
+            @{ App = "Client/bin/Release/net7.0/Client.dll" }
+            @{ App = "ClientDesignTime/bin/Release/net7.0/ClientDesignTime.dll" }
         )     
     )
 }
