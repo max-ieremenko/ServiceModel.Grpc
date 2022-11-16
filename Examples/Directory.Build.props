@@ -13,8 +13,9 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <MicrosoftBclVersion>6.0.0</MicrosoftBclVersion>
-	<MicrosoftExtensionsHostingVersion>6.0.0</MicrosoftExtensionsHostingVersion>
-	<MicrosoftDependencyInjectionVersion>6.0.0</MicrosoftDependencyInjectionVersion>
+    <MicrosoftBclVersion>7.0.0</MicrosoftBclVersion>
+	<MicrosoftExtensionsHostingVersion>7.0.0</MicrosoftExtensionsHostingVersion>
+	<MicrosoftDependencyInjectionVersion>7.0.0</MicrosoftDependencyInjectionVersion>
+	<MicrosoftLoggingVersion>7.0.0</MicrosoftLoggingVersion>
   </PropertyGroup>
 </Project>
