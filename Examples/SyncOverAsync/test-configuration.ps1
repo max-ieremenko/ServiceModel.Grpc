@@ -5,10 +5,10 @@
 
     Tests         = @(
         @( 
-            @{ App = "Demo.ServerAspNetCore/bin/Release/net6.0/Demo.ServerAspNetCore.dll" }
+            @{ App = "Demo.ServerAspNetCore/bin/Release/net7.0/Demo.ServerAspNetCore.dll" }
         ),
         @( 
-            @{ App = "Demo.ServerSelfHost/bin/Release/net6.0/Demo.ServerSelfHost.dll" }
+            @{ App = "Demo.ServerSelfHost/bin/Release/net7.0/Demo.ServerSelfHost.dll" }
         )
     )
 }

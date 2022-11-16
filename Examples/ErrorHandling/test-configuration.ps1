@@ -1,20 +1,20 @@
 @{ 
     Solution      = "ErrorHandling.sln"
     Configuration = "Release"
-    Platform      = "Win"
+    Platform      = "Linux"
 
     Tests         = @(
         , @( 
             @{
-                App  = "ServerAspNetHost/bin/Release/net6.0/ServerAspNetHost.exe"
+                App  = "ServerAspNetHost/bin/Release/net7.0/ServerAspNetHost.dll"
                 Port = 5000
             }
             @{
-                App  = "ServerNativeHost/bin/Release/net462/ServerNativeHost.exe"
+                App  = "ServerNativeHost/bin/Release/net7.0/ServerNativeHost.dll"
                 Port = 5050
             }
-            @{ App = "Client/bin/Release/net462/Client.exe" }
-            @{ App = "ClientDesignTime/bin/Release/net462/ClientDesignTime.exe" }
+            @{ App = "Client/bin/Release/net7.0/Client.dll" }
+            @{ App = "ClientDesignTime/bin/Release/net7.0/ClientDesignTime.dll" }
         )     
     )
 }
