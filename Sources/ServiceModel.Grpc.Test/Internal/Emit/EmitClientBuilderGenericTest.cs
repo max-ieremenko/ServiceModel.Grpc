@@ -19,27 +19,26 @@ using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 
-namespace ServiceModel.Grpc.Internal.Emit
+namespace ServiceModel.Grpc.Internal.Emit;
+
+[TestFixture]
+public class EmitClientBuilderGenericTest : ClientBuilderGenericTestBase
 {
-    [TestFixture]
-    public class EmitClientBuilderGenericTest : ClientBuilderGenericTestBase
+    [OneTimeSetUp]
+    public void BeforeAllTests()
     {
-        [OneTimeSetUp]
-        public void BeforeAllTests()
-        {
-            var description = new ContractDescription(typeof(IGenericContract<int, string>));
+        var description = new ContractDescription(typeof(IGenericContract<int, string>));
 
-            var moduleBuilder = ProxyAssembly.CreateModule(nameof(EmitClientBuilderGenericTest));
+        var moduleBuilder = ProxyAssembly.CreateModule(nameof(EmitClientBuilderGenericTest));
 
-            var contractBuilder = new EmitContractBuilder(description);
-            var contractType = contractBuilder.Build(moduleBuilder);
-            var contractFactory = EmitContractBuilder.CreateFactory(contractType);
+        var contractBuilder = new EmitContractBuilder(description);
+        var contractType = contractBuilder.Build(moduleBuilder);
+        var contractFactory = EmitContractBuilder.CreateFactory(contractType);
 
-            var sut = new EmitClientBuilder(description, contractType);
-            var clientType = sut.Build(moduleBuilder);
-            var clientFactory = sut.CreateFactory<IGenericContract<int, string>>(clientType);
+        var sut = new EmitClientBuilder(description, contractType);
+        var clientType = sut.Build(moduleBuilder);
+        var clientFactory = sut.CreateFactory<IGenericContract<int, string>>(clientType);
 
-            Factory = () => clientFactory(CallInvoker.Object, contractFactory(DataContractMarshallerFactory.Default), null);
-        }
+        Factory = () => clientFactory(CallInvoker.Object, contractFactory(DataContractMarshallerFactory.Default), null);
     }
 }

@@ -19,55 +19,54 @@ using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Internal;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger
+namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger;
+
+internal partial class SwaggerUiRequestHandler
 {
-    internal partial class SwaggerUiRequestHandler
+    private interface IMethodAccessor
     {
-        private interface IMethodAccessor
+        Type[] GetParameterTypes();
+
+        byte[] SerializeRequest(object?[] values);
+
+        Type? GetResponseType();
+
+        object? DeserializeResponse(byte[] payload);
+    }
+
+    private sealed class MethodAccessor<TRequest, TResponse> : IMethodAccessor
+    {
+        private readonly Method<TRequest, TResponse> _method;
+
+        public MethodAccessor(IMethod method)
         {
-            Type[] GetParameterTypes();
-
-            byte[] SerializeRequest(object?[] values);
-
-            Type? GetResponseType();
-
-            object? DeserializeResponse(byte[] payload);
+            _method = (Method<TRequest, TResponse>)method;
         }
 
-        private sealed class MethodAccessor<TRequest, TResponse> : IMethodAccessor
+        public Type[] GetParameterTypes()
         {
-            private readonly Method<TRequest, TResponse> _method;
+            return typeof(TRequest).GetGenericArguments()!;
+        }
 
-            public MethodAccessor(IMethod method)
-            {
-                _method = (Method<TRequest, TResponse>)method;
-            }
+        public byte[] SerializeRequest(object?[] values)
+        {
+            var message = Activator.CreateInstance(typeof(TRequest), values)!;
+            return CompatibilityTools.SerializeValue(_method.RequestMarshaller, (TRequest)message);
+        }
 
-            public Type[] GetParameterTypes()
-            {
-                return typeof(TRequest).GetGenericArguments()!;
-            }
+        public Type? GetResponseType()
+        {
+            var type = typeof(TResponse);
+            return type.IsGenericType ? type.GetGenericArguments()[0] : null;
+        }
 
-            public byte[] SerializeRequest(object?[] values)
-            {
-                var message = Activator.CreateInstance(typeof(TRequest), values)!;
-                return CompatibilityTools.SerializeValue(_method.RequestMarshaller, (TRequest)message);
-            }
-
-            public Type? GetResponseType()
-            {
-                var type = typeof(TResponse);
-                return type.IsGenericType ? type.GetGenericArguments()[0] : null;
-            }
-
-            public object? DeserializeResponse(byte[] payload)
-            {
-                var message = CompatibilityTools.DeserializeValue(_method.ResponseMarshaller, payload);
-                return message!
-                    .GetType()
-                    .InstanceProperty(nameof(Message<int>.Value1))
-                    .GetValue(message);
-            }
+        public object? DeserializeResponse(byte[] payload)
+        {
+            var message = CompatibilityTools.DeserializeValue(_method.ResponseMarshaller, payload);
+            return message!
+                .GetType()
+                .InstanceProperty(nameof(Message<int>.Value1))
+                .GetValue(message);
         }
     }
 }

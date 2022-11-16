@@ -17,32 +17,31 @@
 using System;
 using System.Diagnostics;
 
-namespace ServiceModel.Grpc.DesignTime
+namespace ServiceModel.Grpc.DesignTime;
+
+/// <summary>
+/// A marker to generate the source code for client service proxy.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+[Conditional("CodeGeneration")]
+public sealed class ImportGrpcServiceAttribute : Attribute
 {
     /// <summary>
-    /// A marker to generate the source code for client service proxy.
+    /// Initializes a new instance of the <see cref="ImportGrpcServiceAttribute"/> class.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    [Conditional("CodeGeneration")]
-    public sealed class ImportGrpcServiceAttribute : Attribute
+    /// <param name="serviceContract">The service contract type to map requests to.</param>
+    public ImportGrpcServiceAttribute(Type serviceContract)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImportGrpcServiceAttribute"/> class.
-        /// </summary>
-        /// <param name="serviceContract">The service contract type to map requests to.</param>
-        public ImportGrpcServiceAttribute(Type serviceContract)
+        if (serviceContract == null)
         {
-            if (serviceContract == null)
-            {
-                throw new ArgumentNullException(nameof(serviceContract));
-            }
-
-            ServiceContract = serviceContract;
+            throw new ArgumentNullException(nameof(serviceContract));
         }
 
-        /// <summary>
-        /// Gets a service contract type to map requests to.
-        /// </summary>
-        public Type ServiceContract { get; }
+        ServiceContract = serviceContract;
     }
+
+    /// <summary>
+    /// Gets a service contract type to map requests to.
+    /// </summary>
+    public Type ServiceContract { get; }
 }

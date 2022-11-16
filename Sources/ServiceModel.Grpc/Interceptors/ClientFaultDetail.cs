@@ -16,32 +16,31 @@
 
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Interceptors
+namespace ServiceModel.Grpc.Interceptors;
+
+/// <summary>
+/// Contains the detail information of the fault condition.
+/// </summary>
+public readonly struct ClientFaultDetail
 {
     /// <summary>
-    /// Contains the detail information of the fault condition.
+    /// Initializes a new instance of the <see cref="ClientFaultDetail"/> struct with the specified error and detail.
     /// </summary>
-    public readonly struct ClientFaultDetail
+    /// <param name="originalError">The original <see cref="RpcException"/> raised by <see cref="CallInvoker"/>.</param>
+    /// <param name="detail">The error detail provided by <see cref="IServerErrorHandler"/>.</param>
+    public ClientFaultDetail(RpcException originalError, object? detail)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ClientFaultDetail"/> struct with the specified error and detail.
-        /// </summary>
-        /// <param name="originalError">The original <see cref="RpcException"/> raised by <see cref="CallInvoker"/>.</param>
-        /// <param name="detail">The error detail provided by <see cref="IServerErrorHandler"/>.</param>
-        public ClientFaultDetail(RpcException originalError, object? detail)
-        {
-            OriginalError = originalError;
-            Detail = detail;
-        }
-
-        /// <summary>
-        /// Gets the original <see cref="RpcException"/> raised by <see cref="CallInvoker"/>.
-        /// </summary>
-        public RpcException OriginalError { get; }
-
-        /// <summary>
-        /// Gets the error detail provided by <see cref="IServerErrorHandler"/>.
-        /// </summary>
-        public object? Detail { get; }
+        OriginalError = originalError;
+        Detail = detail;
     }
+
+    /// <summary>
+    /// Gets the original <see cref="RpcException"/> raised by <see cref="CallInvoker"/>.
+    /// </summary>
+    public RpcException OriginalError { get; }
+
+    /// <summary>
+    /// Gets the error detail provided by <see cref="IServerErrorHandler"/>.
+    /// </summary>
+    public object? Detail { get; }
 }

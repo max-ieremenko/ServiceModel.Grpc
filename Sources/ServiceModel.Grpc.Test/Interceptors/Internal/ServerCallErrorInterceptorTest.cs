@@ -22,83 +22,82 @@ using NUnit.Framework;
 using ServiceModel.Grpc.Configuration;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Interceptors.Internal
+namespace ServiceModel.Grpc.Interceptors.Internal;
+
+[TestFixture]
+public class ServerCallErrorInterceptorTest
 {
-    [TestFixture]
-    public class ServerCallErrorInterceptorTest
+    private ServerCallErrorInterceptor _sut = null!;
+    private Mock<IServerErrorHandler> _errorHandler = null!;
+    private ServerCallInterceptorContext _context;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private ServerCallErrorInterceptor _sut = null!;
-        private Mock<IServerErrorHandler> _errorHandler = null!;
-        private ServerCallInterceptorContext _context;
+        var serverContext = new Mock<ServerCallContext> { CallBase = true };
+        _context = new ServerCallInterceptorContext(serverContext.Object);
 
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            var serverContext = new Mock<ServerCallContext> { CallBase = true };
-            _context = new ServerCallInterceptorContext(serverContext.Object);
+        _errorHandler = new Mock<IServerErrorHandler>(MockBehavior.Strict);
+        _sut = new ServerCallErrorInterceptor(_errorHandler.Object, DataContractMarshallerFactory.Default);
+    }
 
-            _errorHandler = new Mock<IServerErrorHandler>(MockBehavior.Strict);
-            _sut = new ServerCallErrorInterceptor(_errorHandler.Object, DataContractMarshallerFactory.Default);
-        }
+    [Test]
+    public void UserHandlerIgnoreError()
+    {
+        var error = new NotSupportedException();
+        _errorHandler
+            .Setup(h => h.ProvideFaultOrIgnore(_context, error))
+            .Returns((ServerFaultDetail?)null);
 
-        [Test]
-        public void UserHandlerIgnoreError()
-        {
-            var error = new NotSupportedException();
-            _errorHandler
-                .Setup(h => h.ProvideFaultOrIgnore(_context, error))
-                .Returns((ServerFaultDetail?)null);
+        _sut.OnError(_context, error);
 
-            _sut.OnError(_context, error);
+        _errorHandler.VerifyAll();
+        _context.ServerCallContext.UserState.Keys.ShouldBe(new[] { ServerCallErrorInterceptor.VisitMarker });
+    }
 
-            _errorHandler.VerifyAll();
-            _context.ServerCallContext.UserState.Keys.ShouldBe(new[] { ServerCallErrorInterceptor.VisitMarker });
-        }
-
-        [Test]
-        public void UserHandler()
-        {
-            var error = new NotSupportedException();
-            _errorHandler
-                .Setup(h => h.ProvideFaultOrIgnore(_context, error))
-                .Returns(new ServerFaultDetail
+    [Test]
+    public void UserHandler()
+    {
+        var error = new NotSupportedException();
+        _errorHandler
+            .Setup(h => h.ProvideFaultOrIgnore(_context, error))
+            .Returns(new ServerFaultDetail
+            {
+                Message = "error message",
+                Detail = "some detail",
+                StatusCode = StatusCode.DataLoss,
+                Trailers = new Metadata
                 {
-                    Message = "error message",
-                    Detail = "some detail",
-                    StatusCode = StatusCode.DataLoss,
-                    Trailers = new Metadata
-                    {
-                        { "user-header", "user-header-value" }
-                    }
-                });
+                    { "user-header", "user-header-value" }
+                }
+            });
 
-            var ex = Assert.Throws<RpcException>(() => _sut.OnError(_context, error));
+        var ex = Assert.Throws<RpcException>(() => _sut.OnError(_context, error));
 
-            _errorHandler.VerifyAll();
-            _context.ServerCallContext.UserState.Keys.ShouldBe(new[] { ServerCallErrorInterceptor.VisitMarker });
+        _errorHandler.VerifyAll();
+        _context.ServerCallContext.UserState.Keys.ShouldBe(new[] { ServerCallErrorInterceptor.VisitMarker });
 
-            ex.ShouldNotBeNull();
-            ex.StatusCode.ShouldBe(StatusCode.DataLoss);
-            ex.Message.ShouldBe("error message");
-            ex.Trailers.Count.ShouldBe(3);
+        ex.ShouldNotBeNull();
+        ex.StatusCode.ShouldBe(StatusCode.DataLoss);
+        ex.Message.ShouldBe("error message");
+        ex.Trailers.Count.ShouldBe(3);
 
-            var header = ex.Trailers.First(i => "user-header".Equals(i.Key, StringComparison.OrdinalIgnoreCase));
-            header.Value.ShouldBe("user-header-value");
+        var header = ex.Trailers.First(i => "user-header".Equals(i.Key, StringComparison.OrdinalIgnoreCase));
+        header.Value.ShouldBe("user-header-value");
 
-            header = ex.Trailers.First(i => CallContext.HeaderNameErrorDetailType.Equals(i.Key, StringComparison.OrdinalIgnoreCase));
-            Type.GetType(header.Value, true, false).ShouldBe(typeof(string));
+        header = ex.Trailers.First(i => CallContext.HeaderNameErrorDetailType.Equals(i.Key, StringComparison.OrdinalIgnoreCase));
+        Type.GetType(header.Value, true, false).ShouldBe(typeof(string));
 
-            header = ex.Trailers.First(i => CallContext.HeaderNameErrorDetail.Equals(i.Key, StringComparison.OrdinalIgnoreCase));
-            var detail = DataContractMarshallerFactory.Default.DeserializeHeader(typeof(string), header.ValueBytes).ShouldBeOfType<string>();
-            detail.ShouldBe("some detail");
-        }
+        header = ex.Trailers.First(i => CallContext.HeaderNameErrorDetail.Equals(i.Key, StringComparison.OrdinalIgnoreCase));
+        var detail = DataContractMarshallerFactory.Default.DeserializeHeader(typeof(string), header.ValueBytes).ShouldBeOfType<string>();
+        detail.ShouldBe("some detail");
+    }
 
-        [Test]
-        public void CheckVisitMarker()
-        {
-            _context.ServerCallContext.UserState.Add(ServerCallErrorInterceptor.VisitMarker, string.Empty);
+    [Test]
+    public void CheckVisitMarker()
+    {
+        _context.ServerCallContext.UserState.Add(ServerCallErrorInterceptor.VisitMarker, string.Empty);
 
-            _sut.OnError(_context, new NotSupportedException());
-        }
+        _sut.OnError(_context, new NotSupportedException());
     }
 }

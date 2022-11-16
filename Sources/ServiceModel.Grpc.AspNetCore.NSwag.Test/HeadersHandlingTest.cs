@@ -24,86 +24,85 @@ using ServiceModel.Grpc.AspNetCore.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
 
-namespace ServiceModel.Grpc.AspNetCore.NSwag
+namespace ServiceModel.Grpc.AspNetCore.NSwag;
+
+[TestFixture]
+public class HeadersHandlingTest
 {
-    [TestFixture]
-    public class HeadersHandlingTest
+    private KestrelHost _host = null!;
+    private SwaggerUiClient _client = null!;
+
+    [OneTimeSetUp]
+    public async Task BeforeAll()
     {
-        private KestrelHost _host = null!;
-        private SwaggerUiClient _client = null!;
-
-        [OneTimeSetUp]
-        public async Task BeforeAll()
-        {
-            _host = await new KestrelHost()
-                .ConfigureServices(services =>
-                {
-                    services.AddServiceModelGrpcSwagger();
-                    services.AddOpenApiDocument();
-                    services.AddMvc();
-
-                    services.AddTransient<IHeadersService, HeadersService>();
-                })
-                .ConfigureApp(app =>
-                {
-                    app.UseOpenApi(); // serve OpenAPI/Swagger documents
-                    app.UseSwaggerUi3(); // serve Swagger UI
-                    app.UseReDoc(); // serve ReDoc UI
-
-                    app.UseServiceModelGrpcSwaggerGateway();
-                })
-                .ConfigureEndpoints(endpoints =>
-                {
-                    endpoints.MapGrpcService<IHeadersService>();
-                })
-                .StartAsync(HttpProtocols.Http1)
-                .ConfigureAwait(false);
-
-            var document = await OpenApiDocument
-                .DownloadAsync(_host.GetLocation("swagger/v1/swagger.json"))
-                .ConfigureAwait(false);
-
-            _client = new SwaggerUiClient(document, nameof(IHeadersService), _host.GetLocation());
-        }
-
-        [OneTimeTearDown]
-        public async Task AfterAll()
-        {
-            await _host.DisposeAsync().ConfigureAwait(false);
-        }
-
-        [Test]
-        public async Task UnaryCall()
-        {
-            var headers = new Dictionary<string, string>
+        _host = await new KestrelHost()
+            .ConfigureServices(services =>
             {
-                { HeadersService.DefaultHeaderName, HeadersService.DefaultHeaderValue },
-                { HeadersService.CallHeaderName, HeadersService.CallHeaderValue }
-            };
-            var parameters = new Dictionary<string, object>();
+                services.AddServiceModelGrpcSwagger();
+                services.AddOpenApiDocument();
+                services.AddMvc();
 
-            var response = await _client.InvokeAsync(nameof(IHeadersService.UnaryCall), parameters, headers).ConfigureAwait(false);
-
-            response.GetValues(HeadersService.DefaultHeaderName).ShouldBe(new[] { HeadersService.DefaultHeaderValue });
-            response.GetValues(HeadersService.CallHeaderName).ShouldBe(new[] { HeadersService.CallHeaderValue });
-            response.GetValues(HeadersService.CallTrailerName).ShouldBe(new[] { HeadersService.CallTrailerValue });
-        }
-
-        [Test]
-        public async Task UnaryCallAsync()
-        {
-            var headers = new Dictionary<string, string>
+                services.AddTransient<IHeadersService, HeadersService>();
+            })
+            .ConfigureApp(app =>
             {
-                { HeadersService.DefaultHeaderName, HeadersService.DefaultHeaderValue },
-                { HeadersService.CallHeaderName, HeadersService.CallHeaderValue }
-            };
-            var parameters = new Dictionary<string, object>();
+                app.UseOpenApi(); // serve OpenAPI/Swagger documents
+                app.UseSwaggerUi3(); // serve Swagger UI
+                app.UseReDoc(); // serve ReDoc UI
 
-            var response = await _client.InvokeAsync(nameof(IHeadersService.UnaryCallAsync), parameters, headers).ConfigureAwait(false);
+                app.UseServiceModelGrpcSwaggerGateway();
+            })
+            .ConfigureEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<IHeadersService>();
+            })
+            .StartAsync(HttpProtocols.Http1)
+            .ConfigureAwait(false);
 
-            response.GetValues(HeadersService.DefaultHeaderName).ShouldBe(new[] { HeadersService.DefaultHeaderValue });
-            response.GetValues(HeadersService.CallHeaderName).ShouldBe(new[] { HeadersService.CallHeaderValue });
-            response.GetValues(HeadersService.CallTrailerName).ShouldBe(new[] { HeadersService.CallTrailerValue });
-        }
+        var document = await OpenApiDocument
+            .DownloadAsync(_host.GetLocation("swagger/v1/swagger.json"))
+            .ConfigureAwait(false);
+
+        _client = new SwaggerUiClient(document, nameof(IHeadersService), _host.GetLocation());
+    }
+
+    [OneTimeTearDown]
+    public async Task AfterAll()
+    {
+        await _host.DisposeAsync().ConfigureAwait(false);
+    }
+
+    [Test]
+    public async Task UnaryCall()
+    {
+        var headers = new Dictionary<string, string>
+        {
+            { HeadersService.DefaultHeaderName, HeadersService.DefaultHeaderValue },
+            { HeadersService.CallHeaderName, HeadersService.CallHeaderValue }
+        };
+        var parameters = new Dictionary<string, object>();
+
+        var response = await _client.InvokeAsync(nameof(IHeadersService.UnaryCall), parameters, headers).ConfigureAwait(false);
+
+        response.GetValues(HeadersService.DefaultHeaderName).ShouldBe(new[] { HeadersService.DefaultHeaderValue });
+        response.GetValues(HeadersService.CallHeaderName).ShouldBe(new[] { HeadersService.CallHeaderValue });
+        response.GetValues(HeadersService.CallTrailerName).ShouldBe(new[] { HeadersService.CallTrailerValue });
+    }
+
+    [Test]
+    public async Task UnaryCallAsync()
+    {
+        var headers = new Dictionary<string, string>
+        {
+            { HeadersService.DefaultHeaderName, HeadersService.DefaultHeaderValue },
+            { HeadersService.CallHeaderName, HeadersService.CallHeaderValue }
+        };
+        var parameters = new Dictionary<string, object>();
+
+        var response = await _client.InvokeAsync(nameof(IHeadersService.UnaryCallAsync), parameters, headers).ConfigureAwait(false);
+
+        response.GetValues(HeadersService.DefaultHeaderName).ShouldBe(new[] { HeadersService.DefaultHeaderValue });
+        response.GetValues(HeadersService.CallHeaderName).ShouldBe(new[] { HeadersService.CallHeaderValue });
+        response.GetValues(HeadersService.CallTrailerName).ShouldBe(new[] { HeadersService.CallTrailerValue });
     }
 }

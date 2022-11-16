@@ -14,52 +14,51 @@
 // limitations under the License.
 // </copyright>
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
+
+internal sealed class CSharpServiceSelfHostAddTransientServiceBuilder : CodeGeneratorBase
 {
-    internal sealed class CSharpServiceSelfHostAddTransientServiceBuilder : CodeGeneratorBase
+    private readonly ContractDescription _contract;
+    private readonly bool _isStaticClass;
+
+    public CSharpServiceSelfHostAddTransientServiceBuilder(ContractDescription contract, bool isStaticClass)
     {
-        private readonly ContractDescription _contract;
-        private readonly bool _isStaticClass;
+        _contract = contract;
+        _isStaticClass = isStaticClass;
+    }
 
-        public CSharpServiceSelfHostAddTransientServiceBuilder(ContractDescription contract, bool isStaticClass)
+    public override string GetGeneratedMemberName() => "AddTransient" + _contract.BaseClassName;
+
+    protected override void Generate()
+    {
+        WriteMetadata();
+        Output
+            .Append("public static ")
+            .AppendTypeName("Grpc.Core", "Server.ServiceDefinitionCollection")
+            .Append(" Add")
+            .Append(_contract.BaseClassName)
+            .Append("(");
+
+        if (_isStaticClass)
         {
-            _contract = contract;
-            _isStaticClass = isStaticClass;
+            Output.Append("this ");
         }
 
-        public override string GetGeneratedMemberName() => "AddTransient" + _contract.BaseClassName;
+        Output
+            .AppendTypeName("Grpc.Core", "Server.ServiceDefinitionCollection")
+            .Append(" services, Func<")
+            .Append(_contract.ContractInterfaceName)
+            .AppendLine("> serviceFactory, Action<global::Grpc.Core.ServiceModelGrpcServiceOptions> configure = default)")
+            .AppendLine("{");
 
-        protected override void Generate()
+        using (Output.Indent())
         {
-            WriteMetadata();
             Output
-                .Append("public static ")
-                .AppendTypeName("Grpc.Core", "Server.ServiceDefinitionCollection")
-                .Append(" Add")
-                .Append(_contract.BaseClassName)
-                .Append("(");
-
-            if (_isStaticClass)
-            {
-                Output.Append("this ");
-            }
-
-            Output
-                .AppendTypeName("Grpc.Core", "Server.ServiceDefinitionCollection")
-                .Append(" services, Func<")
-                .Append(_contract.ContractInterfaceName)
-                .AppendLine("> serviceFactory, Action<global::Grpc.Core.ServiceModelGrpcServiceOptions> configure = default)")
-                .AppendLine("{");
-
-            using (Output.Indent())
-            {
-                Output
-                    .Append("return ")
-                    .AppendTypeName("Grpc.Core", "ServiceDefinitionCollectionExtensions")
-                    .AppendLine(".AddServiceModelTransient(services, serviceFactory, configure);");
-            }
-
-            Output.AppendLine("}");
+                .Append("return ")
+                .AppendTypeName("Grpc.Core", "ServiceDefinitionCollectionExtensions")
+                .AppendLine(".AddServiceModelTransient(services, serviceFactory, configure);");
         }
+
+        Output.AppendLine("}");
     }
 }

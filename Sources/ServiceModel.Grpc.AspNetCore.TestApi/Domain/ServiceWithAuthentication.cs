@@ -17,27 +17,26 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 
-namespace ServiceModel.Grpc.AspNetCore.TestApi.Domain
+namespace ServiceModel.Grpc.AspNetCore.TestApi.Domain;
+
+[Authorize]
+public sealed class ServiceWithAuthentication : IServiceWithAuthentication
 {
-    [Authorize]
-    public sealed class ServiceWithAuthentication : IServiceWithAuthentication
+    private readonly IHttpContextAccessor _contextAccessor;
+
+    public ServiceWithAuthentication(IHttpContextAccessor contextAccessor)
     {
-        private readonly IHttpContextAccessor _contextAccessor;
+        _contextAccessor = contextAccessor;
+    }
 
-        public ServiceWithAuthentication(IHttpContextAccessor contextAccessor)
-        {
-            _contextAccessor = contextAccessor;
-        }
+    public string? GetCurrentUserName(CallContext? context)
+    {
+        return _contextAccessor.HttpContext?.User.Identity?.Name;
+    }
 
-        public string? GetCurrentUserName(CallContext? context)
-        {
-            return _contextAccessor.HttpContext?.User.Identity?.Name;
-        }
-
-        [AllowAnonymous]
-        public string? TryGetCurrentUserName(CallContext? context)
-        {
-            return _contextAccessor.HttpContext?.User.Identity?.Name;
-        }
+    [AllowAnonymous]
+    public string? TryGetCurrentUserName(CallContext? context)
+    {
+        return _contextAccessor.HttpContext?.User.Identity?.Name;
     }
 }

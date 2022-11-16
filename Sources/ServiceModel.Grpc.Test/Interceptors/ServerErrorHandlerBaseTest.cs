@@ -22,61 +22,60 @@ using Moq.Protected;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Interceptors
+namespace ServiceModel.Grpc.Interceptors;
+
+[TestFixture]
+public class ServerErrorHandlerBaseTest
 {
-    [TestFixture]
-    public class ServerErrorHandlerBaseTest
+    private Mock<ServerErrorHandlerBase> _sut = null!;
+    private Mock<ServerCallContext> _rpcContext = null!;
+    private CancellationTokenSource _tokenSource = null!;
+    private ServerCallInterceptorContext _errorContext;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private Mock<ServerErrorHandlerBase> _sut = null!;
-        private Mock<ServerCallContext> _rpcContext = null!;
-        private CancellationTokenSource _tokenSource = null!;
-        private ServerCallInterceptorContext _errorContext;
+        _sut = new Mock<ServerErrorHandlerBase> { CallBase = true };
 
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            _sut = new Mock<ServerErrorHandlerBase> { CallBase = true };
+        _tokenSource = new CancellationTokenSource();
 
-            _tokenSource = new CancellationTokenSource();
+        _rpcContext = new Mock<ServerCallContext>(MockBehavior.Strict);
+        _rpcContext
+            .Protected()
+            .SetupGet<CancellationToken>("CancellationTokenCore")
+            .Returns(_tokenSource.Token);
 
-            _rpcContext = new Mock<ServerCallContext>(MockBehavior.Strict);
-            _rpcContext
-                .Protected()
-                .SetupGet<CancellationToken>("CancellationTokenCore")
-                .Returns(_tokenSource.Token);
+        _errorContext = new ServerCallInterceptorContext(_rpcContext.Object);
+    }
 
-            _errorContext = new ServerCallInterceptorContext(_rpcContext.Object);
-        }
+    [Test]
+    public void UserHandler()
+    {
+        var ex = new NotSupportedException();
 
-        [Test]
-        public void UserHandler()
-        {
-            var ex = new NotSupportedException();
+        _sut
+            .Protected()
+            .Setup("ProvideFaultOrIgnoreCore", _errorContext, ex)
+            .Verifiable();
 
-            _sut
-                .Protected()
-                .Setup("ProvideFaultOrIgnoreCore", _errorContext, ex)
-                .Verifiable();
+        _sut.Object.ProvideFaultOrIgnore(_errorContext, ex).ShouldBeNull();
 
-            _sut.Object.ProvideFaultOrIgnore(_errorContext, ex).ShouldBeNull();
+        _sut.Verify();
+    }
 
-            _sut.Verify();
-        }
+    [Test]
+    public void IgnoreUserHandlerOnOperationCancelled()
+    {
+        var ex = new NotSupportedException();
 
-        [Test]
-        public void IgnoreUserHandlerOnOperationCancelled()
-        {
-            var ex = new NotSupportedException();
+        _sut
+            .Protected()
+            .Setup("OnOperationCancelled", _errorContext, ex)
+            .Verifiable();
 
-            _sut
-                .Protected()
-                .Setup("OnOperationCancelled", _errorContext, ex)
-                .Verifiable();
+        _tokenSource.Cancel();
+        _sut.Object.ProvideFaultOrIgnore(_errorContext, ex).ShouldBeNull();
 
-            _tokenSource.Cancel();
-            _sut.Object.ProvideFaultOrIgnore(_errorContext, ex).ShouldBeNull();
-
-            _sut.Verify();
-        }
+        _sut.Verify();
     }
 }

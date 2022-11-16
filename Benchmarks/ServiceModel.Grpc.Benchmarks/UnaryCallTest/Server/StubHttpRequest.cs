@@ -20,49 +20,48 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Server
+namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Server;
+
+internal sealed class StubHttpRequest
 {
-    internal sealed class StubHttpRequest
+    private static readonly MediaTypeHeaderValue ApplicationGrpc = new MediaTypeHeaderValue("application/grpc");
+    private static readonly HttpMethod Method = new HttpMethod("POST");
+    private static readonly Version Version = new Version("2.0");
+
+    private readonly HttpClient _client;
+    private readonly string _url;
+    private readonly byte[] _payload;
+
+    public StubHttpRequest(HttpClient client, string url, byte[] payload)
     {
-        private static readonly MediaTypeHeaderValue ApplicationGrpc = new MediaTypeHeaderValue("application/grpc");
-        private static readonly HttpMethod Method = new HttpMethod("POST");
-        private static readonly Version Version = new Version("2.0");
+        _client = client;
+        _url = url;
+        _payload = payload;
+    }
 
-        private readonly HttpClient _client;
-        private readonly string _url;
-        private readonly byte[] _payload;
+    public long PayloadSize { get; private set; }
 
-        public StubHttpRequest(HttpClient client, string url, byte[] payload)
+    public async Task SendAsync()
+    {
+        using (var request = CreateRequest())
+        using (var response = await _client.SendAsync(request).ConfigureAwait(false))
         {
-            _client = client;
-            _url = url;
-            _payload = payload;
+            response.EnsureSuccessStatusCode();
+            await using var stream = await response.Content!.ReadAsStreamAsync().ConfigureAwait(false);
+            await stream.CopyToAsync(Stream.Null).ConfigureAwait(false);
+            PayloadSize = stream.Length;
         }
+    }
 
-        public long PayloadSize { get; private set; }
+    private HttpRequestMessage CreateRequest()
+    {
+        var content = new ByteArrayContent(_payload);
+        content.Headers.ContentType = ApplicationGrpc;
 
-        public async Task SendAsync()
-        {
-            using (var request = CreateRequest())
-            using (var response = await _client.SendAsync(request).ConfigureAwait(false))
-            {
-                response.EnsureSuccessStatusCode();
-                await using var stream = await response.Content!.ReadAsStreamAsync().ConfigureAwait(false);
-                await stream.CopyToAsync(Stream.Null).ConfigureAwait(false);
-                PayloadSize = stream.Length;
-            }
-        }
+        var request = new HttpRequestMessage(Method, _url);
+        request.Version = Version;
+        request.Content = content;
 
-        private HttpRequestMessage CreateRequest()
-        {
-            var content = new ByteArrayContent(_payload);
-            content.Headers.ContentType = ApplicationGrpc;
-
-            var request = new HttpRequestMessage(Method, _url);
-            request.Version = Version;
-            request.Content = content;
-
-            return request;
-        }
+        return request;
     }
 }

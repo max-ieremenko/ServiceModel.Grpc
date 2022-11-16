@@ -27,107 +27,106 @@ using NSwag.Generation.Processors.Contexts;
 using ServiceModel.Grpc.AspNetCore.Internal;
 using ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer;
 
-namespace ServiceModel.Grpc.AspNetCore.NSwag.Internal
+namespace ServiceModel.Grpc.AspNetCore.NSwag.Internal;
+
+internal sealed class SwaggerOperationProcessor : IOperationProcessor
 {
-    internal sealed class SwaggerOperationProcessor : IOperationProcessor
+    private const string Multipart = "multipart/form-data";
+
+    public bool Process(OperationProcessorContext context)
     {
-        private const string Multipart = "multipart/form-data";
-
-        public bool Process(OperationProcessorContext context)
+        var description = (context as AspNetCoreOperationProcessorContext)?.ApiDescription;
+        var descriptor = description?.ActionDescriptor as GrpcActionDescriptor;
+        if (descriptor == null)
         {
-            var description = (context as AspNetCoreOperationProcessorContext)?.ApiDescription;
-            var descriptor = description?.ActionDescriptor as GrpcActionDescriptor;
-            if (descriptor == null)
-            {
-                return true;
-            }
-
-            var operation = context.OperationDescription.Operation;
-            FixRequestType(operation);
-            UpdateSummary(operation, descriptor);
-            UpdateDescription(operation, descriptor);
-
-            for (var i = 0; i < description!.SupportedResponseTypes.Count; i++)
-            {
-                AddResponseHeaders(operation, description.SupportedResponseTypes[i], context.SchemaResolver, context.SchemaGenerator);
-            }
-
             return true;
         }
 
-        private static void UpdateSummary(OpenApiOperation operation, GrpcActionDescriptor descriptor)
+        var operation = context.OperationDescription.Operation;
+        FixRequestType(operation);
+        UpdateSummary(operation, descriptor);
+        UpdateDescription(operation, descriptor);
+
+        for (var i = 0; i < description!.SupportedResponseTypes.Count; i++)
         {
-            if (string.IsNullOrWhiteSpace(operation.Summary))
-            {
-                operation.Summary = string.Format(CultureInfo.InvariantCulture, "ServiceModel.Grpc - {0}", descriptor.MethodType.ToString());
-            }
-            else
-            {
-                operation.Summary = string.Format(CultureInfo.InvariantCulture, "ServiceModel.Grpc - {0}. {1}", descriptor.MethodType.ToString(), operation.Summary);
-            }
+            AddResponseHeaders(operation, description.SupportedResponseTypes[i], context.SchemaResolver, context.SchemaGenerator);
         }
 
-        private static void UpdateDescription(OpenApiOperation operation, GrpcActionDescriptor descriptor)
-        {
-            if (string.IsNullOrWhiteSpace(operation.Description))
-            {
-                operation.Description = descriptor.MethodSignature;
-            }
-            else
-            {
-                operation.Description = new StringBuilder(operation.Description.Length + 4 + descriptor.MethodSignature)
-                    .AppendLine(operation.Description)
-                    .AppendLine()
-                    .Append(descriptor.MethodSignature)
-                    .ToString();
-            }
-        }
+        return true;
+    }
 
-        private static void FixRequestType(OpenApiOperation operation)
+    private static void UpdateSummary(OpenApiOperation operation, GrpcActionDescriptor descriptor)
+    {
+        if (string.IsNullOrWhiteSpace(operation.Summary))
         {
-            var body = operation.RequestBody;
-            if (body == null && operation.Parameters.Count == 0)
+            operation.Summary = string.Format(CultureInfo.InvariantCulture, "ServiceModel.Grpc - {0}", descriptor.MethodType.ToString());
+        }
+        else
+        {
+            operation.Summary = string.Format(CultureInfo.InvariantCulture, "ServiceModel.Grpc - {0}. {1}", descriptor.MethodType.ToString(), operation.Summary);
+        }
+    }
+
+    private static void UpdateDescription(OpenApiOperation operation, GrpcActionDescriptor descriptor)
+    {
+        if (string.IsNullOrWhiteSpace(operation.Description))
+        {
+            operation.Description = descriptor.MethodSignature;
+        }
+        else
+        {
+            operation.Description = new StringBuilder(operation.Description.Length + 4 + descriptor.MethodSignature)
+                .AppendLine(operation.Description)
+                .AppendLine()
+                .Append(descriptor.MethodSignature)
+                .ToString();
+        }
+    }
+
+    private static void FixRequestType(OpenApiOperation operation)
+    {
+        var body = operation.RequestBody;
+        if (body == null && operation.Parameters.Count == 0)
+        {
+            // fix request content type when operation contract has no input
+            operation.RequestBody = new OpenApiRequestBody
             {
-                // fix request content type when operation contract has no input
-                operation.RequestBody = new OpenApiRequestBody
+                Content =
                 {
-                    Content =
-                    {
-                        { ProtocolConstants.MediaTypeNameSwaggerRequest, new OpenApiMediaType() }
-                    }
-                };
-            }
-            else if (body != null && body.Content.TryGetValue(Multipart, out var mediaType))
-            {
-                body.Content.Remove(Multipart);
-                body.Content.Add(ProtocolConstants.MediaTypeNameSwaggerRequest, mediaType);
-            }
+                    { ProtocolConstants.MediaTypeNameSwaggerRequest, new OpenApiMediaType() }
+                }
+            };
+        }
+        else if (body != null && body.Content.TryGetValue(Multipart, out var mediaType))
+        {
+            body.Content.Remove(Multipart);
+            body.Content.Add(ProtocolConstants.MediaTypeNameSwaggerRequest, mediaType);
+        }
+    }
+
+    private static void AddResponseHeaders(
+        OpenApiOperation operation,
+        ApiResponseType responseType,
+        JsonSchemaResolver schemaResolver,
+        JsonSchemaGenerator schemaGenerator)
+    {
+        var headers = (responseType.ModelMetadata as ApiModelMetadata)?.Headers;
+        if (headers == null || headers.Length == 0)
+        {
+            return;
         }
 
-        private static void AddResponseHeaders(
-            OpenApiOperation operation,
-            ApiResponseType responseType,
-            JsonSchemaResolver schemaResolver,
-            JsonSchemaGenerator schemaGenerator)
+        if (!operation.Responses.TryGetValue(responseType.StatusCode.ToString(), out var response))
         {
-            var headers = (responseType.ModelMetadata as ApiModelMetadata)?.Headers;
-            if (headers == null || headers.Length == 0)
-            {
-                return;
-            }
+            return;
+        }
 
-            if (!operation.Responses.TryGetValue(responseType.StatusCode.ToString(), out var response))
-            {
-                return;
-            }
-
-            for (var i = 0; i < headers.Length; i++)
-            {
-                var metadata = headers[i];
-                var headerType = metadata.Type.ToContextualType();
-                var schema = schemaGenerator.GenerateWithReferenceAndNullability<JsonSchema>(headerType, schemaResolver);
-                response.Headers.Add(metadata.Name, new OpenApiHeader { Schema = schema });
-            }
+        for (var i = 0; i < headers.Length; i++)
+        {
+            var metadata = headers[i];
+            var headerType = metadata.Type.ToContextualType();
+            var schema = schemaGenerator.GenerateWithReferenceAndNullability<JsonSchema>(headerType, schemaResolver);
+            response.Headers.Add(metadata.Name, new OpenApiHeader { Schema = schema });
         }
     }
 }

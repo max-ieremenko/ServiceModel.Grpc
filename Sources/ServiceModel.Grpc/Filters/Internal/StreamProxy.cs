@@ -16,23 +16,22 @@
 
 using System;
 
-namespace ServiceModel.Grpc.Filters.Internal
+namespace ServiceModel.Grpc.Filters.Internal;
+
+internal sealed class StreamProxy
 {
-    internal sealed class StreamProxy
+    private readonly Func<object, object> _streamCast;
+    private readonly Func<object> _streamCreate;
+
+    public StreamProxy(Type itemType)
     {
-        private readonly Func<object, object> _streamCast;
-        private readonly Func<object> _streamCreate;
-
-        public StreamProxy(Type itemType)
-        {
-            (_streamCreate, _streamCast) = ProxyCompiler.GetStreamAccessors(itemType);
-        }
-
-        public void AssignValue(out object? target, object value)
-        {
-            target = _streamCast(value);
-        }
-
-        public object CreateDefault() => _streamCreate();
+        (_streamCreate, _streamCast) = ProxyCompiler.GetStreamAccessors(itemType);
     }
+
+    public void AssignValue(out object? target, object value)
+    {
+        target = _streamCast(value);
+    }
+
+    public object CreateDefault() => _streamCreate();
 }

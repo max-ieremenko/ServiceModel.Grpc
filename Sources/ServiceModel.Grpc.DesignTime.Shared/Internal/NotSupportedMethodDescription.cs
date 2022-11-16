@@ -16,18 +16,17 @@
 
 using Microsoft.CodeAnalysis;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal;
+
+internal sealed class NotSupportedMethodDescription
 {
-    internal sealed class NotSupportedMethodDescription
+    public NotSupportedMethodDescription(IMethodSymbol method, string error)
     {
-        public NotSupportedMethodDescription(IMethodSymbol method, string error)
-        {
-            Method = new MethodDescription(method);
-            Error = error;
-        }
-
-        public MethodDescription Method { get; }
-
-        public string Error { get; }
+        Method = new MethodDescription(method);
+        Error = error;
     }
+
+    public MethodDescription Method { get; }
+
+    public string Error { get; }
 }

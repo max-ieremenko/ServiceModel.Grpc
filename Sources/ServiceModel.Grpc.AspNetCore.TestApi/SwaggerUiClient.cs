@@ -22,101 +22,100 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace ServiceModel.Grpc.AspNetCore.TestApi
+namespace ServiceModel.Grpc.AspNetCore.TestApi;
+
+public sealed class SwaggerUiClient
 {
-    public sealed class SwaggerUiClient
+    private readonly OpenApiDocument _document;
+    private readonly string _serviceName;
+    private readonly string _hostLocation;
+
+    public SwaggerUiClient(
+        OpenApiDocument document,
+        string serviceName,
+        string hostLocation)
     {
-        private readonly OpenApiDocument _document;
-        private readonly string _serviceName;
-        private readonly string _hostLocation;
+        _document = document;
+        _serviceName = serviceName;
+        _hostLocation = hostLocation;
+    }
 
-        public SwaggerUiClient(
-            OpenApiDocument document,
-            string serviceName,
-            string hostLocation)
+    public async Task<HttpResponseHeaders> InvokeAsync(string methodName, IDictionary<string, object> parameters, IDictionary<string, string>? headers = null)
+    {
+        var endpoint = _document.GetEndpoint(_serviceName, methodName);
+        var contentType = _document.GetRequestContentType(endpoint);
+        var url = new Uri(new Uri(_hostLocation), endpoint);
+
+        using (var client = new HttpClient())
         {
-            _document = document;
-            _serviceName = serviceName;
-            _hostLocation = hostLocation;
-        }
+            HttpResponseMessage response;
 
-        public async Task<HttpResponseHeaders> InvokeAsync(string methodName, IDictionary<string, object> parameters, IDictionary<string, string>? headers = null)
-        {
-            var endpoint = _document.GetEndpoint(_serviceName, methodName);
-            var contentType = _document.GetRequestContentType(endpoint);
-            var url = new Uri(new Uri(_hostLocation), endpoint);
-
-            using (var client = new HttpClient())
+            using (var request = new MemoryStream())
             {
-                HttpResponseMessage response;
-
-                using (var request = new MemoryStream())
+                using (var writer = new StreamWriter(request, leaveOpen: true))
                 {
-                    using (var writer = new StreamWriter(request, leaveOpen: true))
-                    {
-                        JsonSerializer.CreateDefault().Serialize(writer, parameters);
-                    }
-
-                    request.Position = 0;
-                    using (var content = new StreamContent(request))
-                    {
-                        content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-                        if (headers != null)
-                        {
-                            foreach (var entry in headers)
-                            {
-                                content.Headers.Add(entry.Key, entry.Value);
-                            }
-                        }
-
-                        response = await client.PostAsync(url, content).ConfigureAwait(false);
-                    }
+                    JsonSerializer.CreateDefault().Serialize(writer, parameters);
                 }
 
-                response.EnsureSuccessStatusCode();
-                return response.Headers;
+                request.Position = 0;
+                using (var content = new StreamContent(request))
+                {
+                    content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+                    if (headers != null)
+                    {
+                        foreach (var entry in headers)
+                        {
+                            content.Headers.Add(entry.Key, entry.Value);
+                        }
+                    }
+
+                    response = await client.PostAsync(url, content).ConfigureAwait(false);
+                }
             }
+
+            response.EnsureSuccessStatusCode();
+            return response.Headers;
         }
+    }
 
-        public async Task<T> InvokeAsync<T>(string methodName, IDictionary<string, object> parameters, IDictionary<string, string>? headers = null)
+    public async Task<T> InvokeAsync<T>(string methodName, IDictionary<string, object> parameters, IDictionary<string, string>? headers = null)
+    {
+        var endpoint = _document.GetEndpoint(_serviceName, methodName);
+        var contentType = _document.GetRequestContentType(endpoint);
+        var url = new Uri(new Uri(_hostLocation), endpoint);
+
+        using (var client = new HttpClient())
         {
-            var endpoint = _document.GetEndpoint(_serviceName, methodName);
-            var contentType = _document.GetRequestContentType(endpoint);
-            var url = new Uri(new Uri(_hostLocation), endpoint);
+            HttpResponseMessage response;
 
-            using (var client = new HttpClient())
+            using (var request = new MemoryStream())
             {
-                HttpResponseMessage response;
-
-                using (var request = new MemoryStream())
+                using (var writer = new StreamWriter(request, leaveOpen: true))
                 {
-                    using (var writer = new StreamWriter(request, leaveOpen: true))
-                    {
-                        JsonSerializer.CreateDefault().Serialize(writer, parameters);
-                    }
+                    JsonSerializer.CreateDefault().Serialize(writer, parameters);
+                }
 
-                    request.Position = 0;
-                    using (var content = new StreamContent(request))
+                request.Position = 0;
+                using (var content = new StreamContent(request))
+                {
+                    content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+                    if (headers != null)
                     {
-                        content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-                        if (headers != null)
+                        foreach (var entry in headers)
                         {
-                            foreach (var entry in headers)
-                            {
-                                content.Headers.Add(entry.Key, entry.Value);
-                            }
+                            content.Headers.Add(entry.Key, entry.Value);
                         }
-
-                        response = await client.PostAsync(url, content).ConfigureAwait(false);
                     }
-                }
 
-                response.EnsureSuccessStatusCode();
-
-                using (var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-                {
-                    return JsonSerializer.CreateDefault().Deserialize<T>(new JsonTextReader(new StreamReader(content)))!;
+                    response = await client.PostAsync(url, content).ConfigureAwait(false);
                 }
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            using (var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+            {
+                return JsonSerializer.CreateDefault().Deserialize<T>(new JsonTextReader(new StreamReader(content)))!;
             }
         }
     }

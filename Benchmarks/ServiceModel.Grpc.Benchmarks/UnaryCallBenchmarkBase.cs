@@ -22,123 +22,122 @@ using ServiceModel.Grpc.Benchmarks.Domain;
 using ServiceModel.Grpc.Benchmarks.UnaryCallTest;
 using ServiceModel.Grpc.Configuration;
 
-namespace ServiceModel.Grpc.Benchmarks
+namespace ServiceModel.Grpc.Benchmarks;
+
+[Config(typeof(BenchmarkConfig))]
+public abstract class UnaryCallBenchmarkBase
 {
-    [Config(typeof(BenchmarkConfig))]
-    public abstract class UnaryCallBenchmarkBase
+    private IUnaryCallTest _serviceModelGrpcDataContract;
+    private IUnaryCallTest _serviceModelGrpcProtobuf;
+    private IUnaryCallTest _serviceModelGrpcMessagePack;
+    private IUnaryCallTest _serviceModelGrpcProto;
+    private IUnaryCallTest _native;
+    private IUnaryCallTest _protobufGrpc;
+    private IUnaryCallTest _magicOnion;
+
+    [GlobalSetup]
+    public void GlobalSetup()
     {
-        private IUnaryCallTest _serviceModelGrpcDataContract;
-        private IUnaryCallTest _serviceModelGrpcProtobuf;
-        private IUnaryCallTest _serviceModelGrpcMessagePack;
-        private IUnaryCallTest _serviceModelGrpcProto;
-        private IUnaryCallTest _native;
-        private IUnaryCallTest _protobufGrpc;
-        private IUnaryCallTest _magicOnion;
+        var payload = DomainExtensions.CreateSomeObject();
+        _serviceModelGrpcDataContract = CreateServiceModelGrpc(DataContractMarshallerFactory.Default, payload);
+        _serviceModelGrpcProtobuf = CreateServiceModelGrpc(ProtobufMarshallerFactory.Default, payload);
+        _serviceModelGrpcMessagePack = CreateServiceModelGrpc(MessagePackMarshallerFactory.Default, payload);
+        _serviceModelGrpcProto = CreateServiceModelGrpcProto(payload);
+        _native = CreateNativeGrpc(payload);
+        _protobufGrpc = CreateProtobufGrpc(payload);
+        _magicOnion = CreateMagicOnion(payload);
+    }
 
-        [GlobalSetup]
-        public void GlobalSetup()
-        {
-            var payload = DomainExtensions.CreateSomeObject();
-            _serviceModelGrpcDataContract = CreateServiceModelGrpc(DataContractMarshallerFactory.Default, payload);
-            _serviceModelGrpcProtobuf = CreateServiceModelGrpc(ProtobufMarshallerFactory.Default, payload);
-            _serviceModelGrpcMessagePack = CreateServiceModelGrpc(MessagePackMarshallerFactory.Default, payload);
-            _serviceModelGrpcProto = CreateServiceModelGrpcProto(payload);
-            _native = CreateNativeGrpc(payload);
-            _protobufGrpc = CreateProtobufGrpc(payload);
-            _magicOnion = CreateMagicOnion(payload);
-        }
+    [GlobalCleanup]
+    public void GlobalCleanup()
+    {
+        _serviceModelGrpcDataContract?.Dispose();
+        _serviceModelGrpcProtobuf?.Dispose();
+        _serviceModelGrpcMessagePack?.Dispose();
+        _serviceModelGrpcProto?.Dispose();
+        _native?.Dispose();
+        _protobufGrpc?.Dispose();
+        _magicOnion?.Dispose();
+    }
 
-        [GlobalCleanup]
-        public void GlobalCleanup()
-        {
-            _serviceModelGrpcDataContract?.Dispose();
-            _serviceModelGrpcProtobuf?.Dispose();
-            _serviceModelGrpcMessagePack?.Dispose();
-            _serviceModelGrpcProto?.Dispose();
-            _native?.Dispose();
-            _protobufGrpc?.Dispose();
-            _magicOnion?.Dispose();
-        }
+    [Benchmark(Description = "ServiceModelGrpc.DataContract")]
+    [PayloadSizeColumn(nameof(GetServiceModelGrpcDataContractSize))]
+    public Task ServiceModelGrpcDataContract() => _serviceModelGrpcDataContract.PingPongAsync();
 
-        [Benchmark(Description = "ServiceModelGrpc.DataContract")]
-        [PayloadSizeColumn(nameof(GetServiceModelGrpcDataContractSize))]
-        public Task ServiceModelGrpcDataContract() => _serviceModelGrpcDataContract.PingPongAsync();
+    [Benchmark(Description = "ServiceModelGrpc.Protobuf")]
+    [PayloadSizeColumn(nameof(GetServiceModelGrpcProtobufSize))]
+    public Task ServiceModelGrpcProtobuf() => _serviceModelGrpcProtobuf.PingPongAsync();
 
-        [Benchmark(Description = "ServiceModelGrpc.Protobuf")]
-        [PayloadSizeColumn(nameof(GetServiceModelGrpcProtobufSize))]
-        public Task ServiceModelGrpcProtobuf() => _serviceModelGrpcProtobuf.PingPongAsync();
+    [Benchmark(Description = "ServiceModelGrpc.MessagePack")]
+    [PayloadSizeColumn(nameof(GetServiceModelGrpcMessagePackSize))]
+    public Task ServiceModelGrpcMessagePack() => _serviceModelGrpcMessagePack.PingPongAsync();
 
-        [Benchmark(Description = "ServiceModelGrpc.MessagePack")]
-        [PayloadSizeColumn(nameof(GetServiceModelGrpcMessagePackSize))]
-        public Task ServiceModelGrpcMessagePack() => _serviceModelGrpcMessagePack.PingPongAsync();
+    [Benchmark(Description = "ServiceModelGrpc.proto-emulation")]
+    [PayloadSizeColumn(nameof(GetServiceModelGrpcProtoSize))]
+    public Task ServiceModelGrpcProto() => _serviceModelGrpcProto.PingPongAsync();
 
-        [Benchmark(Description = "ServiceModelGrpc.proto-emulation")]
-        [PayloadSizeColumn(nameof(GetServiceModelGrpcProtoSize))]
-        public Task ServiceModelGrpcProto() => _serviceModelGrpcProto.PingPongAsync();
+    [Benchmark(Baseline = true, Description = "grpc-dotnet")]
+    [PayloadSizeColumn(nameof(GetNativeSize))]
+    public Task Native() => _native.PingPongAsync();
 
-        [Benchmark(Baseline = true, Description = "grpc-dotnet")]
-        [PayloadSizeColumn(nameof(GetNativeSize))]
-        public Task Native() => _native.PingPongAsync();
+    [Benchmark(Description = "protobuf-net.Grpc")]
+    [PayloadSizeColumn(nameof(GetProtobufGrpcSize))]
+    public Task ProtobufGrpc() => _protobufGrpc.PingPongAsync();
 
-        [Benchmark(Description = "protobuf-net.Grpc")]
-        [PayloadSizeColumn(nameof(GetProtobufGrpcSize))]
-        public Task ProtobufGrpc() => _protobufGrpc.PingPongAsync();
+    [Benchmark]
+    [PayloadSizeColumn(nameof(GetMagicOnionSize))]
+    public Task MagicOnion() => _magicOnion.PingPongAsync();
 
-        [Benchmark]
-        [PayloadSizeColumn(nameof(GetMagicOnionSize))]
-        public Task MagicOnion() => _magicOnion.PingPongAsync();
+    internal ValueTask<long> GetServiceModelGrpcDataContractSize()
+    {
+        return GetSize(() => _serviceModelGrpcDataContract);
+    }
 
-        internal ValueTask<long> GetServiceModelGrpcDataContractSize()
-        {
-            return GetSize(() => _serviceModelGrpcDataContract);
-        }
+    internal ValueTask<long> GetServiceModelGrpcProtobufSize()
+    {
+        return GetSize(() => _serviceModelGrpcProtobuf);
+    }
 
-        internal ValueTask<long> GetServiceModelGrpcProtobufSize()
-        {
-            return GetSize(() => _serviceModelGrpcProtobuf);
-        }
+    internal ValueTask<long> GetServiceModelGrpcMessagePackSize()
+    {
+        return GetSize(() => _serviceModelGrpcMessagePack);
+    }
 
-        internal ValueTask<long> GetServiceModelGrpcMessagePackSize()
-        {
-            return GetSize(() => _serviceModelGrpcMessagePack);
-        }
+    internal ValueTask<long> GetServiceModelGrpcProtoSize()
+    {
+        return GetSize(() => _serviceModelGrpcProto);
+    }
 
-        internal ValueTask<long> GetServiceModelGrpcProtoSize()
-        {
-            return GetSize(() => _serviceModelGrpcProto);
-        }
+    internal ValueTask<long> GetNativeSize()
+    {
+        return GetSize(() => _native);
+    }
 
-        internal ValueTask<long> GetNativeSize()
-        {
-            return GetSize(() => _native);
-        }
+    internal ValueTask<long> GetProtobufGrpcSize()
+    {
+        return GetSize(() => _protobufGrpc);
+    }
 
-        internal ValueTask<long> GetProtobufGrpcSize()
-        {
-            return GetSize(() => _protobufGrpc);
-        }
+    internal ValueTask<long> GetMagicOnionSize()
+    {
+        return GetSize(() => _magicOnion);
+    }
 
-        internal ValueTask<long> GetMagicOnionSize()
-        {
-            return GetSize(() => _magicOnion);
-        }
+    internal abstract IUnaryCallTest CreateServiceModelGrpc(IMarshallerFactory marshallerFactory, SomeObject payload);
 
-        internal abstract IUnaryCallTest CreateServiceModelGrpc(IMarshallerFactory marshallerFactory, SomeObject payload);
+    internal abstract IUnaryCallTest CreateServiceModelGrpcProto(SomeObject payload);
 
-        internal abstract IUnaryCallTest CreateServiceModelGrpcProto(SomeObject payload);
+    internal abstract IUnaryCallTest CreateNativeGrpc(SomeObject payload);
 
-        internal abstract IUnaryCallTest CreateNativeGrpc(SomeObject payload);
+    internal abstract IUnaryCallTest CreateProtobufGrpc(SomeObject payload);
 
-        internal abstract IUnaryCallTest CreateProtobufGrpc(SomeObject payload);
+    internal abstract IUnaryCallTest CreateMagicOnion(SomeObject payload);
 
-        internal abstract IUnaryCallTest CreateMagicOnion(SomeObject payload);
-
-        private async ValueTask<long> GetSize(Func<IUnaryCallTest> sut)
-        {
-            GlobalSetup();
-            var result = await sut().GetPingPongPayloadSize().ConfigureAwait(false);
-            GlobalCleanup();
-            return result;
-        }
+    private async ValueTask<long> GetSize(Func<IUnaryCallTest> sut)
+    {
+        GlobalSetup();
+        var result = await sut().GetPingPongPayloadSize().ConfigureAwait(false);
+        GlobalCleanup();
+        return result;
     }
 }

@@ -18,49 +18,48 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ServiceModel.Grpc.Filters.Internal
+namespace ServiceModel.Grpc.Filters.Internal;
+
+internal sealed class ServerCallFilterHandler
 {
-    internal sealed class ServerCallFilterHandler
+    private readonly Func<ValueTask> _nextAsync;
+    private int _processedIndex;
+    private Func<IServerFilterContextInternal, ValueTask>? _last;
+
+    public ServerCallFilterHandler(IServerFilterContextInternal context, IServerFilter[] filters)
     {
-        private readonly Func<ValueTask> _nextAsync;
-        private int _processedIndex;
-        private Func<IServerFilterContextInternal, ValueTask>? _last;
+        Context = context;
+        Filters = filters;
+        _nextAsync = NextAsync;
+        _processedIndex = -1;
+    }
 
-        public ServerCallFilterHandler(IServerFilterContextInternal context, IServerFilter[] filters)
+    public IServerFilterContextInternal Context { get; }
+
+    public IServerFilter[] Filters { get; }
+
+    public ValueTask InvokeAsync(Func<IServerFilterContextInternal, ValueTask> last)
+    {
+        _last = last;
+        return NextAsync();
+    }
+
+    private ValueTask NextAsync()
+    {
+        var index = Interlocked.Increment(ref _processedIndex);
+        if (index >= 0 && index < Filters.Length)
         {
-            Context = context;
-            Filters = filters;
-            _nextAsync = NextAsync;
-            _processedIndex = -1;
+            var filter = Filters[index];
+            Filters[index] = null!;
+            return filter.InvokeAsync(Context, _nextAsync);
         }
 
-        public IServerFilterContextInternal Context { get; }
-
-        public IServerFilter[] Filters { get; }
-
-        public ValueTask InvokeAsync(Func<IServerFilterContextInternal, ValueTask> last)
+        var last = Interlocked.Exchange(ref _last, null);
+        if (last != null)
         {
-            _last = last;
-            return NextAsync();
+            return last(Context);
         }
 
-        private ValueTask NextAsync()
-        {
-            var index = Interlocked.Increment(ref _processedIndex);
-            if (index >= 0 && index < Filters.Length)
-            {
-                var filter = Filters[index];
-                Filters[index] = null!;
-                return filter.InvokeAsync(Context, _nextAsync);
-            }
-
-            var last = Interlocked.Exchange(ref _last, null);
-            if (last != null)
-            {
-                return last(Context);
-            }
-
-            return new ValueTask(Task.CompletedTask);
-        }
+        return new ValueTask(Task.CompletedTask);
     }
 }

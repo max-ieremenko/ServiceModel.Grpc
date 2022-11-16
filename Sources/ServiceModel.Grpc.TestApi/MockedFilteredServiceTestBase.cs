@@ -22,60 +22,59 @@ using ServiceModel.Grpc.Filters;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
 
-namespace ServiceModel.Grpc.TestApi
+namespace ServiceModel.Grpc.TestApi;
+
+public abstract class MockedFilteredServiceTestBase
 {
-    public abstract class MockedFilteredServiceTestBase
+    protected IFilteredService DomainService { get; set; } = null!;
+
+    [Test]
+    public async Task UnaryAsync()
     {
-        protected IFilteredService DomainService { get; set; } = null!;
+        var track = await DomainService.UnaryAsync(new[] { "client-call" }).ConfigureAwait(false);
 
-        [Test]
-        public async Task UnaryAsync()
+        track.ShouldBeNull();
+    }
+
+    [Test]
+    public async Task ClientStreamAsync()
+    {
+        var stream = new[] { 1, 2, 3 }.AsAsyncEnumerable();
+        var track = await DomainService.ClientStreamAsync(stream, new[] { "client-call" }).ConfigureAwait(false);
+
+        track.ShouldBeNull();
+    }
+
+    [Test]
+    public async Task ServerStreamAsync()
+    {
+        var (stream, track) = await DomainService.ServerStreamAsync(new[] { "client-call" }).ConfigureAwait(false);
+
+        var data = await stream.ToListAsync().ConfigureAwait(false);
+        data.ShouldBeEmpty();
+        track.ShouldBeNull();
+    }
+
+    [Test]
+    public async Task DuplexStreamAsync()
+    {
+        var inputStream = new[] { 1, 2, 3 }.AsAsyncEnumerable();
+        var (outStream, track) = await DomainService.DuplexStreamAsync(inputStream, new[] { "client-call" }).ConfigureAwait(false);
+
+        var data = await outStream.ToListAsync().ConfigureAwait(false);
+        data.ShouldBeEmpty();
+        track.ShouldBeNull();
+    }
+
+    protected sealed class MockServerFilter : IServerFilter
+    {
+        public async ValueTask InvokeAsync(IServerFilterContext context, Func<ValueTask> next)
         {
-            var track = await DomainService.UnaryAsync(new[] { "client-call" }).ConfigureAwait(false);
-
-            track.ShouldBeNull();
-        }
-
-        [Test]
-        public async Task ClientStreamAsync()
-        {
-            var stream = new[] { 1, 2, 3 }.AsAsyncEnumerable();
-            var track = await DomainService.ClientStreamAsync(stream, new[] { "client-call" }).ConfigureAwait(false);
-
-            track.ShouldBeNull();
-        }
-
-        [Test]
-        public async Task ServerStreamAsync()
-        {
-            var (stream, track) = await DomainService.ServerStreamAsync(new[] { "client-call" }).ConfigureAwait(false);
-
-            var data = await stream.ToListAsync().ConfigureAwait(false);
-            data.ShouldBeEmpty();
-            track.ShouldBeNull();
-        }
-
-        [Test]
-        public async Task DuplexStreamAsync()
-        {
-            var inputStream = new[] { 1, 2, 3 }.AsAsyncEnumerable();
-            var (outStream, track) = await DomainService.DuplexStreamAsync(inputStream, new[] { "client-call" }).ConfigureAwait(false);
-
-            var data = await outStream.ToListAsync().ConfigureAwait(false);
-            data.ShouldBeEmpty();
-            track.ShouldBeNull();
-        }
-
-        protected sealed class MockServerFilter : IServerFilter
-        {
-            public async ValueTask InvokeAsync(IServerFilterContext context, Func<ValueTask> next)
+            var clientStream = (IAsyncEnumerable<int>?)context.Request.Stream;
+            if (clientStream != null)
             {
-                var clientStream = (IAsyncEnumerable<int>?)context.Request.Stream;
-                if (clientStream != null)
+                await foreach (var i in clientStream.ConfigureAwait(false))
                 {
-                    await foreach (var i in clientStream.ConfigureAwait(false))
-                    {
-                    }
                 }
             }
         }

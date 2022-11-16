@@ -19,48 +19,47 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace ServiceModel.Grpc.DesignTime.Generator
+namespace ServiceModel.Grpc.DesignTime.Generator;
+
+internal sealed class SourceGeneratorSyntaxReceiver : ISyntaxReceiver
 {
-    internal sealed class SourceGeneratorSyntaxReceiver : ISyntaxReceiver
+    public IList<ClassDeclarationSyntax> Candidates { get; } = new List<ClassDeclarationSyntax>();
+
+    public static bool IsCandidate(SyntaxNode syntaxNode)
     {
-        public IList<ClassDeclarationSyntax> Candidates { get; } = new List<ClassDeclarationSyntax>();
+        return syntaxNode is ClassDeclarationSyntax owner
+               && ContainsGrpcServiceAttribute(owner.AttributeLists);
+    }
 
-        public static bool IsCandidate(SyntaxNode syntaxNode)
+    public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
+    {
+        if (IsCandidate(syntaxNode))
         {
-            return syntaxNode is ClassDeclarationSyntax owner
-                   && ContainsGrpcServiceAttribute(owner.AttributeLists);
+            Candidates.Add((ClassDeclarationSyntax)syntaxNode);
         }
+    }
 
-        public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
+    private static bool ContainsGrpcServiceAttribute(in SyntaxList<AttributeListSyntax> attributeLists)
+    {
+        for (var i = 0; i < attributeLists.Count; i++)
         {
-            if (IsCandidate(syntaxNode))
+            var attributes = attributeLists[i].Attributes;
+            for (var j = 0; j < attributes.Count; j++)
             {
-                Candidates.Add((ClassDeclarationSyntax)syntaxNode);
-            }
-        }
-
-        private static bool ContainsGrpcServiceAttribute(in SyntaxList<AttributeListSyntax> attributeLists)
-        {
-            for (var i = 0; i < attributeLists.Count; i++)
-            {
-                var attributes = attributeLists[i].Attributes;
-                for (var j = 0; j < attributes.Count; j++)
+                if (DoesLookLikeGrpcServiceAttribute(attributes[j]))
                 {
-                    if (DoesLookLikeGrpcServiceAttribute(attributes[j]))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
-
-            return false;
         }
 
-        private static bool DoesLookLikeGrpcServiceAttribute(AttributeSyntax attribute)
-        {
-            var name = attribute.Name.ToString();
-            return name.IndexOf("ExportGrpcService", StringComparison.Ordinal) >= 0
-                   || name.IndexOf("ImportGrpcService", StringComparison.Ordinal) >= 0;
-        }
+        return false;
+    }
+
+    private static bool DoesLookLikeGrpcServiceAttribute(AttributeSyntax attribute)
+    {
+        var name = attribute.Name.ToString();
+        return name.IndexOf("ExportGrpcService", StringComparison.Ordinal) >= 0
+               || name.IndexOf("ImportGrpcService", StringComparison.Ordinal) >= 0;
     }
 }

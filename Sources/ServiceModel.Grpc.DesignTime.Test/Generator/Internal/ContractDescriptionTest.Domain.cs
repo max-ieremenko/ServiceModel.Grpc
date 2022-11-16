@@ -18,60 +18,59 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Threading.Tasks;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal;
+
+public partial class ContractDescriptionTest
 {
-    public partial class ContractDescriptionTest
+    [ServiceContract]
+    public interface IDuplicateOperationName
     {
-        [ServiceContract]
-        public interface IDuplicateOperationName
-        {
-            [OperationContract]
-            void Ping();
+        [OperationContract]
+        void Ping();
 
-            [OperationContract]
-            void Ping(int x);
-        }
+        [OperationContract]
+        void Ping(int x);
+    }
 
-        [ServiceContract(Name = "Service")]
-        public interface IDuplicateServiceNameBase
-        {
-            [OperationContract]
-            void Ping();
-        }
+    [ServiceContract(Name = "Service")]
+    public interface IDuplicateServiceNameBase
+    {
+        [OperationContract]
+        void Ping();
+    }
 
-        [ServiceContract(Name = "Service")]
-        public interface IDuplicateServiceName : IDuplicateServiceNameBase
-        {
-            [OperationContract]
-            void Ping(int x);
-        }
+    [ServiceContract(Name = "Service")]
+    public interface IDuplicateServiceName : IDuplicateServiceNameBase
+    {
+        [OperationContract]
+        void Ping(int x);
+    }
 
-        [ServiceContract]
-        public interface IGenericService<TValue>
-        {
-            [OperationContract]
-            TValue Ping(TValue value);
-        }
+    [ServiceContract]
+    public interface IGenericService<TValue>
+    {
+        [OperationContract]
+        TValue Ping(TValue value);
+    }
 
-        [ServiceContract]
-        public interface ICalculator<TValue> : IGenericService<TValue>
-        {
-            [OperationContract]
-            TValue Sum(TValue x, TValue y);
-        }
+    [ServiceContract]
+    public interface ICalculator<TValue> : IGenericService<TValue>
+    {
+        [OperationContract]
+        TValue Sum(TValue x, TValue y);
+    }
 
-        [ServiceContract]
-        public interface ISyncOveAsync
-        {
-            void Ping();
+    [ServiceContract]
+    public interface ISyncOveAsync
+    {
+        void Ping();
 
-            [OperationContract]
-            Task PingAsync();
-        }
+        [OperationContract]
+        Task PingAsync();
+    }
 
-        [DataContract(Name = "Some-Value")]
-        public sealed class TheValue
-        {
-        }
+    [DataContract(Name = "Some-Value")]
+    public sealed class TheValue
+    {
     }
 }

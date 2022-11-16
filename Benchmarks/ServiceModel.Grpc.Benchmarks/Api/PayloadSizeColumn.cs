@@ -22,76 +22,75 @@ using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 
-namespace ServiceModel.Grpc.Benchmarks.Api
+namespace ServiceModel.Grpc.Benchmarks.Api;
+
+internal sealed class PayloadSizeColumn : IColumn
 {
-    internal sealed class PayloadSizeColumn : IColumn
+    public string Id => nameof(PayloadSizeColumn);
+
+    public string ColumnName => "Message size";
+
+    public bool AlwaysShow => true;
+
+    public ColumnCategory Category => ColumnCategory.Custom;
+
+    public int PriorityInCategory => int.MaxValue;
+
+    public bool IsNumeric => false;
+
+    public UnitType UnitType => UnitType.Size;
+
+    public string Legend => "Grpc message size";
+
+    public string GetValue(Summary summary, BenchmarkCase benchmarkCase)
     {
-        public string Id => nameof(PayloadSizeColumn);
+        return GetValue(summary, benchmarkCase, SummaryStyle.Default);
+    }
 
-        public string ColumnName => "Message size";
-
-        public bool AlwaysShow => true;
-
-        public ColumnCategory Category => ColumnCategory.Custom;
-
-        public int PriorityInCategory => int.MaxValue;
-
-        public bool IsNumeric => false;
-
-        public UnitType UnitType => UnitType.Size;
-
-        public string Legend => "Grpc message size";
-
-        public string GetValue(Summary summary, BenchmarkCase benchmarkCase)
+    public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style)
+    {
+        var methodName = benchmarkCase.Descriptor.WorkloadMethod.GetCustomAttribute<PayloadSizeColumnAttribute>()?.MethodName;
+        if (string.IsNullOrEmpty(methodName))
         {
-            return GetValue(summary, benchmarkCase, SummaryStyle.Default);
+            return "-";
         }
 
-        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style)
+        var benchmark = Activator.CreateInstance(benchmarkCase.Descriptor.Type);
+        var method = benchmark
+            .GetType()
+            .GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+            .CreateDelegate<Func<ValueTask<long>>>(benchmark);
+
+        var size = method().Result;
+        return LengthToString(size);
+    }
+
+    public bool IsDefault(Summary summary, BenchmarkCase benchmarkCase)
+    {
+        return false;
+    }
+
+    public bool IsAvailable(Summary summary)
+    {
+        return true;
+    }
+
+    private static string LengthToString(long length)
+    {
+        string units;
+        double value;
+        if (length >= 0x400)
         {
-            var methodName = benchmarkCase.Descriptor.WorkloadMethod.GetCustomAttribute<PayloadSizeColumnAttribute>()?.MethodName;
-            if (string.IsNullOrEmpty(methodName))
-            {
-                return "-";
-            }
-
-            var benchmark = Activator.CreateInstance(benchmarkCase.Descriptor.Type);
-            var method = benchmark
-                .GetType()
-                .GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                .CreateDelegate<Func<ValueTask<long>>>(benchmark);
-
-            var size = method().Result;
-            return LengthToString(size);
+            units = " KB";
+            value = length;
+            value = value / 1024;
+        }
+        else
+        {
+            units = " B";
+            value = length;
         }
 
-        public bool IsDefault(Summary summary, BenchmarkCase benchmarkCase)
-        {
-            return false;
-        }
-
-        public bool IsAvailable(Summary summary)
-        {
-            return true;
-        }
-
-        private static string LengthToString(long length)
-        {
-            string units;
-            double value;
-            if (length >= 0x400)
-            {
-                units = " KB";
-                value = length;
-                value = value / 1024;
-            }
-            else
-            {
-                units = " B";
-                value = length;
-            }
-
-            return value.ToString("0.##", CultureInfo.InvariantCulture) + units;
-        }
+        return value.ToString("0.##", CultureInfo.InvariantCulture) + units;
     }
 }

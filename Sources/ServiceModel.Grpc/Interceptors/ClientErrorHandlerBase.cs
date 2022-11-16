@@ -17,56 +17,55 @@
 using System;
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Interceptors
+namespace ServiceModel.Grpc.Interceptors;
+
+/// <summary>
+/// Provides basic functionality for client side error handling.
+/// </summary>
+public abstract class ClientErrorHandlerBase : IClientErrorHandler
 {
     /// <summary>
-    /// Provides basic functionality for client side error handling.
+    /// Return true is the current call was cancelled.
     /// </summary>
-    public abstract class ClientErrorHandlerBase : IClientErrorHandler
+    /// <param name="context">The context associated with the current call.</param>
+    /// <param name="error">The original <see cref="RpcException"/> raised by <see cref="CallInvoker"/>.</param>
+    /// <returns>True if current call was cancelled, otherwise false.</returns>
+    public static bool IsOperationCancelled(ClientCallInterceptorContext context, RpcException error)
     {
-        /// <summary>
-        /// Return true is the current call was cancelled.
-        /// </summary>
-        /// <param name="context">The context associated with the current call.</param>
-        /// <param name="error">The original <see cref="RpcException"/> raised by <see cref="CallInvoker"/>.</param>
-        /// <returns>True if current call was cancelled, otherwise false.</returns>
-        public static bool IsOperationCancelled(ClientCallInterceptorContext context, RpcException error)
-        {
-            return context.CallOptions.CancellationToken.IsCancellationRequested;
-        }
-
-        /// <summary>
-        /// If current call is cancelled invokes OnOperationCancelled, otherwise invokes ThrowOrIgnoreCore.
-        /// </summary>
-        /// <param name="context">The context associated with the current call.</param>
-        /// <param name="detail">The exception details.</param>
-        public virtual void ThrowOrIgnore(ClientCallInterceptorContext context, ClientFaultDetail detail)
-        {
-            // the request is already aborted, no extra details are available from server
-            if (IsOperationCancelled(context, detail.OriginalError))
-            {
-                OnOperationCancelled(context, detail.OriginalError);
-            }
-
-            ThrowOrIgnoreCore(context, detail);
-        }
-
-        /// <summary>
-        /// Enables custom action when call is cancelled.
-        /// Call is already aborted by a client, no external detail is available.
-        /// </summary>
-        /// <param name="context">The context associated with the current call.</param>
-        /// <param name="error">The original <see cref="RpcException"/> raised by <see cref="CallInvoker"/>.</param>
-        protected virtual void OnOperationCancelled(ClientCallInterceptorContext context, RpcException error)
-        {
-            throw new OperationCanceledException(null, error, context.CallOptions.CancellationToken);
-        }
-
-        /// <summary>
-        /// Handle the exception that was raised by <see cref="CallInvoker"/>.
-        /// </summary>
-        /// <param name="context">The context associated with the current call.</param>
-        /// <param name="detail">The exception details.</param>
-        protected abstract void ThrowOrIgnoreCore(ClientCallInterceptorContext context, ClientFaultDetail detail);
+        return context.CallOptions.CancellationToken.IsCancellationRequested;
     }
+
+    /// <summary>
+    /// If current call is cancelled invokes OnOperationCancelled, otherwise invokes ThrowOrIgnoreCore.
+    /// </summary>
+    /// <param name="context">The context associated with the current call.</param>
+    /// <param name="detail">The exception details.</param>
+    public virtual void ThrowOrIgnore(ClientCallInterceptorContext context, ClientFaultDetail detail)
+    {
+        // the request is already aborted, no extra details are available from server
+        if (IsOperationCancelled(context, detail.OriginalError))
+        {
+            OnOperationCancelled(context, detail.OriginalError);
+        }
+
+        ThrowOrIgnoreCore(context, detail);
+    }
+
+    /// <summary>
+    /// Enables custom action when call is cancelled.
+    /// Call is already aborted by a client, no external detail is available.
+    /// </summary>
+    /// <param name="context">The context associated with the current call.</param>
+    /// <param name="error">The original <see cref="RpcException"/> raised by <see cref="CallInvoker"/>.</param>
+    protected virtual void OnOperationCancelled(ClientCallInterceptorContext context, RpcException error)
+    {
+        throw new OperationCanceledException(null, error, context.CallOptions.CancellationToken);
+    }
+
+    /// <summary>
+    /// Handle the exception that was raised by <see cref="CallInvoker"/>.
+    /// </summary>
+    /// <param name="context">The context associated with the current call.</param>
+    /// <param name="detail">The exception details.</param>
+    protected abstract void ThrowOrIgnoreCore(ClientCallInterceptorContext context, ClientFaultDetail detail);
 }

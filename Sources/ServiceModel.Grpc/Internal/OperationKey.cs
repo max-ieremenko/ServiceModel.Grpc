@@ -16,32 +16,31 @@
 
 using System;
 
-namespace ServiceModel.Grpc.Internal
+namespace ServiceModel.Grpc.Internal;
+
+internal readonly struct OperationKey : IEquatable<OperationKey>
 {
-    internal readonly struct OperationKey : IEquatable<OperationKey>
+    private readonly string _serviceName;
+    private readonly string _operationName;
+
+    public OperationKey(string serviceName, string operationName)
     {
-        private readonly string _serviceName;
-        private readonly string _operationName;
+        _serviceName = serviceName;
+        _operationName = operationName;
+    }
 
-        public OperationKey(string serviceName, string operationName)
-        {
-            _serviceName = serviceName;
-            _operationName = operationName;
-        }
+    public bool Equals(OperationKey other)
+    {
+        return StringComparer.OrdinalIgnoreCase.Equals(_serviceName, _serviceName)
+               && StringComparer.OrdinalIgnoreCase.Equals(_operationName, _operationName);
+    }
 
-        public bool Equals(OperationKey other)
-        {
-            return StringComparer.OrdinalIgnoreCase.Equals(_serviceName, _serviceName)
-                   && StringComparer.OrdinalIgnoreCase.Equals(_operationName, _operationName);
-        }
+    public override bool Equals(object obj) => throw new NotSupportedException();
 
-        public override bool Equals(object obj) => throw new NotSupportedException();
-
-        public override int GetHashCode()
-        {
-            var h1 = StringComparer.OrdinalIgnoreCase.GetHashCode(_serviceName);
-            var h2 = StringComparer.OrdinalIgnoreCase.GetHashCode(_operationName);
-            return ((h1 << 5) + h1) ^ h2;
-        }
+    public override int GetHashCode()
+    {
+        var h1 = StringComparer.OrdinalIgnoreCase.GetHashCode(_serviceName);
+        var h2 = StringComparer.OrdinalIgnoreCase.GetHashCode(_operationName);
+        return ((h1 << 5) + h1) ^ h2;
     }
 }

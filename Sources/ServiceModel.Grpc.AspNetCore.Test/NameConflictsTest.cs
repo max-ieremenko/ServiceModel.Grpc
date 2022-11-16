@@ -20,44 +20,43 @@ using NUnit.Framework;
 using ServiceModel.Grpc.AspNetCore.TestApi;
 using Shouldly;
 
-namespace ServiceModel.Grpc.AspNetCore
+namespace ServiceModel.Grpc.AspNetCore;
+
+[TestFixture]
+public partial class NameConflictsTest
 {
-    [TestFixture]
-    public partial class NameConflictsTest
+    private KestrelHost _host = null!;
+    private ICalculator _calculator = null!;
+
+    [OneTimeSetUp]
+    public async Task BeforeAll()
     {
-        private KestrelHost _host = null!;
-        private ICalculator _calculator = null!;
+        _host = await new KestrelHost()
+            .ConfigureEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<Calculator>();
+            })
+            .StartAsync()
+            .ConfigureAwait(false);
 
-        [OneTimeSetUp]
-        public async Task BeforeAll()
-        {
-            _host = await new KestrelHost()
-                .ConfigureEndpoints(endpoints =>
-                {
-                    endpoints.MapGrpcService<Calculator>();
-                })
-                .StartAsync()
-                .ConfigureAwait(false);
+        _calculator = _host.ClientFactory.CreateClient<ICalculator>(_host.Channel);
+    }
 
-            _calculator = _host.ClientFactory.CreateClient<ICalculator>(_host.Channel);
-        }
+    [OneTimeTearDown]
+    public async Task AfterAll()
+    {
+        await _host.DisposeAsync().ConfigureAwait(false);
+    }
 
-        [OneTimeTearDown]
-        public async Task AfterAll()
-        {
-            await _host.DisposeAsync().ConfigureAwait(false);
-        }
+    [Test]
+    public void Sum2()
+    {
+        _calculator.Sum(1, 2).ShouldBe(4);
+    }
 
-        [Test]
-        public void Sum2()
-        {
-            _calculator.Sum(1, 2).ShouldBe(4);
-        }
-
-        [Test]
-        public void Sum3()
-        {
-            _calculator.Sum(1, 2, 3).ShouldBe(5);
-        }
+    [Test]
+    public void Sum3()
+    {
+        _calculator.Sum(1, 2, 3).ShouldBe(5);
     }
 }

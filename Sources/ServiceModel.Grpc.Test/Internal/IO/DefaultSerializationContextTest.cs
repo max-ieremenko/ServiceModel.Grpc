@@ -18,41 +18,40 @@ using System;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Internal.IO
+namespace ServiceModel.Grpc.Internal.IO;
+
+[TestFixture]
+public class DefaultSerializationContextTest
 {
-    [TestFixture]
-    public class DefaultSerializationContextTest
+    private DefaultSerializationContext _sut = null!;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private DefaultSerializationContext _sut = null!;
+        _sut = new DefaultSerializationContext();
+    }
 
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            _sut = new DefaultSerializationContext();
-        }
+    [Test]
+    public void EmulateContextualSerializer()
+    {
+        var payload = Guid.NewGuid().ToByteArray();
 
-        [Test]
-        public void EmulateContextualSerializer()
-        {
-            var payload = Guid.NewGuid().ToByteArray();
+        _sut.Complete(payload);
 
-            _sut.Complete(payload);
+        _sut.GetContent().ShouldBe(payload);
+    }
 
-            _sut.GetContent().ShouldBe(payload);
-        }
+    [Test]
+    public void Write()
+    {
+        var payload = Guid.NewGuid().ToByteArray();
 
-        [Test]
-        public void Write()
-        {
-            var payload = Guid.NewGuid().ToByteArray();
+        var writer = _sut.GetBufferWriter();
+        var span = writer.GetSpan(payload.Length);
+        payload.AsSpan(0).CopyTo(span);
+        writer.Advance(payload.Length);
 
-            var writer = _sut.GetBufferWriter();
-            var span = writer.GetSpan(payload.Length);
-            payload.AsSpan(0).CopyTo(span);
-            writer.Advance(payload.Length);
-
-            _sut.Complete();
-            _sut.GetContent().ShouldBe(payload);
-        }
+        _sut.Complete();
+        _sut.GetContent().ShouldBe(payload);
     }
 }

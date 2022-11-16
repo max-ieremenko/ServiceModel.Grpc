@@ -17,25 +17,24 @@
 using ServiceModel.Grpc.AspNetCore.NSwag.Configuration;
 
 //// ReSharper disable CheckNamespace
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
 //// ReSharper restore CheckNamespace
+
+/// <summary>
+/// Provides a configuration for ServiceModel.Grpc integration with NSwag.
+/// </summary>
+public sealed class ServiceModelGrpcSwaggerOptions
 {
     /// <summary>
-    /// Provides a configuration for ServiceModel.Grpc integration with NSwag.
+    /// Initializes a new instance of the <see cref="ServiceModelGrpcSwaggerOptions"/> class with <see cref="SystemTextJsonSerializer"/>.
     /// </summary>
-    public sealed class ServiceModelGrpcSwaggerOptions
+    public ServiceModelGrpcSwaggerOptions()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ServiceModelGrpcSwaggerOptions"/> class with <see cref="SystemTextJsonSerializer"/>.
-        /// </summary>
-        public ServiceModelGrpcSwaggerOptions()
-        {
-            JsonSerializer = new SystemTextJsonSerializer();
-        }
-
-        /// <summary>
-        /// Gets or sets the <see cref="IJsonSerializer"/> which handles data serialization and deserialization for HTTP/1.1 JSON Swagger UI gateway.
-        /// </summary>
-        public IJsonSerializer JsonSerializer { get; set; }
+        JsonSerializer = new SystemTextJsonSerializer();
     }
+
+    /// <summary>
+    /// Gets or sets the <see cref="IJsonSerializer"/> which handles data serialization and deserialization for HTTP/1.1 JSON Swagger UI gateway.
+    /// </summary>
+    public IJsonSerializer JsonSerializer { get; set; }
 }

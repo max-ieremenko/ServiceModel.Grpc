@@ -21,99 +21,98 @@ using Grpc.Core;
 using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
 
-namespace ServiceModel.Grpc.Internal.Emit
+namespace ServiceModel.Grpc.Internal.Emit;
+
+internal sealed class EmitClientBuilderBuilder
 {
-    internal sealed class EmitClientBuilderBuilder
+    private readonly ContractDescription _description;
+    private readonly Type _contractType;
+    private readonly Type _clientType;
+    private readonly Type _clientBuilderType;
+
+    private FieldBuilder _contractField = null!;
+    private FieldBuilder _callOptionsFactoryField = null!;
+
+    public EmitClientBuilderBuilder(ContractDescription description, Type contractType, Type clientType)
     {
-        private readonly ContractDescription _description;
-        private readonly Type _contractType;
-        private readonly Type _clientType;
-        private readonly Type _clientBuilderType;
+        _description = description;
+        _contractType = contractType;
+        _clientType = clientType;
+        _clientBuilderType = typeof(IClientBuilder<>).MakeGenericType(_description.ServiceType);
+    }
 
-        private FieldBuilder _contractField = null!;
-        private FieldBuilder _callOptionsFactoryField = null!;
+    public TypeInfo Build(ModuleBuilder moduleBuilder)
+    {
+        var typeBuilder = moduleBuilder.DefineType(
+            _description.ClientBuilderClassName,
+            TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit);
 
-        public EmitClientBuilderBuilder(ContractDescription description, Type contractType, Type clientType)
-        {
-            _description = description;
-            _contractType = contractType;
-            _clientType = clientType;
-            _clientBuilderType = typeof(IClientBuilder<>).MakeGenericType(_description.ServiceType);
-        }
+        typeBuilder.AddInterfaceImplementation(_clientBuilderType);
 
-        public TypeInfo Build(ModuleBuilder moduleBuilder)
-        {
-            var typeBuilder = moduleBuilder.DefineType(
-                _description.ClientBuilderClassName,
-                TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit);
+        BuildFields(typeBuilder);
+        BuildInitializeMethod(typeBuilder);
+        BuildBuildMethod(typeBuilder);
 
-            typeBuilder.AddInterfaceImplementation(_clientBuilderType);
+        return typeBuilder.CreateTypeInfo()!;
+    }
 
-            BuildFields(typeBuilder);
-            BuildInitializeMethod(typeBuilder);
-            BuildBuildMethod(typeBuilder);
+    private void BuildFields(TypeBuilder typeBuilder)
+    {
+        _contractField = typeBuilder.DefineField("_contract", _contractType, FieldAttributes.Private);
+        _callOptionsFactoryField = typeBuilder.DefineField("_defaultCallOptionsFactory", typeof(Func<CallOptions>), FieldAttributes.Private);
+    }
 
-            return typeBuilder.CreateTypeInfo()!;
-        }
+    private void BuildInitializeMethod(TypeBuilder typeBuilder)
+    {
+        var method = typeBuilder
+            .DefineMethod(
+                "Initialize",
+                MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
+                typeof(void),
+                new[] { typeof(IMarshallerFactory), typeof(Func<CallOptions>) });
 
-        private void BuildFields(TypeBuilder typeBuilder)
-        {
-            _contractField = typeBuilder.DefineField("_contract", _contractType, FieldAttributes.Private);
-            _callOptionsFactoryField = typeBuilder.DefineField("_defaultCallOptionsFactory", typeof(Func<CallOptions>), FieldAttributes.Private);
-        }
+        typeBuilder.DefineMethodOverride(
+            method,
+            _clientBuilderType.InstanceMethod("Initialize"));
 
-        private void BuildInitializeMethod(TypeBuilder typeBuilder)
-        {
-            var method = typeBuilder
-                .DefineMethod(
-                    "Initialize",
-                    MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
-                    typeof(void),
-                    new[] { typeof(IMarshallerFactory), typeof(Func<CallOptions>) });
+        var body = method.GetILGenerator();
 
-            typeBuilder.DefineMethodOverride(
-                method,
-                _clientBuilderType.InstanceMethod("Initialize"));
+        // _contract = new (marshallerFactory);
+        body.Emit(OpCodes.Ldarg_0);
+        body.Emit(OpCodes.Ldarg_1);
+        body.Emit(OpCodes.Newobj, _contractType.Constructor(typeof(IMarshallerFactory)));
+        body.Emit(OpCodes.Stfld, _contractField);
 
-            var body = method.GetILGenerator();
+        // _defaultCallOptionsFactory = defaultCallOptionsFactory
+        body.Emit(OpCodes.Ldarg_0);
+        body.Emit(OpCodes.Ldarg_2);
+        body.Emit(OpCodes.Stfld, _callOptionsFactoryField);
 
-            // _contract = new (marshallerFactory);
-            body.Emit(OpCodes.Ldarg_0);
-            body.Emit(OpCodes.Ldarg_1);
-            body.Emit(OpCodes.Newobj, _contractType.Constructor(typeof(IMarshallerFactory)));
-            body.Emit(OpCodes.Stfld, _contractField);
+        body.Emit(OpCodes.Ret);
+    }
 
-            // _defaultCallOptionsFactory = defaultCallOptionsFactory
-            body.Emit(OpCodes.Ldarg_0);
-            body.Emit(OpCodes.Ldarg_2);
-            body.Emit(OpCodes.Stfld, _callOptionsFactoryField);
+    private void BuildBuildMethod(TypeBuilder typeBuilder)
+    {
+        var method = typeBuilder
+            .DefineMethod(
+                "Build",
+                MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
+                _description.ServiceType,
+                new[] { typeof(CallInvoker) });
 
-            body.Emit(OpCodes.Ret);
-        }
+        typeBuilder.DefineMethodOverride(
+            method,
+            _clientBuilderType.InstanceMethod("Build"));
 
-        private void BuildBuildMethod(TypeBuilder typeBuilder)
-        {
-            var method = typeBuilder
-                .DefineMethod(
-                    "Build",
-                    MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
-                    _description.ServiceType,
-                    new[] { typeof(CallInvoker) });
+        var body = method.GetILGenerator();
 
-            typeBuilder.DefineMethodOverride(
-                method,
-                _clientBuilderType.InstanceMethod("Build"));
-
-            var body = method.GetILGenerator();
-
-            // new (callInvoker, _contract, _defaultCallOptionsFactory)
-            body.Emit(OpCodes.Ldarg_1);
-            body.Emit(OpCodes.Ldarg_0);
-            body.Emit(OpCodes.Ldfld, _contractField);
-            body.Emit(OpCodes.Ldarg_0);
-            body.Emit(OpCodes.Ldfld, _callOptionsFactoryField);
-            body.Emit(OpCodes.Newobj, _clientType.Constructor(typeof(CallInvoker), _contractType, typeof(Func<CallOptions>)));
-            body.Emit(OpCodes.Ret);
-        }
+        // new (callInvoker, _contract, _defaultCallOptionsFactory)
+        body.Emit(OpCodes.Ldarg_1);
+        body.Emit(OpCodes.Ldarg_0);
+        body.Emit(OpCodes.Ldfld, _contractField);
+        body.Emit(OpCodes.Ldarg_0);
+        body.Emit(OpCodes.Ldfld, _callOptionsFactoryField);
+        body.Emit(OpCodes.Newobj, _clientType.Constructor(typeof(CallInvoker), _contractType, typeof(Func<CallOptions>)));
+        body.Emit(OpCodes.Ret);
     }
 }

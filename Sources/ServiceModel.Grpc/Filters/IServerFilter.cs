@@ -17,19 +17,18 @@
 using System;
 using System.Threading.Tasks;
 
-namespace ServiceModel.Grpc.Filters
+namespace ServiceModel.Grpc.Filters;
+
+/// <summary>
+/// A filter that surrounds execution of the method.
+/// </summary>
+public interface IServerFilter
 {
     /// <summary>
-    /// A filter that surrounds execution of the method.
+    /// Call handling method.
     /// </summary>
-    public interface IServerFilter
-    {
-        /// <summary>
-        /// Call handling method.
-        /// </summary>
-        /// <param name="context">The <see cref="IServerFilterContext"/> for the current call.</param>
-        /// <param name="next">The delegate representing the remaining call in the request pipeline.</param>
-        /// <returns>A <see cref="ValueTask"/> that represents the execution of this filter.</returns>
-        ValueTask InvokeAsync(IServerFilterContext context, Func<ValueTask> next);
-    }
+    /// <param name="context">The <see cref="IServerFilterContext"/> for the current call.</param>
+    /// <param name="next">The delegate representing the remaining call in the request pipeline.</param>
+    /// <returns>A <see cref="ValueTask"/> that represents the execution of this filter.</returns>
+    ValueTask InvokeAsync(IServerFilterContext context, Func<ValueTask> next);
 }

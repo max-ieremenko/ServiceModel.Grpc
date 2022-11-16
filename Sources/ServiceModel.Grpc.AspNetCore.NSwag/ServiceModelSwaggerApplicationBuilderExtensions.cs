@@ -17,28 +17,27 @@
 using System;
 
 //// ReSharper disable CheckNamespace
-namespace Microsoft.AspNetCore.Builder
+namespace Microsoft.AspNetCore.Builder;
 //// ReSharper restore CheckNamespace
+
+/// <summary>
+/// Provides a set of methods to simplify registration of ServiceModel.Grpc integration with NSwag.
+/// </summary>
+public static class ServiceModelSwaggerApplicationBuilderExtensions
 {
     /// <summary>
-    /// Provides a set of methods to simplify registration of ServiceModel.Grpc integration with NSwag.
+    /// Enables HTTP/1.1 JSON Swagger UI gateway.
     /// </summary>
-    public static class ServiceModelSwaggerApplicationBuilderExtensions
+    /// <param name="app">The <see cref="IApplicationBuilder"/>.</param>
+    /// <returns>The <paramref name="app"/>.</returns>
+    public static IApplicationBuilder UseServiceModelGrpcSwaggerGateway(this IApplicationBuilder app)
     {
-        /// <summary>
-        /// Enables HTTP/1.1 JSON Swagger UI gateway.
-        /// </summary>
-        /// <param name="app">The <see cref="IApplicationBuilder"/>.</param>
-        /// <returns>The <paramref name="app"/>.</returns>
-        public static IApplicationBuilder UseServiceModelGrpcSwaggerGateway(this IApplicationBuilder app)
+        if (app == null)
         {
-            if (app == null)
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
-
-            ServiceModel.Grpc.AspNetCore.ApplicationBuilderExtensions.UseSwagger(app);
-            return app;
+            throw new ArgumentNullException(nameof(app));
         }
+
+        ServiceModel.Grpc.AspNetCore.ApplicationBuilderExtensions.UseSwagger(app);
+        return app;
     }
 }

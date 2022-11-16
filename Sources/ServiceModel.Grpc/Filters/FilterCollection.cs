@@ -17,39 +17,38 @@
 using System;
 using System.Collections.ObjectModel;
 
-namespace ServiceModel.Grpc.Filters
+namespace ServiceModel.Grpc.Filters;
+
+/// <summary>
+/// Represents the pipeline of filters to be invoked when processing a gRPC call.
+/// </summary>
+/// <typeparam name="TFilter">The filter type.</typeparam>
+public sealed class FilterCollection<TFilter> : Collection<FilterRegistration<TFilter>>
+    where TFilter : class
 {
     /// <summary>
-    /// Represents the pipeline of filters to be invoked when processing a gRPC call.
+    /// Add a filter to the pipeline.
     /// </summary>
-    /// <typeparam name="TFilter">The filter type.</typeparam>
-    public sealed class FilterCollection<TFilter> : Collection<FilterRegistration<TFilter>>
-        where TFilter : class
+    /// <param name="order">The order value for determining the order of execution of filters.</param>
+    /// <param name="filter">The filter instance.</param>
+    /// <returns>Self.</returns>
+    public FilterCollection<TFilter> Add(int order, TFilter filter)
     {
-        /// <summary>
-        /// Add a filter to the pipeline.
-        /// </summary>
-        /// <param name="order">The order value for determining the order of execution of filters.</param>
-        /// <param name="filter">The filter instance.</param>
-        /// <returns>Self.</returns>
-        public FilterCollection<TFilter> Add(int order, TFilter filter)
-        {
-            filter.AssertNotNull(nameof(filter));
+        filter.AssertNotNull(nameof(filter));
 
-            Add(new FilterRegistration<TFilter>(order, _ => filter));
-            return this;
-        }
+        Add(new FilterRegistration<TFilter>(order, _ => filter));
+        return this;
+    }
 
-        /// <summary>
-        /// Add a filter to the pipeline.
-        /// </summary>
-        /// <param name="order">The order value for determining the order of execution of filters.</param>
-        /// <param name="factory">The filter factory.</param>
-        /// <returns>Self.</returns>
-        public FilterCollection<TFilter> Add(int order, Func<IServiceProvider, TFilter> factory)
-        {
-            Add(new FilterRegistration<TFilter>(order, factory));
-            return this;
-        }
+    /// <summary>
+    /// Add a filter to the pipeline.
+    /// </summary>
+    /// <param name="order">The order value for determining the order of execution of filters.</param>
+    /// <param name="factory">The filter factory.</param>
+    /// <returns>Self.</returns>
+    public FilterCollection<TFilter> Add(int order, Func<IServiceProvider, TFilter> factory)
+    {
+        Add(new FilterRegistration<TFilter>(order, factory));
+        return this;
     }
 }

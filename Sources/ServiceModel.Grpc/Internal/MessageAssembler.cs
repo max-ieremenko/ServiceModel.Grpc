@@ -26,317 +26,316 @@ using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Internal.Emit;
 
-namespace ServiceModel.Grpc.Internal
+namespace ServiceModel.Grpc.Internal;
+
+internal sealed class MessageAssembler
 {
-    internal sealed class MessageAssembler
+    public MessageAssembler(MethodInfo operation)
     {
-        public MessageAssembler(MethodInfo operation)
+        Operation = operation;
+        Parameters = operation.GetParameters();
+
+        ValidateSignature();
+
+        (ResponseType, ResponseTypeIndex, HeaderResponseType, HeaderResponseTypeInput) = GetResponseType(operation.ReturnType);
+        (RequestType, RequestTypeInput, HeaderRequestType, HeaderRequestTypeInput) = GetRequestType();
+        ContextInput = GetContextInput();
+        OperationType = GetOperationType();
+        IsAsync = ReflectionTools.IsTask(Operation.ReturnType);
+    }
+
+    public MethodInfo Operation { get; }
+
+    public ParameterInfo[] Parameters { get; }
+
+    public Type ResponseType { get; }
+
+    public int ResponseTypeIndex { get; }
+
+    public Type? HeaderResponseType { get; }
+
+    public int[] HeaderResponseTypeInput { get; }
+
+    public Type RequestType { get; }
+
+    public int[] RequestTypeInput { get; }
+
+    public Type? HeaderRequestType { get; }
+
+    public int[] HeaderRequestTypeInput { get; }
+
+    public MethodType OperationType { get; }
+
+    public int[] ContextInput { get; }
+
+    public bool IsAsync { get; }
+
+    public string[] GetResponseHeaderNames()
+    {
+        if (HeaderResponseTypeInput.Length == 0)
         {
-            Operation = operation;
-            Parameters = operation.GetParameters();
-
-            ValidateSignature();
-
-            (ResponseType, ResponseTypeIndex, HeaderResponseType, HeaderResponseTypeInput) = GetResponseType(operation.ReturnType);
-            (RequestType, RequestTypeInput, HeaderRequestType, HeaderRequestTypeInput) = GetRequestType();
-            ContextInput = GetContextInput();
-            OperationType = GetOperationType();
-            IsAsync = ReflectionTools.IsTask(Operation.ReturnType);
+            return Array.Empty<string>();
         }
 
-        public MethodInfo Operation { get; }
+        var result = new string[HeaderResponseTypeInput.Length];
+        var names = Operation.ReturnParameter!.GetCustomAttribute<TupleElementNamesAttribute>()?.TransformNames;
 
-        public ParameterInfo[] Parameters { get; }
-
-        public Type ResponseType { get; }
-
-        public int ResponseTypeIndex { get; }
-
-        public Type? HeaderResponseType { get; }
-
-        public int[] HeaderResponseTypeInput { get; }
-
-        public Type RequestType { get; }
-
-        public int[] RequestTypeInput { get; }
-
-        public Type? HeaderRequestType { get; }
-
-        public int[] HeaderRequestTypeInput { get; }
-
-        public MethodType OperationType { get; }
-
-        public int[] ContextInput { get; }
-
-        public bool IsAsync { get; }
-
-        public string[] GetResponseHeaderNames()
+        for (var i = 0; i < result.Length; i++)
         {
-            if (HeaderResponseTypeInput.Length == 0)
+            var index = HeaderResponseTypeInput[i];
+
+            string? name = null;
+            if (names != null)
             {
-                return Array.Empty<string>();
+                name = names[index];
             }
 
-            var result = new string[HeaderResponseTypeInput.Length];
-            var names = Operation.ReturnParameter!.GetCustomAttribute<TupleElementNamesAttribute>()?.TransformNames;
-
-            for (var i = 0; i < result.Length; i++)
+            if (string.IsNullOrEmpty(name))
             {
-                var index = HeaderResponseTypeInput[i];
-
-                string? name = null;
-                if (names != null)
-                {
-                    name = names[index];
-                }
-
-                if (string.IsNullOrEmpty(name))
-                {
-                    name = "Item{0}".FormatWith((i + 1).ToString(CultureInfo.InvariantCulture));
-                }
-
-                result[i] = name!;
+                name = "Item{0}".FormatWith((i + 1).ToString(CultureInfo.InvariantCulture));
             }
 
-            return result;
+            result[i] = name!;
         }
 
-        // implemented only for unary calls
-        public bool IsCompatibleWith(MessageAssembler other)
+        return result;
+    }
+
+    // implemented only for unary calls
+    public bool IsCompatibleWith(MessageAssembler other)
+    {
+        return OperationType == other.OperationType
+               && RequestType == other.RequestType
+               && ResponseType == other.ResponseType;
+    }
+
+    private static bool IsContextParameter(Type type)
+    {
+        return typeof(ServerCallContext).IsAssignableFrom(type)
+               || typeof(CancellationToken) == type
+               || typeof(CancellationToken?) == type
+               || typeof(CallContext) == type
+               || typeof(CallOptions) == type
+               || typeof(CallOptions?) == type;
+    }
+
+    private static bool IsDataParameter(Type type)
+    {
+        return !ReflectionTools.IsTask(type)
+               && !IsContextParameter(type)
+               && !ReflectionTools.IsStream(type);
+    }
+
+    private (Type ResponseType, int Index, Type? HeaderType, int[] HeaderIndexes) GetResponseType(Type returnType)
+    {
+        if (returnType == typeof(void))
         {
-            return OperationType == other.OperationType
-                   && RequestType == other.RequestType
-                   && ResponseType == other.ResponseType;
+            return (typeof(Message), 0, null, Array.Empty<int>());
         }
 
-        private static bool IsContextParameter(Type type)
+        var responseType = returnType;
+        if (ReflectionTools.IsTask(returnType))
         {
-            return typeof(ServerCallContext).IsAssignableFrom(type)
-                || typeof(CancellationToken) == type
-                || typeof(CancellationToken?) == type
-                || typeof(CallContext) == type
-                || typeof(CallOptions) == type
-                || typeof(CallOptions?) == type;
-        }
-
-        private static bool IsDataParameter(Type type)
-        {
-            return !ReflectionTools.IsTask(type)
-                && !IsContextParameter(type)
-                && !ReflectionTools.IsStream(type);
-        }
-
-        private (Type ResponseType, int Index, Type? HeaderType, int[] HeaderIndexes) GetResponseType(Type returnType)
-        {
-            if (returnType == typeof(void))
+            if (!returnType.IsGenericType)
             {
                 return (typeof(Message), 0, null, Array.Empty<int>());
             }
 
-            var responseType = returnType;
-            if (ReflectionTools.IsTask(returnType))
-            {
-                if (!returnType.IsGenericType)
-                {
-                    return (typeof(Message), 0, null, Array.Empty<int>());
-                }
+            responseType = returnType.GenericTypeArguments[0];
+        }
 
-                responseType = returnType.GenericTypeArguments[0];
+        if (ReflectionTools.IsValueTuple(responseType) && responseType.GenericTypeArguments.Any(ReflectionTools.IsAsyncEnumerable))
+        {
+            if (!ReflectionTools.IsTask(returnType))
+            {
+                ThrowInvalidSignature("Wrap return type with Task<> or ValueTask<>.");
             }
 
-            if (ReflectionTools.IsValueTuple(responseType) && responseType.GenericTypeArguments.Any(ReflectionTools.IsAsyncEnumerable))
+            var genericArguments = responseType.GenericTypeArguments;
+            if (genericArguments.Length == 1)
             {
-                if (!ReflectionTools.IsTask(returnType))
-                {
-                    ThrowInvalidSignature("Wrap return type with Task<> or ValueTask<>.");
-                }
+                ThrowInvalidSignature("Unwrap return type from ValueTuple<>.");
+            }
 
-                var genericArguments = responseType.GenericTypeArguments;
-                if (genericArguments.Length == 1)
+            var streamIndex = -1;
+            var headerIndexes = new List<int>();
+            var headerTypes = new List<Type>();
+            for (var i = 0; i < genericArguments.Length; i++)
+            {
+                var genericArgument = genericArguments[i];
+                if (ReflectionTools.IsAsyncEnumerable(genericArgument))
                 {
-                    ThrowInvalidSignature("Unwrap return type from ValueTuple<>.");
-                }
-
-                var streamIndex = -1;
-                var headerIndexes = new List<int>();
-                var headerTypes = new List<Type>();
-                for (var i = 0; i < genericArguments.Length; i++)
-                {
-                    var genericArgument = genericArguments[i];
-                    if (ReflectionTools.IsAsyncEnumerable(genericArgument))
-                    {
-                        responseType = genericArgument.GenericTypeArguments[0];
-                        if (streamIndex >= 0 || IsContextParameter(responseType) || !IsDataParameter(responseType))
-                        {
-                            ThrowInvalidSignature();
-                        }
-
-                        streamIndex = i;
-                    }
-                    else if (IsContextParameter(genericArgument) || !IsDataParameter(genericArgument))
+                    responseType = genericArgument.GenericTypeArguments[0];
+                    if (streamIndex >= 0 || IsContextParameter(responseType) || !IsDataParameter(responseType))
                     {
                         ThrowInvalidSignature();
                     }
-                    else
-                    {
-                        headerIndexes.Add(i);
-                        headerTypes.Add(genericArgument);
-                    }
+
+                    streamIndex = i;
                 }
-
-                return (
-                    MessageBuilder.GetMessageType(responseType),
-                    streamIndex,
-                    MessageBuilder.GetMessageType(headerTypes.ToArray()),
-                    headerIndexes.ToArray());
-            }
-
-            if (ReflectionTools.IsAsyncEnumerable(responseType))
-            {
-                responseType = responseType.GenericTypeArguments[0];
-            }
-
-            if (IsContextParameter(responseType) || !IsDataParameter(responseType))
-            {
-                ThrowInvalidSignature();
-            }
-
-            return (MessageBuilder.GetMessageType(responseType), 0, null, Array.Empty<int>());
-        }
-
-        private (Type MessageType, int[] DataIndexes, Type? HeaderType, int[] HeaderIndexes) GetRequestType()
-        {
-            if (Parameters.Length == 0)
-            {
-                return (typeof(Message), Array.Empty<int>(), null, Array.Empty<int>());
-            }
-
-            var dataParameters = new List<Type>();
-            var dataParameterIndexes = new List<int>();
-            var streamingIndex = -1;
-
-            for (var i = 0; i < Parameters.Length; i++)
-            {
-                var parameter = Parameters[i];
-                if (IsDataParameter(parameter.ParameterType))
+                else if (IsContextParameter(genericArgument) || !IsDataParameter(genericArgument))
                 {
-                    if (ReflectionTools.IsAsyncEnumerable(parameter.ParameterType))
-                    {
-                        streamingIndex = i;
-                    }
-                    else
-                    {
-                        dataParameters.Add(parameter.ParameterType);
-                        dataParameterIndexes.Add(i);
-                    }
+                    ThrowInvalidSignature();
                 }
-            }
-
-            if (streamingIndex >= 0)
-            {
-                return (
-                    MessageBuilder.GetMessageType(Parameters[streamingIndex].ParameterType.GenericTypeArguments[0]),
-                    new[] { streamingIndex },
-                    dataParameters.Count > 0 ? MessageBuilder.GetMessageType(dataParameters.ToArray()) : null,
-                    dataParameterIndexes.ToArray());
+                else
+                {
+                    headerIndexes.Add(i);
+                    headerTypes.Add(genericArgument);
+                }
             }
 
             return (
-                MessageBuilder.GetMessageType(dataParameters.ToArray()),
-                dataParameterIndexes.ToArray(),
-                null,
-                Array.Empty<int>());
+                MessageBuilder.GetMessageType(responseType),
+                streamIndex,
+                MessageBuilder.GetMessageType(headerTypes.ToArray()),
+                headerIndexes.ToArray());
         }
 
-        private int[] GetContextInput()
+        if (ReflectionTools.IsAsyncEnumerable(responseType))
         {
-            if (Parameters.Length == 0)
-            {
-                return Array.Empty<int>();
-            }
+            responseType = responseType.GenericTypeArguments[0];
+        }
 
-            var indexes = new List<int>();
+        if (IsContextParameter(responseType) || !IsDataParameter(responseType))
+        {
+            ThrowInvalidSignature();
+        }
 
-            for (var i = 0; i < Parameters.Length; i++)
+        return (MessageBuilder.GetMessageType(responseType), 0, null, Array.Empty<int>());
+    }
+
+    private (Type MessageType, int[] DataIndexes, Type? HeaderType, int[] HeaderIndexes) GetRequestType()
+    {
+        if (Parameters.Length == 0)
+        {
+            return (typeof(Message), Array.Empty<int>(), null, Array.Empty<int>());
+        }
+
+        var dataParameters = new List<Type>();
+        var dataParameterIndexes = new List<int>();
+        var streamingIndex = -1;
+
+        for (var i = 0; i < Parameters.Length; i++)
+        {
+            var parameter = Parameters[i];
+            if (IsDataParameter(parameter.ParameterType))
             {
-                if (IsContextParameter(Parameters[i].ParameterType))
+                if (ReflectionTools.IsAsyncEnumerable(parameter.ParameterType))
                 {
-                    indexes.Add(i);
+                    streamingIndex = i;
+                }
+                else
+                {
+                    dataParameters.Add(parameter.ParameterType);
+                    dataParameterIndexes.Add(i);
                 }
             }
-
-            return indexes.Count == 0 ? Array.Empty<int>() : indexes.ToArray();
         }
 
-        private MethodType GetOperationType()
+        if (streamingIndex >= 0)
         {
-            var returnType = Operation.ReturnType;
-            if (ReflectionTools.IsTask(returnType))
-            {
-                var args = returnType.GenericTypeArguments;
-                returnType = args.Length == 0 ? returnType : args[0];
-            }
-
-            var responseIsStreaming = ReflectionTools.IsAsyncEnumerable(returnType)
-                                      || (ReflectionTools.IsValueTuple(returnType) && returnType.GenericTypeArguments.Any(ReflectionTools.IsAsyncEnumerable));
-
-            var requestIsStreaming = Parameters.Select(i => i.ParameterType).Any(ReflectionTools.IsAsyncEnumerable);
-            if (responseIsStreaming)
-            {
-                return requestIsStreaming ? MethodType.DuplexStreaming : MethodType.ServerStreaming;
-            }
-
-            return requestIsStreaming ? MethodType.ClientStreaming : MethodType.Unary;
+            return (
+                MessageBuilder.GetMessageType(Parameters[streamingIndex].ParameterType.GenericTypeArguments[0]),
+                new[] { streamingIndex },
+                dataParameters.Count > 0 ? MessageBuilder.GetMessageType(dataParameters.ToArray()) : null,
+                dataParameterIndexes.ToArray());
         }
 
-        private void ValidateSignature()
+        return (
+            MessageBuilder.GetMessageType(dataParameters.ToArray()),
+            dataParameterIndexes.ToArray(),
+            null,
+            Array.Empty<int>());
+    }
+
+    private int[] GetContextInput()
+    {
+        if (Parameters.Length == 0)
         {
-            if (Operation.IsGenericMethod)
+            return Array.Empty<int>();
+        }
+
+        var indexes = new List<int>();
+
+        for (var i = 0; i < Parameters.Length; i++)
+        {
+            if (IsContextParameter(Parameters[i].ParameterType))
+            {
+                indexes.Add(i);
+            }
+        }
+
+        return indexes.Count == 0 ? Array.Empty<int>() : indexes.ToArray();
+    }
+
+    private MethodType GetOperationType()
+    {
+        var returnType = Operation.ReturnType;
+        if (ReflectionTools.IsTask(returnType))
+        {
+            var args = returnType.GenericTypeArguments;
+            returnType = args.Length == 0 ? returnType : args[0];
+        }
+
+        var responseIsStreaming = ReflectionTools.IsAsyncEnumerable(returnType)
+                                  || (ReflectionTools.IsValueTuple(returnType) && returnType.GenericTypeArguments.Any(ReflectionTools.IsAsyncEnumerable));
+
+        var requestIsStreaming = Parameters.Select(i => i.ParameterType).Any(ReflectionTools.IsAsyncEnumerable);
+        if (responseIsStreaming)
+        {
+            return requestIsStreaming ? MethodType.DuplexStreaming : MethodType.ServerStreaming;
+        }
+
+        return requestIsStreaming ? MethodType.ClientStreaming : MethodType.Unary;
+    }
+
+    private void ValidateSignature()
+    {
+        if (Operation.IsGenericMethod)
+        {
+            ThrowInvalidSignature();
+        }
+
+        var hasInputStreaming = false;
+
+        for (var i = 0; i < Parameters.Length; i++)
+        {
+            var parameter = Parameters[i];
+
+            if (parameter.IsOut() || parameter.IsRef())
             {
                 ThrowInvalidSignature();
             }
 
-            var hasInputStreaming = false;
-
-            for (var i = 0; i < Parameters.Length; i++)
+            if (IsDataParameter(parameter.ParameterType))
             {
-                var parameter = Parameters[i];
-
-                if (parameter.IsOut() || parameter.IsRef())
+                if (ReflectionTools.IsAsyncEnumerable(parameter.ParameterType))
                 {
-                    ThrowInvalidSignature();
-                }
-
-                if (IsDataParameter(parameter.ParameterType))
-                {
-                    if (ReflectionTools.IsAsyncEnumerable(parameter.ParameterType))
+                    if (hasInputStreaming)
                     {
-                        if (hasInputStreaming)
-                        {
-                            ThrowInvalidSignature();
-                        }
-
-                        hasInputStreaming = true;
+                        ThrowInvalidSignature();
                     }
-                }
-                else if (!IsContextParameter(parameter.ParameterType))
-                {
-                    ThrowInvalidSignature();
+
+                    hasInputStreaming = true;
                 }
             }
-        }
-
-        private void ThrowInvalidSignature(string? additionalInfo = null)
-        {
-            var message = new StringBuilder()
-                .AppendFormat("Method signature [{0}] is not supported.", ReflectionTools.GetSignature(Operation));
-
-            if (!string.IsNullOrEmpty(additionalInfo))
+            else if (!IsContextParameter(parameter.ParameterType))
             {
-                message.Append(" ").Append(additionalInfo);
+                ThrowInvalidSignature();
             }
-
-            throw new NotSupportedException(message.ToString());
         }
+    }
+
+    private void ThrowInvalidSignature(string? additionalInfo = null)
+    {
+        var message = new StringBuilder()
+            .AppendFormat("Method signature [{0}] is not supported.", ReflectionTools.GetSignature(Operation));
+
+        if (!string.IsNullOrEmpty(additionalInfo))
+        {
+            message.Append(" ").Append(additionalInfo);
+        }
+
+        throw new NotSupportedException(message.ToString());
     }
 }

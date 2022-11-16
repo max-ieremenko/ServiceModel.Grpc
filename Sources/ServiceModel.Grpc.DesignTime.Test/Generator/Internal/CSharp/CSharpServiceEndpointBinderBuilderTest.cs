@@ -23,50 +23,49 @@ using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
+
+[TestFixture]
+public partial class CSharpServiceEndpointBinderBuilderTest
 {
-    [TestFixture]
-    public partial class CSharpServiceEndpointBinderBuilderTest
+    private static readonly Compilation Compilation = CSharpCompilation
+        .Create(
+            nameof(CSharpServiceEndpointBinderBuilderTest),
+            references: AppDomain
+                .CurrentDomain
+                .GetAssemblies()
+                .Where(i => !i.IsDynamic && !string.IsNullOrEmpty(i.Location))
+                .Select(i => MetadataReference.CreateFromFile(i.Location)),
+            options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
+    [Test]
+    [TestCaseSource(nameof(GetWriteNewAttributeCases))]
+    public void WriteNewAttribute(AttributeData attribute, string expected)
     {
-        private static readonly Compilation Compilation = CSharpCompilation
-            .Create(
-                nameof(CSharpServiceEndpointBinderBuilderTest),
-                references: AppDomain
-                    .CurrentDomain
-                    .GetAssemblies()
-                    .Where(i => !i.IsDynamic && !string.IsNullOrEmpty(i.Location))
-                    .Select(i => MetadataReference.CreateFromFile(i.Location)),
-                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+        var output = new CodeStringBuilder();
+        CSharpServiceEndpointBinderBuilder.WriteNewAttribute(output, attribute);
 
-        [Test]
-        [TestCaseSource(nameof(GetWriteNewAttributeCases))]
-        public void WriteNewAttribute(AttributeData attribute, string expected)
+        output.AsStringBuilder().ToString().ShouldBe(expected);
+    }
+
+    private static IEnumerable<TestCaseData> GetWriteNewAttributeCases()
+    {
+        var type = typeof(WriteNewAttributeCases);
+        var symbol = Compilation.GetTypeByMetadataName(type);
+
+        foreach (var method in SyntaxTools.GetInstanceMethods(symbol))
         {
-            var output = new CodeStringBuilder();
-            CSharpServiceEndpointBinderBuilder.WriteNewAttribute(output, attribute);
+            var attributes = CSharpServiceEndpointBinderBuilder.FilterAttributes(method.GetAttributes()).ToList();
+            attributes.Count.ShouldBe(1);
 
-            output.AsStringBuilder().ToString().ShouldBe(expected);
-        }
+            var expected = (string)type
+                .GetMethod(method.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)
+                ?.Invoke(new WriteNewAttributeCases(), Array.Empty<object>())!;
 
-        private static IEnumerable<TestCaseData> GetWriteNewAttributeCases()
-        {
-            var type = typeof(WriteNewAttributeCases);
-            var symbol = Compilation.GetTypeByMetadataName(type);
-
-            foreach (var method in SyntaxTools.GetInstanceMethods(symbol))
+            yield return new TestCaseData(attributes[0], expected)
             {
-                var attributes = CSharpServiceEndpointBinderBuilder.FilterAttributes(method.GetAttributes()).ToList();
-                attributes.Count.ShouldBe(1);
-
-                var expected = (string)type
-                    .GetMethod(method.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)
-                    ?.Invoke(new WriteNewAttributeCases(), Array.Empty<object>())!;
-
-                yield return new TestCaseData(attributes[0], expected)
-                {
-                    TestName = "WriteAttribute." + method.Name
-                };
-            }
+                TestName = "WriteAttribute." + method.Name
+            };
         }
     }
 }

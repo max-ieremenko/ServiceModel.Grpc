@@ -19,23 +19,22 @@ using NUnit.Framework;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.TestApi;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Test
+namespace ServiceModel.Grpc.DesignTime.Generator.Test;
+
+[TestFixture]
+public class CSharpClientBuilderGenericTest : ClientBuilderGenericTestBase
 {
-    [TestFixture]
-    public class CSharpClientBuilderGenericTest : ClientBuilderGenericTestBase
+    [OneTimeSetUp]
+    public void BeforeAllTests()
     {
-        [OneTimeSetUp]
-        public void BeforeAllTests()
-        {
-            var builder = new GrpcServices.GenericContractInt32StringClientBuilder();
-            builder.Initialize(DataContractMarshallerFactory.Default, null);
+        var builder = new GrpcServices.GenericContractInt32StringClientBuilder();
+        builder.Initialize(DataContractMarshallerFactory.Default, null);
 
-            Factory = () => builder.Build(CallInvoker.Object);
-        }
+        Factory = () => builder.Build(CallInvoker.Object);
+    }
 
-        protected override MethodInfo GetClientInstanceMethod(string name)
-        {
-            return base.GetClientInstanceMethod("global::ServiceModel.Grpc.TestApi.Domain.IGenericContract<System.Int32,System.String>." + name);
-        }
+    protected override MethodInfo GetClientInstanceMethod(string name)
+    {
+        return base.GetClientInstanceMethod("global::ServiceModel.Grpc.TestApi.Domain.IGenericContract<System.Int32,System.String>." + name);
     }
 }

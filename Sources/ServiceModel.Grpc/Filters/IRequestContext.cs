@@ -16,35 +16,34 @@
 
 using System.Collections.Generic;
 
-namespace ServiceModel.Grpc.Filters
+namespace ServiceModel.Grpc.Filters;
+
+/// <summary>
+/// Represents a request context for filters, specifically <see cref="IServerFilter.InvokeAsync"/>.
+/// </summary>
+public interface IRequestContext : IEnumerable<KeyValuePair<string, object?>>
 {
     /// <summary>
-    /// Represents a request context for filters, specifically <see cref="IServerFilter.InvokeAsync"/>.
+    /// Gets the number of arguments to pass when invoking the service method.
     /// </summary>
-    public interface IRequestContext : IEnumerable<KeyValuePair<string, object?>>
-    {
-        /// <summary>
-        /// Gets the number of arguments to pass when invoking the service method.
-        /// </summary>
-        int Count { get; }
+    int Count { get; }
 
-        /// <summary>
-        /// Gets or sets the client stream to pass when invoking the ClientStreaming or DuplexStreaming service method, <see cref="IAsyncEnumerable{T}"/>.
-        /// </summary>
-        object? Stream { get; set; }
+    /// <summary>
+    /// Gets or sets the client stream to pass when invoking the ClientStreaming or DuplexStreaming service method, <see cref="IAsyncEnumerable{T}"/>.
+    /// </summary>
+    object? Stream { get; set; }
 
-        /// <summary>
-        /// Gets or sets the value of argument by name. The name comes from contract method definition <see cref="IServerFilterContext.ContractMethodInfo"/>.
-        /// </summary>
-        /// <param name="name">The argument name.</param>
-        /// <returns>The value of argument.</returns>
-        object? this[string name] { get; set; }
+    /// <summary>
+    /// Gets or sets the value of argument by name. The name comes from contract method definition <see cref="IServerFilterContext.ContractMethodInfo"/>.
+    /// </summary>
+    /// <param name="name">The argument name.</param>
+    /// <returns>The value of argument.</returns>
+    object? this[string name] { get; set; }
 
-        /// <summary>
-        /// Gets or sets the value of argument by index. The index comes from contract method definition <see cref="IServerFilterContext.ContractMethodInfo"/>.
-        /// </summary>
-        /// <param name="index">The argument index.</param>
-        /// <returns>The value of argument.</returns>
-        object? this[int index] { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the value of argument by index. The index comes from contract method definition <see cref="IServerFilterContext.ContractMethodInfo"/>.
+    /// </summary>
+    /// <param name="index">The argument index.</param>
+    /// <returns>The value of argument.</returns>
+    object? this[int index] { get; set; }
 }

@@ -18,15 +18,14 @@ using NUnit.Framework;
 using ServiceModel.Grpc.AspNetCore.TestApi;
 using ServiceModel.Grpc.AspNetCore.TestApi.Domain;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Test.AspNetCore
+namespace ServiceModel.Grpc.DesignTime.Generator.Test.AspNetCore;
+
+[TestFixture]
+[ExportGrpcService(typeof(ServiceWithAuthentication), GenerateAspNetExtensions = true)]
+public partial class AspNetCoreAuthViaImplementationTest : AspNetCoreAuthenticationTestBase
 {
-    [TestFixture]
-    [ExportGrpcService(typeof(ServiceWithAuthentication), GenerateAspNetExtensions = true)]
-    public partial class AspNetCoreAuthViaImplementationTest : AspNetCoreAuthenticationTestBase
+    protected override void ConfigureKestrelHost(KestrelHost host)
     {
-        protected override void ConfigureKestrelHost(KestrelHost host)
-        {
-            host.ConfigureEndpoints(endpoints => MapServiceWithAuthentication(endpoints));
-        }
+        host.ConfigureEndpoints(endpoints => MapServiceWithAuthentication(endpoints));
     }
 }

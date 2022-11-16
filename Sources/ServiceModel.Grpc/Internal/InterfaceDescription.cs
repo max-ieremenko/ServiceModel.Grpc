@@ -17,23 +17,22 @@
 using System;
 using System.Collections.Generic;
 
-namespace ServiceModel.Grpc.Internal
+namespace ServiceModel.Grpc.Internal;
+
+internal sealed class InterfaceDescription
 {
-    internal sealed class InterfaceDescription
+    public InterfaceDescription(Type interfaceType)
     {
-        public InterfaceDescription(Type interfaceType)
-        {
-            InterfaceType = interfaceType;
-        }
-
-        public Type InterfaceType { get; }
-
-        public IList<MethodDescription> Methods { get; } = new List<MethodDescription>();
-
-        public IList<OperationDescription> Operations { get; } = new List<OperationDescription>();
-
-        public IList<MethodDescription> NotSupportedOperations { get; } = new List<MethodDescription>();
-
-        public List<(MessageAssembler Sync, OperationDescription Async)> SyncOverAsync { get; } = new List<(MessageAssembler Sync, OperationDescription Async)>();
+        InterfaceType = interfaceType;
     }
+
+    public Type InterfaceType { get; }
+
+    public IList<MethodDescription> Methods { get; } = new List<MethodDescription>();
+
+    public IList<OperationDescription> Operations { get; } = new List<OperationDescription>();
+
+    public IList<MethodDescription> NotSupportedOperations { get; } = new List<MethodDescription>();
+
+    public List<(MessageAssembler Sync, OperationDescription Async)> SyncOverAsync { get; } = new List<(MessageAssembler Sync, OperationDescription Async)>();
 }

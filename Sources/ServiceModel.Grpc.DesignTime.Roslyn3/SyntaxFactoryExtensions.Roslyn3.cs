@@ -20,23 +20,22 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace ServiceModel.Grpc.DesignTime.Generator
-{
-    internal static partial class SyntaxFactoryExtensions
-    {
-        private static void TryGetAncestorMember(MemberDeclarationSyntax syntax, ref SyntaxKind kind, ref string? name)
-        {
-            var type = syntax.GetType();
-            if ("FileScopedNamespaceDeclarationSyntax".Equals(type.Name, StringComparison.Ordinal))
-            {
-                var nameSyntax = (NameSyntax)syntax
-                    .GetType()
-                    .GetProperty(nameof(NamespaceDeclarationSyntax.Name), BindingFlags.Public | BindingFlags.Instance)!
-                    .GetValue(syntax);
+namespace ServiceModel.Grpc.DesignTime.Generator;
 
-                kind = SyntaxKind.NamespaceDeclaration;
-                name = nameSyntax.WithoutTrivia().ToString();
-            }
+internal static partial class SyntaxFactoryExtensions
+{
+    private static void TryGetAncestorMember(MemberDeclarationSyntax syntax, ref SyntaxKind kind, ref string? name)
+    {
+        var type = syntax.GetType();
+        if ("FileScopedNamespaceDeclarationSyntax".Equals(type.Name, StringComparison.Ordinal))
+        {
+            var nameSyntax = (NameSyntax)syntax
+                .GetType()
+                .GetProperty(nameof(NamespaceDeclarationSyntax.Name), BindingFlags.Public | BindingFlags.Instance)!
+                .GetValue(syntax);
+
+            kind = SyntaxKind.NamespaceDeclaration;
+            name = nameSyntax.WithoutTrivia().ToString();
         }
     }
 }

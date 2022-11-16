@@ -21,28 +21,27 @@ using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Test
+namespace ServiceModel.Grpc.DesignTime.Generator.Test;
+
+[TestFixture]
+public class CSharpClientBuilderTest : ClientBuilderTestBase
 {
-    [TestFixture]
-    public class CSharpClientBuilderTest : ClientBuilderTestBase
+    [OneTimeSetUp]
+    public void BeforeAllTests()
     {
-        [OneTimeSetUp]
-        public void BeforeAllTests()
-        {
-            var builder = new GrpcServices.ContractClientBuilder();
-            builder.Initialize(DataContractMarshallerFactory.Default, null);
+        var builder = new GrpcServices.ContractClientBuilder();
+        builder.Initialize(DataContractMarshallerFactory.Default, null);
 
-            Factory = () => builder.Build(CallInvoker.Object);
-        }
+        Factory = () => builder.Build(CallInvoker.Object);
+    }
 
-        protected override MethodInfo GetClientInstanceMethod(string name)
-        {
-            return base.GetClientInstanceMethod("global::" + typeof(IContract).FullName + "." + name);
-        }
+    protected override MethodInfo GetClientInstanceMethod(string name)
+    {
+        return base.GetClientInstanceMethod("global::" + typeof(IContract).FullName + "." + name);
+    }
 
-        protected override MethodInfo GetClientInstanceMethod(string name, params Type[] parameters)
-        {
-            return base.GetClientInstanceMethod("global::" + typeof(IContract).FullName + "." + name, parameters);
-        }
+    protected override MethodInfo GetClientInstanceMethod(string name, params Type[] parameters)
+    {
+        return base.GetClientInstanceMethod("global::" + typeof(IContract).FullName + "." + name, parameters);
     }
 }

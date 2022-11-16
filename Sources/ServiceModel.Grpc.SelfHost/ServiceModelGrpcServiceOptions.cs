@@ -22,57 +22,56 @@ using ServiceModel.Grpc.Filters;
 using ServiceModel.Grpc.Interceptors;
 
 //// ReSharper disable CheckNamespace
-namespace Grpc.Core
+namespace Grpc.Core;
 //// ReSharper restore CheckNamespace
+
+/// <summary>
+/// Provides a configuration for a ServiceModel.Grpc services.
+/// </summary>
+public sealed class ServiceModelGrpcServiceOptions
 {
+    private FilterCollection<IServerFilter>? _filters;
+
     /// <summary>
-    /// Provides a configuration for a ServiceModel.Grpc services.
+    /// Gets or sets a factory for serializing and deserializing messages.
     /// </summary>
-    public sealed class ServiceModelGrpcServiceOptions
+    public IMarshallerFactory? MarshallerFactory { get; set; }
+
+    /// <summary>
+    /// Gets or sets a server call error handler.
+    /// </summary>
+    public IServerErrorHandler? ErrorHandler { get; set; }
+
+    /// <summary>
+    /// Gets or sets logger to handle possible output from service binding process.
+    /// </summary>
+    public ILogger? Logger { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="IServiceProvider"/>.
+    /// </summary>
+    public IServiceProvider? ServiceProvider { get; set; }
+
+    /// <summary>
+    /// Gets or sets a method for additional <see cref="ServerServiceDefinition"/> configuration.
+    /// </summary>
+    public Func<ServerServiceDefinition, ServerServiceDefinition>? ConfigureServiceDefinition { get; set; }
+
+    /// <summary>
+    /// Gets the collection of registered server filters for this service.
+    /// </summary>
+    public FilterCollection<IServerFilter> Filters
     {
-        private FilterCollection<IServerFilter>? _filters;
-
-        /// <summary>
-        /// Gets or sets a factory for serializing and deserializing messages.
-        /// </summary>
-        public IMarshallerFactory? MarshallerFactory { get; set; }
-
-        /// <summary>
-        /// Gets or sets a server call error handler.
-        /// </summary>
-        public IServerErrorHandler? ErrorHandler { get; set; }
-
-        /// <summary>
-        /// Gets or sets logger to handle possible output from service binding process.
-        /// </summary>
-        public ILogger? Logger { get; set; }
-
-        /// <summary>
-        /// Gets or sets the <see cref="IServiceProvider"/>.
-        /// </summary>
-        public IServiceProvider? ServiceProvider { get; set; }
-
-        /// <summary>
-        /// Gets or sets a method for additional <see cref="ServerServiceDefinition"/> configuration.
-        /// </summary>
-        public Func<ServerServiceDefinition, ServerServiceDefinition>? ConfigureServiceDefinition { get; set; }
-
-        /// <summary>
-        /// Gets the collection of registered server filters for this service.
-        /// </summary>
-        public FilterCollection<IServerFilter> Filters
+        get
         {
-            get
+            if (_filters == null)
             {
-                if (_filters == null)
-                {
-                    _filters = new FilterCollection<IServerFilter>();
-                }
-
-                return _filters;
+                _filters = new FilterCollection<IServerFilter>();
             }
-        }
 
-        internal IList<FilterRegistration<IServerFilter>>? GetFilters() => _filters;
+            return _filters;
+        }
     }
+
+    internal IList<FilterRegistration<IServerFilter>>? GetFilters() => _filters;
 }

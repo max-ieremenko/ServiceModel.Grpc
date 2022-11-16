@@ -17,15 +17,14 @@
 using System.ServiceModel;
 using System.Threading.Tasks;
 
-namespace ServiceModel.Grpc.Benchmarks.Domain
-{
-    [ServiceContract]
-    public interface ITestService
-    {
-        [OperationContract]
-        Task<SomeObject> PingPong(SomeObject value);
+namespace ServiceModel.Grpc.Benchmarks.Domain;
 
-        [OperationContract]
-        Task<SomeObjectProto> PingPongProto(SomeObjectProto value);
-    }
+[ServiceContract]
+public interface ITestService
+{
+    [OperationContract]
+    Task<SomeObject> PingPong(SomeObject value);
+
+    [OperationContract]
+    Task<SomeObjectProto> PingPongProto(SomeObjectProto value);
 }

@@ -18,28 +18,27 @@ using System.Collections.Generic;
 using ServiceModel.Grpc.DesignTime.Generator.Internal;
 using ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
 
-namespace ServiceModel.Grpc.DesignTime.Generator
+namespace ServiceModel.Grpc.DesignTime.Generator;
+
+internal sealed class CSharpClientCodeGeneratorFactory : ICodeGeneratorFactory
 {
-    internal sealed class CSharpClientCodeGeneratorFactory : ICodeGeneratorFactory
+    private readonly ContractDescription _contract;
+    private readonly bool _canUseStaticExtensions;
+
+    public CSharpClientCodeGeneratorFactory(
+        ContractDescription contract,
+        bool canUseStaticExtensions)
     {
-        private readonly ContractDescription _contract;
-        private readonly bool _canUseStaticExtensions;
-
-        public CSharpClientCodeGeneratorFactory(
-            ContractDescription contract,
-            bool canUseStaticExtensions)
-        {
-            _contract = contract;
-            _canUseStaticExtensions = canUseStaticExtensions;
-        }
-
-        public IEnumerable<CodeGeneratorBase> GetGenerators()
-        {
-            yield return new CSharpClientFactoryExtensionBuilder(_contract, _canUseStaticExtensions);
-            yield return new CSharpClientBuilderBuilder(_contract);
-            yield return new CSharpClientBuilder(_contract);
-        }
-
-        public string GetHintName() => _contract.ClientClassName;
+        _contract = contract;
+        _canUseStaticExtensions = canUseStaticExtensions;
     }
+
+    public IEnumerable<CodeGeneratorBase> GetGenerators()
+    {
+        yield return new CSharpClientFactoryExtensionBuilder(_contract, _canUseStaticExtensions);
+        yield return new CSharpClientBuilderBuilder(_contract);
+        yield return new CSharpClientBuilder(_contract);
+    }
+
+    public string GetHintName() => _contract.ClientClassName;
 }

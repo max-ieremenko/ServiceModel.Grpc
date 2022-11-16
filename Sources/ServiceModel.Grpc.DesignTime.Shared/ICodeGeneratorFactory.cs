@@ -17,12 +17,11 @@
 using System.Collections.Generic;
 using ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
 
-namespace ServiceModel.Grpc.DesignTime.Generator
-{
-    internal interface ICodeGeneratorFactory
-    {
-        IEnumerable<CodeGeneratorBase> GetGenerators();
+namespace ServiceModel.Grpc.DesignTime.Generator;
 
-        string GetHintName();
-    }
+internal interface ICodeGeneratorFactory
+{
+    IEnumerable<CodeGeneratorBase> GetGenerators();
+
+    string GetHintName();
 }

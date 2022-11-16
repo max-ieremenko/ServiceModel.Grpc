@@ -18,18 +18,17 @@ using System.ServiceModel;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ServiceModel.Grpc.TestApi.Domain
+namespace ServiceModel.Grpc.TestApi.Domain;
+
+[ServiceContract]
+public interface IGenericContract<in T1, T2>
 {
-    [ServiceContract]
-    public interface IGenericContract<in T1, T2>
-    {
-        [OperationContract]
-        T2 Invoke(T1 value, T2 value2);
+    [OperationContract]
+    T2 Invoke(T1 value, T2 value2);
 
-        // [OperationContract] => BlockingCallAsync
-        T2 BlockingCall(T1 value, T2 value2);
+    // [OperationContract] => BlockingCallAsync
+    T2 BlockingCall(T1 value, T2 value2);
 
-        [OperationContract]
-        Task<T2> BlockingCallAsync(T1 value, T2 value2, CancellationToken token);
-    }
+    [OperationContract]
+    Task<T2> BlockingCallAsync(T1 value, T2 value2, CancellationToken token);
 }

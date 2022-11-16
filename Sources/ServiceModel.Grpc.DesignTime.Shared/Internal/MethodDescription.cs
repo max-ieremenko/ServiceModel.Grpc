@@ -17,30 +17,29 @@
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal;
+
+internal sealed class MethodDescription
 {
-    internal sealed class MethodDescription
+    public MethodDescription(IMethodSymbol source)
     {
-        public MethodDescription(IMethodSymbol source)
-        {
-            Source = source;
-            Name = source.Name;
-            ReturnType = SyntaxTools.GetFullName(source.ReturnType);
-            ReturnTypeSymbol = source.ReturnType;
-            TypeArguments = source.TypeArguments.Select(SyntaxTools.GetFullName).ToArray();
-            Parameters = source.Parameters.Select(i => new ParameterDescription(i)).ToArray();
-        }
-
-        public IMethodSymbol Source { get; }
-
-        public string Name { get; }
-
-        public string ReturnType { get; }
-
-        public ITypeSymbol ReturnTypeSymbol { get; }
-
-        public string[] TypeArguments { get; }
-
-        public ParameterDescription[] Parameters { get; }
+        Source = source;
+        Name = source.Name;
+        ReturnType = SyntaxTools.GetFullName(source.ReturnType);
+        ReturnTypeSymbol = source.ReturnType;
+        TypeArguments = source.TypeArguments.Select(SyntaxTools.GetFullName).ToArray();
+        Parameters = source.Parameters.Select(i => new ParameterDescription(i)).ToArray();
     }
+
+    public IMethodSymbol Source { get; }
+
+    public string Name { get; }
+
+    public string ReturnType { get; }
+
+    public ITypeSymbol ReturnTypeSymbol { get; }
+
+    public string[] TypeArguments { get; }
+
+    public ParameterDescription[] Parameters { get; }
 }

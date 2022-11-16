@@ -18,22 +18,21 @@ using System;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace ServiceModel.Grpc.DesignTime.Generator
+namespace ServiceModel.Grpc.DesignTime.Generator;
+
+internal sealed class CodeGeneratorCache
 {
-    internal sealed class CodeGeneratorCache
+    private readonly IDictionary<string, HashSet<string>> _memberNamesByOwner = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
+
+    public bool AddNew(ClassDeclarationSyntax owner, string memberName)
     {
-        private readonly IDictionary<string, HashSet<string>> _memberNamesByOwner = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
-
-        public bool AddNew(ClassDeclarationSyntax owner, string memberName)
+        var ownerName = owner.GetFullName();
+        if (!_memberNamesByOwner.TryGetValue(ownerName, out var members))
         {
-            var ownerName = owner.GetFullName();
-            if (!_memberNamesByOwner.TryGetValue(ownerName, out var members))
-            {
-                members = new HashSet<string>(StringComparer.Ordinal);
-                _memberNamesByOwner.Add(ownerName, members);
-            }
-
-            return members.Add(memberName);
+            members = new HashSet<string>(StringComparer.Ordinal);
+            _memberNamesByOwner.Add(ownerName, members);
         }
+
+        return members.Add(memberName);
     }
 }

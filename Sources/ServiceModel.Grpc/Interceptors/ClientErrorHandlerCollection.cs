@@ -16,72 +16,71 @@
 
 using System.Collections.Generic;
 
-namespace ServiceModel.Grpc.Interceptors
+namespace ServiceModel.Grpc.Interceptors;
+
+/// <summary>
+/// Represents the pipeline of <see cref="IClientErrorHandler"/>.
+/// </summary>
+public sealed class ClientErrorHandlerCollection : ClientErrorHandlerBase
 {
+    private readonly List<IClientErrorHandler> _pipeline;
+
     /// <summary>
-    /// Represents the pipeline of <see cref="IClientErrorHandler"/>.
+    /// Initializes a new instance of the <see cref="ClientErrorHandlerCollection"/> class.
     /// </summary>
-    public sealed class ClientErrorHandlerCollection : ClientErrorHandlerBase
+    public ClientErrorHandlerCollection()
     {
-        private readonly List<IClientErrorHandler> _pipeline;
+        _pipeline = new List<IClientErrorHandler>();
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ClientErrorHandlerCollection"/> class.
-        /// </summary>
-        public ClientErrorHandlerCollection()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ClientErrorHandlerCollection"/> class with the list of specified <see cref="IClientErrorHandler"/>.
+    /// </summary>
+    /// <param name="errorHandlers">The list of error handlers.</param>
+    public ClientErrorHandlerCollection(params IClientErrorHandler[] errorHandlers)
+        : this((IEnumerable<IClientErrorHandler>)errorHandlers)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ClientErrorHandlerCollection"/> class with the list of specified <see cref="IClientErrorHandler"/>.
+    /// </summary>
+    /// <param name="errorHandlers">The list of error handlers.</param>
+    public ClientErrorHandlerCollection(IEnumerable<IClientErrorHandler> errorHandlers)
+    {
+        errorHandlers.AssertNotNull(nameof(errorHandlers));
+
+        _pipeline = new List<IClientErrorHandler>(errorHandlers);
+    }
+
+    /// <summary>
+    /// Gets the list of error handlers.
+    /// </summary>
+    public IReadOnlyList<IClientErrorHandler> Pipeline => _pipeline;
+
+    /// <summary>
+    /// Adds the given error handler to the end of this list.
+    /// </summary>
+    /// <param name="errorHandler">The <see cref="IServerErrorHandler"/>.</param>
+    public void Add(IClientErrorHandler errorHandler)
+    {
+        errorHandler.AssertNotNull(nameof(errorHandler));
+
+        _pipeline.Add(errorHandler);
+    }
+
+    /// <summary>
+    /// Invokes ThrowOrIgnore of handlers in the pipeline ony by one.
+    /// </summary>
+    /// <param name="context">The context associated with the current call.</param>
+    /// <param name="detail">The exception details.</param>
+    protected override void ThrowOrIgnoreCore(ClientCallInterceptorContext context, ClientFaultDetail detail)
+    {
+        for (var i = 0; i < _pipeline.Count; i++)
         {
-            _pipeline = new List<IClientErrorHandler>();
-        }
+            var handler = _pipeline[i];
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ClientErrorHandlerCollection"/> class with the list of specified <see cref="IClientErrorHandler"/>.
-        /// </summary>
-        /// <param name="errorHandlers">The list of error handlers.</param>
-        public ClientErrorHandlerCollection(params IClientErrorHandler[] errorHandlers)
-            : this((IEnumerable<IClientErrorHandler>)errorHandlers)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ClientErrorHandlerCollection"/> class with the list of specified <see cref="IClientErrorHandler"/>.
-        /// </summary>
-        /// <param name="errorHandlers">The list of error handlers.</param>
-        public ClientErrorHandlerCollection(IEnumerable<IClientErrorHandler> errorHandlers)
-        {
-            errorHandlers.AssertNotNull(nameof(errorHandlers));
-
-            _pipeline = new List<IClientErrorHandler>(errorHandlers);
-        }
-
-        /// <summary>
-        /// Gets the list of error handlers.
-        /// </summary>
-        public IReadOnlyList<IClientErrorHandler> Pipeline => _pipeline;
-
-        /// <summary>
-        /// Adds the given error handler to the end of this list.
-        /// </summary>
-        /// <param name="errorHandler">The <see cref="IServerErrorHandler"/>.</param>
-        public void Add(IClientErrorHandler errorHandler)
-        {
-            errorHandler.AssertNotNull(nameof(errorHandler));
-
-            _pipeline.Add(errorHandler);
-        }
-
-        /// <summary>
-        /// Invokes ThrowOrIgnore of handlers in the pipeline ony by one.
-        /// </summary>
-        /// <param name="context">The context associated with the current call.</param>
-        /// <param name="detail">The exception details.</param>
-        protected override void ThrowOrIgnoreCore(ClientCallInterceptorContext context, ClientFaultDetail detail)
-        {
-            for (var i = 0; i < _pipeline.Count; i++)
-            {
-                var handler = _pipeline[i];
-
-                handler.ThrowOrIgnore(context, detail);
-            }
+            handler.ThrowOrIgnore(context, detail);
         }
     }
 }

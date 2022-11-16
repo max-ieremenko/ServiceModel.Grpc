@@ -18,55 +18,54 @@ using System.Collections.Generic;
 using ServiceModel.Grpc.DesignTime.Generator.Internal;
 using ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
 
-namespace ServiceModel.Grpc.DesignTime.Generator
+namespace ServiceModel.Grpc.DesignTime.Generator;
+
+internal sealed class CSharpSharedCodeGeneratorFactory : ICodeGeneratorFactory
 {
-    internal sealed class CSharpSharedCodeGeneratorFactory : ICodeGeneratorFactory
+    private readonly ContractDescription _contract;
+
+    public CSharpSharedCodeGeneratorFactory(ContractDescription contract)
     {
-        private readonly ContractDescription _contract;
+        _contract = contract;
+    }
 
-        public CSharpSharedCodeGeneratorFactory(ContractDescription contract)
+    public IEnumerable<CodeGeneratorBase> GetGenerators()
+    {
+        yield return new CSharpContractBuilder(_contract);
+
+        foreach (var propertiesCount in GetNonBuildInMessages(_contract))
         {
-            _contract = contract;
+            yield return new CSharpMessageBuilder(propertiesCount);
         }
+    }
 
-        public IEnumerable<CodeGeneratorBase> GetGenerators()
+    public string GetHintName() => _contract.ContractClassName;
+
+    private static IEnumerable<int> GetNonBuildInMessages(ContractDescription contract)
+    {
+        var result = new SortedSet<int>();
+
+        for (var i = 0; i < contract.Services.Count; i++)
         {
-            yield return new CSharpContractBuilder(_contract);
-
-            foreach (var propertiesCount in GetNonBuildInMessages(_contract))
+            var service = contract.Services[i];
+            for (var j = 0; j < service.Operations.Count; j++)
             {
-                yield return new CSharpMessageBuilder(propertiesCount);
+                var operation = service.Operations[j];
+                AddPropertiesCount(result, operation.RequestType);
+                AddPropertiesCount(result, operation.HeaderRequestType);
+                AddPropertiesCount(result, operation.ResponseType);
+                AddPropertiesCount(result, operation.HeaderResponseType);
             }
         }
 
-        public string GetHintName() => _contract.ContractClassName;
+        return result;
+    }
 
-        private static IEnumerable<int> GetNonBuildInMessages(ContractDescription contract)
+    private static void AddPropertiesCount(SortedSet<int> target, MessageDescription? message)
+    {
+        if (message != null && !message.IsBuiltIn)
         {
-            var result = new SortedSet<int>();
-
-            for (var i = 0; i < contract.Services.Count; i++)
-            {
-                var service = contract.Services[i];
-                for (var j = 0; j < service.Operations.Count; j++)
-                {
-                    var operation = service.Operations[j];
-                    AddPropertiesCount(result, operation.RequestType);
-                    AddPropertiesCount(result, operation.HeaderRequestType);
-                    AddPropertiesCount(result, operation.ResponseType);
-                    AddPropertiesCount(result, operation.HeaderResponseType);
-                }
-            }
-
-            return result;
-        }
-
-        private static void AddPropertiesCount(SortedSet<int> target, MessageDescription? message)
-        {
-            if (message != null && !message.IsBuiltIn)
-            {
-                target.Add(message.Properties.Length);
-            }
+            target.Add(message.Properties.Length);
         }
     }
 }

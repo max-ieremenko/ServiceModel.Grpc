@@ -16,10 +16,9 @@
 
 using System;
 
-namespace ServiceModel.Grpc.Interceptors.Internal
+namespace ServiceModel.Grpc.Interceptors.Internal;
+
+internal interface IServerCallInterceptor
 {
-    internal interface IServerCallInterceptor
-    {
-        void OnError(ServerCallInterceptorContext context, Exception error);
-    }
+    void OnError(ServerCallInterceptorContext context, Exception error);
 }

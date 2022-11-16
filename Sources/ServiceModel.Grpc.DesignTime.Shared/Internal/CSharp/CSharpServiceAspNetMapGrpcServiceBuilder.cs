@@ -16,55 +16,54 @@
 
 using System.Collections.Generic;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
+
+internal sealed class CSharpServiceAspNetMapGrpcServiceBuilder : CodeGeneratorBase
 {
-    internal sealed class CSharpServiceAspNetMapGrpcServiceBuilder : CodeGeneratorBase
+    private readonly ContractDescription _contract;
+    private readonly bool _isStaticClass;
+
+    public CSharpServiceAspNetMapGrpcServiceBuilder(ContractDescription contract, bool isStaticClass)
     {
-        private readonly ContractDescription _contract;
-        private readonly bool _isStaticClass;
+        _contract = contract;
+        _isStaticClass = isStaticClass;
+    }
 
-        public CSharpServiceAspNetMapGrpcServiceBuilder(ContractDescription contract, bool isStaticClass)
+    public override string GetGeneratedMemberName() => "Map" + _contract.BaseClassName;
+
+    protected override void Generate()
+    {
+        WriteMetadata();
+        Output
+            .Append("public static ")
+            .AppendTypeName("Microsoft.AspNetCore.Builder", "GrpcServiceEndpointConventionBuilder")
+            .Append(" ")
+            .Append(GetGeneratedMemberName())
+            .Append("(");
+
+        if (_isStaticClass)
         {
-            _contract = contract;
-            _isStaticClass = isStaticClass;
+            Output.Append("this ");
         }
 
-        public override string GetGeneratedMemberName() => "Map" + _contract.BaseClassName;
+        Output
+            .AppendTypeName("Microsoft.AspNetCore.Routing", "IEndpointRouteBuilder")
+            .AppendLine(" builder)")
+            .AppendLine("{");
 
-        protected override void Generate()
+        using (Output.Indent())
         {
-            WriteMetadata();
             Output
-                .Append("public static ")
-                .AppendTypeName("Microsoft.AspNetCore.Builder", "GrpcServiceEndpointConventionBuilder")
-                .Append(" ")
-                .Append(GetGeneratedMemberName())
-                .Append("(");
-
-            if (_isStaticClass)
-            {
-                Output.Append("this ");
-            }
-
-            Output
-                .AppendTypeName("Microsoft.AspNetCore.Routing", "IEndpointRouteBuilder")
-                .AppendLine(" builder)")
-                .AppendLine("{");
-
-            using (Output.Indent())
-            {
-                Output
-                    .AppendArgumentNullException("builder")
-                    .Append("return ")
-                    .AppendTypeName("Microsoft.AspNetCore.Builder", "ServiceModelGrpcEndpointRouteBuilderExtensions")
-                    .Append(".MapGrpcService<")
-                    .Append(_contract.ContractInterfaceName)
-                    .Append(", ")
-                    .Append(_contract.EndpointBinderClassName)
-                    .AppendLine(">(builder);");
-            }
-
-            Output.AppendLine("}");
+                .AppendArgumentNullException("builder")
+                .Append("return ")
+                .AppendTypeName("Microsoft.AspNetCore.Builder", "ServiceModelGrpcEndpointRouteBuilderExtensions")
+                .Append(".MapGrpcService<")
+                .Append(_contract.ContractInterfaceName)
+                .Append(", ")
+                .Append(_contract.EndpointBinderClassName)
+                .AppendLine(">(builder);");
         }
+
+        Output.AppendLine("}");
     }
 }

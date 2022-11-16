@@ -20,25 +20,24 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 
-namespace ServiceModel.Grpc.Client.Internal
+namespace ServiceModel.Grpc.Client.Internal;
+
+internal static class ClientChannelAdapter
 {
-    internal static class ClientChannelAdapter
+    internal static async Task WaitForServerStreamExceptionAsync<THeader, TResult>(
+        IAsyncStreamReader<Message<TResult>> responseStream,
+        Metadata? responseHeaders,
+        Marshaller<THeader> marshaller,
+        CancellationToken token)
     {
-        internal static async Task WaitForServerStreamExceptionAsync<THeader, TResult>(
-            IAsyncStreamReader<Message<TResult>> responseStream,
-            Metadata? responseHeaders,
-            Marshaller<THeader> marshaller,
-            CancellationToken token)
-        {
-            // here should throw the RpcException from server-side
-            // see ExceptionHandlingTestBase ThrowApplicationExceptionServerStreamingHeader and ThrowApplicationExceptionDuplexStreamingHeader
-            await responseStream.MoveNext(token).ConfigureAwait(false);
+        // here should throw the RpcException from server-side
+        // see ExceptionHandlingTestBase ThrowApplicationExceptionServerStreamingHeader and ThrowApplicationExceptionDuplexStreamingHeader
+        await responseStream.MoveNext(token).ConfigureAwait(false);
 
-            // this line should not be reached
-            // if the case, check for the headers content
-            CompatibilityTools.DeserializeMethodOutputHeader(marshaller, responseHeaders);
+        // this line should not be reached
+        // if the case, check for the headers content
+        CompatibilityTools.DeserializeMethodOutputHeader(marshaller, responseHeaders);
 
-            throw new InvalidOperationException("The server streaming ResponseHeadersAsync did not provide any headers, headers are available only after the streaming.");
-        }
+        throw new InvalidOperationException("The server streaming ResponseHeadersAsync did not provide any headers, headers are available only after the streaming.");
     }
 }

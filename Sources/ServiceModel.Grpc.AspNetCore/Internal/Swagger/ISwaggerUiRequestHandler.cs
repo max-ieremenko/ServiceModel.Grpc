@@ -22,29 +22,28 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.AspNetCore.Http;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger
+namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger;
+
+internal interface ISwaggerUiRequestHandler
 {
-    internal interface ISwaggerUiRequestHandler
-    {
-        Task<byte[]> ReadRequestMessageAsync(
-            PipeReader bodyReader,
-            IList<string> orderedParameterNames,
-            IMethod method,
-            CancellationToken token);
+    Task<byte[]> ReadRequestMessageAsync(
+        PipeReader bodyReader,
+        IList<string> orderedParameterNames,
+        IMethod method,
+        CancellationToken token);
 
-        void AppendResponseTrailers(
-            IHeaderDictionary responseHeaders,
-            IHeaderDictionary? trailers);
+    void AppendResponseTrailers(
+        IHeaderDictionary responseHeaders,
+        IHeaderDictionary? trailers);
 
-        Task WriteResponseMessageAsync(
-            MemoryStream original,
-            PipeWriter bodyWriter,
-            IMethod method,
-            CancellationToken token);
+    Task WriteResponseMessageAsync(
+        MemoryStream original,
+        PipeWriter bodyWriter,
+        IMethod method,
+        CancellationToken token);
 
-        Task WriteResponseErrorAsync(
-            RpcException error,
-            PipeWriter bodyWriter,
-            CancellationToken token);
-    }
+    Task WriteResponseErrorAsync(
+        RpcException error,
+        PipeWriter bodyWriter,
+        CancellationToken token);
 }

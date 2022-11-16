@@ -18,45 +18,44 @@ using System;
 using System.Text;
 using ServiceModel.Grpc.Channel;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal;
+
+internal sealed class MessageDescription
 {
-    internal sealed class MessageDescription
+    public MessageDescription(string[] properties)
     {
-        public MessageDescription(string[] properties)
+        Properties = properties;
+        ClassName = GetClassName(properties);
+    }
+
+    public static MessageDescription Empty { get; } = new MessageDescription(Array.Empty<string>());
+
+    public string ClassName { get; }
+
+    public string[] Properties { get; }
+
+    // see ServiceModel.Grpc.Channel.Message.tt
+    public bool IsBuiltIn => Properties.Length < 4;
+
+    private static string GetClassName(string[] properties)
+    {
+        var result = new StringBuilder(nameof(Message));
+        if (properties.Length > 0)
         {
-            Properties = properties;
-            ClassName = GetClassName(properties);
-        }
-
-        public static MessageDescription Empty { get; } = new MessageDescription(Array.Empty<string>());
-
-        public string ClassName { get; }
-
-        public string[] Properties { get; }
-
-        // see ServiceModel.Grpc.Channel.Message.tt
-        public bool IsBuiltIn => Properties.Length < 4;
-
-        private static string GetClassName(string[] properties)
-        {
-            var result = new StringBuilder(nameof(Message));
-            if (properties.Length > 0)
+            result.Append("<");
+            for (var i = 0; i < properties.Length; i++)
             {
-                result.Append("<");
-                for (var i = 0; i < properties.Length; i++)
+                if (i > 0)
                 {
-                    if (i > 0)
-                    {
-                        result.Append(", ");
-                    }
-
-                    result.Append(properties[i]);
+                    result.Append(", ");
                 }
 
-                result.Append(">");
+                result.Append(properties[i]);
             }
 
-            return result.ToString();
+            result.Append(">");
         }
+
+        return result.ToString();
     }
 }

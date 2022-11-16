@@ -24,56 +24,55 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using Grpc.Net.Client;
 
-namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Combined
+namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Combined;
+
+internal sealed class StubHttpMessageHandler : HttpMessageHandler
 {
-    internal sealed class StubHttpMessageHandler : HttpMessageHandler
+    public long PayloadSize { get; private set; }
+
+    public static async ValueTask<long> GetPayloadSize(Func<GrpcChannel, Task> call)
     {
-        public long PayloadSize { get; private set; }
+        using var httpHandler = new StubHttpMessageHandler();
+        using var channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpHandler = httpHandler });
 
-        public static async ValueTask<long> GetPayloadSize(Func<GrpcChannel, Task> call)
+        try
         {
-            using var httpHandler = new StubHttpMessageHandler();
-            using var channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpHandler = httpHandler });
+            await call(channel).ConfigureAwait(false);
+        }
+        catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
+        {
+        }
 
-            try
+        return httpHandler.PayloadSize;
+    }
+
+    protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        throw new NotSupportedException();
+    }
+
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        await using var stream = await request.Content!.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        await stream.CopyToAsync(Stream.Null, cancellationToken).ConfigureAwait(false);
+        PayloadSize = stream.Length;
+
+        return CreateResponse();
+    }
+
+    private HttpResponseMessage CreateResponse()
+    {
+        var content = new ByteArrayContent(Array.Empty<byte>());
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/grpc");
+
+        return new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = content,
+            Version = new Version(2, 0),
+            TrailingHeaders =
             {
-                await call(channel).ConfigureAwait(false);
+                { "grpc-status", StatusCode.Cancelled.ToString("D") }
             }
-            catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
-            {
-            }
-
-            return httpHandler.PayloadSize;
-        }
-
-        protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            throw new NotSupportedException();
-        }
-
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            await using var stream = await request.Content!.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-            await stream.CopyToAsync(Stream.Null, cancellationToken).ConfigureAwait(false);
-            PayloadSize = stream.Length;
-
-            return CreateResponse();
-        }
-
-        private HttpResponseMessage CreateResponse()
-        {
-            var content = new ByteArrayContent(Array.Empty<byte>());
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/grpc");
-
-            return new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = content,
-                Version = new Version(2, 0),
-                TrailingHeaders =
-                {
-                    { "grpc-status", StatusCode.Cancelled.ToString("D") }
-                }
-            };
-        }
+        };
     }
 }

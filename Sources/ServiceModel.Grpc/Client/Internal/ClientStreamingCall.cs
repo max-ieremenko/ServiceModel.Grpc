@@ -27,128 +27,127 @@ using ServiceModel.Grpc.Channel;
 #pragma warning disable SA1615 // Element return value should be documented
 #pragma warning disable SA1618 // Generic type parameters should be documented
 
-namespace ServiceModel.Grpc.Client.Internal
+namespace ServiceModel.Grpc.Client.Internal;
+
+/// <summary>
+/// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+/// This API may change or be removed in future releases.
+/// </summary>
+public ref struct ClientStreamingCall<TRequestHeader, TRequest, TResponse>
+    where TRequestHeader : class
+    where TResponse : class
 {
-    /// <summary>
-    /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
-    /// This API may change or be removed in future releases.
-    /// </summary>
-    public ref struct ClientStreamingCall<TRequestHeader, TRequest, TResponse>
-        where TRequestHeader : class
-        where TResponse : class
+    private readonly Method<Message<TRequest>, TResponse> _method;
+    private readonly CallInvoker _callInvoker;
+
+    private readonly CallContext? _callContext;
+    private CallOptions _callOptions;
+
+    public ClientStreamingCall(
+        Method<Message<TRequest>, TResponse> method,
+        CallInvoker callInvoker,
+        in CallOptionsBuilder callOptionsBuilder)
     {
-        private readonly Method<Message<TRequest>, TResponse> _method;
-        private readonly CallInvoker _callInvoker;
+        _method = method;
+        _callInvoker = callInvoker;
 
-        private readonly CallContext? _callContext;
-        private CallOptions _callOptions;
+        _callContext = callOptionsBuilder.CallContext;
+        _callOptions = callOptionsBuilder.Build();
+    }
 
-        public ClientStreamingCall(
-            Method<Message<TRequest>, TResponse> method,
-            CallInvoker callInvoker,
-            in CallOptionsBuilder callOptionsBuilder)
+    public ClientStreamingCall<TRequestHeader, TRequest, TResponse> WithRequestHeader(
+        Marshaller<TRequestHeader> marshaller,
+        TRequestHeader header)
+    {
+        var metadata = CompatibilityTools.SerializeMethodInputHeader(marshaller, header);
+        _callOptions = CallOptionsBuilder.MergeCallOptions(_callOptions, new CallOptions(metadata));
+        return this;
+    }
+
+    public Task InvokeAsync(IAsyncEnumerable<TRequest> request)
+    {
+        object call = _callInvoker.AsyncClientStreamingCall(_method, null, _callOptions);
+        var typedCall = (AsyncClientStreamingCall<Message<TRequest>, Message>)call;
+
+        return CallAsync(typedCall, request, _callContext, _callOptions.CancellationToken);
+    }
+
+    public Task<TResult> InvokeAsync<TResult>(IAsyncEnumerable<TRequest> request)
+    {
+        object call = _callInvoker.AsyncClientStreamingCall(_method, null, _callOptions);
+        var typedCall = (AsyncClientStreamingCall<Message<TRequest>, Message<TResult>>)call;
+
+        return CallAsync(typedCall, request, _callContext, _callOptions.CancellationToken);
+    }
+
+    private static async Task CallAsync(
+        AsyncClientStreamingCall<Message<TRequest>, Message> call,
+        IAsyncEnumerable<TRequest> request,
+        CallContext? context,
+        CancellationToken token)
+    {
+        using (call)
+        using (var writer = new ClientStreamWriter<TRequest>(request, call.RequestStream, token))
         {
-            _method = method;
-            _callInvoker = callInvoker;
-
-            _callContext = callOptionsBuilder.CallContext;
-            _callOptions = callOptionsBuilder.Build();
-        }
-
-        public ClientStreamingCall<TRequestHeader, TRequest, TResponse> WithRequestHeader(
-            Marshaller<TRequestHeader> marshaller,
-            TRequestHeader header)
-        {
-            var metadata = CompatibilityTools.SerializeMethodInputHeader(marshaller, header);
-            _callOptions = CallOptionsBuilder.MergeCallOptions(_callOptions, new CallOptions(metadata));
-            return this;
-        }
-
-        public Task InvokeAsync(IAsyncEnumerable<TRequest> request)
-        {
-            object call = _callInvoker.AsyncClientStreamingCall(_method, null, _callOptions);
-            var typedCall = (AsyncClientStreamingCall<Message<TRequest>, Message>)call;
-
-            return CallAsync(typedCall, request, _callContext, _callOptions.CancellationToken);
-        }
-
-        public Task<TResult> InvokeAsync<TResult>(IAsyncEnumerable<TRequest> request)
-        {
-            object call = _callInvoker.AsyncClientStreamingCall(_method, null, _callOptions);
-            var typedCall = (AsyncClientStreamingCall<Message<TRequest>, Message<TResult>>)call;
-
-            return CallAsync(typedCall, request, _callContext, _callOptions.CancellationToken);
-        }
-
-        private static async Task CallAsync(
-            AsyncClientStreamingCall<Message<TRequest>, Message> call,
-            IAsyncEnumerable<TRequest> request,
-            CallContext? context,
-            CancellationToken token)
-        {
-            using (call)
-            using (var writer = new ClientStreamWriter<TRequest>(request, call.RequestStream, token))
+            if (context != null && !token.IsCancellationRequested)
             {
-                if (context != null && !token.IsCancellationRequested)
-                {
-                    context.TraceClientStreaming?.Invoke(writer.Task);
+                context.TraceClientStreaming?.Invoke(writer.Task);
 
-                    var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
-                    context.ServerResponse = new ServerResponse(
-                        headers,
-                        call.GetStatus,
-                        call.GetTrailers);
-                }
-
-                await call.ResponseAsync.ConfigureAwait(false);
-
-                if (context != null && !token.IsCancellationRequested)
-                {
-                    context.ServerResponse = new ServerResponse(
-                        context.ResponseHeaders!,
-                        call.GetStatus(),
-                        call.GetTrailers());
-                }
-
-                await writer.WaitAsync(token).ConfigureAwait(false);
-            }
-        }
-
-        private static async Task<TResult> CallAsync<TResult>(
-            AsyncClientStreamingCall<Message<TRequest>, Message<TResult>> call,
-            IAsyncEnumerable<TRequest> request,
-            CallContext? context,
-            CancellationToken token)
-        {
-            Message<TResult> result;
-            using (call)
-            using (var writer = new ClientStreamWriter<TRequest>(request, call.RequestStream, token))
-            {
-                if (context != null && !token.IsCancellationRequested)
-                {
-                    context.TraceClientStreaming?.Invoke(writer.Task);
-
-                    var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
-                    context.ServerResponse = new ServerResponse(
-                        headers,
-                        call.GetStatus,
-                        call.GetTrailers);
-                }
-
-                result = await call.ResponseAsync.ConfigureAwait(false);
-
-                if (!token.IsCancellationRequested && context != null)
-                {
-                    context.ServerResponse = new ServerResponse(
-                        context.ResponseHeaders!,
-                        call.GetStatus(),
-                        call.GetTrailers());
-                }
-
-                await writer.WaitAsync(token).ConfigureAwait(false);
+                var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
+                context.ServerResponse = new ServerResponse(
+                    headers,
+                    call.GetStatus,
+                    call.GetTrailers);
             }
 
-            return result.Value1;
+            await call.ResponseAsync.ConfigureAwait(false);
+
+            if (context != null && !token.IsCancellationRequested)
+            {
+                context.ServerResponse = new ServerResponse(
+                    context.ResponseHeaders!,
+                    call.GetStatus(),
+                    call.GetTrailers());
+            }
+
+            await writer.WaitAsync(token).ConfigureAwait(false);
         }
+    }
+
+    private static async Task<TResult> CallAsync<TResult>(
+        AsyncClientStreamingCall<Message<TRequest>, Message<TResult>> call,
+        IAsyncEnumerable<TRequest> request,
+        CallContext? context,
+        CancellationToken token)
+    {
+        Message<TResult> result;
+        using (call)
+        using (var writer = new ClientStreamWriter<TRequest>(request, call.RequestStream, token))
+        {
+            if (context != null && !token.IsCancellationRequested)
+            {
+                context.TraceClientStreaming?.Invoke(writer.Task);
+
+                var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
+                context.ServerResponse = new ServerResponse(
+                    headers,
+                    call.GetStatus,
+                    call.GetTrailers);
+            }
+
+            result = await call.ResponseAsync.ConfigureAwait(false);
+
+            if (!token.IsCancellationRequested && context != null)
+            {
+                context.ServerResponse = new ServerResponse(
+                    context.ResponseHeaders!,
+                    call.GetStatus(),
+                    call.GetTrailers());
+            }
+
+            await writer.WaitAsync(token).ConfigureAwait(false);
+        }
+
+        return result.Value1;
     }
 }

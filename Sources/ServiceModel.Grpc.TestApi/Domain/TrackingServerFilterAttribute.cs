@@ -17,21 +17,20 @@
 using System;
 using ServiceModel.Grpc.Filters;
 
-namespace ServiceModel.Grpc.TestApi.Domain
+namespace ServiceModel.Grpc.TestApi.Domain;
+
+public sealed class TrackingServerFilterAttribute : ServerFilterRegistrationAttribute
 {
-    public sealed class TrackingServerFilterAttribute : ServerFilterRegistrationAttribute
+    private readonly string _name;
+
+    public TrackingServerFilterAttribute(int order, string name)
+        : base(order)
     {
-        private readonly string _name;
+        _name = name;
+    }
 
-        public TrackingServerFilterAttribute(int order, string name)
-            : base(order)
-        {
-            _name = name;
-        }
-
-        public override IServerFilter CreateFilter(IServiceProvider serviceProvider)
-        {
-            return new TrackingServerFilter(_name);
-        }
+    public override IServerFilter CreateFilter(IServiceProvider serviceProvider)
+    {
+        return new TrackingServerFilter(_name);
     }
 }

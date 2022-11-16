@@ -23,74 +23,73 @@ using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal;
+
+[TestFixture]
+public partial class ServiceContractTest
 {
-    [TestFixture]
-    public partial class ServiceContractTest
+    private Compilation _compilation = null!;
+
+    [OneTimeSetUp]
+    public void BeforeAllTest()
     {
-        private Compilation _compilation = null!;
+        _compilation = CSharpCompilation
+            .Create(
+                nameof(ServiceContractTest),
+                references: new[]
+                {
+                    MetadataReference.CreateFromFile(typeof(string).Assembly.Location),
+                    MetadataReference.CreateFromFile(GetType().Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(ServiceContractAttribute).Assembly.Location)
+                });
+    }
 
-        [OneTimeSetUp]
-        public void BeforeAllTest()
+    [Test]
+    [TestCaseSource(nameof(GetGetServiceNameCases))]
+    public void GetServiceName(Type type, string expected)
+    {
+        var symbol = _compilation.GetTypeByMetadataName(type);
+
+        ServiceContract.GetServiceName(symbol).ShouldBe(expected);
+    }
+
+    [Test]
+    [TestCase(typeof(I1), nameof(I1.Operation), "Operation")]
+    [TestCase(typeof(I2), nameof(I2.Operation), "Method")]
+    public void GetServiceOperationName(Type type, string methodName, string expected)
+    {
+        var symbol = _compilation.GetTypeByMetadataName(type);
+        symbol.ShouldNotBeNull();
+
+        var method = SyntaxTools.GetInstanceMethods(symbol).First(i => i.Name == methodName);
+
+        ServiceContract.GetServiceOperationName(method).ShouldBe(expected);
+    }
+
+    private static IEnumerable<TestCaseData> GetGetServiceNameCases()
+    {
+        var cases = new[]
         {
-            _compilation = CSharpCompilation
-                .Create(
-                    nameof(ServiceContractTest),
-                    references: new[]
-                    {
-                        MetadataReference.CreateFromFile(typeof(string).Assembly.Location),
-                        MetadataReference.CreateFromFile(GetType().Assembly.Location),
-                        MetadataReference.CreateFromFile(typeof(ServiceContractAttribute).Assembly.Location)
-                    });
-        }
+            (typeof(I1), "I1"),
+            (typeof(I2), "Service2"),
+            (typeof(I3), "Test.Service2"),
+            (typeof(IGeneric1<double>), "IGeneric1-Double"),
+            (typeof(IGeneric2<double, int>), "Service2-Double-Int32"),
+            (typeof(IGeneric1<IGeneric2<double, int>>), "IGeneric1-IGeneric2-Double-Int32"),
+            (typeof(IGeneric1<SomeData>), "IGeneric1-Some-Data"),
+            (typeof(IGeneric1<int?>), "IGeneric1-Nullable-Int32"),
+            (typeof(IGeneric1<int?[][]>), "IGeneric1-ArrayArrayNullable-Int32"),
+            (typeof(IGeneric1<string?>), "IGeneric1-String"),
+            (typeof(IGeneric1<string[]>), "IGeneric1-ArrayString"),
+            (typeof(IGeneric1<string[][]>), "IGeneric1-ArrayArrayString"),
+            (typeof(IGeneric1<string[,]>), "IGeneric1-Array2String"),
+            (typeof(IGeneric1<IList<string>?>), "IGeneric1-IList-String"),
+            (typeof(IGeneric1<IList<int?>>), "IGeneric1-IList-Nullable-Int32")
+        };
 
-        [Test]
-        [TestCaseSource(nameof(GetGetServiceNameCases))]
-        public void GetServiceName(Type type, string expected)
+        foreach (var item in cases)
         {
-            var symbol = _compilation.GetTypeByMetadataName(type);
-
-            ServiceContract.GetServiceName(symbol).ShouldBe(expected);
-        }
-
-        [Test]
-        [TestCase(typeof(I1), nameof(I1.Operation), "Operation")]
-        [TestCase(typeof(I2), nameof(I2.Operation), "Method")]
-        public void GetServiceOperationName(Type type, string methodName, string expected)
-        {
-            var symbol = _compilation.GetTypeByMetadataName(type);
-            symbol.ShouldNotBeNull();
-
-            var method = SyntaxTools.GetInstanceMethods(symbol).First(i => i.Name == methodName);
-
-            ServiceContract.GetServiceOperationName(method).ShouldBe(expected);
-        }
-
-        private static IEnumerable<TestCaseData> GetGetServiceNameCases()
-        {
-            var cases = new[]
-            {
-                (typeof(I1), "I1"),
-                (typeof(I2), "Service2"),
-                (typeof(I3), "Test.Service2"),
-                (typeof(IGeneric1<double>), "IGeneric1-Double"),
-                (typeof(IGeneric2<double, int>), "Service2-Double-Int32"),
-                (typeof(IGeneric1<IGeneric2<double, int>>), "IGeneric1-IGeneric2-Double-Int32"),
-                (typeof(IGeneric1<SomeData>), "IGeneric1-Some-Data"),
-                (typeof(IGeneric1<int?>), "IGeneric1-Nullable-Int32"),
-                (typeof(IGeneric1<int?[][]>), "IGeneric1-ArrayArrayNullable-Int32"),
-                (typeof(IGeneric1<string?>), "IGeneric1-String"),
-                (typeof(IGeneric1<string[]>), "IGeneric1-ArrayString"),
-                (typeof(IGeneric1<string[][]>), "IGeneric1-ArrayArrayString"),
-                (typeof(IGeneric1<string[,]>), "IGeneric1-Array2String"),
-                (typeof(IGeneric1<IList<string>?>), "IGeneric1-IList-String"),
-                (typeof(IGeneric1<IList<int?>>), "IGeneric1-IList-Nullable-Int32")
-            };
-
-            foreach (var item in cases)
-            {
-                yield return new TestCaseData(item.Item1, item.Item2) { TestName = "GetServiceName." + item.Item2 };
-            }
+            yield return new TestCaseData(item.Item1, item.Item2) { TestName = "GetServiceName." + item.Item2 };
         }
     }
 }

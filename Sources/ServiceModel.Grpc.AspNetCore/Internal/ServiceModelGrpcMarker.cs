@@ -16,15 +16,14 @@
 
 using System.Reflection;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal
-{
-    internal sealed class ServiceModelGrpcMarker
-    {
-        public ServiceModelGrpcMarker(MethodInfo contractMethodDefinition)
-        {
-            ContractMethodDefinition = contractMethodDefinition;
-        }
+namespace ServiceModel.Grpc.AspNetCore.Internal;
 
-        public MethodInfo ContractMethodDefinition { get; }
+internal sealed class ServiceModelGrpcMarker
+{
+    public ServiceModelGrpcMarker(MethodInfo contractMethodDefinition)
+    {
+        ContractMethodDefinition = contractMethodDefinition;
     }
+
+    public MethodInfo ContractMethodDefinition { get; }
 }

@@ -14,12 +14,11 @@
 // limitations under the License.
 // </copyright>
 
-namespace ServiceModel.Grpc.Filters.Internal
-{
-    internal interface IServerFilterContextInternal : IServerFilterContext
-    {
-        IRequestContextInternal RequestInternal { get; }
+namespace ServiceModel.Grpc.Filters.Internal;
 
-        IResponseContextInternal ResponseInternal { get; }
-    }
+internal interface IServerFilterContextInternal : IServerFilterContext
+{
+    IRequestContextInternal RequestInternal { get; }
+
+    IResponseContextInternal ResponseInternal { get; }
 }

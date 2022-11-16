@@ -19,53 +19,52 @@ using System.Collections.Generic;
 using System.Reflection;
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Filters.Internal
+namespace ServiceModel.Grpc.Filters.Internal;
+
+internal sealed class ServerFilterContext : IServerFilterContextInternal
 {
-    internal sealed class ServerFilterContext : IServerFilterContextInternal
+    private readonly Func<object, MethodInfo> _getServiceMethodInfo;
+
+    public ServerFilterContext(
+        object serviceInstance,
+        ServerCallContext serverCallContext,
+        IServiceProvider serviceProvider,
+        MethodInfo contractMethodInfo,
+        Func<object, MethodInfo> getServiceMethodInfo,
+        IRequestContextInternal request,
+        IResponseContextInternal response)
     {
-        private readonly Func<object, MethodInfo> _getServiceMethodInfo;
+        ServiceInstance = serviceInstance;
+        ServerCallContext = serverCallContext;
+        ServiceProvider = serviceProvider;
+        ContractMethodInfo = contractMethodInfo;
+        _getServiceMethodInfo = getServiceMethodInfo;
+        RequestInternal = request;
+        ResponseInternal = response;
+    }
 
-        public ServerFilterContext(
-            object serviceInstance,
-            ServerCallContext serverCallContext,
-            IServiceProvider serviceProvider,
-            MethodInfo contractMethodInfo,
-            Func<object, MethodInfo> getServiceMethodInfo,
-            IRequestContextInternal request,
-            IResponseContextInternal response)
-        {
-            ServiceInstance = serviceInstance;
-            ServerCallContext = serverCallContext;
-            ServiceProvider = serviceProvider;
-            ContractMethodInfo = contractMethodInfo;
-            _getServiceMethodInfo = getServiceMethodInfo;
-            RequestInternal = request;
-            ResponseInternal = response;
-        }
+    public object ServiceInstance { get; }
 
-        public object ServiceInstance { get; }
+    public ServerCallContext ServerCallContext { get; }
 
-        public ServerCallContext ServerCallContext { get; }
+    public IServiceProvider ServiceProvider { get; }
 
-        public IServiceProvider ServiceProvider { get; }
+    public IDictionary<object, object> UserState => ServerCallContext.UserState;
 
-        public IDictionary<object, object> UserState => ServerCallContext.UserState;
+    public MethodInfo ContractMethodInfo { get; }
 
-        public MethodInfo ContractMethodInfo { get; }
+    public MethodInfo ServiceMethodInfo => _getServiceMethodInfo(ServiceInstance);
 
-        public MethodInfo ServiceMethodInfo => _getServiceMethodInfo(ServiceInstance);
+    IRequestContext IServerFilterContext.Request => RequestInternal;
 
-        IRequestContext IServerFilterContext.Request => RequestInternal;
+    IResponseContext IServerFilterContext.Response => ResponseInternal;
 
-        IResponseContext IServerFilterContext.Response => ResponseInternal;
+    public IRequestContextInternal RequestInternal { get; }
 
-        public IRequestContextInternal RequestInternal { get; }
+    public IResponseContextInternal ResponseInternal { get; }
 
-        public IResponseContextInternal ResponseInternal { get; }
-
-        public override string ToString()
-        {
-            return "{0} - {1}.{2}()".FormatWith(ServerCallContext.Method, ContractMethodInfo.DeclaringType, ContractMethodInfo.Name);
-        }
+    public override string ToString()
+    {
+        return "{0} - {1}.{2}()".FormatWith(ServerCallContext.Method, ContractMethodInfo.DeclaringType, ContractMethodInfo.Name);
     }
 }

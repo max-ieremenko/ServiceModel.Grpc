@@ -16,27 +16,26 @@
 
 using System.Net.Mime;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal
+namespace ServiceModel.Grpc.AspNetCore.Internal;
+
+internal static class ProtocolConstants
 {
-    internal static class ProtocolConstants
+    public const string MediaTypeNameGrpc = "application/grpc";
+    public const string MediaTypeNameSwaggerRequest = MediaTypeNames.Application.Json + "+servicemodel.grpc";
+    public const string MediaTypeNameSwaggerResponse = MediaTypeNames.Application.Json;
+
+    public const string HeaderGrpcStatus = "grpc-status";
+    public const string HeaderGrpcMessage = "grpc-message";
+
+    public const string Http2 = "HTTP/2";
+
+    public static string NormalizeRelativePath(string path)
     {
-        public const string MediaTypeNameGrpc = "application/grpc";
-        public const string MediaTypeNameSwaggerRequest = MediaTypeNames.Application.Json + "+servicemodel.grpc";
-        public const string MediaTypeNameSwaggerResponse = MediaTypeNames.Application.Json;
-
-        public const string HeaderGrpcStatus = "grpc-status";
-        public const string HeaderGrpcMessage = "grpc-message";
-
-        public const string Http2 = "HTTP/2";
-
-        public static string NormalizeRelativePath(string path)
+        if (!string.IsNullOrEmpty(path) && path[0] == '/')
         {
-            if (!string.IsNullOrEmpty(path) && path[0] == '/')
-            {
-                return path.TrimStart('/');
-            }
-
-            return path;
+            return path.TrimStart('/');
         }
+
+        return path;
     }
 }

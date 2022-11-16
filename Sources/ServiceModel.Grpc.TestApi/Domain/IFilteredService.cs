@@ -18,21 +18,20 @@ using System.Collections.Generic;
 using System.ServiceModel;
 using System.Threading.Tasks;
 
-namespace ServiceModel.Grpc.TestApi.Domain
+namespace ServiceModel.Grpc.TestApi.Domain;
+
+[ServiceContract]
+public interface IFilteredService
 {
-    [ServiceContract]
-    public interface IFilteredService
-    {
-        [OperationContract]
-        ValueTask<IList<string>> UnaryAsync(IList<string> input);
+    [OperationContract]
+    ValueTask<IList<string>> UnaryAsync(IList<string> input);
 
-        [OperationContract]
-        ValueTask<IList<string>> ClientStreamAsync(IAsyncEnumerable<int> stream, IList<string> input);
+    [OperationContract]
+    ValueTask<IList<string>> ClientStreamAsync(IAsyncEnumerable<int> stream, IList<string> input);
 
-        [OperationContract]
-        ValueTask<(IAsyncEnumerable<int> Stream, IList<string> Output)> ServerStreamAsync(IList<string> input);
+    [OperationContract]
+    ValueTask<(IAsyncEnumerable<int> Stream, IList<string> Output)> ServerStreamAsync(IList<string> input);
 
-        [OperationContract]
-        ValueTask<(IAsyncEnumerable<int> Stream, IList<string> Output)> DuplexStreamAsync(IAsyncEnumerable<int> stream, IList<string> input);
-    }
+    [OperationContract]
+    ValueTask<(IAsyncEnumerable<int> Stream, IList<string> Output)> DuplexStreamAsync(IAsyncEnumerable<int> stream, IList<string> input);
 }

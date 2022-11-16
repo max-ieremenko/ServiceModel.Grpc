@@ -20,34 +20,33 @@ using System.Threading.Tasks;
 using ServiceModel.Grpc.Filters;
 using Shouldly;
 
-namespace ServiceModel.Grpc.TestApi.Domain
+namespace ServiceModel.Grpc.TestApi.Domain;
+
+public sealed class TrackingServerFilter : IServerFilter
 {
-    public sealed class TrackingServerFilter : IServerFilter
+    public TrackingServerFilter(string name)
     {
-        public TrackingServerFilter(string name)
+        Name = name;
+    }
+
+    public string Name { get; }
+
+    public async ValueTask InvokeAsync(IServerFilterContext context, Func<ValueTask> next)
+    {
+        context.ServiceMethodInfo.ShouldNotBeNull();
+
+        var input = (IList<string>)context.Request[0]!;
+        context.Request["input"] = new List<string>(input)
         {
-            Name = name;
-        }
+            Name + "-before"
+        };
 
-        public string Name { get; }
+        await next().ConfigureAwait(false);
 
-        public async ValueTask InvokeAsync(IServerFilterContext context, Func<ValueTask> next)
+        var result = (IList<string>)context.Response[0]!;
+        context.Response[0] = new List<string>(result)
         {
-            context.ServiceMethodInfo.ShouldNotBeNull();
-
-            var input = (IList<string>)context.Request[0]!;
-            context.Request["input"] = new List<string>(input)
-            {
-                Name + "-before"
-            };
-
-            await next().ConfigureAwait(false);
-
-            var result = (IList<string>)context.Response[0]!;
-            context.Response[0] = new List<string>(result)
-            {
-                Name + "-after"
-            };
-        }
+            Name + "-after"
+        };
     }
 }

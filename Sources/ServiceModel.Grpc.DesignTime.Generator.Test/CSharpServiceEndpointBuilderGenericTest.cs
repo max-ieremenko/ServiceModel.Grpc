@@ -18,17 +18,16 @@ using NUnit.Framework;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Test
+namespace ServiceModel.Grpc.DesignTime.Generator.Test;
+
+[TestFixture]
+[ExportGrpcService(typeof(IGenericContract<int, string>))]
+public partial class CSharpServiceEndpointBuilderGenericTest : ServiceEndpointBuilderGenericTestBase
 {
-    [TestFixture]
-    [ExportGrpcService(typeof(IGenericContract<int, string>))]
-    public partial class CSharpServiceEndpointBuilderGenericTest : ServiceEndpointBuilderGenericTestBase
+    [OneTimeSetUp]
+    public void BeforeAllTest()
     {
-        [OneTimeSetUp]
-        public void BeforeAllTest()
-        {
-            ChannelType = typeof(GenericContractInt32StringEndpoint);
-            Channel = new GenericContractInt32StringEndpoint();
-        }
+        ChannelType = typeof(GenericContractInt32StringEndpoint);
+        Channel = new GenericContractInt32StringEndpoint();
     }
 }

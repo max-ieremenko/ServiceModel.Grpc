@@ -17,23 +17,22 @@
 using System;
 using System.IO;
 
-namespace ServiceModel.Grpc.DesignTime.Generator
+namespace ServiceModel.Grpc.DesignTime.Generator;
+
+internal sealed class TempDirectory : IDisposable
 {
-    internal sealed class TempDirectory : IDisposable
+    public TempDirectory()
     {
-        public TempDirectory()
-        {
-            Location = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        }
+        Location = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+    }
 
-        public string Location { get; }
+    public string Location { get; }
 
-        public void Dispose()
+    public void Dispose()
+    {
+        if (Directory.Exists(Location))
         {
-            if (Directory.Exists(Location))
-            {
-                Directory.Delete(Location, true);
-            }
+            Directory.Delete(Location, true);
         }
     }
 }

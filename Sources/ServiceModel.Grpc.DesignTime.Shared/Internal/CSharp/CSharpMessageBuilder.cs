@@ -19,130 +19,129 @@ using System.Globalization;
 using System.Runtime.Serialization;
 using ServiceModel.Grpc.Channel;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
+
+internal sealed class CSharpMessageBuilder : CodeGeneratorBase
 {
-    internal sealed class CSharpMessageBuilder : CodeGeneratorBase
+    private readonly int _propertiesCount;
+
+    public CSharpMessageBuilder(int propertiesCount)
     {
-        private readonly int _propertiesCount;
+        _propertiesCount = propertiesCount;
+    }
 
-        public CSharpMessageBuilder(int propertiesCount)
+    public override string GetGeneratedMemberName() => "Message_" + _propertiesCount.ToString(CultureInfo.InvariantCulture);
+
+    protected override void Generate()
+    {
+        WriteMetadata();
+        Output
+            .AppendAttribute(typeof(SerializableAttribute))
+            .AppendAttribute(typeof(DataContractAttribute), "Name = \"m\"", "Namespace = \"s\"")
+            .Append("public sealed class ")
+            .Append(nameof(Message))
+            .Append("<");
+
+        for (var i = 0; i < _propertiesCount; i++)
         {
-            _propertiesCount = propertiesCount;
+            Output.AppendCommaIf(i != 0);
+            Output.AppendFormat("T{0}", i + 1);
         }
 
-        public override string GetGeneratedMemberName() => "Message_" + _propertiesCount.ToString(CultureInfo.InvariantCulture);
+        Output
+            .AppendLine(">")
+            .AppendLine("{");
 
-        protected override void Generate()
+        using (Output.Indent())
         {
-            WriteMetadata();
-            Output
-                .AppendAttribute(typeof(SerializableAttribute))
-                .AppendAttribute(typeof(DataContractAttribute), "Name = \"m\"", "Namespace = \"s\"")
-                .Append("public sealed class ")
-                .Append(nameof(Message))
-                .Append("<");
+            BuildFields();
+            Output.AppendLine();
 
+            BuildCtorDefault();
+            Output.AppendLine();
+
+            BuildCtorFull();
+            BuildProperties();
+        }
+
+        Output.AppendLine("}");
+    }
+
+    private void BuildCtorDefault()
+    {
+        Output
+            .Append("public ")
+            .Append(nameof(Message))
+            .AppendLine("()")
+            .AppendLine("{")
+            .AppendLine("}");
+    }
+
+    private void BuildCtorFull()
+    {
+        Output
+            .Append("public ")
+            .Append(nameof(Message))
+            .Append("(");
+
+        for (var i = 0; i < _propertiesCount; i++)
+        {
+            Output
+                .AppendCommaIf(i != 0)
+                .AppendFormat("T{0} value{0}", i + 1);
+        }
+
+        Output
+            .AppendLine(")")
+            .AppendLine("{");
+
+        using (Output.Indent())
+        {
             for (var i = 0; i < _propertiesCount; i++)
             {
-                Output.AppendCommaIf(i != 0);
-                Output.AppendFormat("T{0}", i + 1);
+                Output
+                    .AppendFormat("_value{0} = value{0}", i + 1)
+                    .AppendLine(";");
             }
+        }
 
+        Output.AppendLine("}");
+    }
+
+    private void BuildFields()
+    {
+        for (var i = 0; i < _propertiesCount; i++)
+        {
             Output
-                .AppendLine(">")
+                .AppendFormat("private T{0} _value{0};", i + 1)
+                .AppendLine();
+        }
+    }
+
+    private void BuildProperties()
+    {
+        for (var i = 0; i < _propertiesCount; i++)
+        {
+            var order = (i + 1).ToString(CultureInfo.InvariantCulture);
+            Output
+                .AppendLine()
+                .AppendAttribute(typeof(DataMemberAttribute), string.Format("Name = \"v{0}\"", order), string.Format("Order = {0}", order))
+                .AppendFormat("public T{0} Value{0}", order)
+                .AppendLine()
                 .AppendLine("{");
 
             using (Output.Indent())
             {
-                BuildFields();
-                Output.AppendLine();
-
-                BuildCtorDefault();
-                Output.AppendLine();
-
-                BuildCtorFull();
-                BuildProperties();
+                Output
+                    .Append("get { return _value")
+                    .Append(order)
+                    .AppendLine("; }")
+                    .Append("set { _value")
+                    .Append(order)
+                    .AppendLine(" = value; }");
             }
 
             Output.AppendLine("}");
-        }
-
-        private void BuildCtorDefault()
-        {
-            Output
-                .Append("public ")
-                .Append(nameof(Message))
-                .AppendLine("()")
-                .AppendLine("{")
-                .AppendLine("}");
-        }
-
-        private void BuildCtorFull()
-        {
-            Output
-                .Append("public ")
-                .Append(nameof(Message))
-                .Append("(");
-
-            for (var i = 0; i < _propertiesCount; i++)
-            {
-                Output
-                    .AppendCommaIf(i != 0)
-                    .AppendFormat("T{0} value{0}", i + 1);
-            }
-
-            Output
-                .AppendLine(")")
-                .AppendLine("{");
-
-            using (Output.Indent())
-            {
-                for (var i = 0; i < _propertiesCount; i++)
-                {
-                    Output
-                        .AppendFormat("_value{0} = value{0}", i + 1)
-                        .AppendLine(";");
-                }
-            }
-
-            Output.AppendLine("}");
-        }
-
-        private void BuildFields()
-        {
-            for (var i = 0; i < _propertiesCount; i++)
-            {
-                Output
-                    .AppendFormat("private T{0} _value{0};", i + 1)
-                    .AppendLine();
-            }
-        }
-
-        private void BuildProperties()
-        {
-            for (var i = 0; i < _propertiesCount; i++)
-            {
-                var order = (i + 1).ToString(CultureInfo.InvariantCulture);
-                Output
-                    .AppendLine()
-                    .AppendAttribute(typeof(DataMemberAttribute), string.Format("Name = \"v{0}\"", order), string.Format("Order = {0}", order))
-                    .AppendFormat("public T{0} Value{0}", order)
-                    .AppendLine()
-                    .AppendLine("{");
-
-                using (Output.Indent())
-                {
-                    Output
-                        .Append("get { return _value")
-                        .Append(order)
-                        .AppendLine("; }")
-                        .Append("set { _value")
-                        .Append(order)
-                        .AppendLine(" = value; }");
-                }
-
-                Output.AppendLine("}");
-            }
         }
     }
 }

@@ -19,22 +19,21 @@ using System.Text;
 using Mono.Reflection;
 using Shouldly;
 
-namespace ServiceModel.Grpc.TestApi
+namespace ServiceModel.Grpc.TestApi;
+
+public static class ReflectionTestExtensions
 {
-    public static class ReflectionTestExtensions
+    public static string Disassemble(this MethodBase method)
     {
-        public static string Disassemble(this MethodBase method)
+        method.ShouldNotBeNull();
+
+        var result = new StringBuilder();
+
+        foreach (var instruction in method.GetInstructions())
         {
-            method.ShouldNotBeNull();
-
-            var result = new StringBuilder();
-
-            foreach (var instruction in method.GetInstructions())
-            {
-                result.AppendLine(instruction.ToString());
-            }
-
-            return result.ToString();
+            result.AppendLine(instruction.ToString());
         }
+
+        return result.ToString();
     }
 }

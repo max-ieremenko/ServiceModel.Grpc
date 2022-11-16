@@ -21,40 +21,39 @@ using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.Configuration;
 
-namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Client
+namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Client;
+
+internal sealed class ServiceModelGrpcClientCallTest : IUnaryCallTest
 {
-    internal sealed class ServiceModelGrpcClientCallTest : IUnaryCallTest
+    private readonly SomeObject _payload;
+    private readonly StubHttpMessageHandler _httpHandler;
+    private readonly GrpcChannel _channel;
+    private readonly ITestService _proxy;
+
+    public ServiceModelGrpcClientCallTest(IMarshallerFactory marshallerFactory, SomeObject payload)
     {
-        private readonly SomeObject _payload;
-        private readonly StubHttpMessageHandler _httpHandler;
-        private readonly GrpcChannel _channel;
-        private readonly ITestService _proxy;
+        _payload = payload;
+        _httpHandler = new StubHttpMessageHandler(marshallerFactory, new Message<SomeObject>(payload));
+        _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpHandler = _httpHandler });
 
-        public ServiceModelGrpcClientCallTest(IMarshallerFactory marshallerFactory, SomeObject payload)
-        {
-            _payload = payload;
-            _httpHandler = new StubHttpMessageHandler(marshallerFactory, new Message<SomeObject>(payload));
-            _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpHandler = _httpHandler });
+        var clientFactory = new ClientFactory(new ServiceModelGrpcClientOptions { MarshallerFactory = marshallerFactory });
+        _proxy = clientFactory.CreateClient<ITestService>(_channel);
+    }
 
-            var clientFactory = new ClientFactory(new ServiceModelGrpcClientOptions { MarshallerFactory = marshallerFactory });
-            _proxy = clientFactory.CreateClient<ITestService>(_channel);
-        }
+    public Task PingPongAsync()
+    {
+        return _proxy.PingPong(_payload);
+    }
 
-        public Task PingPongAsync()
-        {
-            return _proxy.PingPong(_payload);
-        }
+    public async ValueTask<long> GetPingPongPayloadSize()
+    {
+        await PingPongAsync().ConfigureAwait(false);
+        return _httpHandler.PayloadSize;
+    }
 
-        public async ValueTask<long> GetPingPongPayloadSize()
-        {
-            await PingPongAsync().ConfigureAwait(false);
-            return _httpHandler.PayloadSize;
-        }
-
-        public void Dispose()
-        {
-            _channel.Dispose();
-            _httpHandler.Dispose();
-        }
+    public void Dispose()
+    {
+        _channel.Dispose();
+        _httpHandler.Dispose();
     }
 }

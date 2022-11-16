@@ -19,137 +19,136 @@ using System.ServiceModel;
 
 //// ReSharper disable OperationContractWithoutServiceContract
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal;
+
+public partial class InterfaceTreeTest
 {
-    public partial class InterfaceTreeTest
+    public static class NonServiceContract
     {
-        public static class NonServiceContract
+        public interface IService
         {
-            public interface IService
-            {
-                [OperationContract]
-                void Method();
-            }
+            [OperationContract]
+            void Method();
+        }
+    }
+
+    public static class OneContractRoot
+    {
+        public interface IService1 : IDisposable
+        {
+            [OperationContract]
+            void Method1();
         }
 
-        public static class OneContractRoot
+        public interface IService2
         {
-            public interface IService1 : IDisposable
-            {
-                [OperationContract]
-                void Method1();
-            }
-
-            public interface IService2
-            {
-                [OperationContract]
-                void Method2();
-            }
-
-            [ServiceContract]
-            public interface IContract : IService1, IService2
-            {
-            }
-
-            public sealed class Contract : IContract
-            {
-                public void Method1() => throw new NotImplementedException();
-
-                public void Method2() => throw new NotImplementedException();
-
-                public void Dispose() => throw new NotImplementedException();
-            }
+            [OperationContract]
+            void Method2();
         }
 
-        // attach non ServiceContract to the most top: IService1 must be attached to IContract2
-        // other behavior does not make sense, the following must work:
-        // - call IService1 via IContract2
-        // - call IService1 via IContract1
-        public static class AttachToMostTopContract
+        [ServiceContract]
+        public interface IContract : IService1, IService2
         {
-            public interface IService1
-            {
-                [OperationContract]
-                void Method1();
-            }
-
-            public interface IService2
-            {
-                [OperationContract]
-                void Method2();
-            }
-
-            [ServiceContract]
-            public interface IContract1 : IService1, IService2
-            {
-            }
-
-            [ServiceContract]
-            public interface IContract2 : IContract1
-            {
-            }
         }
 
-        public static class RootNotFound
+        public sealed class Contract : IContract
         {
-            public interface IService
-            {
-                [OperationContract]
-                void Method();
-            }
+            public void Method1() => throw new NotImplementedException();
 
-            [ServiceContract]
-            public interface IContract1 : IService
-            {
-            }
+            public void Method2() => throw new NotImplementedException();
 
-            [ServiceContract]
-            public interface IContract2 : IService
-            {
-            }
+            public void Dispose() => throw new NotImplementedException();
+        }
+    }
 
-            public sealed class Contract : IContract1, IContract2
-            {
-                public void Method() => throw new NotImplementedException();
-            }
+    // attach non ServiceContract to the most top: IService1 must be attached to IContract2
+    // other behavior does not make sense, the following must work:
+    // - call IService1 via IContract2
+    // - call IService1 via IContract1
+    public static class AttachToMostTopContract
+    {
+        public interface IService1
+        {
+            [OperationContract]
+            void Method1();
         }
 
-        public static class TransientInterface
+        public interface IService2
         {
-            public interface IService1
-            {
-                [OperationContract]
-                void Method();
-            }
-
-            public interface IService2 : IService1
-            {
-            }
-
-            [ServiceContract]
-            public interface IContract : IService2
-            {
-            }
+            [OperationContract]
+            void Method2();
         }
 
-        public static class TransientGenericInterface
+        [ServiceContract]
+        public interface IContract1 : IService1, IService2
         {
-            public interface IService1
-            {
-                [OperationContract]
-                void Method1();
-            }
+        }
 
-            public interface IService2<T> : IService1
-            {
-                [OperationContract]
-                void Method2(T value);
-            }
+        [ServiceContract]
+        public interface IContract2 : IContract1
+        {
+        }
+    }
 
-            [ServiceContract]
-            public interface IContract<T> : IService2<T>
-            {
-            }
+    public static class RootNotFound
+    {
+        public interface IService
+        {
+            [OperationContract]
+            void Method();
+        }
+
+        [ServiceContract]
+        public interface IContract1 : IService
+        {
+        }
+
+        [ServiceContract]
+        public interface IContract2 : IService
+        {
+        }
+
+        public sealed class Contract : IContract1, IContract2
+        {
+            public void Method() => throw new NotImplementedException();
+        }
+    }
+
+    public static class TransientInterface
+    {
+        public interface IService1
+        {
+            [OperationContract]
+            void Method();
+        }
+
+        public interface IService2 : IService1
+        {
+        }
+
+        [ServiceContract]
+        public interface IContract : IService2
+        {
+        }
+    }
+
+    public static class TransientGenericInterface
+    {
+        public interface IService1
+        {
+            [OperationContract]
+            void Method1();
+        }
+
+        public interface IService2<T> : IService1
+        {
+            [OperationContract]
+            void Method2(T value);
+        }
+
+        [ServiceContract]
+        public interface IContract<T> : IService2<T>
+        {
         }
     }
 }

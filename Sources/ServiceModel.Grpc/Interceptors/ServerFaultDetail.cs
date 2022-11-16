@@ -16,31 +16,30 @@
 
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Interceptors
+namespace ServiceModel.Grpc.Interceptors;
+
+/// <summary>
+/// Contains the detail information of the fault condition.
+/// </summary>
+public struct ServerFaultDetail
 {
     /// <summary>
-    /// Contains the detail information of the fault condition.
+    /// Gets or sets the the gRPC status code, <see cref="Status"/>.
     /// </summary>
-    public struct ServerFaultDetail
-    {
-        /// <summary>
-        /// Gets or sets the the gRPC status code, <see cref="Status"/>.
-        /// </summary>
-        public StatusCode? StatusCode { get; set; }
+    public StatusCode? StatusCode { get; set; }
 
-        /// <summary>
-        /// Gets or sets the the optional gRPC error message, <see cref="Status"/>.
-        /// </summary>
-        public string? Message { get; set; }
+    /// <summary>
+    /// Gets or sets the the optional gRPC error message, <see cref="Status"/>.
+    /// </summary>
+    public string? Message { get; set; }
 
-        /// <summary>
-        /// Gets or sets the the optional detail of error to pass for a client call.
-        /// </summary>
-        public object? Detail { get; set; }
+    /// <summary>
+    /// Gets or sets the the optional detail of error to pass for a client call.
+    /// </summary>
+    public object? Detail { get; set; }
 
-        /// <summary>
-        /// Gets or sets the optional call trailing metadata, <see cref="RpcException"/>.
-        /// </summary>
-        public Metadata? Trailers { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the optional call trailing metadata, <see cref="RpcException"/>.
+    /// </summary>
+    public Metadata? Trailers { get; set; }
 }

@@ -17,29 +17,28 @@
 using System;
 using System.Threading.Tasks;
 
-namespace ServiceModel.Grpc.Filters
+namespace ServiceModel.Grpc.Filters;
+
+/// <summary>
+/// Base attribute for inline server filter.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
+public abstract class ServerFilterAttribute : Attribute, IServerFilter
 {
     /// <summary>
-    /// Base attribute for inline server filter.
+    /// Initializes a new instance of the <see cref="ServerFilterAttribute"/> class.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
-    public abstract class ServerFilterAttribute : Attribute, IServerFilter
+    /// <param name="order">The order value for determining the order of execution of filters.</param>
+    protected ServerFilterAttribute(int order)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ServerFilterAttribute"/> class.
-        /// </summary>
-        /// <param name="order">The order value for determining the order of execution of filters.</param>
-        protected ServerFilterAttribute(int order)
-        {
-            Order = order;
-        }
-
-        /// <summary>
-        /// Gets or sets the order value for determining the order of execution of filters.
-        /// </summary>
-        public int Order { get; protected set; }
-
-        /// <inheritdoc />
-        public abstract ValueTask InvokeAsync(IServerFilterContext context, Func<ValueTask> next);
+        Order = order;
     }
+
+    /// <summary>
+    /// Gets or sets the order value for determining the order of execution of filters.
+    /// </summary>
+    public int Order { get; protected set; }
+
+    /// <inheritdoc />
+    public abstract ValueTask InvokeAsync(IServerFilterContext context, Func<ValueTask> next);
 }

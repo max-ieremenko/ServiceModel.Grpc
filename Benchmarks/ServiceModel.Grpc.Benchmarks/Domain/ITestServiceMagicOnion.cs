@@ -18,12 +18,11 @@ using System.ServiceModel;
 using System.Threading.Tasks;
 using MagicOnion;
 
-namespace ServiceModel.Grpc.Benchmarks.Domain
+namespace ServiceModel.Grpc.Benchmarks.Domain;
+
+[ServiceContract]
+public interface ITestServiceMagicOnion : IService<ITestServiceMagicOnion>
 {
-    [ServiceContract]
-    public interface ITestServiceMagicOnion : IService<ITestServiceMagicOnion>
-    {
-        [OperationContract]
-        UnaryResult<SomeObject> PingPong(SomeObject value);
-    }
+    [OperationContract]
+    UnaryResult<SomeObject> PingPong(SomeObject value);
 }

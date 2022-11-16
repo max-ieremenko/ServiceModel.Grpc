@@ -23,16 +23,15 @@ using System.ComponentModel;
 #pragma warning disable SA1615 // Element return value should be documented
 #pragma warning disable SA1618 // Generic type parameters should be documented
 
-namespace ServiceModel.Grpc.Hosting.Internal
+namespace ServiceModel.Grpc.Hosting.Internal;
+
+/// <summary>
+/// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+/// This API may change or be removed in future releases.
+/// </summary>
+[Browsable(false)]
+[EditorBrowsable(EditorBrowsableState.Never)]
+public interface IServiceEndpointBinder<TService>
 {
-    /// <summary>
-    /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
-    /// This API may change or be removed in future releases.
-    /// </summary>
-    [Browsable(false)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public interface IServiceEndpointBinder<TService>
-    {
-        void Bind(IServiceMethodBinder<TService> binder);
-    }
+    void Bind(IServiceMethodBinder<TService> binder);
 }

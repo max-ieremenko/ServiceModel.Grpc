@@ -22,106 +22,105 @@ using Moq.Protected;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Interceptors
+namespace ServiceModel.Grpc.Interceptors;
+
+[TestFixture]
+public class ServerErrorHandlerCollectionTest
 {
-    [TestFixture]
-    public class ServerErrorHandlerCollectionTest
+    private ServerErrorHandlerCollection _sut = null!;
+    private Mock<IServerErrorHandler> _errorHandler1 = null!;
+    private Mock<IServerErrorHandler> _errorHandler2 = null!;
+    private Mock<ServerCallContext> _rpcContext = null!;
+    private CancellationTokenSource _tokenSource = null!;
+    private ServerCallInterceptorContext _errorContext;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private ServerErrorHandlerCollection _sut = null!;
-        private Mock<IServerErrorHandler> _errorHandler1 = null!;
-        private Mock<IServerErrorHandler> _errorHandler2 = null!;
-        private Mock<ServerCallContext> _rpcContext = null!;
-        private CancellationTokenSource _tokenSource = null!;
-        private ServerCallInterceptorContext _errorContext;
+        _errorHandler1 = new Mock<IServerErrorHandler>(MockBehavior.Strict);
+        _errorHandler2 = new Mock<IServerErrorHandler>(MockBehavior.Strict);
 
-        [SetUp]
-        public void BeforeEachTest()
+        _sut = new ServerErrorHandlerCollection();
+
+        _tokenSource = new CancellationTokenSource();
+
+        _rpcContext = new Mock<ServerCallContext>(MockBehavior.Strict);
+        _rpcContext
+            .Protected()
+            .SetupGet<CancellationToken>("CancellationTokenCore")
+            .Returns(_tokenSource.Token);
+
+        _errorContext = new ServerCallInterceptorContext(_rpcContext.Object);
+    }
+
+    [Test]
+    public void DefaultCtor()
+    {
+        _sut.Pipeline.ShouldBeEmpty();
+    }
+
+    [Test]
+    public void Ctor()
+    {
+        var sut = new ServerErrorHandlerCollection(_errorHandler1.Object);
+
+        sut.Pipeline.ShouldBe(new[] { _errorHandler1.Object });
+    }
+
+    [Test]
+    public void Add()
+    {
+        _sut.Add(_errorHandler1.Object);
+
+        _sut.Pipeline.ShouldBe(new[] { _errorHandler1.Object });
+    }
+
+    [Test]
+    public void ProvideFaultOrIgnoreFromFirst()
+    {
+        _sut.Add(_errorHandler1.Object);
+        _sut.Add(_errorHandler2.Object);
+
+        var error = new Exception();
+        var expected = new ServerFaultDetail
         {
-            _errorHandler1 = new Mock<IServerErrorHandler>(MockBehavior.Strict);
-            _errorHandler2 = new Mock<IServerErrorHandler>(MockBehavior.Strict);
+            Detail = new object()
+        };
 
-            _sut = new ServerErrorHandlerCollection();
+        _errorHandler1
+            .Setup(h => h.ProvideFaultOrIgnore(_errorContext, error))
+            .Returns(expected);
 
-            _tokenSource = new CancellationTokenSource();
+        var actual = _sut.ProvideFaultOrIgnore(_errorContext, error);
 
-            _rpcContext = new Mock<ServerCallContext>(MockBehavior.Strict);
-            _rpcContext
-                .Protected()
-                .SetupGet<CancellationToken>("CancellationTokenCore")
-                .Returns(_tokenSource.Token);
+        actual.ShouldNotBeNull();
+        actual!.Value.ShouldBe(expected);
+    }
 
-            _errorContext = new ServerCallInterceptorContext(_rpcContext.Object);
-        }
+    [Test]
+    public void ProvideFaultOrIgnoreFromLast()
+    {
+        _sut.Add(_errorHandler1.Object);
+        _sut.Add(_errorHandler2.Object);
 
-        [Test]
-        public void DefaultCtor()
+        var error = new Exception();
+        var expected = new ServerFaultDetail
         {
-            _sut.Pipeline.ShouldBeEmpty();
-        }
+            Detail = new object()
+        };
 
-        [Test]
-        public void Ctor()
-        {
-            var sut = new ServerErrorHandlerCollection(_errorHandler1.Object);
+        _errorHandler1
+            .Setup(h => h.ProvideFaultOrIgnore(_errorContext, error))
+            .Returns((ServerFaultDetail?)null);
 
-            sut.Pipeline.ShouldBe(new[] { _errorHandler1.Object });
-        }
+        _errorHandler2
+            .Setup(h => h.ProvideFaultOrIgnore(_errorContext, error))
+            .Returns(expected);
 
-        [Test]
-        public void Add()
-        {
-            _sut.Add(_errorHandler1.Object);
+        var actual = _sut.ProvideFaultOrIgnore(_errorContext, error);
 
-            _sut.Pipeline.ShouldBe(new[] { _errorHandler1.Object });
-        }
-
-        [Test]
-        public void ProvideFaultOrIgnoreFromFirst()
-        {
-            _sut.Add(_errorHandler1.Object);
-            _sut.Add(_errorHandler2.Object);
-
-            var error = new Exception();
-            var expected = new ServerFaultDetail
-            {
-                Detail = new object()
-            };
-
-            _errorHandler1
-                .Setup(h => h.ProvideFaultOrIgnore(_errorContext, error))
-                .Returns(expected);
-
-            var actual = _sut.ProvideFaultOrIgnore(_errorContext, error);
-
-            actual.ShouldNotBeNull();
-            actual!.Value.ShouldBe(expected);
-        }
-
-        [Test]
-        public void ProvideFaultOrIgnoreFromLast()
-        {
-            _sut.Add(_errorHandler1.Object);
-            _sut.Add(_errorHandler2.Object);
-
-            var error = new Exception();
-            var expected = new ServerFaultDetail
-            {
-                Detail = new object()
-            };
-
-            _errorHandler1
-                .Setup(h => h.ProvideFaultOrIgnore(_errorContext, error))
-                .Returns((ServerFaultDetail?)null);
-
-            _errorHandler2
-                .Setup(h => h.ProvideFaultOrIgnore(_errorContext, error))
-                .Returns(expected);
-
-            var actual = _sut.ProvideFaultOrIgnore(_errorContext, error);
-
-            actual.ShouldNotBeNull();
-            actual!.Value.ShouldBe(expected);
-            _errorHandler1.VerifyAll();
-        }
+        actual.ShouldNotBeNull();
+        actual!.Value.ShouldBe(expected);
+        _errorHandler1.VerifyAll();
     }
 }

@@ -19,72 +19,71 @@ using System.Runtime.CompilerServices;
 using Grpc.Core;
 using ServiceModel.Grpc.Internal.IO;
 
-namespace ServiceModel.Grpc.Channel
+namespace ServiceModel.Grpc.Channel;
+
+internal static class CompatibilityTools
 {
-    internal static class CompatibilityTools
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Metadata SerializeMethodInputHeader<T>(Marshaller<T> marshaller, T value)
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Metadata SerializeMethodInputHeader<T>(Marshaller<T> marshaller, T value)
+        return new Metadata
         {
-            return new Metadata
-            {
-                { CallContext.HeaderNameMethodInput, SerializeValue(marshaller, value) }
-            };
+            { CallContext.HeaderNameMethodInput, SerializeValue(marshaller, value) }
+        };
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T DeserializeMethodInputHeader<T>(Marshaller<T> marshaller, Metadata? requestHeaders)
+    {
+        return DeserializeHeader(marshaller, requestHeaders, CallContext.HeaderNameMethodInput);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Metadata SerializeMethodOutputHeader<T>(Marshaller<T> marshaller, T value)
+    {
+        return new Metadata
+        {
+            { CallContext.HeaderNameMethodOutput, SerializeValue(marshaller, value) }
+        };
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T DeserializeMethodOutputHeader<T>(Marshaller<T> marshaller, Metadata? responseHeaders)
+    {
+        return DeserializeHeader(marshaller, responseHeaders, CallContext.HeaderNameMethodOutput);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ContainsMethodOutputHeader(Metadata? responseHeaders)
+    {
+        return responseHeaders.FindHeader(CallContext.HeaderNameMethodOutput, true) != null;
+    }
+
+    public static byte[] SerializeValue<T>(Marshaller<T> marshaller, T value)
+    {
+        byte[] payload;
+        using (var serializationContext = new DefaultSerializationContext())
+        {
+            marshaller.ContextualSerializer(value, serializationContext);
+            payload = serializationContext.GetContent();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T DeserializeMethodInputHeader<T>(Marshaller<T> marshaller, Metadata? requestHeaders)
+        return payload;
+    }
+
+    public static T DeserializeValue<T>(Marshaller<T> marshaller, byte[] payload)
+    {
+        return marshaller.ContextualDeserializer(new DefaultDeserializationContext(payload));
+    }
+
+    private static T DeserializeHeader<T>(Marshaller<T> marshaller, Metadata? headers, string headerName)
+    {
+        var header = headers.FindHeader(headerName, true);
+        if (header == null)
         {
-            return DeserializeHeader(marshaller, requestHeaders, CallContext.HeaderNameMethodInput);
+            throw new InvalidOperationException("Fail to resolve header parameters, {0} header not found.".FormatWith(headerName));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Metadata SerializeMethodOutputHeader<T>(Marshaller<T> marshaller, T value)
-        {
-            return new Metadata
-            {
-                { CallContext.HeaderNameMethodOutput, SerializeValue(marshaller, value) }
-            };
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T DeserializeMethodOutputHeader<T>(Marshaller<T> marshaller, Metadata? responseHeaders)
-        {
-            return DeserializeHeader(marshaller, responseHeaders, CallContext.HeaderNameMethodOutput);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool ContainsMethodOutputHeader(Metadata? responseHeaders)
-        {
-            return responseHeaders.FindHeader(CallContext.HeaderNameMethodOutput, true) != null;
-        }
-
-        public static byte[] SerializeValue<T>(Marshaller<T> marshaller, T value)
-        {
-            byte[] payload;
-            using (var serializationContext = new DefaultSerializationContext())
-            {
-                marshaller.ContextualSerializer(value, serializationContext);
-                payload = serializationContext.GetContent();
-            }
-
-            return payload;
-        }
-
-        public static T DeserializeValue<T>(Marshaller<T> marshaller, byte[] payload)
-        {
-            return marshaller.ContextualDeserializer(new DefaultDeserializationContext(payload));
-        }
-
-        private static T DeserializeHeader<T>(Marshaller<T> marshaller, Metadata? headers, string headerName)
-        {
-            var header = headers.FindHeader(headerName, true);
-            if (header == null)
-            {
-                throw new InvalidOperationException("Fail to resolve header parameters, {0} header not found.".FormatWith(headerName));
-            }
-
-            return marshaller.ContextualDeserializer(new DefaultDeserializationContext(header.ValueBytes));
-        }
+        return marshaller.ContextualDeserializer(new DefaultDeserializationContext(header.ValueBytes));
     }
 }

@@ -19,54 +19,53 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
-namespace ServiceModel.Grpc.DesignTime.Generator
+namespace ServiceModel.Grpc.DesignTime.Generator;
+
+[Generator]
+internal sealed class ServiceModelGrpcSourceGenerator : ISourceGenerator
 {
-    [Generator]
-    internal sealed class ServiceModelGrpcSourceGenerator : ISourceGenerator
+    public void Initialize(GeneratorInitializationContext context)
     {
-        public void Initialize(GeneratorInitializationContext context)
+        context.RegisterForSyntaxNotifications(() => new SourceGeneratorSyntaxReceiver());
+    }
+
+    public void Execute(GeneratorExecutionContext context)
+    {
+        if (!"C#".Equals(context.ParseOptions.Language, StringComparison.OrdinalIgnoreCase))
         {
-            context.RegisterForSyntaxNotifications(() => new SourceGeneratorSyntaxReceiver());
+            return;
         }
 
-        public void Execute(GeneratorExecutionContext context)
+        var candidates = (context.SyntaxReceiver as SourceGeneratorSyntaxReceiver)?.Candidates;
+        if (candidates == null || candidates.Count == 0)
         {
-            if (!"C#".Equals(context.ParseOptions.Language, StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
-
-            var candidates = (context.SyntaxReceiver as SourceGeneratorSyntaxReceiver)?.Candidates;
-            if (candidates == null || candidates.Count == 0)
-            {
-                return;
-            }
-
-            using (var assemblyResolver = new AssemblyResolver(context.AnalyzerConfigOptions.GlobalOptions))
-            {
-                assemblyResolver.Initialize();
-
-                var outputContext = new GeneratorContext(
-                    context.Compilation,
-                    new ExecutionContext(context));
-                new CSharpSourceGenerator().Execute(outputContext, candidates);
-            }
+            return;
         }
 
-        private sealed class ExecutionContext : IExecutionContext
+        using (var assemblyResolver = new AssemblyResolver(context.AnalyzerConfigOptions.GlobalOptions))
         {
-            private readonly GeneratorExecutionContext _context;
+            assemblyResolver.Initialize();
 
-            public ExecutionContext(GeneratorExecutionContext context)
-            {
-                _context = context;
-            }
-
-            public CancellationToken CancellationToken => _context.CancellationToken;
-
-            public void ReportDiagnostic(Diagnostic diagnostic) => _context.ReportDiagnostic(diagnostic);
-
-            public void AddSource(string hintName, SourceText sourceText) => _context.AddSource(hintName, sourceText);
+            var outputContext = new GeneratorContext(
+                context.Compilation,
+                new ExecutionContext(context));
+            new CSharpSourceGenerator().Execute(outputContext, candidates);
         }
+    }
+
+    private sealed class ExecutionContext : IExecutionContext
+    {
+        private readonly GeneratorExecutionContext _context;
+
+        public ExecutionContext(GeneratorExecutionContext context)
+        {
+            _context = context;
+        }
+
+        public CancellationToken CancellationToken => _context.CancellationToken;
+
+        public void ReportDiagnostic(Diagnostic diagnostic) => _context.ReportDiagnostic(diagnostic);
+
+        public void AddSource(string hintName, SourceText sourceText) => _context.AddSource(hintName, sourceText);
     }
 }

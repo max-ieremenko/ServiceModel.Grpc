@@ -25,114 +25,113 @@ using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.TestApi;
 using Shouldly;
 
-namespace ServiceModel.Grpc.AspNetCore
+namespace ServiceModel.Grpc.AspNetCore;
+
+[TestFixture]
+public partial class NativeServiceCompatibilityTest
 {
-    [TestFixture]
-    public partial class NativeServiceCompatibilityTest
+    private KestrelHost _grpcHost = null!;
+    private KestrelHost _serviceModelHost = null!;
+
+    [OneTimeSetUp]
+    public async Task BeforeAll()
     {
-        private KestrelHost _grpcHost = null!;
-        private KestrelHost _serviceModelHost = null!;
+        _grpcHost = await new KestrelHost()
+            .ConfigureClientFactory(options => options.MarshallerFactory = ProtobufMarshallerFactory.Default)
+            .ConfigureEndpoints(endpoints => endpoints.MapGrpcService<GreeterService>())
+            .StartAsync()
+            .ConfigureAwait(false);
 
-        [OneTimeSetUp]
-        public async Task BeforeAll()
+        _serviceModelHost = await new KestrelHost()
+            .ConfigureClientFactory(options => options.MarshallerFactory = ProtobufMarshallerFactory.Default)
+            .ConfigureEndpoints(endpoints => endpoints.MapGrpcService<DomainGreeterService>())
+            .StartAsync()
+            .ConfigureAwait(false);
+    }
+
+    [OneTimeTearDown]
+    public async Task AfterAll()
+    {
+        await _grpcHost.DisposeAsync().ConfigureAwait(false);
+        await _serviceModelHost.DisposeAsync().ConfigureAwait(false);
+    }
+
+    [Test]
+    [TestCase("Native")]
+    [TestCase("Domain")]
+    public async Task UnaryNativeCall(string channelName)
+    {
+        var client = new Greeter.GreeterClient(GetChannel(channelName));
+        var response = await client.UnaryAsync(new HelloRequest { Name = "world" }).ResponseAsync.ConfigureAwait(false);
+
+        response.Message.ShouldBe("Hello world!");
+    }
+
+    [Test]
+    [TestCase("Native")]
+    [TestCase("Domain")]
+    public async Task DuplexStreamingNativeCall(string channelName)
+    {
+        var client = new Greeter.GreeterClient(GetChannel(channelName));
+        var response = new List<string>();
+
+        using (var call = client.DuplexStreaming(CompatibilityToolsTestExtensions.SerializeMethodInput(ProtobufMarshallerFactory.Default, "Hello")))
         {
-            _grpcHost = await new KestrelHost()
-                .ConfigureClientFactory(options => options.MarshallerFactory = ProtobufMarshallerFactory.Default)
-                .ConfigureEndpoints(endpoints => endpoints.MapGrpcService<GreeterService>())
-                .StartAsync()
-                .ConfigureAwait(false);
+            var responseHeaders = await call.ResponseHeadersAsync.ConfigureAwait(false);
+            CompatibilityToolsTestExtensions.DeserializeMethodOutput<string>(ProtobufMarshallerFactory.Default, responseHeaders).ShouldBe("Hello");
 
-            _serviceModelHost = await new KestrelHost()
-                .ConfigureClientFactory(options => options.MarshallerFactory = ProtobufMarshallerFactory.Default)
-                .ConfigureEndpoints(endpoints => endpoints.MapGrpcService<DomainGreeterService>())
-                .StartAsync()
-                .ConfigureAwait(false);
-        }
-
-        [OneTimeTearDown]
-        public async Task AfterAll()
-        {
-            await _grpcHost.DisposeAsync().ConfigureAwait(false);
-            await _serviceModelHost.DisposeAsync().ConfigureAwait(false);
-        }
-
-        [Test]
-        [TestCase("Native")]
-        [TestCase("Domain")]
-        public async Task UnaryNativeCall(string channelName)
-        {
-            var client = new Greeter.GreeterClient(GetChannel(channelName));
-            var response = await client.UnaryAsync(new HelloRequest { Name = "world" }).ResponseAsync.ConfigureAwait(false);
-
-            response.Message.ShouldBe("Hello world!");
-        }
-
-        [Test]
-        [TestCase("Native")]
-        [TestCase("Domain")]
-        public async Task DuplexStreamingNativeCall(string channelName)
-        {
-            var client = new Greeter.GreeterClient(GetChannel(channelName));
-            var response = new List<string>();
-
-            using (var call = client.DuplexStreaming(CompatibilityToolsTestExtensions.SerializeMethodInput(ProtobufMarshallerFactory.Default, "Hello")))
+            foreach (var name in new[] { "person 1", "person 2" })
             {
-                var responseHeaders = await call.ResponseHeadersAsync.ConfigureAwait(false);
-                CompatibilityToolsTestExtensions.DeserializeMethodOutput<string>(ProtobufMarshallerFactory.Default, responseHeaders).ShouldBe("Hello");
-
-                foreach (var name in new[] { "person 1", "person 2" })
-                {
-                    await call.RequestStream.WriteAsync(new HelloRequest { Name = name }).ConfigureAwait(false);
-                }
-
-                await call.RequestStream.CompleteAsync().ConfigureAwait(false);
-
-                while (await call.ResponseStream.MoveNext(default).ConfigureAwait(false))
-                {
-                    response.Add(call.ResponseStream.Current.Message);
-                }
+                await call.RequestStream.WriteAsync(new HelloRequest { Name = name }).ConfigureAwait(false);
             }
 
-            response.ShouldBe(new[] { "Hello person 1!", "Hello person 2!" });
-        }
+            await call.RequestStream.CompleteAsync().ConfigureAwait(false);
 
-        [Test]
-        [TestCase("Native")]
-        [TestCase("Domain")]
-        public async Task UnaryDomainCall(string channelName)
-        {
-            var client = _serviceModelHost.ClientFactory.CreateClient<IDomainGreeterService>(GetChannel(channelName));
-            var response = await client.UnaryAsync("world").ConfigureAwait(false);
-
-            response.ShouldBe("Hello world!");
-        }
-
-        [Test]
-        [TestCase("Native")]
-        [TestCase("Domain")]
-        public async Task DuplexStreamingDomainCall(string channelName)
-        {
-            var client = _serviceModelHost.ClientFactory.CreateClient<IDomainGreeterService>(GetChannel(channelName));
-            var (greet, stream) = await client.DuplexStreaming(new[] { "person 1", "person 2" }.AsAsyncEnumerable(), "Hello").ConfigureAwait(false);
-
-            greet.ShouldBe("Hello");
-            var response = await stream.ToListAsync().ConfigureAwait(false);
-            response.ShouldBe(new[] { "Hello person 1!", "Hello person 2!" });
-        }
-
-        private ChannelBase GetChannel(string name)
-        {
-            if (name == "Native")
+            while (await call.ResponseStream.MoveNext(default).ConfigureAwait(false))
             {
-                return _grpcHost.Channel;
+                response.Add(call.ResponseStream.Current.Message);
             }
-
-            if (name == "Domain")
-            {
-                return _serviceModelHost.Channel;
-            }
-
-            throw new ArgumentOutOfRangeException();
         }
+
+        response.ShouldBe(new[] { "Hello person 1!", "Hello person 2!" });
+    }
+
+    [Test]
+    [TestCase("Native")]
+    [TestCase("Domain")]
+    public async Task UnaryDomainCall(string channelName)
+    {
+        var client = _serviceModelHost.ClientFactory.CreateClient<IDomainGreeterService>(GetChannel(channelName));
+        var response = await client.UnaryAsync("world").ConfigureAwait(false);
+
+        response.ShouldBe("Hello world!");
+    }
+
+    [Test]
+    [TestCase("Native")]
+    [TestCase("Domain")]
+    public async Task DuplexStreamingDomainCall(string channelName)
+    {
+        var client = _serviceModelHost.ClientFactory.CreateClient<IDomainGreeterService>(GetChannel(channelName));
+        var (greet, stream) = await client.DuplexStreaming(new[] { "person 1", "person 2" }.AsAsyncEnumerable(), "Hello").ConfigureAwait(false);
+
+        greet.ShouldBe("Hello");
+        var response = await stream.ToListAsync().ConfigureAwait(false);
+        response.ShouldBe(new[] { "Hello person 1!", "Hello person 2!" });
+    }
+
+    private ChannelBase GetChannel(string name)
+    {
+        if (name == "Native")
+        {
+            return _grpcHost.Channel;
+        }
+
+        if (name == "Domain")
+        {
+            return _serviceModelHost.Channel;
+        }
+
+        throw new ArgumentOutOfRangeException();
     }
 }
