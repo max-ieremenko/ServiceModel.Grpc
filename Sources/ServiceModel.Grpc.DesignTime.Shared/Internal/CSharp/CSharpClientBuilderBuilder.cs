@@ -14,9 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-using System.Collections.Generic;
 using Grpc.Core;
-using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
 
@@ -80,7 +78,7 @@ internal sealed class CSharpClientBuilderBuilder : CodeGeneratorBase
             .AppendLine(" _contract;");
 
         Output
-            .AppendLine("private Func<")
+            .Append("private Func<")
             .AppendType(typeof(CallOptions))
             .AppendLine("> _defaultCallOptionsFactory;");
     }
