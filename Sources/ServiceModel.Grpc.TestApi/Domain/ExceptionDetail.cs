@@ -19,35 +19,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 
-namespace ServiceModel.Grpc.TestApi.Domain
+namespace ServiceModel.Grpc.TestApi.Domain;
+
+[DataContract]
+public sealed class ExceptionDetail
 {
-    [DataContract]
-    public sealed class ExceptionDetail
+    public ExceptionDetail(Exception error)
     {
-        public ExceptionDetail(Exception error)
+        Messages = Expand(error).Select(i => i.Message).ToArray();
+        ErrorType = error.GetType().FullName!;
+        Stack = error.StackTrace!;
+    }
+
+    [DataMember]
+    public string ErrorType { get; set; }
+
+    [DataMember]
+    public string[] Messages { get; set; }
+
+    [DataMember]
+    public string Stack { get; set; }
+
+    private IEnumerable<Exception> Expand(Exception error)
+    {
+        var ex = error;
+        while (ex != null)
         {
-            Messages = Expand(error).Select(i => i.Message).ToArray();
-            ErrorType = error.GetType().FullName!;
-            Stack = error.StackTrace!;
-        }
-
-        [DataMember]
-        public string ErrorType { get; set; }
-
-        [DataMember]
-        public string[] Messages { get; set; }
-
-        [DataMember]
-        public string Stack { get; set; }
-
-        private IEnumerable<Exception> Expand(Exception error)
-        {
-            var ex = error;
-            while (ex != null)
-            {
-                yield return ex;
-                ex = ex.InnerException;
-            }
+            yield return ex;
+            ex = ex.InnerException;
         }
     }
 }

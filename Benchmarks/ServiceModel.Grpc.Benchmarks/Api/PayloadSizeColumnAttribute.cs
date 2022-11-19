@@ -16,16 +16,15 @@
 
 using System;
 
-namespace ServiceModel.Grpc.Benchmarks.Api
-{
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    internal sealed class PayloadSizeColumnAttribute : Attribute
-    {
-        public PayloadSizeColumnAttribute(string methodName)
-        {
-            MethodName = methodName;
-        }
+namespace ServiceModel.Grpc.Benchmarks.Api;
 
-        public string MethodName { get; }
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+internal sealed class PayloadSizeColumnAttribute : Attribute
+{
+    public PayloadSizeColumnAttribute(string methodName)
+    {
+        MethodName = methodName;
     }
+
+    public string MethodName { get; }
 }

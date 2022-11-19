@@ -17,70 +17,69 @@
 using System;
 using System.Threading.Tasks;
 
-namespace ServiceModel.Grpc.Benchmarks
+namespace ServiceModel.Grpc.Benchmarks;
+
+public static class Program
 {
-    public static class Program
-    {
 #if RELEASE
         public static void Main(string[] args)
         {
             BenchmarkDotNet.Running.BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
         }
 #else
-        public static async Task Main(string[] args)
-        {
-            await RunUnaryCallBenchmark<CombinedUnaryCallBenchmark>();
-            await RunUnaryCallBenchmark<ClientUnaryCallBenchmark>();
-            await RunUnaryCallBenchmark<ServerUnaryCallBenchmark>();
+    public static async Task Main(string[] args)
+    {
+        await RunUnaryCallBenchmark<CombinedUnaryCallBenchmark>();
+        await RunUnaryCallBenchmark<ClientUnaryCallBenchmark>();
+        await RunUnaryCallBenchmark<ServerUnaryCallBenchmark>();
 
-            RunMarshallerBenchmark<MessagePackMarshallerBenchmark>();
-            RunMarshallerBenchmark<ProtobufMarshallerBenchmark>();
-        }
-
-        private static async Task RunUnaryCallBenchmark<T>()
-            where T : UnaryCallBenchmarkBase, new()
-        {
-            var benchmark = new T();
-            Console.WriteLine("---- {0} -----", benchmark.GetType().Name);
-            benchmark.GlobalSetup();
-
-            await benchmark.ServiceModelGrpcDataContract().ConfigureAwait(false);
-            Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcDataContract), await new T().GetServiceModelGrpcDataContractSize());
-
-            await benchmark.ServiceModelGrpcProtobuf().ConfigureAwait(false);
-            Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcProtobuf), await new T().GetServiceModelGrpcProtobufSize());
-
-            await benchmark.ServiceModelGrpcMessagePack().ConfigureAwait(false);
-            Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcMessagePack), await new T().GetServiceModelGrpcMessagePackSize());
-
-            await benchmark.ServiceModelGrpcProto().ConfigureAwait(false);
-            Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcProto), await new T().GetServiceModelGrpcProtoSize());
-
-            await benchmark.Native().ConfigureAwait(false);
-            Console.WriteLine("{0}: {1}", nameof(benchmark.Native), await new T().GetNativeSize());
-
-            await benchmark.ProtobufGrpc().ConfigureAwait(false);
-            Console.WriteLine("{0}: {1}", nameof(benchmark.ProtobufGrpc), await new T().GetProtobufGrpcSize());
-
-            await benchmark.MagicOnion().ConfigureAwait(false);
-            Console.WriteLine("{0}: {1}", nameof(benchmark.MagicOnion), await new T().GetMagicOnionSize());
-
-            benchmark.GlobalCleanup();
-        }
-
-        private static void RunMarshallerBenchmark<T>()
-            where T : MarshallerBenchmarkBase, new()
-        {
-            var benchmark = new T();
-            Console.WriteLine("---- {0} -----", benchmark.GetType().Name);
-            benchmark.GlobalSetup();
-
-            benchmark.DefaultSerializer();
-            benchmark.DefaultDeserializer();
-
-            benchmark.StreamSerializer();
-            benchmark.StreamDeserializer();
-        }
-#endif
+        RunMarshallerBenchmark<MessagePackMarshallerBenchmark>();
+        RunMarshallerBenchmark<ProtobufMarshallerBenchmark>();
     }
+
+    private static async Task RunUnaryCallBenchmark<T>()
+        where T : UnaryCallBenchmarkBase, new()
+    {
+        var benchmark = new T();
+        Console.WriteLine("---- {0} -----", benchmark.GetType().Name);
+        benchmark.GlobalSetup();
+
+        await benchmark.ServiceModelGrpcDataContract().ConfigureAwait(false);
+        Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcDataContract), await new T().GetServiceModelGrpcDataContractSize());
+
+        await benchmark.ServiceModelGrpcProtobuf().ConfigureAwait(false);
+        Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcProtobuf), await new T().GetServiceModelGrpcProtobufSize());
+
+        await benchmark.ServiceModelGrpcMessagePack().ConfigureAwait(false);
+        Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcMessagePack), await new T().GetServiceModelGrpcMessagePackSize());
+
+        await benchmark.ServiceModelGrpcProto().ConfigureAwait(false);
+        Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcProto), await new T().GetServiceModelGrpcProtoSize());
+
+        await benchmark.Native().ConfigureAwait(false);
+        Console.WriteLine("{0}: {1}", nameof(benchmark.Native), await new T().GetNativeSize());
+
+        await benchmark.ProtobufGrpc().ConfigureAwait(false);
+        Console.WriteLine("{0}: {1}", nameof(benchmark.ProtobufGrpc), await new T().GetProtobufGrpcSize());
+
+        await benchmark.MagicOnion().ConfigureAwait(false);
+        Console.WriteLine("{0}: {1}", nameof(benchmark.MagicOnion), await new T().GetMagicOnionSize());
+
+        benchmark.GlobalCleanup();
+    }
+
+    private static void RunMarshallerBenchmark<T>()
+        where T : MarshallerBenchmarkBase, new()
+    {
+        var benchmark = new T();
+        Console.WriteLine("---- {0} -----", benchmark.GetType().Name);
+        benchmark.GlobalSetup();
+
+        benchmark.DefaultSerializer();
+        benchmark.DefaultDeserializer();
+
+        benchmark.StreamSerializer();
+        benchmark.StreamDeserializer();
+    }
+#endif
 }

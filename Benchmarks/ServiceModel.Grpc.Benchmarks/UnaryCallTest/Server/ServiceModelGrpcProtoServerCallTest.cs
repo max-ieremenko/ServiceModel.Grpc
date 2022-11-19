@@ -24,58 +24,57 @@ using ServiceModel.Grpc.Benchmarks.Api;
 using ServiceModel.Grpc.Benchmarks.Domain;
 using ServiceModel.Grpc.Channel;
 
-namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Server
+namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Server;
+
+internal sealed class ServiceModelGrpcProtoServerCallTest : IUnaryCallTest
 {
-    internal sealed class ServiceModelGrpcProtoServerCallTest : IUnaryCallTest
+    private readonly TestServer _server;
+    private readonly HttpClient _client;
+    private readonly StubHttpRequest _request;
+
+    public ServiceModelGrpcProtoServerCallTest(SomeObject payload)
     {
-        private readonly TestServer _server;
-        private readonly HttpClient _client;
-        private readonly StubHttpRequest _request;
+        var builder = new WebHostBuilder().UseStartup<Startup>();
 
-        public ServiceModelGrpcProtoServerCallTest(SomeObject payload)
+        _server = new TestServer(builder);
+        _client = _server.CreateClient();
+
+        var proto = DomainExtensions.CopyToProto(payload);
+        _request = new StubHttpRequest(
+            _client,
+            "/ITestService/PingPongProto",
+            MessageSerializer.Create(GoogleProtoMarshallerFactory.Default, new Message<SomeObjectProto>(proto)));
+    }
+
+    public Task PingPongAsync() => _request.SendAsync();
+
+    public async ValueTask<long> GetPingPongPayloadSize()
+    {
+        await PingPongAsync().ConfigureAwait(false);
+        return _request.PayloadSize;
+    }
+
+    public void Dispose()
+    {
+        _server.Dispose();
+        _client.Dispose();
+    }
+
+    private sealed class Startup
+    {
+        public void ConfigureServices(IServiceCollection services)
         {
-            var builder = new WebHostBuilder().UseStartup<Startup>();
-
-            _server = new TestServer(builder);
-            _client = _server.CreateClient();
-
-            var proto = DomainExtensions.CopyToProto(payload);
-            _request = new StubHttpRequest(
-                _client,
-                "/ITestService/PingPongProto",
-                MessageSerializer.Create(GoogleProtoMarshallerFactory.Default, new Message<SomeObjectProto>(proto)));
+            services.AddServiceModelGrpc(options => options.DefaultMarshallerFactory = GoogleProtoMarshallerFactory.Default);
         }
 
-        public Task PingPongAsync() => _request.SendAsync();
-
-        public async ValueTask<long> GetPingPongPayloadSize()
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            await PingPongAsync().ConfigureAwait(false);
-            return _request.PayloadSize;
-        }
+            app.UseRouting();
 
-        public void Dispose()
-        {
-            _server.Dispose();
-            _client.Dispose();
-        }
-
-        private sealed class Startup
-        {
-            public void ConfigureServices(IServiceCollection services)
+            app.UseEndpoints(endpoints =>
             {
-                services.AddServiceModelGrpc(options => options.DefaultMarshallerFactory = GoogleProtoMarshallerFactory.Default);
-            }
-
-            public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-            {
-                app.UseRouting();
-
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.MapGrpcService<TestServiceStub>();
-                });
-            }
+                endpoints.MapGrpcService<TestServiceStub>();
+            });
         }
     }
 }

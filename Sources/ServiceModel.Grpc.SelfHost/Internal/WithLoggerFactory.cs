@@ -17,48 +17,47 @@
 using System;
 using IGrpcLogger = global::Grpc.Core.Logging.ILogger;
 
-namespace ServiceModel.Grpc.SelfHost.Internal
+namespace ServiceModel.Grpc.SelfHost.Internal;
+
+internal sealed class WithLoggerFactory<T>
 {
-    internal sealed class WithLoggerFactory<T>
+    private readonly Func<T> _factory;
+    private readonly IGrpcLogger _logger;
+
+    private WithLoggerFactory(Func<T> factory, IGrpcLogger logger)
     {
-        private readonly Func<T> _factory;
-        private readonly IGrpcLogger _logger;
+        _factory = factory;
+        _logger = logger;
+    }
 
-        private WithLoggerFactory(Func<T> factory, IGrpcLogger logger)
+    public static Func<T> Wrap(Func<T> factory, IGrpcLogger? logger)
+    {
+        if (logger == null)
         {
-            _factory = factory;
-            _logger = logger;
+            return factory;
         }
 
-        public static Func<T> Wrap(Func<T> factory, IGrpcLogger? logger)
-        {
-            if (logger == null)
-            {
-                return factory;
-            }
+        return new WithLoggerFactory<T>(factory, logger).Create;
+    }
 
-            return new WithLoggerFactory<T>(factory, logger).Create;
+    public T Create()
+    {
+        T result;
+
+        try
+        {
+            result = _factory();
+            if (result == null)
+            {
+                throw new InvalidOperationException("{0} factory return null.".FormatWith(typeof(T).Name));
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("{0} factory failed: {1}", typeof(T).FullName, ex);
+            throw;
         }
 
-        public T Create()
-        {
-            T result;
-
-            try
-            {
-                result = _factory();
-                if (result == null)
-                {
-                    throw new InvalidOperationException("{0} factory return null.".FormatWith(typeof(T).Name));
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error("{0} factory failed: {1}", typeof(T).FullName, ex);
-                throw;
-            }
-
-            return result;
-        }
+        return result;
     }
 }

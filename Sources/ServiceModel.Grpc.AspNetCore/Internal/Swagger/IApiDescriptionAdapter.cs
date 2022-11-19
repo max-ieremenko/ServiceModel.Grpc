@@ -18,12 +18,11 @@ using Grpc.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger
-{
-    internal interface IApiDescriptionAdapter
-    {
-        ApiDescription? FindApiDescription(string requestPath);
+namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger;
 
-        IMethod? GetMethod(HttpContext context);
-    }
+internal interface IApiDescriptionAdapter
+{
+    ApiDescription? FindApiDescription(string requestPath);
+
+    IMethod? GetMethod(HttpContext context);
 }

@@ -17,15 +17,14 @@
 using System;
 using System.ServiceModel;
 
-namespace ServiceModel.Grpc.TestApi.Domain
-{
-    [ServiceContract]
-    public interface IInvalidContract : IDisposable
-    {
-        [OperationContract]
-        void InvalidSignature(ref int value1, out int value2);
+namespace ServiceModel.Grpc.TestApi.Domain;
 
-        [OperationContract]
-        T2 Generic<T1, T2>(T1 value);
-    }
+[ServiceContract]
+public interface IInvalidContract : IDisposable
+{
+    [OperationContract]
+    void InvalidSignature(ref int value1, out int value2);
+
+    [OperationContract]
+    T2 Generic<T1, T2>(T1 value);
 }

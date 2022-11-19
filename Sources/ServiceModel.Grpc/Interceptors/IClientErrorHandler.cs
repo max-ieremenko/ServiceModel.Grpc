@@ -16,18 +16,17 @@
 
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Interceptors
+namespace ServiceModel.Grpc.Interceptors;
+
+/// <summary>
+/// Allows an implementer to perform custom error processing on client call.
+/// </summary>
+public interface IClientErrorHandler
 {
     /// <summary>
-    /// Allows an implementer to perform custom error processing on client call.
+    /// Handle the exception that was raised by by <see cref="CallInvoker"/>.
     /// </summary>
-    public interface IClientErrorHandler
-    {
-        /// <summary>
-        /// Handle the exception that was raised by by <see cref="CallInvoker"/>.
-        /// </summary>
-        /// <param name="context">The current call context.</param>
-        /// <param name="detail">The exception details.</param>
-        void ThrowOrIgnore(ClientCallInterceptorContext context, ClientFaultDetail detail);
-    }
+    /// <param name="context">The current call context.</param>
+    /// <param name="detail">The exception details.</param>
+    void ThrowOrIgnore(ClientCallInterceptorContext context, ClientFaultDetail detail);
 }

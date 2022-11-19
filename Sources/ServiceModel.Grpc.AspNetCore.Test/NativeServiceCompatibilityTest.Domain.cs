@@ -18,42 +18,41 @@ using System.Collections.Generic;
 using System.ServiceModel;
 using System.Threading.Tasks;
 
-namespace ServiceModel.Grpc.AspNetCore
-{
-    public partial class NativeServiceCompatibilityTest
-    {
-        [ServiceContract(Name = "Greeter")]
-        public interface IDomainGreeterService
-        {
-            [OperationContract(Name = "Unary")]
-            Task<string> UnaryAsync(string name, CallContext? context = default);
+namespace ServiceModel.Grpc.AspNetCore;
 
-            [OperationContract]
-            Task<(string Greet, IAsyncEnumerable<string> Stream)> DuplexStreaming(IAsyncEnumerable<string> names, string greet, CallContext? context = default);
+public partial class NativeServiceCompatibilityTest
+{
+    [ServiceContract(Name = "Greeter")]
+    public interface IDomainGreeterService
+    {
+        [OperationContract(Name = "Unary")]
+        Task<string> UnaryAsync(string name, CallContext? context = default);
+
+        [OperationContract]
+        Task<(string Greet, IAsyncEnumerable<string> Stream)> DuplexStreaming(IAsyncEnumerable<string> names, string greet, CallContext? context = default);
+    }
+
+    private sealed class DomainGreeterService : IDomainGreeterService
+    {
+        public async Task<string> UnaryAsync(string name, CallContext? context)
+        {
+            var response = await new GreeterService().Unary(new HelloRequest { Name = name }, context!).ConfigureAwait(false);
+            return response.Message;
         }
 
-        private sealed class DomainGreeterService : IDomainGreeterService
+        public async Task<(string Greet, IAsyncEnumerable<string> Stream)> DuplexStreaming(IAsyncEnumerable<string> names, string greet, CallContext? context)
         {
-            public async Task<string> UnaryAsync(string name, CallContext? context)
-            {
-                var response = await new GreeterService().Unary(new HelloRequest { Name = name }, context!).ConfigureAwait(false);
-                return response.Message;
-            }
+            await Task.CompletedTask.ConfigureAwait(false);
 
-            public async Task<(string Greet, IAsyncEnumerable<string> Stream)> DuplexStreaming(IAsyncEnumerable<string> names, string greet, CallContext? context)
-            {
-                await Task.CompletedTask.ConfigureAwait(false);
+            var stream = Greet(names, greet);
+            return (greet, stream);
+        }
 
-                var stream = Greet(names, greet);
-                return (greet, stream);
-            }
-
-            private static async IAsyncEnumerable<string> Greet(IAsyncEnumerable<string> names, string greet)
+        private static async IAsyncEnumerable<string> Greet(IAsyncEnumerable<string> names, string greet)
+        {
+            await foreach (var i in names.ConfigureAwait(false))
             {
-                await foreach (var i in names.ConfigureAwait(false))
-                {
-                    yield return greet + " " + i + "!";
-                }
+                yield return greet + " " + i + "!";
             }
         }
     }

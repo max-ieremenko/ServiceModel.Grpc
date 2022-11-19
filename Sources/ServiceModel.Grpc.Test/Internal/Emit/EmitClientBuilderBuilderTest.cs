@@ -22,63 +22,62 @@ using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Internal.Emit
+namespace ServiceModel.Grpc.Internal.Emit;
+
+[TestFixture]
+public partial class EmitClientBuilderBuilderTest
 {
-    [TestFixture]
-    public partial class EmitClientBuilderBuilderTest
+    private IClientBuilder<ISomeContract> _builder = null!;
+    private Type _builderType = null!;
+    private Mock<CallInvoker> _callInvoker = null!;
+    private Mock<IMarshallerFactory> _marshallerFactory = null!;
+    private Func<CallOptions> _callOptionsFactory = null!;
+    private EmitClientBuilderBuilder _sut = null!;
+
+    [OneTimeSetUp]
+    public void BeforeAllTests()
     {
-        private IClientBuilder<ISomeContract> _builder = null!;
-        private Type _builderType = null!;
-        private Mock<CallInvoker> _callInvoker = null!;
-        private Mock<IMarshallerFactory> _marshallerFactory = null!;
-        private Func<CallOptions> _callOptionsFactory = null!;
-        private EmitClientBuilderBuilder _sut = null!;
+        var description = new ContractDescription(typeof(ISomeContract));
 
-        [OneTimeSetUp]
-        public void BeforeAllTests()
-        {
-            var description = new ContractDescription(typeof(ISomeContract));
+        var moduleBuilder = ProxyAssembly.CreateModule(nameof(EmitClientBuilderBuilderTest));
 
-            var moduleBuilder = ProxyAssembly.CreateModule(nameof(EmitClientBuilderBuilderTest));
+        _sut = new EmitClientBuilderBuilder(description, typeof(ContractMock), typeof(ClientMock));
+        _builderType = _sut.Build(moduleBuilder);
+    }
 
-            _sut = new EmitClientBuilderBuilder(description, typeof(ContractMock), typeof(ClientMock));
-            _builderType = _sut.Build(moduleBuilder);
-        }
+    [SetUp]
+    public void BeforeEachTest()
+    {
+        _callInvoker = new Mock<CallInvoker>(MockBehavior.Strict);
+        _marshallerFactory = new Mock<IMarshallerFactory>(MockBehavior.Strict);
+        _callOptionsFactory = () => throw new NotSupportedException();
+        _builder = (IClientBuilder<ISomeContract>)Activator.CreateInstance(_builderType)!;
+    }
 
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            _callInvoker = new Mock<CallInvoker>(MockBehavior.Strict);
-            _marshallerFactory = new Mock<IMarshallerFactory>(MockBehavior.Strict);
-            _callOptionsFactory = () => throw new NotSupportedException();
-            _builder = (IClientBuilder<ISomeContract>)Activator.CreateInstance(_builderType)!;
-        }
+    [Test]
+    public void Build()
+    {
+        _builder.Initialize(_marshallerFactory.Object, _callOptionsFactory);
 
-        [Test]
-        public void Build()
-        {
-            _builder.Initialize(_marshallerFactory.Object, _callOptionsFactory);
+        var actual = _builder.Build(_callInvoker.Object);
 
-            var actual = _builder.Build(_callInvoker.Object);
+        var mock = actual.ShouldBeOfType<ClientMock>();
+        mock.CallInvoker.ShouldBe(_callInvoker.Object);
+        mock.Contract.MarshallerFactory.ShouldBe(_marshallerFactory.Object);
+        mock.DefaultCallOptionsFactory.ShouldBe(_callOptionsFactory);
+    }
 
-            var mock = actual.ShouldBeOfType<ClientMock>();
-            mock.CallInvoker.ShouldBe(_callInvoker.Object);
-            mock.Contract.MarshallerFactory.ShouldBe(_marshallerFactory.Object);
-            mock.DefaultCallOptionsFactory.ShouldBe(_callOptionsFactory);
-        }
+    [Test]
+    public void Initialize()
+    {
+        _builder.Initialize(_marshallerFactory.Object, _callOptionsFactory);
+        _builder.Initialize(DataContractMarshallerFactory.Default, null);
 
-        [Test]
-        public void Initialize()
-        {
-            _builder.Initialize(_marshallerFactory.Object, _callOptionsFactory);
-            _builder.Initialize(DataContractMarshallerFactory.Default, null);
+        var actual = _builder.Build(_callInvoker.Object);
 
-            var actual = _builder.Build(_callInvoker.Object);
-
-            var mock = actual.ShouldBeOfType<ClientMock>();
-            mock.CallInvoker.ShouldBe(_callInvoker.Object);
-            mock.Contract.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
-            mock.DefaultCallOptionsFactory.ShouldBeNull();
-        }
+        var mock = actual.ShouldBeOfType<ClientMock>();
+        mock.CallInvoker.ShouldBe(_callInvoker.Object);
+        mock.Contract.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
+        mock.DefaultCallOptionsFactory.ShouldBeNull();
     }
 }

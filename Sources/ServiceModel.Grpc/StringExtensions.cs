@@ -17,32 +17,31 @@
 using System.Globalization;
 using System.Runtime.CompilerServices;
 
-namespace ServiceModel.Grpc
+namespace ServiceModel.Grpc;
+
+internal static class StringExtensions
 {
-    internal static class StringExtensions
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string FormatWith(this string format, object? arg0)
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string FormatWith(this string format, object? arg0)
-        {
-            return string.Format(CultureInfo.InvariantCulture, format, arg0);
-        }
+        return string.Format(CultureInfo.InvariantCulture, format, arg0);
+    }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string FormatWith(this string format, object? arg0, object? arg1)
-        {
-            return string.Format(CultureInfo.InvariantCulture, format, arg0, arg1);
-        }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string FormatWith(this string format, object? arg0, object? arg1)
+    {
+        return string.Format(CultureInfo.InvariantCulture, format, arg0, arg1);
+    }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string FormatWith(this string format, object? arg0, object? arg1, object? arg2)
-        {
-            return string.Format(CultureInfo.InvariantCulture, format, arg0, arg1, arg2);
-        }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string FormatWith(this string format, object? arg0, object? arg1, object? arg2)
+    {
+        return string.Format(CultureInfo.InvariantCulture, format, arg0, arg1, arg2);
+    }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string FormatWith(this string format, params object[] args)
-        {
-            return string.Format(CultureInfo.InvariantCulture, format, args);
-        }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string FormatWith(this string format, params object[] args)
+    {
+        return string.Format(CultureInfo.InvariantCulture, format, args);
     }
 }

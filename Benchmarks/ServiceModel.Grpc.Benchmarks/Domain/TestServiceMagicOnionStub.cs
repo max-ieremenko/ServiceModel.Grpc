@@ -17,13 +17,12 @@
 using MagicOnion;
 using MagicOnion.Server;
 
-namespace ServiceModel.Grpc.Benchmarks.Domain
+namespace ServiceModel.Grpc.Benchmarks.Domain;
+
+internal sealed class TestServiceMagicOnionStub : ServiceBase<ITestServiceMagicOnion>, ITestServiceMagicOnion
 {
-    internal sealed class TestServiceMagicOnionStub : ServiceBase<ITestServiceMagicOnion>, ITestServiceMagicOnion
+    public UnaryResult<SomeObject> PingPong(SomeObject value)
     {
-        public UnaryResult<SomeObject> PingPong(SomeObject value)
-        {
-            return new UnaryResult<SomeObject>(value);
-        }
+        return new UnaryResult<SomeObject>(value);
     }
 }

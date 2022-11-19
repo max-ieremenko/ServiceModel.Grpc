@@ -19,32 +19,31 @@ using NUnit.Framework;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
 
-namespace ServiceModel.Grpc.TestApi
+namespace ServiceModel.Grpc.TestApi;
+
+public abstract class SharedContractTestBase
 {
-    public abstract class SharedContractTestBase
+    protected IConcreteContract1 DomainService1 { get; set; } = null!;
+
+    protected IConcreteContract2 DomainService2 { get; set; } = null!;
+
+    [Test]
+    public async Task InvokeConcreteContract1()
     {
-        protected IConcreteContract1 DomainService1 { get; set; } = null!;
+        var name1 = await DomainService1.GetName().ConfigureAwait(false);
+        var name2 = await DomainService1.GetConcreteName().ConfigureAwait(false);
 
-        protected IConcreteContract2 DomainService2 { get; set; } = null!;
+        name1.ShouldBe(nameof(ConcreteContract1));
+        name1.ShouldBe(name2);
+    }
 
-        [Test]
-        public async Task InvokeConcreteContract1()
-        {
-            var name1 = await DomainService1.GetName().ConfigureAwait(false);
-            var name2 = await DomainService1.GetConcreteName().ConfigureAwait(false);
+    [Test]
+    public async Task InvokeConcreteContract2()
+    {
+        var name1 = await DomainService2.GetName().ConfigureAwait(false);
+        var name2 = await DomainService2.GetConcreteName().ConfigureAwait(false);
 
-            name1.ShouldBe(nameof(ConcreteContract1));
-            name1.ShouldBe(name2);
-        }
-
-        [Test]
-        public async Task InvokeConcreteContract2()
-        {
-            var name1 = await DomainService2.GetName().ConfigureAwait(false);
-            var name2 = await DomainService2.GetConcreteName().ConfigureAwait(false);
-
-            name1.ShouldBe(nameof(ConcreteContract2));
-            name1.ShouldBe(name2);
-        }
+        name1.ShouldBe(nameof(ConcreteContract2));
+        name1.ShouldBe(name2);
     }
 }

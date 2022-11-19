@@ -18,13 +18,12 @@ using System.Diagnostics;
 using Grpc.Core;
 using Microsoft.AspNetCore.Mvc.Controllers;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer
-{
-    [DebuggerDisplay("{ControllerName}.{ActionName}")]
-    internal sealed class GrpcActionDescriptor : ControllerActionDescriptor
-    {
-        public MethodType MethodType { get; set; }
+namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer;
 
-        public string MethodSignature { get; set; } = null!;
-    }
+[DebuggerDisplay("{ControllerName}.{ActionName}")]
+internal sealed class GrpcActionDescriptor : ControllerActionDescriptor
+{
+    public MethodType MethodType { get; set; }
+
+    public string MethodSignature { get; set; } = null!;
 }

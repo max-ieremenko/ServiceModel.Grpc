@@ -16,19 +16,18 @@
 
 using System;
 
-namespace ServiceModel.Grpc.Interceptors
+namespace ServiceModel.Grpc.Interceptors;
+
+/// <summary>
+/// Allows an implementer to perform custom error processing on server call handler.
+/// </summary>
+public interface IServerErrorHandler
 {
     /// <summary>
-    /// Allows an implementer to perform custom error processing on server call handler.
+    /// Enables the creation of a custom detail that is returned from an exception in the course of a service method.
     /// </summary>
-    public interface IServerErrorHandler
-    {
-        /// <summary>
-        /// Enables the creation of a custom detail that is returned from an exception in the course of a service method.
-        /// </summary>
-        /// <param name="context">The current call context.</param>
-        /// <param name="error">The <see cref="Exception"/> object thrown in the course of the service operation.</param>
-        /// <returns>Optional error detail that is returned to the client.</returns>
-        ServerFaultDetail? ProvideFaultOrIgnore(ServerCallInterceptorContext context, Exception error);
-    }
+    /// <param name="context">The current call context.</param>
+    /// <param name="error">The <see cref="Exception"/> object thrown in the course of the service operation.</param>
+    /// <returns>Optional error detail that is returned to the client.</returns>
+    ServerFaultDetail? ProvideFaultOrIgnore(ServerCallInterceptorContext context, Exception error);
 }

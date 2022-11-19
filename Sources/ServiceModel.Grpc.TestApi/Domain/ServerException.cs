@@ -16,16 +16,15 @@
 
 using System;
 
-namespace ServiceModel.Grpc.TestApi.Domain
-{
-    public sealed class ServerException : SystemException
-    {
-        public ServerException(ExceptionDetail detail, Exception innerException)
-            : base(detail.Messages[0], innerException)
-        {
-            Detail = detail;
-        }
+namespace ServiceModel.Grpc.TestApi.Domain;
 
-        public ExceptionDetail Detail { get; }
+public sealed class ServerException : SystemException
+{
+    public ServerException(ExceptionDetail detail, Exception innerException)
+        : base(detail.Messages[0], innerException)
+    {
+        Detail = detail;
     }
+
+    public ExceptionDetail Detail { get; }
 }

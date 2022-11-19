@@ -25,71 +25,70 @@ using ServiceModel.Grpc.Benchmarks.Domain;
 using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.Configuration;
 
-namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Combined
+namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Combined;
+
+internal sealed class ServiceModelGrpcCombinedCallTest : IUnaryCallTest
 {
-    internal sealed class ServiceModelGrpcCombinedCallTest : IUnaryCallTest
+    private readonly IClientFactory _clientFactory;
+    private readonly SomeObject _payload;
+    private readonly TestServer _server;
+    private readonly HttpClient _client;
+    private readonly GrpcChannel _channel;
+    private readonly ITestService _proxy;
+
+    public ServiceModelGrpcCombinedCallTest(IMarshallerFactory marshallerFactory, SomeObject payload)
     {
-        private readonly IClientFactory _clientFactory;
-        private readonly SomeObject _payload;
-        private readonly TestServer _server;
-        private readonly HttpClient _client;
-        private readonly GrpcChannel _channel;
-        private readonly ITestService _proxy;
+        _payload = payload;
 
-        public ServiceModelGrpcCombinedCallTest(IMarshallerFactory marshallerFactory, SomeObject payload)
+        var builder = new WebHostBuilder().UseStartup(_ => new Startup(marshallerFactory));
+        _server = new TestServer(builder);
+        _client = _server.CreateClient();
+
+        _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpClient = _client });
+        _clientFactory = new ClientFactory(new ServiceModelGrpcClientOptions { MarshallerFactory = marshallerFactory });
+        _proxy = _clientFactory.CreateClient<ITestService>(_channel);
+    }
+
+    public Task PingPongAsync() => _proxy.PingPong(_payload);
+
+    public ValueTask<long> GetPingPongPayloadSize()
+    {
+        return StubHttpMessageHandler.GetPayloadSize(channel =>
         {
-            _payload = payload;
+            var proxy = _clientFactory.CreateClient<ITestService>(channel);
+            return proxy.PingPong(_payload);
+        });
+    }
 
-            var builder = new WebHostBuilder().UseStartup(_ => new Startup(marshallerFactory));
-            _server = new TestServer(builder);
-            _client = _server.CreateClient();
+    public void Dispose()
+    {
+        _channel.Dispose();
+        _client.Dispose();
+        _server.Dispose();
+    }
 
-            _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpClient = _client });
-            _clientFactory = new ClientFactory(new ServiceModelGrpcClientOptions { MarshallerFactory = marshallerFactory });
-            _proxy = _clientFactory.CreateClient<ITestService>(_channel);
+    private sealed class Startup
+    {
+        private readonly IMarshallerFactory _marshallerFactory;
+
+        public Startup(IMarshallerFactory marshallerFactory)
+        {
+            _marshallerFactory = marshallerFactory;
         }
 
-        public Task PingPongAsync() => _proxy.PingPong(_payload);
-
-        public ValueTask<long> GetPingPongPayloadSize()
+        public void ConfigureServices(IServiceCollection services)
         {
-            return StubHttpMessageHandler.GetPayloadSize(channel =>
+            services.AddServiceModelGrpc(options => options.DefaultMarshallerFactory = _marshallerFactory);
+        }
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
             {
-                var proxy = _clientFactory.CreateClient<ITestService>(channel);
-                return proxy.PingPong(_payload);
+                endpoints.MapGrpcService<TestServiceStub>();
             });
-        }
-
-        public void Dispose()
-        {
-            _channel.Dispose();
-            _client.Dispose();
-            _server.Dispose();
-        }
-
-        private sealed class Startup
-        {
-            private readonly IMarshallerFactory _marshallerFactory;
-
-            public Startup(IMarshallerFactory marshallerFactory)
-            {
-                _marshallerFactory = marshallerFactory;
-            }
-
-            public void ConfigureServices(IServiceCollection services)
-            {
-                services.AddServiceModelGrpc(options => options.DefaultMarshallerFactory = _marshallerFactory);
-            }
-
-            public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-            {
-                app.UseRouting();
-
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.MapGrpcService<TestServiceStub>();
-                });
-            }
         }
     }
 }

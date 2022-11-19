@@ -19,77 +19,76 @@ using System.CodeDom.Compiler;
 using System.IO;
 using System.Text;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
+
+internal sealed class CodeStringBuilder
 {
-    internal sealed class CodeStringBuilder
+    private readonly StringBuilder _output;
+    private readonly IndentedTextWriter _writer;
+
+    public CodeStringBuilder()
     {
-        private readonly StringBuilder _output;
-        private readonly IndentedTextWriter _writer;
+        _output = new StringBuilder();
+        _writer = new IndentedTextWriter(new StringWriter(_output), "    ");
+    }
 
-        public CodeStringBuilder()
+    public int Length => _output.Length;
+
+    public CodeStringBuilder AppendLine(string text)
+    {
+        _writer.WriteLine(text);
+        return this;
+    }
+
+    public CodeStringBuilder AppendLine()
+    {
+        _writer.WriteLine();
+        return this;
+    }
+
+    public CodeStringBuilder Append(string text)
+    {
+        _writer.Write(text);
+        return this;
+    }
+
+    public CodeStringBuilder AppendCommaIf(bool condition)
+    {
+        if (condition)
         {
-            _output = new StringBuilder();
-            _writer = new IndentedTextWriter(new StringWriter(_output), "    ");
+            Append(", ");
         }
 
-        public int Length => _output.Length;
+        return this;
+    }
 
-        public CodeStringBuilder AppendLine(string text)
+    public CodeStringBuilder AppendFormat(string format, params object[] args)
+    {
+        _writer.Write(format, args);
+        return this;
+    }
+
+    public IDisposable Indent() => new Indenter(this);
+
+    public StringBuilder AsStringBuilder()
+    {
+        _writer.Flush();
+        return _output;
+    }
+
+    private sealed class Indenter : IDisposable
+    {
+        private readonly CodeStringBuilder _owner;
+
+        public Indenter(CodeStringBuilder owner)
         {
-            _writer.WriteLine(text);
-            return this;
+            _owner = owner;
+            owner._writer.Indent++;
         }
 
-        public CodeStringBuilder AppendLine()
+        public void Dispose()
         {
-            _writer.WriteLine();
-            return this;
-        }
-
-        public CodeStringBuilder Append(string text)
-        {
-            _writer.Write(text);
-            return this;
-        }
-
-        public CodeStringBuilder AppendCommaIf(bool condition)
-        {
-            if (condition)
-            {
-                Append(", ");
-            }
-
-            return this;
-        }
-
-        public CodeStringBuilder AppendFormat(string format, params object[] args)
-        {
-            _writer.Write(format, args);
-            return this;
-        }
-
-        public IDisposable Indent() => new Indenter(this);
-
-        public StringBuilder AsStringBuilder()
-        {
-            _writer.Flush();
-            return _output;
-        }
-
-        private sealed class Indenter : IDisposable
-        {
-            private readonly CodeStringBuilder _owner;
-
-            public Indenter(CodeStringBuilder owner)
-            {
-                _owner = owner;
-                owner._writer.Indent++;
-            }
-
-            public void Dispose()
-            {
-                _owner._writer.Indent--;
-            }
+            _owner._writer.Indent--;
         }
     }
 }

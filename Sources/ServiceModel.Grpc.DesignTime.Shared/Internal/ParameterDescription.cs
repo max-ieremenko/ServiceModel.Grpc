@@ -16,27 +16,26 @@
 
 using Microsoft.CodeAnalysis;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal;
+
+internal sealed class ParameterDescription
 {
-    internal sealed class ParameterDescription
+    public ParameterDescription(IParameterSymbol parameter)
     {
-        public ParameterDescription(IParameterSymbol parameter)
-        {
-            Name = parameter.Name;
-            Type = SyntaxTools.GetFullName(parameter.Type);
-            TypeSymbol = parameter.Type;
-            IsOut = parameter.IsOut();
-            IsRef = parameter.IsRef();
-        }
-
-        public string Name { get; }
-
-        public string Type { get; }
-
-        public ITypeSymbol TypeSymbol { get; }
-
-        public bool IsOut { get; }
-
-        public bool IsRef { get; }
+        Name = parameter.Name;
+        Type = SyntaxTools.GetFullName(parameter.Type);
+        TypeSymbol = parameter.Type;
+        IsOut = parameter.IsOut();
+        IsRef = parameter.IsRef();
     }
+
+    public string Name { get; }
+
+    public string Type { get; }
+
+    public ITypeSymbol TypeSymbol { get; }
+
+    public bool IsOut { get; }
+
+    public bool IsRef { get; }
 }

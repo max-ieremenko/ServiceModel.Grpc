@@ -19,39 +19,38 @@ using System.ServiceModel;
 using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
 
-namespace ServiceModel.Grpc.Internal.Emit
+namespace ServiceModel.Grpc.Internal.Emit;
+
+public partial class EmitClientBuilderBuilderTest
 {
-    public partial class EmitClientBuilderBuilderTest
+    [ServiceContract]
+    public interface ISomeContract
     {
-        [ServiceContract]
-        public interface ISomeContract
+    }
+
+    public sealed class ContractMock
+    {
+        public ContractMock(IMarshallerFactory marshallerFactory)
         {
+            MarshallerFactory = marshallerFactory;
         }
 
-        public sealed class ContractMock
-        {
-            public ContractMock(IMarshallerFactory marshallerFactory)
-            {
-                MarshallerFactory = marshallerFactory;
-            }
+        public IMarshallerFactory MarshallerFactory { get; }
+    }
 
-            public IMarshallerFactory MarshallerFactory { get; }
+    public sealed class ClientMock : ISomeContract
+    {
+        public ClientMock(CallInvoker callInvoker, ContractMock contract, Func<CallOptions> defaultCallOptionsFactory)
+        {
+            CallInvoker = callInvoker;
+            Contract = contract;
+            DefaultCallOptionsFactory = defaultCallOptionsFactory;
         }
 
-        public sealed class ClientMock : ISomeContract
-        {
-            public ClientMock(CallInvoker callInvoker, ContractMock contract, Func<CallOptions> defaultCallOptionsFactory)
-            {
-                CallInvoker = callInvoker;
-                Contract = contract;
-                DefaultCallOptionsFactory = defaultCallOptionsFactory;
-            }
+        public CallInvoker CallInvoker { get; }
 
-            public CallInvoker CallInvoker { get; }
+        public ContractMock Contract { get; }
 
-            public ContractMock Contract { get; }
-
-            public Func<CallOptions> DefaultCallOptionsFactory { get; }
-        }
+        public Func<CallOptions> DefaultCallOptionsFactory { get; }
     }
 }

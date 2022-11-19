@@ -18,17 +18,16 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace ServiceModel.Grpc.DesignTime.Generator
+namespace ServiceModel.Grpc.DesignTime.Generator;
+
+internal static partial class SyntaxFactoryExtensions
 {
-    internal static partial class SyntaxFactoryExtensions
+    private static void TryGetAncestorMember(MemberDeclarationSyntax syntax, ref SyntaxKind kind, ref string? name)
     {
-        private static void TryGetAncestorMember(MemberDeclarationSyntax syntax, ref SyntaxKind kind, ref string? name)
+        if (syntax is FileScopedNamespaceDeclarationSyntax ns)
         {
-            if (syntax is FileScopedNamespaceDeclarationSyntax ns)
-            {
-                kind = SyntaxKind.NamespaceDeclaration;
-                name = ns.Name.WithoutTrivia().ToString();
-            }
+            kind = SyntaxKind.NamespaceDeclaration;
+            name = ns.Name.WithoutTrivia().ToString();
         }
     }
 }

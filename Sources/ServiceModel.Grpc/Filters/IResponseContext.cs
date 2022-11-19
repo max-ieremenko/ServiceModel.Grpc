@@ -16,40 +16,39 @@
 
 using System.Collections.Generic;
 
-namespace ServiceModel.Grpc.Filters
+namespace ServiceModel.Grpc.Filters;
+
+/// <summary>
+/// Represents a response context for filters, specifically <see cref="IServerFilter.InvokeAsync"/>.
+/// </summary>
+public interface IResponseContext : IEnumerable<KeyValuePair<string, object?>>
 {
     /// <summary>
-    /// Represents a response context for filters, specifically <see cref="IServerFilter.InvokeAsync"/>.
+    /// Gets a value indicating whether response was provide by service method, <see cref="IServerFilterContext.ServiceMethodInfo"/>.
     /// </summary>
-    public interface IResponseContext : IEnumerable<KeyValuePair<string, object?>>
-    {
-        /// <summary>
-        /// Gets a value indicating whether response was provide by service method, <see cref="IServerFilterContext.ServiceMethodInfo"/>.
-        /// </summary>
-        bool IsProvided { get; }
+    bool IsProvided { get; }
 
-        /// <summary>
-        /// Gets the number of result arguments after invoking the service method.
-        /// </summary>
-        int Count { get; }
+    /// <summary>
+    /// Gets the number of result arguments after invoking the service method.
+    /// </summary>
+    int Count { get; }
 
-        /// <summary>
-        /// Gets or sets the server stream provided by ServerStreaming or DuplexStreaming service method, <see cref="IAsyncEnumerable{T}"/>.
-        /// </summary>
-        object? Stream { get; set; }
+    /// <summary>
+    /// Gets or sets the server stream provided by ServerStreaming or DuplexStreaming service method, <see cref="IAsyncEnumerable{T}"/>.
+    /// </summary>
+    object? Stream { get; set; }
 
-        /// <summary>
-        /// Gets or sets the value of argument by name. The name comes from contract method definition <see cref="IServerFilterContext.ContractMethodInfo"/>.
-        /// </summary>
-        /// <param name="name">The argument name.</param>
-        /// <returns>The value of argument.</returns>
-        object? this[string name] { get; set; }
+    /// <summary>
+    /// Gets or sets the value of argument by name. The name comes from contract method definition <see cref="IServerFilterContext.ContractMethodInfo"/>.
+    /// </summary>
+    /// <param name="name">The argument name.</param>
+    /// <returns>The value of argument.</returns>
+    object? this[string name] { get; set; }
 
-        /// <summary>
-        /// Gets or sets the value of argument by index. The index comes from contract method definition <see cref="IServerFilterContext.ContractMethodInfo"/>.
-        /// </summary>
-        /// <param name="index">The argument index.</param>
-        /// <returns>The value of argument.</returns>
-        object? this[int index] { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the value of argument by index. The index comes from contract method definition <see cref="IServerFilterContext.ContractMethodInfo"/>.
+    /// </summary>
+    /// <param name="index">The argument index.</param>
+    /// <returns>The value of argument.</returns>
+    object? this[int index] { get; set; }
 }

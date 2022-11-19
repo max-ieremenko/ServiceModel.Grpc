@@ -19,172 +19,171 @@ using System.Linq;
 using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
+
+internal sealed class CSharpContractBuilder : CodeGeneratorBase
 {
-    internal sealed class CSharpContractBuilder : CodeGeneratorBase
+    private readonly ContractDescription _contract;
+
+    public CSharpContractBuilder(ContractDescription contract)
     {
-        private readonly ContractDescription _contract;
+        _contract = contract;
+    }
 
-        public CSharpContractBuilder(ContractDescription contract)
+    public override string GetGeneratedMemberName() => _contract.ContractClassName;
+
+    protected override void Generate()
+    {
+        WriteMetadata();
+        Output.AppendLine($"internal sealed class {_contract.ContractClassName}");
+        Output.AppendLine("{");
+
+        using (Output.Indent())
         {
-            _contract = contract;
+            BuildCtor();
+            Output.AppendLine();
+
+            BuildProperties();
         }
 
-        public override string GetGeneratedMemberName() => _contract.ContractClassName;
+        Output.AppendLine("}");
+    }
 
-        protected override void Generate()
+    private void BuildCtor()
+    {
+        Output
+            .Append("public ")
+            .Append(_contract.ContractClassName)
+            .Append("(")
+            .AppendType(typeof(IMarshallerFactory))
+            .AppendLine(" marshallerFactory)");
+
+        Output.AppendLine("{");
+
+        using (Output.Indent())
         {
-            WriteMetadata();
-            Output.AppendLine($"internal sealed class {_contract.ContractClassName}");
-            Output.AppendLine("{");
+            Output.AppendArgumentNullException("marshallerFactory");
 
-            using (Output.Indent())
+            foreach (var operation in GetAllOperations())
             {
-                BuildCtor();
-                Output.AppendLine();
-
-                BuildProperties();
+                BuildMethodInitializer(operation);
+                BuildRequestHeaderInitializer(operation);
+                BuildResponseHeaderInitializer(operation);
             }
-
-            Output.AppendLine("}");
         }
 
-        private void BuildCtor()
+        Output.AppendLine("}");
+    }
+
+    private void BuildProperties()
+    {
+        foreach (var operation in GetAllOperations())
         {
             Output
                 .Append("public ")
-                .Append(_contract.ContractClassName)
-                .Append("(")
-                .AppendType(typeof(IMarshallerFactory))
-                .AppendLine(" marshallerFactory)");
-
-            Output.AppendLine("{");
-
-            using (Output.Indent())
-            {
-                Output.AppendArgumentNullException("marshallerFactory");
-
-                foreach (var operation in GetAllOperations())
-                {
-                    BuildMethodInitializer(operation);
-                    BuildRequestHeaderInitializer(operation);
-                    BuildResponseHeaderInitializer(operation);
-                }
-            }
-
-            Output.AppendLine("}");
-        }
-
-        private void BuildProperties()
-        {
-            foreach (var operation in GetAllOperations())
-            {
-                Output
-                    .Append("public ")
-                    .AppendType(typeof(Method<,>))
-                    .AppendMessage(operation.RequestType)
-                    .Append(", ")
-                    .AppendMessage(operation.ResponseType)
-                    .Append("> ")
-                    .Append(operation.GrpcMethodName)
-                    .AppendLine(" { get; }")
-                    .AppendLine();
-
-                if (operation.HeaderRequestType != null)
-                {
-                    Output
-                        .Append("public ")
-                        .AppendType(typeof(Marshaller<>))
-                        .AppendMessage(operation.HeaderRequestType)
-                        .Append("> ")
-                        .Append(operation.GrpcMethodInputHeaderName)
-                        .AppendLine(" { get; }")
-                        .AppendLine();
-                }
-
-                if (operation.HeaderResponseType != null)
-                {
-                    Output
-                        .Append("public ")
-                        .AppendType(typeof(Marshaller<>))
-                        .AppendMessage(operation.HeaderResponseType)
-                        .Append("> ")
-                        .Append(operation.GrpcMethodOutputHeaderName)
-                        .AppendLine(" { get; }")
-                        .AppendLine();
-                }
-            }
-        }
-
-        private void BuildMethodInitializer(OperationDescription operation)
-        {
-            Output
-                .Append(operation.GrpcMethodName)
-                .Append(" = new ")
                 .AppendType(typeof(Method<,>))
                 .AppendMessage(operation.RequestType)
                 .Append(", ")
                 .AppendMessage(operation.ResponseType)
-                .Append(">(");
+                .Append("> ")
+                .Append(operation.GrpcMethodName)
+                .AppendLine(" { get; }")
+                .AppendLine();
 
-            Output
-                .AppendType(typeof(MethodType))
-                .Append(".")
-                .Append(operation.OperationType.ToString())
-                .Append(",");
-
-            Output
-                .Append(" \"")
-                .Append(operation.ServiceName)
-                .Append("\",");
-
-            Output
-                .Append(" \"")
-                .Append(operation.OperationName)
-                .Append("\",");
-
-            Output
-                .Append(" marshallerFactory.CreateMarshaller<")
-                .AppendMessage(operation.RequestType)
-                .Append(">(),");
-
-            Output
-                .Append(" marshallerFactory.CreateMarshaller<")
-                .AppendMessage(operation.ResponseType)
-                .AppendLine(">());");
-        }
-
-        private void BuildRequestHeaderInitializer(OperationDescription operation)
-        {
-            if (operation.HeaderRequestType == null)
+            if (operation.HeaderRequestType != null)
             {
-                return;
+                Output
+                    .Append("public ")
+                    .AppendType(typeof(Marshaller<>))
+                    .AppendMessage(operation.HeaderRequestType)
+                    .Append("> ")
+                    .Append(operation.GrpcMethodInputHeaderName)
+                    .AppendLine(" { get; }")
+                    .AppendLine();
             }
 
-            Output
-                .Append(operation.GrpcMethodInputHeaderName)
-                .Append(" = marshallerFactory.CreateMarshaller<")
-                .AppendMessage(operation.HeaderRequestType)
-                .AppendLine(">();");
-        }
-
-        private void BuildResponseHeaderInitializer(OperationDescription operation)
-        {
-            if (operation.HeaderResponseType == null)
+            if (operation.HeaderResponseType != null)
             {
-                return;
+                Output
+                    .Append("public ")
+                    .AppendType(typeof(Marshaller<>))
+                    .AppendMessage(operation.HeaderResponseType)
+                    .Append("> ")
+                    .Append(operation.GrpcMethodOutputHeaderName)
+                    .AppendLine(" { get; }")
+                    .AppendLine();
             }
-
-            Output
-                .Append(operation.GrpcMethodOutputHeaderName)
-                .Append(" = marshallerFactory.CreateMarshaller<")
-                .AppendMessage(operation.HeaderResponseType)
-                .AppendLine(">();");
         }
+    }
 
-        private IEnumerable<OperationDescription> GetAllOperations()
+    private void BuildMethodInitializer(OperationDescription operation)
+    {
+        Output
+            .Append(operation.GrpcMethodName)
+            .Append(" = new ")
+            .AppendType(typeof(Method<,>))
+            .AppendMessage(operation.RequestType)
+            .Append(", ")
+            .AppendMessage(operation.ResponseType)
+            .Append(">(");
+
+        Output
+            .AppendType(typeof(MethodType))
+            .Append(".")
+            .Append(operation.OperationType.ToString())
+            .Append(",");
+
+        Output
+            .Append(" \"")
+            .Append(operation.ServiceName)
+            .Append("\",");
+
+        Output
+            .Append(" \"")
+            .Append(operation.OperationName)
+            .Append("\",");
+
+        Output
+            .Append(" marshallerFactory.CreateMarshaller<")
+            .AppendMessage(operation.RequestType)
+            .Append(">(),");
+
+        Output
+            .Append(" marshallerFactory.CreateMarshaller<")
+            .AppendMessage(operation.ResponseType)
+            .AppendLine(">());");
+    }
+
+    private void BuildRequestHeaderInitializer(OperationDescription operation)
+    {
+        if (operation.HeaderRequestType == null)
         {
-            return _contract.Services.SelectMany(i => i.Operations);
+            return;
         }
+
+        Output
+            .Append(operation.GrpcMethodInputHeaderName)
+            .Append(" = marshallerFactory.CreateMarshaller<")
+            .AppendMessage(operation.HeaderRequestType)
+            .AppendLine(">();");
+    }
+
+    private void BuildResponseHeaderInitializer(OperationDescription operation)
+    {
+        if (operation.HeaderResponseType == null)
+        {
+            return;
+        }
+
+        Output
+            .Append(operation.GrpcMethodOutputHeaderName)
+            .Append(" = marshallerFactory.CreateMarshaller<")
+            .AppendMessage(operation.HeaderResponseType)
+            .AppendLine(">();");
+    }
+
+    private IEnumerable<OperationDescription> GetAllOperations()
+    {
+        return _contract.Services.SelectMany(i => i.Operations);
     }
 }

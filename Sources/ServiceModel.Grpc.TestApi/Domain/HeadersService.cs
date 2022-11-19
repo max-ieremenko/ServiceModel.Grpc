@@ -21,116 +21,115 @@ using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using Shouldly;
 
-namespace ServiceModel.Grpc.TestApi.Domain
+namespace ServiceModel.Grpc.TestApi.Domain;
+
+public sealed class HeadersService : IHeadersService
 {
-    public sealed class HeadersService : IHeadersService
+    public const string DefaultHeaderName = "default-Header";
+    public const string DefaultHeaderValue = "default-Header value";
+
+    public const string CallHeaderName = "call-Header";
+    public const string CallHeaderValue = "call-Header value";
+
+    public const string CallTrailerName = "call-Trailer";
+    public const string CallTrailerValue = "call-Trailer value";
+
+    public void UnaryCall(CallContext context)
     {
-        public const string DefaultHeaderName = "default-Header";
-        public const string DefaultHeaderValue = "default-Header value";
+        WriteResponseHeadersAsync(context).Wait();
+        WriteResponseTrailers(context);
+    }
 
-        public const string CallHeaderName = "call-Header";
-        public const string CallHeaderValue = "call-Header value";
+    public async Task UnaryCallAsync(CallContext context)
+    {
+        await WriteResponseHeadersAsync(context).ConfigureAwait(false);
+        WriteResponseTrailers(context);
+    }
 
-        public const string CallTrailerName = "call-Trailer";
-        public const string CallTrailerValue = "call-Trailer value";
+    public async IAsyncEnumerable<int> ServerStreamingCall(CallContext context)
+    {
+        await WriteResponseHeadersAsync(context).ConfigureAwait(false);
 
-        public void UnaryCall(CallContext context)
+        foreach (var i in Enumerable.Range(1, 10))
         {
-            WriteResponseHeadersAsync(context).Wait();
-            WriteResponseTrailers(context);
+            await Task.Delay(0).ConfigureAwait(false);
+            yield return i;
         }
 
-        public async Task UnaryCallAsync(CallContext context)
+        WriteResponseTrailers(context);
+    }
+
+    public async Task<IAsyncEnumerable<int>> ServerStreamingCallAsync(CallContext context)
+    {
+        await WriteResponseHeadersAsync(context).ConfigureAwait(false);
+
+        WriteResponseTrailers(context);
+
+        return Enumerable.Range(1, 10).AsAsyncEnumerable();
+    }
+
+    public async Task ClientStreamingCall(IAsyncEnumerable<int> stream, CallContext context)
+    {
+        await WriteResponseHeadersAsync(context).ConfigureAwait(false);
+
+        var list = await stream.ToListAsync().ConfigureAwait(false);
+        list.Count.ShouldBe(10);
+
+        WriteResponseTrailers(context);
+    }
+
+    public async IAsyncEnumerable<int> DuplexStreamingCall(IAsyncEnumerable<int> stream, CallContext context)
+    {
+        await WriteResponseHeadersAsync(context).ConfigureAwait(false);
+
+        var list = await stream.ToListAsync().ConfigureAwait(false);
+        list.Count.ShouldBe(10);
+
+        foreach (var i in Enumerable.Range(1, 10))
         {
-            await WriteResponseHeadersAsync(context).ConfigureAwait(false);
-            WriteResponseTrailers(context);
+            await Task.Delay(0).ConfigureAwait(false);
+            yield return i;
         }
 
-        public async IAsyncEnumerable<int> ServerStreamingCall(CallContext context)
-        {
-            await WriteResponseHeadersAsync(context).ConfigureAwait(false);
+        WriteResponseTrailers(context);
+    }
 
-            foreach (var i in Enumerable.Range(1, 10))
+    public async Task<IAsyncEnumerable<int>> DuplexStreamingCallAsync(IAsyncEnumerable<int> stream, CallContext context)
+    {
+        await WriteResponseHeadersAsync(context).ConfigureAwait(false);
+
+        var list = await stream.ToListAsync().ConfigureAwait(false);
+        list.Count.ShouldBe(10);
+
+        WriteResponseTrailers(context);
+
+        return Enumerable.Range(1, 10).AsAsyncEnumerable();
+    }
+
+    private static async Task WriteResponseHeadersAsync(CallContext context)
+    {
+        ServerCallContext serverContext = context!;
+
+        var defaultHeader = serverContext.RequestHeaders.FindHeader(DefaultHeaderName, false);
+        defaultHeader.ShouldNotBeNull();
+        defaultHeader.Value.ShouldBe(DefaultHeaderValue);
+
+        var callHeader = serverContext.RequestHeaders.FindHeader(CallHeaderName, false);
+        callHeader.ShouldNotBeNull();
+        callHeader.Value.ShouldBe(CallHeaderValue);
+
+        await serverContext
+            .WriteResponseHeadersAsync(new Metadata
             {
-                await Task.Delay(0).ConfigureAwait(false);
-                yield return i;
-            }
+                { DefaultHeaderName, DefaultHeaderValue },
+                { CallHeaderName, CallHeaderValue }
+            })
+            .ConfigureAwait(false);
+    }
 
-            WriteResponseTrailers(context);
-        }
-
-        public async Task<IAsyncEnumerable<int>> ServerStreamingCallAsync(CallContext context)
-        {
-            await WriteResponseHeadersAsync(context).ConfigureAwait(false);
-
-            WriteResponseTrailers(context);
-
-            return Enumerable.Range(1, 10).AsAsyncEnumerable();
-        }
-
-        public async Task ClientStreamingCall(IAsyncEnumerable<int> stream, CallContext context)
-        {
-            await WriteResponseHeadersAsync(context).ConfigureAwait(false);
-
-            var list = await stream.ToListAsync().ConfigureAwait(false);
-            list.Count.ShouldBe(10);
-
-            WriteResponseTrailers(context);
-        }
-
-        public async IAsyncEnumerable<int> DuplexStreamingCall(IAsyncEnumerable<int> stream, CallContext context)
-        {
-            await WriteResponseHeadersAsync(context).ConfigureAwait(false);
-
-            var list = await stream.ToListAsync().ConfigureAwait(false);
-            list.Count.ShouldBe(10);
-
-            foreach (var i in Enumerable.Range(1, 10))
-            {
-                await Task.Delay(0).ConfigureAwait(false);
-                yield return i;
-            }
-
-            WriteResponseTrailers(context);
-        }
-
-        public async Task<IAsyncEnumerable<int>> DuplexStreamingCallAsync(IAsyncEnumerable<int> stream, CallContext context)
-        {
-            await WriteResponseHeadersAsync(context).ConfigureAwait(false);
-
-            var list = await stream.ToListAsync().ConfigureAwait(false);
-            list.Count.ShouldBe(10);
-
-            WriteResponseTrailers(context);
-
-            return Enumerable.Range(1, 10).AsAsyncEnumerable();
-        }
-
-        private static async Task WriteResponseHeadersAsync(CallContext context)
-        {
-            ServerCallContext serverContext = context!;
-
-            var defaultHeader = serverContext.RequestHeaders.FindHeader(DefaultHeaderName, false);
-            defaultHeader.ShouldNotBeNull();
-            defaultHeader.Value.ShouldBe(DefaultHeaderValue);
-
-            var callHeader = serverContext.RequestHeaders.FindHeader(CallHeaderName, false);
-            callHeader.ShouldNotBeNull();
-            callHeader.Value.ShouldBe(CallHeaderValue);
-
-            await serverContext
-                .WriteResponseHeadersAsync(new Metadata
-                {
-                    { DefaultHeaderName, DefaultHeaderValue },
-                    { CallHeaderName, CallHeaderValue }
-                })
-                .ConfigureAwait(false);
-        }
-
-        private static void WriteResponseTrailers(CallContext context)
-        {
-            ServerCallContext serverContext = context!;
-            serverContext.ResponseTrailers.Add(CallTrailerName, CallTrailerValue);
-        }
+    private static void WriteResponseTrailers(CallContext context)
+    {
+        ServerCallContext serverContext = context!;
+        serverContext.ResponseTrailers.Add(CallTrailerName, CallTrailerValue);
     }
 }

@@ -25,402 +25,401 @@ using Microsoft.CodeAnalysis.CSharp;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Hosting.Internal;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
+
+internal sealed class CSharpServiceEndpointBinderBuilder : CodeGeneratorBase
 {
-    internal sealed class CSharpServiceEndpointBinderBuilder : CodeGeneratorBase
+    private readonly ContractDescription _contract;
+
+    public CSharpServiceEndpointBinderBuilder(ContractDescription contract)
     {
-        private readonly ContractDescription _contract;
+        _contract = contract;
+    }
 
-        public CSharpServiceEndpointBinderBuilder(ContractDescription contract)
+    public override string GetGeneratedMemberName() => _contract.EndpointBinderClassName;
+
+    internal static void WriteNewAttribute(CodeStringBuilder output, AttributeData attribute)
+    {
+        output
+            .Append("new ")
+            .Append(SyntaxTools.GetFullName(attribute.AttributeClass!));
+
+        if (attribute.ConstructorArguments.Length == 0 && attribute.NamedArguments.Length == 0)
         {
-            _contract = contract;
+            output.Append("()");
+            return;
         }
 
-        public override string GetGeneratedMemberName() => _contract.EndpointBinderClassName;
-
-        internal static void WriteNewAttribute(CodeStringBuilder output, AttributeData attribute)
+        if (attribute.ConstructorArguments.Length > 0)
         {
-            output
-                .Append("new ")
-                .Append(SyntaxTools.GetFullName(attribute.AttributeClass!));
+            output.Append("(");
 
-            if (attribute.ConstructorArguments.Length == 0 && attribute.NamedArguments.Length == 0)
+            for (var i = 0; i < attribute.ConstructorArguments.Length; i++)
             {
-                output.Append("()");
-                return;
-            }
-
-            if (attribute.ConstructorArguments.Length > 0)
-            {
-                output.Append("(");
-
-                for (var i = 0; i < attribute.ConstructorArguments.Length; i++)
+                var arg = attribute.ConstructorArguments[i];
+                if (i > 0)
                 {
-                    var arg = attribute.ConstructorArguments[i];
-                    if (i > 0)
-                    {
-                        output.Append(", ");
-                    }
-
-                    output.Append(arg.ToCSharpString());
+                    output.Append(", ");
                 }
 
-                output.Append(")");
+                output.Append(arg.ToCSharpString());
             }
 
-            if (attribute.NamedArguments.Length > 0)
+            output.Append(")");
+        }
+
+        if (attribute.NamedArguments.Length > 0)
+        {
+            output.Append(" { ");
+
+            for (var i = 0; i < attribute.NamedArguments.Length; i++)
             {
-                output.Append(" { ");
-
-                for (var i = 0; i < attribute.NamedArguments.Length; i++)
+                var arg = attribute.NamedArguments[i];
+                if (i > 0)
                 {
-                    var arg = attribute.NamedArguments[i];
-                    if (i > 0)
-                    {
-                        output.Append(", ");
-                    }
-
-                    output
-                        .Append(arg.Key)
-                        .Append(" = ")
-                        .Append(arg.Value.ToCSharpString());
+                    output.Append(", ");
                 }
 
-                output.Append(" }");
+                output
+                    .Append(arg.Key)
+                    .Append(" = ")
+                    .Append(arg.Value.ToCSharpString());
+            }
+
+            output.Append(" }");
+        }
+    }
+
+    internal static IEnumerable<AttributeData> FilterAttributes(ImmutableArray<AttributeData> attributes)
+    {
+        foreach (var attribute in attributes)
+        {
+            var ns = SyntaxTools.GetNamespace(attribute.AttributeClass!);
+            if (!string.IsNullOrEmpty(ns)
+                && !ns.StartsWith("System.Runtime.CompilerServices", StringComparison.OrdinalIgnoreCase)
+                && !ns.StartsWith("System.Diagnostics", StringComparison.OrdinalIgnoreCase)
+                && !ns.StartsWith("System.ServiceModel", StringComparison.OrdinalIgnoreCase))
+            {
+                yield return attribute;
+            }
+        }
+    }
+
+    protected override void Generate()
+    {
+        WriteMetadata();
+        Output
+            .Append("internal sealed partial class ")
+            .Append(GetGeneratedMemberName())
+            .Append(" : ")
+            .AppendType(typeof(IServiceEndpointBinder<>))
+            .Append(_contract.ContractInterfaceName)
+            .AppendLine(">");
+        Output.AppendLine("{");
+
+        using (Output.Indent())
+        {
+            BuildBind();
+            Output.AppendLine();
+
+            BuildGetServiceMetadata();
+            Output.AppendLine();
+
+            BuildGetServiceMetadataOverride();
+
+            foreach (var interfaceDescription in _contract.Services)
+            {
+                foreach (var method in interfaceDescription.Operations)
+                {
+                    Output.AppendLine();
+                    BuildGetMethodMetadata(interfaceDescription, method);
+                    Output.AppendLine();
+                    BuildGetMethodMetadataOverride(method);
+                    Output.AppendLine();
+                    BuildGetMethodDefinition(interfaceDescription.InterfaceTypeName, method);
+                }
             }
         }
 
-        internal static IEnumerable<AttributeData> FilterAttributes(ImmutableArray<AttributeData> attributes)
-        {
-            foreach (var attribute in attributes)
-            {
-                var ns = SyntaxTools.GetNamespace(attribute.AttributeClass!);
-                if (!string.IsNullOrEmpty(ns)
-                    && !ns.StartsWith("System.Runtime.CompilerServices", StringComparison.OrdinalIgnoreCase)
-                    && !ns.StartsWith("System.Diagnostics", StringComparison.OrdinalIgnoreCase)
-                    && !ns.StartsWith("System.ServiceModel", StringComparison.OrdinalIgnoreCase))
-                {
-                    yield return attribute;
-                }
-            }
-        }
+        Output.AppendLine("}");
+    }
 
-        protected override void Generate()
+    private void BuildBind()
+    {
+        Output
+            .Append("public void Bind(")
+            .AppendType(typeof(IServiceMethodBinder<>))
+            .Append(_contract.ContractInterfaceName)
+            .AppendLine("> methodBinder)")
+            .AppendLine("{");
+
+        using (Output.Indent())
         {
-            WriteMetadata();
+            Output.AppendArgumentNullException("methodBinder");
+
             Output
-                .Append("internal sealed partial class ")
-                .Append(GetGeneratedMemberName())
-                .Append(" : ")
-                .AppendType(typeof(IServiceEndpointBinder<>))
-                .Append(_contract.ContractInterfaceName)
-                .AppendLine(">");
-            Output.AppendLine("{");
+                .Append("var contract = new ")
+                .Append(_contract.ContractClassName)
+                .AppendLine("(methodBinder.MarshallerFactory);");
 
-            using (Output.Indent())
+            Output
+                .Append("var endpoint = new ")
+                .Append(_contract.EndpointClassName)
+                .AppendLine("();");
+
+            foreach (var interfaceDescription in _contract.Services)
             {
-                BuildBind();
-                Output.AppendLine();
-
-                BuildGetServiceMetadata();
-                Output.AppendLine();
-
-                BuildGetServiceMetadataOverride();
-
-                foreach (var interfaceDescription in _contract.Services)
+                foreach (var method in interfaceDescription.Operations)
                 {
-                    foreach (var method in interfaceDescription.Operations)
+                    Output
+                        .Append("methodBinder.Add")
+                        .Append(method.OperationType.ToString())
+                        .Append("Method(contract.")
+                        .Append(method.GrpcMethodName)
+                        .Append(", ")
+                        .Append(GetMethodDefinitionName(method));
+
+                    if (method.OperationType == MethodType.ClientStreaming)
                     {
-                        Output.AppendLine();
-                        BuildGetMethodMetadata(interfaceDescription, method);
-                        Output.AppendLine();
-                        BuildGetMethodMetadataOverride(method);
-                        Output.AppendLine();
-                        BuildGetMethodDefinition(interfaceDescription.InterfaceTypeName, method);
+                        WriteHeaderMarshaller(method.HeaderRequestType, method.GrpcMethodInputHeaderName);
                     }
+                    else if (method.OperationType == MethodType.ServerStreaming)
+                    {
+                        WriteHeaderMarshaller(method.HeaderResponseType, method.GrpcMethodOutputHeaderName);
+                    }
+                    else if (method.OperationType == MethodType.DuplexStreaming)
+                    {
+                        WriteHeaderMarshaller(method.HeaderRequestType, method.GrpcMethodInputHeaderName);
+                        WriteHeaderMarshaller(method.HeaderResponseType, method.GrpcMethodOutputHeaderName);
+                    }
+
+                    Output
+                        .Append(", ")
+                        .Append(GetMethodMetadataName(method))
+                        .Append("(), endpoint.")
+                        .Append(method.OperationName)
+                        .AppendLine(");");
                 }
             }
-
-            Output.AppendLine("}");
         }
 
-        private void BuildBind()
+        Output.AppendLine("}");
+    }
+
+    private void WriteHeaderMarshaller(MessageDescription? description, string propertyName)
+    {
+        Output.Append(", ");
+        if (description == null)
+        {
+            // (Marshaller<Message>)null
+            Output
+                .Append("(")
+                .AppendType(typeof(Marshaller<>))
+                .AppendType(typeof(Message))
+                .Append(">)null");
+        }
+        else
         {
             Output
-                .Append("public void Bind(")
-                .AppendType(typeof(IServiceMethodBinder<>))
-                .Append(_contract.ContractInterfaceName)
-                .AppendLine("> methodBinder)")
-                .AppendLine("{");
+                .Append("contract.")
+                .Append(propertyName);
+        }
+    }
 
-            using (Output.Indent())
+    private void BuildGetServiceMetadata()
+    {
+        Output
+            .AppendLine("private void ServiceGetMetadata(IList<object> metadata)")
+            .AppendLine("{");
+
+        using (Output.Indent())
+        {
+            Output
+                .Append("// copy attributes from ")
+                .Append(_contract.ContractInterface.TypeKind.ToString().ToLowerInvariant())
+                .Append(" ")
+                .AppendLine(_contract.ContractInterface.Name);
+
+            var length = Output.Length;
+
+            foreach (var attribute in FilterAttributes(_contract.ContractInterface.GetAttributes()))
             {
-                Output.AppendArgumentNullException("methodBinder");
-
-                Output
-                    .Append("var contract = new ")
-                    .Append(_contract.ContractClassName)
-                    .AppendLine("(methodBinder.MarshallerFactory);");
-
-                Output
-                    .Append("var endpoint = new ")
-                    .Append(_contract.EndpointClassName)
-                    .AppendLine("();");
-
-                foreach (var interfaceDescription in _contract.Services)
-                {
-                    foreach (var method in interfaceDescription.Operations)
-                    {
-                        Output
-                            .Append("methodBinder.Add")
-                            .Append(method.OperationType.ToString())
-                            .Append("Method(contract.")
-                            .Append(method.GrpcMethodName)
-                            .Append(", ")
-                            .Append(GetMethodDefinitionName(method));
-
-                        if (method.OperationType == MethodType.ClientStreaming)
-                        {
-                            WriteHeaderMarshaller(method.HeaderRequestType, method.GrpcMethodInputHeaderName);
-                        }
-                        else if (method.OperationType == MethodType.ServerStreaming)
-                        {
-                            WriteHeaderMarshaller(method.HeaderResponseType, method.GrpcMethodOutputHeaderName);
-                        }
-                        else if (method.OperationType == MethodType.DuplexStreaming)
-                        {
-                            WriteHeaderMarshaller(method.HeaderRequestType, method.GrpcMethodInputHeaderName);
-                            WriteHeaderMarshaller(method.HeaderResponseType, method.GrpcMethodOutputHeaderName);
-                        }
-
-                        Output
-                            .Append(", ")
-                            .Append(GetMethodMetadataName(method))
-                            .Append("(), endpoint.")
-                            .Append(method.OperationName)
-                            .AppendLine(");");
-                    }
-                }
+                Output.Append("metadata.Add(");
+                WriteNewAttribute(Output, attribute);
+                Output.AppendLine(");");
             }
 
-            Output.AppendLine("}");
+            if (Output.Length == length)
+            {
+                Output.AppendLine("// no applicable attributes found");
+            }
+
+            Output.AppendLine("ServiceGetMetadataOverride(metadata);");
         }
 
-        private void WriteHeaderMarshaller(MessageDescription? description, string propertyName)
+        Output.AppendLine("}");
+    }
+
+    private void BuildGetServiceMetadataOverride()
+    {
+        Output.AppendLine("partial void ServiceGetMetadataOverride(IList<object> metadata);");
+    }
+
+    private void BuildGetMethodMetadata(InterfaceDescription interfaceDescription, OperationDescription method)
+    {
+        Output
+            .Append("private IList<object> ")
+            .Append(GetMethodMetadataName(method))
+            .AppendLine("()")
+            .AppendLine("{");
+
+        using (Output.Indent())
         {
-            Output.Append(", ");
-            if (description == null)
+            Output
+                .AppendLine("var metadata = new List<object>();")
+                .AppendLine("ServiceGetMetadata(metadata);");
+
+            var implementation = method.Method.Source;
+            if (SyntaxTools.IsInterface(_contract.ContractInterface))
             {
-                // (Marshaller<Message>)null
                 Output
-                    .Append("(")
-                    .AppendType(typeof(Marshaller<>))
-                    .AppendType(typeof(Message))
-                    .Append(">)null");
+                    .Append("// copy attributes from method ")
+                    .Append(interfaceDescription.InterfaceType.Name)
+                    .Append(".")
+                    .AppendLine(implementation.Name);
             }
             else
             {
+                implementation = _contract.ContractInterface.GetInterfaceImplementation(method.Method.Source);
                 Output
-                    .Append("contract.")
-                    .Append(propertyName);
+                    .Append("// copy attributes from method ")
+                    .Append(implementation.Name)
+                    .Append(", implementation of ")
+                    .Append(interfaceDescription.InterfaceType.Name)
+                    .Append(".")
+                    .AppendLine(method.Method.Name);
             }
-        }
 
-        private void BuildGetServiceMetadata()
-        {
-            Output
-                .AppendLine("private void ServiceGetMetadata(IList<object> metadata)")
-                .AppendLine("{");
+            var length = Output.Length;
 
-            using (Output.Indent())
+            foreach (var attribute in FilterAttributes(implementation.GetAttributes()))
             {
-                Output
-                    .Append("// copy attributes from ")
-                    .Append(_contract.ContractInterface.TypeKind.ToString().ToLowerInvariant())
-                    .Append(" ")
-                    .AppendLine(_contract.ContractInterface.Name);
-
-                var length = Output.Length;
-
-                foreach (var attribute in FilterAttributes(_contract.ContractInterface.GetAttributes()))
-                {
-                    Output.Append("metadata.Add(");
-                    WriteNewAttribute(Output, attribute);
-                    Output.AppendLine(");");
-                }
-
-                if (Output.Length == length)
-                {
-                    Output.AppendLine("// no applicable attributes found");
-                }
-
-                Output.AppendLine("ServiceGetMetadataOverride(metadata);");
+                Output.Append("metadata.Add(");
+                WriteNewAttribute(Output, attribute);
+                Output.AppendLine(");");
             }
 
-            Output.AppendLine("}");
-        }
+            if (Output.Length == length)
+            {
+                Output.AppendLine("// no applicable attributes found");
+            }
 
-        private void BuildGetServiceMetadataOverride()
-        {
-            Output.AppendLine("partial void ServiceGetMetadataOverride(IList<object> metadata);");
-        }
-
-        private void BuildGetMethodMetadata(InterfaceDescription interfaceDescription, OperationDescription method)
-        {
             Output
-                .Append("private IList<object> ")
                 .Append(GetMethodMetadataName(method))
-                .AppendLine("()")
-                .AppendLine("{");
+                .AppendLine("Override(metadata);")
+                .AppendLine("return metadata;");
+        }
 
-            using (Output.Indent())
+        Output.AppendLine("}");
+    }
+
+    private void BuildGetMethodMetadataOverride(OperationDescription method)
+    {
+        Output
+            .Append("partial void ")
+            .Append(GetMethodMetadataName(method))
+            .AppendLine("Override(IList<object> metadata);");
+    }
+
+    private void BuildGetMethodDefinition(string interfaceType, OperationDescription method)
+    {
+        Output
+            .Append("private ")
+            .AppendType(typeof(MethodInfo))
+            .Append(" ")
+            .Append(GetMethodDefinitionName(method))
+            .AppendLine("()")
+            .AppendLine("{");
+
+        using (Output.Indent())
+        {
+            for (var i = 0; i < method.Method.Parameters.Length; i++)
             {
-                Output
-                    .AppendLine("var metadata = new List<object>();")
-                    .AppendLine("ServiceGetMetadata(metadata);");
-
-                var implementation = method.Method.Source;
-                if (SyntaxTools.IsInterface(_contract.ContractInterface))
+                var p = method.Method.Parameters[i];
+                if (p.IsOut)
                 {
                     Output
-                        .Append("// copy attributes from method ")
-                        .Append(interfaceDescription.InterfaceType.Name)
-                        .Append(".")
-                        .AppendLine(implementation.Name);
+                        .Append(p.Type)
+                        .Append(" ")
+                        .Append(p.Name)
+                        .AppendLine(";");
+                }
+                else if (p.IsRef)
+                {
+                    Output
+                        .Append(p.Type)
+                        .Append(" ")
+                        .Append(p.Name)
+                        .AppendLine(" = default;");
+                }
+            }
+
+            // Expression<Action<IDemoService>> __exp = s => s.Sum(default, default);
+            Output
+                .AppendType(typeof(Expression))
+                .Append("<Action<")
+                .Append(interfaceType)
+                .Append(">> __exp = s => s.")
+                .Append(method.Method.Name)
+                .Append("(");
+
+            for (var i = 0; i < method.Method.Parameters.Length; i++)
+            {
+                if (i > 0)
+                {
+                    Output.Append(", ");
+                }
+
+                var p = method.Method.Parameters[i];
+                if (p.IsOut)
+                {
+                    Output
+                        .Append("out ")
+                        .Append(p.Name);
+                }
+                else if (p.IsRef)
+                {
+                    Output
+                        .Append("ref ")
+                        .Append(p.Name);
                 }
                 else
                 {
-                    implementation = _contract.ContractInterface.GetInterfaceImplementation(method.Method.Source);
                     Output
-                        .Append("// copy attributes from method ")
-                        .Append(implementation.Name)
-                        .Append(", implementation of ")
-                        .Append(interfaceDescription.InterfaceType.Name)
-                        .Append(".")
-                        .AppendLine(method.Method.Name);
+                        .Append("default(")
+                        .Append(method.Method.Parameters[i].Type)
+                        .Append(")");
                 }
-
-                var length = Output.Length;
-
-                foreach (var attribute in FilterAttributes(implementation.GetAttributes()))
-                {
-                    Output.Append("metadata.Add(");
-                    WriteNewAttribute(Output, attribute);
-                    Output.AppendLine(");");
-                }
-
-                if (Output.Length == length)
-                {
-                    Output.AppendLine("// no applicable attributes found");
-                }
-
-                Output
-                    .Append(GetMethodMetadataName(method))
-                    .AppendLine("Override(metadata);")
-                    .AppendLine("return metadata;");
             }
 
-            Output.AppendLine("}");
-        }
+            Output.AppendLine(");");
 
-        private void BuildGetMethodMetadataOverride(OperationDescription method)
-        {
             Output
-                .Append("partial void ")
-                .Append(GetMethodMetadataName(method))
-                .AppendLine("Override(IList<object> metadata);");
+                .Append("return ((")
+                .AppendType(typeof(MethodCallExpression))
+                .AppendLine(")__exp.Body).Method;");
         }
 
-        private void BuildGetMethodDefinition(string interfaceType, OperationDescription method)
-        {
-            Output
-                .Append("private ")
-                .AppendType(typeof(MethodInfo))
-                .Append(" ")
-                .Append(GetMethodDefinitionName(method))
-                .AppendLine("()")
-                .AppendLine("{");
+        Output.AppendLine("}");
+    }
 
-            using (Output.Indent())
-            {
-                for (var i = 0; i < method.Method.Parameters.Length; i++)
-                {
-                    var p = method.Method.Parameters[i];
-                    if (p.IsOut)
-                    {
-                        Output
-                            .Append(p.Type)
-                            .Append(" ")
-                            .Append(p.Name)
-                            .AppendLine(";");
-                    }
-                    else if (p.IsRef)
-                    {
-                        Output
-                            .Append(p.Type)
-                            .Append(" ")
-                            .Append(p.Name)
-                            .AppendLine(" = default;");
-                    }
-                }
+    private string GetMethodMetadataName(OperationDescription method)
+    {
+        return "Method" + method.OperationName + "GetMetadata";
+    }
 
-                // Expression<Action<IDemoService>> __exp = s => s.Sum(default, default);
-                Output
-                    .AppendType(typeof(Expression))
-                    .Append("<Action<")
-                    .Append(interfaceType)
-                    .Append(">> __exp = s => s.")
-                    .Append(method.Method.Name)
-                    .Append("(");
-
-                for (var i = 0; i < method.Method.Parameters.Length; i++)
-                {
-                    if (i > 0)
-                    {
-                        Output.Append(", ");
-                    }
-
-                    var p = method.Method.Parameters[i];
-                    if (p.IsOut)
-                    {
-                        Output
-                            .Append("out ")
-                            .Append(p.Name);
-                    }
-                    else if (p.IsRef)
-                    {
-                        Output
-                            .Append("ref ")
-                            .Append(p.Name);
-                    }
-                    else
-                    {
-                        Output
-                            .Append("default(")
-                            .Append(method.Method.Parameters[i].Type)
-                            .Append(")");
-                    }
-                }
-
-                Output.AppendLine(");");
-
-                Output
-                    .Append("return ((")
-                    .AppendType(typeof(MethodCallExpression))
-                    .AppendLine(")__exp.Body).Method;");
-            }
-
-            Output.AppendLine("}");
-        }
-
-        private string GetMethodMetadataName(OperationDescription method)
-        {
-            return "Method" + method.OperationName + "GetMetadata";
-        }
-
-        private string GetMethodDefinitionName(OperationDescription method)
-        {
-            return "Method" + method.OperationName + "GetDefinition";
-        }
+    private string GetMethodDefinitionName(OperationDescription method)
+    {
+        return "Method" + method.OperationName + "GetDefinition";
     }
 }

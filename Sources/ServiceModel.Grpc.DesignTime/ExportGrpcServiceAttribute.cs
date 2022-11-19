@@ -17,42 +17,41 @@
 using System;
 using System.Diagnostics;
 
-namespace ServiceModel.Grpc.DesignTime
+namespace ServiceModel.Grpc.DesignTime;
+
+/// <summary>
+/// A marker to generate the source code for service hosting.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+[Conditional("CodeGeneration")]
+public sealed class ExportGrpcServiceAttribute : Attribute
 {
     /// <summary>
-    /// A marker to generate the source code for service hosting.
+    /// Initializes a new instance of the <see cref="ExportGrpcServiceAttribute"/> class.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    [Conditional("CodeGeneration")]
-    public sealed class ExportGrpcServiceAttribute : Attribute
+    /// <param name="serviceType">The service type to map requests to.</param>
+    public ExportGrpcServiceAttribute(Type serviceType)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ExportGrpcServiceAttribute"/> class.
-        /// </summary>
-        /// <param name="serviceType">The service type to map requests to.</param>
-        public ExportGrpcServiceAttribute(Type serviceType)
+        if (serviceType == null)
         {
-            if (serviceType == null)
-            {
-                throw new ArgumentNullException(nameof(serviceType));
-            }
-
-            ServiceType = serviceType;
+            throw new ArgumentNullException(nameof(serviceType));
         }
 
-        /// <summary>
-        /// Gets the service type to map requests to.
-        /// </summary>
-        public Type ServiceType { get; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to generate extension methods for AspNet hosting.
-        /// </summary>
-        public bool GenerateAspNetExtensions { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to generate extension methods for Grpc.Core.Server hosting.
-        /// </summary>
-        public bool GenerateSelfHostExtensions { get; set; }
+        ServiceType = serviceType;
     }
+
+    /// <summary>
+    /// Gets the service type to map requests to.
+    /// </summary>
+    public Type ServiceType { get; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to generate extension methods for AspNet hosting.
+    /// </summary>
+    public bool GenerateAspNetExtensions { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to generate extension methods for Grpc.Core.Server hosting.
+    /// </summary>
+    public bool GenerateSelfHostExtensions { get; set; }
 }

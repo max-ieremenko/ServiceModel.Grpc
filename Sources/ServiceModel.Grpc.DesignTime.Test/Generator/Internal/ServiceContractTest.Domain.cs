@@ -17,44 +17,43 @@
 using System.Runtime.Serialization;
 using System.ServiceModel;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal;
+
+public partial class ServiceContractTest
 {
-    public partial class ServiceContractTest
+    [ServiceContract]
+    private interface I1
     {
-        [ServiceContract]
-        private interface I1
-        {
-            [OperationContract]
-            string Operation();
-        }
+        [OperationContract]
+        string Operation();
+    }
 
-        [ServiceContract(Name = "Service2")]
-        private interface I2
-        {
-            [OperationContract(Name = "Method")]
-            string Operation();
-        }
+    [ServiceContract(Name = "Service2")]
+    private interface I2
+    {
+        [OperationContract(Name = "Method")]
+        string Operation();
+    }
 
-        [ServiceContract(Name = "Service2", Namespace = "Test")]
-        private interface I3
-        {
-            [OperationContract]
-            string Operation();
-        }
+    [ServiceContract(Name = "Service2", Namespace = "Test")]
+    private interface I3
+    {
+        [OperationContract]
+        string Operation();
+    }
 
-        [ServiceContract]
-        private interface IGeneric1<TValue>
-        {
-        }
+    [ServiceContract]
+    private interface IGeneric1<TValue>
+    {
+    }
 
-        [ServiceContract(Name = "Service2")]
-        private interface IGeneric2<TValue1, TValue2>
-        {
-        }
+    [ServiceContract(Name = "Service2")]
+    private interface IGeneric2<TValue1, TValue2>
+    {
+    }
 
-        [DataContract(Name = "Some-Data")]
-        private sealed class SomeData
-        {
-        }
+    [DataContract(Name = "Some-Data")]
+    private sealed class SomeData
+    {
     }
 }

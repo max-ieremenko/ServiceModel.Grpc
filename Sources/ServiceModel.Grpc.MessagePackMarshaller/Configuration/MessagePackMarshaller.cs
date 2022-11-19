@@ -17,14 +17,13 @@
 using Grpc.Core;
 using MessagePack;
 
-namespace ServiceModel.Grpc.Configuration
+namespace ServiceModel.Grpc.Configuration;
+
+internal sealed class MessagePackMarshaller<T>
 {
-    internal sealed class MessagePackMarshaller<T>
-    {
-        public static readonly Marshaller<T> Default = new Marshaller<T>(Serialize, Deserialize);
+    public static readonly Marshaller<T> Default = new Marshaller<T>(Serialize, Deserialize);
 
-        private static void Serialize(T value, SerializationContext context) => MessagePackMarshallerFactory.Serialize(value, context, MessagePackSerializer.DefaultOptions);
+    private static void Serialize(T value, SerializationContext context) => MessagePackMarshallerFactory.Serialize(value, context, MessagePackSerializer.DefaultOptions);
 
-        private static T Deserialize(DeserializationContext context) => MessagePackMarshallerFactory.Deserialize<T>(context, MessagePackSerializer.DefaultOptions);
-    }
+    private static T Deserialize(DeserializationContext context) => MessagePackMarshallerFactory.Deserialize<T>(context, MessagePackSerializer.DefaultOptions);
 }

@@ -14,53 +14,52 @@
 // limitations under the License.
 // </copyright>
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
+
+internal sealed class CSharpServiceSelfHostAddProviderServiceBuilder : CodeGeneratorBase
 {
-    internal sealed class CSharpServiceSelfHostAddProviderServiceBuilder : CodeGeneratorBase
+    private readonly ContractDescription _contract;
+    private readonly bool _isStaticClass;
+
+    public CSharpServiceSelfHostAddProviderServiceBuilder(ContractDescription contract, bool isStaticClass)
     {
-        private readonly ContractDescription _contract;
-        private readonly bool _isStaticClass;
+        _contract = contract;
+        _isStaticClass = isStaticClass;
+    }
 
-        public CSharpServiceSelfHostAddProviderServiceBuilder(ContractDescription contract, bool isStaticClass)
+    public override string GetGeneratedMemberName() => "Add<" + _contract.BaseClassName + ">";
+
+    protected override void Generate()
+    {
+        WriteMetadata();
+        Output
+            .Append("public static ")
+            .AppendTypeName("Grpc.Core", "Server.ServiceDefinitionCollection")
+            .Append(" Add")
+            .Append(_contract.BaseClassName)
+            .Append("(");
+
+        if (_isStaticClass)
         {
-            _contract = contract;
-            _isStaticClass = isStaticClass;
+            Output.Append("this ");
         }
 
-        public override string GetGeneratedMemberName() => "Add<" + _contract.BaseClassName + ">";
+        Output
+            .AppendTypeName("Grpc.Core", "Server.ServiceDefinitionCollection")
+            .Append(" services, IServiceProvider serviceProvider")
+            .AppendLine(", Action<global::Grpc.Core.ServiceModelGrpcServiceOptions> configure = default)")
+            .AppendLine("{");
 
-        protected override void Generate()
+        using (Output.Indent())
         {
-            WriteMetadata();
             Output
-                .Append("public static ")
-                .AppendTypeName("Grpc.Core", "Server.ServiceDefinitionCollection")
-                .Append(" Add")
-                .Append(_contract.BaseClassName)
-                .Append("(");
-
-            if (_isStaticClass)
-            {
-                Output.Append("this ");
-            }
-
-            Output
-                .AppendTypeName("Grpc.Core", "Server.ServiceDefinitionCollection")
-                .Append(" services, IServiceProvider serviceProvider")
-                .AppendLine(", Action<global::Grpc.Core.ServiceModelGrpcServiceOptions> configure = default)")
-                .AppendLine("{");
-
-            using (Output.Indent())
-            {
-                Output
-                    .Append("return ")
-                    .AppendTypeName("Grpc.Core", "ServiceDefinitionCollectionExtensions")
-                    .Append(".AddServiceModel<")
-                    .Append(_contract.ContractInterfaceName)
-                    .AppendLine(">(services, serviceProvider, configure);");
-            }
-
-            Output.AppendLine("}");
+                .Append("return ")
+                .AppendTypeName("Grpc.Core", "ServiceDefinitionCollectionExtensions")
+                .Append(".AddServiceModel<")
+                .Append(_contract.ContractInterfaceName)
+                .AppendLine(">(services, serviceProvider, configure);");
         }
+
+        Output.AppendLine("}");
     }
 }

@@ -20,25 +20,24 @@ using System.Threading;
 using System.Threading.Tasks;
 using ServiceModel.Grpc.AspNetCore.Internal.Swagger;
 
-namespace ServiceModel.Grpc.AspNetCore.Swashbuckle.Configuration
+namespace ServiceModel.Grpc.AspNetCore.Swashbuckle.Configuration;
+
+internal sealed class DataSerializer : IDataSerializer
 {
-    internal sealed class DataSerializer : IDataSerializer
+    private readonly IJsonSerializer _jsonSerializer;
+
+    public DataSerializer(IJsonSerializer jsonSerializer)
     {
-        private readonly IJsonSerializer _jsonSerializer;
+        _jsonSerializer = jsonSerializer;
+    }
 
-        public DataSerializer(IJsonSerializer jsonSerializer)
-        {
-            _jsonSerializer = jsonSerializer;
-        }
+    public object Deserialize(string json, Type returnType)
+    {
+        return _jsonSerializer.Deserialize(json, returnType);
+    }
 
-        public object Deserialize(string json, Type returnType)
-        {
-            return _jsonSerializer.Deserialize(json, returnType);
-        }
-
-        public Task SerializeAsync(Stream stream, object value, Type inputType, CancellationToken cancellationToken)
-        {
-            return _jsonSerializer.SerializeAsync(stream, value, inputType, cancellationToken);
-        }
+    public Task SerializeAsync(Stream stream, object value, Type inputType, CancellationToken cancellationToken)
+    {
+        return _jsonSerializer.SerializeAsync(stream, value, inputType, cancellationToken);
     }
 }

@@ -21,109 +21,108 @@ using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Filters.Internal;
 
-namespace ServiceModel.Grpc.Hosting.Internal
+namespace ServiceModel.Grpc.Hosting.Internal;
+
+internal sealed class DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponseHeader, TResponse>
+    where TRequestHeader : class
+    where TResponseHeader : class
 {
-    internal sealed class DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponseHeader, TResponse>
-        where TRequestHeader : class
-        where TResponseHeader : class
+    private readonly Func<TService> _serviceFactory;
+    private readonly Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, ValueTask<(TResponseHeader?, IAsyncEnumerable<TResponse>)>> _invoker;
+    private readonly Marshaller<TRequestHeader>? _requestHeaderMarshaller;
+    private readonly Marshaller<TResponseHeader>? _responseHeaderMarshaller;
+    private readonly ServerCallFilterHandlerFactory? _filterHandlerFactory;
+    private readonly Func<IServerFilterContextInternal, ValueTask> _filterLastAsync;
+
+    public DuplexStreamingServerCallHandler(
+        Func<TService> serviceFactory,
+        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> invoker,
+        Marshaller<TRequestHeader>? requestHeaderMarshaller,
+        Marshaller<TResponseHeader>? responseHeaderMarshaller,
+        ServerCallFilterHandlerFactory? filterHandlerFactory)
     {
-        private readonly Func<TService> _serviceFactory;
-        private readonly Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, ValueTask<(TResponseHeader?, IAsyncEnumerable<TResponse>)>> _invoker;
-        private readonly Marshaller<TRequestHeader>? _requestHeaderMarshaller;
-        private readonly Marshaller<TResponseHeader>? _responseHeaderMarshaller;
-        private readonly ServerCallFilterHandlerFactory? _filterHandlerFactory;
-        private readonly Func<IServerFilterContextInternal, ValueTask> _filterLastAsync;
+        _serviceFactory = serviceFactory;
+        _invoker = invoker;
+        _requestHeaderMarshaller = requestHeaderMarshaller;
+        _responseHeaderMarshaller = responseHeaderMarshaller;
+        _filterHandlerFactory = filterHandlerFactory;
 
-        public DuplexStreamingServerCallHandler(
-            Func<TService> serviceFactory,
-            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> invoker,
-            Marshaller<TRequestHeader>? requestHeaderMarshaller,
-            Marshaller<TResponseHeader>? responseHeaderMarshaller,
-            ServerCallFilterHandlerFactory? filterHandlerFactory)
+        if (filterHandlerFactory == null)
         {
-            _serviceFactory = serviceFactory;
-            _invoker = invoker;
-            _requestHeaderMarshaller = requestHeaderMarshaller;
-            _responseHeaderMarshaller = responseHeaderMarshaller;
-            _filterHandlerFactory = filterHandlerFactory;
+            _filterLastAsync = null!;
+        }
+        else
+        {
+            _filterLastAsync = FilterLastAsync;
+        }
+    }
 
-            if (filterHandlerFactory == null)
-            {
-                _filterLastAsync = null!;
-            }
-            else
-            {
-                _filterLastAsync = FilterLastAsync;
-            }
+    public DuplexStreamingServerCallHandler(
+        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> invoker,
+        Marshaller<TRequestHeader>? requestHeaderMarshaller,
+        Marshaller<TResponseHeader>? responseHeaderMarshaller,
+        ServerCallFilterHandlerFactory? filterHandlerFactory)
+        : this(null!, invoker, requestHeaderMarshaller, responseHeaderMarshaller, filterHandlerFactory)
+    {
+    }
+
+    public Task Handle(
+        IAsyncStreamReader<Message<TRequest>> input,
+        IServerStreamWriter<Message<TResponse>> output,
+        ServerCallContext context)
+    {
+        return Handle(_serviceFactory(), input, output, context);
+    }
+
+    public Task Handle(
+        TService service,
+        IAsyncStreamReader<Message<TRequest>> input,
+        IServerStreamWriter<Message<TResponse>> output,
+        ServerCallContext context)
+    {
+        TRequestHeader? header = null;
+        if (_requestHeaderMarshaller != null)
+        {
+            header = CompatibilityTools.DeserializeMethodInputHeader(_requestHeaderMarshaller, context.RequestHeaders);
         }
 
-        public DuplexStreamingServerCallHandler(
-            Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> invoker,
-            Marshaller<TRequestHeader>? requestHeaderMarshaller,
-            Marshaller<TResponseHeader>? responseHeaderMarshaller,
-            ServerCallFilterHandlerFactory? filterHandlerFactory)
-            : this(null!, invoker, requestHeaderMarshaller, responseHeaderMarshaller, filterHandlerFactory)
+        var request = ServerChannelAdapter.ReadClientStream(input, context);
+
+        if (_filterHandlerFactory == null)
         {
+            var result = _invoker(service, header, request, context);
+            return ServerChannelAdapter.WriteServerStreamingResult(result, _responseHeaderMarshaller, output, context);
         }
 
-        public Task Handle(
-            IAsyncStreamReader<Message<TRequest>> input,
-            IServerStreamWriter<Message<TResponse>> output,
-            ServerCallContext context)
-        {
-            return Handle(_serviceFactory(), input, output, context);
-        }
+        return HandleWithFilter(service, header, request, output, context);
+    }
 
-        public Task Handle(
-            TService service,
-            IAsyncStreamReader<Message<TRequest>> input,
-            IServerStreamWriter<Message<TResponse>> output,
-            ServerCallContext context)
-        {
-            TRequestHeader? header = null;
-            if (_requestHeaderMarshaller != null)
-            {
-                header = CompatibilityTools.DeserializeMethodInputHeader(_requestHeaderMarshaller, context.RequestHeaders);
-            }
+    private async Task HandleWithFilter(
+        TService service,
+        TRequestHeader? inputHeader,
+        IAsyncEnumerable<TRequest> input,
+        IServerStreamWriter<Message<TResponse>> output,
+        ServerCallContext context)
+    {
+        var handler = _filterHandlerFactory!.CreateHandler(service!, context);
+        handler.Context.RequestInternal.SetRaw(inputHeader, input);
+        await handler.InvokeAsync(_filterLastAsync).ConfigureAwait(false);
 
-            var request = ServerChannelAdapter.ReadClientStream(input, context);
+        var (rawHeader, rawData) = handler.Context.ResponseInternal.GetRaw();
 
-            if (_filterHandlerFactory == null)
-            {
-                var result = _invoker(service, header, request, context);
-                return ServerChannelAdapter.WriteServerStreamingResult(result, _responseHeaderMarshaller, output, context);
-            }
+        var outputHeader = (TResponseHeader?)rawHeader;
+        var outputData = (IAsyncEnumerable<TResponse>)rawData!;
+        var result = new ValueTask<(TResponseHeader?, IAsyncEnumerable<TResponse>)>((outputHeader, outputData));
 
-            return HandleWithFilter(service, header, request, output, context);
-        }
+        await ServerChannelAdapter.WriteServerStreamingResult(result, _responseHeaderMarshaller, output, context).ConfigureAwait(false);
+    }
 
-        private async Task HandleWithFilter(
-            TService service,
-            TRequestHeader? inputHeader,
-            IAsyncEnumerable<TRequest> input,
-            IServerStreamWriter<Message<TResponse>> output,
-            ServerCallContext context)
-        {
-            var handler = _filterHandlerFactory!.CreateHandler(service!, context);
-            handler.Context.RequestInternal.SetRaw(inputHeader, input);
-            await handler.InvokeAsync(_filterLastAsync).ConfigureAwait(false);
+    private async ValueTask FilterLastAsync(IServerFilterContextInternal context)
+    {
+        var service = (TService)context.ServiceInstance;
+        var (inputHeader, inputStream) = context.RequestInternal.GetRaw();
 
-            var (rawHeader, rawData) = handler.Context.ResponseInternal.GetRaw();
-
-            var outputHeader = (TResponseHeader?)rawHeader;
-            var outputData = (IAsyncEnumerable<TResponse>)rawData!;
-            var result = new ValueTask<(TResponseHeader?, IAsyncEnumerable<TResponse>)>((outputHeader, outputData));
-
-            await ServerChannelAdapter.WriteServerStreamingResult(result, _responseHeaderMarshaller, output, context).ConfigureAwait(false);
-        }
-
-        private async ValueTask FilterLastAsync(IServerFilterContextInternal context)
-        {
-            var service = (TService)context.ServiceInstance;
-            var (inputHeader, inputStream) = context.RequestInternal.GetRaw();
-
-            var (responseHeader, responseStream) = await _invoker(service, (TRequestHeader?)inputHeader, (IAsyncEnumerable<TRequest>)inputStream!, context.ServerCallContext).ConfigureAwait(false);
-            context.ResponseInternal.SetRaw(responseHeader, responseStream);
-        }
+        var (responseHeader, responseStream) = await _invoker(service, (TRequestHeader?)inputHeader, (IAsyncEnumerable<TRequest>)inputStream!, context.ServerCallContext).ConfigureAwait(false);
+        context.ResponseInternal.SetRaw(responseHeader, responseStream);
     }
 }

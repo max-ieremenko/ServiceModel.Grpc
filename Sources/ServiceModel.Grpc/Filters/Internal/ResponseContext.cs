@@ -19,98 +19,97 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace ServiceModel.Grpc.Filters.Internal
+namespace ServiceModel.Grpc.Filters.Internal;
+
+[DebuggerDisplay("Count = {Count}")]
+internal sealed class ResponseContext : IResponseContextInternal
 {
-    [DebuggerDisplay("Count = {Count}")]
-    internal sealed class ResponseContext : IResponseContextInternal
+    private readonly MessageProxy _messageProxy;
+    private readonly StreamProxy? _streamProxy;
+    private object? _response;
+    private object? _stream;
+
+    public ResponseContext(MessageProxy messageProxy, StreamProxy? streamProxy)
     {
-        private readonly MessageProxy _messageProxy;
-        private readonly StreamProxy? _streamProxy;
-        private object? _response;
-        private object? _stream;
+        _messageProxy = messageProxy;
+        _streamProxy = streamProxy;
+    }
 
-        public ResponseContext(MessageProxy messageProxy, StreamProxy? streamProxy)
+    public int Count => _messageProxy.Names.Length;
+
+    public object? Stream
+    {
+        get => SafeGetStream();
+        set => UpdateStream(value);
+    }
+
+    public bool IsProvided { get; private set; }
+
+    public object? this[string name]
+    {
+        get => _messageProxy.GetValue(SafeGetResponse(), _messageProxy.GetPropertyIndex(name));
+        set => _messageProxy.SetValue(SafeGetResponse(), _messageProxy.GetPropertyIndex(name), value);
+    }
+
+    public object? this[int index]
+    {
+        get => _messageProxy.GetValue(SafeGetResponse(), index);
+        set => _messageProxy.SetValue(SafeGetResponse(), index, value);
+    }
+
+    public (object Response, object? Stream) GetRaw() => (SafeGetResponse(), Stream);
+
+    public void SetRaw(object? response, object? stream)
+    {
+        IsProvided = true;
+        _response = response;
+        _stream = stream;
+    }
+
+    public IEnumerator<KeyValuePair<string, object?>> GetEnumerator()
+    {
+        for (var i = 0; i < _messageProxy.Names.Length; i++)
         {
-            _messageProxy = messageProxy;
-            _streamProxy = streamProxy;
+            var name = _messageProxy.Names[i];
+            var value = this[i];
+            yield return new KeyValuePair<string, object?>(name, value);
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    private object SafeGetResponse()
+    {
+        if (_response == null)
+        {
+            _response = _messageProxy.CreateDefault();
         }
 
-        public int Count => _messageProxy.Names.Length;
+        return _response;
+    }
 
-        public object? Stream
+    private object? SafeGetStream()
+    {
+        if (_stream == null && _streamProxy != null)
         {
-            get => SafeGetStream();
-            set => UpdateStream(value);
+            _stream = _streamProxy.CreateDefault();
         }
 
-        public bool IsProvided { get; private set; }
+        return _stream;
+    }
 
-        public object? this[string name]
+    private void UpdateStream(object? stream)
+    {
+        if (_streamProxy == null)
         {
-            get => _messageProxy.GetValue(SafeGetResponse(), _messageProxy.GetPropertyIndex(name));
-            set => _messageProxy.SetValue(SafeGetResponse(), _messageProxy.GetPropertyIndex(name), value);
+            throw new NotSupportedException("The current method does not return server stream.");
         }
 
-        public object? this[int index]
+        if (stream == null)
         {
-            get => _messageProxy.GetValue(SafeGetResponse(), index);
-            set => _messageProxy.SetValue(SafeGetResponse(), index, value);
+            throw new ArgumentNullException(nameof(stream), "The server stream cannot be null.");
         }
 
-        public (object Response, object? Stream) GetRaw() => (SafeGetResponse(), Stream);
-
-        public void SetRaw(object? response, object? stream)
-        {
-            IsProvided = true;
-            _response = response;
-            _stream = stream;
-        }
-
-        public IEnumerator<KeyValuePair<string, object?>> GetEnumerator()
-        {
-            for (var i = 0; i < _messageProxy.Names.Length; i++)
-            {
-                var name = _messageProxy.Names[i];
-                var value = this[i];
-                yield return new KeyValuePair<string, object?>(name, value);
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-        private object SafeGetResponse()
-        {
-            if (_response == null)
-            {
-                _response = _messageProxy.CreateDefault();
-            }
-
-            return _response;
-        }
-
-        private object? SafeGetStream()
-        {
-            if (_stream == null && _streamProxy != null)
-            {
-                _stream = _streamProxy.CreateDefault();
-            }
-
-            return _stream;
-        }
-
-        private void UpdateStream(object? stream)
-        {
-            if (_streamProxy == null)
-            {
-                throw new NotSupportedException("The current method does not return server stream.");
-            }
-
-            if (stream == null)
-            {
-                throw new ArgumentNullException(nameof(stream), "The server stream cannot be null.");
-            }
-
-            _streamProxy.AssignValue(out _stream, stream);
-        }
+        _streamProxy.AssignValue(out _stream, stream);
     }
 }

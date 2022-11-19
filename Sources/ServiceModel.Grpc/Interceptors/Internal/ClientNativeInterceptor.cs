@@ -18,117 +18,116 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 
-namespace ServiceModel.Grpc.Interceptors.Internal
+namespace ServiceModel.Grpc.Interceptors.Internal;
+
+internal sealed class ClientNativeInterceptor : Interceptor
 {
-    internal sealed class ClientNativeInterceptor : Interceptor
+    public ClientNativeInterceptor(IClientCallInterceptor callInterceptor)
     {
-        public ClientNativeInterceptor(IClientCallInterceptor callInterceptor)
-        {
-            callInterceptor.AssertNotNull(nameof(callInterceptor));
+        callInterceptor.AssertNotNull(nameof(callInterceptor));
 
-            CallInterceptor = callInterceptor;
+        CallInterceptor = callInterceptor;
+    }
+
+    internal IClientCallInterceptor CallInterceptor { get; }
+
+    public override TResponse BlockingUnaryCall<TRequest, TResponse>(
+        TRequest request,
+        ClientInterceptorContext<TRequest, TResponse> context,
+        BlockingUnaryCallContinuation<TRequest, TResponse> continuation)
+    {
+        try
+        {
+            return base.BlockingUnaryCall(request, context, continuation);
         }
-
-        internal IClientCallInterceptor CallInterceptor { get; }
-
-        public override TResponse BlockingUnaryCall<TRequest, TResponse>(
-            TRequest request,
-            ClientInterceptorContext<TRequest, TResponse> context,
-            BlockingUnaryCallContinuation<TRequest, TResponse> continuation)
+        catch (RpcException ex)
         {
-            try
-            {
-                return base.BlockingUnaryCall(request, context, continuation);
-            }
-            catch (RpcException ex)
-            {
-                CallInterceptor.OnError(new ClientCallInterceptorContext(context.Options, context.Host, context.Method), ex);
-                throw;
-            }
+            CallInterceptor.OnError(new ClientCallInterceptorContext(context.Options, context.Host, context.Method), ex);
+            throw;
         }
+    }
 
-        public override AsyncUnaryCall<TResponse> AsyncUnaryCall<TRequest, TResponse>(
-            TRequest request,
-            ClientInterceptorContext<TRequest, TResponse> context,
-            AsyncUnaryCallContinuation<TRequest, TResponse> continuation)
+    public override AsyncUnaryCall<TResponse> AsyncUnaryCall<TRequest, TResponse>(
+        TRequest request,
+        ClientInterceptorContext<TRequest, TResponse> context,
+        AsyncUnaryCallContinuation<TRequest, TResponse> continuation)
+    {
+        var callContext = new ClientCallInterceptorContext(context.Options, context.Host, context.Method);
+
+        var call = base.AsyncUnaryCall(request, context, continuation);
+
+        return new AsyncUnaryCall<TResponse>(
+            WaitAsyncUnaryCall(callContext, call.ResponseAsync),
+            call.ResponseHeadersAsync,
+            call.GetStatus,
+            call.GetTrailers,
+            call.Dispose);
+    }
+
+    public override AsyncClientStreamingCall<TRequest, TResponse> AsyncClientStreamingCall<TRequest, TResponse>(
+        ClientInterceptorContext<TRequest, TResponse> context,
+        AsyncClientStreamingCallContinuation<TRequest, TResponse> continuation)
+    {
+        var callContext = new ClientCallInterceptorContext(context.Options, context.Host, context.Method);
+
+        var call = base.AsyncClientStreamingCall(context, continuation);
+
+        return new AsyncClientStreamingCall<TRequest, TResponse>(
+            new ClientStreamWriterInterceptor<TRequest>(call.RequestStream, callContext, CallInterceptor),
+            WaitAsyncUnaryCall(callContext, call.ResponseAsync),
+            call.ResponseHeadersAsync,
+            call.GetStatus,
+            call.GetTrailers,
+            call.Dispose);
+    }
+
+    public override AsyncServerStreamingCall<TResponse> AsyncServerStreamingCall<TRequest, TResponse>(
+        TRequest request,
+        ClientInterceptorContext<TRequest, TResponse> context,
+        AsyncServerStreamingCallContinuation<TRequest, TResponse> continuation)
+    {
+        var callContext = new ClientCallInterceptorContext(context.Options, context.Host, context.Method);
+
+        var call = base.AsyncServerStreamingCall(request, context, continuation);
+
+        return new AsyncServerStreamingCall<TResponse>(
+            new AsyncStreamReaderInterceptor<TResponse>(call.ResponseStream, callContext, CallInterceptor),
+            call.ResponseHeadersAsync,
+            call.GetStatus,
+            call.GetTrailers,
+            call.Dispose);
+    }
+
+    public override AsyncDuplexStreamingCall<TRequest, TResponse> AsyncDuplexStreamingCall<TRequest, TResponse>(
+        ClientInterceptorContext<TRequest, TResponse> context,
+        AsyncDuplexStreamingCallContinuation<TRequest, TResponse> continuation)
+    {
+        var callContext = new ClientCallInterceptorContext(context.Options, context.Host, context.Method);
+
+        var call = base.AsyncDuplexStreamingCall(context, continuation);
+
+        return new AsyncDuplexStreamingCall<TRequest, TResponse>(
+            new ClientStreamWriterInterceptor<TRequest>(call.RequestStream, callContext, CallInterceptor),
+            new AsyncStreamReaderInterceptor<TResponse>(call.ResponseStream, callContext, CallInterceptor),
+            call.ResponseHeadersAsync,
+            call.GetStatus,
+            call.GetTrailers,
+            call.Dispose);
+    }
+
+    private async Task<TResponse> WaitAsyncUnaryCall<TResponse>(
+        ClientCallInterceptorContext context,
+        Task<TResponse> responseAsync)
+        where TResponse : class
+    {
+        try
         {
-            var callContext = new ClientCallInterceptorContext(context.Options, context.Host, context.Method);
-
-            var call = base.AsyncUnaryCall(request, context, continuation);
-
-            return new AsyncUnaryCall<TResponse>(
-                WaitAsyncUnaryCall(callContext, call.ResponseAsync),
-                call.ResponseHeadersAsync,
-                call.GetStatus,
-                call.GetTrailers,
-                call.Dispose);
+            return await responseAsync.ConfigureAwait(false);
         }
-
-        public override AsyncClientStreamingCall<TRequest, TResponse> AsyncClientStreamingCall<TRequest, TResponse>(
-            ClientInterceptorContext<TRequest, TResponse> context,
-            AsyncClientStreamingCallContinuation<TRequest, TResponse> continuation)
+        catch (RpcException ex)
         {
-            var callContext = new ClientCallInterceptorContext(context.Options, context.Host, context.Method);
-
-            var call = base.AsyncClientStreamingCall(context, continuation);
-
-            return new AsyncClientStreamingCall<TRequest, TResponse>(
-                new ClientStreamWriterInterceptor<TRequest>(call.RequestStream, callContext, CallInterceptor),
-                WaitAsyncUnaryCall(callContext, call.ResponseAsync),
-                call.ResponseHeadersAsync,
-                call.GetStatus,
-                call.GetTrailers,
-                call.Dispose);
-        }
-
-        public override AsyncServerStreamingCall<TResponse> AsyncServerStreamingCall<TRequest, TResponse>(
-            TRequest request,
-            ClientInterceptorContext<TRequest, TResponse> context,
-            AsyncServerStreamingCallContinuation<TRequest, TResponse> continuation)
-        {
-            var callContext = new ClientCallInterceptorContext(context.Options, context.Host, context.Method);
-
-            var call = base.AsyncServerStreamingCall(request, context, continuation);
-
-            return new AsyncServerStreamingCall<TResponse>(
-                new AsyncStreamReaderInterceptor<TResponse>(call.ResponseStream, callContext, CallInterceptor),
-                call.ResponseHeadersAsync,
-                call.GetStatus,
-                call.GetTrailers,
-                call.Dispose);
-        }
-
-        public override AsyncDuplexStreamingCall<TRequest, TResponse> AsyncDuplexStreamingCall<TRequest, TResponse>(
-            ClientInterceptorContext<TRequest, TResponse> context,
-            AsyncDuplexStreamingCallContinuation<TRequest, TResponse> continuation)
-        {
-            var callContext = new ClientCallInterceptorContext(context.Options, context.Host, context.Method);
-
-            var call = base.AsyncDuplexStreamingCall(context, continuation);
-
-            return new AsyncDuplexStreamingCall<TRequest, TResponse>(
-                new ClientStreamWriterInterceptor<TRequest>(call.RequestStream, callContext, CallInterceptor),
-                new AsyncStreamReaderInterceptor<TResponse>(call.ResponseStream, callContext, CallInterceptor),
-                call.ResponseHeadersAsync,
-                call.GetStatus,
-                call.GetTrailers,
-                call.Dispose);
-        }
-
-        private async Task<TResponse> WaitAsyncUnaryCall<TResponse>(
-            ClientCallInterceptorContext context,
-            Task<TResponse> responseAsync)
-            where TResponse : class
-        {
-            try
-            {
-                return await responseAsync.ConfigureAwait(false);
-            }
-            catch (RpcException ex)
-            {
-                CallInterceptor.OnError(context, ex);
-                throw;
-            }
+            CallInterceptor.OnError(context, ex);
+            throw;
         }
     }
 }

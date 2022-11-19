@@ -22,57 +22,56 @@ using ServiceModel.Grpc.AspNetCore.Swashbuckle.Internal;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 //// ReSharper disable CheckNamespace
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
 //// ReSharper restore CheckNamespace
+
+/// <summary>
+/// Provides a set of methods to simplify registration of ServiceModel.Grpc integration with Swashbuckle.AspNetCore.
+/// </summary>
+public static class ServiceModelSwaggerServiceCollectionExtensions
 {
     /// <summary>
-    /// Provides a set of methods to simplify registration of ServiceModel.Grpc integration with Swashbuckle.AspNetCore.
+    /// Enables integration of ServiceModel.Grpc with Swashbuckle.AspNetCore.
     /// </summary>
-    public static class ServiceModelSwaggerServiceCollectionExtensions
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <param name="configure">The optional configuration action.</param>
+    /// <returns>The the same <see cref="IServiceCollection"/>.</returns>
+    public static IServiceCollection AddServiceModelGrpcSwagger(
+        this IServiceCollection services,
+        Action<ServiceModelGrpcSwaggerOptions>? configure = default)
     {
-        /// <summary>
-        /// Enables integration of ServiceModel.Grpc with Swashbuckle.AspNetCore.
-        /// </summary>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <param name="configure">The optional configuration action.</param>
-        /// <returns>The the same <see cref="IServiceCollection"/>.</returns>
-        public static IServiceCollection AddServiceModelGrpcSwagger(
-            this IServiceCollection services,
-            Action<ServiceModelGrpcSwaggerOptions>? configure = default)
+        if (services == null)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if (configure != null)
-            {
-                services.Configure(configure);
-            }
-
-            ServiceCollectionExtensions.AddSwagger(services, ResolveDataSerializer);
-            services.ConfigureSwaggerGen(ConfigureSwagger);
-            return services;
+            throw new ArgumentNullException(nameof(services));
         }
 
-        private static IDataSerializer ResolveDataSerializer(IServiceProvider serviceProvider)
+        if (configure != null)
         {
-            var options = serviceProvider.GetRequiredService<IOptions<ServiceModelGrpcSwaggerOptions>>().Value;
-            return new DataSerializer(options.JsonSerializer);
+            services.Configure(configure);
         }
 
-        private static void ConfigureSwagger(SwaggerGenOptions options)
+        ServiceCollectionExtensions.AddSwagger(services, ResolveDataSerializer);
+        services.ConfigureSwaggerGen(ConfigureSwagger);
+        return services;
+    }
+
+    private static IDataSerializer ResolveDataSerializer(IServiceProvider serviceProvider)
+    {
+        var options = serviceProvider.GetRequiredService<IOptions<ServiceModelGrpcSwaggerOptions>>().Value;
+        return new DataSerializer(options.JsonSerializer);
+    }
+
+    private static void ConfigureSwagger(SwaggerGenOptions options)
+    {
+        var filters = options.OperationFilterDescriptors;
+        for (var i = 0; i < filters.Count; i++)
         {
-            var filters = options.OperationFilterDescriptors;
-            for (var i = 0; i < filters.Count; i++)
+            if (filters[i].Type == typeof(SwaggerOperationFilter))
             {
-                if (filters[i].Type == typeof(SwaggerOperationFilter))
-                {
-                    return;
-                }
+                return;
             }
-
-            options.OperationFilter<SwaggerOperationFilter>();
         }
+
+        options.OperationFilter<SwaggerOperationFilter>();
     }
 }

@@ -20,62 +20,61 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace ServiceModel.Grpc.DesignTime.Generator
+namespace ServiceModel.Grpc.DesignTime.Generator;
+
+[Generator]
+internal sealed class ServiceModelGrpcSourceGenerator : IIncrementalGenerator
 {
-    [Generator]
-    internal sealed class ServiceModelGrpcSourceGenerator : IIncrementalGenerator
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        public void Initialize(IncrementalGeneratorInitializationContext context)
+        var candidatesProvider = context.SyntaxProvider.CreateSyntaxProvider(
+            (syntaxNode, _) => SourceGeneratorSyntaxReceiver.IsCandidate(syntaxNode),
+            (syntaxContext, _) => (ClassDeclarationSyntax)syntaxContext.Node);
+
+        var assemblyResolverProvider = context.AnalyzerConfigOptionsProvider.Select((provider, _) => new AssemblyResolver(provider.GlobalOptions));
+
+        var compilationProvider = context.CompilationProvider.Select((compilation, _) => compilation);
+
+        var source = candidatesProvider
+            .Collect()
+            .Combine(assemblyResolverProvider)
+            .Combine(compilationProvider)
+            .Select((i, _) => (i.Left.Left, i.Left.Right, i.Right));
+
+        context.RegisterSourceOutput(source, Execute);
+    }
+
+    private static void Execute(
+        SourceProductionContext context,
+        (ImmutableArray<ClassDeclarationSyntax> Candidates, AssemblyResolver AssemblyResolver, Compilation Compilation) source)
+    {
+        using (source.AssemblyResolver)
         {
-            var candidatesProvider = context.SyntaxProvider.CreateSyntaxProvider(
-                (syntaxNode, _) => SourceGeneratorSyntaxReceiver.IsCandidate(syntaxNode),
-                (syntaxContext, _) => (ClassDeclarationSyntax)syntaxContext.Node);
-
-            var assemblyResolverProvider = context.AnalyzerConfigOptionsProvider.Select((provider, _) => new AssemblyResolver(provider.GlobalOptions));
-
-            var compilationProvider = context.CompilationProvider.Select((compilation, _) => compilation);
-
-            var source = candidatesProvider
-                .Collect()
-                .Combine(assemblyResolverProvider)
-                .Combine(compilationProvider)
-                .Select((i, _) => (i.Left.Left, i.Left.Right, i.Right));
-
-            context.RegisterSourceOutput(source, Execute);
-        }
-
-        private static void Execute(
-            SourceProductionContext context,
-            (ImmutableArray<ClassDeclarationSyntax> Candidates, AssemblyResolver AssemblyResolver, Compilation Compilation) source)
-        {
-            using (source.AssemblyResolver)
+            if (source.Candidates.Length > 0)
             {
-                if (source.Candidates.Length > 0)
-                {
-                    source.AssemblyResolver.Initialize();
+                source.AssemblyResolver.Initialize();
 
-                    var outputContext = new GeneratorContext(
-                        source.Compilation,
-                        new ExecutionContext(context));
-                    new CSharpSourceGenerator().Execute(outputContext, source.Candidates);
-                }
+                var outputContext = new GeneratorContext(
+                    source.Compilation,
+                    new ExecutionContext(context));
+                new CSharpSourceGenerator().Execute(outputContext, source.Candidates);
             }
         }
+    }
 
-        private sealed class ExecutionContext : IExecutionContext
+    private sealed class ExecutionContext : IExecutionContext
+    {
+        private readonly SourceProductionContext _context;
+
+        public ExecutionContext(SourceProductionContext context)
         {
-            private readonly SourceProductionContext _context;
-
-            public ExecutionContext(SourceProductionContext context)
-            {
-                _context = context;
-            }
-
-            public CancellationToken CancellationToken => _context.CancellationToken;
-
-            public void ReportDiagnostic(Diagnostic diagnostic) => _context.ReportDiagnostic(diagnostic);
-
-            public void AddSource(string hintName, SourceText sourceText) => _context.AddSource(hintName, sourceText);
+            _context = context;
         }
+
+        public CancellationToken CancellationToken => _context.CancellationToken;
+
+        public void ReportDiagnostic(Diagnostic diagnostic) => _context.ReportDiagnostic(diagnostic);
+
+        public void AddSource(string hintName, SourceText sourceText) => _context.AddSource(hintName, sourceText);
     }
 }

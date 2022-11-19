@@ -18,30 +18,29 @@ using System;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Configuration
+namespace ServiceModel.Grpc.Configuration;
+
+[TestFixture]
+public class MarshallerFactoryExtensionsTest
 {
-    [TestFixture]
-    public class MarshallerFactoryExtensionsTest
+    private readonly IMarshallerFactory _factory = DataContractMarshallerFactory.Default;
+
+    [Test]
+    public void SerializeString()
     {
-        private readonly IMarshallerFactory _factory = DataContractMarshallerFactory.Default;
+        var content = _factory.SerializeHeader("abc");
 
-        [Test]
-        public void SerializeString()
-        {
-            var content = _factory.SerializeHeader("abc");
+        _factory.DeserializeHeader(typeof(string), content).ShouldBe("abc");
+    }
 
-            _factory.DeserializeHeader(typeof(string), content).ShouldBe("abc");
-        }
+    [Test]
+    public void SerializeBytes()
+    {
+        var expected = Guid.NewGuid().ToByteArray();
 
-        [Test]
-        public void SerializeBytes()
-        {
-            var expected = Guid.NewGuid().ToByteArray();
+        var content = _factory.SerializeHeader(expected);
+        content.ShouldBe(expected);
 
-            var content = _factory.SerializeHeader(expected);
-            content.ShouldBe(expected);
-
-            _factory.DeserializeHeader(typeof(byte[]), content).ShouldBe(expected);
-        }
+        _factory.DeserializeHeader(typeof(byte[]), content).ShouldBe(expected);
     }
 }

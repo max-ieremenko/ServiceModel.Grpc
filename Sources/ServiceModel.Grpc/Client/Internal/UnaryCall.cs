@@ -26,113 +26,112 @@ using ServiceModel.Grpc.Channel;
 #pragma warning disable SA1615 // Element return value should be documented
 #pragma warning disable SA1618 // Generic type parameters should be documented
 
-namespace ServiceModel.Grpc.Client.Internal
+namespace ServiceModel.Grpc.Client.Internal;
+
+/// <summary>
+/// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+/// This API may change or be removed in future releases.
+/// </summary>
+public readonly ref struct UnaryCall<TRequest, TResponse>
+    where TRequest : class
+    where TResponse : class
 {
-    /// <summary>
-    /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
-    /// This API may change or be removed in future releases.
-    /// </summary>
-    public readonly ref struct UnaryCall<TRequest, TResponse>
-        where TRequest : class
-        where TResponse : class
+    private readonly Method<TRequest, TResponse> _method;
+    private readonly CallInvoker _callInvoker;
+
+    private readonly CallOptions _callOptions;
+    private readonly CallContext? _callContext;
+
+    public UnaryCall(
+        Method<TRequest, TResponse> method,
+        CallInvoker callInvoker,
+        in CallOptionsBuilder callOptionsBuilder)
     {
-        private readonly Method<TRequest, TResponse> _method;
-        private readonly CallInvoker _callInvoker;
+        _method = method;
+        _callInvoker = callInvoker;
 
-        private readonly CallOptions _callOptions;
-        private readonly CallContext? _callContext;
+        _callContext = callOptionsBuilder.CallContext;
+        _callOptions = callOptionsBuilder.Build();
+    }
 
-        public UnaryCall(
-            Method<TRequest, TResponse> method,
-            CallInvoker callInvoker,
-            in CallOptionsBuilder callOptionsBuilder)
+    public void Invoke(TRequest request)
+    {
+        _callInvoker.BlockingUnaryCall(_method, null, _callOptions, request);
+    }
+
+    public TResult Invoke<TResult>(TRequest request)
+    {
+        object result = _callInvoker.BlockingUnaryCall(_method, null, _callOptions, request);
+
+        return ((Message<TResult>)result).Value1;
+    }
+
+    public Task InvokeAsync(TRequest request)
+    {
+        object call = _callInvoker.AsyncUnaryCall(_method, null, _callOptions, request);
+        var typedCall = (AsyncUnaryCall<Message>)call;
+
+        return CallAsync(typedCall, _callContext, _callOptions.CancellationToken);
+    }
+
+    public Task<TResult> InvokeAsync<TResult>(TRequest request)
+    {
+        object call = _callInvoker.AsyncUnaryCall(_method, null, _callOptions, request);
+        var typedCall = (AsyncUnaryCall<Message<TResult>>)call;
+
+        return CallAsync(typedCall, _callContext, _callOptions.CancellationToken);
+    }
+
+    internal static async Task CallAsync(AsyncUnaryCall<Message> call, CallContext? context, CancellationToken token)
+    {
+        using (call)
         {
-            _method = method;
-            _callInvoker = callInvoker;
-
-            _callContext = callOptionsBuilder.CallContext;
-            _callOptions = callOptionsBuilder.Build();
-        }
-
-        public void Invoke(TRequest request)
-        {
-            _callInvoker.BlockingUnaryCall(_method, null, _callOptions, request);
-        }
-
-        public TResult Invoke<TResult>(TRequest request)
-        {
-            object result = _callInvoker.BlockingUnaryCall(_method, null, _callOptions, request);
-
-            return ((Message<TResult>)result).Value1;
-        }
-
-        public Task InvokeAsync(TRequest request)
-        {
-            object call = _callInvoker.AsyncUnaryCall(_method, null, _callOptions, request);
-            var typedCall = (AsyncUnaryCall<Message>)call;
-
-            return CallAsync(typedCall, _callContext, _callOptions.CancellationToken);
-        }
-
-        public Task<TResult> InvokeAsync<TResult>(TRequest request)
-        {
-            object call = _callInvoker.AsyncUnaryCall(_method, null, _callOptions, request);
-            var typedCall = (AsyncUnaryCall<Message<TResult>>)call;
-
-            return CallAsync(typedCall, _callContext, _callOptions.CancellationToken);
-        }
-
-        internal static async Task CallAsync(AsyncUnaryCall<Message> call, CallContext? context, CancellationToken token)
-        {
-            using (call)
+            if (context != null && !token.IsCancellationRequested)
             {
-                if (context != null && !token.IsCancellationRequested)
-                {
-                    var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
-                    context.ServerResponse = new ServerResponse(
-                        headers,
-                        call.GetStatus,
-                        call.GetTrailers);
-                }
+                var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
+                context.ServerResponse = new ServerResponse(
+                    headers,
+                    call.GetStatus,
+                    call.GetTrailers);
+            }
 
-                await call.ResponseAsync.ConfigureAwait(false);
+            await call.ResponseAsync.ConfigureAwait(false);
 
-                if (context != null && !token.IsCancellationRequested)
-                {
-                    context.ServerResponse = new ServerResponse(
-                        context.ResponseHeaders!,
-                        call.GetStatus(),
-                        call.GetTrailers());
-                }
+            if (context != null && !token.IsCancellationRequested)
+            {
+                context.ServerResponse = new ServerResponse(
+                    context.ResponseHeaders!,
+                    call.GetStatus(),
+                    call.GetTrailers());
+            }
+        }
+    }
+
+    internal static async Task<T> CallAsync<T>(AsyncUnaryCall<Message<T>> call, CallContext? context, CancellationToken token)
+    {
+        Message<T> result;
+        using (call)
+        {
+            if (context != null && !token.IsCancellationRequested)
+            {
+                var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
+                context.ServerResponse = new ServerResponse(
+                    headers,
+                    call.GetStatus,
+                    call.GetTrailers);
+            }
+
+            result = await call.ResponseAsync.ConfigureAwait(false);
+
+            if (context != null && !token.IsCancellationRequested)
+            {
+                context.ServerResponse = new ServerResponse(
+                    context.ResponseHeaders!,
+                    call.GetStatus(),
+                    call.GetTrailers());
             }
         }
 
-        internal static async Task<T> CallAsync<T>(AsyncUnaryCall<Message<T>> call, CallContext? context, CancellationToken token)
-        {
-            Message<T> result;
-            using (call)
-            {
-                if (context != null && !token.IsCancellationRequested)
-                {
-                    var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
-                    context.ServerResponse = new ServerResponse(
-                        headers,
-                        call.GetStatus,
-                        call.GetTrailers);
-                }
-
-                result = await call.ResponseAsync.ConfigureAwait(false);
-
-                if (context != null && !token.IsCancellationRequested)
-                {
-                    context.ServerResponse = new ServerResponse(
-                        context.ResponseHeaders!,
-                        call.GetStatus(),
-                        call.GetTrailers());
-                }
-            }
-
-            return result.Value1;
-        }
+        return result.Value1;
     }
 }

@@ -22,234 +22,233 @@ using Grpc.Core;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Internal
+namespace ServiceModel.Grpc.Internal;
+
+[TestFixture]
+public partial class MessageAssemblerTest
 {
-    [TestFixture]
-    public partial class MessageAssemblerTest
+    [Test]
+    [TestCaseSource(nameof(GetResponseTypeCases))]
+    public void ResponseType(
+        MethodInfo method,
+        Type responseType,
+        Type? headerResponseType,
+        int[]? headerIndexes,
+        int? streamIndex)
     {
-        [Test]
-        [TestCaseSource(nameof(GetResponseTypeCases))]
-        public void ResponseType(
-            MethodInfo method,
-            Type responseType,
-            Type? headerResponseType,
-            int[]? headerIndexes,
-            int? streamIndex)
+        var actual = new MessageAssembler(method);
+
+        actual.ResponseType.ShouldBe(responseType);
+        actual.HeaderResponseType.ShouldBe(headerResponseType);
+
+        if (headerResponseType == null)
         {
-            var actual = new MessageAssembler(method);
+            actual.HeaderResponseTypeInput.ShouldBeEmpty();
+            actual.ResponseTypeIndex.ShouldBe(0);
+        }
+        else
+        {
+            actual.HeaderResponseTypeInput.ShouldBe(headerIndexes);
+            actual.ResponseTypeIndex.ShouldBe(streamIndex!.Value);
+        }
+    }
 
-            actual.ResponseType.ShouldBe(responseType);
-            actual.HeaderResponseType.ShouldBe(headerResponseType);
+    [Test]
+    [TestCaseSource(nameof(GetOperationTypeCases))]
+    public void OperationType(MethodInfo method, MethodType expected)
+    {
+        new MessageAssembler(method).OperationType.ShouldBe(expected);
+    }
 
-            if (headerResponseType == null)
+    [Test]
+    [TestCaseSource(nameof(GetNotSupportedResponseTypeCases))]
+    public void NotSupportedResponseType(MethodInfo method)
+    {
+        Assert.Throws<NotSupportedException>(() => new MessageAssembler(method));
+    }
+
+    [Test]
+    [TestCaseSource(nameof(GetRequestTypeCases))]
+    public void RequestType(
+        MethodInfo method,
+        Type requestType,
+        int[] requestIndexes,
+        Type? headerRequestType,
+        int[] headerIndexes)
+    {
+        var sut = new MessageAssembler(method);
+
+        sut.RequestType.ShouldBe(requestType);
+        sut.RequestTypeInput.ShouldBe(requestIndexes);
+        sut.HeaderRequestType.ShouldBe(headerRequestType);
+
+        if (headerRequestType == null)
+        {
+            sut.HeaderRequestTypeInput.ShouldBeEmpty();
+        }
+        else
+        {
+            sut.HeaderRequestTypeInput.ShouldBe(headerIndexes);
+        }
+    }
+
+    [Test]
+    [TestCaseSource(nameof(GetContextInputCases))]
+    public void ContextInput(MethodInfo method, int[] expected)
+    {
+        var actual = new MessageAssembler(method).ContextInput;
+
+        actual.ShouldBe(expected);
+    }
+
+    [Test]
+    [TestCaseSource(nameof(GetNotSupportedParametersCases))]
+    public void NotSupportedParameters(MethodInfo method)
+    {
+        Assert.Throws<NotSupportedException>(() => new MessageAssembler(method));
+    }
+
+    [Test]
+    [TestCaseSource(nameof(GetGenericNotSupportedCases))]
+    public void GenericNotSupported(MethodInfo method)
+    {
+        Assert.Throws<NotSupportedException>(() => new MessageAssembler(method));
+    }
+
+    [Test]
+    [TestCaseSource(nameof(GetIsCompatibleToCases))]
+    public void IsCompatibleWith(MethodInfo method, MethodInfo other, bool expected)
+    {
+        var sut = new MessageAssembler(method);
+        var otherSut = new MessageAssembler(other);
+
+        sut.IsCompatibleWith(otherSut).ShouldBe(expected);
+        otherSut.IsCompatibleWith(sut).ShouldBe(expected);
+    }
+
+    private static IEnumerable<TestCaseData> GetResponseTypeCases()
+    {
+        foreach (var method in ReflectionTools.GetMethods(typeof(ResponseTypeCases)))
+        {
+            var response = method.GetCustomAttribute<ResponseTypeAttribute>();
+            var responseHeader = method.GetCustomAttribute<HeaderResponseTypeAttribute>();
+
+            yield return new TestCaseData(
+                method,
+                response!.Type,
+                responseHeader?.Type,
+                responseHeader?.Indexes,
+                responseHeader?.StreamIndex)
             {
-                actual.HeaderResponseTypeInput.ShouldBeEmpty();
-                actual.ResponseTypeIndex.ShouldBe(0);
-            }
-            else
+                TestName = method.Name
+            };
+        }
+    }
+
+    private static IEnumerable<TestCaseData> GetNotSupportedResponseTypeCases()
+    {
+        foreach (var method in ReflectionTools.GetMethods(typeof(NotSupportedResponseTypeCases)))
+        {
+            yield return new TestCaseData(method) { TestName = method.Name };
+        }
+    }
+
+    private static IEnumerable<TestCaseData> GetOperationTypeCases()
+    {
+        foreach (var method in ReflectionTools.GetMethods(typeof(OperationTypeCases)))
+        {
+            var description = method.GetCustomAttribute<OperationTypeAttribute>();
+
+            yield return new TestCaseData(
+                method,
+                description!.Type)
             {
-                actual.HeaderResponseTypeInput.ShouldBe(headerIndexes);
-                actual.ResponseTypeIndex.ShouldBe(streamIndex!.Value);
-            }
+                TestName = method.Name
+            };
         }
+    }
 
-        [Test]
-        [TestCaseSource(nameof(GetOperationTypeCases))]
-        public void OperationType(MethodInfo method, MethodType expected)
+    private static IEnumerable<TestCaseData> GetRequestTypeCases()
+    {
+        foreach (var method in ReflectionTools.GetMethods(typeof(RequestTypeCases)))
         {
-            new MessageAssembler(method).OperationType.ShouldBe(expected);
-        }
+            var request = method.GetCustomAttribute<RequestTypeAttribute>();
+            var headerRequest = method.GetCustomAttribute<HeaderRequestTypeAttribute>();
 
-        [Test]
-        [TestCaseSource(nameof(GetNotSupportedResponseTypeCases))]
-        public void NotSupportedResponseType(MethodInfo method)
-        {
-            Assert.Throws<NotSupportedException>(() => new MessageAssembler(method));
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetRequestTypeCases))]
-        public void RequestType(
-            MethodInfo method,
-            Type requestType,
-            int[] requestIndexes,
-            Type? headerRequestType,
-            int[] headerIndexes)
-        {
-            var sut = new MessageAssembler(method);
-
-            sut.RequestType.ShouldBe(requestType);
-            sut.RequestTypeInput.ShouldBe(requestIndexes);
-            sut.HeaderRequestType.ShouldBe(headerRequestType);
-
-            if (headerRequestType == null)
+            yield return new TestCaseData(
+                method,
+                request!.Type,
+                request!.Indexes,
+                headerRequest?.Type,
+                headerRequest?.Indexes)
             {
-                sut.HeaderRequestTypeInput.ShouldBeEmpty();
-            }
-            else
+                TestName = method.Name
+            };
+        }
+    }
+
+    private static IEnumerable<TestCaseData> GetNotSupportedParametersCases()
+    {
+        foreach (var method in ReflectionTools.GetMethods(typeof(NotSupportedParametersCases)))
+        {
+            yield return new TestCaseData(method) { TestName = method.Name };
+        }
+    }
+
+    private static IEnumerable<TestCaseData> GetContextInputCases()
+    {
+        foreach (var method in ReflectionTools.GetMethods(typeof(ContextInputCases)))
+        {
+            var description = method.GetCustomAttribute<ContextInputAttribute>();
+
+            yield return new TestCaseData(
+                method,
+                description!.Indexes)
             {
-                sut.HeaderRequestTypeInput.ShouldBe(headerIndexes);
-            }
+                TestName = method.Name
+            };
         }
+    }
 
-        [Test]
-        [TestCaseSource(nameof(GetContextInputCases))]
-        public void ContextInput(MethodInfo method, int[] expected)
+    private static IEnumerable<TestCaseData> GetGenericNotSupportedCases()
+    {
+        foreach (var method in ReflectionTools.GetMethods(typeof(GenericNotSupportedCases)))
         {
-            var actual = new MessageAssembler(method).ContextInput;
-
-            actual.ShouldBe(expected);
+            yield return new TestCaseData(method) { TestName = method.Name };
         }
+    }
 
-        [Test]
-        [TestCaseSource(nameof(GetNotSupportedParametersCases))]
-        public void NotSupportedParameters(MethodInfo method)
+    private static IEnumerable<TestCaseData> GetIsCompatibleToCases()
+    {
+        var methodByName = ReflectionTools
+            .GetMethods(typeof(IsCompatibleToCases))
+            .ToDictionary(i => i.Name, StringComparer.OrdinalIgnoreCase);
+
+        foreach (var method in methodByName.Values)
         {
-            Assert.Throws<NotSupportedException>(() => new MessageAssembler(method));
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetGenericNotSupportedCases))]
-        public void GenericNotSupported(MethodInfo method)
-        {
-            Assert.Throws<NotSupportedException>(() => new MessageAssembler(method));
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetIsCompatibleToCases))]
-        public void IsCompatibleWith(MethodInfo method, MethodInfo other, bool expected)
-        {
-            var sut = new MessageAssembler(method);
-            var otherSut = new MessageAssembler(other);
-
-            sut.IsCompatibleWith(otherSut).ShouldBe(expected);
-            otherSut.IsCompatibleWith(sut).ShouldBe(expected);
-        }
-
-        private static IEnumerable<TestCaseData> GetResponseTypeCases()
-        {
-            foreach (var method in ReflectionTools.GetMethods(typeof(ResponseTypeCases)))
+            yield return new TestCaseData(method, method, true)
             {
-                var response = method.GetCustomAttribute<ResponseTypeAttribute>();
-                var responseHeader = method.GetCustomAttribute<HeaderResponseTypeAttribute>();
+                TestName = string.Format("{0} vs {1}", method.Name, method.Name)
+            };
 
-                yield return new TestCaseData(
-                    method,
-                    response!.Type,
-                    responseHeader?.Type,
-                    responseHeader?.Indexes,
-                    responseHeader?.StreamIndex)
+            foreach (var compatibleTo in method.GetCustomAttributes<CompatibleToAttribute>())
+            {
+                var other = methodByName[compatibleTo.MethodName];
+
+                yield return new TestCaseData(method, other, true)
                 {
-                    TestName = method.Name
+                    TestName = string.Format("{0} vs {1}", method.Name, other.Name)
                 };
             }
-        }
 
-        private static IEnumerable<TestCaseData> GetNotSupportedResponseTypeCases()
-        {
-            foreach (var method in ReflectionTools.GetMethods(typeof(NotSupportedResponseTypeCases)))
+            foreach (var notCompatibleTo in method.GetCustomAttributes<NotCompatibleToAttribute>())
             {
-                yield return new TestCaseData(method) { TestName = method.Name };
-            }
-        }
+                var other = methodByName[notCompatibleTo.MethodName];
 
-        private static IEnumerable<TestCaseData> GetOperationTypeCases()
-        {
-            foreach (var method in ReflectionTools.GetMethods(typeof(OperationTypeCases)))
-            {
-                var description = method.GetCustomAttribute<OperationTypeAttribute>();
-
-                yield return new TestCaseData(
-                    method,
-                    description!.Type)
+                yield return new TestCaseData(method, other, false)
                 {
-                    TestName = method.Name
+                    TestName = string.Format("{0} vs {1}", method.Name, other.Name)
                 };
-            }
-        }
-
-        private static IEnumerable<TestCaseData> GetRequestTypeCases()
-        {
-            foreach (var method in ReflectionTools.GetMethods(typeof(RequestTypeCases)))
-            {
-                var request = method.GetCustomAttribute<RequestTypeAttribute>();
-                var headerRequest = method.GetCustomAttribute<HeaderRequestTypeAttribute>();
-
-                yield return new TestCaseData(
-                    method,
-                    request!.Type,
-                    request!.Indexes,
-                    headerRequest?.Type,
-                    headerRequest?.Indexes)
-                {
-                    TestName = method.Name
-                };
-            }
-        }
-
-        private static IEnumerable<TestCaseData> GetNotSupportedParametersCases()
-        {
-            foreach (var method in ReflectionTools.GetMethods(typeof(NotSupportedParametersCases)))
-            {
-                yield return new TestCaseData(method) { TestName = method.Name };
-            }
-        }
-
-        private static IEnumerable<TestCaseData> GetContextInputCases()
-        {
-            foreach (var method in ReflectionTools.GetMethods(typeof(ContextInputCases)))
-            {
-                var description = method.GetCustomAttribute<ContextInputAttribute>();
-
-                yield return new TestCaseData(
-                    method,
-                    description!.Indexes)
-                {
-                    TestName = method.Name
-                };
-            }
-        }
-
-        private static IEnumerable<TestCaseData> GetGenericNotSupportedCases()
-        {
-            foreach (var method in ReflectionTools.GetMethods(typeof(GenericNotSupportedCases)))
-            {
-                yield return new TestCaseData(method) { TestName = method.Name };
-            }
-        }
-
-        private static IEnumerable<TestCaseData> GetIsCompatibleToCases()
-        {
-            var methodByName = ReflectionTools
-                .GetMethods(typeof(IsCompatibleToCases))
-                .ToDictionary(i => i.Name, StringComparer.OrdinalIgnoreCase);
-
-            foreach (var method in methodByName.Values)
-            {
-                yield return new TestCaseData(method, method, true)
-                {
-                    TestName = string.Format("{0} vs {1}", method.Name, method.Name)
-                };
-
-                foreach (var compatibleTo in method.GetCustomAttributes<CompatibleToAttribute>())
-                {
-                    var other = methodByName[compatibleTo.MethodName];
-
-                    yield return new TestCaseData(method, other, true)
-                    {
-                        TestName = string.Format("{0} vs {1}", method.Name, other.Name)
-                    };
-                }
-
-                foreach (var notCompatibleTo in method.GetCustomAttributes<NotCompatibleToAttribute>())
-                {
-                    var other = methodByName[notCompatibleTo.MethodName];
-
-                    yield return new TestCaseData(method, other, false)
-                    {
-                        TestName = string.Format("{0} vs {1}", method.Name, other.Name)
-                    };
-                }
             }
         }
     }

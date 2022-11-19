@@ -19,29 +19,28 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
+
+internal abstract class CodeGeneratorBase
 {
-    internal abstract class CodeGeneratorBase
+    protected CodeStringBuilder Output { get; private set; } = null!;
+
+    public void GenerateMemberDeclaration(CodeStringBuilder output)
     {
-        protected CodeStringBuilder Output { get; private set; } = null!;
+        Output = output;
+        Generate();
+    }
 
-        public void GenerateMemberDeclaration(CodeStringBuilder output)
-        {
-            Output = output;
-            Generate();
-        }
+    public abstract string GetGeneratedMemberName();
 
-        public abstract string GetGeneratedMemberName();
+    protected abstract void Generate();
 
-        protected abstract void Generate();
-
-        protected void WriteMetadata()
-        {
-            Output
-                .AppendAttribute(typeof(GeneratedCodeAttribute), "\"ServiceModel.Grpc\"", "\"" + GetType().Assembly.GetName().Version.ToString(3) + "\"")
-                .AppendAttribute(typeof(CompilerGeneratedAttribute))
-                .AppendAttribute(typeof(ExcludeFromCodeCoverageAttribute))
-                .AppendAttribute(typeof(ObfuscationAttribute), "Exclude = true");
-        }
+    protected void WriteMetadata()
+    {
+        Output
+            .AppendAttribute(typeof(GeneratedCodeAttribute), "\"ServiceModel.Grpc\"", "\"" + GetType().Assembly.GetName().Version.ToString(3) + "\"")
+            .AppendAttribute(typeof(CompilerGeneratedAttribute))
+            .AppendAttribute(typeof(ExcludeFromCodeCoverageAttribute))
+            .AppendAttribute(typeof(ObfuscationAttribute), "Exclude = true");
     }
 }

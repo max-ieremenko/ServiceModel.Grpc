@@ -18,45 +18,44 @@ using System;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Filters
+namespace ServiceModel.Grpc.Filters;
+
+[TestFixture]
+public class FilterCollectionTest
 {
-    [TestFixture]
-    public class FilterCollectionTest
+    private FilterCollection<IDisposable> _sut = null!;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private FilterCollection<IDisposable> _sut = null!;
+        _sut = new FilterCollection<IDisposable>();
+    }
 
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            _sut = new FilterCollection<IDisposable>();
-        }
+    [Test]
+    public void AddFactory()
+    {
+        Func<IServiceProvider, SomeFilter> factory = _ => throw new NotImplementedException();
 
-        [Test]
-        public void AddFactory()
-        {
-            Func<IServiceProvider, SomeFilter> factory = _ => throw new NotImplementedException();
+        _sut.Add(10, factory);
 
-            _sut.Add(10, factory);
+        _sut.Count.ShouldBe(1);
+        _sut[0].Factory.ShouldBe(factory);
+        _sut[0].Order.ShouldBe(10);
+    }
 
-            _sut.Count.ShouldBe(1);
-            _sut[0].Factory.ShouldBe(factory);
-            _sut[0].Order.ShouldBe(10);
-        }
+    [Test]
+    public void AddInstance()
+    {
+        var filter = new SomeFilter();
+        _sut.Add(10, filter);
 
-        [Test]
-        public void AddInstance()
-        {
-            var filter = new SomeFilter();
-            _sut.Add(10, filter);
+        _sut.Count.ShouldBe(1);
+        _sut[0].Factory(null!).ShouldBe(filter);
+        _sut[0].Order.ShouldBe(10);
+    }
 
-            _sut.Count.ShouldBe(1);
-            _sut[0].Factory(null!).ShouldBe(filter);
-            _sut[0].Order.ShouldBe(10);
-        }
-
-        private sealed class SomeFilter : IDisposable
-        {
-            public void Dispose() => throw new NotImplementedException();
-        }
+    private sealed class SomeFilter : IDisposable
+    {
+        public void Dispose() => throw new NotImplementedException();
     }
 }

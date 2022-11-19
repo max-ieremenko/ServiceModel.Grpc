@@ -17,14 +17,13 @@
 using Grpc.Core;
 using ProtoBuf.Meta;
 
-namespace ServiceModel.Grpc.Configuration
+namespace ServiceModel.Grpc.Configuration;
+
+internal sealed class ProtobufMarshaller<T>
 {
-    internal sealed class ProtobufMarshaller<T>
-    {
-        public static readonly Marshaller<T> Default = new Marshaller<T>(Serialize, Deserialize);
+    public static readonly Marshaller<T> Default = new Marshaller<T>(Serialize, Deserialize);
 
-        private static void Serialize(T value, SerializationContext context) => ProtobufMarshallerFactory.Serialize(value, context, RuntimeTypeModel.Default);
+    private static void Serialize(T value, SerializationContext context) => ProtobufMarshallerFactory.Serialize(value, context, RuntimeTypeModel.Default);
 
-        private static T Deserialize(DeserializationContext context) => ProtobufMarshallerFactory.Deserialize<T>(context, RuntimeTypeModel.Default);
-    }
+    private static T Deserialize(DeserializationContext context) => ProtobufMarshallerFactory.Deserialize<T>(context, RuntimeTypeModel.Default);
 }

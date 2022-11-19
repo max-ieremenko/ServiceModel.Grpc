@@ -18,21 +18,20 @@ using System;
 using System.Buffers;
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Benchmarks.MarshallerTest
+namespace ServiceModel.Grpc.Benchmarks.MarshallerTest;
+
+internal sealed class StubDeserializationContext : DeserializationContext
 {
-    internal sealed class StubDeserializationContext : DeserializationContext
+    private readonly byte[] _payload;
+
+    public StubDeserializationContext(byte[] payload)
     {
-        private readonly byte[] _payload;
-
-        public StubDeserializationContext(byte[] payload)
-        {
-            _payload = payload;
-        }
-
-        public override int PayloadLength => _payload.Length;
-
-        public override byte[] PayloadAsNewBuffer() => throw new NotSupportedException();
-
-        public override ReadOnlySequence<byte> PayloadAsReadOnlySequence() => new ReadOnlySequence<byte>(_payload);
+        _payload = payload;
     }
+
+    public override int PayloadLength => _payload.Length;
+
+    public override byte[] PayloadAsNewBuffer() => throw new NotSupportedException();
+
+    public override ReadOnlySequence<byte> PayloadAsReadOnlySequence() => new ReadOnlySequence<byte>(_payload);
 }

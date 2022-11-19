@@ -25,88 +25,87 @@ using ServiceModel.Grpc.Hosting.Internal;
 using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.Internal.Emit;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal.Binding
+namespace ServiceModel.Grpc.AspNetCore.Internal.Binding;
+
+internal sealed class ServiceModelServiceMethodProvider<TService> : IServiceMethodProvider<TService>
+    where TService : class
 {
-    internal sealed class ServiceModelServiceMethodProvider<TService> : IServiceMethodProvider<TService>
-        where TService : class
+    private readonly ServiceModelGrpcServiceOptions _rootConfiguration;
+    private readonly ServiceModelGrpcServiceOptions<TService> _serviceConfiguration;
+    private readonly ILogger<ServiceModelServiceMethodProvider<TService>> _logger;
+    private readonly IServiceProvider _serviceProvider;
+
+    public ServiceModelServiceMethodProvider(
+        IOptions<ServiceModelGrpcServiceOptions> rootConfiguration,
+        IOptions<ServiceModelGrpcServiceOptions<TService>> serviceConfiguration,
+        ILogger<ServiceModelServiceMethodProvider<TService>> logger,
+        IServiceProvider serviceProvider)
     {
-        private readonly ServiceModelGrpcServiceOptions _rootConfiguration;
-        private readonly ServiceModelGrpcServiceOptions<TService> _serviceConfiguration;
-        private readonly ILogger<ServiceModelServiceMethodProvider<TService>> _logger;
-        private readonly IServiceProvider _serviceProvider;
+        rootConfiguration.AssertNotNull(nameof(rootConfiguration));
+        serviceConfiguration.AssertNotNull(nameof(serviceConfiguration));
+        logger.AssertNotNull(nameof(logger));
+        serviceProvider.AssertNotNull(nameof(serviceProvider));
 
-        public ServiceModelServiceMethodProvider(
-            IOptions<ServiceModelGrpcServiceOptions> rootConfiguration,
-            IOptions<ServiceModelGrpcServiceOptions<TService>> serviceConfiguration,
-            ILogger<ServiceModelServiceMethodProvider<TService>> logger,
-            IServiceProvider serviceProvider)
+        _rootConfiguration = rootConfiguration.Value;
+        _serviceConfiguration = serviceConfiguration.Value;
+        _logger = logger;
+        _serviceProvider = serviceProvider;
+    }
+
+    public void OnServiceMethodDiscovery(ServiceMethodProviderContext<TService> context)
+    {
+        var serviceType = typeof(TService);
+        if (ServiceContract.IsNativeGrpcService(serviceType))
         {
-            rootConfiguration.AssertNotNull(nameof(rootConfiguration));
-            serviceConfiguration.AssertNotNull(nameof(serviceConfiguration));
-            logger.AssertNotNull(nameof(logger));
-            serviceProvider.AssertNotNull(nameof(serviceProvider));
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Ignore service {0} binding: native grpc service.", serviceType.FullName);
+            }
 
-            _rootConfiguration = rootConfiguration.Value;
-            _serviceConfiguration = serviceConfiguration.Value;
-            _logger = logger;
-            _serviceProvider = serviceProvider;
+            return;
         }
 
-        public void OnServiceMethodDiscovery(ServiceMethodProviderContext<TService> context)
+        var filterContext = new ServiceMethodFilterRegistration(_serviceProvider);
+        filterContext.Add(_rootConfiguration.GetFilters());
+        filterContext.Add(_serviceConfiguration.GetFilters());
+
+        var marshallerFactory = (_serviceConfiguration.MarshallerFactory ?? _rootConfiguration.DefaultMarshallerFactory).ThisOrDefault();
+        var serviceBinder = new AspNetCoreServiceMethodBinder<TService>(
+            context,
+            marshallerFactory,
+            filterContext,
+            _rootConfiguration.IsApiDescriptionRequested);
+
+        CreateEndpointBinder().Bind(serviceBinder);
+    }
+
+    internal Type GetServiceInstanceType()
+    {
+        var serviceInstanceType = typeof(TService);
+        if (ServiceContract.IsServiceInstanceType(serviceInstanceType))
         {
-            var serviceType = typeof(TService);
-            if (ServiceContract.IsNativeGrpcService(serviceType))
-            {
-                if (_logger.IsEnabled(LogLevel.Debug))
-                {
-                    _logger.LogDebug("Ignore service {0} binding: native grpc service.", serviceType.FullName);
-                }
-
-                return;
-            }
-
-            var filterContext = new ServiceMethodFilterRegistration(_serviceProvider);
-            filterContext.Add(_rootConfiguration.GetFilters());
-            filterContext.Add(_serviceConfiguration.GetFilters());
-
-            var marshallerFactory = (_serviceConfiguration.MarshallerFactory ?? _rootConfiguration.DefaultMarshallerFactory).ThisOrDefault();
-            var serviceBinder = new AspNetCoreServiceMethodBinder<TService>(
-                context,
-                marshallerFactory,
-                filterContext,
-                _rootConfiguration.IsApiDescriptionRequested);
-
-            CreateEndpointBinder().Bind(serviceBinder);
+            return serviceInstanceType;
         }
 
-        internal Type GetServiceInstanceType()
+        try
         {
-            var serviceInstanceType = typeof(TService);
-            if (ServiceContract.IsServiceInstanceType(serviceInstanceType))
-            {
-                return serviceInstanceType;
-            }
+            return _serviceProvider.GetRequiredService<TService>().GetType();
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException(
+                "A gRPC service binding is registered via {0}. Failed to resolve the implementation: {1}.".FormatWith(serviceInstanceType.GetShortAssemblyQualifiedName(), ex.Message),
+                ex);
+        }
+    }
 
-            try
-            {
-                return _serviceProvider.GetRequiredService<TService>().GetType();
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException(
-                    "A gRPC service binding is registered via {0}. Failed to resolve the implementation: {1}.".FormatWith(serviceInstanceType.GetShortAssemblyQualifiedName(), ex.Message),
-                    ex);
-            }
+    private IServiceEndpointBinder<TService> CreateEndpointBinder()
+    {
+        if (_serviceConfiguration.EndpointBinderType == null)
+        {
+            return new EmitGenerator { Logger = new LogAdapter(_logger) }.GenerateServiceEndpointBinder<TService>(GetServiceInstanceType());
         }
 
-        private IServiceEndpointBinder<TService> CreateEndpointBinder()
-        {
-            if (_serviceConfiguration.EndpointBinderType == null)
-            {
-                return new EmitGenerator { Logger = new LogAdapter(_logger) }.GenerateServiceEndpointBinder<TService>(GetServiceInstanceType());
-            }
-
-            return (IServiceEndpointBinder<TService>)Activator.CreateInstance(_serviceConfiguration.EndpointBinderType)!;
-        }
+        return (IServiceEndpointBinder<TService>)Activator.CreateInstance(_serviceConfiguration.EndpointBinderType)!;
     }
 }

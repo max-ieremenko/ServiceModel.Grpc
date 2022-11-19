@@ -21,39 +21,38 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.DesignTime.Generator
+namespace ServiceModel.Grpc.DesignTime.Generator;
+
+[TestFixture]
+public class SourceGeneratorSyntaxReceiverTest
 {
-    [TestFixture]
-    public class SourceGeneratorSyntaxReceiverTest
+    [Test]
+    [TestCaseSource(nameof(GetIsCandidateCases))]
+    public void IsCandidate(SyntaxNode syntaxNode, bool expected)
     {
-        [Test]
-        [TestCaseSource(nameof(GetIsCandidateCases))]
-        public void IsCandidate(SyntaxNode syntaxNode, bool expected)
-        {
-            SourceGeneratorSyntaxReceiver.IsCandidate(syntaxNode).ShouldBe(expected);
-        }
+        SourceGeneratorSyntaxReceiver.IsCandidate(syntaxNode).ShouldBe(expected);
+    }
 
-        private static IEnumerable<TestCaseData> GetIsCandidateCases()
-        {
-            var unit = (CompilationUnitSyntax)SyntaxFactory
-                .ParseSyntaxTree(@"[ExportGrpcService] class A {}")
-                .GetRoot();
-            yield return new TestCaseData(unit.Members[0], true) { TestName = "export" };
+    private static IEnumerable<TestCaseData> GetIsCandidateCases()
+    {
+        var unit = (CompilationUnitSyntax)SyntaxFactory
+            .ParseSyntaxTree(@"[ExportGrpcService] class A {}")
+            .GetRoot();
+        yield return new TestCaseData(unit.Members[0], true) { TestName = "export" };
 
-            unit = (CompilationUnitSyntax)SyntaxFactory
-                .ParseSyntaxTree(@"[ ImportGrpcService ] class A {}")
-                .GetRoot();
-            yield return new TestCaseData(unit.Members[0], true) { TestName = "import" };
+        unit = (CompilationUnitSyntax)SyntaxFactory
+            .ParseSyntaxTree(@"[ ImportGrpcService ] class A {}")
+            .GetRoot();
+        yield return new TestCaseData(unit.Members[0], true) { TestName = "import" };
 
-            unit = (CompilationUnitSyntax)SyntaxFactory
-                .ParseSyntaxTree(@"[ImportGrpcService, ExportGrpcService] class A {}")
-                .GetRoot();
-            yield return new TestCaseData(unit.Members[0], true) { TestName = "combined" };
+        unit = (CompilationUnitSyntax)SyntaxFactory
+            .ParseSyntaxTree(@"[ImportGrpcService, ExportGrpcService] class A {}")
+            .GetRoot();
+        yield return new TestCaseData(unit.Members[0], true) { TestName = "combined" };
 
-            unit = (CompilationUnitSyntax)SyntaxFactory
-                .ParseSyntaxTree(@"[ImportGrpcService] struct A {}")
-                .GetRoot();
-            yield return new TestCaseData(unit.Members[0], false) { TestName = "ignore struct" };
-        }
+        unit = (CompilationUnitSyntax)SyntaxFactory
+            .ParseSyntaxTree(@"[ImportGrpcService] struct A {}")
+            .GetRoot();
+        yield return new TestCaseData(unit.Members[0], false) { TestName = "ignore struct" };
     }
 }

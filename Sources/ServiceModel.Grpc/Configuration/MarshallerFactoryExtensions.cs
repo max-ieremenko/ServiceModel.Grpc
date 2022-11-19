@@ -19,62 +19,61 @@ using System.Runtime.CompilerServices;
 using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.Internal.IO;
 
-namespace ServiceModel.Grpc.Configuration
+namespace ServiceModel.Grpc.Configuration;
+
+internal static class MarshallerFactoryExtensions
 {
-    internal static class MarshallerFactoryExtensions
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IMarshallerFactory ThisOrDefault(this IMarshallerFactory? factory)
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IMarshallerFactory ThisOrDefault(this IMarshallerFactory? factory)
+        return factory ?? DataContractMarshallerFactory.Default;
+    }
+
+    public static byte[] SerializeHeader(this IMarshallerFactory factory, object value)
+    {
+        factory.AssertNotNull(nameof(factory));
+        value.AssertNotNull(nameof(value));
+
+        if (value is byte[] buffer)
         {
-            return factory ?? DataContractMarshallerFactory.Default;
+            return buffer;
         }
 
-        public static byte[] SerializeHeader(this IMarshallerFactory factory, object value)
+        return typeof(MarshallerFactoryExtensions)
+            .StaticMethod(nameof(SerializeInternal))
+            .MakeGenericMethod(value.GetType())
+            .CreateDelegate<Func<IMarshallerFactory, object, byte[]>>()
+            .Invoke(factory, value);
+    }
+
+    public static object DeserializeHeader(this IMarshallerFactory factory, Type valueType, byte[] valueContent)
+    {
+        valueType.AssertNotNull(nameof(valueType));
+
+        if (valueType == typeof(byte[]))
         {
-            factory.AssertNotNull(nameof(factory));
-            value.AssertNotNull(nameof(value));
-
-            if (value is byte[] buffer)
-            {
-                return buffer;
-            }
-
-            return typeof(MarshallerFactoryExtensions)
-                .StaticMethod(nameof(SerializeInternal))
-                .MakeGenericMethod(value.GetType())
-                .CreateDelegate<Func<IMarshallerFactory, object, byte[]>>()
-                .Invoke(factory, value);
+            return valueContent;
         }
 
-        public static object DeserializeHeader(this IMarshallerFactory factory, Type valueType, byte[] valueContent)
+        return typeof(MarshallerFactoryExtensions)
+            .StaticMethod(nameof(DeserializeInternal))
+            .MakeGenericMethod(valueType)
+            .CreateDelegate<Func<IMarshallerFactory, byte[], object>>()
+            .Invoke(factory, valueContent);
+    }
+
+    private static byte[] SerializeInternal<T>(IMarshallerFactory factory, object value)
+    {
+        using (var context = new DefaultSerializationContext())
         {
-            valueType.AssertNotNull(nameof(valueType));
-
-            if (valueType == typeof(byte[]))
-            {
-                return valueContent;
-            }
-
-            return typeof(MarshallerFactoryExtensions)
-                .StaticMethod(nameof(DeserializeInternal))
-                .MakeGenericMethod(valueType)
-                .CreateDelegate<Func<IMarshallerFactory, byte[], object>>()
-                .Invoke(factory, valueContent);
+            factory.CreateMarshaller<T>().ContextualSerializer((T)value, context);
+            return context.GetContent();
         }
+    }
 
-        private static byte[] SerializeInternal<T>(IMarshallerFactory factory, object value)
-        {
-            using (var context = new DefaultSerializationContext())
-            {
-                factory.CreateMarshaller<T>().ContextualSerializer((T)value, context);
-                return context.GetContent();
-            }
-        }
-
-        private static object DeserializeInternal<T>(IMarshallerFactory factory, byte[] content)
-        {
-            var result = factory.CreateMarshaller<T>().ContextualDeserializer(new DefaultDeserializationContext(content));
-            return result!;
-        }
+    private static object DeserializeInternal<T>(IMarshallerFactory factory, byte[] content)
+    {
+        var result = factory.CreateMarshaller<T>().ContextualDeserializer(new DefaultDeserializationContext(content));
+        return result!;
     }
 }

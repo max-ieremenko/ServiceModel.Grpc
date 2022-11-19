@@ -21,32 +21,31 @@ using ServiceModel.Grpc.Benchmarks.Domain;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
 
-namespace ServiceModel.Grpc.Benchmarks.Api
+namespace ServiceModel.Grpc.Benchmarks.Api;
+
+internal sealed class GoogleProtoMarshallerFactory : IMarshallerFactory
 {
-    internal sealed class GoogleProtoMarshallerFactory : IMarshallerFactory
+    public static readonly IMarshallerFactory Default = new GoogleProtoMarshallerFactory();
+
+    public Marshaller<T> CreateMarshaller<T>()
     {
-        public static readonly IMarshallerFactory Default = new GoogleProtoMarshallerFactory();
+        Action<T, SerializationContext> serializer = Serialize;
+        Func<DeserializationContext, T> deserializer = Deserialize<T>;
+        return new Marshaller<T>(serializer, deserializer);
+    }
 
-        public Marshaller<T> CreateMarshaller<T>()
-        {
-            Action<T, SerializationContext> serializer = Serialize;
-            Func<DeserializationContext, T> deserializer = Deserialize<T>;
-            return new Marshaller<T>(serializer, deserializer);
-        }
+    private static void Serialize<T>(T value, SerializationContext context)
+    {
+        var message = (Message<SomeObjectProto>)((object)value);
+        context.SetPayloadLength(message.Value1.CalculateSize());
+        message.Value1.WriteTo(context.GetBufferWriter());
+        context.Complete();
+    }
 
-        private static void Serialize<T>(T value, SerializationContext context)
-        {
-            var message = (Message<SomeObjectProto>)((object)value);
-            context.SetPayloadLength(message.Value1.CalculateSize());
-            message.Value1.WriteTo(context.GetBufferWriter());
-            context.Complete();
-        }
-
-        private static T Deserialize<T>(DeserializationContext context)
-        {
-            var value = SomeObjectProto.Parser.ParseFrom(context.PayloadAsReadOnlySequence());
-            object result = new Message<SomeObjectProto>(value);
-            return (T)result;
-        }
+    private static T Deserialize<T>(DeserializationContext context)
+    {
+        var value = SomeObjectProto.Parser.ParseFrom(context.PayloadAsReadOnlySequence());
+        object result = new Message<SomeObjectProto>(value);
+        return (T)result;
     }
 }

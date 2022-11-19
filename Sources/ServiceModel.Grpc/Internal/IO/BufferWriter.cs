@@ -17,93 +17,92 @@
 using System;
 using System.Buffers;
 
-namespace ServiceModel.Grpc.Internal.IO
+namespace ServiceModel.Grpc.Internal.IO;
+
+internal sealed class BufferWriter<T> : IBufferWriter<T>, IDisposable
 {
-    internal sealed class BufferWriter<T> : IBufferWriter<T>, IDisposable
+    private readonly int _minimumLength;
+    private T[] _buffer;
+    private int _length;
+
+    public BufferWriter(int minimumLength)
     {
-        private readonly int _minimumLength;
-        private T[] _buffer;
-        private int _length;
-
-        public BufferWriter(int minimumLength)
+        if (minimumLength <= 0)
         {
-            if (minimumLength <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(minimumLength));
-            }
-
-            _minimumLength = minimumLength;
-            _buffer = ArrayPool<T>.Shared.Rent(minimumLength);
+            throw new ArgumentOutOfRangeException(nameof(minimumLength));
         }
 
-        public void Advance(int count)
+        _minimumLength = minimumLength;
+        _buffer = ArrayPool<T>.Shared.Rent(minimumLength);
+    }
+
+    public void Advance(int count)
+    {
+        if (count < 0)
         {
-            if (count < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(count));
-            }
-
-            if (_length + count > _buffer.Length)
-            {
-                throw new ArgumentException();
-            }
-
-            _length += count;
+            throw new ArgumentOutOfRangeException(nameof(count));
         }
 
-        public Memory<T> GetMemory(int sizeHint = 0)
+        if (_length + count > _buffer.Length)
         {
-            if (sizeHint < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(sizeHint));
-            }
-
-            CheckCapacity(sizeHint);
-            return _buffer.AsMemory(_length);
+            throw new ArgumentException();
         }
 
-        public Span<T> GetSpan(int sizeHint = 0)
-        {
-            if (sizeHint < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(sizeHint));
-            }
+        _length += count;
+    }
 
-            CheckCapacity(sizeHint);
-            return _buffer.AsSpan(_length);
+    public Memory<T> GetMemory(int sizeHint = 0)
+    {
+        if (sizeHint < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(sizeHint));
         }
 
-        public T[] ToArray()
+        CheckCapacity(sizeHint);
+        return _buffer.AsMemory(_length);
+    }
+
+    public Span<T> GetSpan(int sizeHint = 0)
+    {
+        if (sizeHint < 0)
         {
-            return _buffer.AsSpan(0, _length).ToArray();
+            throw new ArgumentOutOfRangeException(nameof(sizeHint));
         }
 
-        public void Dispose()
+        CheckCapacity(sizeHint);
+        return _buffer.AsSpan(_length);
+    }
+
+    public T[] ToArray()
+    {
+        return _buffer.AsSpan(0, _length).ToArray();
+    }
+
+    public void Dispose()
+    {
+        ArrayPool<T>.Shared.Return(_buffer, true);
+    }
+
+    private void CheckCapacity(int sizeHint)
+    {
+        var available = _buffer.Length - _length;
+        if (sizeHint == 0)
         {
-            ArrayPool<T>.Shared.Return(_buffer, true);
+            sizeHint = _minimumLength;
         }
 
-        private void CheckCapacity(int sizeHint)
+        if (sizeHint <= available)
         {
-            var available = _buffer.Length - _length;
-            if (sizeHint == 0)
-            {
-                sizeHint = _minimumLength;
-            }
-
-            if (sizeHint <= available)
-            {
-                return;
-            }
-
-            var increment = Math.Max(sizeHint, _minimumLength);
-
-            var backup = _buffer;
-
-            _buffer = ArrayPool<T>.Shared.Rent(backup.Length + increment);
-            Array.Copy(backup, 0, _buffer, 0, _length);
-
-            ArrayPool<T>.Shared.Return(backup);
+            return;
         }
+
+        var increment = Math.Max(sizeHint, _minimumLength);
+
+        var backup = _buffer;
+
+        _buffer = ArrayPool<T>.Shared.Rent(backup.Length + increment);
+        Array.Copy(backup, 0, _buffer, 0, _length);
+
+        ArrayPool<T>.Shared.Return(backup);
     }
 }

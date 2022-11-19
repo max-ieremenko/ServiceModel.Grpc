@@ -28,118 +28,117 @@ using NUnit.Framework;
 using ServiceModel.Grpc.AspNetCore.TestApi.Domain;
 using Shouldly;
 
-namespace ServiceModel.Grpc.AspNetCore.TestApi
+namespace ServiceModel.Grpc.AspNetCore.TestApi;
+
+public abstract class AspNetCoreAuthenticationTestBase
 {
-    public abstract class AspNetCoreAuthenticationTestBase
+    private KestrelHost _host = null!;
+    private IServiceWithAuthentication _domainService = null!;
+
+    [OneTimeSetUp]
+    public async Task BeforeAll()
     {
-        private KestrelHost _host = null!;
-        private IServiceWithAuthentication _domainService = null!;
+        _host = new KestrelHost()
+            .ConfigureServices(services =>
+            {
+                services.AddHttpContextAccessor();
+                services.AddAuthorization();
 
-        [OneTimeSetUp]
-        public async Task BeforeAll()
-        {
-            _host = new KestrelHost()
-                .ConfigureServices(services =>
-                {
-                    services.AddHttpContextAccessor();
-                    services.AddAuthorization();
-
-                    services
-                        .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                        .AddJwtBearer(options =>
+                services
+                    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options =>
+                    {
+                        options.RequireHttpsMetadata = false;
+                        options.SaveToken = false;
+                        options.TokenValidationParameters = new TokenValidationParameters
                         {
-                            options.RequireHttpsMetadata = false;
-                            options.SaveToken = false;
-                            options.TokenValidationParameters = new TokenValidationParameters
-                            {
-                                ValidateLifetime = false,
-                                ValidateAudience = false,
-                                ValidateIssuer = false,
-                                ValidateIssuerSigningKey = false,
-                                ValidateTokenReplay = false,
-                                RequireAudience = false,
-                                RequireExpirationTime = false,
-                                IssuerSigningKey = new SymmetricSecurityKey(Guid.Empty.ToByteArray())
-                            };
-                        });
-                })
-                .ConfigureApp(app =>
-                {
-                    app
-                        .UseAuthentication()
-                        .UseAuthorization();
-                });
-
-            ConfigureKestrelHost(_host);
-            await _host.StartAsync().ConfigureAwait(false);
-
-            _domainService = _host.ClientFactory.CreateClient<IServiceWithAuthentication>(_host.Channel);
-        }
-
-        [OneTimeTearDown]
-        public async Task AfterAll()
-        {
-            await _host.DisposeAsync().ConfigureAwait(false);
-        }
-
-        [Test]
-        public void TryAccessWithoutAuthentication()
-        {
-            var ex = Assert.Throws<RpcException>(() => _domainService.GetCurrentUserName());
-
-            ex.ShouldNotBeNull();
-            ex.StatusCode.ShouldBe(StatusCode.Unauthenticated);
-        }
-
-        [Test]
-        public void GetCurrentUserName()
-        {
-            var headers = CreateMetadataWithToken("user-name");
-
-            var name = _domainService.GetCurrentUserName(new CallOptions(headers));
-
-            name.ShouldBe("user-name");
-        }
-
-        [Test]
-        public void TryGetCurrentUserNameWithoutAuthentication()
-        {
-            var name = _domainService.TryGetCurrentUserName();
-
-            name.ShouldBeNullOrEmpty();
-        }
-
-        [Test]
-        public void TryGetCurrentUserNameWithAuthentication()
-        {
-            var headers = CreateMetadataWithToken("user-name");
-
-            var name = _domainService.TryGetCurrentUserName(new CallOptions(headers));
-
-            name.ShouldBe("user-name");
-        }
-
-        protected abstract void ConfigureKestrelHost(KestrelHost host);
-
-        private static Metadata CreateMetadataWithToken(string userName)
-        {
-            var descriptor = new SecurityTokenDescriptor
+                            ValidateLifetime = false,
+                            ValidateAudience = false,
+                            ValidateIssuer = false,
+                            ValidateIssuerSigningKey = false,
+                            ValidateTokenReplay = false,
+                            RequireAudience = false,
+                            RequireExpirationTime = false,
+                            IssuerSigningKey = new SymmetricSecurityKey(Guid.Empty.ToByteArray())
+                        };
+                    });
+            })
+            .ConfigureApp(app =>
             {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.Name, userName)
-                }),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Guid.Empty.ToByteArray()), SecurityAlgorithms.HmacSha256Signature)
-            };
+                app
+                    .UseAuthentication()
+                    .UseAuthorization();
+            });
 
-            var handler = new JwtSecurityTokenHandler();
-            var token = handler.CreateToken(descriptor);
-            var tokenString = handler.WriteToken(token);
+        ConfigureKestrelHost(_host);
+        await _host.StartAsync().ConfigureAwait(false);
 
-            return new Metadata
+        _domainService = _host.ClientFactory.CreateClient<IServiceWithAuthentication>(_host.Channel);
+    }
+
+    [OneTimeTearDown]
+    public async Task AfterAll()
+    {
+        await _host.DisposeAsync().ConfigureAwait(false);
+    }
+
+    [Test]
+    public void TryAccessWithoutAuthentication()
+    {
+        var ex = Assert.Throws<RpcException>(() => _domainService.GetCurrentUserName());
+
+        ex.ShouldNotBeNull();
+        ex.StatusCode.ShouldBe(StatusCode.Unauthenticated);
+    }
+
+    [Test]
+    public void GetCurrentUserName()
+    {
+        var headers = CreateMetadataWithToken("user-name");
+
+        var name = _domainService.GetCurrentUserName(new CallOptions(headers));
+
+        name.ShouldBe("user-name");
+    }
+
+    [Test]
+    public void TryGetCurrentUserNameWithoutAuthentication()
+    {
+        var name = _domainService.TryGetCurrentUserName();
+
+        name.ShouldBeNullOrEmpty();
+    }
+
+    [Test]
+    public void TryGetCurrentUserNameWithAuthentication()
+    {
+        var headers = CreateMetadataWithToken("user-name");
+
+        var name = _domainService.TryGetCurrentUserName(new CallOptions(headers));
+
+        name.ShouldBe("user-name");
+    }
+
+    protected abstract void ConfigureKestrelHost(KestrelHost host);
+
+    private static Metadata CreateMetadataWithToken(string userName)
+    {
+        var descriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(new[]
             {
-                { "Authorization", "Bearer " + tokenString }
-            };
-        }
+                new Claim(ClaimTypes.Name, userName)
+            }),
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Guid.Empty.ToByteArray()), SecurityAlgorithms.HmacSha256Signature)
+        };
+
+        var handler = new JwtSecurityTokenHandler();
+        var token = handler.CreateToken(descriptor);
+        var tokenString = handler.WriteToken(token);
+
+        return new Metadata
+        {
+            { "Authorization", "Bearer " + tokenString }
+        };
     }
 }

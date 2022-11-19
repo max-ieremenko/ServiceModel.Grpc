@@ -18,46 +18,45 @@ using System.Collections.Generic;
 using ServiceModel.Grpc.DesignTime.Generator.Internal;
 using ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
 
-namespace ServiceModel.Grpc.DesignTime.Generator
+namespace ServiceModel.Grpc.DesignTime.Generator;
+
+internal sealed class CSharpServiceCodeGeneratorFactory : ICodeGeneratorFactory
 {
-    internal sealed class CSharpServiceCodeGeneratorFactory : ICodeGeneratorFactory
+    private readonly ContractDescription _contract;
+    private readonly bool _generateAspNetExtensions;
+    private readonly bool _generateSelfHostExtensions;
+    private readonly bool _canUseStaticExtensions;
+
+    public CSharpServiceCodeGeneratorFactory(
+        ContractDescription contract,
+        bool generateAspNetExtensions,
+        bool generateSelfHostExtensions,
+        bool canUseStaticExtensions)
     {
-        private readonly ContractDescription _contract;
-        private readonly bool _generateAspNetExtensions;
-        private readonly bool _generateSelfHostExtensions;
-        private readonly bool _canUseStaticExtensions;
-
-        public CSharpServiceCodeGeneratorFactory(
-            ContractDescription contract,
-            bool generateAspNetExtensions,
-            bool generateSelfHostExtensions,
-            bool canUseStaticExtensions)
-        {
-            _contract = contract;
-            _generateAspNetExtensions = generateAspNetExtensions;
-            _generateSelfHostExtensions = generateSelfHostExtensions;
-            _canUseStaticExtensions = canUseStaticExtensions;
-        }
-
-        public IEnumerable<CodeGeneratorBase> GetGenerators()
-        {
-            if (_generateAspNetExtensions)
-            {
-                yield return new CSharpServiceAspNetAddOptionsBuilder(_contract, _canUseStaticExtensions);
-                yield return new CSharpServiceAspNetMapGrpcServiceBuilder(_contract, _canUseStaticExtensions);
-            }
-
-            if (_generateSelfHostExtensions)
-            {
-                yield return new CSharpServiceSelfHostAddSingletonServiceBuilder(_contract, _canUseStaticExtensions);
-                yield return new CSharpServiceSelfHostAddTransientServiceBuilder(_contract, _canUseStaticExtensions);
-                yield return new CSharpServiceSelfHostAddProviderServiceBuilder(_contract, _canUseStaticExtensions);
-            }
-
-            yield return new CSharpServiceEndpointBuilder(_contract);
-            yield return new CSharpServiceEndpointBinderBuilder(_contract);
-        }
-
-        public string GetHintName() => _contract.EndpointClassName;
+        _contract = contract;
+        _generateAspNetExtensions = generateAspNetExtensions;
+        _generateSelfHostExtensions = generateSelfHostExtensions;
+        _canUseStaticExtensions = canUseStaticExtensions;
     }
+
+    public IEnumerable<CodeGeneratorBase> GetGenerators()
+    {
+        if (_generateAspNetExtensions)
+        {
+            yield return new CSharpServiceAspNetAddOptionsBuilder(_contract, _canUseStaticExtensions);
+            yield return new CSharpServiceAspNetMapGrpcServiceBuilder(_contract, _canUseStaticExtensions);
+        }
+
+        if (_generateSelfHostExtensions)
+        {
+            yield return new CSharpServiceSelfHostAddSingletonServiceBuilder(_contract, _canUseStaticExtensions);
+            yield return new CSharpServiceSelfHostAddTransientServiceBuilder(_contract, _canUseStaticExtensions);
+            yield return new CSharpServiceSelfHostAddProviderServiceBuilder(_contract, _canUseStaticExtensions);
+        }
+
+        yield return new CSharpServiceEndpointBuilder(_contract);
+        yield return new CSharpServiceEndpointBinderBuilder(_contract);
+    }
+
+    public string GetHintName() => _contract.EndpointClassName;
 }

@@ -20,69 +20,68 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace ServiceModel.Grpc.DesignTime.Generator
+namespace ServiceModel.Grpc.DesignTime.Generator;
+
+internal sealed class CSharpSourceGenerator
 {
-    internal sealed class CSharpSourceGenerator
+    private readonly CodeGeneratorCache _generatorCache = new CodeGeneratorCache();
+
+    public void Execute(GeneratorContext context, IEnumerable<ClassDeclarationSyntax> candidates)
     {
-        private readonly CodeGeneratorCache _generatorCache = new CodeGeneratorCache();
-
-        public void Execute(GeneratorContext context, IEnumerable<ClassDeclarationSyntax> candidates)
+        foreach (var candidate in candidates.OrderBy(i => i.GetFullName(), StringComparer.Ordinal))
         {
-            foreach (var candidate in candidates.OrderBy(i => i.GetFullName(), StringComparer.Ordinal))
+            var owner = context.Compilation.GetSemanticModel(candidate.SyntaxTree).GetDeclaredSymbol(candidate);
+            if (owner == null)
             {
-                var owner = context.Compilation.GetSemanticModel(candidate.SyntaxTree).GetDeclaredSymbol(candidate);
-                if (owner == null)
-                {
-                    continue;
-                }
+                continue;
+            }
 
-                var factoryResolver = new CodeGeneratorFactoryResolver(context, candidate);
-                var attributes = owner.GetAttributes();
+            var factoryResolver = new CodeGeneratorFactoryResolver(context, candidate);
+            var attributes = owner.GetAttributes();
 
-                for (var i = 0; i < attributes.Length; i++)
+            for (var i = 0; i < attributes.Length; i++)
+            {
+                if (factoryResolver.TryResolve(attributes[i], out var factory, out var contract))
                 {
-                    if (factoryResolver.TryResolve(attributes[i], out var factory, out var contract))
-                    {
-                        InvokeGenerator(context, factory, candidate);
-                        InvokeGenerator(context, new CSharpSharedCodeGeneratorFactory(contract), candidate);
-                    }
+                    InvokeGenerator(context, factory, candidate);
+                    InvokeGenerator(context, new CSharpSharedCodeGeneratorFactory(contract), candidate);
                 }
             }
         }
+    }
 
-        private void InvokeGenerator(GeneratorContext context, ICodeGeneratorFactory factory, ClassDeclarationSyntax node)
+    private void InvokeGenerator(GeneratorContext context, ICodeGeneratorFactory factory, ClassDeclarationSyntax node)
+    {
+        var generatedCount = 0;
+
+        CompilationUnit unit = default;
+
+        foreach (var generator in factory.GetGenerators())
         {
-            var generatedCount = 0;
-
-            CompilationUnit unit = default;
-
-            foreach (var generator in factory.GetGenerators())
-            {
-                context.CancellationToken.ThrowIfCancellationRequested();
-
-                if (_generatorCache.AddNew(node, generator.GetGeneratedMemberName()))
-                {
-                    if (generatedCount == 0)
-                    {
-                        unit = new CompilationUnit(node);
-                    }
-                    else
-                    {
-                        unit.Output.AppendLine();
-                    }
-
-                    generator.GenerateMemberDeclaration(unit.Output);
-
-                    generatedCount++;
-                }
-            }
-
             context.CancellationToken.ThrowIfCancellationRequested();
-            if (generatedCount > 0)
+
+            if (_generatorCache.AddNew(node, generator.GetGeneratedMemberName()))
             {
-                var source = unit.GetSourceText();
-                context.AddOutput(node, factory.GetHintName(), source);
+                if (generatedCount == 0)
+                {
+                    unit = new CompilationUnit(node);
+                }
+                else
+                {
+                    unit.Output.AppendLine();
+                }
+
+                generator.GenerateMemberDeclaration(unit.Output);
+
+                generatedCount++;
             }
+        }
+
+        context.CancellationToken.ThrowIfCancellationRequested();
+        if (generatedCount > 0)
+        {
+            var source = unit.GetSourceText();
+            context.AddOutput(node, factory.GetHintName(), source);
         }
     }
 }

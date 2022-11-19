@@ -1,20 +1,20 @@
 @{ 
     Solution      = "ProtobufMarshaller.sln"
     Configuration = "Release"
-    Platform      = "Win"
+    Platform      = "Linux"
 
     Tests         = @(
         , @( 
             @{
-                App  = "ServerAspNetCore/bin/Release/net6.0/ServerAspNetCore.exe"
+                App  = "ServerAspNetCore/bin/Release/net7.0/ServerAspNetCore.dll"
                 Port = 5000
             }
             @{
-                App  = "ServerSelfHost/bin/Release/net462/ServerSelfHost.exe"
+                App  = "ServerSelfHost/bin/Release/net7.0/ServerSelfHost.dll"
                 Port = 7000
             }
-            @{ App = "Client/bin/Release/net462/Client.exe" }
-            @{ App = "ClientDesignTime/bin/Release/net462/ClientDesignTime.exe" }
+            @{ App = "Client/bin/Release/net7.0/Client.dll" }
+            @{ App = "ClientDesignTime/bin/Release/net7.0/ClientDesignTime.dll" }
         )
     )
 }

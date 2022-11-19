@@ -19,19 +19,18 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceModel.Grpc.AspNetCore.Internal.Swagger;
 
-namespace ServiceModel.Grpc.AspNetCore
-{
-    internal static class ApplicationBuilderExtensions
-    {
-        public static void UseSwagger(IApplicationBuilder app)
-        {
-            var test = app.ApplicationServices.GetService<IApiDescriptionAdapter>();
-            if (test == null)
-            {
-                throw new InvalidOperationException("Missing services.AddServiceModelGrpcSwagger() in Startup.cs");
-            }
+namespace ServiceModel.Grpc.AspNetCore;
 
-            app.UseMiddleware<SwaggerUiMiddleware>();
+internal static class ApplicationBuilderExtensions
+{
+    public static void UseSwagger(IApplicationBuilder app)
+    {
+        var test = app.ApplicationServices.GetService<IApiDescriptionAdapter>();
+        if (test == null)
+        {
+            throw new InvalidOperationException("Missing services.AddServiceModelGrpcSwagger() in Startup.cs");
         }
+
+        app.UseMiddleware<SwaggerUiMiddleware>();
     }
 }

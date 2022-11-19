@@ -22,50 +22,49 @@ using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
 
-namespace ServiceModel.Grpc.AspNetCore
+namespace ServiceModel.Grpc.AspNetCore;
+
+[TestFixture(GrpcChannelType.GrpcCore)]
+[TestFixture(GrpcChannelType.GrpcDotNet)]
+public class MultipurposeServiceTest : MultipurposeServiceTestBase
 {
-    [TestFixture(GrpcChannelType.GrpcCore)]
-    [TestFixture(GrpcChannelType.GrpcDotNet)]
-    public class MultipurposeServiceTest : MultipurposeServiceTestBase
+    private readonly GrpcChannelType _channelType;
+    private KestrelHost _host = null!;
+    private Greeter.GreeterClient _greeterService = null!;
+
+    public MultipurposeServiceTest(GrpcChannelType channelType)
     {
-        private readonly GrpcChannelType _channelType;
-        private KestrelHost _host = null!;
-        private Greeter.GreeterClient _greeterService = null!;
+        _channelType = channelType;
+    }
 
-        public MultipurposeServiceTest(GrpcChannelType channelType)
-        {
-            _channelType = channelType;
-        }
+    [OneTimeSetUp]
+    public async Task BeforeAll()
+    {
+        _host = await new KestrelHost()
+            .ConfigureEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<GreeterService>();
+                endpoints.MapGrpcService<MultipurposeService>();
+            })
+            .WithChannelType(_channelType)
+            .StartAsync()
+            .ConfigureAwait(false);
 
-        [OneTimeSetUp]
-        public async Task BeforeAll()
-        {
-            _host = await new KestrelHost()
-                .ConfigureEndpoints(endpoints =>
-                {
-                    endpoints.MapGrpcService<GreeterService>();
-                    endpoints.MapGrpcService<MultipurposeService>();
-                })
-                .WithChannelType(_channelType)
-                .StartAsync()
-                .ConfigureAwait(false);
+        DomainService = _host.ClientFactory.CreateClient<IMultipurposeService>(_host.Channel);
+        _greeterService = new Greeter.GreeterClient(_host.Channel);
+    }
 
-            DomainService = _host.ClientFactory.CreateClient<IMultipurposeService>(_host.Channel);
-            _greeterService = new Greeter.GreeterClient(_host.Channel);
-        }
+    [OneTimeTearDown]
+    public async Task AfterAll()
+    {
+        await _host.DisposeAsync().ConfigureAwait(false);
+    }
 
-        [OneTimeTearDown]
-        public async Task AfterAll()
-        {
-            await _host.DisposeAsync().ConfigureAwait(false);
-        }
+    [Test]
+    public async Task NativeGreet()
+    {
+        var actual = await _greeterService.UnaryAsync(new HelloRequest { Name = "world" }).ResponseAsync.ConfigureAwait(false);
 
-        [Test]
-        public async Task NativeGreet()
-        {
-            var actual = await _greeterService.UnaryAsync(new HelloRequest { Name = "world" }).ResponseAsync.ConfigureAwait(false);
-
-            actual.Message.ShouldBe("Hello world!");
-        }
+        actual.Message.ShouldBe("Hello world!");
     }
 }

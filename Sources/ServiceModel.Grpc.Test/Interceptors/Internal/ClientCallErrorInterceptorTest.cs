@@ -22,92 +22,91 @@ using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.TestApi;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Interceptors.Internal
+namespace ServiceModel.Grpc.Interceptors.Internal;
+
+[TestFixture]
+public class ClientCallErrorInterceptorTest
 {
-    [TestFixture]
-    public class ClientCallErrorInterceptorTest
+    private ClientCallErrorInterceptor _sut = null!;
+    private Mock<IClientErrorHandler> _errorHandler = null!;
+    private LoggerMock _logger = null!;
+    private ClientCallInterceptorContext _context;
+    private RpcException _error = null!;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private ClientCallErrorInterceptor _sut = null!;
-        private Mock<IClientErrorHandler> _errorHandler = null!;
-        private LoggerMock _logger = null!;
-        private ClientCallInterceptorContext _context;
-        private RpcException _error = null!;
+        _logger = new LoggerMock();
+        _errorHandler = new Mock<IClientErrorHandler>(MockBehavior.Strict);
+        _context = new ClientCallInterceptorContext(default, "host", new Mock<IMethod>(MockBehavior.Strict).Object);
+        _error = new RpcException(Status.DefaultSuccess, new Metadata());
 
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            _logger = new LoggerMock();
-            _errorHandler = new Mock<IClientErrorHandler>(MockBehavior.Strict);
-            _context = new ClientCallInterceptorContext(default, "host", new Mock<IMethod>(MockBehavior.Strict).Object);
-            _error = new RpcException(Status.DefaultSuccess, new Metadata());
+        _sut = new ClientCallErrorInterceptor(_errorHandler.Object, DataContractMarshallerFactory.Default, _logger.Logger);
+    }
 
-            _sut = new ClientCallErrorInterceptor(_errorHandler.Object, DataContractMarshallerFactory.Default, _logger.Logger);
-        }
+    [Test]
+    public void UserHandlerWithDetail()
+    {
+        _error.Trailers.Add(
+            CallContext.HeaderNameErrorDetailType,
+            typeof(string).GetShortAssemblyQualifiedName());
+        _error.Trailers.Add(
+            CallContext.HeaderNameErrorDetail,
+            _sut.MarshallerFactory.SerializeHeader("abc"));
 
-        [Test]
-        public void UserHandlerWithDetail()
-        {
-            _error.Trailers.Add(
-                CallContext.HeaderNameErrorDetailType,
-                typeof(string).GetShortAssemblyQualifiedName());
-            _error.Trailers.Add(
-                CallContext.HeaderNameErrorDetail,
-                _sut.MarshallerFactory.SerializeHeader("abc"));
+        _errorHandler
+            .Setup(h => h.ThrowOrIgnore(_context, It.IsAny<ClientFaultDetail>()))
+            .Callback<ClientCallInterceptorContext, ClientFaultDetail>((_, detail) =>
+            {
+                detail.OriginalError.ShouldBe(_error);
+                detail.Detail.ShouldBe("abc");
+            });
 
-            _errorHandler
-                .Setup(h => h.ThrowOrIgnore(_context, It.IsAny<ClientFaultDetail>()))
-                .Callback<ClientCallInterceptorContext, ClientFaultDetail>((_, detail) =>
-                {
-                    detail.OriginalError.ShouldBe(_error);
-                    detail.Detail.ShouldBe("abc");
-                });
+        _sut.OnError(_context, _error);
 
-            _sut.OnError(_context, _error);
+        _errorHandler.VerifyAll();
+        _logger.Errors.ShouldBeEmpty();
+    }
 
-            _errorHandler.VerifyAll();
-            _logger.Errors.ShouldBeEmpty();
-        }
+    [Test]
+    public void UserHandlerNoDetails()
+    {
+        _errorHandler
+            .Setup(h => h.ThrowOrIgnore(_context, It.IsAny<ClientFaultDetail>()))
+            .Callback<ClientCallInterceptorContext, ClientFaultDetail>((_, detail) =>
+            {
+                detail.OriginalError.ShouldBe(_error);
+                detail.Detail.ShouldBeNull();
+            });
 
-        [Test]
-        public void UserHandlerNoDetails()
-        {
-            _errorHandler
-                .Setup(h => h.ThrowOrIgnore(_context, It.IsAny<ClientFaultDetail>()))
-                .Callback<ClientCallInterceptorContext, ClientFaultDetail>((_, detail) =>
-                {
-                    detail.OriginalError.ShouldBe(_error);
-                    detail.Detail.ShouldBeNull();
-                });
+        _sut.OnError(_context, _error);
 
-            _sut.OnError(_context, _error);
+        _errorHandler.VerifyAll();
+        _logger.Errors.ShouldBeEmpty();
+    }
 
-            _errorHandler.VerifyAll();
-            _logger.Errors.ShouldBeEmpty();
-        }
+    [Test]
+    public void FailToResolveDetailType()
+    {
+        _error.Trailers.Add(
+            CallContext.HeaderNameErrorDetailType,
+            "invalid type");
+        _error.Trailers.Add(
+            CallContext.HeaderNameErrorDetail,
+            _sut.MarshallerFactory.SerializeHeader("dummy"));
 
-        [Test]
-        public void FailToResolveDetailType()
-        {
-            _error.Trailers.Add(
-                CallContext.HeaderNameErrorDetailType,
-                "invalid type");
-            _error.Trailers.Add(
-                CallContext.HeaderNameErrorDetail,
-                _sut.MarshallerFactory.SerializeHeader("dummy"));
+        _errorHandler
+            .Setup(h => h.ThrowOrIgnore(_context, It.IsAny<ClientFaultDetail>()))
+            .Callback<ClientCallInterceptorContext, ClientFaultDetail>((_, detail) =>
+            {
+                detail.OriginalError.ShouldBe(_error);
+                detail.Detail.ShouldBeNull();
+            });
 
-            _errorHandler
-                .Setup(h => h.ThrowOrIgnore(_context, It.IsAny<ClientFaultDetail>()))
-                .Callback<ClientCallInterceptorContext, ClientFaultDetail>((_, detail) =>
-                {
-                    detail.OriginalError.ShouldBe(_error);
-                    detail.Detail.ShouldBeNull();
-                });
+        _sut.OnError(_context, _error);
 
-            _sut.OnError(_context, _error);
-
-            _errorHandler.VerifyAll();
-            _logger.Errors.Count.ShouldBe(1);
-            _logger.Errors[0].ShouldContain("invalid type");
-        }
+        _errorHandler.VerifyAll();
+        _logger.Errors.Count.ShouldBe(1);
+        _logger.Errors[0].ShouldContain("invalid type");
     }
 }

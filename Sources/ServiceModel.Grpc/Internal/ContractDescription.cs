@@ -22,229 +22,228 @@ using System.Reflection;
 using System.Text;
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Internal
+namespace ServiceModel.Grpc.Internal;
+
+internal sealed class ContractDescription
 {
-    internal sealed class ContractDescription
+    public ContractDescription(Type serviceType)
     {
-        public ContractDescription(Type serviceType)
+        ServiceType = serviceType;
+        Interfaces = new List<InterfaceDescription>();
+        Services = new List<InterfaceDescription>();
+
+        AnalyzeServiceAndInterfaces(serviceType);
+        FindDuplicates();
+        FindSyncOverAsync();
+
+        var baseClassName = GetClassName(serviceType);
+        ClientClassName = baseClassName + "Client";
+        ContractClassName = baseClassName + "Contract";
+        ClientBuilderClassName = baseClassName + "ClientBuilder";
+        EndpointClassName = baseClassName + "Endpoint";
+    }
+
+    public string ClientClassName { get; }
+
+    public string ContractClassName { get; }
+
+    public string ClientBuilderClassName { get; }
+
+    public string EndpointClassName { get; }
+
+    public Type ServiceType { get; }
+
+    public IList<InterfaceDescription> Interfaces { get; }
+
+    public IList<InterfaceDescription> Services { get; }
+
+    public static string GetContractClassName(Type serviceType) => GetClassName(serviceType, "Contract");
+
+    public static string GetClientBuilderClassName(Type serviceType) => GetClassName(serviceType, "ClientBuilder");
+
+    public static string GetEndpointClassName(Type serviceType) => GetClassName(serviceType, "Endpoint");
+
+    private static string GetClassName(Type serviceType, string? suffix = null)
+    {
+        var result = new StringBuilder()
+            .Append(serviceType.Assembly.GetName().Name)
+            .Append('.')
+            .Append(ReflectionTools.GetNamespace(serviceType))
+            .Append('.')
+            .Append(ReflectionTools.GetNonGenericName(serviceType));
+
+        var serviceGenericEnding = ServiceContract.GetServiceGenericEnding(serviceType);
+        for (var i = 0; i < serviceGenericEnding.Count; i++)
         {
-            ServiceType = serviceType;
-            Interfaces = new List<InterfaceDescription>();
-            Services = new List<InterfaceDescription>();
-
-            AnalyzeServiceAndInterfaces(serviceType);
-            FindDuplicates();
-            FindSyncOverAsync();
-
-            var baseClassName = GetClassName(serviceType);
-            ClientClassName = baseClassName + "Client";
-            ContractClassName = baseClassName + "Contract";
-            ClientBuilderClassName = baseClassName + "ClientBuilder";
-            EndpointClassName = baseClassName + "Endpoint";
+            result
+                .Append('-')
+                .Append(serviceGenericEnding[i]);
         }
 
-        public string ClientClassName { get; }
+        result.Append(suffix);
+        return result.ToString();
+    }
 
-        public string ContractClassName { get; }
+    private static bool TryCreateMessage(MethodInfo method, [MaybeNullWhen(false)] out MessageAssembler message, [MaybeNullWhen(true)] out string error)
+    {
+        message = default;
+        error = default;
 
-        public string ClientBuilderClassName { get; }
-
-        public string EndpointClassName { get; }
-
-        public Type ServiceType { get; }
-
-        public IList<InterfaceDescription> Interfaces { get; }
-
-        public IList<InterfaceDescription> Services { get; }
-
-        public static string GetContractClassName(Type serviceType) => GetClassName(serviceType, "Contract");
-
-        public static string GetClientBuilderClassName(Type serviceType) => GetClassName(serviceType, "ClientBuilder");
-
-        public static string GetEndpointClassName(Type serviceType) => GetClassName(serviceType, "Endpoint");
-
-        private static string GetClassName(Type serviceType, string? suffix = null)
+        try
         {
-            var result = new StringBuilder()
-                .Append(serviceType.Assembly.GetName().Name)
-                .Append('.')
-                .Append(ReflectionTools.GetNamespace(serviceType))
-                .Append('.')
-                .Append(ReflectionTools.GetNonGenericName(serviceType));
-
-            var serviceGenericEnding = ServiceContract.GetServiceGenericEnding(serviceType);
-            for (var i = 0; i < serviceGenericEnding.Count; i++)
-            {
-                result
-                    .Append('-')
-                    .Append(serviceGenericEnding[i]);
-            }
-
-            result.Append(suffix);
-            return result.ToString();
+            message = new MessageAssembler(method);
+            return true;
         }
-
-        private static bool TryCreateMessage(MethodInfo method, [MaybeNullWhen(false)] out MessageAssembler message, [MaybeNullWhen(true)] out string error)
+        catch (NotSupportedException ex)
         {
-            message = default;
-            error = default;
-
-            try
+            var text = new StringBuilder();
+            Exception? e = ex;
+            while (e != null)
             {
-                message = new MessageAssembler(method);
-                return true;
-            }
-            catch (NotSupportedException ex)
-            {
-                var text = new StringBuilder();
-                Exception? e = ex;
-                while (e != null)
+                if (text.Length > 0)
                 {
-                    if (text.Length > 0)
-                    {
-                        text.Append(" --> ");
-                    }
-
-                    text.Append(ex.Message);
-                    e = e.InnerException;
+                    text.Append(" --> ");
                 }
 
-                error = text.ToString();
-                return false;
+                text.Append(ex.Message);
+                e = e.InnerException;
+            }
+
+            error = text.ToString();
+            return false;
+        }
+    }
+
+    private static OperationDescription? TryFindAsyncOperation(IList<OperationDescription> operations, MessageAssembler syncOperation)
+    {
+        var asyncMethodName = syncOperation.Operation.Name + "Async";
+        for (var i = 0; i < operations.Count; i++)
+        {
+            var operation = operations[i];
+            if (operation.Message.IsAsync
+                && operation.Message.OperationType == MethodType.Unary
+                && operation.Message.Operation.Name.Equals(asyncMethodName, StringComparison.OrdinalIgnoreCase)
+                && operation.Message.IsCompatibleWith(syncOperation))
+            {
+                return operation;
             }
         }
 
-        private static OperationDescription? TryFindAsyncOperation(IList<OperationDescription> operations, MessageAssembler syncOperation)
+        return null;
+    }
+
+    private static MethodDescription CreateNonServiceOperation(Type interfaceType, MethodInfo method)
+    {
+        var error = "Method {0}.{1}.{2} is not service operation.".FormatWith(
+            ReflectionTools.GetNamespace(interfaceType),
+            interfaceType.Name,
+            method.Name);
+
+        return new MethodDescription(method, error);
+    }
+
+    private void AnalyzeServiceAndInterfaces(Type serviceType)
+    {
+        var tree = new InterfaceTree(serviceType);
+
+        for (var i = 0; i < tree.Services.Count; i++)
         {
-            var asyncMethodName = syncOperation.Operation.Name + "Async";
-            for (var i = 0; i < operations.Count; i++)
+            var service = tree.Services[i];
+            var interfaceDescription = new InterfaceDescription(service.ServiceType);
+            Services.Add(interfaceDescription);
+
+            foreach (var method in ReflectionTools.GetMethods(service.ServiceType))
             {
-                var operation = operations[i];
-                if (operation.Message.IsAsync
-                    && operation.Message.OperationType == MethodType.Unary
-                    && operation.Message.Operation.Name.Equals(asyncMethodName, StringComparison.OrdinalIgnoreCase)
-                    && operation.Message.IsCompatibleWith(syncOperation))
+                if (!ServiceContract.IsServiceOperation(method))
                 {
-                    return operation;
+                    interfaceDescription.Methods.Add(CreateNonServiceOperation(service.ServiceType, method));
+                    continue;
                 }
-            }
 
-            return null;
-        }
-
-        private static MethodDescription CreateNonServiceOperation(Type interfaceType, MethodInfo method)
-        {
-            var error = "Method {0}.{1}.{2} is not service operation.".FormatWith(
-                ReflectionTools.GetNamespace(interfaceType),
-                interfaceType.Name,
-                method.Name);
-
-            return new MethodDescription(method, error);
-        }
-
-        private void AnalyzeServiceAndInterfaces(Type serviceType)
-        {
-            var tree = new InterfaceTree(serviceType);
-
-            for (var i = 0; i < tree.Services.Count; i++)
-            {
-                var service = tree.Services[i];
-                var interfaceDescription = new InterfaceDescription(service.ServiceType);
-                Services.Add(interfaceDescription);
-
-                foreach (var method in ReflectionTools.GetMethods(service.ServiceType))
+                if (TryCreateMessage(method, out var message, out var error))
                 {
-                    if (!ServiceContract.IsServiceOperation(method))
-                    {
-                        interfaceDescription.Methods.Add(CreateNonServiceOperation(service.ServiceType, method));
-                        continue;
-                    }
-
-                    if (TryCreateMessage(method, out var message, out var error))
-                    {
-                        interfaceDescription.Operations.Add(new OperationDescription(
-                            service.ServiceName,
-                            ServiceContract.GetServiceOperationName(method),
-                            message));
-                    }
-                    else
-                    {
-                        interfaceDescription.NotSupportedOperations.Add(new MethodDescription(method, error));
-                    }
+                    interfaceDescription.Operations.Add(new OperationDescription(
+                        service.ServiceName,
+                        ServiceContract.GetServiceOperationName(method),
+                        message));
                 }
-            }
-
-            for (var i = 0; i < tree.Interfaces.Count; i++)
-            {
-                var interfaceType = tree.Interfaces[i];
-                var interfaceDescription = new InterfaceDescription(interfaceType);
-                Interfaces.Add(interfaceDescription);
-
-                foreach (var method in ReflectionTools.GetMethods(interfaceType))
+                else
                 {
-                    interfaceDescription.Methods.Add(CreateNonServiceOperation(interfaceType, method));
+                    interfaceDescription.NotSupportedOperations.Add(new MethodDescription(method, error));
                 }
             }
         }
 
-        private void FindDuplicates()
+        for (var i = 0; i < tree.Interfaces.Count; i++)
         {
-            var duplicates = Services
-                .SelectMany(s => s.Operations.Select(m => (s, m)))
-                .GroupBy(i => new OperationKey(i.m.ServiceName, i.m.OperationName))
-                .Where(i => i.Count() > 1);
+            var interfaceType = tree.Interfaces[i];
+            var interfaceDescription = new InterfaceDescription(interfaceType);
+            Interfaces.Add(interfaceDescription);
 
-            foreach (var entries in duplicates)
+            foreach (var method in ReflectionTools.GetMethods(interfaceType))
             {
-                var text = new StringBuilder();
-
-                foreach (var (_, operation) in entries)
-                {
-                    if (text.Length == 0)
-                    {
-                        text.AppendFormat("Operations have naming conflict [{0}/{1}]: ", operation.ServiceName, operation.OperationName);
-                    }
-                    else
-                    {
-                        text.Append(" and ");
-                    }
-
-                    text.AppendFormat(ReflectionTools.GetSignature(operation.Message.Operation));
-                }
-
-                var error = text.Append(".").ToString();
-
-                foreach (var (service, operation) in entries)
-                {
-                    service.Operations.Remove(operation);
-                    service.NotSupportedOperations.Add(new MethodDescription(operation.Message.Operation, error));
-                }
+                interfaceDescription.Methods.Add(CreateNonServiceOperation(interfaceType, method));
             }
         }
+    }
 
-        private void FindSyncOverAsync()
+    private void FindDuplicates()
+    {
+        var duplicates = Services
+            .SelectMany(s => s.Operations.Select(m => (s, m)))
+            .GroupBy(i => new OperationKey(i.m.ServiceName, i.m.OperationName))
+            .Where(i => i.Count() > 1);
+
+        foreach (var entries in duplicates)
         {
-            for (var i = 0; i < Services.Count; i++)
+            var text = new StringBuilder();
+
+            foreach (var (_, operation) in entries)
             {
-                var service = Services[i];
-
-                for (var j = 0; j < service.Methods.Count; j++)
+                if (text.Length == 0)
                 {
-                    var syncMethod = service.Methods[j];
-                    if (!TryCreateMessage(syncMethod.Method, out var syncOperation, out _)
-                        || syncOperation.OperationType != MethodType.Unary
-                        || syncOperation.IsAsync)
-                    {
-                        continue;
-                    }
+                    text.AppendFormat("Operations have naming conflict [{0}/{1}]: ", operation.ServiceName, operation.OperationName);
+                }
+                else
+                {
+                    text.Append(" and ");
+                }
 
-                    var asyncOperation = TryFindAsyncOperation(service.Operations, syncOperation);
-                    if (asyncOperation != null)
-                    {
-                        service.Methods.Remove(syncMethod);
-                        service.SyncOverAsync.Add((syncOperation, asyncOperation));
-                        j--;
-                    }
+                text.AppendFormat(ReflectionTools.GetSignature(operation.Message.Operation));
+            }
+
+            var error = text.Append(".").ToString();
+
+            foreach (var (service, operation) in entries)
+            {
+                service.Operations.Remove(operation);
+                service.NotSupportedOperations.Add(new MethodDescription(operation.Message.Operation, error));
+            }
+        }
+    }
+
+    private void FindSyncOverAsync()
+    {
+        for (var i = 0; i < Services.Count; i++)
+        {
+            var service = Services[i];
+
+            for (var j = 0; j < service.Methods.Count; j++)
+            {
+                var syncMethod = service.Methods[j];
+                if (!TryCreateMessage(syncMethod.Method, out var syncOperation, out _)
+                    || syncOperation.OperationType != MethodType.Unary
+                    || syncOperation.IsAsync)
+                {
+                    continue;
+                }
+
+                var asyncOperation = TryFindAsyncOperation(service.Operations, syncOperation);
+                if (asyncOperation != null)
+                {
+                    service.Methods.Remove(syncMethod);
+                    service.SyncOverAsync.Add((syncOperation, asyncOperation));
+                    j--;
                 }
             }
         }

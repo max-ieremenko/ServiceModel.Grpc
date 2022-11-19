@@ -19,75 +19,74 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace ServiceModel.Grpc.Filters.Internal
+namespace ServiceModel.Grpc.Filters.Internal;
+
+[DebuggerDisplay("Count = {Count}")]
+internal sealed class RequestContext : IRequestContextInternal
 {
-    [DebuggerDisplay("Count = {Count}")]
-    internal sealed class RequestContext : IRequestContextInternal
+    private readonly MessageProxy _messageProxy;
+    private readonly StreamProxy? _streamProxy;
+    private object? _request;
+    private object? _stream;
+
+    public RequestContext(MessageProxy messageProxy, StreamProxy? streamProxy)
     {
-        private readonly MessageProxy _messageProxy;
-        private readonly StreamProxy? _streamProxy;
-        private object? _request;
-        private object? _stream;
+        _messageProxy = messageProxy;
+        _streamProxy = streamProxy;
+    }
 
-        public RequestContext(MessageProxy messageProxy, StreamProxy? streamProxy)
+    public int Count => _messageProxy.Names.Length;
+
+    public object? Stream
+    {
+        get => _stream;
+        set => UpdateStream(value);
+    }
+
+    public object? this[string name]
+    {
+        get => _messageProxy.GetValue(_request!, _messageProxy.GetPropertyIndex(name));
+        set => _messageProxy.SetValue(_request!, _messageProxy.GetPropertyIndex(name), value);
+    }
+
+    public object? this[int index]
+    {
+        get => _messageProxy.GetValue(_request!, index);
+        set => _messageProxy.SetValue(_request!, index, value);
+    }
+
+    public (object? Request, object? Stream) GetRaw() => (_request, _stream);
+
+    public void SetRaw(object? request, object? stream)
+    {
+        _request = request;
+        _stream = stream;
+    }
+
+    public IEnumerator<KeyValuePair<string, object?>> GetEnumerator()
+    {
+        for (var i = 0; i < _messageProxy.Names.Length; i++)
         {
-            _messageProxy = messageProxy;
-            _streamProxy = streamProxy;
+            var name = _messageProxy.Names[i];
+            var value = this[i];
+            yield return new KeyValuePair<string, object?>(name, value);
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    private void UpdateStream(object? stream)
+    {
+        if (_streamProxy == null)
+        {
+            throw new NotSupportedException("The current method does not accept a client stream.");
         }
 
-        public int Count => _messageProxy.Names.Length;
-
-        public object? Stream
+        if (stream == null)
         {
-            get => _stream;
-            set => UpdateStream(value);
+            throw new ArgumentNullException(nameof(stream), "The client stream cannot be null.");
         }
 
-        public object? this[string name]
-        {
-            get => _messageProxy.GetValue(_request!, _messageProxy.GetPropertyIndex(name));
-            set => _messageProxy.SetValue(_request!, _messageProxy.GetPropertyIndex(name), value);
-        }
-
-        public object? this[int index]
-        {
-            get => _messageProxy.GetValue(_request!, index);
-            set => _messageProxy.SetValue(_request!, index, value);
-        }
-
-        public (object? Request, object? Stream) GetRaw() => (_request, _stream);
-
-        public void SetRaw(object? request, object? stream)
-        {
-            _request = request;
-            _stream = stream;
-        }
-
-        public IEnumerator<KeyValuePair<string, object?>> GetEnumerator()
-        {
-            for (var i = 0; i < _messageProxy.Names.Length; i++)
-            {
-                var name = _messageProxy.Names[i];
-                var value = this[i];
-                yield return new KeyValuePair<string, object?>(name, value);
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-        private void UpdateStream(object? stream)
-        {
-            if (_streamProxy == null)
-            {
-                throw new NotSupportedException("The current method does not accept a client stream.");
-            }
-
-            if (stream == null)
-            {
-                throw new ArgumentNullException(nameof(stream), "The client stream cannot be null.");
-            }
-
-            _streamProxy.AssignValue(out _stream, stream);
-        }
+        _streamProxy.AssignValue(out _stream, stream);
     }
 }

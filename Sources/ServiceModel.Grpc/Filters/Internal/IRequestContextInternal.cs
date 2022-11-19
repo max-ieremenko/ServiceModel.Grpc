@@ -14,12 +14,11 @@
 // limitations under the License.
 // </copyright>
 
-namespace ServiceModel.Grpc.Filters.Internal
-{
-    internal interface IRequestContextInternal : IRequestContext
-    {
-        (object? Request, object? Stream) GetRaw();
+namespace ServiceModel.Grpc.Filters.Internal;
 
-        void SetRaw(object? request, object? stream);
-    }
+internal interface IRequestContextInternal : IRequestContext
+{
+    (object? Request, object? Stream) GetRaw();
+
+    void SetRaw(object? request, object? stream);
 }

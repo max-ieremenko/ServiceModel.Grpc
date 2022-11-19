@@ -21,33 +21,32 @@ using ServiceModel.Grpc.AspNetCore.TestApi;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 
-namespace ServiceModel.Grpc.AspNetCore
+namespace ServiceModel.Grpc.AspNetCore;
+
+[TestFixture]
+public class SharedContractTest : SharedContractTestBase
 {
-    [TestFixture]
-    public class SharedContractTest : SharedContractTestBase
+    private KestrelHost _host = null!;
+
+    [OneTimeSetUp]
+    public async Task BeforeAll()
     {
-        private KestrelHost _host = null!;
+        _host = await new KestrelHost()
+            .ConfigureEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<ConcreteContract1>();
+                endpoints.MapGrpcService<ConcreteContract2>();
+            })
+            .StartAsync()
+            .ConfigureAwait(false);
 
-        [OneTimeSetUp]
-        public async Task BeforeAll()
-        {
-            _host = await new KestrelHost()
-                .ConfigureEndpoints(endpoints =>
-                {
-                    endpoints.MapGrpcService<ConcreteContract1>();
-                    endpoints.MapGrpcService<ConcreteContract2>();
-                })
-                .StartAsync()
-                .ConfigureAwait(false);
+        DomainService1 = _host.ClientFactory.CreateClient<IConcreteContract1>(_host.Channel);
+        DomainService2 = _host.ClientFactory.CreateClient<IConcreteContract2>(_host.Channel);
+    }
 
-            DomainService1 = _host.ClientFactory.CreateClient<IConcreteContract1>(_host.Channel);
-            DomainService2 = _host.ClientFactory.CreateClient<IConcreteContract2>(_host.Channel);
-        }
-
-        [OneTimeTearDown]
-        public async Task AfterAll()
-        {
-            await _host.DisposeAsync().ConfigureAwait(false);
-        }
+    [OneTimeTearDown]
+    public async Task AfterAll()
+    {
+        await _host.DisposeAsync().ConfigureAwait(false);
     }
 }

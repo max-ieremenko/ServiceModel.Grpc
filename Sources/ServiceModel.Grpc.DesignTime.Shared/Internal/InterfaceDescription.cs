@@ -17,26 +17,25 @@
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal;
+
+internal sealed class InterfaceDescription
 {
-    internal sealed class InterfaceDescription
+    public InterfaceDescription(INamedTypeSymbol interfaceType)
     {
-        public InterfaceDescription(INamedTypeSymbol interfaceType)
-        {
-            InterfaceType = interfaceType;
-            InterfaceTypeName = SyntaxTools.GetFullName(interfaceType);
-        }
-
-        public INamedTypeSymbol InterfaceType { get; }
-
-        public string InterfaceTypeName { get; }
-
-        public List<NotSupportedMethodDescription> Methods { get; } = new List<NotSupportedMethodDescription>();
-
-        public List<OperationDescription> Operations { get; } = new List<OperationDescription>();
-
-        public List<NotSupportedMethodDescription> NotSupportedOperations { get; } = new List<NotSupportedMethodDescription>();
-
-        public List<(OperationDescription Sync, OperationDescription Async)> SyncOverAsync { get; } = new List<(OperationDescription Sync, OperationDescription Async)>();
+        InterfaceType = interfaceType;
+        InterfaceTypeName = SyntaxTools.GetFullName(interfaceType);
     }
+
+    public INamedTypeSymbol InterfaceType { get; }
+
+    public string InterfaceTypeName { get; }
+
+    public List<NotSupportedMethodDescription> Methods { get; } = new List<NotSupportedMethodDescription>();
+
+    public List<OperationDescription> Operations { get; } = new List<OperationDescription>();
+
+    public List<NotSupportedMethodDescription> NotSupportedOperations { get; } = new List<NotSupportedMethodDescription>();
+
+    public List<(OperationDescription Sync, OperationDescription Async)> SyncOverAsync { get; } = new List<(OperationDescription Sync, OperationDescription Async)>();
 }

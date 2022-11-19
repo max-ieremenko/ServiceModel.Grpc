@@ -20,20 +20,19 @@ using System.IO;
 using System.IO.Pipelines;
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Benchmarks.MarshallerTest
+namespace ServiceModel.Grpc.Benchmarks.MarshallerTest;
+
+internal sealed class StubSerializationContext : SerializationContext
 {
-    internal sealed class StubSerializationContext : SerializationContext
+    private readonly IBufferWriter<byte> _buffer = PipeWriter.Create(Stream.Null);
+
+    public override IBufferWriter<byte> GetBufferWriter() => _buffer;
+
+    public override void Complete(byte[] payload) => throw new NotSupportedException();
+
+    public override void Complete()
     {
-        private readonly IBufferWriter<byte> _buffer = PipeWriter.Create(Stream.Null);
-
-        public override IBufferWriter<byte> GetBufferWriter() => _buffer;
-
-        public override void Complete(byte[] payload) => throw new NotSupportedException();
-
-        public override void Complete()
-        {
-        }
-
-        public override void SetPayloadLength(int payloadLength) => throw new NotSupportedException();
     }
+
+    public override void SetPayloadLength(int payloadLength) => throw new NotSupportedException();
 }

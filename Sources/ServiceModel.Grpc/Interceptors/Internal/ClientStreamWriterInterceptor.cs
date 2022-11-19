@@ -17,54 +17,53 @@
 using System.Threading.Tasks;
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Interceptors.Internal
+namespace ServiceModel.Grpc.Interceptors.Internal;
+
+internal sealed class ClientStreamWriterInterceptor<TRequest> : IClientStreamWriter<TRequest>
 {
-    internal sealed class ClientStreamWriterInterceptor<TRequest> : IClientStreamWriter<TRequest>
+    private readonly IClientStreamWriter<TRequest> _original;
+    private readonly ClientCallInterceptorContext _context;
+    private readonly IClientCallInterceptor _interceptor;
+
+    public ClientStreamWriterInterceptor(
+        IClientStreamWriter<TRequest> original,
+        ClientCallInterceptorContext context,
+        IClientCallInterceptor interceptor)
     {
-        private readonly IClientStreamWriter<TRequest> _original;
-        private readonly ClientCallInterceptorContext _context;
-        private readonly IClientCallInterceptor _interceptor;
+        _original = original;
+        _context = context;
+        _interceptor = interceptor;
+    }
 
-        public ClientStreamWriterInterceptor(
-            IClientStreamWriter<TRequest> original,
-            ClientCallInterceptorContext context,
-            IClientCallInterceptor interceptor)
+    public WriteOptions? WriteOptions
+    {
+        get => _original.WriteOptions;
+        set => _original.WriteOptions = value;
+    }
+
+    public async Task WriteAsync(TRequest message)
+    {
+        try
         {
-            _original = original;
-            _context = context;
-            _interceptor = interceptor;
+            await _original.WriteAsync(message).ConfigureAwait(false);
         }
-
-        public WriteOptions? WriteOptions
+        catch (RpcException ex)
         {
-            get => _original.WriteOptions;
-            set => _original.WriteOptions = value;
+            _interceptor.OnError(_context, ex);
+            throw;
         }
+    }
 
-        public async Task WriteAsync(TRequest message)
+    public async Task CompleteAsync()
+    {
+        try
         {
-            try
-            {
-                await _original.WriteAsync(message).ConfigureAwait(false);
-            }
-            catch (RpcException ex)
-            {
-                _interceptor.OnError(_context, ex);
-                throw;
-            }
+            await _original.CompleteAsync().ConfigureAwait(false);
         }
-
-        public async Task CompleteAsync()
+        catch (RpcException ex)
         {
-            try
-            {
-                await _original.CompleteAsync().ConfigureAwait(false);
-            }
-            catch (RpcException ex)
-            {
-                _interceptor.OnError(_context, ex);
-                throw;
-            }
+            _interceptor.OnError(_context, ex);
+            throw;
         }
     }
 }

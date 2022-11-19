@@ -16,57 +16,56 @@
 
 using System.Collections.Generic;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
+
+internal sealed class CSharpServiceAspNetAddOptionsBuilder : CodeGeneratorBase
 {
-    internal sealed class CSharpServiceAspNetAddOptionsBuilder : CodeGeneratorBase
+    private readonly ContractDescription _contract;
+    private readonly bool _isStaticClass;
+
+    public CSharpServiceAspNetAddOptionsBuilder(ContractDescription contract, bool isStaticClass)
     {
-        private readonly ContractDescription _contract;
-        private readonly bool _isStaticClass;
+        _contract = contract;
+        _isStaticClass = isStaticClass;
+    }
 
-        public CSharpServiceAspNetAddOptionsBuilder(ContractDescription contract, bool isStaticClass)
+    public override string GetGeneratedMemberName() => "Add" + _contract.BaseClassName + "Options";
+
+    protected override void Generate()
+    {
+        WriteMetadata();
+        Output
+            .Append("public static ")
+            .AppendTypeName("Microsoft.Extensions.DependencyInjection", "IServiceCollection")
+            .Append(" ")
+            .Append(GetGeneratedMemberName())
+            .Append("(");
+
+        if (_isStaticClass)
         {
-            _contract = contract;
-            _isStaticClass = isStaticClass;
+            Output.Append("this ");
         }
 
-        public override string GetGeneratedMemberName() => "Add" + _contract.BaseClassName + "Options";
+        Output
+            .AppendTypeName("Microsoft.Extensions.DependencyInjection", "IServiceCollection")
+            .Append(" services, Action<")
+            .AppendTypeName("Microsoft.Extensions.DependencyInjection", "ServiceModelGrpcServiceOptions")
+            .Append("<")
+            .Append(_contract.ContractInterfaceName)
+            .AppendLine(">> configure)")
+            .AppendLine("{");
 
-        protected override void Generate()
+        using (Output.Indent())
         {
-            WriteMetadata();
             Output
-                .Append("public static ")
-                .AppendTypeName("Microsoft.Extensions.DependencyInjection", "IServiceCollection")
-                .Append(" ")
-                .Append(GetGeneratedMemberName())
-                .Append("(");
-
-            if (_isStaticClass)
-            {
-                Output.Append("this ");
-            }
-
-            Output
-                .AppendTypeName("Microsoft.Extensions.DependencyInjection", "IServiceCollection")
-                .Append(" services, Action<")
-                .AppendTypeName("Microsoft.Extensions.DependencyInjection", "ServiceModelGrpcServiceOptions")
-                .Append("<")
+                .AppendArgumentNullException("services")
+                .Append("return ")
+                .AppendTypeName("Microsoft.Extensions.DependencyInjection", "ServiceCollectionExtensions")
+                .Append(".AddServiceModelGrpcServiceOptions<")
                 .Append(_contract.ContractInterfaceName)
-                .AppendLine(">> configure)")
-                .AppendLine("{");
-
-            using (Output.Indent())
-            {
-                Output
-                    .AppendArgumentNullException("services")
-                    .Append("return ")
-                    .AppendTypeName("Microsoft.Extensions.DependencyInjection", "ServiceCollectionExtensions")
-                    .Append(".AddServiceModelGrpcServiceOptions<")
-                    .Append(_contract.ContractInterfaceName)
-                    .AppendLine(">(services, configure);");
-            }
-
-            Output.AppendLine("}");
+                .AppendLine(">(services, configure);");
         }
+
+        Output.AppendLine("}");
     }
 }

@@ -28,126 +28,125 @@ using ServiceModel.Grpc.Channel;
 #pragma warning disable SA1615 // Element return value should be documented
 #pragma warning disable SA1618 // Generic type parameters should be documented
 
-namespace ServiceModel.Grpc.Client.Internal
+namespace ServiceModel.Grpc.Client.Internal;
+
+/// <summary>
+/// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+/// This API may change or be removed in future releases.
+/// </summary>
+[Browsable(false)]
+[EditorBrowsable(EditorBrowsableState.Never)]
+public ref struct CallOptionsBuilder
 {
-    /// <summary>
-    /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
-    /// This API may change or be removed in future releases.
-    /// </summary>
-    [Browsable(false)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public ref struct CallOptionsBuilder
+    private CallOptions _options;
+
+    /// <exclude />
+    public CallOptionsBuilder(Func<CallOptions>? defaultOptionsFactory)
     {
-        private CallOptions _options;
+        _options = defaultOptionsFactory?.Invoke() ?? default;
+        CallContext = default;
+    }
 
-        /// <exclude />
-        public CallOptionsBuilder(Func<CallOptions>? defaultOptionsFactory)
+    public CallContext? CallContext { get; private set; }
+
+    /// <exclude />
+    public CallOptionsBuilder WithCallOptions(CallOptions? options)
+    {
+        if (options.HasValue)
         {
-            _options = defaultOptionsFactory?.Invoke() ?? default;
-            CallContext = default;
+            _options = MergeCallOptions(_options, options.Value);
         }
 
-        public CallContext? CallContext { get; private set; }
+        return this;
+    }
 
-        /// <exclude />
-        public CallOptionsBuilder WithCallOptions(CallOptions? options)
+    /// <exclude />
+    public CallOptionsBuilder WithCancellationToken(CancellationToken? token)
+    {
+        if (token.HasValue)
         {
-            if (options.HasValue)
-            {
-                _options = MergeCallOptions(_options, options.Value);
-            }
-
-            return this;
+            _options = MergeCallOptions(_options, new CallOptions(cancellationToken: token.Value));
         }
 
-        /// <exclude />
-        public CallOptionsBuilder WithCancellationToken(CancellationToken? token)
-        {
-            if (token.HasValue)
-            {
-                _options = MergeCallOptions(_options, new CallOptions(cancellationToken: token.Value));
-            }
+        return this;
+    }
 
-            return this;
+    /// <exclude />
+    public CallOptionsBuilder WithCallContext(CallContext? context)
+    {
+        CallContext = context ?? CallContext;
+
+        return WithCallOptions(context?.CallOptions);
+    }
+
+    /// <exclude />
+    public CallOptionsBuilder WithServerCallContext(ServerCallContext? context)
+    {
+        if (context != null)
+        {
+            throw new NotSupportedException("ServerCallContext cannot be propagated from client call.");
         }
 
-        /// <exclude />
-        public CallOptionsBuilder WithCallContext(CallContext? context)
-        {
-            CallContext = context ?? CallContext;
+        return this;
+    }
 
-            return WithCallOptions(context?.CallOptions);
+    /// <exclude />
+    public readonly CallOptions Build() => _options;
+
+    internal static Metadata? MergeMetadata(Metadata? current, Metadata? mergeWith)
+    {
+        if (current == null || current.Count == 0)
+        {
+            return mergeWith;
         }
 
-        /// <exclude />
-        public CallOptionsBuilder WithServerCallContext(ServerCallContext? context)
+        if (mergeWith == null || mergeWith.Count == 0)
         {
-            if (context != null)
-            {
-                throw new NotSupportedException("ServerCallContext cannot be propagated from client call.");
-            }
-
-            return this;
+            return current;
         }
 
-        /// <exclude />
-        public readonly CallOptions Build() => _options;
-
-        internal static Metadata? MergeMetadata(Metadata? current, Metadata? mergeWith)
+        var result = new Metadata();
+        for (var i = 0; i < mergeWith.Count; i++)
         {
-            if (current == null || current.Count == 0)
-            {
-                return mergeWith;
-            }
-
-            if (mergeWith == null || mergeWith.Count == 0)
-            {
-                return current;
-            }
-
-            var result = new Metadata();
-            for (var i = 0; i < mergeWith.Count; i++)
-            {
-                result.Add(mergeWith[i]);
-            }
-
-            for (var i = 0; i < current.Count; i++)
-            {
-                var entry = current[i];
-                if (!result.ContainsHeader(entry))
-                {
-                    result.Add(entry);
-                }
-            }
-
-            return result;
+            result.Add(mergeWith[i]);
         }
 
-        internal static CallOptions MergeCallOptions(CallOptions current, CallOptions mergeWith)
+        for (var i = 0; i < current.Count; i++)
         {
-            return new CallOptions(
-                headers: MergeMetadata(current.Headers, mergeWith.Headers),
-                deadline: mergeWith.Deadline ?? current.Deadline,
-                cancellationToken: MergeToken(current.CancellationToken, mergeWith.CancellationToken),
-                writeOptions: mergeWith.WriteOptions ?? current.WriteOptions,
-                propagationToken: mergeWith.PropagationToken ?? current.PropagationToken,
-                credentials: mergeWith.Credentials ?? current.Credentials);
+            var entry = current[i];
+            if (!result.ContainsHeader(entry))
+            {
+                result.Add(entry);
+            }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static CancellationToken MergeToken(CancellationToken current, CancellationToken mergeWith)
+        return result;
+    }
+
+    internal static CallOptions MergeCallOptions(CallOptions current, CallOptions mergeWith)
+    {
+        return new CallOptions(
+            headers: MergeMetadata(current.Headers, mergeWith.Headers),
+            deadline: mergeWith.Deadline ?? current.Deadline,
+            cancellationToken: MergeToken(current.CancellationToken, mergeWith.CancellationToken),
+            writeOptions: mergeWith.WriteOptions ?? current.WriteOptions,
+            propagationToken: mergeWith.PropagationToken ?? current.PropagationToken,
+            credentials: mergeWith.Credentials ?? current.Credentials);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static CancellationToken MergeToken(CancellationToken current, CancellationToken mergeWith)
+    {
+        if (!mergeWith.CanBeCanceled || mergeWith.Equals(current))
         {
-            if (!mergeWith.CanBeCanceled || mergeWith.Equals(current))
-            {
-                return current;
-            }
-
-            if (!current.CanBeCanceled)
-            {
-                return mergeWith;
-            }
-
-            throw new NotSupportedException("Too many cancellation tokens.");
+            return current;
         }
+
+        if (!current.CanBeCanceled)
+        {
+            return mergeWith;
+        }
+
+        throw new NotSupportedException("Too many cancellation tokens.");
     }
 }

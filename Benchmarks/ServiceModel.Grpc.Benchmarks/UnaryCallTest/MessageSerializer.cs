@@ -20,39 +20,38 @@ using System.Reflection;
 using Google.Protobuf;
 using ServiceModel.Grpc.Configuration;
 
-namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest
+namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest;
+
+internal static class MessageSerializer
 {
-    internal static class MessageSerializer
+    private static readonly Func<IMarshallerFactory, object, byte[]> MarshallerSerialize = ResolveMarshallerSerialize();
+
+    public static byte[] Create(IMessage data) => Create(data.ToByteArray());
+
+    public static byte[] Create(IMarshallerFactory marshallerFactory, object data) => Create(MarshallerSerialize(marshallerFactory, data));
+
+    private static byte[] Create(byte[] data)
     {
-        private static readonly Func<IMarshallerFactory, object, byte[]> MarshallerSerialize = ResolveMarshallerSerialize();
+        var result = new byte[data.Length + 5];
 
-        public static byte[] Create(IMessage data) => Create(data.ToByteArray());
+        // not compressed
+        result[0] = 0;
 
-        public static byte[] Create(IMarshallerFactory marshallerFactory, object data) => Create(MarshallerSerialize(marshallerFactory, data));
+        // length
+        BinaryPrimitives.WriteUInt32BigEndian(result.AsSpan(1), (uint)data.Length);
 
-        private static byte[] Create(byte[] data)
-        {
-            var result = new byte[data.Length + 5];
+        // data
+        Array.Copy(data, 0, result, 5, data.Length);
 
-            // not compressed
-            result[0] = 0;
+        return result;
+    }
 
-            // length
-            BinaryPrimitives.WriteUInt32BigEndian(result.AsSpan(1), (uint)data.Length);
-
-            // data
-            Array.Copy(data, 0, result, 5, data.Length);
-
-            return result;
-        }
-
-        private static Func<IMarshallerFactory, object, byte[]> ResolveMarshallerSerialize()
-        {
-            return typeof(IMarshallerFactory)
-                .Assembly
-                .GetType("ServiceModel.Grpc.Configuration.MarshallerFactoryExtensions", true, false)
-                .GetMethod("SerializeHeader", BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
-                .CreateDelegate<Func<IMarshallerFactory, object, byte[]>>();
-        }
+    private static Func<IMarshallerFactory, object, byte[]> ResolveMarshallerSerialize()
+    {
+        return typeof(IMarshallerFactory)
+            .Assembly
+            .GetType("ServiceModel.Grpc.Configuration.MarshallerFactoryExtensions", true, false)
+            .GetMethod("SerializeHeader", BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
+            .CreateDelegate<Func<IMarshallerFactory, object, byte[]>>();
     }
 }

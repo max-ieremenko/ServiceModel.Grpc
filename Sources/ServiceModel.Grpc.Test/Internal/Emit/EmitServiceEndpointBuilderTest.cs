@@ -19,22 +19,21 @@ using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 
-namespace ServiceModel.Grpc.Internal.Emit
+namespace ServiceModel.Grpc.Internal.Emit;
+
+[TestFixture]
+public class EmitServiceEndpointBuilderTest : ServiceEndpointBuilderTestBase
 {
-    [TestFixture]
-    public class EmitServiceEndpointBuilderTest : ServiceEndpointBuilderTestBase
+    [OneTimeSetUp]
+    public void BeforeAllTest()
     {
-        [OneTimeSetUp]
-        public void BeforeAllTest()
-        {
-            var description = new ContractDescription(typeof(IContract));
-            var contractType = new EmitContractBuilder(description).Build(ProxyAssembly.DefaultModule, nameof(EmitServiceEndpointBuilderTest) + "Contract");
+        var description = new ContractDescription(typeof(IContract));
+        var contractType = new EmitContractBuilder(description).Build(ProxyAssembly.DefaultModule, nameof(EmitServiceEndpointBuilderTest) + "Contract");
 
-            var sut = new EmitServiceEndpointBuilder(description);
-            ChannelType = sut.Build(ProxyAssembly.DefaultModule, className: nameof(EmitServiceEndpointBuilderTest) + "Channel");
+        var sut = new EmitServiceEndpointBuilder(description);
+        ChannelType = sut.Build(ProxyAssembly.DefaultModule, className: nameof(EmitServiceEndpointBuilderTest) + "Channel");
 
-            var contract = EmitContractBuilder.CreateFactory(contractType)(DataContractMarshallerFactory.Default);
-            Channel = EmitServiceEndpointBuilder.CreateFactory(ChannelType)();
-        }
+        var contract = EmitContractBuilder.CreateFactory(contractType)(DataContractMarshallerFactory.Default);
+        Channel = EmitServiceEndpointBuilder.CreateFactory(ChannelType)();
     }
 }

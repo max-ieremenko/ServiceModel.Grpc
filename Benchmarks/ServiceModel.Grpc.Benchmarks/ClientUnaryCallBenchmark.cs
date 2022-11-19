@@ -19,33 +19,32 @@ using ServiceModel.Grpc.Benchmarks.UnaryCallTest;
 using ServiceModel.Grpc.Benchmarks.UnaryCallTest.Client;
 using ServiceModel.Grpc.Configuration;
 
-namespace ServiceModel.Grpc.Benchmarks
+namespace ServiceModel.Grpc.Benchmarks;
+
+public class ClientUnaryCallBenchmark : UnaryCallBenchmarkBase
 {
-    public class ClientUnaryCallBenchmark : UnaryCallBenchmarkBase
+    internal override IUnaryCallTest CreateServiceModelGrpc(IMarshallerFactory marshallerFactory, SomeObject payload)
     {
-        internal override IUnaryCallTest CreateServiceModelGrpc(IMarshallerFactory marshallerFactory, SomeObject payload)
-        {
-            return new ServiceModelGrpcClientCallTest(marshallerFactory, payload);
-        }
+        return new ServiceModelGrpcClientCallTest(marshallerFactory, payload);
+    }
 
-        internal override IUnaryCallTest CreateServiceModelGrpcProto(SomeObject payload)
-        {
-            return new ServiceModelGrpcProtoClientCallTest(payload);
-        }
+    internal override IUnaryCallTest CreateServiceModelGrpcProto(SomeObject payload)
+    {
+        return new ServiceModelGrpcProtoClientCallTest(payload);
+    }
 
-        internal override IUnaryCallTest CreateNativeGrpc(SomeObject payload)
-        {
-            return new NativeGrpcClientCallTest(payload);
-        }
+    internal override IUnaryCallTest CreateNativeGrpc(SomeObject payload)
+    {
+        return new NativeGrpcClientCallTest(payload);
+    }
 
-        internal override IUnaryCallTest CreateProtobufGrpc(SomeObject payload)
-        {
-            return new ProtobufGrpcClientCallTest(payload);
-        }
+    internal override IUnaryCallTest CreateProtobufGrpc(SomeObject payload)
+    {
+        return new ProtobufGrpcClientCallTest(payload);
+    }
 
-        internal override IUnaryCallTest CreateMagicOnion(SomeObject payload)
-        {
-            return new MagicOnionClientCallTest(payload);
-        }
+    internal override IUnaryCallTest CreateMagicOnion(SomeObject payload)
+    {
+        return new MagicOnionClientCallTest(payload);
     }
 }

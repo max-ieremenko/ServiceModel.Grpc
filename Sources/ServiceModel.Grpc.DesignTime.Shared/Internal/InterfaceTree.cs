@@ -19,95 +19,94 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal;
+
+internal readonly ref struct InterfaceTree
 {
-    internal readonly ref struct InterfaceTree
+    public InterfaceTree(INamedTypeSymbol rootType)
     {
-        public InterfaceTree(INamedTypeSymbol rootType)
+        Services = new List<(string ServiceName, INamedTypeSymbol ServiceType)>();
+        Interfaces = new List<INamedTypeSymbol>();
+
+        var interfaces = SyntaxTools.ExpandInterface(rootType).ToList();
+        ExtractServiceContracts(interfaces);
+        ExtractAttachedContracts(interfaces);
+        Interfaces.AddRange(interfaces);
+    }
+
+    public List<(string ServiceName, INamedTypeSymbol ServiceType)> Services { get; }
+
+    public List<INamedTypeSymbol> Interfaces { get; }
+
+    private static bool ContainsOperation(INamedTypeSymbol type)
+    {
+        foreach (var method in SyntaxTools.GetInstanceMethods(type))
         {
-            Services = new List<(string ServiceName, INamedTypeSymbol ServiceType)>();
-            Interfaces = new List<INamedTypeSymbol>();
-
-            var interfaces = SyntaxTools.ExpandInterface(rootType).ToList();
-            ExtractServiceContracts(interfaces);
-            ExtractAttachedContracts(interfaces);
-            Interfaces.AddRange(interfaces);
-        }
-
-        public List<(string ServiceName, INamedTypeSymbol ServiceType)> Services { get; }
-
-        public List<INamedTypeSymbol> Interfaces { get; }
-
-        private static bool ContainsOperation(INamedTypeSymbol type)
-        {
-            foreach (var method in SyntaxTools.GetInstanceMethods(type))
+            if (ServiceContract.IsServiceOperation(method))
             {
-                if (ServiceContract.IsServiceOperation(method))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private void ExtractServiceContracts(List<INamedTypeSymbol> interfaces)
-        {
-            for (var i = 0; i < interfaces.Count; i++)
-            {
-                var interfaceType = interfaces[i];
-                if (!ServiceContract.IsServiceContractInterface(interfaceType))
-                {
-                    continue;
-                }
-
-                var serviceName = ServiceContract.GetServiceName(interfaceType);
-                Services.Add((serviceName, interfaceType));
-                interfaces.RemoveAt(i);
-                i--;
+                return true;
             }
         }
 
-        private void ExtractAttachedContracts(List<INamedTypeSymbol> interfaces)
+        return false;
+    }
+
+    private void ExtractServiceContracts(List<INamedTypeSymbol> interfaces)
+    {
+        for (var i = 0; i < interfaces.Count; i++)
         {
-            // take into account only ServiceContracts
-            var servicesIndex = Services.Count;
-
-            for (var i = 0; i < interfaces.Count; i++)
+            var interfaceType = interfaces[i];
+            if (!ServiceContract.IsServiceContractInterface(interfaceType))
             {
-                var interfaceType = interfaces[i];
-                if (!ContainsOperation(interfaceType) || !TryFindParentService(interfaceType, servicesIndex, out var serviceName))
-                {
-                    continue;
-                }
+                continue;
+            }
 
-                Services.Add((serviceName, interfaceType));
-                interfaces.RemoveAt(i);
-                i--;
+            var serviceName = ServiceContract.GetServiceName(interfaceType);
+            Services.Add((serviceName, interfaceType));
+            interfaces.RemoveAt(i);
+            i--;
+        }
+    }
+
+    private void ExtractAttachedContracts(List<INamedTypeSymbol> interfaces)
+    {
+        // take into account only ServiceContracts
+        var servicesIndex = Services.Count;
+
+        for (var i = 0; i < interfaces.Count; i++)
+        {
+            var interfaceType = interfaces[i];
+            if (!ContainsOperation(interfaceType) || !TryFindParentService(interfaceType, servicesIndex, out var serviceName))
+            {
+                continue;
+            }
+
+            Services.Add((serviceName, interfaceType));
+            interfaces.RemoveAt(i);
+            i--;
+        }
+    }
+
+    private bool TryFindParentService(INamedTypeSymbol interfaceType, int servicesIndex, [NotNullWhen(true)] out string? serviceName)
+    {
+        serviceName = null;
+        INamedTypeSymbol? parent = null;
+
+        for (var i = 0; i < servicesIndex; i++)
+        {
+            var test = Services[i];
+            if (!interfaceType.IsAssignableFrom(test.ServiceType))
+            {
+                continue;
+            }
+
+            if (parent == null || parent.IsAssignableFrom(test.ServiceType))
+            {
+                parent = test.ServiceType;
+                serviceName = test.ServiceName;
             }
         }
 
-        private bool TryFindParentService(INamedTypeSymbol interfaceType, int servicesIndex, [NotNullWhen(true)] out string? serviceName)
-        {
-            serviceName = null;
-            INamedTypeSymbol? parent = null;
-
-            for (var i = 0; i < servicesIndex; i++)
-            {
-                var test = Services[i];
-                if (!interfaceType.IsAssignableFrom(test.ServiceType))
-                {
-                    continue;
-                }
-
-                if (parent == null || parent.IsAssignableFrom(test.ServiceType))
-                {
-                    parent = test.ServiceType;
-                    serviceName = test.ServiceName;
-                }
-            }
-
-            return parent != null;
-        }
+        return parent != null;
     }
 }

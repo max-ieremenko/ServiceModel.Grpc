@@ -19,71 +19,70 @@ using System.Buffers;
 using System.Runtime.CompilerServices;
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Internal.IO
+namespace ServiceModel.Grpc.Internal.IO;
+
+internal sealed class DefaultSerializationContext : SerializationContext, IDisposable
 {
-    internal sealed class DefaultSerializationContext : SerializationContext, IDisposable
+    private readonly BufferWriter<byte> _buffer;
+    private bool _isSealed;
+
+    public DefaultSerializationContext(int initialCapacity = 1024)
     {
-        private readonly BufferWriter<byte> _buffer;
-        private bool _isSealed;
+        _buffer = new BufferWriter<byte>(initialCapacity);
+    }
 
-        public DefaultSerializationContext(int initialCapacity = 1024)
+    public byte[] GetContent()
+    {
+        if (!_isSealed)
         {
-            _buffer = new BufferWriter<byte>(initialCapacity);
+            throw new InvalidOperationException("Serialization context is not completed.");
         }
 
-        public byte[] GetContent()
-        {
-            if (!_isSealed)
-            {
-                throw new InvalidOperationException("Serialization context is not completed.");
-            }
+        return _buffer.ToArray();
+    }
 
-            return _buffer.ToArray();
+    public override void Complete()
+    {
+        CheckIsNotSealed();
+        _isSealed = true;
+    }
+
+    public override void Complete(byte[] payload)
+    {
+        payload.AssertNotNull(nameof(payload));
+
+        Complete();
+
+        if (payload.Length > 0)
+        {
+            var span = _buffer.GetSpan(payload.Length);
+            payload.AsSpan(0).CopyTo(span);
+            _buffer.Advance(payload.Length);
         }
+    }
 
-        public override void Complete()
+    public override IBufferWriter<byte> GetBufferWriter()
+    {
+        CheckIsNotSealed();
+        return _buffer;
+    }
+
+    public override void SetPayloadLength(int payloadLength)
+    {
+        CheckIsNotSealed();
+    }
+
+    public void Dispose()
+    {
+        _buffer.Dispose();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void CheckIsNotSealed()
+    {
+        if (_isSealed)
         {
-            CheckIsNotSealed();
-            _isSealed = true;
-        }
-
-        public override void Complete(byte[] payload)
-        {
-            payload.AssertNotNull(nameof(payload));
-
-            Complete();
-
-            if (payload.Length > 0)
-            {
-                var span = _buffer.GetSpan(payload.Length);
-                payload.AsSpan(0).CopyTo(span);
-                _buffer.Advance(payload.Length);
-            }
-        }
-
-        public override IBufferWriter<byte> GetBufferWriter()
-        {
-            CheckIsNotSealed();
-            return _buffer;
-        }
-
-        public override void SetPayloadLength(int payloadLength)
-        {
-            CheckIsNotSealed();
-        }
-
-        public void Dispose()
-        {
-            _buffer.Dispose();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void CheckIsNotSealed()
-        {
-            if (_isSealed)
-            {
-                throw new InvalidOperationException("Serialization context is completed.");
-            }
+            throw new InvalidOperationException("Serialization context is completed.");
         }
     }
 }

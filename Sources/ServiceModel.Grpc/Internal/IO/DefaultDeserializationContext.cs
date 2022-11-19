@@ -18,35 +18,34 @@ using System;
 using System.Buffers;
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Internal.IO
+namespace ServiceModel.Grpc.Internal.IO;
+
+internal sealed class DefaultDeserializationContext : DeserializationContext
 {
-    internal sealed class DefaultDeserializationContext : DeserializationContext
+    private readonly byte[]? _payload;
+
+    public DefaultDeserializationContext(byte[]? payload)
     {
-        private readonly byte[]? _payload;
+        _payload = payload;
+    }
 
-        public DefaultDeserializationContext(byte[]? payload)
+    public override int PayloadLength => _payload?.Length ?? 0;
+
+    public override byte[] PayloadAsNewBuffer()
+    {
+        if (_payload == null)
         {
-            _payload = payload;
+            return Array.Empty<byte>();
         }
 
-        public override int PayloadLength => _payload?.Length ?? 0;
+        var result = new byte[_payload.Length];
+        Array.Copy(_payload, 0, result, 0, _payload.Length);
+        return result;
+    }
 
-        public override byte[] PayloadAsNewBuffer()
-        {
-            if (_payload == null)
-            {
-                return Array.Empty<byte>();
-            }
-
-            var result = new byte[_payload.Length];
-            Array.Copy(_payload, 0, result, 0, _payload.Length);
-            return result;
-        }
-
-        public override ReadOnlySequence<byte> PayloadAsReadOnlySequence()
-        {
-            var payload = _payload ?? Array.Empty<byte>();
-            return new ReadOnlySequence<byte>(payload);
-        }
+    public override ReadOnlySequence<byte> PayloadAsReadOnlySequence()
+    {
+        var payload = _payload ?? Array.Empty<byte>();
+        return new ReadOnlySequence<byte>(payload);
     }
 }

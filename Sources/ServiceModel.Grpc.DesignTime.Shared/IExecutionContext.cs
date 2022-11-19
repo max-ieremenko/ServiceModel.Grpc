@@ -18,14 +18,13 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
-namespace ServiceModel.Grpc.DesignTime.Generator
+namespace ServiceModel.Grpc.DesignTime.Generator;
+
+internal interface IExecutionContext
 {
-    internal interface IExecutionContext
-    {
-        CancellationToken CancellationToken { get; }
+    CancellationToken CancellationToken { get; }
 
-        void ReportDiagnostic(Diagnostic diagnostic);
+    void ReportDiagnostic(Diagnostic diagnostic);
 
-        void AddSource(string hintName, SourceText sourceText);
-    }
+    void AddSource(string hintName, SourceText sourceText);
 }

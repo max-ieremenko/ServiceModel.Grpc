@@ -16,18 +16,17 @@
 
 using System.Threading.Tasks;
 
-namespace ServiceModel.Grpc.Benchmarks.Domain
-{
-    internal sealed class TestServiceStub : ITestService
-    {
-        public Task<SomeObject> PingPong(SomeObject value)
-        {
-            return Task.FromResult(value);
-        }
+namespace ServiceModel.Grpc.Benchmarks.Domain;
 
-        public Task<SomeObjectProto> PingPongProto(SomeObjectProto value)
-        {
-            return Task.FromResult(value);
-        }
+internal sealed class TestServiceStub : ITestService
+{
+    public Task<SomeObject> PingPong(SomeObject value)
+    {
+        return Task.FromResult(value);
+    }
+
+    public Task<SomeObjectProto> PingPongProto(SomeObjectProto value)
+    {
+        return Task.FromResult(value);
     }
 }

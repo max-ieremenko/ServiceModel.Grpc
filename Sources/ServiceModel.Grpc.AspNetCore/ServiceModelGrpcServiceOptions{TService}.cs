@@ -21,46 +21,45 @@ using ServiceModel.Grpc.Filters;
 using ServiceModel.Grpc.Interceptors;
 
 //// ReSharper disable CheckNamespace
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
 //// ReSharper restore CheckNamespace
+
+/// <summary>
+/// Provides a configuration for a specific ServiceModel.Grpc service.
+/// </summary>
+/// <typeparam name="TService">The implementation type of ServiceModel.Grpc service.</typeparam>
+public sealed class ServiceModelGrpcServiceOptions<TService>
+    where TService : class
 {
+    private FilterCollection<IServerFilter>? _filters;
+
     /// <summary>
-    /// Provides a configuration for a specific ServiceModel.Grpc service.
+    /// Gets or sets a factory for serializing and deserializing messages.
     /// </summary>
-    /// <typeparam name="TService">The implementation type of ServiceModel.Grpc service.</typeparam>
-    public sealed class ServiceModelGrpcServiceOptions<TService>
-        where TService : class
+    public IMarshallerFactory? MarshallerFactory { get; set; }
+
+    /// <summary>
+    /// Gets or sets a factory for server call error handler.
+    /// </summary>
+    public Func<IServiceProvider, IServerErrorHandler>? ErrorHandlerFactory { get; set; }
+
+    /// <summary>
+    /// Gets the collection of registered server filters for this service.
+    /// </summary>
+    public FilterCollection<IServerFilter> Filters
     {
-        private FilterCollection<IServerFilter>? _filters;
-
-        /// <summary>
-        /// Gets or sets a factory for serializing and deserializing messages.
-        /// </summary>
-        public IMarshallerFactory? MarshallerFactory { get; set; }
-
-        /// <summary>
-        /// Gets or sets a factory for server call error handler.
-        /// </summary>
-        public Func<IServiceProvider, IServerErrorHandler>? ErrorHandlerFactory { get; set; }
-
-        /// <summary>
-        /// Gets the collection of registered server filters for this service.
-        /// </summary>
-        public FilterCollection<IServerFilter> Filters
+        get
         {
-            get
+            if (_filters == null)
             {
-                if (_filters == null)
-                {
-                    _filters = new FilterCollection<IServerFilter>();
-                }
-
-                return _filters;
+                _filters = new FilterCollection<IServerFilter>();
             }
+
+            return _filters;
         }
-
-        internal Type? EndpointBinderType { get; set; }
-
-        internal IList<FilterRegistration<IServerFilter>>? GetFilters() => _filters;
     }
+
+    internal Type? EndpointBinderType { get; set; }
+
+    internal IList<FilterRegistration<IServerFilter>>? GetFilters() => _filters;
 }

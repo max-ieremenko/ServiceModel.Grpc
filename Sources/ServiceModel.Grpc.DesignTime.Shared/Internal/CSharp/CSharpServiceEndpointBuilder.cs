@@ -20,465 +20,464 @@ using System.Linq;
 using System.Threading;
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
+
+internal sealed class CSharpServiceEndpointBuilder : CodeGeneratorBase
 {
-    internal sealed class CSharpServiceEndpointBuilder : CodeGeneratorBase
+    private readonly ContractDescription _contract;
+
+    public CSharpServiceEndpointBuilder(ContractDescription contract)
     {
-        private readonly ContractDescription _contract;
+        _contract = contract;
+    }
 
-        public CSharpServiceEndpointBuilder(ContractDescription contract)
+    public override string GetGeneratedMemberName() => _contract.EndpointClassName;
+
+    protected override void Generate()
+    {
+        WriteMetadata();
+        Output
+            .Append($"internal sealed class {_contract.EndpointClassName}")
+            .AppendLine();
+        Output.AppendLine("{");
+
+        using (Output.Indent())
         {
-            _contract = contract;
-        }
-
-        public override string GetGeneratedMemberName() => _contract.EndpointClassName;
-
-        protected override void Generate()
-        {
-            WriteMetadata();
-            Output
-                .Append($"internal sealed class {_contract.EndpointClassName}")
-                .AppendLine();
-            Output.AppendLine("{");
-
-            using (Output.Indent())
+            foreach (var interfaceDescription in _contract.Services)
             {
-                foreach (var interfaceDescription in _contract.Services)
+                foreach (var method in interfaceDescription.Operations)
                 {
-                    foreach (var method in interfaceDescription.Operations)
-                    {
-                        Output.AppendLine();
-                        ImplementMethod(interfaceDescription.InterfaceTypeName, method);
-                    }
+                    Output.AppendLine();
+                    ImplementMethod(interfaceDescription.InterfaceTypeName, method);
                 }
-            }
-
-            Output.AppendLine("}");
-        }
-
-        private void ImplementMethod(string interfaceType, OperationDescription operation)
-        {
-            switch (operation.OperationType)
-            {
-                case MethodType.Unary:
-                    BuildUnary(interfaceType, operation);
-                    break;
-
-                case MethodType.ClientStreaming:
-                    BuildClientStreaming(interfaceType, operation);
-                    break;
-
-                case MethodType.ServerStreaming:
-                    BuildServerStreaming(interfaceType, operation);
-                    break;
-
-                case MethodType.DuplexStreaming:
-                    BuildDuplexStreaming(interfaceType, operation);
-                    break;
-
-                default:
-                    throw new NotImplementedException("{0} operation is not implemented.".FormatWith(operation.OperationType));
             }
         }
 
-        private void BuildUnary(string interfaceType, OperationDescription operation)
+        Output.AppendLine("}");
+    }
+
+    private void ImplementMethod(string interfaceType, OperationDescription operation)
+    {
+        switch (operation.OperationType)
         {
-            // Task<TResponse> Invoke(TService service, TRequest request, ServerCallContext context)
-            Output.Append("public ");
-            if (operation.IsAsync)
-            {
-                Output.Append("async ");
-            }
+            case MethodType.Unary:
+                BuildUnary(interfaceType, operation);
+                break;
 
-            Output
-                .Append("Task<").AppendMessage(operation.ResponseType).Append("> ")
-                .Append(operation.OperationName)
-                .Append("(")
-                .Append(interfaceType).Append(" service, ")
-                .AppendMessage(operation.RequestType).Append(" request, ")
-                .AppendType(typeof(ServerCallContext)).AppendLine(" context)")
-                .AppendLine("{");
+            case MethodType.ClientStreaming:
+                BuildClientStreaming(interfaceType, operation);
+                break;
 
-            using (Output.Indent())
-            {
-                if (operation.ResponseType.Properties.Length > 0)
-                {
-                    Output.Append("var result = ");
-                }
+            case MethodType.ServerStreaming:
+                BuildServerStreaming(interfaceType, operation);
+                break;
 
-                if (operation.IsAsync)
-                {
-                    Output.Append("await ");
-                }
+            case MethodType.DuplexStreaming:
+                BuildDuplexStreaming(interfaceType, operation);
+                break;
 
-                Output
-                    .Append("service.")
-                    .Append(operation.Method.Name)
-                    .Append("(");
+            default:
+                throw new NotImplementedException("{0} operation is not implemented.".FormatWith(operation.OperationType));
+        }
+    }
 
-                for (var i = 0; i < operation.Method.Parameters.Length; i++)
-                {
-                    if (i > 0)
-                    {
-                        Output.Append(", ");
-                    }
-
-                    var parameter = operation.Method.Parameters[i];
-                    if (operation.ContextInput.Contains(i))
-                    {
-                        PushContext(parameter);
-                    }
-                    else
-                    {
-                        Output
-                            .Append("request.Value")
-                            .Append((Array.IndexOf(operation.RequestTypeInput, i) + 1).ToString(CultureInfo.InvariantCulture));
-                    }
-                }
-
-                Output.Append(")");
-                if (operation.IsAsync)
-                {
-                    Output.Append(".ConfigureAwait(false)");
-                }
-
-                Output
-                    .AppendLine(";")
-                    .Append("return ");
-
-                if (!operation.IsAsync)
-                {
-                    Output.Append("Task.FromResult(");
-                }
-
-                Output
-                    .Append("new ")
-                    .AppendMessage(operation.ResponseType)
-                    .Append("(");
-
-                if (operation.ResponseType.Properties.Length > 0)
-                {
-                    Output.Append("result");
-                }
-
-                Output.Append(")");
-
-                if (!operation.IsAsync)
-                {
-                    Output.Append(")");
-                }
-
-                Output.AppendLine(";");
-            }
-
-            Output.AppendLine("}");
+    private void BuildUnary(string interfaceType, OperationDescription operation)
+    {
+        // Task<TResponse> Invoke(TService service, TRequest request, ServerCallContext context)
+        Output.Append("public ");
+        if (operation.IsAsync)
+        {
+            Output.Append("async ");
         }
 
-        private void BuildClientStreaming(string interfaceType, OperationDescription operation)
+        Output
+            .Append("Task<").AppendMessage(operation.ResponseType).Append("> ")
+            .Append(operation.OperationName)
+            .Append("(")
+            .Append(interfaceType).Append(" service, ")
+            .AppendMessage(operation.RequestType).Append(" request, ")
+            .AppendType(typeof(ServerCallContext)).AppendLine(" context)")
+            .AppendLine("{");
+
+        using (Output.Indent())
         {
-            // Task<TResponse> Invoke(TService service, TRequestHeader requestHeader, IAsyncEnumerable<TRequest> request, ServerCallContext context)
-            Output
-                .Append("public async Task<").AppendMessage(operation.ResponseType).Append("> ")
-                .Append(operation.OperationName)
-                .Append("(")
-                .Append(interfaceType).Append(" service, ")
-                .AppendMessageOrDefault(operation.HeaderRequestType).Append(" requestHeader, ")
-                .Append("IAsyncEnumerable<").Append(operation.RequestType.Properties[0]).Append(">").Append(" request, ")
-                .AppendType(typeof(ServerCallContext)).AppendLine(" context)")
-                .AppendLine("{");
-
-            using (Output.Indent())
-            {
-                if (operation.ResponseType.Properties.Length > 0)
-                {
-                    Output.Append("var result = ");
-                }
-
-                Output
-                    .Append("await service.")
-                    .Append(operation.Method.Name)
-                    .Append("(");
-
-                for (var i = 0; i < operation.Method.Parameters.Length; i++)
-                {
-                    if (i > 0)
-                    {
-                        Output.Append(", ");
-                    }
-
-                    var parameter = operation.Method.Parameters[i];
-                    if (operation.ContextInput.Contains(i))
-                    {
-                        PushContext(parameter);
-                    }
-                    else if (operation.HeaderRequestTypeInput.Contains(i))
-                    {
-                        Output
-                            .Append("requestHeader.Value")
-                            .Append((Array.IndexOf(operation.HeaderRequestTypeInput, i) + 1).ToString(CultureInfo.InvariantCulture));
-                    }
-                    else
-                    {
-                        Output.Append("request");
-                    }
-                }
-
-                Output
-                    .AppendLine(").ConfigureAwait(false);")
-                    .Append("return ");
-
-                Output
-                    .Append("new ")
-                    .AppendMessage(operation.ResponseType)
-                    .Append("(");
-
-                if (operation.ResponseType.Properties.Length > 0)
-                {
-                    Output.Append("result");
-                }
-
-                Output.AppendLine(");");
-            }
-
-            Output.AppendLine("}");
-        }
-
-        private void BuildServerStreaming(string interfaceType, OperationDescription operation)
-        {
-            // ValueTask<(TResponseHeader, IAsyncEnumerable<TResponse>)> Invoke(TService service, TRequest request, ServerCallContext context)
-            Output
-                .Append("public")
-                .Append(operation.IsAsync ? " async" : string.Empty)
-                .Append(" ValueTask<(")
-                .AppendMessageOrDefault(operation.HeaderResponseType)
-                .Append(", IAsyncEnumerable<")
-                .Append(operation.ResponseType.Properties[0])
-                .Append(">)> ")
-                .Append(operation.OperationName)
-                .Append("(")
-                .Append(interfaceType).Append(" service, ")
-                .AppendMessage(operation.RequestType).Append(" request, ")
-                .AppendType(typeof(ServerCallContext)).AppendLine(" context)")
-                .AppendLine("{");
-
-            using (Output.Indent())
+            if (operation.ResponseType.Properties.Length > 0)
             {
                 Output.Append("var result = ");
-                if (operation.IsAsync)
-                {
-                    Output.Append("await ");
-                }
-
-                Output
-                    .Append("service.")
-                    .Append(operation.Method.Name)
-                    .Append("(");
-
-                for (var i = 0; i < operation.Method.Parameters.Length; i++)
-                {
-                    if (i > 0)
-                    {
-                        Output.Append(", ");
-                    }
-
-                    var parameter = operation.Method.Parameters[i];
-                    if (operation.ContextInput.Contains(i))
-                    {
-                        PushContext(parameter);
-                    }
-                    else
-                    {
-                        Output
-                            .Append("request.Value")
-                            .Append((Array.IndexOf(operation.RequestTypeInput, i) + 1).ToString(CultureInfo.InvariantCulture));
-                    }
-                }
-
-                Output.Append(")");
-                if (operation.IsAsync)
-                {
-                    Output.Append(".ConfigureAwait(false)");
-                }
-
-                Output.AppendLine(";");
-
-                BuildWriteServerStreamingResult(operation);
             }
 
-            Output.AppendLine("}");
-        }
-
-        private void BuildDuplexStreaming(string interfaceType, OperationDescription operation)
-        {
-            // ValueTask<(TResponseHeader, IAsyncEnumerable<TResponse>)> Invoke(TService service, TRequestHeader requestHeader, IAsyncEnumerable<TRequest> request, ServerCallContext context)
-            Output
-                .Append("public")
-                .Append(operation.IsAsync ? " async" : string.Empty)
-                .Append(" ValueTask<(")
-                .AppendMessageOrDefault(operation.HeaderResponseType)
-                .Append(", IAsyncEnumerable<")
-                .Append(operation.ResponseType.Properties[0])
-                .Append(">)> ")
-                .Append(operation.OperationName)
-                .Append("(")
-                .Append(interfaceType).Append(" service, ")
-                .AppendMessageOrDefault(operation.HeaderRequestType).Append(" requestHeader, ")
-                .Append("IAsyncEnumerable<").Append(operation.RequestType.Properties[0]).Append("> request, ")
-                .AppendType(typeof(ServerCallContext)).AppendLine(" context)")
-                .AppendLine("{");
-
-            using (Output.Indent())
-            {
-                Output.Append("var result = ");
-                if (operation.IsAsync)
-                {
-                    Output.Append("await ");
-                }
-
-                Output
-                    .Append("service.")
-                    .Append(operation.Method.Name)
-                    .Append("(");
-
-                for (var i = 0; i < operation.Method.Parameters.Length; i++)
-                {
-                    if (i > 0)
-                    {
-                        Output.Append(", ");
-                    }
-
-                    var parameter = operation.Method.Parameters[i];
-                    if (operation.ContextInput.Contains(i))
-                    {
-                        PushContext(parameter);
-                    }
-                    else if (operation.HeaderRequestTypeInput.Contains(i))
-                    {
-                        Output
-                            .Append("requestHeader.Value")
-                            .Append((Array.IndexOf(operation.HeaderRequestTypeInput, i) + 1).ToString(CultureInfo.InvariantCulture));
-                    }
-                    else
-                    {
-                        Output.Append("request");
-                    }
-                }
-
-                Output.Append(")");
-
-                if (operation.IsAsync)
-                {
-                    Output.Append(".ConfigureAwait(false)");
-                }
-
-                Output.AppendLine(";");
-
-                BuildWriteServerStreamingResult(operation);
-            }
-
-            Output.AppendLine("}");
-        }
-
-        // return ValueTask<(Message<THeader>, IAsyncEnumerable<TResponse>)>
-        private void BuildWriteServerStreamingResult(OperationDescription operation)
-        {
-            Output.Append("return ");
             if (operation.IsAsync)
             {
-                Output.Append("(");
-            }
-            else
-            {
-                Output
-                    .Append("new ValueTask<(")
-                    .AppendMessageOrDefault(operation.HeaderResponseType)
-                    .Append(", IAsyncEnumerable<")
-                    .Append(operation.ResponseType.Properties[0])
-                    .Append(">)>((");
+                Output.Append("await ");
             }
 
-            if (operation.HeaderResponseType == null)
-            {
-                Output.Append("null");
-            }
-            else
-            {
-                Output
-                    .Append("new ")
-                    .AppendMessage(operation.HeaderResponseType)
-                    .Append("(");
+            Output
+                .Append("service.")
+                .Append(operation.Method.Name)
+                .Append("(");
 
-                for (var i = 0; i < operation.HeaderResponseTypeInput.Length; i++)
+            for (var i = 0; i < operation.Method.Parameters.Length; i++)
+            {
+                if (i > 0)
                 {
-                    if (i > 0)
-                    {
-                        Output.Append(", ");
-                    }
-
-                    Output.Append("result.Item").Append((operation.HeaderResponseTypeInput[i] + 1).ToString(CultureInfo.InvariantCulture));
+                    Output.Append(", ");
                 }
 
-                Output.Append(")");
+                var parameter = operation.Method.Parameters[i];
+                if (operation.ContextInput.Contains(i))
+                {
+                    PushContext(parameter);
+                }
+                else
+                {
+                    Output
+                        .Append("request.Value")
+                        .Append((Array.IndexOf(operation.RequestTypeInput, i) + 1).ToString(CultureInfo.InvariantCulture));
+                }
             }
 
-            Output.Append(", ");
+            Output.Append(")");
+            if (operation.IsAsync)
+            {
+                Output.Append(".ConfigureAwait(false)");
+            }
 
-            if (operation.HeaderResponseType == null)
+            Output
+                .AppendLine(";")
+                .Append("return ");
+
+            if (!operation.IsAsync)
+            {
+                Output.Append("Task.FromResult(");
+            }
+
+            Output
+                .Append("new ")
+                .AppendMessage(operation.ResponseType)
+                .Append("(");
+
+            if (operation.ResponseType.Properties.Length > 0)
             {
                 Output.Append("result");
             }
-            else
+
+            Output.Append(")");
+
+            if (!operation.IsAsync)
             {
-                Output
-                    .Append("result.Item")
-                    .Append((operation.ResponseTypeIndex + 1).ToString(CultureInfo.InvariantCulture));
+                Output.Append(")");
             }
+
+            Output.AppendLine(";");
+        }
+
+        Output.AppendLine("}");
+    }
+
+    private void BuildClientStreaming(string interfaceType, OperationDescription operation)
+    {
+        // Task<TResponse> Invoke(TService service, TRequestHeader requestHeader, IAsyncEnumerable<TRequest> request, ServerCallContext context)
+        Output
+            .Append("public async Task<").AppendMessage(operation.ResponseType).Append("> ")
+            .Append(operation.OperationName)
+            .Append("(")
+            .Append(interfaceType).Append(" service, ")
+            .AppendMessageOrDefault(operation.HeaderRequestType).Append(" requestHeader, ")
+            .Append("IAsyncEnumerable<").Append(operation.RequestType.Properties[0]).Append(">").Append(" request, ")
+            .AppendType(typeof(ServerCallContext)).AppendLine(" context)")
+            .AppendLine("{");
+
+        using (Output.Indent())
+        {
+            if (operation.ResponseType.Properties.Length > 0)
+            {
+                Output.Append("var result = ");
+            }
+
+            Output
+                .Append("await service.")
+                .Append(operation.Method.Name)
+                .Append("(");
+
+            for (var i = 0; i < operation.Method.Parameters.Length; i++)
+            {
+                if (i > 0)
+                {
+                    Output.Append(", ");
+                }
+
+                var parameter = operation.Method.Parameters[i];
+                if (operation.ContextInput.Contains(i))
+                {
+                    PushContext(parameter);
+                }
+                else if (operation.HeaderRequestTypeInput.Contains(i))
+                {
+                    Output
+                        .Append("requestHeader.Value")
+                        .Append((Array.IndexOf(operation.HeaderRequestTypeInput, i) + 1).ToString(CultureInfo.InvariantCulture));
+                }
+                else
+                {
+                    Output.Append("request");
+                }
+            }
+
+            Output
+                .AppendLine(").ConfigureAwait(false);")
+                .Append("return ");
+
+            Output
+                .Append("new ")
+                .AppendMessage(operation.ResponseType)
+                .Append("(");
+
+            if (operation.ResponseType.Properties.Length > 0)
+            {
+                Output.Append("result");
+            }
+
+            Output.AppendLine(");");
+        }
+
+        Output.AppendLine("}");
+    }
+
+    private void BuildServerStreaming(string interfaceType, OperationDescription operation)
+    {
+        // ValueTask<(TResponseHeader, IAsyncEnumerable<TResponse>)> Invoke(TService service, TRequest request, ServerCallContext context)
+        Output
+            .Append("public")
+            .Append(operation.IsAsync ? " async" : string.Empty)
+            .Append(" ValueTask<(")
+            .AppendMessageOrDefault(operation.HeaderResponseType)
+            .Append(", IAsyncEnumerable<")
+            .Append(operation.ResponseType.Properties[0])
+            .Append(">)> ")
+            .Append(operation.OperationName)
+            .Append("(")
+            .Append(interfaceType).Append(" service, ")
+            .AppendMessage(operation.RequestType).Append(" request, ")
+            .AppendType(typeof(ServerCallContext)).AppendLine(" context)")
+            .AppendLine("{");
+
+        using (Output.Indent())
+        {
+            Output.Append("var result = ");
+            if (operation.IsAsync)
+            {
+                Output.Append("await ");
+            }
+
+            Output
+                .Append("service.")
+                .Append(operation.Method.Name)
+                .Append("(");
+
+            for (var i = 0; i < operation.Method.Parameters.Length; i++)
+            {
+                if (i > 0)
+                {
+                    Output.Append(", ");
+                }
+
+                var parameter = operation.Method.Parameters[i];
+                if (operation.ContextInput.Contains(i))
+                {
+                    PushContext(parameter);
+                }
+                else
+                {
+                    Output
+                        .Append("request.Value")
+                        .Append((Array.IndexOf(operation.RequestTypeInput, i) + 1).ToString(CultureInfo.InvariantCulture));
+                }
+            }
+
+            Output.Append(")");
+            if (operation.IsAsync)
+            {
+                Output.Append(".ConfigureAwait(false)");
+            }
+
+            Output.AppendLine(";");
+
+            BuildWriteServerStreamingResult(operation);
+        }
+
+        Output.AppendLine("}");
+    }
+
+    private void BuildDuplexStreaming(string interfaceType, OperationDescription operation)
+    {
+        // ValueTask<(TResponseHeader, IAsyncEnumerable<TResponse>)> Invoke(TService service, TRequestHeader requestHeader, IAsyncEnumerable<TRequest> request, ServerCallContext context)
+        Output
+            .Append("public")
+            .Append(operation.IsAsync ? " async" : string.Empty)
+            .Append(" ValueTask<(")
+            .AppendMessageOrDefault(operation.HeaderResponseType)
+            .Append(", IAsyncEnumerable<")
+            .Append(operation.ResponseType.Properties[0])
+            .Append(">)> ")
+            .Append(operation.OperationName)
+            .Append("(")
+            .Append(interfaceType).Append(" service, ")
+            .AppendMessageOrDefault(operation.HeaderRequestType).Append(" requestHeader, ")
+            .Append("IAsyncEnumerable<").Append(operation.RequestType.Properties[0]).Append("> request, ")
+            .AppendType(typeof(ServerCallContext)).AppendLine(" context)")
+            .AppendLine("{");
+
+        using (Output.Indent())
+        {
+            Output.Append("var result = ");
+            if (operation.IsAsync)
+            {
+                Output.Append("await ");
+            }
+
+            Output
+                .Append("service.")
+                .Append(operation.Method.Name)
+                .Append("(");
+
+            for (var i = 0; i < operation.Method.Parameters.Length; i++)
+            {
+                if (i > 0)
+                {
+                    Output.Append(", ");
+                }
+
+                var parameter = operation.Method.Parameters[i];
+                if (operation.ContextInput.Contains(i))
+                {
+                    PushContext(parameter);
+                }
+                else if (operation.HeaderRequestTypeInput.Contains(i))
+                {
+                    Output
+                        .Append("requestHeader.Value")
+                        .Append((Array.IndexOf(operation.HeaderRequestTypeInput, i) + 1).ToString(CultureInfo.InvariantCulture));
+                }
+                else
+                {
+                    Output.Append("request");
+                }
+            }
+
+            Output.Append(")");
 
             if (operation.IsAsync)
             {
-                Output.AppendLine(");");
+                Output.Append(".ConfigureAwait(false)");
             }
-            else
-            {
-                Output.AppendLine("));");
-            }
+
+            Output.AppendLine(";");
+
+            BuildWriteServerStreamingResult(operation);
         }
 
-        private void PushContext(ParameterDescription parameter)
+        Output.AppendLine("}");
+    }
+
+    // return ValueTask<(Message<THeader>, IAsyncEnumerable<TResponse>)>
+    private void BuildWriteServerStreamingResult(OperationDescription operation)
+    {
+        Output.Append("return ");
+        if (operation.IsAsync)
         {
-            if (parameter.TypeSymbol.IsAssignableFrom(typeof(ServerCallContext))
-                || parameter.TypeSymbol.IsAssignableFrom(typeof(CallContext)))
-            {
-                Output.Append("context");
-                return;
-            }
-
-            if (parameter.TypeSymbol.Is(typeof(CancellationToken))
-                || parameter.TypeSymbol.Is(typeof(CancellationToken?)))
-            {
-                Output
-                    .Append("context.")
-                    .Append(nameof(ServerCallContext.CancellationToken));
-                return;
-            }
-
-            if (parameter.TypeSymbol.Is(typeof(CallOptions))
-                || parameter.TypeSymbol.Is(typeof(CallOptions?)))
-            {
-                // new CallOptions(context.RequestHeaders, context.Deadline, context.CancellationToken, context.WriteOptions)
-                Output
-                    .Append("new ")
-                    .AppendType(typeof(CallOptions))
-                    .Append("(")
-                    .Append("context.").Append(nameof(ServerCallContext.RequestHeaders))
-                    .Append(", context.").Append(nameof(ServerCallContext.Deadline))
-                    .Append(", context.").Append(nameof(ServerCallContext.CancellationToken))
-                    .Append(", context.").Append(nameof(ServerCallContext.WriteOptions))
-                    .Append(")");
-                return;
-            }
-
-            throw new NotImplementedException();
+            Output.Append("(");
         }
+        else
+        {
+            Output
+                .Append("new ValueTask<(")
+                .AppendMessageOrDefault(operation.HeaderResponseType)
+                .Append(", IAsyncEnumerable<")
+                .Append(operation.ResponseType.Properties[0])
+                .Append(">)>((");
+        }
+
+        if (operation.HeaderResponseType == null)
+        {
+            Output.Append("null");
+        }
+        else
+        {
+            Output
+                .Append("new ")
+                .AppendMessage(operation.HeaderResponseType)
+                .Append("(");
+
+            for (var i = 0; i < operation.HeaderResponseTypeInput.Length; i++)
+            {
+                if (i > 0)
+                {
+                    Output.Append(", ");
+                }
+
+                Output.Append("result.Item").Append((operation.HeaderResponseTypeInput[i] + 1).ToString(CultureInfo.InvariantCulture));
+            }
+
+            Output.Append(")");
+        }
+
+        Output.Append(", ");
+
+        if (operation.HeaderResponseType == null)
+        {
+            Output.Append("result");
+        }
+        else
+        {
+            Output
+                .Append("result.Item")
+                .Append((operation.ResponseTypeIndex + 1).ToString(CultureInfo.InvariantCulture));
+        }
+
+        if (operation.IsAsync)
+        {
+            Output.AppendLine(");");
+        }
+        else
+        {
+            Output.AppendLine("));");
+        }
+    }
+
+    private void PushContext(ParameterDescription parameter)
+    {
+        if (parameter.TypeSymbol.IsAssignableFrom(typeof(ServerCallContext))
+            || parameter.TypeSymbol.IsAssignableFrom(typeof(CallContext)))
+        {
+            Output.Append("context");
+            return;
+        }
+
+        if (parameter.TypeSymbol.Is(typeof(CancellationToken))
+            || parameter.TypeSymbol.Is(typeof(CancellationToken?)))
+        {
+            Output
+                .Append("context.")
+                .Append(nameof(ServerCallContext.CancellationToken));
+            return;
+        }
+
+        if (parameter.TypeSymbol.Is(typeof(CallOptions))
+            || parameter.TypeSymbol.Is(typeof(CallOptions?)))
+        {
+            // new CallOptions(context.RequestHeaders, context.Deadline, context.CancellationToken, context.WriteOptions)
+            Output
+                .Append("new ")
+                .AppendType(typeof(CallOptions))
+                .Append("(")
+                .Append("context.").Append(nameof(ServerCallContext.RequestHeaders))
+                .Append(", context.").Append(nameof(ServerCallContext.Deadline))
+                .Append(", context.").Append(nameof(ServerCallContext.CancellationToken))
+                .Append(", context.").Append(nameof(ServerCallContext.WriteOptions))
+                .Append(")");
+            return;
+        }
+
+        throw new NotImplementedException();
     }
 }

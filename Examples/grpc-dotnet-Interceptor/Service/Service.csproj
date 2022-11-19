@@ -1,12 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Grpc.Core" Version="$(GrpcCoreVersion)" />
-	  <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
+	  <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(MicrosoftLoggingVersion)" />
   </ItemGroup>
 
   <ItemGroup>

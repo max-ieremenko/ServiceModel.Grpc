@@ -16,15 +16,14 @@
 
 using System.Threading.Tasks;
 
-namespace ServiceModel.Grpc.TestApi.Domain
-{
-    public sealed class ConcreteContract2 : IConcreteContract2
-    {
-        public Task<string> GetName() => GetConcreteName();
+namespace ServiceModel.Grpc.TestApi.Domain;
 
-        public Task<string> GetConcreteName()
-        {
-            return Task.FromResult(GetType().Name);
-        }
+public sealed class ConcreteContract2 : IConcreteContract2
+{
+    public Task<string> GetName() => GetConcreteName();
+
+    public Task<string> GetConcreteName()
+    {
+        return Task.FromResult(GetType().Name);
     }
 }

@@ -24,55 +24,54 @@ using ProtoBuf.Grpc.Server;
 using ServiceModel.Grpc.Benchmarks.Domain;
 using ServiceModel.Grpc.Configuration;
 
-namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Server
+namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Server;
+
+internal sealed class ProtobufGrpcServerCallTest : IUnaryCallTest
 {
-    internal sealed class ProtobufGrpcServerCallTest : IUnaryCallTest
+    private readonly TestServer _server;
+    private readonly HttpClient _client;
+    private readonly StubHttpRequest _request;
+
+    public ProtobufGrpcServerCallTest(SomeObject payload)
     {
-        private readonly TestServer _server;
-        private readonly HttpClient _client;
-        private readonly StubHttpRequest _request;
+        _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
+        _client = _server.CreateClient();
 
-        public ProtobufGrpcServerCallTest(SomeObject payload)
+        _request = new StubHttpRequest(
+            _client,
+            "/ServiceModel.Grpc.Benchmarks.Domain.TestService/PingPong",
+            MessageSerializer.Create(ProtobufMarshallerFactory.Default, payload));
+    }
+
+    public Task PingPongAsync() => _request.SendAsync();
+
+    public async ValueTask<long> GetPingPongPayloadSize()
+    {
+        await PingPongAsync().ConfigureAwait(false);
+        return _request.PayloadSize;
+    }
+
+    public void Dispose()
+    {
+        _server.Dispose();
+        _client.Dispose();
+    }
+
+    private sealed class Startup
+    {
+        public void ConfigureServices(IServiceCollection services)
         {
-            _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
-            _client = _server.CreateClient();
-
-            _request = new StubHttpRequest(
-                _client,
-                "/ServiceModel.Grpc.Benchmarks.Domain.TestService/PingPong",
-                MessageSerializer.Create(ProtobufMarshallerFactory.Default, payload));
+            services.AddCodeFirstGrpc();
         }
 
-        public Task PingPongAsync() => _request.SendAsync();
-
-        public async ValueTask<long> GetPingPongPayloadSize()
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            await PingPongAsync().ConfigureAwait(false);
-            return _request.PayloadSize;
-        }
+            app.UseRouting();
 
-        public void Dispose()
-        {
-            _server.Dispose();
-            _client.Dispose();
-        }
-
-        private sealed class Startup
-        {
-            public void ConfigureServices(IServiceCollection services)
+            app.UseEndpoints(endpoints =>
             {
-                services.AddCodeFirstGrpc();
-            }
-
-            public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-            {
-                app.UseRouting();
-
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.MapGrpcService<TestServiceStub>();
-                });
-            }
+                endpoints.MapGrpcService<TestServiceStub>();
+            });
         }
     }
 }

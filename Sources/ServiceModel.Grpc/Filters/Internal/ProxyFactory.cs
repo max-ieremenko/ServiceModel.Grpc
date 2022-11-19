@@ -20,93 +20,92 @@ using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Internal;
 
-namespace ServiceModel.Grpc.Filters.Internal
+namespace ServiceModel.Grpc.Filters.Internal;
+
+internal readonly struct ProxyFactory
 {
-    internal readonly struct ProxyFactory
+    public ProxyFactory(MethodInfo contractMethodDefinition)
     {
-        public ProxyFactory(MethodInfo contractMethodDefinition)
+        var operation = new MessageAssembler(contractMethodDefinition);
+        RequestProxy = CreateRequestProxy(operation);
+        ResponseProxy = CreateResponseProxy(operation);
+        RequestStreamProxy = CreateRequestStreamProxy(operation);
+        ResponseStreamProxy = CreateResponseStreamProxy(operation);
+    }
+
+    public MessageProxy RequestProxy { get; }
+
+    public MessageProxy ResponseProxy { get; }
+
+    public StreamProxy? RequestStreamProxy { get; }
+
+    public StreamProxy? ResponseStreamProxy { get; }
+
+    private static MessageProxy CreateRequestProxy(MessageAssembler operation)
+    {
+        Type requestType;
+        int[] requestTypeInput;
+        if (operation.OperationType == MethodType.Unary || operation.OperationType == MethodType.ServerStreaming)
         {
-            var operation = new MessageAssembler(contractMethodDefinition);
-            RequestProxy = CreateRequestProxy(operation);
-            ResponseProxy = CreateResponseProxy(operation);
-            RequestStreamProxy = CreateRequestStreamProxy(operation);
-            ResponseStreamProxy = CreateResponseStreamProxy(operation);
+            requestType = operation.RequestType;
+            requestTypeInput = operation.RequestTypeInput;
+        }
+        else
+        {
+            requestType = operation.HeaderRequestType ?? typeof(Message);
+            requestTypeInput = operation.HeaderRequestTypeInput;
         }
 
-        public MessageProxy RequestProxy { get; }
-
-        public MessageProxy ResponseProxy { get; }
-
-        public StreamProxy? RequestStreamProxy { get; }
-
-        public StreamProxy? ResponseStreamProxy { get; }
-
-        private static MessageProxy CreateRequestProxy(MessageAssembler operation)
+        if (requestTypeInput.Length == 0)
         {
-            Type requestType;
-            int[] requestTypeInput;
-            if (operation.OperationType == MethodType.Unary || operation.OperationType == MethodType.ServerStreaming)
-            {
-                requestType = operation.RequestType;
-                requestTypeInput = operation.RequestTypeInput;
-            }
-            else
-            {
-                requestType = operation.HeaderRequestType ?? typeof(Message);
-                requestTypeInput = operation.HeaderRequestTypeInput;
-            }
-
-            if (requestTypeInput.Length == 0)
-            {
-                return new MessageProxy(Array.Empty<string>(), requestType);
-            }
-
-            var requestNames = new string[requestTypeInput.Length];
-            for (var i = 0; i < requestNames.Length; i++)
-            {
-                var index = requestTypeInput[i];
-                requestNames[i] = operation.Parameters[index].Name;
-            }
-
-            return new MessageProxy(requestNames, requestType);
+            return new MessageProxy(Array.Empty<string>(), requestType);
         }
 
-        private static MessageProxy CreateResponseProxy(MessageAssembler operation)
+        var requestNames = new string[requestTypeInput.Length];
+        for (var i = 0; i < requestNames.Length; i++)
         {
-            Type responseType;
-            string[] names;
-            if (operation.OperationType == MethodType.Unary || operation.OperationType == MethodType.ClientStreaming)
-            {
-                responseType = operation.ResponseType;
-                names = operation.ResponseType == typeof(Message) ? Array.Empty<string>() : MessageProxy.UnaryResultNames;
-            }
-            else
-            {
-                responseType = operation.HeaderResponseType ?? typeof(Message);
-                names = operation.GetResponseHeaderNames();
-            }
-
-            return new MessageProxy(names, responseType);
+            var index = requestTypeInput[i];
+            requestNames[i] = operation.Parameters[index].Name;
         }
 
-        private static StreamProxy? CreateRequestStreamProxy(MessageAssembler operation)
-        {
-            if (operation.OperationType != MethodType.ClientStreaming && operation.OperationType != MethodType.DuplexStreaming)
-            {
-                return null;
-            }
+        return new MessageProxy(requestNames, requestType);
+    }
 
-            return new StreamProxy(operation.RequestType.GenericTypeArguments[0]);
+    private static MessageProxy CreateResponseProxy(MessageAssembler operation)
+    {
+        Type responseType;
+        string[] names;
+        if (operation.OperationType == MethodType.Unary || operation.OperationType == MethodType.ClientStreaming)
+        {
+            responseType = operation.ResponseType;
+            names = operation.ResponseType == typeof(Message) ? Array.Empty<string>() : MessageProxy.UnaryResultNames;
+        }
+        else
+        {
+            responseType = operation.HeaderResponseType ?? typeof(Message);
+            names = operation.GetResponseHeaderNames();
         }
 
-        private static StreamProxy? CreateResponseStreamProxy(MessageAssembler operation)
-        {
-            if (operation.OperationType != MethodType.ServerStreaming && operation.OperationType != MethodType.DuplexStreaming)
-            {
-                return null;
-            }
+        return new MessageProxy(names, responseType);
+    }
 
-            return new StreamProxy(operation.ResponseType.GenericTypeArguments[0]);
+    private static StreamProxy? CreateRequestStreamProxy(MessageAssembler operation)
+    {
+        if (operation.OperationType != MethodType.ClientStreaming && operation.OperationType != MethodType.DuplexStreaming)
+        {
+            return null;
         }
+
+        return new StreamProxy(operation.RequestType.GenericTypeArguments[0]);
+    }
+
+    private static StreamProxy? CreateResponseStreamProxy(MessageAssembler operation)
+    {
+        if (operation.OperationType != MethodType.ServerStreaming && operation.OperationType != MethodType.DuplexStreaming)
+        {
+            return null;
+        }
+
+        return new StreamProxy(operation.ResponseType.GenericTypeArguments[0]);
     }
 }

@@ -18,99 +18,98 @@ using System;
 using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Hosting.Internal;
 
-namespace ServiceModel.Grpc.Internal.Emit
+namespace ServiceModel.Grpc.Internal.Emit;
+
+internal sealed class EmitGenerator : IEmitGenerator
 {
-    internal sealed class EmitGenerator : IEmitGenerator
+    public ILogger? Logger { get; set; }
+
+    public IClientBuilder<TContract> GenerateClientBuilder<TContract>()
     {
-        public ILogger? Logger { get; set; }
+        var serviceType = typeof(TContract);
 
-        public IClientBuilder<TContract> GenerateClientBuilder<TContract>()
+        Type clientBuilderType;
+        lock (ProxyAssembly.SyncRoot)
         {
-            var serviceType = typeof(TContract);
-
-            Type clientBuilderType;
-            lock (ProxyAssembly.SyncRoot)
+            clientBuilderType = ProxyAssembly.DefaultModule.GetType(ContractDescription.GetClientBuilderClassName(serviceType), false, false)!;
+            if (clientBuilderType == null)
             {
-                clientBuilderType = ProxyAssembly.DefaultModule.GetType(ContractDescription.GetClientBuilderClassName(serviceType), false, false)!;
-                if (clientBuilderType == null)
-                {
-                    var (description, contractType) = GenerateContract(serviceType);
-                    var clientType = new EmitClientBuilder(description, contractType).Build(ProxyAssembly.DefaultModule);
-                    clientBuilderType = new EmitClientBuilderBuilder(description, contractType, clientType).Build(ProxyAssembly.DefaultModule);
-                }
+                var (description, contractType) = GenerateContract(serviceType);
+                var clientType = new EmitClientBuilder(description, contractType).Build(ProxyAssembly.DefaultModule);
+                clientBuilderType = new EmitClientBuilderBuilder(description, contractType, clientType).Build(ProxyAssembly.DefaultModule);
             }
-
-            return (IClientBuilder<TContract>)Activator.CreateInstance(clientBuilderType);
         }
 
-        public IServiceEndpointBinder<TService> GenerateServiceEndpointBinder<TService>(Type? serviceInstanceType)
+        return (IClientBuilder<TContract>)Activator.CreateInstance(clientBuilderType);
+    }
+
+    public IServiceEndpointBinder<TService> GenerateServiceEndpointBinder<TService>(Type? serviceInstanceType)
+    {
+        if (serviceInstanceType != null && !ServiceContract.IsServiceInstanceType(serviceInstanceType))
         {
-            if (serviceInstanceType != null && !ServiceContract.IsServiceInstanceType(serviceInstanceType))
-            {
-                throw new ArgumentOutOfRangeException(nameof(serviceInstanceType));
-            }
-
-            var serviceType = typeof(TService);
-
-            ContractDescription description;
-            Type contractType;
-            Type channelType;
-            lock (ProxyAssembly.SyncRoot)
-            {
-                (description, contractType) = GenerateContract(serviceType);
-                channelType = ProxyAssembly.DefaultModule.GetType(ContractDescription.GetEndpointClassName(serviceType), false, false)!;
-                if (channelType == null)
-                {
-                    var serviceBuilder = new EmitServiceEndpointBuilder(description);
-                    channelType = serviceBuilder.Build(ProxyAssembly.DefaultModule, Logger);
-                }
-            }
-
-            return new EmitServiceEndpointBinder<TService>(description, serviceInstanceType, contractType, channelType, Logger);
+            throw new ArgumentOutOfRangeException(nameof(serviceInstanceType));
         }
 
-        private static ContractDescription CreateDescription(Type serviceType, ILogger? logger)
+        var serviceType = typeof(TService);
+
+        ContractDescription description;
+        Type contractType;
+        Type channelType;
+        lock (ProxyAssembly.SyncRoot)
         {
-            var contractDescription = new ContractDescription(serviceType);
-
-            foreach (var interfaceDescription in contractDescription.Interfaces)
+            (description, contractType) = GenerateContract(serviceType);
+            channelType = ProxyAssembly.DefaultModule.GetType(ContractDescription.GetEndpointClassName(serviceType), false, false)!;
+            if (channelType == null)
             {
-                logger?.LogDebug("{0}: {1} is not service contract.", serviceType.FullName, interfaceDescription.InterfaceType.FullName);
+                var serviceBuilder = new EmitServiceEndpointBuilder(description);
+                channelType = serviceBuilder.Build(ProxyAssembly.DefaultModule, Logger);
             }
-
-            foreach (var interfaceDescription in contractDescription.Services)
-            {
-                foreach (var method in interfaceDescription.Methods)
-                {
-                    logger?.LogDebug("{0}: {1}", serviceType.FullName, method.Error);
-                }
-
-                foreach (var method in interfaceDescription.NotSupportedOperations)
-                {
-                    logger?.LogError("{0}: {1}", serviceType.FullName, method.Error);
-                }
-            }
-
-            return contractDescription;
         }
 
-        private (ContractDescription Description, Type ContractType) GenerateContract(Type serviceType)
+        return new EmitServiceEndpointBinder<TService>(description, serviceInstanceType, contractType, channelType, Logger);
+    }
+
+    private static ContractDescription CreateDescription(Type serviceType, ILogger? logger)
+    {
+        var contractDescription = new ContractDescription(serviceType);
+
+        foreach (var interfaceDescription in contractDescription.Interfaces)
         {
-            var className = ContractDescription.GetContractClassName(serviceType);
-            var contractType = ProxyAssembly.DefaultModule.GetType(className, false, false);
-
-            ContractDescription description;
-            if (contractType == null)
-            {
-                description = CreateDescription(serviceType, Logger);
-                contractType = new EmitContractBuilder(description).Build(ProxyAssembly.DefaultModule);
-            }
-            else
-            {
-                description = CreateDescription(serviceType, null);
-            }
-
-            return (description, contractType);
+            logger?.LogDebug("{0}: {1} is not service contract.", serviceType.FullName, interfaceDescription.InterfaceType.FullName);
         }
+
+        foreach (var interfaceDescription in contractDescription.Services)
+        {
+            foreach (var method in interfaceDescription.Methods)
+            {
+                logger?.LogDebug("{0}: {1}", serviceType.FullName, method.Error);
+            }
+
+            foreach (var method in interfaceDescription.NotSupportedOperations)
+            {
+                logger?.LogError("{0}: {1}", serviceType.FullName, method.Error);
+            }
+        }
+
+        return contractDescription;
+    }
+
+    private (ContractDescription Description, Type ContractType) GenerateContract(Type serviceType)
+    {
+        var className = ContractDescription.GetContractClassName(serviceType);
+        var contractType = ProxyAssembly.DefaultModule.GetType(className, false, false);
+
+        ContractDescription description;
+        if (contractType == null)
+        {
+            description = CreateDescription(serviceType, Logger);
+            contractType = new EmitContractBuilder(description).Build(ProxyAssembly.DefaultModule);
+        }
+        else
+        {
+            description = CreateDescription(serviceType, null);
+        }
+
+        return (description, contractType);
     }
 }

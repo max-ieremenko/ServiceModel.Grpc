@@ -14,126 +14,123 @@
 // limitations under the License.
 // </copyright>
 
-using System.Collections.Generic;
 using Grpc.Core;
-using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
 
-namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp
+namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
+
+internal sealed class CSharpClientBuilderBuilder : CodeGeneratorBase
 {
-    internal sealed class CSharpClientBuilderBuilder : CodeGeneratorBase
+    private readonly ContractDescription _contract;
+
+    public CSharpClientBuilderBuilder(ContractDescription contract)
     {
-        private readonly ContractDescription _contract;
+        _contract = contract;
+    }
 
-        public CSharpClientBuilderBuilder(ContractDescription contract)
+    public override string GetGeneratedMemberName() => _contract.ClientBuilderClassName;
+
+    protected override void Generate()
+    {
+        WriteMetadata();
+        Output
+            .Append("public sealed class ")
+            .Append(_contract.ClientBuilderClassName)
+            .Append(" : ")
+            .AppendType(typeof(IClientBuilder<>))
+            .Append(_contract.ContractInterfaceName)
+            .AppendLine(">");
+        Output.AppendLine("{");
+
+        using (Output.Indent())
         {
-            _contract = contract;
+            BuildFields();
+            Output.AppendLine();
+
+            BuildCtor();
+            Output.AppendLine();
+
+            BuildMethodInitialize();
+            Output.AppendLine();
+
+            BuildMethodBuild();
         }
 
-        public override string GetGeneratedMemberName() => _contract.ClientBuilderClassName;
+        Output.AppendLine("}");
+    }
 
-        protected override void Generate()
-        {
-            WriteMetadata();
-            Output
-                .Append("public sealed class ")
-                .Append(_contract.ClientBuilderClassName)
-                .Append(" : ")
-                .AppendType(typeof(IClientBuilder<>))
-                .Append(_contract.ContractInterfaceName)
-                .AppendLine(">");
-            Output.AppendLine("{");
+    private void BuildCtor()
+    {
+        Output
+            .Append("public ")
+            .Append(_contract.ClientBuilderClassName)
+            .AppendLine("()")
+            .AppendLine("{")
+            .AppendLine("}");
+    }
 
-            using (Output.Indent())
-            {
-                BuildFields();
-                Output.AppendLine();
+    private void BuildFields()
+    {
+        Output
+            .Append("private ")
+            .Append(_contract.ContractClassName)
+            .AppendLine(" _contract;");
 
-                BuildCtor();
-                Output.AppendLine();
+        Output
+            .Append("private Func<")
+            .AppendType(typeof(CallOptions))
+            .AppendLine("> _defaultCallOptionsFactory;");
+    }
 
-                BuildMethodInitialize();
-                Output.AppendLine();
+    private void BuildMethodInitialize()
+    {
+        Output
+            .Append("public void Initialize(")
+            .AppendType(typeof(IMarshallerFactory))
+            .Append(" marshallerFactory, Func<")
+            .AppendType(typeof(CallOptions))
+            .AppendLine("> defaultCallOptionsFactory)");
 
-                BuildMethodBuild();
-            }
-
-            Output.AppendLine("}");
-        }
-
-        private void BuildCtor()
-        {
-            Output
-                .Append("public ")
-                .Append(_contract.ClientBuilderClassName)
-                .AppendLine("()")
-                .AppendLine("{")
-                .AppendLine("}");
-        }
-
-        private void BuildFields()
+        Output.AppendLine("{");
+        using (Output.Indent())
         {
             Output
-                .Append("private ")
+                .AppendArgumentNullException("marshallerFactory");
+
+            Output
+                .Append("_contract = new ")
                 .Append(_contract.ContractClassName)
-                .AppendLine(" _contract;");
+                .AppendLine("(marshallerFactory);");
 
             Output
-                .AppendLine("private Func<")
-                .AppendType(typeof(CallOptions))
-                .AppendLine("> _defaultCallOptionsFactory;");
+                .AppendLine("_defaultCallOptionsFactory = defaultCallOptionsFactory;");
         }
 
-        private void BuildMethodInitialize()
+        Output.AppendLine("}");
+    }
+
+    private void BuildMethodBuild()
+    {
+        Output
+            .Append("public ")
+            .Append(_contract.ContractInterfaceName)
+            .Append(" Build(")
+            .AppendType(typeof(CallInvoker))
+            .AppendLine(" callInvoker)");
+
+        Output.AppendLine("{");
+        using (Output.Indent())
         {
             Output
-                .Append("public void Initialize(")
-                .AppendType(typeof(IMarshallerFactory))
-                .Append(" marshallerFactory, Func<")
-                .AppendType(typeof(CallOptions))
-                .AppendLine("> defaultCallOptionsFactory)");
+                .AppendArgumentNullException("callInvoker");
 
-            Output.AppendLine("{");
-            using (Output.Indent())
-            {
-                Output
-                    .AppendArgumentNullException("marshallerFactory");
-
-                Output
-                    .Append("_contract = new ")
-                    .Append(_contract.ContractClassName)
-                    .AppendLine("(marshallerFactory);");
-
-                Output
-                    .AppendLine("_defaultCallOptionsFactory = defaultCallOptionsFactory;");
-            }
-
-            Output.AppendLine("}");
-        }
-
-        private void BuildMethodBuild()
-        {
             Output
-                .Append("public ")
-                .Append(_contract.ContractInterfaceName)
-                .Append(" Build(")
-                .AppendType(typeof(CallInvoker))
-                .AppendLine(" callInvoker)");
-
-            Output.AppendLine("{");
-            using (Output.Indent())
-            {
-                Output
-                    .AppendArgumentNullException("callInvoker");
-
-                Output
-                    .Append("return new ")
-                    .Append(_contract.ClientClassName)
-                    .AppendLine("(callInvoker, _contract, _defaultCallOptionsFactory);");
-            }
-
-            Output.AppendLine("}");
+                .Append("return new ")
+                .Append(_contract.ClientClassName)
+                .AppendLine("(callInvoker, _contract, _defaultCallOptionsFactory);");
         }
+
+        Output.AppendLine("}");
     }
 }

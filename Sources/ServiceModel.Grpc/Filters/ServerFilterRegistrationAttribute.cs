@@ -16,33 +16,32 @@
 
 using System;
 
-namespace ServiceModel.Grpc.Filters
+namespace ServiceModel.Grpc.Filters;
+
+/// <summary>
+/// A server filter registration.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
+public abstract class ServerFilterRegistrationAttribute : Attribute
 {
     /// <summary>
-    /// A server filter registration.
+    /// Initializes a new instance of the <see cref="ServerFilterRegistrationAttribute"/> class.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
-    public abstract class ServerFilterRegistrationAttribute : Attribute
+    /// <param name="order">The order value for determining the order of execution of filters.</param>
+    protected ServerFilterRegistrationAttribute(int order)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ServerFilterRegistrationAttribute"/> class.
-        /// </summary>
-        /// <param name="order">The order value for determining the order of execution of filters.</param>
-        protected ServerFilterRegistrationAttribute(int order)
-        {
-            Order = order;
-        }
-
-        /// <summary>
-        /// Gets or sets the order value for determining the order of execution of filters.
-        /// </summary>
-        public int Order { get; protected set; }
-
-        /// <summary>
-        /// Create the filter instance.
-        /// </summary>
-        /// <param name="serviceProvider"><see cref="IServiceProvider"/>.</param>
-        /// <returns>The filter instance.</returns>
-        public abstract IServerFilter CreateFilter(IServiceProvider serviceProvider);
+        Order = order;
     }
+
+    /// <summary>
+    /// Gets or sets the order value for determining the order of execution of filters.
+    /// </summary>
+    public int Order { get; protected set; }
+
+    /// <summary>
+    /// Create the filter instance.
+    /// </summary>
+    /// <param name="serviceProvider"><see cref="IServiceProvider"/>.</param>
+    /// <returns>The filter instance.</returns>
+    public abstract IServerFilter CreateFilter(IServiceProvider serviceProvider);
 }

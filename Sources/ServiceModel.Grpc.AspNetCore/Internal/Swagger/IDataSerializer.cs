@@ -19,12 +19,11 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger
-{
-    internal interface IDataSerializer
-    {
-        object Deserialize(string json, Type returnType);
+namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger;
 
-        Task SerializeAsync(Stream stream, object value, Type inputType, CancellationToken cancellationToken);
-    }
+internal interface IDataSerializer
+{
+    object Deserialize(string json, Type returnType);
+
+    Task SerializeAsync(Stream stream, object value, Type inputType, CancellationToken cancellationToken);
 }

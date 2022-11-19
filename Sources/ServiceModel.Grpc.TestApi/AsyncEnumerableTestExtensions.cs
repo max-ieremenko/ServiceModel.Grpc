@@ -20,48 +20,47 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
-namespace ServiceModel.Grpc.TestApi
+namespace ServiceModel.Grpc.TestApi;
+
+public static class AsyncEnumerableTestExtensions
 {
-    public static class AsyncEnumerableTestExtensions
+    public static async IAsyncEnumerable<T> AsAsyncEnumerable<T>(this IEnumerable<T> source)
     {
-        public static async IAsyncEnumerable<T> AsAsyncEnumerable<T>(this IEnumerable<T> source)
+        foreach (var i in source)
         {
-            foreach (var i in source)
-            {
-                await Task.CompletedTask.ConfigureAwait(false);
-                yield return i;
-            }
+            await Task.CompletedTask.ConfigureAwait(false);
+            yield return i;
+        }
+    }
+
+    public static async Task<List<T>> ToListAsync<T>(this IAsyncEnumerable<T> source)
+    {
+        var result = new List<T>();
+
+        await foreach (var i in source.ConfigureAwait(false))
+        {
+            result.Add(i);
         }
 
-        public static async Task<List<T>> ToListAsync<T>(this IAsyncEnumerable<T> source)
-        {
-            var result = new List<T>();
+        return result;
+    }
 
-            await foreach (var i in source.ConfigureAwait(false))
-            {
-                result.Add(i);
-            }
-
-            return result;
-        }
-
-        public static IAsyncEnumerable<T> AsAsyncEnumerable<T>(this ChannelReader<T> reader, CancellationToken token)
-        {
+    public static IAsyncEnumerable<T> AsAsyncEnumerable<T>(this ChannelReader<T> reader, CancellationToken token)
+    {
 #if NETCOREAPP3_0_OR_GREATER
-            return reader.ReadAllAsync(token);
+        return reader.ReadAllAsync(token);
 #else
             return ReadAllAsync(reader, token);
 #endif
-        }
+    }
 
-        private static async IAsyncEnumerable<T> ReadAllAsync<T>(ChannelReader<T> reader, [EnumeratorCancellation] CancellationToken token)
+    private static async IAsyncEnumerable<T> ReadAllAsync<T>(ChannelReader<T> reader, [EnumeratorCancellation] CancellationToken token)
+    {
+        while (await reader.WaitToReadAsync(token).ConfigureAwait(false))
         {
-            while (await reader.WaitToReadAsync(token).ConfigureAwait(false))
+            while (reader.TryRead(out var item))
             {
-                while (reader.TryRead(out var item))
-                {
-                    yield return item;
-                }
+                yield return item;
             }
         }
     }
