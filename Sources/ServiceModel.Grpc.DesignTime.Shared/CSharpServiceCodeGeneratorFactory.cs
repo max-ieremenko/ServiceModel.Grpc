@@ -52,6 +52,9 @@ internal sealed class CSharpServiceCodeGeneratorFactory : ICodeGeneratorFactory
             yield return new CSharpServiceSelfHostAddSingletonServiceBuilder(_contract, _canUseStaticExtensions);
             yield return new CSharpServiceSelfHostAddTransientServiceBuilder(_contract, _canUseStaticExtensions);
             yield return new CSharpServiceSelfHostAddProviderServiceBuilder(_contract, _canUseStaticExtensions);
+
+            yield return new CSharpServiceBinderBaseBindProviderBuilder(_contract, _canUseStaticExtensions);
+            yield return new CSharpServiceBinderBaseBindTransientBuilder(_contract, _canUseStaticExtensions);
         }
 
         yield return new CSharpServiceEndpointBuilder(_contract);
