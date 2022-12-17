@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,7 +56,11 @@ internal sealed class CSharpServiceSelfHostAddSingletonServiceBuilder : CodeGene
             Output
                 .Append("return ")
                 .AppendTypeName("Grpc.Core", "ServiceDefinitionCollectionExtensions")
-                .AppendLine(".AddServiceModelSingleton(services, service, configure);");
+                .Append(".AddServiceModelSingleton<")
+                .Append(_contract.ContractInterfaceName)
+                .Append(">(services, service, new ")
+                .Append(_contract.EndpointBinderClassName)
+                .AppendLine("(), configure);");
         }
 
         Output.AppendLine("}");

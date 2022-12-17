@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -87,6 +87,7 @@ public static class ServiceDefinitionCollectionExtensions
         Action<ServiceModelGrpcServiceOptions>? configure = default)
     {
         services.AssertNotNull(nameof(services));
+        service.AssertNotNull(nameof(service));
 
         BindService(services, () => service, null, configure);
         return services;
@@ -109,7 +110,8 @@ public static class ServiceDefinitionCollectionExtensions
         Action<ServiceModelGrpcServiceOptions>? configure = default)
     {
         services.AssertNotNull(nameof(services));
-        services.AssertNotNull(nameof(endpointBinder));
+        service.AssertNotNull(nameof(service));
+        endpointBinder.AssertNotNull(nameof(endpointBinder));
 
         BindService(services, () => service, endpointBinder, configure);
         return services;
@@ -130,6 +132,36 @@ public static class ServiceDefinitionCollectionExtensions
     {
         services.AssertNotNull(nameof(services));
         serviceProvider.AssertNotNull(nameof(serviceProvider));
+
+        Func<TService> serviceFactory = serviceProvider.GetServiceRequired<TService>;
+        var options = new ServiceModelGrpcServiceOptions
+        {
+            ServiceProvider = serviceProvider
+        };
+
+        BindService(services, serviceFactory, null, configure, options);
+        return services;
+    }
+
+    /// <summary>
+    /// Registers a ServiceModel.Grpc service in the <see cref="Server.ServiceDefinitionCollection"/>.
+    /// This method used by generated source code.
+    /// </summary>
+    /// <typeparam name="TService">The implementation type of ServiceModel.Grpc service.</typeparam>
+    /// <param name="services">The <see cref="Server.ServiceDefinitionCollection"/>.</param>
+    /// <param name="serviceProvider">See <see cref="IServiceProvider"/>.</param>
+    /// <param name="endpointBinder">The generated service endpoint binder.</param>
+    /// <param name="configure">The optional configuration action to provide a configuration the service.</param>
+    /// <returns><see cref="Server.ServiceDefinitionCollection"/>.</returns>
+    public static Server.ServiceDefinitionCollection AddServiceModel<TService>(
+        this Server.ServiceDefinitionCollection services,
+        IServiceProvider serviceProvider,
+        IServiceEndpointBinder<TService> endpointBinder,
+        Action<ServiceModelGrpcServiceOptions>? configure = default)
+    {
+        services.AssertNotNull(nameof(services));
+        serviceProvider.AssertNotNull(nameof(serviceProvider));
+        endpointBinder.AssertNotNull(nameof(endpointBinder));
 
         Func<TService> serviceFactory = serviceProvider.GetServiceRequired<TService>;
         var options = new ServiceModelGrpcServiceOptions
