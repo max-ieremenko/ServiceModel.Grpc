@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2022 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,7 +57,9 @@ internal sealed class CSharpServiceSelfHostAddProviderServiceBuilder : CodeGener
                 .AppendTypeName("Grpc.Core", "ServiceDefinitionCollectionExtensions")
                 .Append(".AddServiceModel<")
                 .Append(_contract.ContractInterfaceName)
-                .AppendLine(">(services, serviceProvider, configure);");
+                .Append(">(services, serviceProvider, new ")
+                .Append(_contract.EndpointBinderClassName)
+                .AppendLine("(), configure);");
         }
 
         Output.AppendLine("}");

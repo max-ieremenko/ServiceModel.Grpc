@@ -40,7 +40,7 @@ public class TrackedFilteredServiceTest : TrackedFilteredServiceTestBase
                 {
                     options.Filters.Add(1, _ => new TrackingServerFilter("global"));
                 });
-                services.AddServiceModelGrpcServiceOptions<TrackedFilteredService>(options =>
+                services.AddTrackedFilteredServiceOptions(options =>
                 {
                     options.Filters.Add(2, _ => new TrackingServerFilter("service-options"));
                 });
