@@ -180,8 +180,6 @@ public static class ServiceDefinitionCollectionExtensions
         Action<ServiceModelGrpcServiceOptions>? configure,
         ServiceModelGrpcServiceOptions? options = null)
     {
-        ValidateServiceType(typeof(TService));
-
         if (configure != null)
         {
             if (options == null)
@@ -192,15 +190,7 @@ public static class ServiceDefinitionCollectionExtensions
             configure(options);
         }
 
-        var definition = new ServerServiceDefinitionProvider<TService>(serviceFactory, endpointBinder, options).CreateDefinition();
+        var definition = ServiceDefinitionFactory.CreateDefinition(serviceFactory, endpointBinder, options);
         services.Add(definition);
-    }
-
-    private static void ValidateServiceType(Type serviceType)
-    {
-        if (ServiceContract.IsNativeGrpcService(serviceType))
-        {
-            throw new InvalidOperationException("{0} is native grpc service.".FormatWith(serviceType.FullName));
-        }
     }
 }
