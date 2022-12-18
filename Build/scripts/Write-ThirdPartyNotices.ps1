@@ -31,12 +31,12 @@ function Write-ThirdPartyNotices {
     $appName = $AppNames[0]
     $outTemp = Join-Path $Out "temp"
 
-    $updateArgs = $()
     if ($GithubToken) {
-        $updateArgs = "-github.com:personalAccessToken", $GithubToken
+        Update-ThirdPartyLibrariesRepository -AppName $appName -Source $Sources -Repository $Repository -GithubPersonalAccessToken $GithubToken
     }
-
-    Update-ThirdPartyLibrariesRepository -AppName $appName -Source $Sources -Repository $Repository $updateArgs
+    else {
+        Update-ThirdPartyLibrariesRepository -AppName $appName -Source $Sources -Repository $Repository    
+    }
 
     Test-ThirdPartyLibrariesRepository -AppName $appName -Source $Sources -Repository $Repository
 
