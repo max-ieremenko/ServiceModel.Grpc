@@ -13,7 +13,11 @@ param(
     [Parameter(Mandatory)]
     [ValidateScript({ Test-Path $_ })]
     [string]
-    $BuildOut
+    $BuildOut,
+
+    [Parameter()]
+    [string]
+    $GithubToken
 )
 
 Enter-Build {
@@ -34,7 +38,8 @@ task Core {
         -Sources $projects `
         -Repository $Repository `
         -Title "ServiceModel.Grpc $releaseVersion" `
-        -Out $BuildOut
+        -Out $BuildOut `
+        -GithubToken $GithubToken
 }
 
 task AspNetCore {
@@ -49,7 +54,8 @@ task AspNetCore {
         -Sources $projects `
         -Repository $Repository `
         -Title "ServiceModel.Grpc.AspNetCore $releaseVersion" `
-        -Out $BuildOut
+        -Out $BuildOut `
+        -GithubToken $GithubToken
 }
 
 task Swashbuckle {
@@ -65,7 +71,8 @@ task Swashbuckle {
         -Sources $projects `
         -Repository $Repository `
         -Title "ServiceModel.Grpc.AspNetCore.Swashbuckle $releaseVersion" `
-        -Out $BuildOut
+        -Out $BuildOut `
+        -GithubToken $GithubToken
 }
 
 task NSwag {
@@ -81,7 +88,8 @@ task NSwag {
         -Sources $projects `
         -Repository $Repository `
         -Title "ServiceModel.Grpc.AspNetCore.NSwag $releaseVersion" `
-        -Out $BuildOut
+        -Out $BuildOut `
+        -GithubToken $GithubToken
 }
 
 task DesignTime {
@@ -98,7 +106,8 @@ task DesignTime {
         -Sources $projects `
         -Repository $Repository `
         -Title "ServiceModel.Grpc.DesignTime $releaseVersion" `
-        -Out $BuildOut
+        -Out $BuildOut `
+        -GithubToken $GithubToken
 }
 
 
@@ -113,7 +122,8 @@ task SelfHost {
         -Sources $projects `
         -Repository $Repository `
         -Title "ServiceModel.Grpc.SelfHost $releaseVersion" `
-        -Out $BuildOut
+        -Out $BuildOut `
+        -GithubToken $GithubToken
 }
 
 task ProtoBufMarshaller {
@@ -126,7 +136,8 @@ task ProtoBufMarshaller {
         -Sources $projects `
         -Repository $Repository `
         -Title "ServiceModel.Grpc.ProtoBufMarshaller $releaseVersion" `
-        -Out $BuildOut
+        -Out $BuildOut `
+        -GithubToken $GithubToken
 }
 
 task MessagePackMarshaller {
@@ -139,5 +150,6 @@ task MessagePackMarshaller {
         -Sources $projects `
         -Repository $Repository `
         -Title "ServiceModel.Grpc.MessagePackMarshaller $releaseVersion" `
-        -Out $BuildOut
+        -Out $BuildOut `
+        -GithubToken $GithubToken
 }

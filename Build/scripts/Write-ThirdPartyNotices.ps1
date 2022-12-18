@@ -21,13 +21,22 @@ function Write-ThirdPartyNotices {
         [Parameter(Mandatory)]
         [ValidateScript({ Test-Path $_ })]
         [string]
-        $Out
+        $Out,
+
+        [Parameter()]
+        [string]
+        $GithubToken
     )
     
     $appName = $AppNames[0]
     $outTemp = Join-Path $Out "temp"
 
-    Update-ThirdPartyLibrariesRepository -AppName $appName -Source $Sources -Repository $Repository
+    $updateArgs = $()
+    if ($GithubToken) {
+        $updateArgs = "-github.com:personalAccessToken", $GithubToken
+    }
+
+    Update-ThirdPartyLibrariesRepository -AppName $appName -Source $Sources -Repository $Repository $updateArgs
 
     Test-ThirdPartyLibrariesRepository -AppName $appName -Source $Sources -Repository $Repository
 
