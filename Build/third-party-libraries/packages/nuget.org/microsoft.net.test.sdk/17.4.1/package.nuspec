@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.NET.Test.Sdk</id>
+    <version>17.4.1</version>
+    <title>Microsoft.NET.Test.Sdk</title>
+    <authors>Microsoft</authors>
+    <owners>Microsoft</owners>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="file">LICENSE_NET.txt</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+    <icon>Icon.png</icon>
+    <projectUrl>https://github.com/microsoft/vstest/</projectUrl>
+    <iconUrl>http://go.microsoft.com/fwlink/?LinkID=288859</iconUrl>
+    <description>The MSbuild targets and properties for building .NET test projects.</description>
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <tags>vstest visual-studio unittest testplatform mstest microsoft test testing</tags>
+    <repository type="git" url="https://github.com/microsoft/vstest" branch="rel/17.4" commit="31e8b9580bec7c5ee5c58439fbcb4c91483a2434" />
+    <dependencies>
+      <group targetFramework=".NETCoreApp3.1">
+        <dependency id="Microsoft.TestPlatform.TestHost" version="17.4.1" />
+        <dependency id="Microsoft.CodeCoverage" version="17.4.1" />
+      </group>
+      <group targetFramework=".NETFramework4.6.2">
+        <dependency id="Microsoft.CodeCoverage" version="17.4.1" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
