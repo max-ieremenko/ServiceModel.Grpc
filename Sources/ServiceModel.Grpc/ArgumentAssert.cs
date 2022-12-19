@@ -22,7 +22,7 @@ namespace ServiceModel.Grpc;
 internal static class ArgumentAssert
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void AssertNotNull(this object argument, string argumentName)
+    public static void AssertNotNull(this object? argument, string argumentName)
     {
         if (argument == null)
         {
@@ -31,7 +31,7 @@ internal static class ArgumentAssert
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void AssertNotNull(this string argument, string argumentName)
+    public static void AssertNotNull(this string? argument, string argumentName)
     {
         if (string.IsNullOrWhiteSpace(argument))
         {
@@ -40,7 +40,7 @@ internal static class ArgumentAssert
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T AssertIsInstanceOf<T>(this object argument, string argumentName)
+    public static T AssertIsInstanceOf<T>(this object? argument, string argumentName)
     {
         if (argument == null)
         {

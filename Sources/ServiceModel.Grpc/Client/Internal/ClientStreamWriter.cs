@@ -55,6 +55,9 @@ internal sealed class ClientStreamWriter<TRequest> : IDisposable
             // Grpc.Core.RpcException : Status(StatusCode="OK", Detail="")
             // one of the reasons the server does not read the whole request, see test MultipurposeServiceTestBase.ClientStreamingStopReading
         }
+        catch (ObjectDisposedException) when (token.IsCancellationRequested)
+        {
+        }
     }
 
     public void Dispose()

@@ -54,11 +54,11 @@ internal sealed class EmitGenerator : IEmitGenerator
 
         ContractDescription description;
         Type contractType;
-        Type channelType;
+        Type? channelType;
         lock (ProxyAssembly.SyncRoot)
         {
             (description, contractType) = GenerateContract(serviceType);
-            channelType = ProxyAssembly.DefaultModule.GetType(ContractDescription.GetEndpointClassName(serviceType), false, false)!;
+            channelType = ProxyAssembly.DefaultModule.GetType(ContractDescription.GetEndpointClassName(serviceType), false, false);
             if (channelType == null)
             {
                 var serviceBuilder = new EmitServiceEndpointBuilder(description);

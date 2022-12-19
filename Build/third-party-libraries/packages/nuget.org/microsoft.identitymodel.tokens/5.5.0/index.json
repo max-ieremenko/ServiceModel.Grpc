@@ -20,7 +20,7 @@
         },
         {
           "Name": "Newtonsoft.Json",
-          "Version": "13.0.1"
+          "Version": "13.0.2"
         },
         {
           "Name": "System.Security.Cryptography.Cng",
@@ -44,7 +44,7 @@
         },
         {
           "Name": "Newtonsoft.Json",
-          "Version": "13.0.1"
+          "Version": "13.0.2"
         },
         {
           "Name": "System.Security.Cryptography.Cng",
@@ -68,7 +68,7 @@
         },
         {
           "Name": "Newtonsoft.Json",
-          "Version": "13.0.1"
+          "Version": "13.0.2"
         },
         {
           "Name": "System.Security.Cryptography.Cng",

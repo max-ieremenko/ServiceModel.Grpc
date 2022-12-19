@@ -5,14 +5,38 @@ param (
     $Version
 )
 
-$versions = dotnet --list-sdks
-foreach ($installedVersion in $versions) {
-    # 6.0.401 [C:\Program Files\dotnet\sdk]
-    $test = ($installedVersion -split " ")[0]
+function Test-Version {
+    param (
+        [Parameter(Mandatory)]
+        [System.Management.Automation.SemanticVersion]
+        $Target,
 
-    if ($test -eq $Version) {
-        Write-Output ".net sdk $version is alredy installed"
-        return
+        [Parameter(Mandatory)]
+        [System.Management.Automation.SemanticVersion]
+        $Test
+    )
+
+    # 6.0 vs 7.0
+    if ($Target.Major -ne $Test.Major -or $Target.Minor -ne $Test.Minor) {
+        $false
+    }
+    else {
+        # 6.0.0 vs 6.0.1
+        # 7.0.100 vs 7.0.100-rc.2.22477.23
+        $Target.CompareTo($Test) -le 0
+    }
+}
+
+if (Get-Command -Name dotnet -ErrorAction SilentlyContinue) {
+    $versions = dotnet --list-sdks
+    foreach ($installedVersion in $versions) {
+        # 6.0.401 [C:\Program Files\dotnet\sdk]
+        $test = ($installedVersion -split " ")[0]
+    
+        if (Test-Version -Target $Version -Test $test) {
+            Write-Output ".net sdk $test is alredy installed"
+            return
+        }
     }
 }
 

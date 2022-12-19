@@ -1,12 +1,12 @@
 <Project>
   <PropertyGroup>
-    <ServiceModelGrpcVersion>1.4.12</ServiceModelGrpcVersion>
+    <ServiceModelGrpcVersion>1.4.13</ServiceModelGrpcVersion>
 
     <GrpcCoreVersion>2.46.5</GrpcCoreVersion>
-	<GrpcCoreApiVersion>2.49.0</GrpcCoreApiVersion>
-    <GrpcNetVersion>2.49.0</GrpcNetVersion>
-    <GrpcToolsVersion>2.49.1</GrpcToolsVersion>
-    <GoogleProtobufVersion>3.21.7</GoogleProtobufVersion>
+	<GrpcCoreApiVersion>2.50.0</GrpcCoreApiVersion>
+    <GrpcNetVersion>2.50.0</GrpcNetVersion>
+    <GrpcToolsVersion>2.51.0</GrpcToolsVersion>
+    <GoogleProtobufVersion>3.21.12</GoogleProtobufVersion>
 
     <SwashbuckleVersion>6.4.0</SwashbuckleVersion>
     <NSwagVersion>13.16.1</NSwagVersion>
@@ -19,15 +19,15 @@
     <StyleCopVersion>1.2.0.435</StyleCopVersion>
     <SourceLinkGitHubVersion>1.1.1</SourceLinkGitHubVersion>
     
-    <MicrosoftTestSdkVersion>17.3.2</MicrosoftTestSdkVersion>
+    <MicrosoftTestSdkVersion>17.4.1</MicrosoftTestSdkVersion>
 	
 	<!-- 
 	https://github.com/nunit/nunit3-vs-adapter/issues/987
 	System.ArgumentException: Unknown framework version 7.0
 	-->
-    <NUnitAdapterVersion>4.3.0-alpha-net7.4</NUnitAdapterVersion>
+    <NUnitAdapterVersion>4.3.1</NUnitAdapterVersion>
     <NUnitVersion>3.13.3</NUnitVersion>
     <ShouldlyVersion>4.1.0</ShouldlyVersion>
-    <MoqVersion>4.18.2</MoqVersion>
+    <MoqVersion>4.18.3</MoqVersion>
   </PropertyGroup>
 </Project>
