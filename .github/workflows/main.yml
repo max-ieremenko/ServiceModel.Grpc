@@ -34,7 +34,7 @@ jobs:
 
     - name: Build
       shell: pwsh
-      run: ./Build/invoke-ci-build.ps1
+      run: ./Build/invoke-ci-build.ps1 "${{ secrets.GITHUB_TOKEN }}"
 
     - name: Artifact nuget packages
       uses: actions/upload-artifact@v3

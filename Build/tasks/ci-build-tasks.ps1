@@ -11,7 +11,11 @@ param(
 
     [Parameter(Mandatory)]
     [string]
-    $PathBuildOut
+    $PathBuildOut,
+
+    [Parameter()]
+    [string]
+    $GithubToken
 )
 
 task Default Clean, Build, UnitTest, ThirdPartyNotices, Pack
@@ -43,7 +47,7 @@ task UnitTest {
 }
 
 task ThirdPartyNotices {
-    Invoke-Build -File "task-third-party-notices.ps1" -Sources $PathSources -Repository $PathThirdParty -BuildOut $PathBuildOut
+    Invoke-Build -File "task-third-party-notices.ps1" -Sources $PathSources -Repository $PathThirdParty -BuildOut $PathBuildOut -GithubToken $GithubToken
 }
 
 task Pack {
