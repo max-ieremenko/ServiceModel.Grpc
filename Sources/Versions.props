@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <ServiceModelGrpcVersion>1.4.13</ServiceModelGrpcVersion>
+    <ServiceModelGrpcVersion>1.5.0</ServiceModelGrpcVersion>
 
     <GrpcCoreVersion>2.46.5</GrpcCoreVersion>
 	<GrpcCoreApiVersion>2.50.0</GrpcCoreApiVersion>
@@ -21,10 +21,6 @@
     
     <MicrosoftTestSdkVersion>17.4.1</MicrosoftTestSdkVersion>
 	
-	<!-- 
-	https://github.com/nunit/nunit3-vs-adapter/issues/987
-	System.ArgumentException: Unknown framework version 7.0
-	-->
     <NUnitAdapterVersion>4.3.1</NUnitAdapterVersion>
     <NUnitVersion>3.13.3</NUnitVersion>
     <ShouldlyVersion>4.1.0</ShouldlyVersion>
