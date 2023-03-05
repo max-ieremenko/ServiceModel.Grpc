@@ -89,6 +89,7 @@ public partial class ContractDescriptionTest
         var sum = calculator.Operations[0];
         sum.OperationName.ShouldBe("Sum");
         sum.ServiceName.ShouldBe("ICalculator-Some-Value");
+        sum.ClrDefinitionMethodName.ShouldBe("GetSumDefinition");
 
         var service = sut.Services.First(i => i.InterfaceType.Name == "IGenericService");
         service.Methods.Count.ShouldBe(0);
@@ -98,6 +99,7 @@ public partial class ContractDescriptionTest
         var ping = service.Operations[0];
         ping.OperationName.ShouldBe("Ping");
         ping.ServiceName.ShouldBe("IGenericService-Some-Value");
+        ping.ClrDefinitionMethodName.ShouldBe("GetPingDefinition");
     }
 
     [Test]
@@ -114,9 +116,11 @@ public partial class ContractDescriptionTest
 
         sut.Services[0].Operations.Count.ShouldBe(1);
         sut.Services[0].Operations[0].OperationName.ShouldBe(nameof(ISyncOveAsync.PingAsync));
+        sut.Services[0].Operations[0].ClrDefinitionMethodName.ShouldBe("GetPingAsyncDefinition");
 
         sut.Services[0].SyncOverAsync.Count.ShouldBe(1);
         sut.Services[0].SyncOverAsync[0].Async.ShouldBe(sut.Services[0].Operations[0]);
         sut.Services[0].SyncOverAsync[0].Sync.Method.Name.ShouldBe(nameof(ISyncOveAsync.Ping));
+        sut.Services[0].SyncOverAsync[0].Sync.ClrDefinitionMethodName.ShouldBe("GetPingAsyncDefinitionSync");
     }
 }

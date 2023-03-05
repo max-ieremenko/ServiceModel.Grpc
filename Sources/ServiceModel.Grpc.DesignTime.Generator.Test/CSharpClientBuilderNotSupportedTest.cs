@@ -15,6 +15,7 @@
 // </copyright>
 
 using NUnit.Framework;
+using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.TestApi;
 
@@ -27,7 +28,7 @@ public class CSharpClientBuilderNotSupportedTest : ClientBuilderNotSupportedTest
     public void BeforeAllTests()
     {
         var builder = new GrpcServices.InvalidContractClientBuilder();
-        builder.Initialize(DataContractMarshallerFactory.Default, null);
+        builder.Initialize(new ClientMethodBinder(null, DataContractMarshallerFactory.Default, null));
 
         Factory = () => builder.Build(CallInvoker.Object);
     }

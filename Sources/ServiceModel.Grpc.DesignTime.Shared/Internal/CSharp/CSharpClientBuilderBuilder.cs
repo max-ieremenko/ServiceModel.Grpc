@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2022 Max Ieremenko
+// Copyright 2020-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 using Grpc.Core;
 using ServiceModel.Grpc.Client.Internal;
-using ServiceModel.Grpc.Configuration;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
 
@@ -81,30 +80,86 @@ internal sealed class CSharpClientBuilderBuilder : CodeGeneratorBase
             .Append("private Func<")
             .AppendType(typeof(CallOptions))
             .AppendLine("> _defaultCallOptionsFactory;");
+
+        Output
+            .Append("private ")
+            .AppendType(typeof(IClientCallFilterHandlerFactory))
+            .AppendLine(" _filterHandlerFactory;");
     }
 
     private void BuildMethodInitialize()
     {
         Output
             .Append("public void Initialize(")
-            .AppendType(typeof(IMarshallerFactory))
-            .Append(" marshallerFactory, Func<")
-            .AppendType(typeof(CallOptions))
-            .AppendLine("> defaultCallOptionsFactory)");
+            .AppendType(typeof(IClientMethodBinder))
+            .AppendLine(" methodBinder)");
 
         Output.AppendLine("{");
         using (Output.Indent())
         {
             Output
-                .AppendArgumentNullException("marshallerFactory");
+                .AppendArgumentNullException("methodBinder");
 
             Output
                 .Append("_contract = new ")
                 .Append(_contract.ContractClassName)
-                .AppendLine("(marshallerFactory);");
+                .Append("(methodBinder.")
+                .Append(nameof(IClientMethodBinder.MarshallerFactory))
+                .AppendLine(");");
 
             Output
-                .AppendLine("_defaultCallOptionsFactory = defaultCallOptionsFactory;");
+                .Append("_defaultCallOptionsFactory = methodBinder.")
+                .Append(nameof(IClientMethodBinder.DefaultCallOptionsFactory))
+                .AppendLine(";");
+
+            Output
+                .AppendLine()
+                .Append("if (methodBinder.")
+                .Append(nameof(IClientMethodBinder.RequiresMetadata))
+                .AppendLine(")")
+                .AppendLine("{");
+            using (Output.Indent())
+            {
+                foreach (var interfaceDescription in _contract.Services)
+                {
+                    foreach (var method in interfaceDescription.Operations)
+                    {
+                        Output
+                            .Append("methodBinder.")
+                            .Append(nameof(IClientMethodBinder.Add))
+                            .Append("(_contract.")
+                            .Append(method.GrpcMethodName)
+                            .Append(", ")
+                            .Append(_contract.ContractClassName)
+                            .Append(".")
+                            .Append(method.ClrDefinitionMethodName)
+                            .AppendLine(");");
+                    }
+
+                    foreach (var entry in interfaceDescription.SyncOverAsync)
+                    {
+                        Output
+                            .Append("methodBinder.")
+                            .Append(nameof(IClientMethodBinder.Add))
+                            .Append("(_contract.")
+                            .Append(entry.Async.GrpcMethodName)
+                            .Append(", ")
+                            .Append(_contract.ContractClassName)
+                            .Append(".")
+                            .Append(entry.Sync.ClrDefinitionMethodName)
+                            .AppendLine(");");
+                    }
+                }
+            }
+
+            Output
+                .AppendLine("}")
+                .AppendLine();
+
+            Output
+                .Append("_filterHandlerFactory = methodBinder.")
+                .Append(nameof(IClientMethodBinder.CreateFilterHandlerFactory))
+                .AppendLine("();");
         }
 
         Output.AppendLine("}");
@@ -128,7 +183,7 @@ internal sealed class CSharpClientBuilderBuilder : CodeGeneratorBase
             Output
                 .Append("return new ")
                 .Append(_contract.ClientClassName)
-                .AppendLine("(callInvoker, _contract, _defaultCallOptionsFactory);");
+                .AppendLine("(callInvoker, _contract, _defaultCallOptionsFactory, _filterHandlerFactory);");
         }
 
         Output.AppendLine("}");

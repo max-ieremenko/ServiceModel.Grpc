@@ -17,6 +17,7 @@
 using System;
 using System.Reflection;
 using NUnit.Framework;
+using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
@@ -30,7 +31,7 @@ public class CSharpClientBuilderTest : ClientBuilderTestBase
     public void BeforeAllTests()
     {
         var builder = new GrpcServices.ContractClientBuilder();
-        builder.Initialize(DataContractMarshallerFactory.Default, null);
+        builder.Initialize(new ClientMethodBinder(null, DataContractMarshallerFactory.Default, null));
 
         Factory = () => builder.Build(CallInvoker.Object);
     }

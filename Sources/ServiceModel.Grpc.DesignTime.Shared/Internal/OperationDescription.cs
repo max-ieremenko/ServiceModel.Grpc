@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2022 Max Ieremenko
+// Copyright 2020-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ internal sealed class OperationDescription
         GrpcMethodName = "Method" + OperationName;
         GrpcMethodInputHeaderName = "MethodInputHeader" + OperationName;
         GrpcMethodOutputHeaderName = "MethodOutputHeader" + OperationName;
+        ClrDefinitionMethodName = "Get" + OperationName + "Definition";
     }
 
     public MethodDescription Method { get; }
@@ -78,6 +79,8 @@ internal sealed class OperationDescription
     public string GrpcMethodInputHeaderName { get; }
 
     public string GrpcMethodOutputHeaderName { get; }
+
+    public string ClrDefinitionMethodName { get; set; }
 
     // implemented only for unary calls
     public bool IsCompatibleWith(OperationDescription other)

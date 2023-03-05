@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2022 Max Ieremenko
+// Copyright 2020-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -108,8 +108,9 @@ internal sealed class CSharpClientBuilder : CodeGeneratorBase
             .AppendType(typeof(CallInvoker)).Append(" callInvoker, ")
             .Append(_contract.ContractClassName).Append(" contract, Func<")
             .AppendType(typeof(CallOptions))
-            .Append("> defaultCallOptionsFactory")
-            .AppendLine(")");
+            .Append("> defaultCallOptionsFactory, ")
+            .AppendType(typeof(IClientCallFilterHandlerFactory))
+            .AppendLine(" filterHandlerFactory)");
 
         using (Output.Indent())
         {
@@ -123,6 +124,7 @@ internal sealed class CSharpClientBuilder : CodeGeneratorBase
 
             Output.AppendLine("Contract = contract;");
             Output.AppendLine("DefaultCallOptionsFactory = defaultCallOptionsFactory;");
+            Output.AppendLine("FilterHandlerFactory = filterHandlerFactory;");
         }
 
         Output.AppendLine("}");
@@ -137,8 +139,9 @@ internal sealed class CSharpClientBuilder : CodeGeneratorBase
             .Append("ClientBaseConfiguration configuration, ")
             .Append(_contract.ContractClassName).Append(" contract, Func<")
             .AppendType(typeof(CallOptions))
-            .Append("> defaultCallOptionsFactory")
-            .AppendLine(")");
+            .Append("> defaultCallOptionsFactory, ")
+            .AppendType(typeof(IClientCallFilterHandlerFactory))
+            .AppendLine(" filterHandlerFactory)");
 
         using (Output.Indent())
         {
@@ -150,6 +153,7 @@ internal sealed class CSharpClientBuilder : CodeGeneratorBase
         {
             Output.AppendLine("Contract = contract;");
             Output.AppendLine("DefaultCallOptionsFactory = defaultCallOptionsFactory;");
+            Output.AppendLine("FilterHandlerFactory = filterHandlerFactory;");
         }
 
         Output.AppendLine("}");
@@ -168,7 +172,7 @@ internal sealed class CSharpClientBuilder : CodeGeneratorBase
             Output
                 .Append("return new ")
                 .Append(_contract.ClientClassName)
-                .AppendLine("(configuration, Contract, DefaultCallOptionsFactory);");
+                .AppendLine("(configuration, Contract, DefaultCallOptionsFactory, FilterHandlerFactory);");
         }
 
         Output.AppendLine("}");
@@ -186,6 +190,12 @@ internal sealed class CSharpClientBuilder : CodeGeneratorBase
             .Append("public Func<")
             .AppendType(typeof(CallOptions))
             .AppendLine("> DefaultCallOptionsFactory  { get; }")
+            .AppendLine();
+
+        Output
+            .Append("public ")
+            .AppendType(typeof(IClientCallFilterHandlerFactory))
+            .AppendLine(" FilterHandlerFactory  { get; }")
             .AppendLine();
     }
 
@@ -227,7 +237,7 @@ internal sealed class CSharpClientBuilder : CodeGeneratorBase
 
         var hasReturn = operation.IsAsync || operation.ResponseType.Properties.Length > 0;
 
-        // var __response = new UnaryCall<TRequest, TResponse>(method, CallInvoker, __callOptionsBuilder)
+        // var __response = new UnaryCall<TRequest, TResponse>(method, CallInvoker, __callOptionsBuilder, __filterHandlerFactory)
         Output
             .Append(hasReturn ? "var __response = " : string.Empty)
             .Append("new ")
@@ -239,7 +249,7 @@ internal sealed class CSharpClientBuilder : CodeGeneratorBase
             .Append(grpcMethodName ?? operation.GrpcMethodName)
             .Append(", CallInvoker, ")
             .Append(VarCallOptionsBuilder)
-            .AppendLine(")");
+            .AppendLine(", FilterHandlerFactory)");
 
         using (Output.Indent())
         {
@@ -285,7 +295,7 @@ internal sealed class CSharpClientBuilder : CodeGeneratorBase
     {
         InitializeCallOptionsBuilderVariable(operation);
 
-        // var __response = new ClientStreamingCall<TRequestHeader, TRequest, TResponse>(method, CallInvoker, __callOptionsBuilder)
+        // var __response = new ClientStreamingCall<TRequestHeader, TRequest, TResponse>(method, CallInvoker, __callOptionsBuilder, __filterHandlerFactory)
         Output
             .Append("var __response = new ")
             .AppendType(typeof(ClientStreamingCall<,,>))
@@ -298,7 +308,7 @@ internal sealed class CSharpClientBuilder : CodeGeneratorBase
             .Append(operation.GrpcMethodName)
             .Append(", CallInvoker, ")
             .Append(VarCallOptionsBuilder)
-            .AppendLine(")");
+            .AppendLine(", FilterHandlerFactory)");
 
         using (Output.Indent())
         {
@@ -345,7 +355,7 @@ internal sealed class CSharpClientBuilder : CodeGeneratorBase
     {
         InitializeCallOptionsBuilderVariable(operation);
 
-        // var __response = new ServerStreamingCall<TRequest, TResponseHeader, TResponse>(method, CallInvoker, __callOptionsBuilder)
+        // var __response = new ServerStreamingCall<TRequest, TResponseHeader, TResponse>(method, CallInvoker, __callOptionsBuilder, __filterHandlerFactory)
         Output
             .Append("var __response = new ")
             .AppendType(typeof(ServerStreamingCall<,,>))
@@ -358,7 +368,7 @@ internal sealed class CSharpClientBuilder : CodeGeneratorBase
             .Append(operation.GrpcMethodName)
             .Append(", CallInvoker, ")
             .Append(VarCallOptionsBuilder)
-            .AppendLine(")");
+            .AppendLine(", FilterHandlerFactory)");
 
         Action? adapterBuilder = null;
         using (Output.Indent())
@@ -465,7 +475,7 @@ internal sealed class CSharpClientBuilder : CodeGeneratorBase
     {
         InitializeCallOptionsBuilderVariable(operation);
 
-        // var __response = new DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader, TResponse>(method, CallInvoker, __callOptionsBuilder)
+        // var __response = new DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader, TResponse>(method, CallInvoker, __callOptionsBuilder, __filterHandlerFactory)
         Output
             .Append("var __response = new ")
             .AppendType(typeof(DuplexStreamingCall<,,,>))
@@ -480,7 +490,7 @@ internal sealed class CSharpClientBuilder : CodeGeneratorBase
             .Append(operation.GrpcMethodName)
             .Append(", CallInvoker, ")
             .Append(VarCallOptionsBuilder)
-            .AppendLine(")");
+            .AppendLine(", FilterHandlerFactory)");
 
         Action? adapterBuilder = null;
         using (Output.Indent())
