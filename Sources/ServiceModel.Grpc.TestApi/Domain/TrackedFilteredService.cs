@@ -85,11 +85,11 @@ public sealed class TrackedFilteredService : IFilteredService
         {
         }
 
-        yield return "implementation";
-
         foreach (var i in input)
         {
             yield return i;
         }
+
+        yield return "implementation";
     }
 }

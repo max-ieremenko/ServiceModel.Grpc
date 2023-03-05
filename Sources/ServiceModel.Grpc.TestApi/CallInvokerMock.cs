@@ -205,38 +205,6 @@ public static class CallInvokerMock
                 null!));
     }
 
-    public static void SetupAsyncUnaryCallInOut<TRequest, TResponse>(
-        this Mock<CallInvoker> invoker,
-        Func<TRequest, TResponse> handler,
-        Action<CallOptions>? callOptions = null)
-    {
-        invoker
-            .Setup(i => i.AsyncUnaryCall(
-                It.IsNotNull<Method<Message<TRequest>, Message<TResponse>>>(),
-                null,
-                It.IsAny<CallOptions>(),
-                It.IsNotNull<Message<TRequest>>()))
-            .Callback<Method<Message<TRequest>, Message<TResponse>>, string, CallOptions, Message<TRequest>>((method, _, options, _) =>
-            {
-                method.Type.ShouldBe(MethodType.Unary);
-                callOptions?.Invoke(options);
-            })
-            .Returns<Method<Message<TRequest>, Message<TResponse>>, string, CallOptions, Message<TRequest>>((_, _, _, request) =>
-            {
-                var response = handler(request.Value1);
-
-                return new AsyncUnaryCall<Message<TResponse>>(
-                    Task.FromResult(new Message<TResponse>(response)),
-                    _ => Task.FromResult(default(Metadata)!),
-                    _ => default,
-                    _ => default!,
-                    _ =>
-                    {
-                    },
-                    null!);
-            });
-    }
-
     public static void SetupAsyncUnaryCallInOut<TRequest1, TRequest2, TRequest3, TResponse>(
         this Mock<CallInvoker> invoker,
         TRequest1 request1,
@@ -324,37 +292,6 @@ public static class CallInvokerMock
                 {
                 },
                 null!));
-    }
-
-    public static void SetupAsyncServerStreamingCall<TRequest, TResponse>(
-        this Mock<CallInvoker> invoker,
-        Func<TRequest, Metadata, IAsyncStreamReader<Message<TResponse>>> handler)
-    {
-        invoker
-            .Setup(i => i.AsyncServerStreamingCall(
-                It.IsNotNull<Method<Message<TRequest>, Message<TResponse>>>(),
-                null,
-                It.IsAny<CallOptions>(),
-                It.IsNotNull<Message<TRequest>>()))
-            .Returns<Method<Message<TRequest>, Message<TResponse>>, string, CallOptions, Message<TRequest>>((method, _, _, r) =>
-            {
-                method.Type.ShouldBe(MethodType.ServerStreaming);
-
-                var responseHeaders = new Metadata();
-                var response = handler(r.Value1, responseHeaders);
-                var responseHeadersAsync = new TaskCompletionSource<Metadata>();
-                responseHeadersAsync.SetResult(responseHeaders);
-
-                return new AsyncServerStreamingCall<Message<TResponse>>(
-                    response,
-                    _ => responseHeadersAsync.Task,
-                    _ => default,
-                    _ => default!,
-                    _ =>
-                    {
-                    },
-                    null!);
-            });
     }
 
     public static void SetupAsyncServerStreamingCall<TRequest1, TRequest2, TResponse>(
@@ -471,37 +408,5 @@ public static class CallInvokerMock
                 {
                 },
                 null!));
-    }
-
-    public static void SetupAsyncDuplexStreamingCall<TRequest, TResponse>(
-        this Mock<CallInvoker> invoker,
-        IClientStreamWriter<Message<TRequest>> requestStream,
-        Func<CallOptions, Metadata, IAsyncStreamReader<Message<TResponse>>> handler)
-    {
-        invoker
-            .Setup(i => i.AsyncDuplexStreamingCall(
-                It.IsNotNull<Method<Message<TRequest>, Message<TResponse>>>(),
-                null,
-                It.IsAny<CallOptions>()))
-            .Returns<Method<Message<TRequest>, Message<TResponse>>, string, CallOptions>((method, _, options) =>
-            {
-                method.Type.ShouldBe(MethodType.DuplexStreaming);
-
-                var responseHeaders = new Metadata();
-                var response = handler(options, responseHeaders);
-                var responseHeadersAsync = new TaskCompletionSource<Metadata>();
-                responseHeadersAsync.SetResult(responseHeaders);
-
-                return new AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>>(
-                    requestStream,
-                    response,
-                    _ => responseHeadersAsync.Task,
-                    _ => default,
-                    _ => default!,
-                    _ =>
-                    {
-                    },
-                    null!);
-            });
     }
 }

@@ -313,6 +313,7 @@ public ref struct DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader,
         try
         {
             writer = new ClientStreamWriter<TRequest>((IAsyncEnumerable<TRequest>)request.Stream!, call.RequestStream, callOptions.CancellationToken);
+            contextInternal.CallContext?.TraceClientStreaming?.Invoke(writer.Task);
         }
         catch
         {
