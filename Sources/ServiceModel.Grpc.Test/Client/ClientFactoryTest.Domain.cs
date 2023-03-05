@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,10 +35,10 @@ public partial class ClientFactoryTest
 
         public Func<CallInvoker, ISomeContract> OnBuild { get; set; } = null!;
 
-        public void Initialize(IMarshallerFactory marshallerFactory, Func<CallOptions>? defaultCallOptionsFactory)
+        public void Initialize(IClientMethodBinder methodBinder)
         {
-            MarshallerFactory = marshallerFactory;
-            DefaultCallOptionsFactory = defaultCallOptionsFactory;
+            MarshallerFactory = methodBinder.MarshallerFactory;
+            DefaultCallOptionsFactory = methodBinder.DefaultCallOptionsFactory;
         }
 
         public ISomeContract Build(CallInvoker callInvoker)

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021-2023 Max Ieremenko
+// Copyright 2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,19 +14,21 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Threading.Tasks;
+using Grpc.Core;
 
 namespace ServiceModel.Grpc.Filters.Internal;
 
-internal sealed class ServerCallFilterHandler : CallFilterHandlerBase<IServerFilterContextInternal, IServerFilter>
+internal interface IClientFilterContextInternal : IClientFilterContext
 {
-    public ServerCallFilterHandler(IServerFilterContextInternal context, IServerFilter[] filters)
-        : base(context, filters)
-    {
-    }
+    CallInvoker CallInvoker { get; }
 
-    protected override ValueTask HandleAsync(IServerFilter filter, Func<ValueTask> next) => filter.InvokeAsync(Context, next);
+    CallContext? CallContext { get; set; }
 
-    protected override void Handle(IServerFilter filter, Action next) => throw new NotSupportedException();
+    object? RequestHeaderMarshaller { get; set; }
+
+    object? ResponseHeaderMarshaller { get; set; }
+
+    IRequestContextInternal RequestInternal { get; }
+
+    IResponseContextInternal ResponseInternal { get; }
 }

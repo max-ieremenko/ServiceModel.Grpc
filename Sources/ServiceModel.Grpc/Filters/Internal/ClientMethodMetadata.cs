@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021-2023 Max Ieremenko
+// Copyright 2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,18 +15,22 @@
 // </copyright>
 
 using System;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace ServiceModel.Grpc.Filters.Internal;
 
-internal sealed class ServerCallFilterHandler : CallFilterHandlerBase<IServerFilterContextInternal, IServerFilter>
+internal sealed partial class ClientMethodMetadata
 {
-    public ServerCallFilterHandler(IServerFilterContextInternal context, IServerFilter[] filters)
-        : base(context, filters)
+    public ClientMethodMetadata(
+        Func<MethodInfo> contractMethodDefinition,
+        Func<MethodInfo>? alternateContractMethodDefinition)
     {
+        Method = new Metadata(contractMethodDefinition);
+        AlternateMethod = alternateContractMethodDefinition == null ? null : new Metadata(alternateContractMethodDefinition);
     }
 
-    protected override ValueTask HandleAsync(IServerFilter filter, Func<ValueTask> next) => filter.InvokeAsync(Context, next);
+    // in case of sync-over-async contains async version
+    public Metadata Method { get; }
 
-    protected override void Handle(IServerFilter filter, Action next) => throw new NotSupportedException();
+    public Metadata? AlternateMethod { get; }
 }

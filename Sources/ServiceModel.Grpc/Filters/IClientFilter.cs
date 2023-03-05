@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,15 +20,22 @@ using System.Threading.Tasks;
 namespace ServiceModel.Grpc.Filters;
 
 /// <summary>
-/// A server filter that surrounds execution of the method.
+/// A client filter that surrounds execution of the method.
 /// </summary>
-public interface IServerFilter
+public interface IClientFilter
 {
     /// <summary>
-    /// Call handling method.
+    /// Blocking unary call handling method.
     /// </summary>
-    /// <param name="context">The <see cref="IServerFilterContext"/> for the current call.</param>
+    /// <param name="context">The <see cref="IClientFilterContext"/> for the current call.</param>
+    /// <param name="next">The delegate representing the remaining call in the request pipeline.</param>
+    void Invoke(IClientFilterContext context, Action next);
+
+    /// <summary>
+    /// Async call handling method.
+    /// </summary>
+    /// <param name="context">The <see cref="IClientFilterContext"/> for the current call.</param>
     /// <param name="next">The delegate representing the remaining call in the request pipeline.</param>
     /// <returns>A <see cref="ValueTask"/> that represents the execution of this filter.</returns>
-    ValueTask InvokeAsync(IServerFilterContext context, Func<ValueTask> next);
+    ValueTask InvokeAsync(IClientFilterContext context, Func<ValueTask> next);
 }

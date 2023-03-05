@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2023 Max Ieremenko
+// Copyright 2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,14 @@
 // limitations under the License.
 // </copyright>
 
+using System;
 using System.ComponentModel;
-using Grpc.Core;
+using System.Threading.Tasks;
+using ServiceModel.Grpc.Filters;
 
-#pragma warning disable SA1642 // Constructor summary documentation should begin with standard text
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 #pragma warning disable SA1611 // Element parameters should be documented
-#pragma warning disable SA1604 // Element documentation should have summary
 #pragma warning disable SA1615 // Element return value should be documented
-#pragma warning disable SA1618 // Generic type parameters should be documented
+#pragma warning disable SA1604 // Element documentation should have summary
 
 namespace ServiceModel.Grpc.Client.Internal;
 
@@ -32,11 +31,14 @@ namespace ServiceModel.Grpc.Client.Internal;
 /// </summary>
 [Browsable(false)]
 [EditorBrowsable(EditorBrowsableState.Never)]
-public interface IClientBuilder<TContract>
+public interface IClientCallFilterHandler
 {
     /// <exclude />
-    void Initialize(IClientMethodBinder methodBinder);
+    IClientFilterContext Context { get; }
 
     /// <exclude />
-    TContract Build(CallInvoker callInvoker);
+    void Invoke(Action<IClientFilterContext> last);
+
+    /// <exclude />
+    ValueTask InvokeAsync(Func<IClientFilterContext, ValueTask> last);
 }

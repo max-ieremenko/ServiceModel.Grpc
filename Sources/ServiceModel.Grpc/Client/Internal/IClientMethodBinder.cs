@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2023 Max Ieremenko
+// Copyright 2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
 // limitations under the License.
 // </copyright>
 
+using System;
 using System.ComponentModel;
+using System.Reflection;
 using Grpc.Core;
+using ServiceModel.Grpc.Configuration;
 
-#pragma warning disable SA1642 // Constructor summary documentation should begin with standard text
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 #pragma warning disable SA1611 // Element parameters should be documented
-#pragma warning disable SA1604 // Element documentation should have summary
 #pragma warning disable SA1615 // Element return value should be documented
-#pragma warning disable SA1618 // Generic type parameters should be documented
+#pragma warning disable SA1604 // Element documentation should have summary
 
 namespace ServiceModel.Grpc.Client.Internal;
 
@@ -32,11 +32,20 @@ namespace ServiceModel.Grpc.Client.Internal;
 /// </summary>
 [Browsable(false)]
 [EditorBrowsable(EditorBrowsableState.Never)]
-public interface IClientBuilder<TContract>
+public interface IClientMethodBinder
 {
     /// <exclude />
-    void Initialize(IClientMethodBinder methodBinder);
+    bool RequiresMetadata { get; }
 
     /// <exclude />
-    TContract Build(CallInvoker callInvoker);
+    IMarshallerFactory MarshallerFactory { get; }
+
+    /// <exclude />
+    Func<CallOptions>? DefaultCallOptionsFactory { get; }
+
+    /// <exclude />
+    void Add(IMethod method, Func<MethodInfo> resolveContractMethodDefinition);
+
+    /// <exclude />
+    IClientCallFilterHandlerFactory? CreateFilterHandlerFactory();
 }

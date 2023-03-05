@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,19 +16,18 @@
 
 using System;
 using System.Threading.Tasks;
+using ServiceModel.Grpc.Client.Internal;
 
-namespace ServiceModel.Grpc.Filters;
+namespace ServiceModel.Grpc.Filters.Internal;
 
-/// <summary>
-/// A server filter that surrounds execution of the method.
-/// </summary>
-public interface IServerFilter
+internal sealed class ClientCallFilterHandler : CallFilterHandlerBase<IClientFilterContext, IClientFilter>, IClientCallFilterHandler
 {
-    /// <summary>
-    /// Call handling method.
-    /// </summary>
-    /// <param name="context">The <see cref="IServerFilterContext"/> for the current call.</param>
-    /// <param name="next">The delegate representing the remaining call in the request pipeline.</param>
-    /// <returns>A <see cref="ValueTask"/> that represents the execution of this filter.</returns>
-    ValueTask InvokeAsync(IServerFilterContext context, Func<ValueTask> next);
+    public ClientCallFilterHandler(IClientFilterContext context, IClientFilter[] filters)
+        : base(context, filters)
+    {
+    }
+
+    protected override ValueTask HandleAsync(IClientFilter filter, Func<ValueTask> next) => filter.InvokeAsync(Context, next);
+
+    protected override void Handle(IClientFilter filter, Action next) => filter.Invoke(Context, next);
 }
