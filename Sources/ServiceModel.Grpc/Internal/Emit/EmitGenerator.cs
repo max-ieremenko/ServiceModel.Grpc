@@ -28,10 +28,10 @@ internal sealed class EmitGenerator : IEmitGenerator
     {
         var serviceType = typeof(TContract);
 
-        Type clientBuilderType;
+        Type? clientBuilderType;
         lock (ProxyAssembly.SyncRoot)
         {
-            clientBuilderType = ProxyAssembly.DefaultModule.GetType(ContractDescription.GetClientBuilderClassName(serviceType), false, false)!;
+            clientBuilderType = ProxyAssembly.DefaultModule.GetType(ContractDescription.GetClientBuilderClassName(serviceType), false, false);
             if (clientBuilderType == null)
             {
                 var (description, contractType) = GenerateContract(serviceType);

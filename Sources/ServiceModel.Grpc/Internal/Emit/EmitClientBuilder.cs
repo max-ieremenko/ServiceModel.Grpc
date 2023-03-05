@@ -37,6 +37,7 @@ internal sealed class EmitClientBuilder
     private FieldBuilder _contractField = null!;
     private FieldBuilder _callInvokerField = null!;
     private FieldBuilder _callOptionsFactoryField = null!;
+    private FieldBuilder _filterHandlerFactoryField = null!;
 
     public EmitClientBuilder(ContractDescription description, Type contractType)
     {
@@ -68,6 +69,12 @@ internal sealed class EmitClientBuilder
             .DefineField(
                 "__callOptionsFactory",
                 typeof(Func<CallOptions>),
+                FieldAttributes.Private | FieldAttributes.InitOnly);
+
+        _filterHandlerFactoryField = _typeBuilder
+            .DefineField(
+                "__filterHandlerFactory",
+                typeof(IClientCallFilterHandlerFactory),
                 FieldAttributes.Private | FieldAttributes.InitOnly);
 
         BuildCtor();
@@ -110,20 +117,22 @@ internal sealed class EmitClientBuilder
         return _typeBuilder.CreateTypeInfo()!;
     }
 
-    public Func<CallInvoker, object, Func<CallOptions>?, TContract> CreateFactory<TContract>(Type implementationType)
+    public Func<CallInvoker, object, Func<CallOptions>?, IClientCallFilterHandlerFactory?, TContract> CreateFactory<TContract>(Type implementationType)
     {
         var callInvoker = Expression.Parameter(typeof(CallInvoker), "callInvoker");
         var contract = Expression.Parameter(typeof(object), "contract");
         var callOptions = Expression.Parameter(typeof(Func<CallOptions>), "callOptions");
+        var filterHandlerFactory = Expression.Parameter(typeof(IClientCallFilterHandlerFactory), "filterHandlerFactory");
 
-        var ctor = implementationType.Constructor(typeof(CallInvoker), _contractType, typeof(Func<CallOptions>));
+        var ctor = implementationType.Constructor(typeof(CallInvoker), _contractType, typeof(Func<CallOptions>), typeof(IClientCallFilterHandlerFactory));
         var factory = Expression.New(
             ctor,
             callInvoker,
             Expression.Convert(contract, _contractType),
-            callOptions);
+            callOptions,
+            filterHandlerFactory);
 
-        return Expression.Lambda<Func<CallInvoker, object, Func<CallOptions>?, TContract>>(factory, callInvoker, contract, callOptions).Compile();
+        return Expression.Lambda<Func<CallInvoker, object, Func<CallOptions>?, IClientCallFilterHandlerFactory?, TContract>>(factory, callInvoker, contract, callOptions, filterHandlerFactory).Compile();
     }
 
     private void ImplementNotSupportedMethod(MethodInfo method, string error)
@@ -358,7 +367,11 @@ internal sealed class EmitClientBuilder
         body.Emit(OpCodes.Ldfld, _callInvokerField);
 
         body.Emit(OpCodes.Ldloca_S, 0); // optionsBuilder
-        body.Emit(OpCodes.Newobj, callType.Constructor(3));
+
+        body.Emit(OpCodes.Ldarg_0); // filterHandlerFactory
+        body.Emit(OpCodes.Ldfld, _filterHandlerFactoryField);
+
+        body.Emit(OpCodes.Newobj, callType.Constructor(4));
         body.Emit(OpCodes.Stloc_1);
 
         if (operation.Message.HeaderResponseType != null)
@@ -468,7 +481,7 @@ internal sealed class EmitClientBuilder
         var ctor = _typeBuilder.DefineConstructor(
             MethodAttributes.Public,
             CallingConventions.HasThis,
-            new[] { typeof(CallInvoker), _contractType, typeof(Func<CallOptions>) });
+            new[] { typeof(CallInvoker), _contractType, typeof(Func<CallOptions>), typeof(IClientCallFilterHandlerFactory) });
 
         var il = ctor.GetILGenerator();
         il.Emit(OpCodes.Ldarg_0);
@@ -476,18 +489,23 @@ internal sealed class EmitClientBuilder
 
         // __callInvoker
         il.Emit(OpCodes.Ldarg_0);
-        il.Emit(OpCodes.Ldarg_1);
+        il.EmitLdarg(1);
         il.Emit(OpCodes.Stfld, _callInvokerField);
 
         // __contract
         il.Emit(OpCodes.Ldarg_0);
-        il.Emit(OpCodes.Ldarg_2);
+        il.EmitLdarg(2);
         il.Emit(OpCodes.Stfld, _contractField);
 
         // __callOptionsFactory
         il.Emit(OpCodes.Ldarg_0);
-        il.Emit(OpCodes.Ldarg_3);
+        il.EmitLdarg(3);
         il.Emit(OpCodes.Stfld, _callOptionsFactoryField);
+
+        // __filterHandlerFactory
+        il.Emit(OpCodes.Ldarg_0);
+        il.EmitLdarg(4);
+        il.Emit(OpCodes.Stfld, _filterHandlerFactoryField);
 
         il.Emit(OpCodes.Ret);
     }

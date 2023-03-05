@@ -69,9 +69,37 @@ internal sealed class EmitContractBuilder
             BuildResponseHeader(operation, typeBuilder, ctor);
         }
 
+        foreach (var interfaceDescription in _description.Services)
+        {
+            foreach (var operation in interfaceDescription.Operations)
+            {
+                BuildDefinition(typeBuilder, operation.ClrDefinitionMethodName);
+            }
+
+            foreach (var entry in interfaceDescription.SyncOverAsync)
+            {
+                BuildDefinition(typeBuilder, entry.Async.ClrDefinitionMethodNameSyncVersion);
+            }
+        }
+
         ctor.Emit(OpCodes.Ret);
 
-        return typeBuilder.CreateTypeInfo()!;
+        var result = typeBuilder.CreateTypeInfo()!;
+
+        foreach (var interfaceDescription in _description.Services)
+        {
+            foreach (var operation in interfaceDescription.Operations)
+            {
+                result.StaticFiled(operation.ClrDefinitionMethodName).SetValue(null, operation.Message.Operation.MethodHandle);
+            }
+
+            foreach (var entry in interfaceDescription.SyncOverAsync)
+            {
+                result.StaticFiled(entry.Async.ClrDefinitionMethodNameSyncVersion).SetValue(null, entry.Sync.Operation.MethodHandle);
+            }
+        }
+
+        return result;
     }
 
     private void BuildMethod(OperationDescription operation, TypeBuilder typeBuilder, ILGenerator ctor)
@@ -163,6 +191,15 @@ internal sealed class EmitContractBuilder
         ctor.Emit(OpCodes.Ldarg_1);
         ctor.Emit(OpCodes.Callvirt, createMarshaller);
         ctor.Emit(OpCodes.Stfld, field);
+    }
+
+    private void BuildDefinition(TypeBuilder typeBuilder, string fieldName)
+    {
+        typeBuilder
+            .DefineField(
+                fieldName,
+                typeof(RuntimeMethodHandle),
+                FieldAttributes.Public | FieldAttributes.Static);
     }
 
     private IEnumerable<OperationDescription> GetAllOperations()
