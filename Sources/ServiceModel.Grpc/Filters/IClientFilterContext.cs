@@ -15,6 +15,7 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Grpc.Core;
 
@@ -39,6 +40,11 @@ public interface IClientFilterContext
     /// Gets the current service provider.
     /// </summary>
     IServiceProvider ServiceProvider { get; }
+
+    /// <summary>
+    /// Gets a dictionary that can be used by the various handlers of this call to store arbitrary state.
+    /// </summary>
+    IDictionary<object, object> UserState { get; }
 
     /// <summary>
     /// Gets the <see cref="MethodInfo"/> for the contract method declaration.

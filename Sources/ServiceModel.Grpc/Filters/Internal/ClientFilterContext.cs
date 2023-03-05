@@ -15,6 +15,7 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Grpc.Core;
 
@@ -25,6 +26,7 @@ internal sealed class ClientFilterContext : IClientFilterContextInternal
     private readonly Func<MethodInfo> _resolveContractMethodInfo;
 
     private MethodInfo? _contractMethodInfo;
+    private IDictionary<object, object>? _userState;
 
     public ClientFilterContext(
         IServiceProvider? serviceProvider,
@@ -49,6 +51,19 @@ internal sealed class ClientFilterContext : IClientFilterContextInternal
     public IMethod Method { get; }
 
     public IServiceProvider ServiceProvider { get; }
+
+    public IDictionary<object, object> UserState
+    {
+        get
+        {
+            if (_userState == null)
+            {
+                _userState = new Dictionary<object, object>();
+            }
+
+            return _userState;
+        }
+    }
 
     public CallInvoker CallInvoker { get; }
 

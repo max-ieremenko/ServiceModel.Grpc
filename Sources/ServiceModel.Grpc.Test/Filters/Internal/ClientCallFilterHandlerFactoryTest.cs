@@ -118,6 +118,7 @@ public class ClientCallFilterHandlerFactoryTest
         context.RequestInternal.ShouldBeOfType<RequestContext>();
         context.ResponseInternal.ShouldBeOfType<ResponseContext>();
         context.CallInvoker.ShouldBe(_callInvoker);
+        context.UserState.ShouldNotBeNull();
     }
 
     [Test]
@@ -139,5 +140,6 @@ public class ClientCallFilterHandlerFactoryTest
         context.RequestInternal.ShouldBeOfType<RequestContext>();
         context.ResponseInternal.ShouldBeOfType<ResponseContext>();
         context.CallInvoker.ShouldBe(_callInvoker);
+        context.UserState.ShouldNotBeNull();
     }
 }
