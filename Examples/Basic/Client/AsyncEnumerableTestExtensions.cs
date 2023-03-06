@@ -1,30 +1,29 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Client
+namespace Client;
+
+internal static class AsyncEnumerableTestExtensions
 {
-    internal static class AsyncEnumerableTestExtensions
+    public static async IAsyncEnumerable<T> AsAsyncEnumerable<T>(this IEnumerable<T> source)
     {
-        public static async IAsyncEnumerable<T> AsAsyncEnumerable<T>(this IEnumerable<T> source)
-        {
-            await Task.CompletedTask;
+        await Task.CompletedTask;
 
-            foreach (var i in source)
-            {
-                yield return i;
-            }
+        foreach (var i in source)
+        {
+            yield return i;
+        }
+    }
+
+    public static async Task<List<T>> ToListAsync<T>(this IAsyncEnumerable<T> source)
+    {
+        var result = new List<T>();
+
+        await foreach (var i in source)
+        {
+            result.Add(i);
         }
 
-        public static async Task<List<T>> ToListAsync<T>(this IAsyncEnumerable<T> source)
-        {
-            var result = new List<T>();
-
-            await foreach (var i in source)
-            {
-                result.Add(i);
-            }
-
-            return result;
-        }
+        return result;
     }
 }

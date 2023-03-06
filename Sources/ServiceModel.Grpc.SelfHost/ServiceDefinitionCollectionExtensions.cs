@@ -15,7 +15,7 @@
 // </copyright>
 
 using System;
-using ServiceModel.Grpc;
+using Grpc.Core.Utils;
 using ServiceModel.Grpc.Hosting.Internal;
 using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.SelfHost.Internal;
@@ -42,8 +42,8 @@ public static class ServiceDefinitionCollectionExtensions
         Func<TService> serviceFactory,
         Action<ServiceModelGrpcServiceOptions>? configure = default)
     {
-        services.AssertNotNull(nameof(services));
-        serviceFactory.AssertNotNull(nameof(serviceFactory));
+        GrpcPreconditions.CheckNotNull(services, nameof(services));
+        GrpcPreconditions.CheckNotNull(serviceFactory, nameof(serviceFactory));
 
         BindService(services, serviceFactory, null, configure);
         return services;
@@ -65,9 +65,9 @@ public static class ServiceDefinitionCollectionExtensions
         IServiceEndpointBinder<TService> endpointBinder,
         Action<ServiceModelGrpcServiceOptions>? configure = default)
     {
-        services.AssertNotNull(nameof(services));
-        serviceFactory.AssertNotNull(nameof(serviceFactory));
-        services.AssertNotNull(nameof(endpointBinder));
+        GrpcPreconditions.CheckNotNull(services, nameof(services));
+        GrpcPreconditions.CheckNotNull(serviceFactory, nameof(serviceFactory));
+        GrpcPreconditions.CheckNotNull(endpointBinder, nameof(endpointBinder));
 
         BindService(services, serviceFactory, endpointBinder, configure);
         return services;
@@ -86,8 +86,8 @@ public static class ServiceDefinitionCollectionExtensions
         TService service,
         Action<ServiceModelGrpcServiceOptions>? configure = default)
     {
-        services.AssertNotNull(nameof(services));
-        service.AssertNotNull(nameof(service));
+        GrpcPreconditions.CheckNotNull(services, nameof(services));
+        GrpcPreconditions.CheckNotNull(service, nameof(service));
 
         BindService(services, () => service, null, configure);
         return services;
@@ -109,9 +109,9 @@ public static class ServiceDefinitionCollectionExtensions
         IServiceEndpointBinder<TService> endpointBinder,
         Action<ServiceModelGrpcServiceOptions>? configure = default)
     {
-        services.AssertNotNull(nameof(services));
-        service.AssertNotNull(nameof(service));
-        endpointBinder.AssertNotNull(nameof(endpointBinder));
+        GrpcPreconditions.CheckNotNull(services, nameof(services));
+        GrpcPreconditions.CheckNotNull(service, nameof(service));
+        GrpcPreconditions.CheckNotNull(endpointBinder, nameof(endpointBinder));
 
         BindService(services, () => service, endpointBinder, configure);
         return services;
@@ -130,8 +130,8 @@ public static class ServiceDefinitionCollectionExtensions
         IServiceProvider serviceProvider,
         Action<ServiceModelGrpcServiceOptions>? configure = default)
     {
-        services.AssertNotNull(nameof(services));
-        serviceProvider.AssertNotNull(nameof(serviceProvider));
+        GrpcPreconditions.CheckNotNull(services, nameof(services));
+        GrpcPreconditions.CheckNotNull(serviceProvider, nameof(serviceProvider));
 
         Func<TService> serviceFactory = serviceProvider.GetServiceRequired<TService>;
         var options = new ServiceModelGrpcServiceOptions
@@ -159,9 +159,9 @@ public static class ServiceDefinitionCollectionExtensions
         IServiceEndpointBinder<TService> endpointBinder,
         Action<ServiceModelGrpcServiceOptions>? configure = default)
     {
-        services.AssertNotNull(nameof(services));
-        serviceProvider.AssertNotNull(nameof(serviceProvider));
-        endpointBinder.AssertNotNull(nameof(endpointBinder));
+        GrpcPreconditions.CheckNotNull(services, nameof(services));
+        GrpcPreconditions.CheckNotNull(serviceProvider, nameof(serviceProvider));
+        GrpcPreconditions.CheckNotNull(endpointBinder, nameof(endpointBinder));
 
         Func<TService> serviceFactory = serviceProvider.GetServiceRequired<TService>;
         var options = new ServiceModelGrpcServiceOptions

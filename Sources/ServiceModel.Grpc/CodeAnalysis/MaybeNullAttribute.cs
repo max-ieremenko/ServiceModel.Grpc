@@ -15,11 +15,10 @@
 // </copyright>
 
 #if !NETSTANDARD2_1
-namespace System.Diagnostics.CodeAnalysis
+namespace System.Diagnostics.CodeAnalysis;
+
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.ReturnValue, Inherited = false)]
+internal sealed class MaybeNullAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.ReturnValue, Inherited = false)]
-    internal sealed class MaybeNullAttribute : Attribute
-    {
-    }
 }
 #endif

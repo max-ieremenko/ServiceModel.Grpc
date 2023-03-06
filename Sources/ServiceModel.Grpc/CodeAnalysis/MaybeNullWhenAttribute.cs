@@ -15,14 +15,13 @@
 // </copyright>
 
 #if !NETSTANDARD2_1
-namespace System.Diagnostics.CodeAnalysis
-{
-    [AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
-    internal sealed class MaybeNullWhenAttribute : Attribute
-    {
-        public MaybeNullWhenAttribute(bool returnValue) => ReturnValue = returnValue;
+namespace System.Diagnostics.CodeAnalysis;
 
-        public bool ReturnValue { get; }
-    }
+[AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
+internal sealed class MaybeNullWhenAttribute : Attribute
+{
+    public MaybeNullWhenAttribute(bool returnValue) => ReturnValue = returnValue;
+
+    public bool ReturnValue { get; }
 }
 #endif

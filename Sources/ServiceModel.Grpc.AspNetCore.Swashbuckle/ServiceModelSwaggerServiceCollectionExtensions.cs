@@ -15,6 +15,7 @@
 // </copyright>
 
 using System;
+using Grpc.Core.Utils;
 using Microsoft.Extensions.Options;
 using ServiceModel.Grpc.AspNetCore.Internal.Swagger;
 using ServiceModel.Grpc.AspNetCore.Swashbuckle.Configuration;
@@ -40,10 +41,7 @@ public static class ServiceModelSwaggerServiceCollectionExtensions
         this IServiceCollection services,
         Action<ServiceModelGrpcSwaggerOptions>? configure = default)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        GrpcPreconditions.CheckNotNull(services, nameof(services));
 
         if (configure != null)
         {

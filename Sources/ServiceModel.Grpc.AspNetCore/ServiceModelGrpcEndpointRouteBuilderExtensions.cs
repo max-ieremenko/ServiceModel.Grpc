@@ -14,10 +14,10 @@
 // limitations under the License.
 // </copyright>
 
+using Grpc.Core.Utils;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using ServiceModel.Grpc;
 using ServiceModel.Grpc.Hosting.Internal;
 
 //// ReSharper disable CheckNamespace
@@ -40,7 +40,7 @@ public static class ServiceModelGrpcEndpointRouteBuilderExtensions
         where TService : class
         where TEndpointBinder : IServiceEndpointBinder<TService>, new()
     {
-        builder.AssertNotNull(nameof(builder));
+        GrpcPreconditions.CheckNotNull(builder, nameof(builder));
 
         var options = builder.ServiceProvider.GetRequiredService<IOptions<ServiceModelGrpcServiceOptions<TService>>>();
         options.Value.EndpointBinderType = typeof(TEndpointBinder);

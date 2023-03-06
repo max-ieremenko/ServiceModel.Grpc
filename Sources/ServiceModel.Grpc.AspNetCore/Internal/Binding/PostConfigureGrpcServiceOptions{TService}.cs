@@ -15,6 +15,7 @@
 // </copyright>
 
 using Grpc.AspNetCore.Server;
+using Grpc.Core.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -30,11 +31,8 @@ internal sealed class PostConfigureGrpcServiceOptions<TService> : IPostConfigure
         IOptions<ServiceModelGrpcServiceOptions> rootConfiguration,
         IOptions<ServiceModelGrpcServiceOptions<TService>> serviceConfiguration)
     {
-        rootConfiguration.AssertNotNull(nameof(rootConfiguration));
-        serviceConfiguration.AssertNotNull(nameof(serviceConfiguration));
-
-        _rootConfiguration = rootConfiguration;
-        _serviceConfiguration = serviceConfiguration;
+        _rootConfiguration = GrpcPreconditions.CheckNotNull(rootConfiguration, nameof(rootConfiguration));
+        _serviceConfiguration = GrpcPreconditions.CheckNotNull(serviceConfiguration, nameof(serviceConfiguration));
     }
 
     public void PostConfigure(string? name, GrpcServiceOptions<TService> options)

@@ -15,6 +15,7 @@
 // </copyright>
 
 using System;
+using Grpc.Core.Utils;
 using ServiceModel.Grpc.Configuration;
 
 namespace ServiceModel.Grpc.Interceptors.Internal;
@@ -28,15 +29,13 @@ internal sealed class ErrorHandlerServerCallInterceptorFactory : IServerCallInte
         IMarshallerFactory marshallerFactory,
         Func<IServiceProvider, IServerErrorHandler> errorHandlerFactory)
     {
-        marshallerFactory.AssertNotNull(nameof(marshallerFactory));
-
-        _marshallerFactory = marshallerFactory;
-        _errorHandlerFactory = errorHandlerFactory;
+        _marshallerFactory = GrpcPreconditions.CheckNotNull(marshallerFactory, nameof(marshallerFactory));
+        _errorHandlerFactory = GrpcPreconditions.CheckNotNull(errorHandlerFactory, nameof(errorHandlerFactory));
     }
 
     public IServerCallInterceptor CreateInterceptor(IServiceProvider serviceProvider)
     {
-        serviceProvider.AssertNotNull(nameof(serviceProvider));
+        GrpcPreconditions.CheckNotNull(serviceProvider, nameof(serviceProvider));
 
         var errorHandler = _errorHandlerFactory(serviceProvider);
         return new ServerCallErrorInterceptor(errorHandler, _marshallerFactory);

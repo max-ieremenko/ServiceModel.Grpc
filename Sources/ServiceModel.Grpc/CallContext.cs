@@ -18,6 +18,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
+using Grpc.Core.Utils;
 using ServiceModel.Grpc.Client.Internal;
 
 namespace ServiceModel.Grpc;
@@ -61,9 +62,7 @@ public sealed class CallContext
     /// <param name="serverCallContext">The context for a server-side call.</param>
     public CallContext(ServerCallContext serverCallContext)
     {
-        serverCallContext.AssertNotNull(nameof(serverCallContext));
-
-        ServerCallContext = serverCallContext;
+        ServerCallContext = GrpcPreconditions.CheckNotNull(serverCallContext, nameof(serverCallContext));
     }
 
     /// <summary>

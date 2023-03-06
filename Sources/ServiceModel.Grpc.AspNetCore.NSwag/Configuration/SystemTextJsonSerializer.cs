@@ -19,6 +19,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Grpc.Core.Utils;
 
 namespace ServiceModel.Grpc.AspNetCore.NSwag.Configuration;
 
@@ -41,12 +42,7 @@ public class SystemTextJsonSerializer : IJsonSerializer
     /// <param name="options">Options to control the conversion behavior.</param>
     public SystemTextJsonSerializer(JsonSerializerOptions options)
     {
-        if (options == null)
-        {
-            throw new ArgumentNullException(nameof(options));
-        }
-
-        Options = options;
+        Options = GrpcPreconditions.CheckNotNull(options, nameof(options));
     }
 
     /// <summary>

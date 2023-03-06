@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
+using Grpc.Core.Utils;
 using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Interceptors.Internal;
@@ -75,7 +76,7 @@ public sealed class ClientFactory : IClientFactory
     public void AddClient<TContract>(IClientBuilder<TContract> builder, Action<ServiceModelGrpcClientOptions>? configure = null)
         where TContract : class
     {
-        builder.AssertNotNull(nameof(builder));
+        GrpcPreconditions.CheckNotNull(builder, nameof(builder));
 
         RegisterClient(builder, configure);
     }
@@ -89,7 +90,7 @@ public sealed class ClientFactory : IClientFactory
     public TContract CreateClient<TContract>(ChannelBase channel)
         where TContract : class
     {
-        channel.AssertNotNull(nameof(channel));
+        GrpcPreconditions.CheckNotNull(channel, nameof(channel));
 
         return CreateClient<TContract>(channel.CreateCallInvoker());
     }
@@ -103,7 +104,7 @@ public sealed class ClientFactory : IClientFactory
     public TContract CreateClient<TContract>(CallInvoker callInvoker)
         where TContract : class
     {
-        callInvoker.AssertNotNull(nameof(callInvoker));
+        GrpcPreconditions.CheckNotNull(callInvoker, nameof(callInvoker));
 
         object factory;
         Interceptor interceptor;

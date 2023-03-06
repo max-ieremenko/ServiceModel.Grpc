@@ -19,6 +19,7 @@ using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Grpc.Core.Utils;
 
 namespace ServiceModel.Grpc.Internal.IO;
 
@@ -69,7 +70,7 @@ internal sealed class BufferReaderStream : Stream
 
     public override int Read(byte[] buffer, int offset, int count)
     {
-        buffer.AssertNotNull(nameof(buffer));
+        GrpcPreconditions.CheckNotNull(buffer, nameof(buffer));
 
         if (offset < 0)
         {
