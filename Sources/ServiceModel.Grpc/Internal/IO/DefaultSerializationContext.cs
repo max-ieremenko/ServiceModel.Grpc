@@ -18,6 +18,7 @@ using System;
 using System.Buffers;
 using System.Runtime.CompilerServices;
 using Grpc.Core;
+using Grpc.Core.Utils;
 
 namespace ServiceModel.Grpc.Internal.IO;
 
@@ -49,7 +50,7 @@ internal sealed class DefaultSerializationContext : SerializationContext, IDispo
 
     public override void Complete(byte[] payload)
     {
-        payload.AssertNotNull(nameof(payload));
+        GrpcPreconditions.CheckNotNull(payload, nameof(payload));
 
         Complete();
 

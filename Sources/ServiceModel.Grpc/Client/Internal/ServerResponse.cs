@@ -16,6 +16,7 @@
 
 using System;
 using Grpc.Core;
+using Grpc.Core.Utils;
 
 namespace ServiceModel.Grpc.Client.Internal;
 
@@ -28,9 +29,7 @@ internal readonly struct ServerResponse
 
     public ServerResponse(Metadata responseHeaders, Status responseStatus, Metadata responseTrailers)
     {
-        responseHeaders.AssertNotNull(nameof(responseHeaders));
-
-        ResponseHeaders = responseHeaders;
+        ResponseHeaders = GrpcPreconditions.CheckNotNull(responseHeaders, nameof(responseHeaders));
         _responseStatus = responseStatus;
         _responseTrailers = responseTrailers;
 
@@ -40,13 +39,9 @@ internal readonly struct ServerResponse
 
     public ServerResponse(Metadata responseHeaders, Func<Status> getResponseStatus, Func<Metadata> getResponseTrailers)
     {
-        responseHeaders.AssertNotNull(nameof(responseHeaders));
-        getResponseStatus.AssertNotNull(nameof(getResponseStatus));
-        getResponseTrailers.AssertNotNull(nameof(getResponseTrailers));
-
-        ResponseHeaders = responseHeaders;
-        _getResponseStatus = getResponseStatus;
-        _getResponseTrailers = getResponseTrailers;
+        ResponseHeaders = GrpcPreconditions.CheckNotNull(responseHeaders, nameof(responseHeaders));
+        _getResponseStatus = GrpcPreconditions.CheckNotNull(getResponseStatus, nameof(getResponseStatus));
+        _getResponseTrailers = GrpcPreconditions.CheckNotNull(getResponseTrailers, nameof(getResponseTrailers));
 
         _responseStatus = default;
         _responseTrailers = default;

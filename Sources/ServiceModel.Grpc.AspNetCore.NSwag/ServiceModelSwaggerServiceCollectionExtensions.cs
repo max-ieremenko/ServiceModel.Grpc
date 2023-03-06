@@ -15,6 +15,7 @@
 // </copyright>
 
 using System;
+using Grpc.Core.Utils;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using NSwag.Generation.Processors;
@@ -41,10 +42,7 @@ public static class ServiceModelSwaggerServiceCollectionExtensions
         this IServiceCollection services,
         Action<ServiceModelGrpcSwaggerOptions>? configure = default)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        GrpcPreconditions.CheckNotNull(services, nameof(services));
 
         if (configure != null)
         {

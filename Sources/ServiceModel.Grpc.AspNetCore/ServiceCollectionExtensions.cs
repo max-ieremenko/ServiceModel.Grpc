@@ -17,10 +17,10 @@
 using System;
 using Grpc.AspNetCore.Server;
 using Grpc.AspNetCore.Server.Model;
+using Grpc.Core.Utils;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using ServiceModel.Grpc;
 using ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer;
 using ServiceModel.Grpc.AspNetCore.Internal.Binding;
 using ServiceModel.Grpc.AspNetCore.Internal.Swagger;
@@ -44,7 +44,7 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         Action<ServiceModelGrpcServiceOptions>? configure = default)
     {
-        services.AssertNotNull(nameof(services));
+        GrpcPreconditions.CheckNotNull(services, nameof(services));
 
         if (configure != null)
         {
@@ -69,7 +69,7 @@ public static class ServiceCollectionExtensions
         Action<ServiceModelGrpcServiceOptions<TService>> configure)
         where TService : class
     {
-        builder.AssertNotNull(nameof(builder));
+        GrpcPreconditions.CheckNotNull(builder, nameof(builder));
 
         AddServiceModelGrpcServiceOptions(builder.Services, configure);
         return builder;
@@ -87,8 +87,8 @@ public static class ServiceCollectionExtensions
         Action<ServiceModelGrpcServiceOptions<TService>> configure)
         where TService : class
     {
-        services.AssertNotNull(nameof(services));
-        configure.AssertNotNull(nameof(configure));
+        GrpcPreconditions.CheckNotNull(services, nameof(services));
+        GrpcPreconditions.CheckNotNull(configure, nameof(configure));
 
         services.Configure(configure);
         services.TryAddTransient<IPostConfigureOptions<GrpcServiceOptions<TService>>, PostConfigureGrpcServiceOptions<TService>>();

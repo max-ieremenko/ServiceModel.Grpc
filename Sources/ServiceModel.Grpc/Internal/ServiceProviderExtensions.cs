@@ -15,6 +15,7 @@
 // </copyright>
 
 using System;
+using Grpc.Core.Utils;
 
 namespace ServiceModel.Grpc.Internal;
 
@@ -22,8 +23,8 @@ internal static class ServiceProviderExtensions
 {
     public static object GetServiceRequired(this IServiceProvider provider, Type serviceType)
     {
-        provider.AssertNotNull(nameof(provider));
-        serviceType.AssertNotNull(nameof(serviceType));
+        GrpcPreconditions.CheckNotNull(provider, nameof(provider));
+        GrpcPreconditions.CheckNotNull(serviceType, nameof(serviceType));
 
         var service = provider.GetService(serviceType);
         if (service == null)

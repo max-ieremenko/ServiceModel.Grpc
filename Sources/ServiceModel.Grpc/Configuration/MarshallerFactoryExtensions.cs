@@ -16,6 +16,7 @@
 
 using System;
 using System.Runtime.CompilerServices;
+using Grpc.Core.Utils;
 using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.Internal.IO;
 
@@ -31,8 +32,8 @@ internal static class MarshallerFactoryExtensions
 
     public static byte[] SerializeHeader(this IMarshallerFactory factory, object value)
     {
-        factory.AssertNotNull(nameof(factory));
-        value.AssertNotNull(nameof(value));
+        GrpcPreconditions.CheckNotNull(factory, nameof(factory));
+        GrpcPreconditions.CheckNotNull(value, nameof(value));
 
         if (value is byte[] buffer)
         {
@@ -48,7 +49,7 @@ internal static class MarshallerFactoryExtensions
 
     public static object DeserializeHeader(this IMarshallerFactory factory, Type valueType, byte[] valueContent)
     {
-        valueType.AssertNotNull(nameof(valueType));
+        GrpcPreconditions.CheckNotNull(valueType, nameof(valueType));
 
         if (valueType == typeof(byte[]))
         {

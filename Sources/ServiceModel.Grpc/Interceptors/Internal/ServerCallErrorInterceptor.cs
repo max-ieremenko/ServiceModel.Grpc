@@ -16,6 +16,7 @@
 
 using System;
 using Grpc.Core;
+using Grpc.Core.Utils;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Internal;
 
@@ -32,11 +33,8 @@ internal sealed class ServerCallErrorInterceptor : IServerCallInterceptor
         IServerErrorHandler errorHandler,
         IMarshallerFactory marshallerFactory)
     {
-        errorHandler.AssertNotNull(nameof(errorHandler));
-        marshallerFactory.AssertNotNull(nameof(marshallerFactory));
-
-        _errorHandler = errorHandler;
-        _marshallerFactory = marshallerFactory;
+        _errorHandler = GrpcPreconditions.CheckNotNull(errorHandler, nameof(errorHandler));
+        _marshallerFactory = GrpcPreconditions.CheckNotNull(marshallerFactory, nameof(marshallerFactory));
     }
 
     public void OnError(ServerCallInterceptorContext context, Exception error)
