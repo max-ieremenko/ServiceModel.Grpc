@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="System.ServiceModel.Primitives" Version="$(SystemServiceModelPrimitivesVersion)" />
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="$(MicrosoftBclVersion)" />
+	</ItemGroup>
+
+</Project>
