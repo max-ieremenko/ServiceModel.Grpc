@@ -14,8 +14,13 @@ $ErrorActionPreference = "Stop"
 . (Join-Path $PSScriptRoot "scripts" "Get-ModuleVersion.ps1")
 
 if (-not $List -or (".net" -in $List)) {
-    $version = (Get-Content -Raw (Join-Path $PSScriptRoot "../Sources/global.json") | ConvertFrom-Json).sdk.version
     $script = Join-Path $PSScriptRoot "scripts/Install-DotNet.ps1"
+    
+    & $script "3.1.426"
+    & $script "5.0.408"
+    & $script "6.0.406"
+
+    $version = (Get-Content -Raw (Join-Path $PSScriptRoot "../Sources/global.json") | ConvertFrom-Json).sdk.version
     & $script $version
 }
 
