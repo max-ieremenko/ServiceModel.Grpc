@@ -1,7 +1,7 @@
 System.Runtime.CompilerServices.Unsafe [5.0.0](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/5.0.0)
 --------------------
 
-Used by: DesignTime, MessagePack
+Used by: DesignTime
 
 Target frameworks: net5.0, net6.0, net7.0, netcoreapp3.1, netstandard2.0
 

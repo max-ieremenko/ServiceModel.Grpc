@@ -1,0 +1,48 @@
+{
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "netcoreapp3.0",
+        "net5.0",
+        "net6.0",
+        "net7.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "NJsonSchema",
+          "Version": "10.8.0"
+        },
+        {
+          "Name": "Newtonsoft.Json",
+          "Version": "10.0.1"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT",
+      "Description": null
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/RicoSuter/NSwag.git",
+      "Description": null
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "http://nswag.org/",
+      "Description": "License should be verified on http://nswag.org/"
+    }
+  ]
+}

@@ -14,17 +14,6 @@
         "net6.0",
         "net7.0"
       ]
-    },
-    {
-      "Name": "MessagePack",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "netcoreapp3.1",
-        "net5.0",
-        "net6.0",
-        "net7.0",
-        "netstandard2.0"
-      ]
     }
   ],
   "Licenses": [

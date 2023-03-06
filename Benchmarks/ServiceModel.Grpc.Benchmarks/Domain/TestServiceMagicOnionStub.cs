@@ -19,7 +19,7 @@ using MagicOnion.Server;
 
 namespace ServiceModel.Grpc.Benchmarks.Domain;
 
-internal sealed class TestServiceMagicOnionStub : ServiceBase<ITestServiceMagicOnion>, ITestServiceMagicOnion
+public sealed class TestServiceMagicOnionStub : ServiceBase<ITestServiceMagicOnion>, ITestServiceMagicOnion
 {
     public UnaryResult<SomeObject> PingPong(SomeObject value)
     {

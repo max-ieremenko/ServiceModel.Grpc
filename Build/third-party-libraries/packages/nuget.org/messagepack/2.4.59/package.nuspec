@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>MessagePack</id>
+    <version>2.4.59</version>
+    <title>MessagePack for C#</title>
+    <authors>neuecc,aarnott</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <projectUrl>https://github.com/neuecc/MessagePack-CSharp</projectUrl>
+    <description>Extremely Fast MessagePack(MsgPack) Serializer for C#(.NET, .NET Core, Unity, Xamarin).</description>
+    <releaseNotes>https://github.com/neuecc/MessagePack-CSharp/releases/tag/v2.4.59</releaseNotes>
+    <copyright>© Yoshifumi Kawai and contributors. All rights reserved.</copyright>
+    <tags>MsgPack MessagePack Serialization Formatter Serializer Unity Xamarin</tags>
+    <repository type="git" url="https://github.com/neuecc/MessagePack-CSharp" commit="92f230bc77f7c131dee8b6aec40f72e07510f543" />
+    <dependencies>
+      <group targetFramework=".NETCoreApp3.1">
+        <dependency id="MessagePack.Annotations" version="2.4.59" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.NET.StringTools" version="17.4.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net6.0">
+        <dependency id="MessagePack.Annotations" version="2.4.59" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.NET.StringTools" version="17.4.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="MessagePack.Annotations" version="2.4.59" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Bcl.AsyncInterfaces" version="6.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.NET.StringTools" version="17.4.0" exclude="Build,Analyzers" />
+        <dependency id="System.Collections.Immutable" version="1.7.1" exclude="Build,Analyzers" />
+        <dependency id="System.Reflection.Emit" version="4.7.0" exclude="Build,Analyzers" />
+        <dependency id="System.Reflection.Emit.Lightweight" version="4.7.0" exclude="Build,Analyzers" />
+        <dependency id="System.Threading.Tasks.Extensions" version="4.5.4" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
