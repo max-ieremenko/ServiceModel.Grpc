@@ -22,7 +22,7 @@ using Grpc.Core;
 namespace ServiceModel.Grpc.Filters;
 
 /// <summary>
-/// A context for client filters, specifically <see cref="IServerFilter.InvokeAsync"/>.
+/// A context for client filters, specifically <see cref="IClientFilter.InvokeAsync"/> and <see cref="IClientFilter.Invoke"/>.
 /// </summary>
 public interface IClientFilterContext
 {
