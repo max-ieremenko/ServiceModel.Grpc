@@ -1,0 +1,44 @@
+{
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "netcoreapp3.0",
+        "net5.0",
+        "net6.0",
+        "net7.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.Extensions.FileProviders.Abstractions",
+          "Version": "7.0.0"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT",
+      "Description": null
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/dotnet/aspnetcore",
+      "Description": null
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "https://asp.net/",
+      "Description": "License should be verified on https://asp.net/"
+    }
+  ]
+}

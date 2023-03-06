@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Grpc.Core</id>
+    <version>2.46.6</version>
+    <authors>The gRPC Authors</authors>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>packageIcon.png</icon>
+    <projectUrl>https://github.com/grpc/grpc</projectUrl>
+    <description>C# implementation of gRPC based on native gRPC C-core library.
+
+Note that the Grpc.Core implementation of gRPC for C# is in maintenance mode and will be replaced by grpc-dotnet in the future.
+See https://grpc.io/blog/grpc-csharp-future/ for details.</description>
+    <copyright>Copyright 2015 The gRPC Authors</copyright>
+    <tags>gRPC RPC HTTP/2</tags>
+    <repository type="git" url="https://github.com/grpc/grpc.git" commit="cdc97245c7977e85bb0234941f5c6cd9cb7accdf" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.5">
+        <dependency id="Grpc.Core.Api" version="2.46.6" exclude="Build,Analyzers" />
+        <dependency id="System.Memory" version="4.5.3" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard1.5">
+        <dependency id="Grpc.Core.Api" version="2.46.6" exclude="Build,Analyzers" />
+        <dependency id="NETStandard.Library" version="1.6.1" exclude="Build,Analyzers" />
+        <dependency id="System.Memory" version="4.5.3" exclude="Build,Analyzers" />
+        <dependency id="System.Runtime.Loader" version="4.0.0" exclude="Build,Analyzers" />
+        <dependency id="System.Threading.Thread" version="4.0.0" exclude="Build,Analyzers" />
+        <dependency id="System.Threading.ThreadPool" version="4.0.10" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Grpc.Core.Api" version="2.46.6" exclude="Build,Analyzers" />
+        <dependency id="System.Memory" version="4.5.3" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="Microsoft.CSharp" targetFramework=".NETFramework4.5" />
+      <frameworkAssembly assemblyName="System" targetFramework=".NETFramework4.5" />
+    </frameworkAssemblies>
+  </metadata>
+</package>
