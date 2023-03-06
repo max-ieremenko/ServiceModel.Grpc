@@ -14,15 +14,11 @@
 // limitations under the License.
 // </copyright>
 
-using System.ServiceModel;
-using System.Threading.Tasks;
 using MagicOnion;
 
 namespace ServiceModel.Grpc.Benchmarks.Domain;
 
-[ServiceContract]
 public interface ITestServiceMagicOnion : IService<ITestServiceMagicOnion>
 {
-    [OperationContract]
     UnaryResult<SomeObject> PingPong(SomeObject value);
 }
