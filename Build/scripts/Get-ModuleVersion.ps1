@@ -15,5 +15,5 @@ function Get-ModuleVersion {
         }
     }
 
-    throw "Module $Name no found."
+    throw "Module $Name not found."
 }
