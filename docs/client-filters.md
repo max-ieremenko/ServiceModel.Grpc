@@ -126,10 +126,10 @@ public interface IClientFilterContext
     // Gets the the contract method declaration.
     MethodInfo ContractMethodInfo { get; }
 
-    // Gets the control of the incoming request.
+    // Gets the control of the outgoing request.
     IRequestContext Request { get; }
 
-    // Gets the control of the outgoing response.
+    // Gets the control of the incoming response.
     IResponseContext Response { get; }
 }
 ```
