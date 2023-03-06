@@ -67,7 +67,7 @@ public class EmitContractBuilderTest
     }
 
     [Test]
-    public void ValidateFields()
+    public void ValidateMethodFields()
     {
         var instance = _factory(DataContractMarshallerFactory.Default);
 
@@ -104,6 +104,37 @@ public class EmitContractBuilderTest
             {
                 field.ShouldNotBeNull();
                 field.GetValue(instance).ShouldNotBeNull();
+            }
+        }
+    }
+
+    [Test]
+    public void ValidateDefinitionFields()
+    {
+        foreach (var interfaceDescription in _description.Services)
+        {
+            foreach (var operation in interfaceDescription.Operations)
+            {
+                var handle = _contractType
+                    .StaticFiled(operation.ClrDefinitionMethodName)
+                    .GetValue(null)
+                    .ShouldBeOfType<RuntimeMethodHandle>();
+
+                var actual = MethodBase.GetMethodFromHandle(handle).ShouldNotBeNull();
+
+                actual.ShouldBe(operation.Message.Operation);
+            }
+
+            foreach (var entry in interfaceDescription.SyncOverAsync)
+            {
+                var handle = _contractType
+                    .StaticFiled(entry.Async.ClrDefinitionMethodNameSyncVersion)
+                    .GetValue(null)
+                    .ShouldBeOfType<RuntimeMethodHandle>();
+
+                var actual = MethodBase.GetMethodFromHandle(handle).ShouldNotBeNull();
+
+                actual.ShouldBe(entry.Sync.Operation);
             }
         }
     }

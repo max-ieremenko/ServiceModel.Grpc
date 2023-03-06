@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 namespace ServiceModel.Grpc.Filters;
 
 /// <summary>
-/// A filter that surrounds execution of the method.
+/// A server filter that surrounds execution of the method.
 /// </summary>
 public interface IServerFilter
 {

@@ -39,6 +39,6 @@ public class EmitClientBuilderNotSupportedTest : ClientBuilderNotSupportedTestBa
         var clientType = sut.Build(moduleBuilder);
         var clientFactory = sut.CreateFactory<IInvalidContract>(clientType);
 
-        Factory = () => clientFactory(CallInvoker.Object, contractFactory(DataContractMarshallerFactory.Default), null);
+        Factory = () => clientFactory(CallInvoker.Object, contractFactory(DataContractMarshallerFactory.Default), null, null);
     }
 }

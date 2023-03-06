@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,9 +14,8 @@
 // limitations under the License.
 // </copyright>
 
-using System;
+using System.ComponentModel;
 using Grpc.Core;
-using ServiceModel.Grpc.Configuration;
 
 #pragma warning disable SA1642 // Constructor summary documentation should begin with standard text
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
@@ -31,10 +30,12 @@ namespace ServiceModel.Grpc.Client.Internal;
 /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
 /// This API may change or be removed in future releases.
 /// </summary>
+[Browsable(false)]
+[EditorBrowsable(EditorBrowsableState.Never)]
 public interface IClientBuilder<TContract>
 {
     /// <exclude />
-    void Initialize(IMarshallerFactory marshallerFactory, Func<CallOptions>? defaultCallOptionsFactory);
+    void Initialize(IClientMethodBinder methodBinder);
 
     /// <exclude />
     TContract Build(CallInvoker callInvoker);

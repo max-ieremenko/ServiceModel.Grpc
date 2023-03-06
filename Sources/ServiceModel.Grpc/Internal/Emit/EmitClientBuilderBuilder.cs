@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ internal sealed class EmitClientBuilderBuilder
 
     private FieldBuilder _contractField = null!;
     private FieldBuilder _callOptionsFactoryField = null!;
+    private FieldBuilder _filterHandlerFactoryField = null!;
 
     public EmitClientBuilderBuilder(ContractDescription description, Type contractType, Type clientType)
     {
@@ -41,10 +42,10 @@ internal sealed class EmitClientBuilderBuilder
         _clientBuilderType = typeof(IClientBuilder<>).MakeGenericType(_description.ServiceType);
     }
 
-    public TypeInfo Build(ModuleBuilder moduleBuilder)
+    public TypeInfo Build(ModuleBuilder moduleBuilder, string? className = default)
     {
         var typeBuilder = moduleBuilder.DefineType(
-            _description.ClientBuilderClassName,
+            className ?? _description.ClientBuilderClassName,
             TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit);
 
         typeBuilder.AddInterfaceImplementation(_clientBuilderType);
@@ -60,6 +61,7 @@ internal sealed class EmitClientBuilderBuilder
     {
         _contractField = typeBuilder.DefineField("_contract", _contractType, FieldAttributes.Private);
         _callOptionsFactoryField = typeBuilder.DefineField("_defaultCallOptionsFactory", typeof(Func<CallOptions>), FieldAttributes.Private);
+        _filterHandlerFactoryField = typeBuilder.DefineField("_filterHandlerFactory", typeof(IClientCallFilterHandlerFactory), FieldAttributes.Private);
     }
 
     private void BuildInitializeMethod(TypeBuilder typeBuilder)
@@ -69,7 +71,7 @@ internal sealed class EmitClientBuilderBuilder
                 "Initialize",
                 MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
                 typeof(void),
-                new[] { typeof(IMarshallerFactory), typeof(Func<CallOptions>) });
+                new[] { typeof(IClientMethodBinder) });
 
         typeBuilder.DefineMethodOverride(
             method,
@@ -77,16 +79,38 @@ internal sealed class EmitClientBuilderBuilder
 
         var body = method.GetILGenerator();
 
-        // _contract = new (marshallerFactory);
+        // _contract = new (methodBinder.MarshallerFactory);
         body.Emit(OpCodes.Ldarg_0);
         body.Emit(OpCodes.Ldarg_1);
+        body.Emit(OpCodes.Callvirt, typeof(IClientMethodBinder).InstanceProperty(nameof(IClientMethodBinder.MarshallerFactory)).GetMethod);
         body.Emit(OpCodes.Newobj, _contractType.Constructor(typeof(IMarshallerFactory)));
         body.Emit(OpCodes.Stfld, _contractField);
 
-        // _defaultCallOptionsFactory = defaultCallOptionsFactory
+        // _defaultCallOptionsFactory = methodBinder.DefaultCallOptionsFactory
         body.Emit(OpCodes.Ldarg_0);
-        body.Emit(OpCodes.Ldarg_2);
+        body.Emit(OpCodes.Ldarg_1);
+        body.Emit(OpCodes.Callvirt, typeof(IClientMethodBinder).InstanceProperty(nameof(IClientMethodBinder.DefaultCallOptionsFactory)).GetMethod);
         body.Emit(OpCodes.Stfld, _callOptionsFactoryField);
+
+        // EmitAdapter.AddMethod(methodBinder, _contract.Method, Contract.Handle);
+        foreach (var interfaceDescription in _description.Services)
+        {
+            foreach (var operation in interfaceDescription.Operations)
+            {
+                InvokeEmitAdapterAddMethod(body, operation.GrpcMethodName, operation.ClrDefinitionMethodName);
+            }
+
+            foreach (var entry in interfaceDescription.SyncOverAsync)
+            {
+                InvokeEmitAdapterAddMethod(body, entry.Async.GrpcMethodName, entry.Async.ClrDefinitionMethodNameSyncVersion);
+            }
+        }
+
+        // _filterHandlerFactory = methodBinder.CreateFilterHandlerFactory()
+        body.Emit(OpCodes.Ldarg_0);
+        body.Emit(OpCodes.Ldarg_1);
+        body.Emit(OpCodes.Callvirt, typeof(IClientMethodBinder).InstanceMethod(nameof(IClientMethodBinder.CreateFilterHandlerFactory)));
+        body.Emit(OpCodes.Stfld, _filterHandlerFactoryField);
 
         body.Emit(OpCodes.Ret);
     }
@@ -112,7 +136,22 @@ internal sealed class EmitClientBuilderBuilder
         body.Emit(OpCodes.Ldfld, _contractField);
         body.Emit(OpCodes.Ldarg_0);
         body.Emit(OpCodes.Ldfld, _callOptionsFactoryField);
-        body.Emit(OpCodes.Newobj, _clientType.Constructor(typeof(CallInvoker), _contractType, typeof(Func<CallOptions>)));
+        body.Emit(OpCodes.Ldarg_0);
+        body.Emit(OpCodes.Ldfld, _filterHandlerFactoryField);
+        body.Emit(OpCodes.Newobj, _clientType.Constructor(typeof(CallInvoker), _contractType, _callOptionsFactoryField.FieldType, _filterHandlerFactoryField.FieldType));
         body.Emit(OpCodes.Ret);
+    }
+
+    private void InvokeEmitAdapterAddMethod(ILGenerator body, string grpcMethodName, string clrDefinitionMethodName)
+    {
+        body.Emit(OpCodes.Ldarg_1); // methodBinder
+
+        body.Emit(OpCodes.Ldarg_0); // _contract.Method
+        body.Emit(OpCodes.Ldfld, _contractField);
+        body.Emit(OpCodes.Ldfld, _contractType.InstanceFiled(grpcMethodName));
+
+        body.Emit(OpCodes.Ldsfld, _contractType.StaticFiled(clrDefinitionMethodName)); // Contract.Handle
+
+        body.Emit(OpCodes.Call, typeof(EmitAdapter).StaticMethod(nameof(EmitAdapter.AddMethod))); // EmitAdapter.AddMethod();
     }
 }

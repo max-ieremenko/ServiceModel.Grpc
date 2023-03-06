@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,14 +24,23 @@ namespace ServiceModel.Grpc.TestApi.Domain;
 public interface IFilteredService
 {
     [OperationContract]
+    IList<string> UnarySync(IList<string> input);
+
+    [OperationContract]
     ValueTask<IList<string>> UnaryAsync(IList<string> input);
 
     [OperationContract]
     ValueTask<IList<string>> ClientStreamAsync(IAsyncEnumerable<int> stream, IList<string> input);
 
     [OperationContract]
+    IAsyncEnumerable<string> ServerStreamSync(IList<string> input);
+
+    [OperationContract]
     ValueTask<(IAsyncEnumerable<int> Stream, IList<string> Output)> ServerStreamAsync(IList<string> input);
 
     [OperationContract]
     ValueTask<(IAsyncEnumerable<int> Stream, IList<string> Output)> DuplexStreamAsync(IAsyncEnumerable<int> stream, IList<string> input);
+
+    [OperationContract]
+    IAsyncEnumerable<string> DuplexStreamSync(IAsyncEnumerable<string> stream, IList<string> input);
 }

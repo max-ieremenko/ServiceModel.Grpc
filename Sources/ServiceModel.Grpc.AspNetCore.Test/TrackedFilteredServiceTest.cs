@@ -35,17 +35,18 @@ public class TrackedFilteredServiceTest : TrackedFilteredServiceTestBase
         _host = await new KestrelHost()
             .ConfigureServices(services =>
             {
-                services.AddTransient<TrackingServerFilter>();
+                services.AddSingleton(new TrackingServerFilter("global-server"));
 
                 services.AddServiceModelGrpc(options =>
                 {
-                    options.Filters.Add(1, _ => new TrackingServerFilter("global"));
+                    options.Filters.Add(1, provider => provider.GetRequiredService<TrackingServerFilter>());
                 });
                 services.AddServiceModelGrpcServiceOptions<TrackedFilteredService>(options =>
                 {
                     options.Filters.Add(2, _ => new TrackingServerFilter("service-options"));
                 });
             })
+            .ConfigureClientFactory(ConfigureClientFactory)
             .ConfigureEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<TrackedFilteredService>();
@@ -53,7 +54,12 @@ public class TrackedFilteredServiceTest : TrackedFilteredServiceTestBase
             .StartAsync()
             .ConfigureAwait(false);
 
-        DomainService = _host.ClientFactory.CreateClient<IFilteredService>(_host.Channel);
+        _host.ClientFactory.AddClient<IFilteredService>(options =>
+        {
+            options.Filters.Add(2, new TrackingClientFilter("client-options"));
+        });
+
+        InitializeClient(_host.ClientFactory, _host.Channel);
     }
 
     [OneTimeTearDown]

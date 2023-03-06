@@ -39,6 +39,6 @@ public class EmitClientBuilderTest : ClientBuilderTestBase
         var clientType = sut.Build(moduleBuilder);
         var clientFactory = sut.CreateFactory<IContract>(clientType);
 
-        Factory = () => clientFactory(CallInvoker.Object, contractFactory(DataContractMarshallerFactory.Default), null);
+        Factory = () => clientFactory(CallInvoker.Object, contractFactory(DataContractMarshallerFactory.Default), null, null);
     }
 }

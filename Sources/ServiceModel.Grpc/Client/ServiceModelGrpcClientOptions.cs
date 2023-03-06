@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Filters;
 using ServiceModel.Grpc.Interceptors;
 
 namespace ServiceModel.Grpc.Client;
@@ -26,6 +28,8 @@ namespace ServiceModel.Grpc.Client;
 /// </summary>
 public sealed class ServiceModelGrpcClientOptions
 {
+    private FilterCollection<IClientFilter>? _filters;
+
     /// <summary>
     /// Gets or sets a factory for serializing and deserializing messages.
     /// </summary>
@@ -45,4 +49,27 @@ public sealed class ServiceModelGrpcClientOptions
     /// Gets or sets logger to handle possible output from <see cref="IClientFactory"/>.
     /// </summary>
     public ILogger? Logger { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="IServiceProvider"/>.
+    /// </summary>
+    public IServiceProvider? ServiceProvider { get; set; }
+
+    /// <summary>
+    /// Gets the collection of registered client filters.
+    /// </summary>
+    public FilterCollection<IClientFilter> Filters
+    {
+        get
+        {
+            if (_filters == null)
+            {
+                _filters = new FilterCollection<IClientFilter>();
+            }
+
+            return _filters;
+        }
+    }
+
+    internal IList<FilterRegistration<IClientFilter>>? GetFilters() => _filters;
 }

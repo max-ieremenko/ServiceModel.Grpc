@@ -40,4 +40,15 @@ internal static class ClientChannelAdapter
 
         throw new InvalidOperationException("The server streaming ResponseHeadersAsync did not provide any headers, headers are available only after the streaming.");
     }
+
+    internal static CallOptions AddRequestHeader<THeader>(in CallOptions callOptions, Marshaller<THeader>? marshaller, THeader? header)
+    {
+        if (marshaller == null)
+        {
+            return callOptions;
+        }
+
+        var metadata = CompatibilityTools.SerializeMethodInputHeader(marshaller!, header);
+        return CallOptionsBuilder.MergeCallOptions(callOptions, new CallOptions(metadata));
+    }
 }

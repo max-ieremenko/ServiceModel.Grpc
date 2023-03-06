@@ -29,6 +29,7 @@ internal sealed class OperationDescription
         GrpcMethodName = "Method" + OperationName;
         GrpcMethodInputHeaderName = "MethodHeader" + OperationName;
         GrpcMethodOutputHeaderName = "MethodOutputHeader" + OperationName;
+        ClrDefinitionMethodName = OperationName + "Definition";
     }
 
     public string ServiceName { get; }
@@ -42,4 +43,8 @@ internal sealed class OperationDescription
     public string GrpcMethodInputHeaderName { get; }
 
     public string GrpcMethodOutputHeaderName { get; }
+
+    public string ClrDefinitionMethodName { get; set; }
+
+    public string ClrDefinitionMethodNameSyncVersion => ClrDefinitionMethodName + "Sync";
 }

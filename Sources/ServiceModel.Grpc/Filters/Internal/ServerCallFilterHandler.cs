@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,51 +15,18 @@
 // </copyright>
 
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace ServiceModel.Grpc.Filters.Internal;
 
-internal sealed class ServerCallFilterHandler
+internal sealed class ServerCallFilterHandler : CallFilterHandlerBase<IServerFilterContextInternal, IServerFilter>
 {
-    private readonly Func<ValueTask> _nextAsync;
-    private int _processedIndex;
-    private Func<IServerFilterContextInternal, ValueTask>? _last;
-
     public ServerCallFilterHandler(IServerFilterContextInternal context, IServerFilter[] filters)
+        : base(context, filters)
     {
-        Context = context;
-        Filters = filters;
-        _nextAsync = NextAsync;
-        _processedIndex = -1;
     }
 
-    public IServerFilterContextInternal Context { get; }
+    protected override ValueTask HandleAsync(IServerFilter filter, Func<ValueTask> next) => filter.InvokeAsync(Context, next);
 
-    public IServerFilter[] Filters { get; }
-
-    public ValueTask InvokeAsync(Func<IServerFilterContextInternal, ValueTask> last)
-    {
-        _last = last;
-        return NextAsync();
-    }
-
-    private ValueTask NextAsync()
-    {
-        var index = Interlocked.Increment(ref _processedIndex);
-        if (index >= 0 && index < Filters.Length)
-        {
-            var filter = Filters[index];
-            Filters[index] = null!;
-            return filter.InvokeAsync(Context, _nextAsync);
-        }
-
-        var last = Interlocked.Exchange(ref _last, null);
-        if (last != null)
-        {
-            return last(Context);
-        }
-
-        return new ValueTask(Task.CompletedTask);
-    }
+    protected override void Handle(IServerFilter filter, Action next) => throw new NotSupportedException();
 }

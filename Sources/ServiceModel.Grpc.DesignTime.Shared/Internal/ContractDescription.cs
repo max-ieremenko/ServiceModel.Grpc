@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2022 Max Ieremenko
+// Copyright 2020-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -267,6 +267,7 @@ internal sealed class ContractDescription
                 if (asyncOperation != null)
                 {
                     service.Methods.Remove(syncMethod);
+                    syncOperation.ClrDefinitionMethodName = asyncOperation.ClrDefinitionMethodName + "Sync";
                     service.SyncOverAsync.Add((syncOperation, asyncOperation));
                     j--;
                 }

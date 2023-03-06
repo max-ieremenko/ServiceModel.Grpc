@@ -23,9 +23,15 @@ namespace ServiceModel.Grpc.TestApi.Domain;
 public sealed class TrackedFilteredService : IFilteredService
 {
     [TrackingServerFilter(4, "method")]
+    public IList<string> UnarySync(IList<string> input)
+    {
+        return new List<string>(input) { "implementation" };
+    }
+
+    [TrackingServerFilter(4, "method")]
     public ValueTask<IList<string>> UnaryAsync(IList<string> input)
     {
-        return new ValueTask<IList<string>>(new List<string>(input) { "implementation" });
+        return new ValueTask<IList<string>>(UnarySync(input));
     }
 
     [TrackingServerFilter(4, "method")]
@@ -38,6 +44,14 @@ public sealed class TrackedFilteredService : IFilteredService
         }
 
         return new List<string>(input) { "implementation " + sum };
+    }
+
+    [TrackingServerFilter(4, "method")]
+    public IAsyncEnumerable<string> ServerStreamSync(IList<string> input)
+    {
+        var output = new List<string>(input) { "implementation" };
+
+        return output.AsAsyncEnumerable();
     }
 
     [TrackingServerFilter(4, "method")]
@@ -62,5 +76,20 @@ public sealed class TrackedFilteredService : IFilteredService
         var outStream = new[] { 3, 2, 1 }.AsAsyncEnumerable();
 
         return (outStream, output);
+    }
+
+    [TrackingServerFilter(4, "method")]
+    public async IAsyncEnumerable<string> DuplexStreamSync(IAsyncEnumerable<string> stream, IList<string> input)
+    {
+        await foreach (var i in stream.ConfigureAwait(false))
+        {
+        }
+
+        foreach (var i in input)
+        {
+            yield return i;
+        }
+
+        yield return "implementation";
     }
 }

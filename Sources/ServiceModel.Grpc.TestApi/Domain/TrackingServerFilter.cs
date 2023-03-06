@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,20 +33,30 @@ public sealed class TrackingServerFilter : IServerFilter
 
     public async ValueTask InvokeAsync(IServerFilterContext context, Func<ValueTask> next)
     {
+        context.ContractMethodInfo.ShouldNotBeNull();
         context.ServiceMethodInfo.ShouldNotBeNull();
 
-        var input = (IList<string>)context.Request[0]!;
-        context.Request["input"] = new List<string>(input)
+        if (context.Request.Count != 0)
         {
-            Name + "-before"
-        };
+            var input = context.Request[0].ShouldBeAssignableTo<IList<string>>()!;
+
+            context.ContractMethodInfo.Name.ShouldBe(input[0]);
+
+            context.Request["input"] = new List<string>(input)
+            {
+                Name + "-before"
+            };
+        }
 
         await next().ConfigureAwait(false);
 
-        var result = (IList<string>)context.Response[0]!;
-        context.Response[0] = new List<string>(result)
+        if (context.Response.Count != 0)
         {
-            Name + "-after"
-        };
+            var result = context.Response[0].ShouldBeAssignableTo<IList<string>>()!;
+            context.Response[0] = new List<string>(result)
+            {
+                Name + "-after"
+            };
+        }
     }
 }
