@@ -14,8 +14,8 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using Grpc.Core;
+using Grpc.Core.Utils;
 using MessagePack;
 
 namespace ServiceModel.Grpc.Configuration;
@@ -44,12 +44,7 @@ public sealed class MessagePackMarshallerFactory : IMarshallerFactory
     /// <param name="options">The <see cref="MessagePackSerializerOptions"/>.</param>
     public MessagePackMarshallerFactory(MessagePackSerializerOptions options)
     {
-        if (options == null)
-        {
-            throw new ArgumentNullException(nameof(options));
-        }
-
-        Options = options;
+        Options = GrpcPreconditions.CheckNotNull(options, nameof(options));
     }
 
     /// <summary>

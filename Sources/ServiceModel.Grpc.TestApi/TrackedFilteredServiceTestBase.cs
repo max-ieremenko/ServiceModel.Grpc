@@ -14,8 +14,12 @@
 // limitations under the License.
 // </copyright>
 
+using System;
 using System.Threading.Tasks;
+using Grpc.Core;
+using Moq;
 using NUnit.Framework;
+using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
 
@@ -23,16 +27,19 @@ namespace ServiceModel.Grpc.TestApi;
 
 public abstract class TrackedFilteredServiceTestBase
 {
-    protected IFilteredService DomainService { get; set; } = null!;
+    private IFilteredService DomainService { get; set; } = null!;
 
     [Test]
-    public async Task UnaryAsync()
+    public void UnarySync()
     {
-        var track = await DomainService.UnaryAsync(new[] { "client-call" }).ConfigureAwait(false);
+        var track = DomainService.UnarySync(new[] { nameof(IFilteredService.UnarySync) });
+
         track.ShouldBe(new[]
         {
-            "client-call",
-            "global-before",
+            nameof(IFilteredService.UnarySync),
+            "global-client-before",
+            "client-options-before",
+            "global-server-before",
             "service-options-before",
             "service-before",
             "method-before",
@@ -40,7 +47,35 @@ public abstract class TrackedFilteredServiceTestBase
             "method-after",
             "service-after",
             "service-options-after",
-            "global-after"
+            "global-server-after",
+            "client-options-after",
+            "global-client-after"
+        });
+    }
+
+    [Test]
+    public async Task UnaryAsync()
+    {
+        var track = await DomainService
+            .UnaryAsync(new[] { nameof(IFilteredService.UnaryAsync) })
+            .ConfigureAwait(false);
+
+        track.ShouldBe(new[]
+        {
+            nameof(IFilteredService.UnaryAsync),
+            "global-client-before",
+            "client-options-before",
+            "global-server-before",
+            "service-options-before",
+            "service-before",
+            "method-before",
+            "implementation",
+            "method-after",
+            "service-after",
+            "service-options-after",
+            "global-server-after",
+            "client-options-after",
+            "global-client-after"
         });
     }
 
@@ -48,12 +83,16 @@ public abstract class TrackedFilteredServiceTestBase
     public async Task ClientStreamAsync()
     {
         var stream = new[] { 1, 2, 3 }.AsAsyncEnumerable();
-        var track = await DomainService.ClientStreamAsync(stream, new[] { "client-call" }).ConfigureAwait(false);
+        var track = await DomainService
+            .ClientStreamAsync(stream, new[] { nameof(IFilteredService.ClientStreamAsync) })
+            .ConfigureAwait(false);
 
         track.ShouldBe(new[]
         {
-            "client-call",
-            "global-before",
+            nameof(IFilteredService.ClientStreamAsync),
+            "global-client-before",
+            "client-options-before",
+            "global-server-before",
             "service-options-before",
             "service-before",
             "method-before",
@@ -61,22 +100,50 @@ public abstract class TrackedFilteredServiceTestBase
             "method-after",
             "service-after",
             "service-options-after",
-            "global-after"
+            "global-server-after",
+            "client-options-after",
+            "global-client-after"
+        });
+    }
+
+    [Test]
+    public async Task ServerStreamSync()
+    {
+        var stream = DomainService.ServerStreamSync(new[] { nameof(IFilteredService.ServerStreamSync) });
+
+        var track = await stream.ToListAsync().ConfigureAwait(false);
+
+        track.ShouldBe(new[]
+        {
+            nameof(IFilteredService.ServerStreamSync),
+            "global-client-before",
+            "client-options-before",
+            "global-server-before",
+            "service-options-before",
+            "service-before",
+            "method-before",
+            "implementation",
+            "client-options-after",
+            "global-client-after"
         });
     }
 
     [Test]
     public async Task ServerStreamAsync()
     {
-        var (stream, track) = await DomainService.ServerStreamAsync(new[] { "client-call" }).ConfigureAwait(false);
+        var (stream, track) = await DomainService
+            .ServerStreamAsync(new[] { nameof(IFilteredService.ServerStreamAsync) })
+            .ConfigureAwait(false);
 
         var data = await stream.ToListAsync().ConfigureAwait(false);
         data.ShouldBe(new[] { 3, 2, 1 });
 
         track.ShouldBe(new[]
         {
-            "client-call",
-            "global-before",
+            nameof(IFilteredService.ServerStreamAsync),
+            "global-client-before",
+            "client-options-before",
+            "global-server-before",
             "service-options-before",
             "service-before",
             "method-before",
@@ -84,7 +151,9 @@ public abstract class TrackedFilteredServiceTestBase
             "method-after",
             "service-after",
             "service-options-after",
-            "global-after"
+            "global-server-after",
+            "client-options-after",
+            "global-client-after"
         });
     }
 
@@ -92,15 +161,19 @@ public abstract class TrackedFilteredServiceTestBase
     public async Task DuplexStreamAsync()
     {
         var inputStream = new[] { 1, 2, 3 }.AsAsyncEnumerable();
-        var (outStream, track) = await DomainService.DuplexStreamAsync(inputStream, new[] { "client-call" }).ConfigureAwait(false);
+        var (outStream, track) = await DomainService
+            .DuplexStreamAsync(inputStream, new[] { nameof(IFilteredService.DuplexStreamAsync) })
+            .ConfigureAwait(false);
 
         var data = await outStream.ToListAsync().ConfigureAwait(false);
         data.ShouldBe(new[] { 3, 2, 1 });
 
         track.ShouldBe(new[]
         {
-            "client-call",
-            "global-before",
+            nameof(IFilteredService.DuplexStreamAsync),
+            "global-client-before",
+            "client-options-before",
+            "global-server-before",
             "service-options-before",
             "service-before",
             "method-before",
@@ -108,7 +181,53 @@ public abstract class TrackedFilteredServiceTestBase
             "method-after",
             "service-after",
             "service-options-after",
-            "global-after"
+            "global-server-after",
+            "client-options-after",
+            "global-client-after"
         });
+    }
+
+    [Test]
+    public async Task DuplexStreamSync()
+    {
+        var stream = DomainService.DuplexStreamSync(
+            Array.Empty<string>().AsAsyncEnumerable(),
+            new[] { nameof(IFilteredService.DuplexStreamSync) });
+
+        var track = await stream.ToListAsync().ConfigureAwait(false);
+
+        track.ShouldBe(new[]
+        {
+            nameof(IFilteredService.DuplexStreamSync),
+            "global-client-before",
+            "client-options-before",
+            "global-server-before",
+            "service-options-before",
+            "service-before",
+            "method-before",
+            "implementation",
+            "client-options-after",
+            "global-client-after"
+        });
+    }
+
+    protected void ConfigureClientFactory(ServiceModelGrpcClientOptions configuration)
+    {
+        var serviceProvider = new Mock<IServiceProvider>(MockBehavior.Strict);
+
+        serviceProvider
+            .Setup(p => p.GetService(typeof(TrackingClientFilter)))
+            .Returns(new TrackingClientFilter("global-client"));
+
+        configuration.ServiceProvider = serviceProvider.Object;
+
+        configuration.Filters.Add(
+            1,
+            provider => provider.GetService(typeof(TrackingClientFilter)).ShouldBeOfType<TrackingClientFilter>());
+    }
+
+    protected void InitializeClient(IClientFactory clientFactory, ChannelBase channel)
+    {
+        DomainService = clientFactory.CreateClient<IFilteredService>(channel);
     }
 }

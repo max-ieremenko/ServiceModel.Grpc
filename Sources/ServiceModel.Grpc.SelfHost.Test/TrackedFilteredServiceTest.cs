@@ -40,12 +40,21 @@ public class TrackedFilteredServiceTest : TrackedFilteredServiceTestBase
             options =>
             {
                 options.ServiceProvider = new Mock<IServiceProvider>().Object;
-                options.Filters.Add(1, _ => new TrackingServerFilter("global"));
+                options.Filters.Add(1, _ => new TrackingServerFilter("global-server"));
                 options.Filters.Add(2, _ => new TrackingServerFilter("service-options"));
             });
         _host.Start();
 
-        DomainService = new ClientFactory().CreateClient<IFilteredService>(_host.Channel);
+        var defaultOptions = new ServiceModelGrpcClientOptions();
+        ConfigureClientFactory(defaultOptions);
+
+        var clientFactory = new ClientFactory(defaultOptions);
+        clientFactory.AddClient<IFilteredService>(options =>
+        {
+            options.Filters.Add(2, new TrackingClientFilter("client-options"));
+        });
+
+        InitializeClient(clientFactory, _host.Channel);
     }
 
     [OneTimeTearDown]

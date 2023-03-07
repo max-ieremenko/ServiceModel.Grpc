@@ -96,7 +96,7 @@ public class UnaryCallTest
         using (new SynchronizationContextMock())
         {
             var result = UnaryCall<Message<int>, Message<int>>.CallAsync(call, context, CancellationToken.None).Result;
-            result.ShouldBe(10);
+            result.Value1.ShouldBe(10);
         }
 
         context.ResponseHeaders.ShouldBe(expectedHeaders);
@@ -121,7 +121,7 @@ public class UnaryCallTest
         using (new SynchronizationContextMock())
         {
             var result = UnaryCall<Message<int>, Message<int>>.CallAsync(call, null, CancellationToken.None).Result;
-            result.ShouldBe(10);
+            result.Value1.ShouldBe(10);
         }
 
         disposeCounter.ShouldBe(1);

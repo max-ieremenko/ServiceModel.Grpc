@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Grpc.Net.Client" Version="$(GrpcNetVersion)" />
+		<PackageReference Include="ServiceModel.Grpc" Version="$(ServiceModelGrpcVersion)" />
+		<PackageReference Include="Shouldly" Version="$(ShouldlyVersion)" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftDependencyInjectionVersion)" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(MicrosoftLoggingVersion)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Contract\Contract.csproj" />
+	</ItemGroup>
+
+</Project>

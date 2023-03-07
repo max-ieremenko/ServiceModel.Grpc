@@ -16,6 +16,7 @@
 
 using System;
 using System.Diagnostics;
+using Grpc.Core.Utils;
 
 namespace ServiceModel.Grpc.DesignTime;
 
@@ -32,12 +33,7 @@ public sealed class ExportGrpcServiceAttribute : Attribute
     /// <param name="serviceType">The service type to map requests to.</param>
     public ExportGrpcServiceAttribute(Type serviceType)
     {
-        if (serviceType == null)
-        {
-            throw new ArgumentNullException(nameof(serviceType));
-        }
-
-        ServiceType = serviceType;
+        ServiceType = GrpcPreconditions.CheckNotNull(serviceType, nameof(serviceType));
     }
 
     /// <summary>

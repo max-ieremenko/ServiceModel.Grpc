@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using Grpc.Core.Utils;
 
 namespace ServiceModel.Grpc.Filters;
 
@@ -34,7 +35,7 @@ public sealed class FilterCollection<TFilter> : Collection<FilterRegistration<TF
     /// <returns>Self.</returns>
     public FilterCollection<TFilter> Add(int order, TFilter filter)
     {
-        filter.AssertNotNull(nameof(filter));
+        GrpcPreconditions.CheckNotNull(filter, nameof(filter));
 
         Add(new FilterRegistration<TFilter>(order, _ => filter));
         return this;

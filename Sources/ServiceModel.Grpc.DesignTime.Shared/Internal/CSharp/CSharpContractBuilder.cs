@@ -16,6 +16,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
 
@@ -44,6 +46,7 @@ internal sealed class CSharpContractBuilder : CodeGeneratorBase
             Output.AppendLine();
 
             BuildProperties();
+            BuildGetDefinition();
         }
 
         Output.AppendLine("}");
@@ -182,8 +185,108 @@ internal sealed class CSharpContractBuilder : CodeGeneratorBase
             .AppendLine(">();");
     }
 
+    private void BuildGetDefinition()
+    {
+        foreach (var interfaceDescription in _contract.Services)
+        {
+            foreach (var method in interfaceDescription.Operations)
+            {
+                AddGetDefinition(interfaceDescription.InterfaceTypeName, method);
+                Output.AppendLine();
+            }
+
+            foreach (var entry in interfaceDescription.SyncOverAsync)
+            {
+                AddGetDefinition(interfaceDescription.InterfaceTypeName, entry.Sync);
+                Output.AppendLine();
+            }
+        }
+    }
+
     private IEnumerable<OperationDescription> GetAllOperations()
     {
         return _contract.Services.SelectMany(i => i.Operations);
+    }
+
+    private void AddGetDefinition(string interfaceType, OperationDescription operation)
+    {
+        Output
+            .Append("public static ")
+            .AppendType(typeof(MethodInfo))
+            .Append(" ")
+            .Append(operation.ClrDefinitionMethodName)
+            .AppendLine("()")
+            .AppendLine("{");
+
+        using (Output.Indent())
+        {
+            for (var i = 0; i < operation.Method.Parameters.Length; i++)
+            {
+                var p = operation.Method.Parameters[i];
+                if (p.IsOut)
+                {
+                    Output
+                        .Append(p.Type)
+                        .Append(" ")
+                        .Append(p.Name)
+                        .AppendLine(";");
+                }
+                else if (p.IsRef)
+                {
+                    Output
+                        .Append(p.Type)
+                        .Append(" ")
+                        .Append(p.Name)
+                        .AppendLine(" = default;");
+                }
+            }
+
+            // Expression<Action<IDemoService>> __exp = s => s.Sum(default, default);
+            Output
+                .AppendType(typeof(Expression))
+                .Append("<Action<")
+                .Append(interfaceType)
+                .Append(">> __exp = s => s.")
+                .Append(operation.Method.Name)
+                .Append("(");
+
+            for (var i = 0; i < operation.Method.Parameters.Length; i++)
+            {
+                if (i > 0)
+                {
+                    Output.Append(", ");
+                }
+
+                var p = operation.Method.Parameters[i];
+                if (p.IsOut)
+                {
+                    Output
+                        .Append("out ")
+                        .Append(p.Name);
+                }
+                else if (p.IsRef)
+                {
+                    Output
+                        .Append("ref ")
+                        .Append(p.Name);
+                }
+                else
+                {
+                    Output
+                        .Append("default(")
+                        .Append(operation.Method.Parameters[i].Type)
+                        .Append(")");
+                }
+            }
+
+            Output.AppendLine(");");
+
+            Output
+                .Append("return ((")
+                .AppendType(typeof(MethodCallExpression))
+                .AppendLine(")__exp.Body).Method;");
+        }
+
+        Output.AppendLine("}");
     }
 }

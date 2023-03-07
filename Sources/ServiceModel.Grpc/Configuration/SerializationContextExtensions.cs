@@ -16,6 +16,7 @@
 
 using System.IO;
 using Grpc.Core;
+using Grpc.Core.Utils;
 using ServiceModel.Grpc.Internal.IO;
 
 namespace ServiceModel.Grpc.Configuration;
@@ -32,7 +33,7 @@ public static class SerializationContextExtensions
     /// <returns>Writable <see cref="Stream"/>.</returns>
     public static Stream AsStream(this SerializationContext context)
     {
-        context.AssertNotNull(nameof(context));
+        GrpcPreconditions.CheckNotNull(context, nameof(context));
 
         return new BufferWriterStream(context.GetBufferWriter());
     }
@@ -44,7 +45,7 @@ public static class SerializationContextExtensions
     /// <returns>Readable <see cref="Stream"/>.</returns>
     public static Stream AsStream(this DeserializationContext context)
     {
-        context.AssertNotNull(nameof(context));
+        GrpcPreconditions.CheckNotNull(context, nameof(context));
 
         return new BufferReaderStream(context.PayloadAsReadOnlySequence());
     }

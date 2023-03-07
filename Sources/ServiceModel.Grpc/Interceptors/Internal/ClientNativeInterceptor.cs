@@ -17,6 +17,7 @@
 using System.Threading.Tasks;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
+using Grpc.Core.Utils;
 
 namespace ServiceModel.Grpc.Interceptors.Internal;
 
@@ -24,9 +25,7 @@ internal sealed class ClientNativeInterceptor : Interceptor
 {
     public ClientNativeInterceptor(IClientCallInterceptor callInterceptor)
     {
-        callInterceptor.AssertNotNull(nameof(callInterceptor));
-
-        CallInterceptor = callInterceptor;
+        CallInterceptor = GrpcPreconditions.CheckNotNull(callInterceptor, nameof(callInterceptor));
     }
 
     internal IClientCallInterceptor CallInterceptor { get; }

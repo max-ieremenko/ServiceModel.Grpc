@@ -16,6 +16,7 @@
 
 using System;
 using System.Diagnostics;
+using Grpc.Core.Utils;
 
 namespace ServiceModel.Grpc.DesignTime;
 
@@ -32,12 +33,7 @@ public sealed class ImportGrpcServiceAttribute : Attribute
     /// <param name="serviceContract">The service contract type to map requests to.</param>
     public ImportGrpcServiceAttribute(Type serviceContract)
     {
-        if (serviceContract == null)
-        {
-            throw new ArgumentNullException(nameof(serviceContract));
-        }
-
-        ServiceContract = serviceContract;
+        ServiceContract = GrpcPreconditions.CheckNotNull(serviceContract, nameof(serviceContract));
     }
 
     /// <summary>

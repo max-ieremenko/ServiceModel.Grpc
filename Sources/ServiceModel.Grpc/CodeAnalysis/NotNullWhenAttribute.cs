@@ -15,13 +15,12 @@
 // </copyright>
 
 #if !NETSTANDARD2_1
-namespace System.Diagnostics.CodeAnalysis
-{
-    internal sealed class NotNullWhenAttribute : Attribute
-    {
-        public NotNullWhenAttribute(bool returnValue) => ReturnValue = returnValue;
+namespace System.Diagnostics.CodeAnalysis;
 
-        public bool ReturnValue { get; }
-    }
+internal sealed class NotNullWhenAttribute : Attribute
+{
+    public NotNullWhenAttribute(bool returnValue) => ReturnValue = returnValue;
+
+    public bool ReturnValue { get; }
 }
 #endif

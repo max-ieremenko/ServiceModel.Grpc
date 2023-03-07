@@ -17,6 +17,8 @@
 using System;
 using System.ServiceModel;
 using Grpc.Core;
+using Moq;
+using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
 
 namespace ServiceModel.Grpc.Internal.Emit;
@@ -26,13 +28,23 @@ public partial class EmitClientBuilderBuilderTest
     [ServiceContract]
     public interface ISomeContract
     {
+        [OperationContract]
+        void SomeOperation();
     }
 
     public sealed class ContractMock
     {
+#pragma warning disable SA1401
+        public static RuntimeMethodHandle SomeOperationDefinition;
+
+        public IMethod MethodSomeOperation;
+#pragma warning restore SA1401
+
         public ContractMock(IMarshallerFactory marshallerFactory)
         {
             MarshallerFactory = marshallerFactory;
+            MethodSomeOperation = new Mock<IMethod>(MockBehavior.Strict).Object;
+            SomeOperationDefinition = typeof(ISomeContract).InstanceMethod(nameof(ISomeContract.SomeOperation)).MethodHandle;
         }
 
         public IMarshallerFactory MarshallerFactory { get; }
@@ -40,11 +52,16 @@ public partial class EmitClientBuilderBuilderTest
 
     public sealed class ClientMock : ISomeContract
     {
-        public ClientMock(CallInvoker callInvoker, ContractMock contract, Func<CallOptions> defaultCallOptionsFactory)
+        public ClientMock(
+            CallInvoker callInvoker,
+            ContractMock contract,
+            Func<CallOptions> defaultCallOptionsFactory,
+            IClientCallFilterHandlerFactory? filterHandlerFactory)
         {
             CallInvoker = callInvoker;
             Contract = contract;
             DefaultCallOptionsFactory = defaultCallOptionsFactory;
+            FilterHandlerFactory = filterHandlerFactory;
         }
 
         public CallInvoker CallInvoker { get; }
@@ -52,5 +69,9 @@ public partial class EmitClientBuilderBuilderTest
         public ContractMock Contract { get; }
 
         public Func<CallOptions> DefaultCallOptionsFactory { get; }
+
+        public IClientCallFilterHandlerFactory? FilterHandlerFactory { get; }
+
+        public void SomeOperation() => throw new NotSupportedException();
     }
 }

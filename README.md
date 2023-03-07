@@ -26,6 +26,7 @@ The solution is built on top of [gRPC C#](https://github.com/grpc/grpc/tree/mast
   - [Grpc.Core server configuration](https://max-ieremenko.github.io/ServiceModel.Grpc/GrpcCoreServerConfiguration.html)
   - [exception handling general information](https://max-ieremenko.github.io/ServiceModel.Grpc/error-handling-general.html)
   - [global exception handling](https://max-ieremenko.github.io/ServiceModel.Grpc/global-error-handling.html)
+  - [client filters](https://max-ieremenko.github.io/ServiceModel.Grpc/client-filters.html)
   - [server filters](https://max-ieremenko.github.io/ServiceModel.Grpc/server-filters.html)
   - [compatibility with native gRPC](https://max-ieremenko.github.io/ServiceModel.Grpc/CompatibilityWithNativegRPC.html)
   - [migrate from WCF to a gRPC](https://max-ieremenko.github.io/ServiceModel.Grpc/MigrateWCFServiceTogRPC.html)

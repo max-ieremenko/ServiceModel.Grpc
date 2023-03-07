@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -80,19 +80,33 @@ public static class CallInvokerMock
         TResponse response,
         Action<CallOptions>? callOptions = null)
     {
+        SetupBlockingUnaryCallInOut<TRequest, TResponse>(
+            invoker,
+            input =>
+            {
+                input.ShouldBe(request);
+                return response;
+            },
+            callOptions);
+    }
+
+    public static void SetupBlockingUnaryCallInOut<TRequest, TResponse>(
+        this Mock<CallInvoker> invoker,
+        Func<TRequest, TResponse> handler,
+        Action<CallOptions>? callOptions = null)
+    {
         invoker
             .Setup(i => i.BlockingUnaryCall(
                 It.IsNotNull<Method<Message<TRequest>, Message<TResponse>>>(),
                 null,
                 It.IsAny<CallOptions>(),
                 It.IsNotNull<Message<TRequest>>()))
-            .Callback<Method<Message<TRequest>, Message<TResponse>>, string, CallOptions, Message<TRequest>>((method, _, options, message) =>
+            .Returns<Method<Message<TRequest>, Message<TResponse>>, string, CallOptions, Message<TRequest>>((method, _, options, message) =>
             {
                 method.Type.ShouldBe(MethodType.Unary);
                 callOptions?.Invoke(options);
-                message.Value1.ShouldBe(request);
-            })
-            .Returns(new Message<TResponse>(response));
+                return new Message<TResponse>(handler(message.Value1));
+            });
     }
 
     public static void SetupBlockingUnaryCallInOut<TRequest1, TRequest2, TResponse>(

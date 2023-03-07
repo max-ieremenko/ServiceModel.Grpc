@@ -14,8 +14,8 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using Grpc.Core;
+using Grpc.Core.Utils;
 using ProtoBuf;
 using ProtoBuf.Meta;
 using SerializationContext = Grpc.Core.SerializationContext;
@@ -46,12 +46,7 @@ public sealed class ProtobufMarshallerFactory : IMarshallerFactory
     /// <param name="runtimeTypeModel">The <see cref="ProtoBuf.Meta.RuntimeTypeModel"/>.</param>
     public ProtobufMarshallerFactory(RuntimeTypeModel runtimeTypeModel)
     {
-        if (runtimeTypeModel == null)
-        {
-            throw new ArgumentNullException(nameof(runtimeTypeModel));
-        }
-
-        RuntimeTypeModel = runtimeTypeModel;
+        RuntimeTypeModel = GrpcPreconditions.CheckNotNull(runtimeTypeModel, nameof(runtimeTypeModel));
     }
 
     /// <summary>

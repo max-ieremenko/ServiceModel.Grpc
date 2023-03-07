@@ -18,6 +18,7 @@ using System;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
+using Grpc.Core.Utils;
 
 namespace ServiceModel.Grpc.Interceptors.Internal;
 
@@ -27,17 +28,15 @@ internal sealed class ServerNativeInterceptor : Interceptor
 
     public ServerNativeInterceptor(IServiceProvider serviceProvider, IServerCallInterceptorFactory callInterceptorFactory)
     {
-        serviceProvider.AssertNotNull(nameof(serviceProvider));
-        callInterceptorFactory.AssertNotNull(nameof(callInterceptorFactory));
+        GrpcPreconditions.CheckNotNull(serviceProvider, nameof(serviceProvider));
+        GrpcPreconditions.CheckNotNull(callInterceptorFactory, nameof(callInterceptorFactory));
 
         _interceptor = callInterceptorFactory.CreateInterceptor(serviceProvider);
     }
 
     internal ServerNativeInterceptor(IServerCallInterceptor interceptor)
     {
-        interceptor.AssertNotNull(nameof(interceptor));
-
-        _interceptor = interceptor;
+        _interceptor = GrpcPreconditions.CheckNotNull(interceptor, nameof(interceptor));
     }
 
     public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(

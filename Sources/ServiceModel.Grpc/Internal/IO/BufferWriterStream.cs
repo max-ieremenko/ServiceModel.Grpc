@@ -19,6 +19,7 @@ using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Grpc.Core.Utils;
 
 namespace ServiceModel.Grpc.Internal.IO;
 
@@ -28,9 +29,9 @@ internal sealed class BufferWriterStream : Stream
 
     public BufferWriterStream(IBufferWriter<byte> writer)
     {
-        writer.AssertNotNull(nameof(writer));
+        GrpcPreconditions.CheckNotNull(writer, nameof(writer));
 
-        _writer = writer;
+        _writer = GrpcPreconditions.CheckNotNull(writer, nameof(writer));
     }
 
     public override bool CanRead => false;
@@ -78,7 +79,7 @@ internal sealed class BufferWriterStream : Stream
 
     public override void Write(byte[] buffer, int offset, int count)
     {
-        buffer.AssertNotNull(nameof(buffer));
+        GrpcPreconditions.CheckNotNull(buffer, nameof(buffer));
 
         if (offset < 0)
         {

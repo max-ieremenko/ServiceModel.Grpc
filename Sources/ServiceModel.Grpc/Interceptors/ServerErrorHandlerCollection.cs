@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using Grpc.Core.Utils;
 
 namespace ServiceModel.Grpc.Interceptors;
 
@@ -49,9 +50,7 @@ public sealed class ServerErrorHandlerCollection : ServerErrorHandlerBase
     /// <param name="errorHandlers">The list of error handlers.</param>
     public ServerErrorHandlerCollection(IEnumerable<IServerErrorHandler> errorHandlers)
     {
-        errorHandlers.AssertNotNull(nameof(errorHandlers));
-
-        _pipeline = new List<IServerErrorHandler>(errorHandlers);
+        _pipeline = new List<IServerErrorHandler>(GrpcPreconditions.CheckNotNull(errorHandlers, nameof(errorHandlers)));
     }
 
     /// <summary>
@@ -65,7 +64,7 @@ public sealed class ServerErrorHandlerCollection : ServerErrorHandlerBase
     /// <param name="errorHandler">The <see cref="IServerErrorHandler"/>.</param>
     public void Add(IServerErrorHandler errorHandler)
     {
-        errorHandler.AssertNotNull(nameof(errorHandler));
+        GrpcPreconditions.CheckNotNull(errorHandler, nameof(errorHandler));
 
         _pipeline.Add(errorHandler);
     }

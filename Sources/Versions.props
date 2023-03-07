@@ -1,33 +1,29 @@
 <Project>
   <PropertyGroup>
-    <ServiceModelGrpcVersion>1.4.13</ServiceModelGrpcVersion>
+    <ServiceModelGrpcVersion>1.5.0</ServiceModelGrpcVersion>
 
-    <GrpcCoreVersion>2.46.5</GrpcCoreVersion>
-	<GrpcCoreApiVersion>2.50.0</GrpcCoreApiVersion>
-    <GrpcNetVersion>2.50.0</GrpcNetVersion>
-    <GrpcToolsVersion>2.51.0</GrpcToolsVersion>
-    <GoogleProtobufVersion>3.21.12</GoogleProtobufVersion>
+    <GrpcCoreVersion>2.46.6</GrpcCoreVersion>
+	<GrpcCoreApiVersion>2.51.0</GrpcCoreApiVersion>
+    <GrpcNetVersion>2.51.0</GrpcNetVersion>
+    <GrpcToolsVersion>2.52.0</GrpcToolsVersion>
+    <GoogleProtobufVersion>3.22.0</GoogleProtobufVersion>
 
-    <SwashbuckleVersion>6.4.0</SwashbuckleVersion>
-    <NSwagVersion>13.16.1</NSwagVersion>
+    <SwashbuckleVersion>6.5.0</SwashbuckleVersion>
+    <NSwagVersion>13.18.2</NSwagVersion>
 
-    <MessagePackVersion>2.4.35</MessagePackVersion>
-    <ProtobufVersion>3.0.101</ProtobufVersion>
+    <MessagePackVersion>2.4.59</MessagePackVersion>
+    <ProtobufVersion>3.1.33</ProtobufVersion>
 
     <SystemServiceModelPrimitivesVersion>4.10.0</SystemServiceModelPrimitivesVersion>
 
     <StyleCopVersion>1.2.0.435</StyleCopVersion>
     <SourceLinkGitHubVersion>1.1.1</SourceLinkGitHubVersion>
     
-    <MicrosoftTestSdkVersion>17.4.1</MicrosoftTestSdkVersion>
+    <MicrosoftTestSdkVersion>17.5.0</MicrosoftTestSdkVersion>
 	
-	<!-- 
-	https://github.com/nunit/nunit3-vs-adapter/issues/987
-	System.ArgumentException: Unknown framework version 7.0
-	-->
-    <NUnitAdapterVersion>4.3.1</NUnitAdapterVersion>
+    <NUnitAdapterVersion>4.4.2</NUnitAdapterVersion>
     <NUnitVersion>3.13.3</NUnitVersion>
     <ShouldlyVersion>4.1.0</ShouldlyVersion>
-    <MoqVersion>4.18.3</MoqVersion>
+    <MoqVersion>4.18.4</MoqVersion>
   </PropertyGroup>
 </Project>

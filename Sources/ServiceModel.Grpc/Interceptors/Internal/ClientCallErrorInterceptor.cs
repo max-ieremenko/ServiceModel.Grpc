@@ -17,6 +17,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Grpc.Core;
+using Grpc.Core.Utils;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
 
@@ -31,11 +32,8 @@ internal sealed class ClientCallErrorInterceptor : IClientCallInterceptor
         IMarshallerFactory marshallerFactory,
         ILogger? logger)
     {
-        errorHandler.AssertNotNull(nameof(errorHandler));
-        marshallerFactory.AssertNotNull(nameof(marshallerFactory));
-
-        ErrorHandler = errorHandler;
-        MarshallerFactory = marshallerFactory;
+        ErrorHandler = GrpcPreconditions.CheckNotNull(errorHandler, nameof(errorHandler));
+        MarshallerFactory = GrpcPreconditions.CheckNotNull(marshallerFactory, nameof(marshallerFactory));
         _logger = logger;
     }
 

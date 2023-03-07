@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
+using Grpc.Core.Utils;
 using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Interceptors.Internal;
@@ -75,7 +76,7 @@ public sealed class ClientFactory : IClientFactory
     public void AddClient<TContract>(IClientBuilder<TContract> builder, Action<ServiceModelGrpcClientOptions>? configure = null)
         where TContract : class
     {
-        builder.AssertNotNull(nameof(builder));
+        GrpcPreconditions.CheckNotNull(builder, nameof(builder));
 
         RegisterClient(builder, configure);
     }
@@ -89,7 +90,7 @@ public sealed class ClientFactory : IClientFactory
     public TContract CreateClient<TContract>(ChannelBase channel)
         where TContract : class
     {
-        channel.AssertNotNull(nameof(channel));
+        GrpcPreconditions.CheckNotNull(channel, nameof(channel));
 
         return CreateClient<TContract>(channel.CreateCallInvoker());
     }
@@ -103,7 +104,7 @@ public sealed class ClientFactory : IClientFactory
     public TContract CreateClient<TContract>(CallInvoker callInvoker)
         where TContract : class
     {
-        callInvoker.AssertNotNull(nameof(callInvoker));
+        GrpcPreconditions.CheckNotNull(callInvoker, nameof(callInvoker));
 
         object factory;
         Interceptor interceptor;
@@ -145,17 +146,16 @@ public sealed class ClientFactory : IClientFactory
             throw new NotSupportedException("{0} is not supported. Client contract must be public interface.".FormatWith(contractType));
         }
 
-        var options = new ServiceModelGrpcClientOptions
-        {
-            MarshallerFactory = _defaultOptions?.MarshallerFactory,
-            DefaultCallOptionsFactory = _defaultOptions?.DefaultCallOptionsFactory,
-            Logger = _defaultOptions?.Logger,
-            ErrorHandler = _defaultOptions?.ErrorHandler
-        };
-
-        configure?.Invoke(options);
-
+        var options = ConfigureClient(configure);
         var generator = userBuilder == null ? CreateGenerator(options) : null;
+
+        var methodBinder = new ClientMethodBinder(
+            options.ServiceProvider,
+            options.MarshallerFactory.ThisOrDefault(),
+            options.DefaultCallOptionsFactory);
+
+        methodBinder.AddFilters(_defaultOptions?.GetFilters());
+        methodBinder.AddFilters(options.GetFilters());
 
         IClientBuilder<TContract> builder;
         lock (_syncRoot)
@@ -166,7 +166,7 @@ public sealed class ClientFactory : IClientFactory
             }
 
             builder = userBuilder ?? generator!.GenerateClientBuilder<TContract>();
-            builder.Initialize(options.MarshallerFactory ?? DataContractMarshallerFactory.Default, options.DefaultCallOptionsFactory);
+            builder.Initialize(methodBinder);
 
             _builderByContract.Add(contractType, builder);
 
@@ -174,11 +174,27 @@ public sealed class ClientFactory : IClientFactory
             {
                 _interceptorByContract.Add(contractType, new ClientNativeInterceptor(new ClientCallErrorInterceptor(
                     options.ErrorHandler,
-                    options.MarshallerFactory.ThisOrDefault(),
+                    methodBinder.MarshallerFactory,
                     options.Logger)));
             }
         }
 
         return builder;
+    }
+
+    private ServiceModelGrpcClientOptions ConfigureClient(Action<ServiceModelGrpcClientOptions>? configure)
+    {
+        var options = new ServiceModelGrpcClientOptions
+        {
+            MarshallerFactory = _defaultOptions?.MarshallerFactory,
+            DefaultCallOptionsFactory = _defaultOptions?.DefaultCallOptionsFactory,
+            Logger = _defaultOptions?.Logger,
+            ErrorHandler = _defaultOptions?.ErrorHandler,
+            ServiceProvider = _defaultOptions?.ServiceProvider
+        };
+
+        configure?.Invoke(options);
+
+        return options;
     }
 }

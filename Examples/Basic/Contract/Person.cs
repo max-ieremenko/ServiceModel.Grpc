@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace Contract
+namespace Contract;
+
+[DataContract]
+public class Person
 {
-    [DataContract]
-    public class Person
-    {
-        [DataMember]
-        public string FullName { get; set; }
+    [DataMember]
+    public string FullName { get; set; }
 
-        [DataMember]
-        public DateTime DateOfBirth { get; set; }
+    [DataMember]
+    public DateTime DateOfBirth { get; set; }
 
-        [DataMember]
-        public IList<Address> Addresses { get; set; }
-    }
+    [DataMember]
+    public IList<Address> Addresses { get; set; }
 }

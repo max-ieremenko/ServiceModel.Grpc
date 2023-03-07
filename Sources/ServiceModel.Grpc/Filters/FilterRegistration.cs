@@ -16,6 +16,7 @@
 
 using System;
 using System.Globalization;
+using Grpc.Core.Utils;
 
 namespace ServiceModel.Grpc.Filters;
 
@@ -33,10 +34,8 @@ public sealed class FilterRegistration<TFilter> : IComparable<FilterRegistration
     /// <param name="factory">The filter factory.</param>
     public FilterRegistration(int order, Func<IServiceProvider, TFilter> factory)
     {
-        factory.AssertNotNull(nameof(factory));
-
         Order = order;
-        Factory = factory;
+        Factory = GrpcPreconditions.CheckNotNull(factory, nameof(factory));
     }
 
     /// <summary>

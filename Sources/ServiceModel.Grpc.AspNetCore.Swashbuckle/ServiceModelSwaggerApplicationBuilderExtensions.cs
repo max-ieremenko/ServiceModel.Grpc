@@ -14,7 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-using System;
+using Grpc.Core.Utils;
 
 //// ReSharper disable CheckNamespace
 namespace Microsoft.AspNetCore.Builder;
@@ -32,10 +32,7 @@ public static class ServiceModelSwaggerApplicationBuilderExtensions
     /// <returns>The <paramref name="app"/>.</returns>
     public static IApplicationBuilder UseServiceModelGrpcSwaggerGateway(this IApplicationBuilder app)
     {
-        if (app == null)
-        {
-            throw new ArgumentNullException(nameof(app));
-        }
+        GrpcPreconditions.CheckNotNull(app, nameof(app));
 
         ServiceModel.Grpc.AspNetCore.ApplicationBuilderExtensions.UseSwagger(app);
         return app;

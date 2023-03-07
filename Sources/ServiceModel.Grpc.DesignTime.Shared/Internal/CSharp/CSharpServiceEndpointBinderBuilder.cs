@@ -17,8 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq.Expressions;
-using System.Reflection;
 using Grpc.Core;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -135,8 +133,6 @@ internal sealed class CSharpServiceEndpointBinderBuilder : CodeGeneratorBase
                     BuildGetMethodMetadata(interfaceDescription, method);
                     Output.AppendLine();
                     BuildGetMethodMetadataOverride(method);
-                    Output.AppendLine();
-                    BuildGetMethodDefinition(interfaceDescription.InterfaceTypeName, method);
                 }
             }
         }
@@ -177,7 +173,9 @@ internal sealed class CSharpServiceEndpointBinderBuilder : CodeGeneratorBase
                         .Append("Method(contract.")
                         .Append(method.GrpcMethodName)
                         .Append(", ")
-                        .Append(GetMethodDefinitionName(method));
+                        .Append(_contract.ContractClassName)
+                        .Append(".")
+                        .Append(method.ClrDefinitionMethodName);
 
                     if (method.OperationType == MethodType.ClientStreaming)
                     {
@@ -331,95 +329,8 @@ internal sealed class CSharpServiceEndpointBinderBuilder : CodeGeneratorBase
             .AppendLine("Override(IList<object> metadata);");
     }
 
-    private void BuildGetMethodDefinition(string interfaceType, OperationDescription method)
-    {
-        Output
-            .Append("private ")
-            .AppendType(typeof(MethodInfo))
-            .Append(" ")
-            .Append(GetMethodDefinitionName(method))
-            .AppendLine("()")
-            .AppendLine("{");
-
-        using (Output.Indent())
-        {
-            for (var i = 0; i < method.Method.Parameters.Length; i++)
-            {
-                var p = method.Method.Parameters[i];
-                if (p.IsOut)
-                {
-                    Output
-                        .Append(p.Type)
-                        .Append(" ")
-                        .Append(p.Name)
-                        .AppendLine(";");
-                }
-                else if (p.IsRef)
-                {
-                    Output
-                        .Append(p.Type)
-                        .Append(" ")
-                        .Append(p.Name)
-                        .AppendLine(" = default;");
-                }
-            }
-
-            // Expression<Action<IDemoService>> __exp = s => s.Sum(default, default);
-            Output
-                .AppendType(typeof(Expression))
-                .Append("<Action<")
-                .Append(interfaceType)
-                .Append(">> __exp = s => s.")
-                .Append(method.Method.Name)
-                .Append("(");
-
-            for (var i = 0; i < method.Method.Parameters.Length; i++)
-            {
-                if (i > 0)
-                {
-                    Output.Append(", ");
-                }
-
-                var p = method.Method.Parameters[i];
-                if (p.IsOut)
-                {
-                    Output
-                        .Append("out ")
-                        .Append(p.Name);
-                }
-                else if (p.IsRef)
-                {
-                    Output
-                        .Append("ref ")
-                        .Append(p.Name);
-                }
-                else
-                {
-                    Output
-                        .Append("default(")
-                        .Append(method.Method.Parameters[i].Type)
-                        .Append(")");
-                }
-            }
-
-            Output.AppendLine(");");
-
-            Output
-                .Append("return ((")
-                .AppendType(typeof(MethodCallExpression))
-                .AppendLine(")__exp.Body).Method;");
-        }
-
-        Output.AppendLine("}");
-    }
-
     private string GetMethodMetadataName(OperationDescription method)
     {
         return "Method" + method.OperationName + "GetMetadata";
-    }
-
-    private string GetMethodDefinitionName(OperationDescription method)
-    {
-        return "Method" + method.OperationName + "GetDefinition";
     }
 }

@@ -16,6 +16,7 @@
 
 using System;
 using Grpc.AspNetCore.Server.Model;
+using Grpc.Core.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -41,15 +42,10 @@ internal sealed class ServiceModelServiceMethodProvider<TService> : IServiceMeth
         ILogger<ServiceModelServiceMethodProvider<TService>> logger,
         IServiceProvider serviceProvider)
     {
-        rootConfiguration.AssertNotNull(nameof(rootConfiguration));
-        serviceConfiguration.AssertNotNull(nameof(serviceConfiguration));
-        logger.AssertNotNull(nameof(logger));
-        serviceProvider.AssertNotNull(nameof(serviceProvider));
-
-        _rootConfiguration = rootConfiguration.Value;
-        _serviceConfiguration = serviceConfiguration.Value;
-        _logger = logger;
-        _serviceProvider = serviceProvider;
+        _rootConfiguration = GrpcPreconditions.CheckNotNull(rootConfiguration, nameof(rootConfiguration)).Value;
+        _serviceConfiguration = GrpcPreconditions.CheckNotNull(serviceConfiguration, nameof(serviceConfiguration)).Value;
+        _logger = GrpcPreconditions.CheckNotNull(logger, nameof(logger));
+        _serviceProvider = GrpcPreconditions.CheckNotNull(serviceProvider, nameof(serviceProvider));
     }
 
     public void OnServiceMethodDiscovery(ServiceMethodProviderContext<TService> context)
