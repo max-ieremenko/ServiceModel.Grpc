@@ -6,10 +6,10 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="ServiceModel.Grpc.SelfHost" Version="$(ServiceModelGrpcVersion)" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftDependencyInjectionVersion)" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(MicrosoftLoggingVersion)" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftExtensionsHostingVersion)" />
+		<PackageReference Include="ServiceModel.Grpc.SelfHost" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" />
 	</ItemGroup>
 
 	<ItemGroup>

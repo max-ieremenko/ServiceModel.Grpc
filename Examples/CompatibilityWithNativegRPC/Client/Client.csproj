@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grpc.Core" Version="$(GrpcCoreVersion)" />
-    <PackageReference Include="ServiceModel.Grpc.ProtoBufMarshaller" Version="$(ServiceModelGrpcVersion)" />
+    <PackageReference Include="Grpc.Core" />
+    <PackageReference Include="ServiceModel.Grpc.ProtoBufMarshaller" />
   </ItemGroup>
 
   <ItemGroup>
