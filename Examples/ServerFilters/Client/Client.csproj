@@ -5,9 +5,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Grpc.Net.Client" Version="$(GrpcNetVersion)" />
-		<PackageReference Include="ServiceModel.Grpc" Version="$(ServiceModelGrpcVersion)" />
-		<PackageReference Include="Shouldly" Version="$(ShouldlyVersion)" />
+		<PackageReference Include="Grpc.Net.Client" />
+		<PackageReference Include="ServiceModel.Grpc" />
+		<PackageReference Include="Shouldly" />
 	</ItemGroup>
 
 	<ItemGroup>

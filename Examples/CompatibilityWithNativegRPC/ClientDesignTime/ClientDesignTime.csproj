@@ -6,10 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grpc.Core" Version="$(GrpcCoreVersion)" />
-    <PackageReference Include="ServiceModel.Grpc.DesignTime" Version="$(ServiceModelGrpcVersion)" />
-    <PackageReference Include="System.ServiceModel.Primitives" Version="$(SystemServiceModelPrimitivesVersion)" />
-    <PackageReference Include="ServiceModel.Grpc.ProtoBufMarshaller" Version="$(ServiceModelGrpcVersion)" />
+    <PackageReference Include="Grpc.Core" />
+    <PackageReference Include="ServiceModel.Grpc.DesignTime" />
+    <PackageReference Include="System.ServiceModel.Primitives" />
+    <PackageReference Include="ServiceModel.Grpc.ProtoBufMarshaller" />
   </ItemGroup>
 
   <ItemGroup>

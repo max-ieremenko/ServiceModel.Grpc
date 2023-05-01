@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ServiceModel.Grpc.SelfHost" Version="$(ServiceModelGrpcVersion)" />
-    <PackageReference Include="ServiceModel.Grpc.DesignTime" Version="$(ServiceModelGrpcVersion)" />
-    <PackageReference Include="Grpc.Core" Version="$(GrpcCoreVersion)" />
+    <PackageReference Include="ServiceModel.Grpc.SelfHost" />
+    <PackageReference Include="ServiceModel.Grpc.DesignTime" />
+    <PackageReference Include="Grpc.Core" />
   </ItemGroup>
   
   <ItemGroup>

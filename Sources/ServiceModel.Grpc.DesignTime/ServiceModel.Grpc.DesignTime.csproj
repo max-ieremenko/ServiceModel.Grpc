@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grpc.Core.Api" Version="$(GrpcCoreApiVersion)" GeneratePathProperty="true" PrivateAssets="all" />
+    <PackageReference Include="Grpc.Core.Api" GeneratePathProperty="true" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
