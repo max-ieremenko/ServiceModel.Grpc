@@ -20,7 +20,7 @@
         },
         {
           "Name": "Newtonsoft.Json",
-          "Version": "13.0.2"
+          "Version": "13.0.3"
         }
       ]
     },
@@ -40,7 +40,7 @@
         },
         {
           "Name": "Newtonsoft.Json",
-          "Version": "13.0.2"
+          "Version": "13.0.3"
         }
       ]
     },
@@ -60,7 +60,7 @@
         },
         {
           "Name": "Newtonsoft.Json",
-          "Version": "13.0.2"
+          "Version": "13.0.3"
         }
       ]
     }
