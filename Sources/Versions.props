@@ -1,29 +1,5 @@
 <Project>
   <PropertyGroup>
     <ServiceModelGrpcVersion>1.5.1</ServiceModelGrpcVersion>
-
-    <GrpcCoreVersion>2.46.6</GrpcCoreVersion>
-	<GrpcCoreApiVersion>2.51.0</GrpcCoreApiVersion>
-    <GrpcNetVersion>2.51.0</GrpcNetVersion>
-    <GrpcToolsVersion>2.52.0</GrpcToolsVersion>
-    <GoogleProtobufVersion>3.22.0</GoogleProtobufVersion>
-
-    <SwashbuckleVersion>6.5.0</SwashbuckleVersion>
-    <NSwagVersion>13.18.2</NSwagVersion>
-
-    <MessagePackVersion>2.4.59</MessagePackVersion>
-    <ProtobufVersion>3.1.33</ProtobufVersion>
-
-    <SystemServiceModelPrimitivesVersion>4.10.0</SystemServiceModelPrimitivesVersion>
-
-    <StyleCopVersion>1.2.0.435</StyleCopVersion>
-    <SourceLinkGitHubVersion>1.1.1</SourceLinkGitHubVersion>
-    
-    <MicrosoftTestSdkVersion>17.5.0</MicrosoftTestSdkVersion>
-	
-    <NUnitAdapterVersion>4.4.2</NUnitAdapterVersion>
-    <NUnitVersion>3.13.3</NUnitVersion>
-    <ShouldlyVersion>4.1.0</ShouldlyVersion>
-    <MoqVersion>4.18.4</MoqVersion>
   </PropertyGroup>
 </Project>

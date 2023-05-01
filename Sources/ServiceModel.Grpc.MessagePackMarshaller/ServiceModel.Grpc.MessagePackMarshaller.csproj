@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="$(MessagePackVersion)" />
+    <PackageReference Include="MessagePack" />
   </ItemGroup>
 
   <ItemGroup>
