@@ -12,7 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StyleCop.Analyzers.Unstable" Version="$(StyleCopVersion)" PrivateAssets="All" />
+    <PackageReference Include="StyleCop.Analyzers.Unstable" PrivateAssets="All" />
   </ItemGroup>
-  
 </Project>
