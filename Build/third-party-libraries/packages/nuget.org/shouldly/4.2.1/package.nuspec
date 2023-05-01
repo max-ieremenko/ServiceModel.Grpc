@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Shouldly</id>
+    <version>4.2.1</version>
+    <authors>Jake Ginnivan, Joseph Woodward, Simon Cropp</authors>
+    <license type="expression">BSD-2-Clause</license>
+    <licenseUrl>https://licenses.nuget.org/BSD-2-Clause</licenseUrl>
+    <icon>assets/logo_128x128.png</icon>
+    <projectUrl>https://shouldly.org/</projectUrl>
+    <description>Shouldly - Assertion framework for .NET. The way asserting *Should* be</description>
+    <releaseNotes>https://github.com/shouldly/releases/tag/4.2.1</releaseNotes>
+    <tags>test unit testing TDD AAA should testunit rspec assert assertion framework</tags>
+    <repository type="git" url="https://github.com/shouldly/shouldly.git" commit="13e7a9658f4d63446f7fddeb96bdc7e92191f130" />
+    <dependencies>
+      <group targetFramework="net5.0">
+        <dependency id="DiffEngine" version="11.3.0" exclude="Build,Analyzers" />
+        <dependency id="EmptyFiles" version="4.4.0" include="All" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="DiffEngine" version="11.3.0" exclude="Build,Analyzers" />
+        <dependency id="EmptyFiles" version="4.4.0" include="All" />
+        <dependency id="Microsoft.CSharp" version="4.7.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
