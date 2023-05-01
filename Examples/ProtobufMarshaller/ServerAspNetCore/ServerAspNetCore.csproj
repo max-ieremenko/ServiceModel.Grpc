@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ServiceModel.Grpc.AspNetCore" Version="$(ServiceModelGrpcVersion)" />
+    <PackageReference Include="ServiceModel.Grpc.AspNetCore" />
   </ItemGroup>
 
   <ItemGroup>

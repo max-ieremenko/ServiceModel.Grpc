@@ -14,11 +14,11 @@
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
     <Reference Include="System.ServiceModel" />
-    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+    <PackageReference Include="System.ValueTuple" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CompareNETObjects" Version="4.79.0" />
+    <PackageReference Include="CompareNETObjects" />
   </ItemGroup>
 
   <ItemGroup>

@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ServiceModel.Grpc.AspNetCore.NSwag" Version="$(ServiceModelGrpcVersion)" />
+    <PackageReference Include="ServiceModel.Grpc.AspNetCore.NSwag" />
   </ItemGroup>
 
   <ItemGroup>

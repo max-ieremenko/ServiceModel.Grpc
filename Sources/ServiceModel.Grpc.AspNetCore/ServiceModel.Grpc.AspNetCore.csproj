@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grpc.AspNetCore.Server" Version="$(GrpcNetVersion)" />
+    <PackageReference Include="Grpc.AspNetCore.Server" />
   </ItemGroup>
 
   <ItemGroup>

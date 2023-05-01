@@ -5,9 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.ServiceModel.Primitives" Version="$(SystemServiceModelPrimitivesVersion)" />
-    <PackageReference Include="ServiceModel.Grpc" Version="$(ServiceModelGrpcVersion)" />
-    <PackageReference Include="ServiceModel.Grpc.MessagePackMarshaller" Version="$(ServiceModelGrpcVersion)" />
+    <PackageReference Include="System.ServiceModel.Primitives" />
+    <PackageReference Include="ServiceModel.Grpc" />
+    <PackageReference Include="ServiceModel.Grpc.MessagePackMarshaller" />
   </ItemGroup>
 
 </Project>

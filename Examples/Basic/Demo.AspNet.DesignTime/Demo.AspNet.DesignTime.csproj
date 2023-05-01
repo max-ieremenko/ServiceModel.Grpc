@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="$(MicrosoftBclVersion)" />
-    <PackageReference Include="ServiceModel.Grpc.AspNetCore" Version="$(ServiceModelGrpcVersion)" />
-    <PackageReference Include="ServiceModel.Grpc.DesignTime" Version="$(ServiceModelGrpcVersion)" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />
+    <PackageReference Include="ServiceModel.Grpc.AspNetCore" />
+    <PackageReference Include="ServiceModel.Grpc.DesignTime" />
   </ItemGroup>
   
   <ItemGroup>

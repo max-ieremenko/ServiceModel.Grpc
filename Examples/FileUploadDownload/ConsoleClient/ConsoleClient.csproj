@@ -6,10 +6,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Grpc.Core" Version="$(GrpcCoreVersion)" />
-		<PackageReference Include="Grpc.Net.Client" Version="$(GrpcNetVersion)" />
-		<PackageReference Include="Grpc.Net.Client.Web" Version="$(GrpcNetVersion)" />
-		<PackageReference Include="Shouldly" Version="$(ShouldlyVersion)" />
+		<PackageReference Include="Grpc.Core" />
+		<PackageReference Include="Grpc.Net.Client" />
+		<PackageReference Include="Grpc.Net.Client.Web" />
+		<PackageReference Include="Shouldly" />
 	</ItemGroup>
 
 	<ItemGroup>

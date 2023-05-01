@@ -1,8 +1,8 @@
 <Project>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTestSdkVersion)" />
-    <PackageReference Include="NUnit3TestAdapter" Version="$(NUnitAdapterVersion)" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NUnit3TestAdapter" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>

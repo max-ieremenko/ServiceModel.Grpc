@@ -5,8 +5,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="ServiceModel.Grpc.AspNetCore" Version="$(ServiceModelGrpcVersion)" />
-		<PackageReference Include="Grpc.AspNetCore.Web" Version="$(GrpcNetVersion)" />
+		<PackageReference Include="ServiceModel.Grpc.AspNetCore" />
+		<PackageReference Include="Grpc.AspNetCore.Web" />
 	</ItemGroup>
 
 	<ItemGroup>
