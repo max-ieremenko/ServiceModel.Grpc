@@ -1,4 +1,5 @@
 {
+  "Source": "https://api.nuget.org/v3/index.json",
   "License": {
     "Code": "Apache-2.0",
     "Status": "AutomaticallyApproved"
@@ -16,27 +17,16 @@
       ],
       "Dependencies": [
         {
-          "Name": "Grpc.Core.Api",
-          "Version": "2.54.0"
-        }
-      ]
-    },
-    {
-      "Name": "SelfHost",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "net461",
-        "netstandard2.0",
-        "netstandard2.1"
-      ],
-      "Dependencies": [
-        {
-          "Name": "Grpc.Core.Api",
+          "Name": "Grpc.Net.Common",
           "Version": "2.54.0"
         },
         {
-          "Name": "System.Memory",
-          "Version": "4.5.3"
+          "Name": "Microsoft.Extensions.Logging.Abstractions",
+          "Version": "3.0.3"
+        },
+        {
+          "Name": "System.Diagnostics.DiagnosticSource",
+          "Version": "4.5.1"
         }
       ]
     }
@@ -51,13 +41,13 @@
     {
       "Subject": "repository",
       "Code": "Apache-2.0",
-      "HRef": "https://github.com/grpc/grpc.git",
+      "HRef": "https://github.com/grpc/grpc-dotnet.git",
       "Description": null
     },
     {
       "Subject": "project",
       "Code": "Apache-2.0",
-      "HRef": "https://github.com/grpc/grpc",
+      "HRef": "https://github.com/grpc/grpc-dotnet",
       "Description": null
     }
   ]
