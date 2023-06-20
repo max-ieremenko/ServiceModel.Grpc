@@ -46,7 +46,7 @@ internal sealed class Startup
                     ValidateAudience = false,
                     ValidateIssuer = false,
                     ValidateActor = false,
-                    IssuerSigningKey = new SymmetricSecurityKey(Guid.Empty.ToByteArray())
+                    IssuerSigningKey = new SymmetricSecurityKey(new byte[256 / 8])
                 };
             });
     }

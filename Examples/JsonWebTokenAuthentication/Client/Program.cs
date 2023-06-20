@@ -63,7 +63,7 @@ public static class Program
 
     private static string ResolveJwtToken(string userName)
     {
-        var securityKey = new SymmetricSecurityKey(Guid.Empty.ToByteArray());
+        var securityKey = new SymmetricSecurityKey(new byte[256 / 8]);
         var descriptor = new SecurityTokenDescriptor
         {
             Issuer = "Demo App",
