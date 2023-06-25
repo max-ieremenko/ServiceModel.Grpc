@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,22 +15,21 @@
 // </copyright>
 
 using System;
-using IGrpcLogger = global::Grpc.Core.Logging.ILogger;
 
 namespace ServiceModel.Grpc.SelfHost.Internal;
 
 internal sealed class WithLoggerFactory<T>
 {
     private readonly Func<T> _factory;
-    private readonly IGrpcLogger _logger;
+    private readonly ILogger _logger;
 
-    private WithLoggerFactory(Func<T> factory, IGrpcLogger logger)
+    private WithLoggerFactory(Func<T> factory, ILogger logger)
     {
         _factory = factory;
         _logger = logger;
     }
 
-    public static Func<T> Wrap(Func<T> factory, IGrpcLogger? logger)
+    public static Func<T> Wrap(Func<T> factory, ILogger? logger)
     {
         if (logger == null)
         {
@@ -54,7 +53,7 @@ internal sealed class WithLoggerFactory<T>
         }
         catch (Exception ex)
         {
-            _logger.Error("{0} factory failed: {1}", typeof(T).FullName, ex);
+            _logger.LogError("{0} factory failed: {1}", typeof(T).FullName, ex);
             throw;
         }
 
