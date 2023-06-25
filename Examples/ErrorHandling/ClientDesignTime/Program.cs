@@ -13,6 +13,9 @@ public static class Program
 {
     private static readonly IClientFactory DefaultClientFactory = new ClientFactory(new ServiceModelGrpcClientOptions
     {
+        // enable ServiceModel.Grpc logging
+        Logger = new SimpleConsoleLogger(),
+
         // combine application and unexpected handlers into one handler
         ErrorHandler = new ClientErrorHandlerCollection(new ApplicationExceptionClientHandler(), new UnexpectedExceptionClientHandler())
     });
