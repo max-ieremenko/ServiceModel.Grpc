@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,10 +47,7 @@ internal sealed class ClientCallErrorInterceptor : IClientCallInterceptor
         if (TryFindHeaders(error.Trailers, out var detailTypeName, out var detailContent))
         {
             var detailType = ResolveDetailType(detailTypeName);
-            if (detailType != null)
-            {
-                detail = MarshallerFactory.DeserializeHeader(detailType, detailContent);
-            }
+            detail = DeserializeDetail(detailType, detailContent);
         }
 
         ErrorHandler.ThrowOrIgnore(context, new ClientFaultDetail(error, detail));
@@ -95,5 +92,28 @@ internal sealed class ClientCallErrorInterceptor : IClientCallInterceptor
         }
 
         return null;
+    }
+
+    private object? DeserializeDetail(Type? detailType, byte[] detailContent)
+    {
+        if (detailType == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            return MarshallerFactory.DeserializeHeader(detailType, detailContent);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(
+                "Error occurred while trying to deserialize the {0} with {1}:{2}{3}",
+                detailType,
+                MarshallerFactory.GetType(),
+                Environment.NewLine,
+                ex);
+            throw;
+        }
     }
 }
