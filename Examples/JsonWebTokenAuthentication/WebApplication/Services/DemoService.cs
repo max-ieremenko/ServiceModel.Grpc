@@ -17,16 +17,22 @@ internal sealed class DemoService : IDemoService
     [AllowAnonymous]
     public Task<string> PingAsync()
     {
-        var user = _httpContextAccessor.HttpContext!.User;
+        var userName = GetHttpContextUserName();
 
-        return Task.FromResult("pong " + user.Identity?.Name);
+        return Task.FromResult("pong " + userName);
     }
 
     // see Startup.cs: RequireAuthenticatedUser by default
     public Task<string> GetCurrentUserNameAsync()
     {
-        var user = _httpContextAccessor.HttpContext!.User;
+        var userName = GetHttpContextUserName();
 
-        return Task.FromResult(user.Identity!.Name);
+        return Task.FromResult(userName);
+    }
+
+    private string GetHttpContextUserName()
+    {
+        var identity = _httpContextAccessor.HttpContext!.User.Identity;
+        return identity?.IsAuthenticated == true ? identity.Name : "<unauthorized>";
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -46,6 +45,8 @@ internal sealed class Startup
                     ValidateAudience = false,
                     ValidateIssuer = false,
                     ValidateActor = false,
+
+                    // dummy key, only for demo purposes, must be synchronized with Client
                     IssuerSigningKey = new SymmetricSecurityKey(new byte[256 / 8])
                 };
             });
