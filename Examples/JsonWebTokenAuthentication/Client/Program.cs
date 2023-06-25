@@ -1,24 +1,36 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Threading.Tasks;
+using Client.Services;
 using Contract;
-using Grpc.Core;
-using Microsoft.IdentityModel.Tokens;
-using ServiceModel.Grpc.Client;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Client;
 
 public static class Program
 {
-    public static async Task Main(string[] args)
+    public static async Task Main()
     {
-        // WARN: insecure connection should be used only in development environments
-        var channel = new Channel("localhost", 8080, ChannelCredentials.Insecure);
+        // demo with Grpc.Core.Channel and ServiceModelGrpcClientOptions.DefaultCallOptionsFactory
+        Console.WriteLine("--- Grpc.Core.Channel ---");
+        await using (var serviceProvider = ServiceProviderBuilder.BuildWithGrpcCoreChannel())
+        {
+            await Run(serviceProvider);
+        }
 
-        await CallAsAnonymous(channel);
-        await CallAsDemoUser(channel);
+        // demo with Grpc.Net.Client.GrpcChannel and ServiceModelGrpcClientOptions.DefaultCallOptionsFactory
+        Console.WriteLine("--- Grpc.Net.Client.GrpcChannel ---");
+        await using (var serviceProvider = ServiceProviderBuilder.BuildWithGrpcNetChannel())
+        {
+            await Run(serviceProvider);
+        }
+
+        // demo with Grpc.Net.Client.GrpcChannel and HttpMessageHandlerWithAuthorization
+        Console.WriteLine("--- HttpMessageHandlerWithAuthorization ---");
+        await using (var serviceProvider = ServiceProviderBuilder.BuildWithAuthorizationMessageHandler())
+        {
+            await Run(serviceProvider);
+        }
 
         if (Debugger.IsAttached)
         {
@@ -27,56 +39,33 @@ public static class Program
         }
     }
 
-    private static async Task CallAsAnonymous(Channel channel)
+    private static async Task Run(IServiceProvider serviceProvider)
     {
-        var proxy = new ClientFactory().CreateClient<IDemoService>(channel);
+        var tokenProvider = (JwtTokenProvider)serviceProvider.GetRequiredService<IJwtTokenProvider>();
+        var demoServiceProxy = serviceProvider.GetRequiredService<IDemoService>();
 
+        tokenProvider.SetCurrentUser(null);
+        await CallAsAnonymous(demoServiceProxy);
+
+        tokenProvider.SetCurrentUser("demo-user");
+        await CallAsDemoUser(demoServiceProxy);
+    }
+
+    private static async Task CallAsAnonymous(IDemoService demoServiceProxy)
+    {
         Console.WriteLine("Invoke PingAsync");
-        var response = await proxy.PingAsync();
+        var response = await demoServiceProxy.PingAsync();
         Console.WriteLine(response);
     }
 
-    private static async Task CallAsDemoUser(Channel channel)
+    private static async Task CallAsDemoUser(IDemoService demoServiceProxy)
     {
-        // create token
-        var authenticationToken = ResolveJwtToken("demo-user");
-
-        var clientFactory = new ClientFactory(new ServiceModelGrpcClientOptions
-        {
-            // setup authorization header for all calls, by all proxies created by this factory
-            DefaultCallOptionsFactory = () => new CallOptions(new Metadata
-            {
-                { "Authorization", "Bearer " + authenticationToken }
-            })
-        });
-
-        var proxy = clientFactory.CreateClient<IDemoService>(channel);
-
         Console.WriteLine("Invoke GetCurrentUserNameAsync");
-        var userName = await proxy.GetCurrentUserNameAsync();
+        var userName = await demoServiceProxy.GetCurrentUserNameAsync();
         Console.WriteLine(userName);
 
         Console.WriteLine("Invoke PingAsync");
-        var response = await proxy.PingAsync();
+        var response = await demoServiceProxy.PingAsync();
         Console.WriteLine(response);
-    }
-
-    private static string ResolveJwtToken(string userName)
-    {
-        var securityKey = new SymmetricSecurityKey(new byte[256 / 8]);
-        var descriptor = new SecurityTokenDescriptor
-        {
-            Issuer = "Demo App",
-            Expires = DateTime.UtcNow.AddHours(2),
-            Subject = new ClaimsIdentity(new []
-            {
-                new Claim(ClaimTypes.Name, userName)
-            }),
-            SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature)
-        };
-
-        var handler = new JwtSecurityTokenHandler();
-        var token = handler.CreateToken(descriptor);
-        return handler.WriteToken(token);
     }
 }
