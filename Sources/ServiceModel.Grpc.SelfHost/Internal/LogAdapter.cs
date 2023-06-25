@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,16 +18,21 @@ namespace ServiceModel.Grpc.SelfHost.Internal;
 
 internal sealed class LogAdapter : ILogger
 {
-    private readonly global::Grpc.Core.Logging.ILogger? _logger;
+    private readonly global::Grpc.Core.Logging.ILogger _logger;
 
-    public LogAdapter(global::Grpc.Core.Logging.ILogger? logger)
+    public LogAdapter(global::Grpc.Core.Logging.ILogger logger)
     {
         _logger = logger;
     }
 
-    public void LogError(string message, params object[] args) => _logger?.Error(message, args);
+    public static ILogger? Wrap(global::Grpc.Core.Logging.ILogger? logger)
+    {
+        return logger == null ? null : new LogAdapter(logger);
+    }
 
-    public void LogWarning(string message, params object[] args) => _logger?.Warning(message, args);
+    public void LogError(string message, params object[] args) => _logger.Error(message, args);
 
-    public void LogDebug(string message, params object[] args) => _logger?.Debug(message, args);
+    public void LogWarning(string message, params object[] args) => _logger.Warning(message, args);
+
+    public void LogDebug(string message, params object[] args) => _logger.Debug(message, args);
 }

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,15 +22,20 @@ namespace ServiceModel.Grpc.Interceptors.Internal;
 
 internal sealed class ErrorHandlerServerCallInterceptorFactory : IServerCallInterceptorFactory
 {
+    internal const string LoggerName = "ServiceModel.Grpc.Interceptors.ServerCallErrorInterceptor";
+
     private readonly IMarshallerFactory _marshallerFactory;
     private readonly Func<IServiceProvider, IServerErrorHandler> _errorHandlerFactory;
+    private readonly ILogger? _logger;
 
     public ErrorHandlerServerCallInterceptorFactory(
         IMarshallerFactory marshallerFactory,
-        Func<IServiceProvider, IServerErrorHandler> errorHandlerFactory)
+        Func<IServiceProvider, IServerErrorHandler> errorHandlerFactory,
+        ILogger? logger)
     {
         _marshallerFactory = GrpcPreconditions.CheckNotNull(marshallerFactory, nameof(marshallerFactory));
         _errorHandlerFactory = GrpcPreconditions.CheckNotNull(errorHandlerFactory, nameof(errorHandlerFactory));
+        _logger = logger;
     }
 
     public IServerCallInterceptor CreateInterceptor(IServiceProvider serviceProvider)
@@ -38,6 +43,6 @@ internal sealed class ErrorHandlerServerCallInterceptorFactory : IServerCallInte
         GrpcPreconditions.CheckNotNull(serviceProvider, nameof(serviceProvider));
 
         var errorHandler = _errorHandlerFactory(serviceProvider);
-        return new ServerCallErrorInterceptor(errorHandler, _marshallerFactory);
+        return new ServerCallErrorInterceptor(errorHandler, _marshallerFactory, _logger);
     }
 }

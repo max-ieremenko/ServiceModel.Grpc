@@ -41,15 +41,17 @@ internal static class ServiceDefinitionFactory
 
         var definitionBuilder = ServerServiceDefinition.CreateBuilder();
 
+        var loggerAdapter = LogAdapter.Wrap(options?.Logger);
+
         var binder = new SelfHostServiceMethodBinder<TService>(
             (options?.MarshallerFactory).ThisOrDefault(),
-            WithLoggerFactory<TService>.Wrap(serviceFactory, options?.Logger),
+            WithLoggerFactory<TService>.Wrap(serviceFactory, loggerAdapter),
             filterRegistration,
             definitionBuilder);
 
         if (endpointBinder == null)
         {
-            endpointBinder = CreateDefaultEndpointBinder<TService>(options?.Logger);
+            endpointBinder = CreateDefaultEndpointBinder<TService>(loggerAdapter);
         }
 
         endpointBinder.Bind(binder);
@@ -60,9 +62,11 @@ internal static class ServiceDefinitionFactory
 
         if (options?.ErrorHandler != null)
         {
-            definition = definition.Intercept(new ServerNativeInterceptor(new ServerCallErrorInterceptor(
+            var errorInterceptor = new ServerCallErrorInterceptor(
                 options.ErrorHandler,
-                options.MarshallerFactory.ThisOrDefault())));
+                options.MarshallerFactory.ThisOrDefault(),
+                loggerAdapter);
+            definition = definition.Intercept(new ServerNativeInterceptor(errorInterceptor));
         }
 
         return definition;
@@ -76,16 +80,14 @@ internal static class ServiceDefinitionFactory
         }
     }
 
-    private static IServiceEndpointBinder<TService> CreateDefaultEndpointBinder<TService>(global::Grpc.Core.Logging.ILogger? logger)
+    private static IServiceEndpointBinder<TService> CreateDefaultEndpointBinder<TService>(ILogger? logger)
     {
-        var loggerAdapter = new LogAdapter(logger);
-
         var serviceInstanceType = typeof(TService);
         if (!ServiceContract.IsServiceInstanceType(serviceInstanceType))
         {
             serviceInstanceType = null;
         }
 
-        return new EmitGenerator { Logger = loggerAdapter }.GenerateServiceEndpointBinder<TService>(serviceInstanceType);
+        return new EmitGenerator { Logger = logger }.GenerateServiceEndpointBinder<TService>(serviceInstanceType);
     }
 }

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2022 Max Ieremenko
+// Copyright 2020-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 using Grpc.AspNetCore.Server;
 using Grpc.Core.Utils;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.Binding;
@@ -26,13 +27,16 @@ internal sealed class PostConfigureGrpcServiceOptions<TService> : IPostConfigure
 {
     private readonly IOptions<ServiceModelGrpcServiceOptions> _rootConfiguration;
     private readonly IOptions<ServiceModelGrpcServiceOptions<TService>> _serviceConfiguration;
+    private readonly ILoggerFactory _loggerFactory;
 
     public PostConfigureGrpcServiceOptions(
         IOptions<ServiceModelGrpcServiceOptions> rootConfiguration,
-        IOptions<ServiceModelGrpcServiceOptions<TService>> serviceConfiguration)
+        IOptions<ServiceModelGrpcServiceOptions<TService>> serviceConfiguration,
+        ILoggerFactory loggerFactory)
     {
         _rootConfiguration = GrpcPreconditions.CheckNotNull(rootConfiguration, nameof(rootConfiguration));
         _serviceConfiguration = GrpcPreconditions.CheckNotNull(serviceConfiguration, nameof(serviceConfiguration));
+        _loggerFactory = GrpcPreconditions.CheckNotNull(loggerFactory, nameof(loggerFactory));
     }
 
     public void PostConfigure(string? name, GrpcServiceOptions<TService> options)
@@ -42,6 +46,7 @@ internal sealed class PostConfigureGrpcServiceOptions<TService> : IPostConfigure
         PostConfigureGrpcServiceOptions.AddErrorHandler(
             options.Interceptors,
             _serviceConfiguration.Value.ErrorHandlerFactory,
-            marshallerFactory);
+            marshallerFactory,
+            _loggerFactory);
     }
 }

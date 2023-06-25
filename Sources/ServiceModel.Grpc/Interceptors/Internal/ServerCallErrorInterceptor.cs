@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,13 +28,16 @@ internal sealed class ServerCallErrorInterceptor : IServerCallInterceptor
 
     private readonly IServerErrorHandler _errorHandler;
     private readonly IMarshallerFactory _marshallerFactory;
+    private readonly ILogger? _logger;
 
     public ServerCallErrorInterceptor(
         IServerErrorHandler errorHandler,
-        IMarshallerFactory marshallerFactory)
+        IMarshallerFactory marshallerFactory,
+        ILogger? logger)
     {
         _errorHandler = GrpcPreconditions.CheckNotNull(errorHandler, nameof(errorHandler));
         _marshallerFactory = GrpcPreconditions.CheckNotNull(marshallerFactory, nameof(marshallerFactory));
+        _logger = logger;
     }
 
     public void OnError(ServerCallInterceptorContext context, Exception error)
@@ -46,7 +49,7 @@ internal sealed class ServerCallErrorInterceptor : IServerCallInterceptor
 
         context.ServerCallContext.UserState.Add(VisitMarker, string.Empty);
 
-        var faultOrIgnore = _errorHandler.ProvideFaultOrIgnore(context, error);
+        var faultOrIgnore = ProvideFaultOrIgnore(context, error);
         if (!faultOrIgnore.HasValue)
         {
             return;
@@ -63,10 +66,47 @@ internal sealed class ServerCallErrorInterceptor : IServerCallInterceptor
                 metadata = new Metadata();
             }
 
-            metadata.Add(CallContext.HeaderNameErrorDetail, _marshallerFactory.SerializeHeader(fault.Detail));
-            metadata.Add(CallContext.HeaderNameErrorDetailType, fault.Detail.GetType().GetShortAssemblyQualifiedName());
+            AddDetail(metadata, fault.Detail);
         }
 
         throw new RpcException(status, metadata ?? Metadata.Empty, status.Detail);
+    }
+
+    private ServerFaultDetail? ProvideFaultOrIgnore(ServerCallInterceptorContext context, Exception error)
+    {
+        try
+        {
+            return _errorHandler.ProvideFaultOrIgnore(context, error);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(
+                "Error occurred while calling {0}.{1}:{2}{3}",
+                _errorHandler.GetType(),
+                nameof(_errorHandler.ProvideFaultOrIgnore),
+                Environment.NewLine,
+                ex);
+            throw;
+        }
+    }
+
+    private void AddDetail(Metadata metadata, object detail)
+    {
+        try
+        {
+            metadata.Add(CallContext.HeaderNameErrorDetail, _marshallerFactory.SerializeHeader(detail));
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(
+                "Error occurred while trying to serialize the instance of {0} with {1}:{2}{3}",
+                detail.GetType(),
+                _marshallerFactory.GetType(),
+                Environment.NewLine,
+                ex);
+            throw;
+        }
+
+        metadata.Add(CallContext.HeaderNameErrorDetailType, detail.GetType().GetShortAssemblyQualifiedName());
     }
 }

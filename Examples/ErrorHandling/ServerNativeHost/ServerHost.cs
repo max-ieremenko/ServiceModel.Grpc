@@ -5,6 +5,7 @@ using ServiceModel.Grpc.Interceptors;
 using System.Threading;
 using System.Threading.Tasks;
 using Contract;
+using Grpc.Core.Logging;
 
 namespace ServerNativeHost;
 
@@ -26,6 +27,9 @@ internal sealed class ServerHost : IHostedService
             new DebugService(),
             options =>
             {
+                // enable ServiceModel.Grpc logging
+                options.Logger = new ConsoleLogger();
+
                 // combine application and unexpected handlers into one handler
                 options.ErrorHandler = new ServerErrorHandlerCollection(
                     new ApplicationExceptionServerHandler(),
