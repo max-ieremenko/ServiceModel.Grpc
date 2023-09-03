@@ -47,7 +47,7 @@ public static class AsyncEnumerableTestExtensions
 
     public static IAsyncEnumerable<T> AsAsyncEnumerable<T>(this ChannelReader<T> reader, CancellationToken token)
     {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         return reader.ReadAllAsync(token);
 #else
             return ReadAllAsync(reader, token);

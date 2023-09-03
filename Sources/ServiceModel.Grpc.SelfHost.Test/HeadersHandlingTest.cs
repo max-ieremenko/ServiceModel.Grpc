@@ -24,7 +24,7 @@ using ServiceModel.Grpc.TestApi.Domain;
 namespace ServiceModel.Grpc.SelfHost;
 
 [TestFixture(GrpcChannelType.GrpcCore)]
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
 [TestFixture(GrpcChannelType.GrpcDotNet)]
 #endif
 public class HeadersHandlingTest : HeadersHandlingTestBase

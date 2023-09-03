@@ -121,7 +121,7 @@ var greet = await greeter.SayHello(new Person { FirstName = "John", SecondName =
 var (greeting, greetings) = await greeter.Greet(new[] { new Person { FirstName = "John", SecondName = "X" } }, "hello");
 ```
 
-> ServiceModel.Grpc.DesignTime uses roslyn [source generators](https://github.com/dotnet/roslyn/blob/master/docs/features/source-generators.md), which requires [net5.0 sdk](https://dotnet.microsoft.com/download/dotnet/5.0).
+> ServiceModel.Grpc.DesignTime uses roslyn [source generators](https://github.com/dotnet/roslyn/blob/master/docs/features/source-generators.md).
 
 ### Implement a service
 
