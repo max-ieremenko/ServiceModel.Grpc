@@ -3,7 +3,7 @@ Microsoft.Extensions.Logging.Abstractions [3.0.3](https://www.nuget.org/packages
 
 Used by: Core internal
 
-Target frameworks: net461, net5.0, net6.0, net7.0, netcoreapp3.1
+Target frameworks: net461, net5.0, net6.0, net7.0
 
 License: [Apache-2.0](../../../../licenses/apache-2.0) 
 

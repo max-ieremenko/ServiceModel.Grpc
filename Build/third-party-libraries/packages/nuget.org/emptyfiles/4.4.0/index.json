@@ -9,11 +9,10 @@
       "Name": "Core",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp3.1",
+        "net461",
         "net5.0",
         "net6.0",
-        "net7.0",
-        "net461"
+        "net7.0"
       ]
     }
   ],
@@ -21,20 +20,17 @@
     {
       "Subject": "package",
       "Code": "MIT",
-      "HRef": "https://licenses.nuget.org/MIT",
-      "Description": null
+      "HRef": "https://licenses.nuget.org/MIT"
     },
     {
       "Subject": "repository",
       "Code": "MIT",
-      "HRef": "https://github.com/SimonCropp/EmptyFiles.git",
-      "Description": null
+      "HRef": "https://github.com/SimonCropp/EmptyFiles.git"
     },
     {
       "Subject": "project",
       "Code": "MIT",
-      "HRef": "https://github.com/SimonCropp/EmptyFiles",
-      "Description": null
+      "HRef": "https://github.com/SimonCropp/EmptyFiles"
     }
   ]
 }

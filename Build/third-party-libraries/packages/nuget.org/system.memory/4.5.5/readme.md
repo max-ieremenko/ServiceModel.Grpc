@@ -3,7 +3,7 @@ System.Memory [4.5.5](https://www.nuget.org/packages/System.Memory/4.5.5)
 
 Used by: Core internal, MessagePack, ProtoBuf
 
-Target frameworks: net461, net5.0, net6.0, net7.0, netcoreapp3.1, netstandard2.0, netstandard2.1
+Target frameworks: net461, net5.0, net6.0, net7.0, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 

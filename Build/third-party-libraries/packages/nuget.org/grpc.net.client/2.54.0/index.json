@@ -9,11 +9,10 @@
       "Name": "Core",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp3.1",
+        "net461",
         "net5.0",
         "net6.0",
-        "net7.0",
-        "net461"
+        "net7.0"
       ],
       "Dependencies": [
         {
@@ -23,10 +22,6 @@
         {
           "Name": "Microsoft.Extensions.Logging.Abstractions",
           "Version": "3.0.3"
-        },
-        {
-          "Name": "System.Diagnostics.DiagnosticSource",
-          "Version": "4.5.1"
         }
       ]
     }
@@ -35,20 +30,17 @@
     {
       "Subject": "package",
       "Code": "Apache-2.0",
-      "HRef": "https://licenses.nuget.org/Apache-2.0",
-      "Description": null
+      "HRef": "https://licenses.nuget.org/Apache-2.0"
     },
     {
       "Subject": "repository",
       "Code": "Apache-2.0",
-      "HRef": "https://github.com/grpc/grpc-dotnet.git",
-      "Description": null
+      "HRef": "https://github.com/grpc/grpc-dotnet.git"
     },
     {
       "Subject": "project",
       "Code": "Apache-2.0",
-      "HRef": "https://github.com/grpc/grpc-dotnet",
-      "Description": null
+      "HRef": "https://github.com/grpc/grpc-dotnet"
     }
   ]
 }

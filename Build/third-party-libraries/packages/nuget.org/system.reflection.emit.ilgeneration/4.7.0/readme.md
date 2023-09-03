@@ -3,7 +3,7 @@ System.Reflection.Emit.ILGeneration [4.7.0](https://www.nuget.org/packages/Syste
 
 Used by: Core, MessagePack, ProtoBuf
 
-Target frameworks: net461, net5.0, net6.0, net7.0, netcoreapp3.1, netstandard2.0, netstandard2.1
+Target frameworks: net461, net5.0, net6.0, net7.0, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 
