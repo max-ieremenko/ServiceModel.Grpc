@@ -1,4 +1,5 @@
 {
+  "Source": "https://api.nuget.org/v3/index.json",
   "License": {
     "Code": "Apache-2.0",
     "Status": "AutomaticallyApproved"
@@ -8,11 +9,11 @@
       "Name": "Core",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp3.1",
+        "net461",
         "net5.0",
         "net6.0",
         "net7.0",
-        "net461"
+        "netcoreapp3.1"
       ],
       "Dependencies": [
         {
@@ -45,20 +46,17 @@
     {
       "Subject": "package",
       "Code": "Apache-2.0",
-      "HRef": "https://licenses.nuget.org/Apache-2.0",
-      "Description": null
+      "HRef": "https://licenses.nuget.org/Apache-2.0"
     },
     {
       "Subject": "repository",
       "Code": "Apache-2.0",
-      "HRef": "https://github.com/grpc/grpc.git",
-      "Description": null
+      "HRef": "https://github.com/grpc/grpc.git"
     },
     {
       "Subject": "project",
       "Code": "Apache-2.0",
-      "HRef": "https://github.com/grpc/grpc",
-      "Description": null
+      "HRef": "https://github.com/grpc/grpc"
     }
   ]
 }

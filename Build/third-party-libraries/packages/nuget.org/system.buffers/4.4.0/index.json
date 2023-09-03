@@ -1,4 +1,5 @@
 {
+  "Source": "https://api.nuget.org/v3/index.json",
   "License": {
     "Code": "MIT",
     "Status": "AutomaticallyApproved"
@@ -14,6 +15,13 @@
       ]
     },
     {
+      "Name": "DesignTime",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "netstandard2.0"
+      ]
+    },
+    {
       "Name": "SelfHost",
       "InternalOnly": false,
       "TargetFrameworks": [
@@ -21,21 +29,13 @@
         "netstandard2.0",
         "netstandard2.1"
       ]
-    },
-    {
-      "Name": "DesignTime",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "netstandard2.0"
-      ]
     }
   ],
   "Licenses": [
     {
       "Subject": "package",
       "Code": "MIT",
-      "HRef": "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT",
-      "Description": null
+      "HRef": "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT"
     },
     {
       "Subject": "project",

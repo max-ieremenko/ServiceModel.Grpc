@@ -6,54 +6,13 @@
   },
   "UsedBy": [
     {
-      "Name": "Core",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "netcoreapp3.1",
-        "net5.0",
-        "net6.0",
-        "net7.0",
-        "net461"
-      ],
-      "Dependencies": [
-        {
-          "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "17.6.2"
-        },
-        {
-          "Name": "Newtonsoft.Json",
-          "Version": "13.0.3"
-        }
-      ]
-    },
-    {
       "Name": "AspNetCore",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp3.1",
         "net5.0",
         "net6.0",
-        "net7.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "17.6.2"
-        },
-        {
-          "Name": "Newtonsoft.Json",
-          "Version": "13.0.3"
-        }
-      ]
-    },
-    {
-      "Name": "AspNetCoreSwashbuckle",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "netcoreapp3.1",
-        "net5.0",
-        "net6.0",
-        "net7.0"
+        "net7.0",
+        "netcoreapp3.1"
       ],
       "Dependencies": [
         {
@@ -70,10 +29,51 @@
       "Name": "AspNetCoreNSwag",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp3.1",
         "net5.0",
         "net6.0",
-        "net7.0"
+        "net7.0",
+        "netcoreapp3.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "17.6.2"
+        },
+        {
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
+        }
+      ]
+    },
+    {
+      "Name": "AspNetCoreSwashbuckle",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net5.0",
+        "net6.0",
+        "net7.0",
+        "netcoreapp3.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "17.6.2"
+        },
+        {
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
+        }
+      ]
+    },
+    {
+      "Name": "Core",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net461",
+        "net5.0",
+        "net6.0",
+        "net7.0",
+        "netcoreapp3.1"
       ],
       "Dependencies": [
         {
@@ -90,10 +90,10 @@
       "Name": "DesignTime",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp3.1",
         "net5.0",
         "net6.0",
-        "net7.0"
+        "net7.0",
+        "netcoreapp3.1"
       ],
       "Dependencies": [
         {
@@ -110,11 +110,11 @@
       "Name": "SelfHost",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp3.1",
+        "net461",
         "net5.0",
         "net6.0",
         "net7.0",
-        "net461"
+        "netcoreapp3.1"
       ],
       "Dependencies": [
         {
@@ -132,20 +132,17 @@
     {
       "Subject": "package",
       "Code": null,
-      "HRef": null,
-      "Description": null
+      "HRef": "LICENSE_NET.txt"
     },
     {
       "Subject": "repository",
       "Code": "MIT",
-      "HRef": "https://github.com/microsoft/vstest",
-      "Description": null
+      "HRef": "https://github.com/microsoft/vstest"
     },
     {
       "Subject": "project",
       "Code": "MIT",
-      "HRef": "https://github.com/microsoft/vstest/",
-      "Description": null
+      "HRef": "https://github.com/microsoft/vstest/"
     }
   ]
 }

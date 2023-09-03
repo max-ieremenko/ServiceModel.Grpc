@@ -1,7 +1,7 @@
 NUnit3TestAdapter [4.5.0](https://www.nuget.org/packages/NUnit3TestAdapter/4.5.0)
 --------------------
 
-Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal
+Used by: Core internal, AspNetCore internal, AspNetCoreSwashbuckle internal, AspNetCoreNSwag internal, DesignTime internal, SelfHost internal
 
 Target frameworks: net461, net5.0, net6.0, net7.0, netcoreapp3.1
 

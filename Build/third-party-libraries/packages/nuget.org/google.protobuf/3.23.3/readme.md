@@ -1,7 +1,7 @@
 Google.Protobuf [3.23.3](https://www.nuget.org/packages/Google.Protobuf/3.23.3)
 --------------------
 
-Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal
+Used by: AspNetCore internal, AspNetCoreSwashbuckle internal, AspNetCoreNSwag internal
 
 Target frameworks: net5.0, net6.0, net7.0, netcoreapp3.1
 

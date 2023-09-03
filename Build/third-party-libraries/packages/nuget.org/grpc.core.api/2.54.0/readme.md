@@ -1,7 +1,7 @@
 Grpc.Core.Api [2.54.0](https://www.nuget.org/packages/Grpc.Core.Api/2.54.0)
 --------------------
 
-Used by: AspNetCore, Core, DesignTime, SelfHost
+Used by: Core, AspNetCore, DesignTime, SelfHost
 
 Target frameworks: net461, net5.0, net6.0, net7.0, netcoreapp3.0, netcoreapp3.1, netstandard2.0, netstandard2.1
 

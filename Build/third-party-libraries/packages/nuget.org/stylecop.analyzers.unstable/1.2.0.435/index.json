@@ -1,41 +1,18 @@
 {
+  "Source": "https://api.nuget.org/v3/index.json",
   "License": {
     "Code": "MIT",
     "Status": "AutomaticallyApproved"
   },
   "UsedBy": [
     {
-      "Name": "Core",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "net461",
-        "netstandard2.0",
-        "netstandard2.1",
-        "netcoreapp3.1",
-        "net5.0",
-        "net6.0",
-        "net7.0"
-      ]
-    },
-    {
       "Name": "AspNetCore",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp3.0",
         "net5.0",
         "net6.0",
         "net7.0",
-        "netcoreapp3.1"
-      ]
-    },
-    {
-      "Name": "AspNetCoreSwashbuckle",
-      "InternalOnly": true,
-      "TargetFrameworks": [
         "netcoreapp3.0",
-        "net5.0",
-        "net6.0",
-        "net7.0",
         "netcoreapp3.1"
       ]
     },
@@ -43,22 +20,70 @@
       "Name": "AspNetCoreNSwag",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp3.0",
         "net5.0",
         "net6.0",
         "net7.0",
+        "netcoreapp3.0",
         "netcoreapp3.1"
+      ]
+    },
+    {
+      "Name": "AspNetCoreSwashbuckle",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net5.0",
+        "net6.0",
+        "net7.0",
+        "netcoreapp3.0",
+        "netcoreapp3.1"
+      ]
+    },
+    {
+      "Name": "Core",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net461",
+        "net5.0",
+        "net6.0",
+        "net7.0",
+        "netcoreapp3.1",
+        "netstandard2.0",
+        "netstandard2.1"
       ]
     },
     {
       "Name": "DesignTime",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netstandard2.0",
-        "netcoreapp3.1",
         "net5.0",
         "net6.0",
-        "net7.0"
+        "net7.0",
+        "netcoreapp3.1",
+        "netstandard2.0"
+      ]
+    },
+    {
+      "Name": "MessagePack",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net5.0",
+        "net6.0",
+        "net7.0",
+        "netcoreapp3.1",
+        "netstandard2.0"
+      ]
+    },
+    {
+      "Name": "ProtoBuf",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net461",
+        "net5.0",
+        "net6.0",
+        "net7.0",
+        "netcoreapp3.1",
+        "netstandard2.0",
+        "netstandard2.1"
       ]
     },
     {
@@ -66,36 +91,12 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net461",
-        "netstandard2.0",
-        "netstandard2.1",
-        "netcoreapp3.1",
-        "net5.0",
-        "net6.0",
-        "net7.0"
-      ]
-    },
-    {
-      "Name": "ProtoBuf",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "netcoreapp3.1",
         "net5.0",
         "net6.0",
         "net7.0",
-        "net461",
+        "netcoreapp3.1",
         "netstandard2.0",
         "netstandard2.1"
-      ]
-    },
-    {
-      "Name": "MessagePack",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "netcoreapp3.1",
-        "net5.0",
-        "net6.0",
-        "net7.0",
-        "netstandard2.0"
       ]
     }
   ],
@@ -103,14 +104,12 @@
     {
       "Subject": "package",
       "Code": "MIT",
-      "HRef": "https://licenses.nuget.org/MIT",
-      "Description": null
+      "HRef": "https://licenses.nuget.org/MIT"
     },
     {
       "Subject": "project",
       "Code": "MIT",
-      "HRef": "https://github.com/DotNetAnalyzers/StyleCopAnalyzers",
-      "Description": null
+      "HRef": "https://github.com/DotNetAnalyzers/StyleCopAnalyzers"
     }
   ]
 }

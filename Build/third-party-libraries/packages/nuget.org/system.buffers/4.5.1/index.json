@@ -1,20 +1,19 @@
 {
+  "Source": "https://api.nuget.org/v3/index.json",
   "License": {
     "Code": "MIT",
     "Status": "AutomaticallyApproved"
   },
   "UsedBy": [
     {
-      "Name": "ProtoBuf",
-      "InternalOnly": false,
+      "Name": "Core",
+      "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp3.1",
+        "net461",
         "net5.0",
         "net6.0",
         "net7.0",
-        "net461",
-        "netstandard2.0",
-        "netstandard2.1"
+        "netcoreapp3.1"
       ]
     },
     {
@@ -28,22 +27,24 @@
       "Name": "MessagePack",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "netcoreapp3.1",
         "net5.0",
         "net6.0",
         "net7.0",
+        "netcoreapp3.1",
         "netstandard2.0"
       ]
     },
     {
-      "Name": "Core",
-      "InternalOnly": true,
+      "Name": "ProtoBuf",
+      "InternalOnly": false,
       "TargetFrameworks": [
-        "netcoreapp3.1",
+        "net461",
         "net5.0",
         "net6.0",
         "net7.0",
-        "net461"
+        "netcoreapp3.1",
+        "netstandard2.0",
+        "netstandard2.1"
       ]
     }
   ],
@@ -51,8 +52,7 @@
     {
       "Subject": "package",
       "Code": "MIT",
-      "HRef": "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT",
-      "Description": null
+      "HRef": "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT"
     },
     {
       "Subject": "project",
