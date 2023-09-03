@@ -1,4 +1,5 @@
 {
+  "Source": "https://api.nuget.org/v3/index.json",
   "License": {
     "Code": "ms-net-library",
     "Status": "AutomaticallyApproved"
@@ -8,10 +9,10 @@
       "Name": "AspNetCoreNSwag",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "netcoreapp3.0",
         "net5.0",
         "net6.0",
-        "net7.0"
+        "net7.0",
+        "netcoreapp3.0"
       ],
       "Dependencies": [
         {
@@ -33,8 +34,7 @@
     {
       "Subject": "package",
       "Code": "ms-net-library",
-      "HRef": "http://go.microsoft.com/fwlink/?LinkId=329770",
-      "Description": null
+      "HRef": "http://go.microsoft.com/fwlink/?LinkId=329770"
     },
     {
       "Subject": "project",

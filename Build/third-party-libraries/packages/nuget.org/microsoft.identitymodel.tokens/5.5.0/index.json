@@ -1,4 +1,5 @@
 {
+  "Source": "https://api.nuget.org/v3/index.json",
   "License": {
     "Code": "MIT",
     "Status": "AutomaticallyApproved"
@@ -8,34 +9,10 @@
       "Name": "AspNetCore",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp3.1",
         "net5.0",
         "net6.0",
-        "net7.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "Microsoft.IdentityModel.Logging",
-          "Version": "5.5.0"
-        },
-        {
-          "Name": "Newtonsoft.Json",
-          "Version": "13.0.3"
-        },
-        {
-          "Name": "System.Security.Cryptography.Cng",
-          "Version": "5.0.0"
-        }
-      ]
-    },
-    {
-      "Name": "AspNetCoreSwashbuckle",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "netcoreapp3.1",
-        "net5.0",
-        "net6.0",
-        "net7.0"
+        "net7.0",
+        "netcoreapp3.1"
       ],
       "Dependencies": [
         {
@@ -56,10 +33,34 @@
       "Name": "AspNetCoreNSwag",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp3.1",
         "net5.0",
         "net6.0",
-        "net7.0"
+        "net7.0",
+        "netcoreapp3.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.IdentityModel.Logging",
+          "Version": "5.5.0"
+        },
+        {
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
+        },
+        {
+          "Name": "System.Security.Cryptography.Cng",
+          "Version": "5.0.0"
+        }
+      ]
+    },
+    {
+      "Name": "AspNetCoreSwashbuckle",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net5.0",
+        "net6.0",
+        "net7.0",
+        "netcoreapp3.1"
       ],
       "Dependencies": [
         {
@@ -81,8 +82,7 @@
     {
       "Subject": "package",
       "Code": "MIT",
-      "HRef": "https://licenses.nuget.org/MIT",
-      "Description": null
+      "HRef": "https://licenses.nuget.org/MIT"
     },
     {
       "Subject": "repository",

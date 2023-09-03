@@ -1,4 +1,5 @@
 {
+  "Source": "https://api.nuget.org/v3/index.json",
   "License": {
     "Code": "MIT",
     "Status": "AutomaticallyApproved"
@@ -8,10 +9,10 @@
       "Name": "MessagePack",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "netcoreapp3.1",
         "net5.0",
         "net6.0",
         "net7.0",
+        "netcoreapp3.1",
         "netstandard2.0"
       ],
       "Dependencies": [
@@ -30,8 +31,7 @@
     {
       "Subject": "package",
       "Code": "MIT",
-      "HRef": "https://licenses.nuget.org/MIT",
-      "Description": null
+      "HRef": "https://licenses.nuget.org/MIT"
     },
     {
       "Subject": "repository",
