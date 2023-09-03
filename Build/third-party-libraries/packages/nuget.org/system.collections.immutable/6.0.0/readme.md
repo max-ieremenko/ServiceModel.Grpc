@@ -3,7 +3,7 @@ System.Collections.Immutable [6.0.0](https://www.nuget.org/packages/System.Colle
 
 Used by: DesignTime internal
 
-Target frameworks: netcoreapp3.1
+Target frameworks: net6.0
 
 License: [MIT](../../../../licenses/mit) 
 

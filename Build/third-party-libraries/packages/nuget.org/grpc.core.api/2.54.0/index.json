@@ -6,16 +6,24 @@
   },
   "UsedBy": [
     {
+      "Name": "AspNetCore",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net5.0",
+        "net6.0",
+        "net7.0"
+      ]
+    },
+    {
       "Name": "Core",
       "InternalOnly": false,
       "TargetFrameworks": [
         "net461",
-        "netstandard2.0",
-        "netstandard2.1",
-        "netcoreapp3.1",
         "net5.0",
         "net6.0",
-        "net7.0"
+        "net7.0",
+        "netstandard2.0",
+        "netstandard2.1"
       ],
       "Dependencies": [
         {
@@ -26,16 +34,6 @@
           "Name": "System.Memory",
           "Version": "4.5.5"
         }
-      ]
-    },
-    {
-      "Name": "AspNetCore",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "netcoreapp3.0",
-        "net5.0",
-        "net6.0",
-        "net7.0"
       ]
     },
     {
@@ -71,20 +69,17 @@
     {
       "Subject": "package",
       "Code": "Apache-2.0",
-      "HRef": "https://licenses.nuget.org/Apache-2.0",
-      "Description": null
+      "HRef": "https://licenses.nuget.org/Apache-2.0"
     },
     {
       "Subject": "repository",
       "Code": "Apache-2.0",
-      "HRef": "https://github.com/grpc/grpc-dotnet.git",
-      "Description": null
+      "HRef": "https://github.com/grpc/grpc-dotnet.git"
     },
     {
       "Subject": "project",
       "Code": "Apache-2.0",
-      "HRef": "https://github.com/grpc/grpc-dotnet",
-      "Description": null
+      "HRef": "https://github.com/grpc/grpc-dotnet"
     }
   ]
 }

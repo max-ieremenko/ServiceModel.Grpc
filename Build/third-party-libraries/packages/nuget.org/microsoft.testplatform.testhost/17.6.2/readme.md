@@ -3,7 +3,7 @@ Microsoft.TestPlatform.TestHost [17.6.2](https://www.nuget.org/packages/Microsof
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal
 
-Target frameworks: net461, net5.0, net6.0, net7.0, netcoreapp3.1
+Target frameworks: net461, net5.0, net6.0, net7.0
 
 License: [ms-net-library](../../../../licenses/ms-net-library) 
 

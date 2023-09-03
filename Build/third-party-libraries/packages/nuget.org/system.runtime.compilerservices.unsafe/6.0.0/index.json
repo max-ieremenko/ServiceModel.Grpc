@@ -11,15 +11,14 @@
       "TargetFrameworks": [
         "net5.0",
         "net6.0",
-        "net7.0",
-        "netcoreapp3.0"
+        "net7.0"
       ]
     },
     {
       "Name": "DesignTime",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp3.1"
+        "net6.0"
       ]
     },
     {
@@ -29,7 +28,6 @@
         "net5.0",
         "net6.0",
         "net7.0",
-        "netcoreapp3.1",
         "netstandard2.0"
       ]
     }

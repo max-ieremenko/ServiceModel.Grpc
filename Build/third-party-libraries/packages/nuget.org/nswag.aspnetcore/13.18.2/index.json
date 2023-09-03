@@ -11,25 +11,12 @@
       "TargetFrameworks": [
         "net5.0",
         "net6.0",
-        "net7.0",
-        "netcoreapp3.0"
+        "net7.0"
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.AspNetCore.Mvc.Core",
-          "Version": "1.0.6"
-        },
-        {
-          "Name": "Microsoft.AspNetCore.Mvc.Formatters.Json",
-          "Version": "1.0.6"
-        },
-        {
-          "Name": "Microsoft.AspNetCore.StaticFiles",
-          "Version": "1.0.4"
-        },
-        {
           "Name": "Microsoft.Extensions.FileProviders.Embedded",
-          "Version": "1.0.1"
+          "Version": "5.0.0"
         },
         {
           "Name": "NSwag.Annotations",
@@ -50,10 +37,6 @@
         {
           "Name": "NSwag.Generation.AspNetCore",
           "Version": "13.18.2"
-        },
-        {
-          "Name": "System.Xml.XPath.XDocument",
-          "Version": "4.0.1"
         }
       ]
     }

@@ -2,7 +2,7 @@
   <Import Project="..\Test.csproj.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0;net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks>net5.0;net6.0;net7.0</TargetFrameworks>
     <RootNamespace>ServiceModel.Grpc.DesignTime</RootNamespace>
   </PropertyGroup>
 
