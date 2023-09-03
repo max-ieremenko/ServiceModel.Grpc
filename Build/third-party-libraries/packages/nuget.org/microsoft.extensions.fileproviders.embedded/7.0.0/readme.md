@@ -3,7 +3,7 @@ Microsoft.Extensions.FileProviders.Embedded [7.0.0](https://www.nuget.org/packag
 
 Used by: AspNetCoreNSwag
 
-Target frameworks: net5.0, net6.0, net7.0
+Target frameworks: net6.0, net7.0
 
 License: [MIT](../../../../licenses/mit) 
 

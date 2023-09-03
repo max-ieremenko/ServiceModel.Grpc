@@ -3,7 +3,7 @@ Google.Protobuf [3.23.3](https://www.nuget.org/packages/Google.Protobuf/3.23.3)
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal
 
-Target frameworks: net5.0, net6.0, net7.0
+Target frameworks: net6.0, net7.0
 
 License: [BSD-3-Clause](../../../../licenses/bsd-3-clause) 
 

@@ -9,7 +9,6 @@
       "Name": "AspNetCoreNSwag",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "net5.0",
         "net6.0",
         "net7.0"
       ]
@@ -25,7 +24,6 @@
       "Name": "MessagePack",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "net5.0",
         "net6.0",
         "net7.0",
         "netstandard2.0"

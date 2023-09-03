@@ -3,7 +3,7 @@ NSwag.Annotations [13.18.2](https://www.nuget.org/packages/NSwag.Annotations/13.
 
 Used by: AspNetCoreNSwag
 
-Target frameworks: net5.0, net6.0, net7.0
+Target frameworks: net6.0, net7.0
 
 License: [MIT](../../../../licenses/mit) 
 

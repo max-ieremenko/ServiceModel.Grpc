@@ -9,14 +9,13 @@
       "Name": "AspNetCoreNSwag",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "net5.0",
         "net6.0",
         "net7.0"
       ],
       "Dependencies": [
         {
           "Name": "Microsoft.Extensions.FileProviders.Embedded",
-          "Version": "5.0.0"
+          "Version": "6.0.0"
         },
         {
           "Name": "NSwag.Annotations",
