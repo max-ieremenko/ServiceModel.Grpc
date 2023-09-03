@@ -7,13 +7,13 @@ Licenses
 |[BSD-2-Clause](licenses/bsd-2-clause)|no|no|1|
 |[BSD-3-Clause](licenses/bsd-3-clause)|no|no|2|
 |[Google.Protobuf](licenses/google.protobuf)|yes|no|0|
-|[MIT](licenses/mit)|no|no|90|
+|[MIT](licenses/mit)|no|no|88|
 |[ms-net-library](licenses/ms-net-library)|no|no|27|
 |[MS-PL](licenses/ms-pl)|no|no|1|
 
 
 
-Packages 134
+Packages 132
 --------
 
 |Name|Version|Source|License|Used by|
@@ -100,7 +100,6 @@ Packages 134
 |[System.ComponentModel.Primitives](packages/nuget.org/system.componentmodel.primitives/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.ComponentModel.Primitives/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
 |[System.ComponentModel.TypeConverter](packages/nuget.org/system.componentmodel.typeconverter/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.ComponentModel.TypeConverter/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
 |[System.Diagnostics.DiagnosticSource](packages/nuget.org/system.diagnostics.diagnosticsource/4.5.1)|4.5.1|[nuget.org](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/4.5.1)|[MIT](licenses/mit)|Core internal|
-|[System.Diagnostics.EventLog](packages/nuget.org/system.diagnostics.eventlog/4.7.0)|4.7.0|[nuget.org](https://www.nuget.org/packages/System.Diagnostics.EventLog/4.7.0)|[MIT](licenses/mit)|Core internal|
 |[System.Diagnostics.EventLog](packages/nuget.org/system.diagnostics.eventlog/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/System.Diagnostics.EventLog/6.0.0)|[MIT](licenses/mit)|Core internal|
 |[System.Dynamic.Runtime](packages/nuget.org/system.dynamic.runtime/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Dynamic.Runtime/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
 |[System.Formats.Asn1](packages/nuget.org/system.formats.asn1/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/System.Formats.Asn1/6.0.0)|[MIT](licenses/mit)|Core internal|
@@ -138,7 +137,6 @@ Packages 134
 |[System.Security.Cryptography.Cng](packages/nuget.org/system.security.cryptography.cng/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Security.Cryptography.Cng/4.5.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
 |[System.Security.Cryptography.Pkcs](packages/nuget.org/system.security.cryptography.pkcs/6.0.1)|6.0.1|[nuget.org](https://www.nuget.org/packages/System.Security.Cryptography.Pkcs/6.0.1)|[MIT](licenses/mit)|Core internal|
 |[System.Security.Cryptography.Xml](packages/nuget.org/system.security.cryptography.xml/6.0.1)|6.0.1|[nuget.org](https://www.nuget.org/packages/System.Security.Cryptography.Xml/6.0.1)|[MIT](licenses/mit)|Core internal|
-|[System.Security.Principal.Windows](packages/nuget.org/system.security.principal.windows/4.7.0)|4.7.0|[nuget.org](https://www.nuget.org/packages/System.Security.Principal.Windows/4.7.0)|[MIT](licenses/mit)|Core internal|
 |[System.Security.Principal.Windows](packages/nuget.org/system.security.principal.windows/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/System.Security.Principal.Windows/5.0.0)|[MIT](licenses/mit)|Core internal|
 |[System.ServiceModel.Primitives](packages/nuget.org/system.servicemodel.primitives/4.10.2)|4.10.2|[nuget.org](https://www.nuget.org/packages/System.ServiceModel.Primitives/4.10.2)|[MIT](licenses/mit)|Core internal|
 |[System.Text.Encoding.CodePages](packages/nuget.org/system.text.encoding.codepages/4.5.1)|4.5.1|[nuget.org](https://www.nuget.org/packages/System.Text.Encoding.CodePages/4.5.1)|[MIT](licenses/mit)|DesignTime|

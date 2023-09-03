@@ -3,7 +3,7 @@ System.Memory [4.5.3](https://www.nuget.org/packages/System.Memory/4.5.3)
 
 Used by: Core, DesignTime, SelfHost
 
-Target frameworks: net461, netstandard2.0, netstandard2.1
+Target frameworks: net462, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 

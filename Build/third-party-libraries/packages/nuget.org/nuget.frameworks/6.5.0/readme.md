@@ -3,7 +3,7 @@ NuGet.Frameworks [6.5.0](https://www.nuget.org/packages/NuGet.Frameworks/6.5.0)
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal
 
-Target frameworks: net461, net6.0, net7.0
+Target frameworks: net462, net6.0, net7.0
 
 License: [Apache-2.0](../../../../licenses/apache-2.0) 
 

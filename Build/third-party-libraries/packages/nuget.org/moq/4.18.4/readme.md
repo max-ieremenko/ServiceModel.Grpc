@@ -3,7 +3,7 @@ Moq [4.18.4](https://www.nuget.org/packages/Moq/4.18.4)
 
 Used by: Core internal
 
-Target frameworks: net461, net6.0, net7.0
+Target frameworks: net462, net6.0, net7.0
 
 License: [BSD-3-Clause](../../../../licenses/bsd-3-clause) 
 

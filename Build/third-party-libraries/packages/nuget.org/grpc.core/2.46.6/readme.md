@@ -3,7 +3,7 @@ Grpc.Core [2.46.6](https://www.nuget.org/packages/Grpc.Core/2.46.6)
 
 Used by: Core internal, SelfHost
 
-Target frameworks: net461, net6.0, net7.0, netstandard2.0, netstandard2.1
+Target frameworks: net462, net6.0, net7.0, netstandard2.0, netstandard2.1
 
 License: [Apache-2.0](../../../../licenses/apache-2.0) 
 

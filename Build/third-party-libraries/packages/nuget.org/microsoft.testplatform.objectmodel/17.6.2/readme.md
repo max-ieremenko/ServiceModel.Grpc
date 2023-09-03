@@ -3,7 +3,7 @@ Microsoft.TestPlatform.ObjectModel [17.6.2](https://www.nuget.org/packages/Micro
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal
 
-Target frameworks: net461, net6.0, net7.0
+Target frameworks: net462, net6.0, net7.0
 
 License: [ms-net-library](../../../../licenses/ms-net-library) 
 
