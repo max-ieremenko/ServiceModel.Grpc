@@ -2,7 +2,7 @@
 
 ## To run local build
 
-Because of the dependency on net461, the build runs on Windows.
+Because of the dependency on net462, the build runs on Windows.
 
 - install dependencies
 
