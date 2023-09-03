@@ -46,7 +46,7 @@ public class BufferReaderStreamTest
         buffer.ShouldBe(expected);
     }
 
-#if !NET461
+#if !NET462
     [Test]
     [TestCase(new byte[] { 5, 5 }, 0, 2, 2, new byte[] { 1, 2 })]
     [TestCase(new byte[] { 5, 5 }, 1, 1, 1, new byte[] { 5, 1 })]
