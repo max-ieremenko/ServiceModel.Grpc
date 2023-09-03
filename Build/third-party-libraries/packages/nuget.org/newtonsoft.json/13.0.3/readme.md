@@ -3,7 +3,7 @@ Newtonsoft.Json [13.0.3](https://www.nuget.org/packages/Newtonsoft.Json/13.0.3)
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal
 
-Target frameworks: net461, net6.0, net7.0
+Target frameworks: net462, net6.0, net7.0
 
 License: [MIT](../../../../licenses/mit) 
 

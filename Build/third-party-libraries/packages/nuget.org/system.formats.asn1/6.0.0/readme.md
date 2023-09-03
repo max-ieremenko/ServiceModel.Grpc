@@ -3,7 +3,7 @@ System.Formats.Asn1 [6.0.0](https://www.nuget.org/packages/System.Formats.Asn1/6
 
 Used by: Core internal
 
-Target frameworks: net461, net6.0, net7.0
+Target frameworks: net462, net6.0, net7.0
 
 License: [MIT](../../../../licenses/mit) 
 

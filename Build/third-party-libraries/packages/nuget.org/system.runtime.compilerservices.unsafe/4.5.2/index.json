@@ -9,7 +9,7 @@
       "Name": "Core",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "net461",
+        "net462",
         "netstandard2.0",
         "netstandard2.1"
       ]
@@ -18,7 +18,7 @@
       "Name": "SelfHost",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "net461",
+        "net462",
         "netstandard2.0",
         "netstandard2.1"
       ]

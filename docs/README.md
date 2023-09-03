@@ -277,7 +277,7 @@ public class Person
 A service contract is a public interface marked with ServiceContractAttribute.
 Methods marked with OperationContractAttribute are gRPC calls.
 
-> for net461 System.ServiceModel.dll, for netstandard package System.ServiceModel.Primitives
+> for net462 System.ServiceModel.dll, for netstandard package System.ServiceModel.Primitives
 
 ``` c#
 [ServiceContract]

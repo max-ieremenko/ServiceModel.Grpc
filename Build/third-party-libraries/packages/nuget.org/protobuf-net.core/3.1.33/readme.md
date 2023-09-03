@@ -3,7 +3,7 @@ protobuf-net.Core [3.1.33](https://www.nuget.org/packages/protobuf-net.Core/3.1.
 
 Used by: ProtoBuf
 
-Target frameworks: net461, net6.0, net7.0, netstandard2.0, netstandard2.1
+Target frameworks: net462, net6.0, net7.0, netstandard2.0, netstandard2.1
 
 License: [Apache-2.0](../../../../licenses/apache-2.0) 
 
