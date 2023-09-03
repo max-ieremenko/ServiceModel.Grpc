@@ -9,18 +9,17 @@
       "Name": "AspNetCoreNSwag",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "net5.0",
         "net6.0",
         "net7.0"
       ],
       "Dependencies": [
         {
           "Name": "Microsoft.Extensions.DependencyInjection.Abstractions",
-          "Version": "5.0.0"
+          "Version": "6.0.0"
         },
         {
           "Name": "Microsoft.Extensions.Options",
-          "Version": "5.0.0"
+          "Version": "6.0.0"
         },
         {
           "Name": "NSwag.Generation",

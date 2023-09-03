@@ -10,18 +10,13 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net461",
-        "net5.0",
         "net6.0",
         "net7.0"
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.Win32.Registry",
-          "Version": "5.0.0"
-        },
-        {
           "Name": "System.Security.Principal.Windows",
-          "Version": "5.0.0"
+          "Version": "4.7.0"
         }
       ]
     }

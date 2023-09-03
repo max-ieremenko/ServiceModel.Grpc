@@ -3,7 +3,7 @@ Microsoft.AspNetCore.Authentication.JwtBearer [3.1.21](https://www.nuget.org/pac
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal
 
-Target frameworks: net5.0, net6.0, net7.0
+Target frameworks: net6.0, net7.0
 
 License: [Apache-2.0](../../../../licenses/apache-2.0) 
 

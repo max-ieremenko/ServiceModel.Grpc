@@ -10,7 +10,6 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net461",
-        "net5.0",
         "net6.0",
         "net7.0"
       ],
@@ -18,10 +17,6 @@
         {
           "Name": "System.Formats.Asn1",
           "Version": "6.0.0"
-        },
-        {
-          "Name": "System.Security.Cryptography.Cng",
-          "Version": "5.0.0"
         }
       ]
     }

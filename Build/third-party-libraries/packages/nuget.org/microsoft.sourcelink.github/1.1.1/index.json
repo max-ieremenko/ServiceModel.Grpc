@@ -9,7 +9,6 @@
       "Name": "AspNetCore",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "net5.0",
         "net6.0",
         "net7.0"
       ]
@@ -18,7 +17,6 @@
       "Name": "AspNetCoreNSwag",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "net5.0",
         "net6.0",
         "net7.0"
       ]
@@ -27,7 +25,6 @@
       "Name": "AspNetCoreSwashbuckle",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "net5.0",
         "net6.0",
         "net7.0"
       ]
@@ -37,7 +34,6 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net461",
-        "net5.0",
         "net6.0",
         "net7.0",
         "netstandard2.0",
@@ -48,7 +44,6 @@
       "Name": "DesignTime",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "net5.0",
         "net6.0",
         "net7.0",
         "netstandard2.0"
@@ -58,7 +53,6 @@
       "Name": "MessagePack",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "net5.0",
         "net6.0",
         "net7.0",
         "netstandard2.0"
@@ -69,7 +63,6 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net461",
-        "net5.0",
         "net6.0",
         "net7.0",
         "netstandard2.0",
@@ -81,7 +74,6 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net461",
-        "net5.0",
         "net6.0",
         "net7.0",
         "netstandard2.0",

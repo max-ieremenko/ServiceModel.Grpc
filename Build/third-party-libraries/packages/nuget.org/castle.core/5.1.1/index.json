@@ -10,14 +10,13 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net461",
-        "net5.0",
         "net6.0",
         "net7.0"
       ],
       "Dependencies": [
         {
           "Name": "System.Diagnostics.EventLog",
-          "Version": "4.7.0"
+          "Version": "6.0.0"
         }
       ]
     }
