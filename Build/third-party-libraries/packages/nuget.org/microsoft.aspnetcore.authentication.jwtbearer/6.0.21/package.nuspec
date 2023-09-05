@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.AspNetCore.Authentication.JwtBearer</id>
+    <version>6.0.21</version>
+    <authors>Microsoft</authors>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>Icon.png</icon>
+    <projectUrl>https://asp.net/</projectUrl>
+    <description>ASP.NET Core middleware that enables an application to receive an OpenID Connect bearer token.
+
+This package was built from the source code at https://github.com/dotnet/aspnetcore/tree/cec88a329584349fda070f4c7346b10538210ace</description>
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <tags>aspnetcore authentication security</tags>
+    <serviceable>true</serviceable>
+    <repository type="git" url="https://github.com/dotnet/aspnetcore" commit="cec88a329584349fda070f4c7346b10538210ace" />
+    <dependencies>
+      <group targetFramework="net6.0">
+        <dependency id="Microsoft.IdentityModel.Protocols.OpenIdConnect" version="6.10.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  <frameworkReferences><group targetFramework="net6.0"><frameworkReference name="Microsoft.AspNetCore.App" /></group></frameworkReferences></metadata>
+</package>

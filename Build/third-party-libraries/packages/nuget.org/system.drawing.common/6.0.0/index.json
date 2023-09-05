@@ -1,0 +1,41 @@
+{
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "Core",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net6.0",
+        "net7.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.Win32.SystemEvents",
+          "Version": "6.0.0"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT"
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/dotnet/runtime"
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "https://dot.net/"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "Apache-2.0",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "AspNetCore",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net6.0",
+        "net7.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Grpc.Net.Common",
+          "Version": "2.57.0-pre1"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "Apache-2.0",
+      "HRef": "https://licenses.nuget.org/Apache-2.0"
+    },
+    {
+      "Subject": "repository",
+      "Code": "Apache-2.0",
+      "HRef": "https://github.com/grpc/grpc-dotnet.git"
+    },
+    {
+      "Subject": "project",
+      "Code": "Apache-2.0",
+      "HRef": "https://github.com/grpc/grpc-dotnet"
+    }
+  ]
+}

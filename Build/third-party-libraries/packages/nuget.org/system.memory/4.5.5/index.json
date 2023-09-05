@@ -24,7 +24,7 @@
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "4.5.3"
+          "Version": "6.0.0"
         }
       ]
     },
