@@ -49,7 +49,7 @@ public class ServiceProviderExtensionsTest
     {
         _serviceProvider
             .Setup(p => p.GetService(typeof(IDisposable)))
-            .Returns(null);
+            .Returns(null!);
 
         Assert.Throws<InvalidOperationException>(() => _serviceProvider.Object.GetServiceRequired(typeof(IDisposable)));
     }

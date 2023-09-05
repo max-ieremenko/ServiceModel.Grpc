@@ -1,0 +1,37 @@
+{
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "MS-PL",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "Core",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net6.0",
+        "net7.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Configuration.ConfigurationManager",
+          "Version": "6.0.0"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MS-PL",
+      "HRef": "License.txt",
+      "Description": "The license file is identical to the project license file."
+    },
+    {
+      "Subject": "project",
+      "Code": "MS-PL",
+      "HRef": "https://github.com/GregFinzer/Compare-Net-Objects"
+    }
+  ]
+}
