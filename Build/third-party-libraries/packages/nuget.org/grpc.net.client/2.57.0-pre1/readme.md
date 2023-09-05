@@ -3,7 +3,7 @@ Grpc.Net.Client [2.57.0-pre1](https://www.nuget.org/packages/Grpc.Net.Client/2.5
 
 Used by: Core internal
 
-Target frameworks: net462, net6.0, net7.0
+Target frameworks: net462, net6.0, net7.0, net8.0
 
 License: [Apache-2.0](../../../../licenses/apache-2.0) 
 

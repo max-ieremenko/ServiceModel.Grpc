@@ -3,7 +3,7 @@ Newtonsoft.Json [10.0.1](https://www.nuget.org/packages/Newtonsoft.Json/10.0.1)
 
 Used by: AspNetCoreNSwag
 
-Target frameworks: net6.0, net7.0
+Target frameworks: net6.0, net7.0, net8.0
 
 License: [MIT](../../../../licenses/mit) 
 

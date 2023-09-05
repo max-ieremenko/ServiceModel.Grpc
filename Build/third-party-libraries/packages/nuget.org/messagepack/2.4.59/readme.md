@@ -3,7 +3,7 @@ MessagePack [2.4.59](https://www.nuget.org/packages/MessagePack/2.4.59)
 
 Used by: MessagePack
 
-Target frameworks: net6.0, net7.0, netstandard2.0
+Target frameworks: net6.0, net7.0, net8.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
