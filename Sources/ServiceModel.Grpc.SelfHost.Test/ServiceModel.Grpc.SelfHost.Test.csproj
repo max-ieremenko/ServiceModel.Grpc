@@ -2,7 +2,7 @@
   <Import Project="..\Test.csproj.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>net462;net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks>net462;net6.0;net7.0;net8.0</TargetFrameworks>
     <RootNamespace>ServiceModel.Grpc.SelfHost</RootNamespace>
     <AssemblyTitle>ServiceModel.Grpc.SelfHost.Test</AssemblyTitle>
   </PropertyGroup>

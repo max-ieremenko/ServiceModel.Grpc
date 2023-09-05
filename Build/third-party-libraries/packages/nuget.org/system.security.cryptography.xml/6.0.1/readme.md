@@ -3,7 +3,7 @@ System.Security.Cryptography.Xml [6.0.1](https://www.nuget.org/packages/System.S
 
 Used by: Core internal
 
-Target frameworks: net462, net6.0, net7.0
+Target frameworks: net462, net6.0, net7.0, net8.0
 
 License: [MIT](../../../../licenses/mit) 
 

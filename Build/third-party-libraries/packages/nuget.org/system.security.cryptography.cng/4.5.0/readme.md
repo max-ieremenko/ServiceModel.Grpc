@@ -3,7 +3,7 @@ System.Security.Cryptography.Cng [4.5.0](https://www.nuget.org/packages/System.S
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal
 
-Target frameworks: net6.0, net7.0
+Target frameworks: net6.0, net7.0, net8.0
 
 License: [MIT](../../../../licenses/mit) 
 

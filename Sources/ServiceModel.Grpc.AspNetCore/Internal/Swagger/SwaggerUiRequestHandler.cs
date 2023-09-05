@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -105,10 +105,7 @@ internal sealed partial class SwaggerUiRequestHandler : ISwaggerUiRequestHandler
 
         foreach (var entry in trailers)
         {
-            if (!responseHeaders.ContainsKey(entry.Key))
-            {
-                responseHeaders.Add(entry.Key, entry.Value);
-            }
+            responseHeaders.TryAdd(entry.Key, entry.Value);
         }
     }
 

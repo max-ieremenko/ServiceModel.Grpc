@@ -3,7 +3,7 @@ Microsoft.SourceLink.GitHub [1.1.1](https://www.nuget.org/packages/Microsoft.Sou
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, MessagePack internal, ProtoBuf internal, SelfHost internal
 
-Target frameworks: net462, net6.0, net7.0, netstandard2.0, netstandard2.1
+Target frameworks: net462, net6.0, net7.0, net8.0, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 

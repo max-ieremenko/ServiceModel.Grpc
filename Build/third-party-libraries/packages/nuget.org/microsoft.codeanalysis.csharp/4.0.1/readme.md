@@ -3,7 +3,7 @@ Microsoft.CodeAnalysis.CSharp [4.0.1](https://www.nuget.org/packages/Microsoft.C
 
 Used by: DesignTime
 
-Target frameworks: net6.0, net7.0, netstandard2.0
+Target frameworks: net6.0, net7.0, net8.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
