@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021-2022 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ internal sealed class MockLogger : Microsoft.Extensions.Logging.ILogger
 {
     public IList<string> Output { get; } = new List<string>();
 
-#if NET7_0
+#if NET7_0_OR_GREATER
     public IDisposable? BeginScope<TState>(TState state)
         where TState : notnull
 #else
