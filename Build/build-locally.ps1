@@ -61,6 +61,10 @@ if (-not $SkipLinuxSdk) {
         "/repository/Build/invoke-sdk-test.ps1" `
         -Platform "linux" `
         -Filter $LinuxSdkFilter
+
+    if ($LASTEXITCODE) {
+        throw "Docker exited with $LASTEXITCODE code."
+    }
 }
 
 if (-not $SkipWinSdk) {

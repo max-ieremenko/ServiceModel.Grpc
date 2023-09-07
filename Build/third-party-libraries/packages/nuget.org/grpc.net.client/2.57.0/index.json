@@ -6,9 +6,10 @@
   },
   "UsedBy": [
     {
-      "Name": "AspNetCore",
-      "InternalOnly": false,
+      "Name": "Core",
+      "InternalOnly": true,
       "TargetFrameworks": [
+        "net462",
         "net6.0",
         "net7.0",
         "net8.0"
@@ -16,7 +17,11 @@
       "Dependencies": [
         {
           "Name": "Grpc.Net.Common",
-          "Version": "2.57.0-pre1"
+          "Version": "2.57.0"
+        },
+        {
+          "Name": "Microsoft.Extensions.Logging.Abstractions",
+          "Version": "6.0.0"
         }
       ]
     }
