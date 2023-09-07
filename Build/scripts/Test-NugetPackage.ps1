@@ -29,6 +29,7 @@ function Test-NugetPackage {
 
     assert (Test-Path (Join-Path "zf:$Path" "LICENSE")) "LICENSE file not found in name"
     assert (Test-Path (Join-Path "zf:$Path" "ThirdPartyNotices.txt")) "ThirdPartyNotices.txt file not found in name"
+    assert (Test-Path (Join-Path "zf:$Path" "README.md")) "README.md file not found in name"
 
     # test .nuspec
     $nuspecFile = Get-Item (Join-Path "zf:$Path" "*.nuspec")
