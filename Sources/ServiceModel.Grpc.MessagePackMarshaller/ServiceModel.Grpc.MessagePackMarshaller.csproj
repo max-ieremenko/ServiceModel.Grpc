@@ -4,6 +4,7 @@
     <TargetFrameworks>netstandard2.0;net6.0;net7.0;net8.0</TargetFrameworks>
     <RootNamespace>ServiceModel.Grpc</RootNamespace>
     <AssemblyTitle>ServiceModel.Grpc.MessagePackMarshaller</AssemblyTitle>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
@@ -19,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">
+    <Content Include="README.md" PackagePath="" />
     <Content Include="..\..\LICENSE" PackagePath="" Visible="false" />
     <Content Include="..\..\build-out\MessagePackThirdPartyNotices.txt" PackagePath="ThirdPartyNotices.txt" Visible="false" />
   </ItemGroup>

@@ -4,6 +4,7 @@
     <TargetFrameworks>netstandard2.0;netstandard2.1;net462;net6.0;net7.0;net8.0</TargetFrameworks>
     <RootNamespace>ServiceModel.Grpc</RootNamespace>
     <AssemblyTitle>ServiceModel.Grpc.ProtoBufMarshaller</AssemblyTitle>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
@@ -19,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">
+    <Content Include="README.md" PackagePath="" />
     <Content Include="..\..\LICENSE" PackagePath="" Visible="false" />
     <Content Include="..\..\build-out\ProtoBufThirdPartyNotices.txt" PackagePath="ThirdPartyNotices.txt" Visible="false" />
   </ItemGroup>
