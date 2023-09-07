@@ -19,7 +19,6 @@ task Core {
         dotnet pack `
             -c Release `
             --no-build `
-            --property:NoWarn=NU5104 `
             -o $BuildOut `
             $projectFile
     }
@@ -31,7 +30,6 @@ task AspNetCore {
         dotnet pack `
             -c Release `
             --no-build `
-            --property:NoWarn=NU5104 `
             -o $BuildOut `
             $projectFile
     }
@@ -43,7 +41,6 @@ task Swashbuckle {
         dotnet pack `
             -c Release `
             --no-build `
-            --property:NoWarn=NU5104 `
             -o $BuildOut `
             $projectFile
     }
@@ -55,7 +52,6 @@ task NSwag {
         dotnet pack `
             -c Release `
             --no-build `
-            --property:NoWarn=NU5104 `
             -o $BuildOut `
             $projectFile
     }
@@ -67,7 +63,6 @@ task DesignTime {
         dotnet pack `
             -c Release `
             --no-build `
-            --property:NoWarn=NU5104 `
             -o $BuildOut `
             $projectFile
     }
@@ -79,7 +74,6 @@ task SelfHost {
         dotnet pack `
             -c Release `
             --no-build `
-            --property:NoWarn=NU5104 `
             -o $BuildOut `
             $projectFile
     }
@@ -91,7 +85,6 @@ task ProtoBufMarshaller {
         dotnet pack `
             -c Release `
             --no-build `
-            --property:NoWarn=NU5104 `
             -o $BuildOut `
             $projectFile
     }
@@ -103,7 +96,6 @@ task MessagePackMarshaller {
         dotnet pack `
             -c Release `
             --no-build `
-            --property:NoWarn=NU5104 `
             -o $BuildOut `
             $projectFile
     }
