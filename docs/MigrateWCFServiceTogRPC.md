@@ -41,8 +41,8 @@ Projects
 
 * [Contract](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/Contract) - netstandard2.0, contains the service contract and data contract
 * [Service](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/Service) - netstandard2.0, contains the person service implementation (business logic)
-* [WCFServiceHost](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/WCFServiceHost) - net461, hosts WCF endpoint "http://localhost:8000/PersonService.svc"
-* [WCFClient](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/WCFClient) - net461, makes WCF calls to endpoint "http://localhost:8000/PersonService.svc"
+* [WCFServiceHost](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/WCFServiceHost) - net462, hosts WCF endpoint "http://localhost:8000/PersonService.svc"
+* [WCFClient](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/WCFClient) - net462, makes WCF calls to endpoint "http://localhost:8000/PersonService.svc"
 
 ## Migrate to gRPC
 

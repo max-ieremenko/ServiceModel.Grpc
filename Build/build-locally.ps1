@@ -57,10 +57,14 @@ if (-not $SkipLinuxSdk) {
         -v "$($invokeBuild):/root/.local/share/powershell/Modules/InvokeBuild" `
         -v "$($nugetCache):/root/.nuget/packages" `
         -v "$($repository):/repository" `
-        mcr.microsoft.com/dotnet/sdk:7.0.100-jammy `
+        mcr.microsoft.com/dotnet/sdk:7.0.400-jammy `
         "/repository/Build/invoke-sdk-test.ps1" `
         -Platform "linux" `
         -Filter $LinuxSdkFilter
+
+    if ($LASTEXITCODE) {
+        throw "Docker exited with $LASTEXITCODE code."
+    }
 }
 
 if (-not $SkipWinSdk) {

@@ -3,7 +3,7 @@ System.ServiceModel.Primitives [4.10.2](https://www.nuget.org/packages/System.Se
 
 Used by: Core internal
 
-Target frameworks: net461, net5.0, net6.0, net7.0, netcoreapp3.1
+Target frameworks: net462, net6.0, net7.0, net8.0
 
 License: [MIT](../../../../licenses/mit) 
 

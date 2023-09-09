@@ -1,6 +1,6 @@
 #Requires -Version "7.0"
-#Requires -Modules @{ ModuleName="InvokeBuild"; ModuleVersion="5.10.3" }
-#Requires -Modules @{ ModuleName="ThirdPartyLibraries"; ModuleVersion="3.3.0" }
+#Requires -Modules @{ ModuleName="InvokeBuild"; ModuleVersion="5.10.4" }
+#Requires -Modules @{ ModuleName="ThirdPartyLibraries"; ModuleVersion="3.4.0" }
 #Requires -Modules @{ ModuleName="ZipAsFolder"; ModuleVersion="0.0.1" }
 
 [CmdletBinding()]

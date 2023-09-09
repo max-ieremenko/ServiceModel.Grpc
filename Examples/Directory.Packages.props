@@ -13,25 +13,25 @@
     <PackageVersion Include="ServiceModel.Grpc.AspNetCore.Swashbuckle" Version="$(ServiceModelGrpcVersion)" />
     <PackageVersion Include="ServiceModel.Grpc.AspNetCore.NSwag" Version="$(ServiceModelGrpcVersion)" />
     
-    <PackageVersion Include="Grpc.Net.Client" Version="2.54.0" />
-    <PackageVersion Include="Grpc.Net.Client.Web" Version="2.54.0" />
-	<PackageVersion Include="Grpc.AspNetCore.Web" Version="2.54.0" />
+    <PackageVersion Include="Grpc.Net.Client" Version="2.57.0" />
+    <PackageVersion Include="Grpc.Net.Client.Web" Version="2.57.0" />
+	<PackageVersion Include="Grpc.AspNetCore.Web" Version="2.57.0" />
 
     <PackageVersion Include="Grpc.Core" Version="2.46.6" />
-    <PackageVersion Include="Grpc.Tools" Version="2.54.0" />
-    <PackageVersion Include="Google.Protobuf" Version="3.23.3" />
+    <PackageVersion Include="Grpc.Tools" Version="2.58.0-pre1" />
+    <PackageVersion Include="Google.Protobuf" Version="3.24.2" />
 
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
 	<PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
-	<PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.7" />
-    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="6.31.0" />
+	<PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.10" />
+    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="6.32.2" />
 
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.7" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.7" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.7" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.10" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.10" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.10" />
 
     <PackageVersion Include="System.ServiceModel.Primitives" Version="4.10.2" />
     <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
@@ -40,6 +40,6 @@
     <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.5.0" />
     <PackageVersion Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
 	
-	<PackageVersion Include="BenchmarkDotNet" Version="0.13.5" />
+	<PackageVersion Include="BenchmarkDotNet" Version="0.13.7" />
   </ItemGroup>
 </Project>

@@ -24,7 +24,7 @@ public sealed class Startup
         // enable ServiceModel.Grpc
         services.AddServiceModelGrpc();
 
-        // enable ServiceModel.Grpc integration for Swashbuckle.AspNetCore
+        // enable ServiceModel.Grpc integration for NSwag.AspNetCore
         services.AddServiceModelGrpcSwagger();
     }
 

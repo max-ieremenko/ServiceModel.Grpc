@@ -8,11 +8,10 @@
       "Name": "Core",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp3.1",
-        "net5.0",
+        "net462",
         "net6.0",
         "net7.0",
-        "net461"
+        "net8.0"
       ]
     }
   ],
@@ -20,8 +19,7 @@
     {
       "Subject": "package",
       "Code": "ms-net-library",
-      "HRef": "http://go.microsoft.com/fwlink/?LinkId=329770",
-      "Description": null
+      "HRef": "http://go.microsoft.com/fwlink/?LinkId=329770"
     },
     {
       "Subject": "project",

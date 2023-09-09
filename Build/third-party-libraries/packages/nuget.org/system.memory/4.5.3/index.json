@@ -1,4 +1,5 @@
 {
+  "Source": "https://api.nuget.org/v3/index.json",
   "License": {
     "Code": "MIT",
     "Status": "AutomaticallyApproved"
@@ -8,30 +9,7 @@
       "Name": "Core",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "net461",
-        "netstandard2.0",
-        "netstandard2.1"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Buffers",
-          "Version": "4.4.0"
-        },
-        {
-          "Name": "System.Numerics.Vectors",
-          "Version": "4.4.0"
-        },
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "4.5.3"
-        }
-      ]
-    },
-    {
-      "Name": "SelfHost",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "net461",
+        "net462",
         "netstandard2.0",
         "netstandard2.1"
       ],
@@ -70,14 +48,36 @@
           "Version": "4.5.3"
         }
       ]
+    },
+    {
+      "Name": "SelfHost",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net462",
+        "netstandard2.0",
+        "netstandard2.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Buffers",
+          "Version": "4.4.0"
+        },
+        {
+          "Name": "System.Numerics.Vectors",
+          "Version": "4.4.0"
+        },
+        {
+          "Name": "System.Runtime.CompilerServices.Unsafe",
+          "Version": "4.5.3"
+        }
+      ]
     }
   ],
   "Licenses": [
     {
       "Subject": "package",
       "Code": "MIT",
-      "HRef": "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT",
-      "Description": null
+      "HRef": "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT"
     },
     {
       "Subject": "project",

@@ -121,7 +121,7 @@ var greet = await greeter.SayHello(new Person { FirstName = "John", SecondName =
 var (greeting, greetings) = await greeter.Greet(new[] { new Person { FirstName = "John", SecondName = "X" } }, "hello");
 ```
 
-> ServiceModel.Grpc.DesignTime uses roslyn [source generators](https://github.com/dotnet/roslyn/blob/master/docs/features/source-generators.md), which requires [net5.0 sdk](https://dotnet.microsoft.com/download/dotnet/5.0).
+> ServiceModel.Grpc.DesignTime uses roslyn [source generators](https://github.com/dotnet/roslyn/blob/master/docs/features/source-generators.md).
 
 ### Implement a service
 
@@ -277,7 +277,7 @@ public class Person
 A service contract is a public interface marked with ServiceContractAttribute.
 Methods marked with OperationContractAttribute are gRPC calls.
 
-> for net461 System.ServiceModel.dll, for netstandard package System.ServiceModel.Primitives
+> for net462 System.ServiceModel.dll, for netstandard package System.ServiceModel.Primitives
 
 ``` c#
 [ServiceContract]

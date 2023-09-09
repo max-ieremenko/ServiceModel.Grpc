@@ -3,7 +3,7 @@ System.Xml.XmlDocument [4.3.0](https://www.nuget.org/packages/System.Xml.XmlDocu
 
 Used by: AspNetCoreNSwag
 
-Target frameworks: net5.0, net6.0, net7.0, netcoreapp3.0
+Target frameworks: net6.0, net7.0, net8.0
 
 License: [ms-net-library](../../../../licenses/ms-net-library) 
 

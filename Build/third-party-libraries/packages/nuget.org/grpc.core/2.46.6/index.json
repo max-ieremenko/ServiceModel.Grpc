@@ -1,4 +1,5 @@
 {
+  "Source": "https://api.nuget.org/v3/index.json",
   "License": {
     "Code": "Apache-2.0",
     "Status": "AutomaticallyApproved"
@@ -8,16 +9,15 @@
       "Name": "Core",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp3.1",
-        "net5.0",
+        "net462",
         "net6.0",
         "net7.0",
-        "net461"
+        "net8.0"
       ],
       "Dependencies": [
         {
           "Name": "Grpc.Core.Api",
-          "Version": "2.54.0"
+          "Version": "2.57.0"
         }
       ]
     },
@@ -25,14 +25,14 @@
       "Name": "SelfHost",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "net461",
+        "net462",
         "netstandard2.0",
         "netstandard2.1"
       ],
       "Dependencies": [
         {
           "Name": "Grpc.Core.Api",
-          "Version": "2.54.0"
+          "Version": "2.57.0"
         },
         {
           "Name": "System.Memory",
@@ -45,20 +45,17 @@
     {
       "Subject": "package",
       "Code": "Apache-2.0",
-      "HRef": "https://licenses.nuget.org/Apache-2.0",
-      "Description": null
+      "HRef": "https://licenses.nuget.org/Apache-2.0"
     },
     {
       "Subject": "repository",
       "Code": "Apache-2.0",
-      "HRef": "https://github.com/grpc/grpc.git",
-      "Description": null
+      "HRef": "https://github.com/grpc/grpc.git"
     },
     {
       "Subject": "project",
       "Code": "Apache-2.0",
-      "HRef": "https://github.com/grpc/grpc",
-      "Description": null
+      "HRef": "https://github.com/grpc/grpc"
     }
   ]
 }

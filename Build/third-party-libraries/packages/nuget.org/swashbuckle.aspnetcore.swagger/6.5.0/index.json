@@ -1,4 +1,5 @@
 {
+  "Source": "https://api.nuget.org/v3/index.json",
   "License": {
     "Code": "MIT",
     "Status": "AutomaticallyApproved"
@@ -8,11 +9,9 @@
       "Name": "AspNetCoreSwashbuckle",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "netcoreapp3.0",
-        "net5.0",
         "net6.0",
         "net7.0",
-        "netcoreapp3.1"
+        "net8.0"
       ],
       "Dependencies": [
         {
@@ -26,20 +25,17 @@
     {
       "Subject": "package",
       "Code": "MIT",
-      "HRef": "https://licenses.nuget.org/MIT",
-      "Description": null
+      "HRef": "https://licenses.nuget.org/MIT"
     },
     {
       "Subject": "repository",
       "Code": "MIT",
-      "HRef": "https://github.com/domaindrivendev/Swashbuckle.AspNetCore.git",
-      "Description": null
+      "HRef": "https://github.com/domaindrivendev/Swashbuckle.AspNetCore.git"
     },
     {
       "Subject": "project",
       "Code": "MIT",
-      "HRef": "https://github.com/domaindrivendev/Swashbuckle.AspNetCore",
-      "Description": null
+      "HRef": "https://github.com/domaindrivendev/Swashbuckle.AspNetCore"
     }
   ]
 }

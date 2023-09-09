@@ -3,7 +3,7 @@ NETStandard.Library [2.0.3](https://www.nuget.org/packages/NETStandard.Library/2
 
 Used by: Core, DesignTime, MessagePack, ProtoBuf, SelfHost
 
-Target frameworks: net461, net5.0, net6.0, net7.0, netcoreapp3.1, netstandard2.0, netstandard2.1
+Target frameworks: net462, net6.0, net7.0, net8.0, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 

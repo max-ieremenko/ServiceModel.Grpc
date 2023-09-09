@@ -1,4 +1,5 @@
 {
+  "Source": "https://api.nuget.org/v3/index.json",
   "License": {
     "Code": "MIT",
     "Status": "AutomaticallyApproved"
@@ -8,32 +9,18 @@
       "Name": "Core",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "net461",
-        "netstandard2.0",
-        "netstandard2.1",
-        "netcoreapp3.1",
-        "net5.0",
+        "net462",
         "net6.0",
-        "net7.0"
+        "net7.0",
+        "net8.0",
+        "netstandard2.0",
+        "netstandard2.1"
       ],
       "Dependencies": [
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
           "Version": "4.5.3"
-        }
-      ]
-    },
-    {
-      "Name": "MessagePack",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "netcoreapp3.1",
-        "net5.0",
-        "net6.0",
-        "net7.0",
-        "netstandard2.0"
-      ],
-      "Dependencies": [
+        },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
           "Version": "6.0.0"
@@ -52,14 +39,29 @@
           "Version": "4.7.1"
         }
       ]
+    },
+    {
+      "Name": "MessagePack",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net6.0",
+        "net7.0",
+        "net8.0",
+        "netstandard2.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Runtime.CompilerServices.Unsafe",
+          "Version": "6.0.0"
+        }
+      ]
     }
   ],
   "Licenses": [
     {
       "Subject": "package",
       "Code": "MIT",
-      "HRef": "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT",
-      "Description": null
+      "HRef": "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT"
     },
     {
       "Subject": "project",

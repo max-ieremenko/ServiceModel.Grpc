@@ -9,11 +9,10 @@
       "Name": "Core",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "netcoreapp3.1",
-        "net5.0",
+        "net462",
         "net6.0",
         "net7.0",
-        "net461"
+        "net8.0"
       ]
     }
   ],
@@ -21,14 +20,12 @@
     {
       "Subject": "package",
       "Code": "MIT",
-      "HRef": "https://licenses.nuget.org/MIT",
-      "Description": null
+      "HRef": "https://licenses.nuget.org/MIT"
     },
     {
       "Subject": "repository",
       "Code": "MIT",
-      "HRef": "https://github.com/dotnet/runtime",
-      "Description": null
+      "HRef": "https://github.com/dotnet/runtime"
     },
     {
       "Subject": "project",

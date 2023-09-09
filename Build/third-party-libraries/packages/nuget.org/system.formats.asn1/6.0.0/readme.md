@@ -1,9 +1,9 @@
 System.Formats.Asn1 [6.0.0](https://www.nuget.org/packages/System.Formats.Asn1/6.0.0)
 --------------------
 
-Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal
+Used by: Core internal
 
-Target frameworks: net461, net5.0, net6.0, net7.0, netcoreapp3.1
+Target frameworks: net462, net6.0, net7.0, net8.0
 
 License: [MIT](../../../../licenses/mit) 
 
