@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2022 Max Ieremenko
+// Copyright 2022-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ public partial class ServiceModelGrpcServiceBinderExtensionsTest
 
         public override void AddMethod<TRequest, TResponse>(
             Method<TRequest, TResponse> method,
-            UnaryServerMethod<TRequest, TResponse> handler)
+            UnaryServerMethod<TRequest, TResponse>? handler)
         {
             method.ShouldNotBeNull();
             handler.ShouldNotBeNull();
@@ -38,7 +38,7 @@ public partial class ServiceModelGrpcServiceBinderExtensionsTest
 
         public override void AddMethod<TRequest, TResponse>(
             Method<TRequest, TResponse> method,
-            ClientStreamingServerMethod<TRequest, TResponse> handler)
+            ClientStreamingServerMethod<TRequest, TResponse>? handler)
         {
             method.ShouldNotBeNull();
             handler.ShouldNotBeNull();
@@ -48,7 +48,7 @@ public partial class ServiceModelGrpcServiceBinderExtensionsTest
 
         public override void AddMethod<TRequest, TResponse>(
             Method<TRequest, TResponse> method,
-            ServerStreamingServerMethod<TRequest, TResponse> handler)
+            ServerStreamingServerMethod<TRequest, TResponse>? handler)
         {
             method.ShouldNotBeNull();
             handler.ShouldNotBeNull();
@@ -58,7 +58,7 @@ public partial class ServiceModelGrpcServiceBinderExtensionsTest
 
         public override void AddMethod<TRequest, TResponse>(
             Method<TRequest, TResponse> method,
-            DuplexStreamingServerMethod<TRequest, TResponse> handler)
+            DuplexStreamingServerMethod<TRequest, TResponse>? handler)
         {
             method.ShouldNotBeNull();
             handler.ShouldNotBeNull();
