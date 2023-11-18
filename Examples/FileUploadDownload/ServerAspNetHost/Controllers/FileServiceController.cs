@@ -6,6 +6,7 @@ using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
 using Contract;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 
@@ -61,7 +62,7 @@ public sealed class FileServiceController : Controller
         var contentType = MediaTypeNames.Application.Octet;
 
         var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-        Response.Headers.Add("X-Content-Length", stream.Length.ToString(CultureInfo.InvariantCulture));
+        Response.Headers.Append("X-Content-Length", stream.Length.ToString(CultureInfo.InvariantCulture));
 
         return new FileStreamResultWithBufferSize(
             stream,

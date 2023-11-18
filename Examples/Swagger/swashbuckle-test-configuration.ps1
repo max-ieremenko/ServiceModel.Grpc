@@ -6,10 +6,10 @@
     Tests         = @(
         , @( 
             @{
-                App  = "SwashbuckleWebApplication/bin/Release/net7.0/SwashbuckleWebApplication.dll"
+                App  = "SwashbuckleWebApplication/bin/Release/net8.0/SwashbuckleWebApplication.dll"
                 Port = 5001
             }
-            @{ App = "Client/bin/Release/net7.0/Client.dll" }
+            @{ App = "Client/bin/Release/net8.0/Client.dll" }
         )     
     )
 }

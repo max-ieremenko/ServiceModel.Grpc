@@ -5,7 +5,7 @@
 
     Tests         = @(
         ,@( 
-            @{ App = "Server/bin/Release/net7.0/Server.dll" }
+            @{ App = "Server/bin/Release/net8.0/Server.dll" }
         )
     )
 }

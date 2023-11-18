@@ -1,7 +1,11 @@
-﻿using System;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+﻿using System.Linq;
+using BlazorApp.Server.Services;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Net.Http.Headers;
 
 namespace BlazorApp.Server;
 
@@ -9,18 +13,53 @@ public static class Program
 {
     public static void Main(string[] args)
     {
-        CreateHostBuilder(args).Build().Run();
-    }
+        var builder = WebApplication.CreateBuilder(args);
 
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host
-            .CreateDefaultBuilder(args)
-            .ConfigureHostConfiguration(builder =>
-            {
-                builder.SetBasePath(AppContext.BaseDirectory);
-            })
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-            });
+        builder.Services.AddServiceModelGrpc();
+
+        builder.Services.AddResponseCompression(options =>
+        {
+            options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
+        });
+
+        // required if the domain in the browser url differs from server hosted domain
+        // for more details see https://learn.microsoft.com/en-us/aspnet/core/grpc/grpcweb?view=aspnetcore-7.0#grpc-web-and-cors
+        builder.Services.AddCors(options => options.AddPolicy("AllowGrpc", builder =>
+        {
+            builder
+                .AllowAnyOrigin()
+                .WithMethods(HttpMethods.Post)
+                .AllowAnyHeader()
+                .WithExposedHeaders(HeaderNames.GrpcStatus, HeaderNames.GrpcMessage, HeaderNames.GrpcEncoding, HeaderNames.GrpcAcceptEncoding);
+        }));
+
+        builder.Services.AddControllersWithViews();
+        builder.Services.AddRazorPages();
+
+        var app = builder.Build();
+
+        app.UseResponseCompression();
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+            app.UseWebAssemblyDebugging();
+        }
+
+        app.UseBlazorFrameworkFiles();
+        app.UseStaticFiles();
+
+        app.UseRouting();
+
+        app.MapRazorPages();
+        app.MapControllers();
+        app.MapFallbackToFile("index.html");
+
+        app.UseGrpcWeb();
+        app.UseCors();
+
+        app.MapGrpcService<WeatherForecastService>().EnableGrpcWeb().RequireCors("AllowGrpc");
+
+        app.Run();
+    }
 }
