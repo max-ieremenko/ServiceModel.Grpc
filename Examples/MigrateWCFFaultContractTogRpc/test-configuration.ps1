@@ -13,7 +13,7 @@
         ),
         @( 
             @{
-                App  = "AspNetServiceHost/bin/Release/net7.0/AspNetServiceHost.exe"
+                App  = "AspNetServiceHost/bin/Release/net8.0/AspNetServiceHost.exe"
                 Port = 8080
             }
             @{
