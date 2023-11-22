@@ -21,13 +21,18 @@ namespace ServiceModel.Grpc.Benchmarks;
 
 public static class Program
 {
-#if RELEASE
-        public static void Main(string[] args)
+    public static Task Main(string[] args)
+    {
+        if (IsRelease())
         {
             BenchmarkDotNet.Running.BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
+            return Task.CompletedTask;
         }
-#else
-    public static async Task Main(string[] args)
+
+        return RunTests();
+    }
+
+    private static async Task RunTests()
     {
         await RunUnaryCallBenchmark<CombinedUnaryCallBenchmark>();
         await RunUnaryCallBenchmark<ClientUnaryCallBenchmark>();
@@ -81,5 +86,13 @@ public static class Program
         benchmark.StreamSerializer();
         benchmark.StreamDeserializer();
     }
+
+    private static bool IsRelease()
+    {
+#if RELEASE
+        return true;
+#else
+        return false;
 #endif
+    }
 }

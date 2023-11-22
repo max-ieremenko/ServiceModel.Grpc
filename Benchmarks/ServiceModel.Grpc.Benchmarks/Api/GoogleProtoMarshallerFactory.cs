@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ internal sealed class GoogleProtoMarshallerFactory : IMarshallerFactory
 
     private static void Serialize<T>(T value, SerializationContext context)
     {
-        var message = (Message<SomeObjectProto>)((object)value);
+        var message = (Message<SomeObjectProto>)((object)value!);
         context.SetPayloadLength(message.Value1.CalculateSize());
         message.Value1.WriteTo(context.GetBufferWriter());
         context.Complete();

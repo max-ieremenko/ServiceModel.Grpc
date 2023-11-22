@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 // </copyright>
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 using MessagePack;
 using ProtoBuf;
@@ -30,7 +29,7 @@ public class SomeObject
     [DataMember]
     [ProtoMember(1)]
     [Key(1)]
-    public string StringScalar { get; set; }
+    public string? StringScalar { get; set; }
 
     [DataMember]
     [ProtoMember(2)]
@@ -50,15 +49,15 @@ public class SomeObject
     [DataMember(EmitDefaultValue = false)]
     [ProtoMember(5, IsPacked = true)]
     [Key(5)]
-    public float[] SingleArray { get; set; }
+    public float[]? SingleArray { get; set; }
 
     [DataMember(EmitDefaultValue = false)]
     [ProtoMember(6, IsPacked = true)]
     [Key(6)]
-    public int[] Int32Array { get; set; }
+    public int[]? Int32Array { get; set; }
 
     [DataMember(EmitDefaultValue = false)]
     [ProtoMember(7, IsPacked = true)]
     [Key(7)]
-    public double[] DoubleArray { get; set; }
+    public double[]? DoubleArray { get; set; }
 }

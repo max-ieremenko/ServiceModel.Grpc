@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,12 +25,12 @@ namespace ServiceModel.Grpc.Benchmarks;
 [Config(typeof(BenchmarkConfig))]
 public abstract class MarshallerBenchmarkBase
 {
-    private StubSerializationContext _serializationContext;
-    private StubDeserializationContext _deserializationContext;
+    private StubSerializationContext _serializationContext = null!;
+    private StubDeserializationContext _deserializationContext = null!;
 
-    private Marshaller<Message<SomeObject>> _asStreamMarshaller;
-    private Marshaller<Message<SomeObject>> _defaultMarshaller;
-    private Message<SomeObject> _payload;
+    private Marshaller<Message<SomeObject>> _asStreamMarshaller = null!;
+    private Marshaller<Message<SomeObject>> _defaultMarshaller = null!;
+    private Message<SomeObject> _payload = null!;
 
     [GlobalSetup]
     public void GlobalSetup()

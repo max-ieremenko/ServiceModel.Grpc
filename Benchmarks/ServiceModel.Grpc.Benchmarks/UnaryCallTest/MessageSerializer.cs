@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -50,8 +50,8 @@ internal static class MessageSerializer
     {
         return typeof(IMarshallerFactory)
             .Assembly
-            .GetType("ServiceModel.Grpc.Configuration.MarshallerFactoryExtensions", true, false)
-            .GetMethod("SerializeHeader", BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
+            .GetType("ServiceModel.Grpc.Configuration.MarshallerFactoryExtensions", true, false)!
+            .GetMethod("SerializeHeader", BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)!
             .CreateDelegate<Func<IMarshallerFactory, object, byte[]>>();
     }
 }

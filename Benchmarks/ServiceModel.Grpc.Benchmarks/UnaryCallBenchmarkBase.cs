@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,13 +27,13 @@ namespace ServiceModel.Grpc.Benchmarks;
 [Config(typeof(BenchmarkConfig))]
 public abstract class UnaryCallBenchmarkBase
 {
-    private IUnaryCallTest _serviceModelGrpcDataContract;
-    private IUnaryCallTest _serviceModelGrpcProtobuf;
-    private IUnaryCallTest _serviceModelGrpcMessagePack;
-    private IUnaryCallTest _serviceModelGrpcProto;
-    private IUnaryCallTest _native;
-    private IUnaryCallTest _protobufGrpc;
-    private IUnaryCallTest _magicOnion;
+    private IUnaryCallTest _serviceModelGrpcDataContract = null!;
+    private IUnaryCallTest _serviceModelGrpcProtobuf = null!;
+    private IUnaryCallTest _serviceModelGrpcMessagePack = null!;
+    private IUnaryCallTest _serviceModelGrpcProto = null!;
+    private IUnaryCallTest _native = null!;
+    private IUnaryCallTest _protobufGrpc = null!;
+    private IUnaryCallTest _magicOnion = null!;
 
     [GlobalSetup]
     public void GlobalSetup()
