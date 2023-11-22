@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,24 +56,18 @@ internal sealed class PayloadSizeColumn : IColumn
         }
 
         var benchmark = Activator.CreateInstance(benchmarkCase.Descriptor.Type);
-        var method = benchmark
+        var method = benchmark!
             .GetType()
-            .GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+            .GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)!
             .CreateDelegate<Func<ValueTask<long>>>(benchmark);
 
         var size = method().Result;
         return LengthToString(size);
     }
 
-    public bool IsDefault(Summary summary, BenchmarkCase benchmarkCase)
-    {
-        return false;
-    }
+    public bool IsDefault(Summary summary, BenchmarkCase benchmarkCase) => false;
 
-    public bool IsAvailable(Summary summary)
-    {
-        return true;
-    }
+    public bool IsAvailable(Summary summary) => true;
 
     private static string LengthToString(long length)
     {
