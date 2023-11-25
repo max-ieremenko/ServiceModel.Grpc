@@ -8,7 +8,10 @@
     <CodeAnalysisRuleSet>..\..\Sources\StyleCope.ruleset</CodeAnalysisRuleSet>
 
     <LangVersion>latest</LangVersion>
-	<SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+    <Nullable>enable</Nullable>
+
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
   </PropertyGroup>
 
   <ItemGroup>

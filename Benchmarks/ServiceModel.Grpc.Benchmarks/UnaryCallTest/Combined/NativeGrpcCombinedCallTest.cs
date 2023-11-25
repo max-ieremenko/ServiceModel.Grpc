@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,9 +33,9 @@ internal sealed class NativeGrpcCombinedCallTest : IUnaryCallTest
     private readonly SomeObjectProto _payload;
     private readonly TestServiceNative.TestServiceNativeClient _proxy;
 
-    public NativeGrpcCombinedCallTest(SomeObject payload)
+    public NativeGrpcCombinedCallTest(SomeObjectProto payload)
     {
-        _payload = DomainExtensions.CopyToProto(payload);
+        _payload = payload;
         _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
         _client = _server.CreateClient();
 
@@ -48,7 +48,7 @@ internal sealed class NativeGrpcCombinedCallTest : IUnaryCallTest
     {
         using (var call = _proxy.PingPongAsync(_payload))
         {
-            await call;
+            await call.ResponseAsync.ConfigureAwait(false);
         }
     }
 

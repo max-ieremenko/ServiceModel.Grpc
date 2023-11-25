@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,23 +27,24 @@ namespace ServiceModel.Grpc.Benchmarks;
 [Config(typeof(BenchmarkConfig))]
 public abstract class UnaryCallBenchmarkBase
 {
-    private IUnaryCallTest _serviceModelGrpcDataContract;
-    private IUnaryCallTest _serviceModelGrpcProtobuf;
-    private IUnaryCallTest _serviceModelGrpcMessagePack;
-    private IUnaryCallTest _serviceModelGrpcProto;
-    private IUnaryCallTest _native;
-    private IUnaryCallTest _protobufGrpc;
-    private IUnaryCallTest _magicOnion;
+    private IUnaryCallTest _serviceModelGrpcDataContract = null!;
+    private IUnaryCallTest _serviceModelGrpcProtobuf = null!;
+    private IUnaryCallTest _serviceModelGrpcMessagePack = null!;
+    private IUnaryCallTest _serviceModelGrpcProto = null!;
+    private IUnaryCallTest _native = null!;
+    private IUnaryCallTest _protobufGrpc = null!;
+    private IUnaryCallTest _magicOnion = null!;
 
     [GlobalSetup]
     public void GlobalSetup()
     {
         var payload = DomainExtensions.CreateSomeObject();
+        var protoPayload = DomainExtensions.CopyToProto(payload);
         _serviceModelGrpcDataContract = CreateServiceModelGrpc(DataContractMarshallerFactory.Default, payload);
         _serviceModelGrpcProtobuf = CreateServiceModelGrpc(ProtobufMarshallerFactory.Default, payload);
         _serviceModelGrpcMessagePack = CreateServiceModelGrpc(MessagePackMarshallerFactory.Default, payload);
-        _serviceModelGrpcProto = CreateServiceModelGrpcProto(payload);
-        _native = CreateNativeGrpc(payload);
+        _serviceModelGrpcProto = CreateServiceModelGrpcProto(protoPayload);
+        _native = CreateNativeGrpc(protoPayload);
         _protobufGrpc = CreateProtobufGrpc(payload);
         _magicOnion = CreateMagicOnion(payload);
     }
@@ -72,13 +73,13 @@ public abstract class UnaryCallBenchmarkBase
     [PayloadSizeColumn(nameof(GetServiceModelGrpcMessagePackSize))]
     public Task ServiceModelGrpcMessagePack() => _serviceModelGrpcMessagePack.PingPongAsync();
 
-    [Benchmark(Description = "ServiceModelGrpc.proto-emulation")]
-    [PayloadSizeColumn(nameof(GetServiceModelGrpcProtoSize))]
-    public Task ServiceModelGrpcProto() => _serviceModelGrpcProto.PingPongAsync();
-
     [Benchmark(Baseline = true, Description = "grpc-dotnet")]
     [PayloadSizeColumn(nameof(GetNativeSize))]
     public Task Native() => _native.PingPongAsync();
+
+    [Benchmark(Description = "ServiceModelGrpc.proto-emulation")]
+    [PayloadSizeColumn(nameof(GetServiceModelGrpcProtoSize))]
+    public Task ServiceModelGrpcProto() => _serviceModelGrpcProto.PingPongAsync();
 
     [Benchmark(Description = "protobuf-net.Grpc")]
     [PayloadSizeColumn(nameof(GetProtobufGrpcSize))]
@@ -125,9 +126,9 @@ public abstract class UnaryCallBenchmarkBase
 
     internal abstract IUnaryCallTest CreateServiceModelGrpc(IMarshallerFactory marshallerFactory, SomeObject payload);
 
-    internal abstract IUnaryCallTest CreateServiceModelGrpcProto(SomeObject payload);
+    internal abstract IUnaryCallTest CreateServiceModelGrpcProto(SomeObjectProto payload);
 
-    internal abstract IUnaryCallTest CreateNativeGrpc(SomeObject payload);
+    internal abstract IUnaryCallTest CreateNativeGrpc(SomeObjectProto payload);
 
     internal abstract IUnaryCallTest CreateProtobufGrpc(SomeObject payload);
 

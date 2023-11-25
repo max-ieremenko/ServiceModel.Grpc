@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,20 +14,13 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.IO;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Server;
 
 internal sealed class StubHttpRequest
 {
-    private static readonly MediaTypeHeaderValue ApplicationGrpc = new MediaTypeHeaderValue("application/grpc");
-    private static readonly HttpMethod Method = new HttpMethod("POST");
-    private static readonly Version Version = new Version("2.0");
-
     private readonly HttpClient _client;
     private readonly string _url;
     private readonly byte[] _payload;
@@ -43,25 +36,12 @@ internal sealed class StubHttpRequest
 
     public async Task SendAsync()
     {
-        using (var request = CreateRequest())
+        using (var request = HttpMessage.CreateRequest(_url, _payload))
         using (var response = await _client.SendAsync(request).ConfigureAwait(false))
         {
             response.EnsureSuccessStatusCode();
-            await using var stream = await response.Content!.ReadAsStreamAsync().ConfigureAwait(false);
-            await stream.CopyToAsync(Stream.Null).ConfigureAwait(false);
-            PayloadSize = stream.Length;
+
+            PayloadSize = await HttpMessage.ReadAsync(response.Content!, default).ConfigureAwait(false);
         }
-    }
-
-    private HttpRequestMessage CreateRequest()
-    {
-        var content = new ByteArrayContent(_payload);
-        content.Headers.ContentType = ApplicationGrpc;
-
-        var request = new HttpRequestMessage(Method, _url);
-        request.Version = Version;
-        request.Content = content;
-
-        return request;
     }
 }

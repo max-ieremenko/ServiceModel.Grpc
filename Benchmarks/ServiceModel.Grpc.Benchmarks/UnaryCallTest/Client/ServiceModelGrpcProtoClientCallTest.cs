@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,10 +30,10 @@ internal sealed class ServiceModelGrpcProtoClientCallTest : IUnaryCallTest
     private readonly GrpcChannel _channel;
     private readonly ITestService _proxy;
 
-    public ServiceModelGrpcProtoClientCallTest(SomeObject payload)
+    public ServiceModelGrpcProtoClientCallTest(SomeObjectProto payload)
     {
-        _payload = DomainExtensions.CopyToProto(payload);
-        _httpHandler = new StubHttpMessageHandler(GoogleProtoMarshallerFactory.Default, new Message<SomeObjectProto>(_payload));
+        _payload = payload;
+        _httpHandler = new StubHttpMessageHandler(MessageSerializer.Create(GoogleProtoMarshallerFactory.Default, new Message<SomeObjectProto>(_payload)));
         _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpHandler = _httpHandler });
 
         var clientFactory = new ClientFactory(new ServiceModelGrpcClientOptions { MarshallerFactory = GoogleProtoMarshallerFactory.Default });

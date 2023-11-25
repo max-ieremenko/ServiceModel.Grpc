@@ -49,7 +49,10 @@ if (-not $SkipLinuxSdk) {
     if (-not $LinuxSdkFilter) {
         $LinuxSdkFilter = " "
     }
-    
+
+    $image = "mcr.microsoft.com/dotnet/sdk:8.0-jammy"
+    docker pull $image
+
     docker run `
         -it `
         --rm `
@@ -57,7 +60,7 @@ if (-not $SkipLinuxSdk) {
         -v "$($invokeBuild):/root/.local/share/powershell/Modules/InvokeBuild" `
         -v "$($nugetCache):/root/.nuget/packages" `
         -v "$($repository):/repository" `
-        mcr.microsoft.com/dotnet/sdk:7.0.400-jammy `
+        $image `
         "/repository/Build/invoke-sdk-test.ps1" `
         -Platform "linux" `
         -Filter $LinuxSdkFilter

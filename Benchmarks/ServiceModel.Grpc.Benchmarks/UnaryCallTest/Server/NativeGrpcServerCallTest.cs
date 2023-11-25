@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ internal sealed class NativeGrpcServerCallTest : IUnaryCallTest
     private readonly HttpClient _client;
     private readonly StubHttpRequest _request;
 
-    public NativeGrpcServerCallTest(SomeObject payload)
+    public NativeGrpcServerCallTest(SomeObjectProto payload)
     {
         _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
         _client = _server.CreateClient();
@@ -38,7 +38,7 @@ internal sealed class NativeGrpcServerCallTest : IUnaryCallTest
         _request = new StubHttpRequest(
             _client,
             "/TestServiceNative/PingPong",
-            MessageSerializer.Create(DomainExtensions.CopyToProto(payload)));
+            MessageSerializer.Create(payload));
     }
 
     public Task PingPongAsync() => _request.SendAsync();

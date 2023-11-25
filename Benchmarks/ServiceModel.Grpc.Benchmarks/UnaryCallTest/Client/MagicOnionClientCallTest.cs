@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ internal sealed class MagicOnionClientCallTest : IUnaryCallTest
     public MagicOnionClientCallTest(SomeObject payload)
     {
         _payload = payload;
-        _httpHandler = new StubHttpMessageHandler(MessagePackMarshallerFactory.Default, payload);
+        _httpHandler = new StubHttpMessageHandler(MessageSerializer.Create(MessagePackMarshallerFactory.Default, payload));
         _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpHandler = _httpHandler });
 
         _proxy = MagicOnion.Client.MagicOnionClient.Create<ITestServiceMagicOnion>(_channel);
@@ -40,7 +40,7 @@ internal sealed class MagicOnionClientCallTest : IUnaryCallTest
     public async Task PingPongAsync()
     {
         var call = _proxy.PingPong(_payload);
-        await call;
+        await call.ResponseAsync.ConfigureAwait(false);
         call.Dispose();
     }
 

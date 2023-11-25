@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,11 +27,11 @@ internal sealed class NativeGrpcClientCallTest : IUnaryCallTest
     private readonly GrpcChannel _channel;
     private readonly TestServiceNative.TestServiceNativeClient _proxy;
 
-    public NativeGrpcClientCallTest(SomeObject payload)
+    public NativeGrpcClientCallTest(SomeObjectProto payload)
     {
-        _payload = DomainExtensions.CopyToProto(payload);
+        _payload = payload;
 
-        _httpHandler = new StubHttpMessageHandler(_payload);
+        _httpHandler = new StubHttpMessageHandler(MessageSerializer.Create(_payload));
         _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpHandler = _httpHandler });
 
         _proxy = new TestServiceNative.TestServiceNativeClient(_channel);
@@ -41,7 +41,7 @@ internal sealed class NativeGrpcClientCallTest : IUnaryCallTest
     {
         using (var call = _proxy.PingPongAsync(_payload))
         {
-            await call;
+            await call.ResponseAsync.ConfigureAwait(false);
         }
     }
 
