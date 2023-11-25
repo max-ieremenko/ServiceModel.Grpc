@@ -73,13 +73,13 @@ public abstract class UnaryCallBenchmarkBase
     [PayloadSizeColumn(nameof(GetServiceModelGrpcMessagePackSize))]
     public Task ServiceModelGrpcMessagePack() => _serviceModelGrpcMessagePack.PingPongAsync();
 
-    [Benchmark(Description = "ServiceModelGrpc.proto-emulation")]
-    [PayloadSizeColumn(nameof(GetServiceModelGrpcProtoSize))]
-    public Task ServiceModelGrpcProto() => _serviceModelGrpcProto.PingPongAsync();
-
     [Benchmark(Baseline = true, Description = "grpc-dotnet")]
     [PayloadSizeColumn(nameof(GetNativeSize))]
     public Task Native() => _native.PingPongAsync();
+
+    [Benchmark(Description = "ServiceModelGrpc.proto-emulation")]
+    [PayloadSizeColumn(nameof(GetServiceModelGrpcProtoSize))]
+    public Task ServiceModelGrpcProto() => _serviceModelGrpcProto.PingPongAsync();
 
     [Benchmark(Description = "protobuf-net.Grpc")]
     [PayloadSizeColumn(nameof(GetProtobufGrpcSize))]

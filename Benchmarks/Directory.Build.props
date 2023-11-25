@@ -9,7 +9,8 @@
 
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
-	
+
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
   </PropertyGroup>
 
