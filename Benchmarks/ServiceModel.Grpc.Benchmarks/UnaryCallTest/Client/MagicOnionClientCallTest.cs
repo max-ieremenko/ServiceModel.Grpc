@@ -31,7 +31,7 @@ internal sealed class MagicOnionClientCallTest : IUnaryCallTest
     public MagicOnionClientCallTest(SomeObject payload)
     {
         _payload = payload;
-        _httpHandler = new StubHttpMessageHandler(MessagePackMarshallerFactory.Default, payload);
+        _httpHandler = new StubHttpMessageHandler(MessageSerializer.Create(MessagePackMarshallerFactory.Default, payload));
         _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpHandler = _httpHandler });
 
         _proxy = MagicOnion.Client.MagicOnionClient.Create<ITestServiceMagicOnion>(_channel);

@@ -33,7 +33,7 @@ internal sealed class ServiceModelGrpcProtoClientCallTest : IUnaryCallTest
     public ServiceModelGrpcProtoClientCallTest(SomeObjectProto payload)
     {
         _payload = payload;
-        _httpHandler = new StubHttpMessageHandler(GoogleProtoMarshallerFactory.Default, new Message<SomeObjectProto>(_payload));
+        _httpHandler = new StubHttpMessageHandler(MessageSerializer.Create(GoogleProtoMarshallerFactory.Default, new Message<SomeObjectProto>(_payload)));
         _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpHandler = _httpHandler });
 
         var clientFactory = new ClientFactory(new ServiceModelGrpcClientOptions { MarshallerFactory = GoogleProtoMarshallerFactory.Default });

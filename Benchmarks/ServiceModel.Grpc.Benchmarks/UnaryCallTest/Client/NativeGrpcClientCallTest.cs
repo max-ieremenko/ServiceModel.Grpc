@@ -31,7 +31,7 @@ internal sealed class NativeGrpcClientCallTest : IUnaryCallTest
     {
         _payload = payload;
 
-        _httpHandler = new StubHttpMessageHandler(_payload);
+        _httpHandler = new StubHttpMessageHandler(MessageSerializer.Create(_payload));
         _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpHandler = _httpHandler });
 
         _proxy = new TestServiceNative.TestServiceNativeClient(_channel);
