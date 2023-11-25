@@ -48,7 +48,7 @@ internal sealed class NativeGrpcCombinedCallTest : IUnaryCallTest
     {
         using (var call = _proxy.PingPongAsync(_payload))
         {
-            await call;
+            await call.ResponseAsync.ConfigureAwait(false);
         }
     }
 
