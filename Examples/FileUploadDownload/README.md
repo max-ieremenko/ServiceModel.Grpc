@@ -55,85 +55,85 @@ Base line is HttpClient.
 
 #### downloading
 
-``` ini
+```
 
-BenchmarkDotNet=v0.13.1, OS=Windows 10.0.19043.1348 (21H1/May2021Update)
-Intel Core i7-8750H CPU 2.20GHz (Coffee Lake), 1 CPU, 12 logical and 6 physical cores
-.NET SDK=6.0.100
-  [Host]   : .NET 6.0.0 (6.0.21.52210), X64 RyuJIT
-  ShortRun : .NET 6.0.0 (6.0.21.52210), X64 RyuJIT
+BenchmarkDotNet v0.13.10, Windows 11 (10.0.22621.2715/22H2/2022Update/SunValley2)
+Intel Core i7-8565U CPU 1.80GHz (Whiskey Lake), 1 CPU, 8 logical and 4 physical cores
+.NET SDK 8.0.100
+  [Host]   : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
+  ShortRun : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
 
 Job=ShortRun  Platform=X64  Force=True  
 Server=False  IterationCount=10  LaunchCount=1  
 RunStrategy=Throughput  WarmupCount=2  
 
 ```
-|      Method | BufferSize | UseCompression |      Mean |     Error |    StdDev | Ratio | RatioSD |      Gen 0 |     Gen 1 | Allocated |
-|------------ |----------- |--------------- |----------:|----------:|----------:|------:|--------:|-----------:|----------:|----------:|
-|     **Default** |       **4096** |          **False** | **134.96 ms** | **37.515 ms** | **24.814 ms** |  **1.81** |    **0.31** |  **8000.0000** |         **-** | **26,504 KB** |
-| RentedArray |       4096 |          False | 133.22 ms | 41.785 ms | 27.638 ms |  1.79 |    0.34 |          - |         - |  2,104 KB |
-|  HttpClient |       4096 |          False |  76.12 ms |  1.617 ms |  0.962 ms |  1.00 |    0.00 |   166.6667 |         - |    935 KB |
-|             |            |                |           |           |           |       |         |            |           |           |
-|     **Default** |       **4096** |           **True** | **433.71 ms** |  **5.978 ms** |  **3.954 ms** |  **1.77** |    **0.02** | **16000.0000** |         **-** | **67,685 KB** |
-| RentedArray |       4096 |           True | 436.56 ms |  3.087 ms |  2.042 ms |  1.78 |    0.01 | 10000.0000 |         - | 43,400 KB |
-|  HttpClient |       4096 |           True | 245.34 ms |  1.408 ms |  0.931 ms |  1.00 |    0.00 |          - |         - |  1,108 KB |
-|             |            |                |           |           |           |       |         |            |           |           |
-|     **Default** |      **65536** |          **False** |  **48.06 ms** |  **0.563 ms** |  **0.373 ms** |  **1.44** |    **0.03** |  **5900.0000** | **1200.0000** | **25,603 KB** |
-| RentedArray |      65536 |          False |  48.44 ms |  0.805 ms |  0.421 ms |  1.45 |    0.03 |   200.0000 |         - |  1,017 KB |
-|  HttpClient |      65536 |          False |  33.36 ms |  1.254 ms |  0.746 ms |  1.00 |    0.00 |    62.5000 |         - |    303 KB |
-|             |            |                |           |           |           |       |         |            |           |           |
-|     **Default** |      **65536** |           **True** | **211.76 ms** |  **3.861 ms** |  **2.554 ms** |  **1.08** |    **0.01** | **16000.0000** | **1000.0000** | **71,351 KB** |
-| RentedArray |      65536 |           True | 209.71 ms |  2.228 ms |  1.474 ms |  1.07 |    0.01 | 11000.0000 | 2000.0000 | 46,833 KB |
-|  HttpClient |      65536 |           True | 196.26 ms |  2.411 ms |  1.435 ms |  1.00 |    0.00 |          - |         - |    406 KB |
-|             |            |                |           |           |           |       |         |            |           |           |
-|     **Default** |      **81920** |          **False** |  **49.18 ms** |  **0.383 ms** |  **0.200 ms** |  **1.87** |    **0.08** |  **5800.0000** |  **500.0000** | **25,407 KB** |
-| RentedArray |      81920 |          False |  44.89 ms |  0.547 ms |  0.325 ms |  1.71 |    0.08 |   181.8182 |         - |    908 KB |
-|  HttpClient |      81920 |          False |  26.16 ms |  1.767 ms |  1.169 ms |  1.00 |    0.00 |          - |         - |    180 KB |
-|             |            |                |           |           |           |       |         |            |           |           |
-|     **Default** |      **81920** |           **True** | **206.94 ms** |  **4.793 ms** |  **3.170 ms** |  **1.09** |    **0.02** | **15000.0000** | **1000.0000** | **66,927 KB** |
-| RentedArray |      81920 |           True | 206.38 ms |  3.322 ms |  2.198 ms |  1.09 |    0.01 | 10000.0000 | 1000.0000 | 42,432 KB |
-|  HttpClient |      81920 |           True | 190.12 ms |  1.884 ms |  1.246 ms |  1.00 |    0.00 |          - |         - |    388 KB |
+| Method      | BufferSize | UseCompression | Mean      | Error     | StdDev    | Ratio | RatioSD | Gen0       | Gen1      | Allocated   | Alloc Ratio |
+|------------ |----------- |--------------- |----------:|----------:|----------:|------:|--------:|-----------:|----------:|------------:|------------:|
+| **Default**     | **4096**       | **False**          | **323.17 ms** | **49.405 ms** | **25.840 ms** |  **2.55** |    **0.20** | **10000.0000** |         **-** | **34811.52 KB** |       **35.53** |
+| RentedArray | 4096       | False          | 309.66 ms | 72.777 ms | 43.309 ms |  2.45 |    0.34 |  2000.0000 |         - |  9806.09 KB |       10.01 |
+| HttpClient  | 4096       | False          | 126.54 ms |  3.632 ms |  2.162 ms |  1.00 |    0.00 |          - |         - |   979.72 KB |        1.00 |
+|             |            |                |           |           |           |       |         |            |           |             |             |
+| **Default**     | **4096**       | **True**           | **707.82 ms** | **11.565 ms** |  **6.882 ms** |  **2.13** |    **0.04** | **20000.0000** |         **-** | **71328.57 KB** |       **63.86** |
+| RentedArray | 4096       | True           | 709.82 ms | 17.025 ms |  8.904 ms |  2.13 |    0.05 | 13000.0000 |         - | 45962.09 KB |       41.15 |
+| HttpClient  | 4096       | True           | 332.77 ms | 10.299 ms |  6.129 ms |  1.00 |    0.00 |          - |         - |  1116.89 KB |        1.00 |
+|             |            |                |           |           |           |       |         |            |           |             |             |
+| **Default**     | **65536**      | **False**          | **100.23 ms** |  **8.923 ms** |  **5.902 ms** |  **1.94** |    **0.14** |  **6750.0000** | **2250.0000** | **26741.13 KB** |       **85.19** |
+| RentedArray | 65536      | False          |  96.92 ms | 18.150 ms | 12.005 ms |  1.87 |    0.22 |   250.0000 |         - |  1151.59 KB |        3.67 |
+| HttpClient  | 65536      | False          |  51.79 ms |  3.200 ms |  2.116 ms |  1.00 |    0.00 |          - |         - |    313.9 KB |        1.00 |
+|             |            |                |           |           |           |       |         |            |           |             |             |
+| **Default**     | **65536**      | **True**           | **322.59 ms** | **12.163 ms** |  **7.238 ms** |  **1.24** |    **0.03** | **19000.0000** | **1000.0000** | **74443.98 KB** |      **188.45** |
+| RentedArray | 65536      | True           | 319.27 ms | 21.394 ms | 14.151 ms |  1.23 |    0.03 | 13000.0000 | 1000.0000 | 48929.55 KB |      123.86 |
+| HttpClient  | 65536      | True           | 260.10 ms | 10.127 ms |  6.699 ms |  1.00 |    0.00 |          - |         - |   395.04 KB |        1.00 |
+|             |            |                |           |           |           |       |         |            |           |             |             |
+| **Default**     | **81920**      | **False**          |  **76.50 ms** |  **4.749 ms** |  **3.141 ms** |  **1.96** |    **0.09** |  **6400.0000** |  **800.0000** | **26551.92 KB** |      **160.05** |
+| RentedArray | 81920      | False          |  68.19 ms |  3.541 ms |  1.852 ms |  1.73 |    0.08 |   166.6667 |         - |   988.25 KB |        5.96 |
+| HttpClient  | 81920      | False          |  39.04 ms |  2.282 ms |  1.509 ms |  1.00 |    0.00 |          - |         - |   165.89 KB |        1.00 |
+|             |            |                |           |           |           |       |         |            |           |             |             |
+| **Default**     | **81920**      | **True**           | **287.48 ms** | **12.215 ms** |  **7.269 ms** |  **1.12** |    **0.03** | **15500.0000** | **4500.0000** | **69892.27 KB** |      **179.18** |
+| RentedArray | 81920      | True           | 311.89 ms | 15.005 ms |  9.925 ms |  1.22 |    0.04 | 11000.0000 | 1000.0000 | 44421.39 KB |      113.88 |
+| HttpClient  | 81920      | True           | 256.06 ms |  8.924 ms |  5.903 ms |  1.00 |    0.00 |          - |         - |   390.06 KB |        1.00 |
 
 #### uploading
 
-``` ini
+```
 
-BenchmarkDotNet=v0.13.1, OS=Windows 10.0.19043.1348 (21H1/May2021Update)
-Intel Core i7-8750H CPU 2.20GHz (Coffee Lake), 1 CPU, 12 logical and 6 physical cores
-.NET SDK=6.0.100
-  [Host]   : .NET 6.0.0 (6.0.21.52210), X64 RyuJIT
-  ShortRun : .NET 6.0.0 (6.0.21.52210), X64 RyuJIT
+BenchmarkDotNet v0.13.10, Windows 11 (10.0.22621.2715/22H2/2022Update/SunValley2)
+Intel Core i7-8565U CPU 1.80GHz (Whiskey Lake), 1 CPU, 8 logical and 4 physical cores
+.NET SDK 8.0.100
+  [Host]   : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
+  ShortRun : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
 
 Job=ShortRun  Platform=X64  Force=True  
 Server=False  IterationCount=10  LaunchCount=1  
 RunStrategy=Throughput  WarmupCount=2  
 
 ```
-|      Method | BufferSize | UseCompression |        Mean |     Error |    StdDev | Ratio | RatioSD |      Gen 0 |     Gen 1 | Allocated |
-|------------ |----------- |--------------- |------------:|----------:|----------:|------:|--------:|-----------:|----------:|----------:|
-|     **Default** |       **4096** |          **False** |   **235.58 ms** | **74.382 ms** | **49.199 ms** |  **1.70** |    **0.33** | **10000.0000** |         **-** | **34,099 KB** |
-| RentedArray |       4096 |          False |   238.38 ms | 49.278 ms | 32.594 ms |  1.72 |    0.24 |  2000.0000 |         - |  9,775 KB |
-|  HttpClient |       4096 |          False |   138.66 ms |  4.833 ms |  3.197 ms |  1.00 |    0.00 |   250.0000 |         - |  1,734 KB |
-|             |            |                |             |           |           |       |         |            |           |           |
-|     **Default** |       **4096** |           **True** |   **539.39 ms** | **12.261 ms** |  **8.110 ms** |  **0.52** |    **0.01** | **18000.0000** | **1000.0000** | **73,785 KB** |
-| RentedArray |       4096 |           True |   549.72 ms |  7.546 ms |  4.991 ms |  0.53 |    0.00 | 19000.0000 |         - | 74,048 KB |
-|  HttpClient |       4096 |           True | 1,046.07 ms |  3.290 ms |  2.176 ms |  1.00 |    0.00 |          - |         - |    965 KB |
-|             |            |                |             |           |           |       |         |            |           |           |
-|     **Default** |      **65536** |          **False** |   **127.07 ms** | **35.136 ms** | **23.240 ms** |  **2.09** |    **0.44** |  **5800.0000** |  **800.0000** | **25,642 KB** |
-| RentedArray |      65536 |          False |   183.40 ms | 47.347 ms | 31.317 ms |  2.97 |    0.50 |   200.0000 |         - |  1,055 KB |
-|  HttpClient |      65536 |          False |    61.51 ms |  4.514 ms |  2.686 ms |  1.00 |    0.00 |   142.8571 |         - |    928 KB |
-|             |            |                |             |           |           |       |         |            |           |           |
-|     **Default** |      **65536** |           **True** |   **244.84 ms** |  **3.161 ms** |  **1.653 ms** |  **0.25** |    **0.00** | **16000.0000** | **1000.0000** | **71,681 KB** |
-| RentedArray |      65536 |           True |   246.20 ms |  5.069 ms |  3.353 ms |  0.25 |    0.00 | 17000.0000 | 4000.0000 | 71,615 KB |
-|  HttpClient |      65536 |           True |   973.48 ms |  1.701 ms |  1.125 ms |  1.00 |    0.00 |          - |         - |    509 KB |
-|             |            |                |             |           |           |       |         |            |           |           |
-|     **Default** |      **81920** |          **False** |    **93.45 ms** | **28.042 ms** | **16.687 ms** |  **1.59** |    **0.29** |  **5000.0000** |         **-** | **25,608 KB** |
-| RentedArray |      81920 |          False |   137.98 ms | 19.088 ms | 11.359 ms |  2.32 |    0.19 |   200.0000 |         - |    913 KB |
-|  HttpClient |      81920 |          False |    59.58 ms |  3.073 ms |  1.607 ms |  1.00 |    0.00 |   111.1111 |         - |    913 KB |
-|             |            |                |             |           |           |       |         |            |           |           |
-|     **Default** |      **81920** |           **True** |   **234.93 ms** |  **4.392 ms** |  **2.905 ms** |  **0.24** |    **0.00** | **15000.0000** | **1000.0000** | **67,202 KB** |
-| RentedArray |      81920 |           True |   236.11 ms |  4.141 ms |  2.166 ms |  0.24 |    0.00 | 15000.0000 | 3000.0000 | 67,134 KB |
-|  HttpClient |      81920 |           True |   971.49 ms |  2.394 ms |  1.425 ms |  1.00 |    0.00 |          - |         - |    498 KB |
+| Method      | BufferSize | UseCompression | Mean        | Error     | StdDev    | Ratio | RatioSD | Gen0       | Gen1      | Allocated   | Alloc Ratio |
+|------------ |----------- |--------------- |------------:|----------:|----------:|------:|--------:|-----------:|----------:|------------:|------------:|
+| **Default**     | **4096**       | **False**          |   **387.90 ms** | **62.950 ms** | **41.637 ms** |  **1.33** |    **0.14** | **11000.0000** |         **-** | **35826.09 KB** |       **16.91** |
+| RentedArray | 4096       | False          |   358.76 ms | 18.902 ms |  9.886 ms |  1.21 |    0.04 |  2000.0000 |         - | 10581.55 KB |        4.99 |
+| HttpClient  | 4096       | False          |   296.50 ms | 10.736 ms |  5.615 ms |  1.00 |    0.00 |          - |         - |  2118.86 KB |        1.00 |
+|             |            |                |             |           |           |       |         |            |           |             |             |
+| **Default**     | **4096**       | **True**           |   **804.77 ms** |  **9.999 ms** |  **5.230 ms** |  **0.68** |    **0.01** | **21000.0000** |         **-** | **75375.71 KB** |       **79.65** |
+| RentedArray | 4096       | True           |   813.17 ms |  8.501 ms |  5.059 ms |  0.69 |    0.00 | 22000.0000 | 1000.0000 | 75791.55 KB |       80.09 |
+| HttpClient  | 4096       | True           | 1,182.16 ms |  8.423 ms |  5.571 ms |  1.00 |    0.00 |          - |         - |   946.36 KB |        1.00 |
+|             |            |                |             |           |           |       |         |            |           |             |             |
+| **Default**     | **65536**      | **False**          |   **114.06 ms** | **20.491 ms** | **10.717 ms** |  **1.20** |    **0.08** |  **6666.6667** | **2000.0000** | **26538.08 KB** |       **31.02** |
+| RentedArray | 65536      | False          |   111.55 ms | 18.228 ms | 12.057 ms |  1.18 |    0.13 |          - |         - |   962.54 KB |        1.13 |
+| HttpClient  | 65536      | False          |    94.52 ms |  6.688 ms |  4.423 ms |  1.00 |    0.00 |          - |         - |   855.38 KB |        1.00 |
+|             |            |                |             |           |           |       |         |            |           |             |             |
+| **Default**     | **65536**      | **True**           |   **291.30 ms** | **13.902 ms** |  **9.195 ms** |  **0.28** |    **0.01** | **19000.0000** | **1000.0000** | **74304.73 KB** |      **154.42** |
+| RentedArray | 65536      | True           |   295.92 ms | 10.185 ms |  6.737 ms |  0.28 |    0.01 | 19000.0000 | 3000.0000 |  74211.5 KB |      154.23 |
+| HttpClient  | 65536      | True           | 1,053.71 ms | 11.137 ms |  7.366 ms |  1.00 |    0.00 |          - |         - |   481.17 KB |        1.00 |
+|             |            |                |             |           |           |       |         |            |           |             |             |
+| **Default**     | **81920**      | **False**          |   **111.68 ms** | **13.805 ms** |  **9.131 ms** |  **1.17** |    **0.14** |  **6500.0000** |  **750.0000** | **26391.61 KB** |       **31.41** |
+| RentedArray | 81920      | False          |   104.14 ms | 10.613 ms |  7.020 ms |  1.09 |    0.09 |          - |         - |   837.88 KB |        1.00 |
+| HttpClient  | 81920      | False          |    96.06 ms |  8.650 ms |  5.722 ms |  1.00 |    0.00 |          - |         - |   840.16 KB |        1.00 |
+|             |            |                |             |           |           |       |         |            |           |             |             |
+| **Default**     | **81920**      | **True**           |   **301.24 ms** | **18.230 ms** | **12.058 ms** |  **0.29** |    **0.01** | **16000.0000** | **5000.0000** | **69781.95 KB** |      **143.61** |
+| RentedArray | 81920      | True           |   279.92 ms |  7.996 ms |  4.182 ms |  0.27 |    0.00 | 18000.0000 | 5500.0000 | 69702.03 KB |      143.44 |
+| HttpClient  | 81920      | True           | 1,046.26 ms |  4.965 ms |  2.597 ms |  1.00 |    0.00 |          - |         - |   485.93 KB |        1.00 |
 
 ### Grpc.Net.Client.Web with Grpc.AspNetCore.Web
 
@@ -141,72 +141,72 @@ Base line is HttpClient.
 
 #### downloading
 
-``` ini
+```
 
-BenchmarkDotNet=v0.13.1, OS=Windows 10.0.19043.1348 (21H1/May2021Update)
-Intel Core i7-8750H CPU 2.20GHz (Coffee Lake), 1 CPU, 12 logical and 6 physical cores
-.NET SDK=6.0.100
-  [Host]   : .NET 6.0.0 (6.0.21.52210), X64 RyuJIT
-  ShortRun : .NET 6.0.0 (6.0.21.52210), X64 RyuJIT
+BenchmarkDotNet v0.13.10, Windows 11 (10.0.22621.2715/22H2/2022Update/SunValley2)
+Intel Core i7-8565U CPU 1.80GHz (Whiskey Lake), 1 CPU, 8 logical and 4 physical cores
+.NET SDK 8.0.100
+  [Host]   : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
+  ShortRun : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
 
 Job=ShortRun  Platform=X64  Force=True  
 Server=False  IterationCount=10  LaunchCount=1  
 RunStrategy=Throughput  WarmupCount=2  
 
 ```
-|      Method |        Mode | BufferSize | UseCompression |      Mean |     Error |    StdDev | Ratio | RatioSD |      Gen 0 |     Gen 1 | Allocated |
-|------------ |------------ |----------- |--------------- |----------:|----------:|----------:|------:|--------:|-----------:|----------:|----------:|
-|     **Default** |     **GrpcWeb** |       **4096** |          **False** | **130.12 ms** | **19.401 ms** | **12.832 ms** |  **1.74** |    **0.15** |  **6000.0000** | **1000.0000** | **25,935 KB** |
-| RentedArray |     GrpcWeb |       4096 |          False | 113.33 ms | 26.944 ms | 16.034 ms |  1.49 |    0.21 |          - |         - |  1,539 KB |
-|  HttpClient |     GrpcWeb |       4096 |          False |  76.90 ms |  2.543 ms |  1.330 ms |  1.00 |    0.00 |   142.8571 |         - |    935 KB |
-|             |             |            |                |           |           |           |       |         |            |           |           |
-|     **Default** |     **GrpcWeb** |       **4096** |           **True** | **412.46 ms** |  **3.996 ms** |  **2.643 ms** |  **1.68** |    **0.01** | **17000.0000** |         **-** | **67,378 KB** |
-| RentedArray |     GrpcWeb |       4096 |           True | 420.75 ms |  4.060 ms |  2.686 ms |  1.72 |    0.01 | 11000.0000 |         - | 43,332 KB |
-|  HttpClient |     GrpcWeb |       4096 |           True | 245.36 ms |  2.020 ms |  1.202 ms |  1.00 |    0.00 |          - |         - |  1,119 KB |
-|             |             |            |                |           |           |           |       |         |            |           |           |
-|     **Default** |     **GrpcWeb** |      **65536** |          **False** |  **37.55 ms** |  **1.653 ms** |  **0.864 ms** |  **1.14** |    **0.03** |  **5714.2857** | **1571.4286** | **24,950 KB** |
-| RentedArray |     GrpcWeb |      65536 |          False |  32.76 ms |  0.431 ms |  0.285 ms |  1.00 |    0.03 |   125.0000 |         - |    651 KB |
-|  HttpClient |     GrpcWeb |      65536 |          False |  32.87 ms |  1.612 ms |  0.959 ms |  1.00 |    0.00 |          - |         - |    280 KB |
-|             |             |            |                |           |           |           |       |         |            |           |           |
-|     **Default** |     **GrpcWeb** |      **65536** |           **True** | **208.10 ms** |  **3.586 ms** |  **2.372 ms** |  **1.08** |    **0.01** | **16000.0000** | **1000.0000** | **71,455 KB** |
-| RentedArray |     GrpcWeb |      65536 |           True | 207.73 ms |  4.958 ms |  2.950 ms |  1.08 |    0.01 | 11000.0000 | 2000.0000 | 46,931 KB |
-|  HttpClient |     GrpcWeb |      65536 |           True | 192.41 ms |  1.596 ms |  1.056 ms |  1.00 |    0.00 |          - |         - |    408 KB |
-|             |             |            |                |           |           |           |       |         |            |           |           |
-|     **Default** |     **GrpcWeb** |      **81920** |          **False** |  **37.69 ms** |  **0.900 ms** |  **0.595 ms** |  **1.44** |    **0.04** |  **5461.5385** | **1538.4615** | **24,869 KB** |
-| RentedArray |     GrpcWeb |      81920 |          False |  30.92 ms |  0.982 ms |  0.649 ms |  1.18 |    0.05 |    62.5000 |         - |    550 KB |
-|  HttpClient |     GrpcWeb |      81920 |          False |  26.17 ms |  1.288 ms |  0.852 ms |  1.00 |    0.00 |          - |         - |    178 KB |
-|             |             |            |                |           |           |           |       |         |            |           |           |
-|     **Default** |     **GrpcWeb** |      **81920** |           **True** | **206.68 ms** |  **4.956 ms** |  **3.278 ms** |  **1.09** |    **0.02** | **15000.0000** | **1000.0000** | **67,000 KB** |
-| RentedArray |     GrpcWeb |      81920 |           True | 203.05 ms |  3.776 ms |  2.498 ms |  1.07 |    0.02 | 10000.0000 |         - | 42,640 KB |
-|  HttpClient |     GrpcWeb |      81920 |           True | 189.45 ms |  1.536 ms |  0.914 ms |  1.00 |    0.00 |          - |         - |    388 KB |
-|             |             |            |                |           |           |           |       |         |            |           |           |
-|     **Default** | **GrpcWebText** |       **4096** |          **False** | **306.11 ms** |  **5.176 ms** |  **3.080 ms** |  **3.73** |    **0.12** |  **9000.0000** |         **-** | **28,235 KB** |
-| RentedArray | GrpcWebText |       4096 |          False | 156.18 ms |  9.734 ms |  5.792 ms |  1.91 |    0.09 |   333.3333 |         - |  1,547 KB |
-|  HttpClient | GrpcWebText |       4096 |          False |  82.27 ms |  5.251 ms |  2.746 ms |  1.00 |    0.00 |   166.6667 |         - |    935 KB |
-|             |             |            |                |           |           |           |       |         |            |           |           |
-|     **Default** | **GrpcWebText** |       **4096** |           **True** | **503.35 ms** |  **4.160 ms** |  **2.476 ms** |  **1.95** |    **0.03** | **17000.0000** |         **-** | **68,649 KB** |
-| RentedArray | GrpcWebText |       4096 |           True | 509.37 ms |  4.401 ms |  2.911 ms |  1.97 |    0.02 | 11000.0000 |         - | 44,354 KB |
-|  HttpClient | GrpcWebText |       4096 |           True | 257.98 ms |  4.733 ms |  3.131 ms |  1.00 |    0.00 |          - |         - |  1,085 KB |
-|             |             |            |                |           |           |           |       |         |            |           |           |
-|     **Default** | **GrpcWebText** |      **65536** |          **False** | **184.70 ms** |  **1.285 ms** |  **0.850 ms** |  **5.59** |    **0.07** |  **5333.3333** | **1000.0000** | **25,449 KB** |
-| RentedArray | GrpcWebText |      65536 |          False |  64.60 ms |  3.661 ms |  1.915 ms |  1.95 |    0.08 |          - |         - |    375 KB |
-|  HttpClient | GrpcWebText |      65536 |          False |  33.10 ms |  0.886 ms |  0.463 ms |  1.00 |    0.00 |    62.5000 |         - |    316 KB |
-|             |             |            |                |           |           |           |       |         |            |           |           |
-|     **Default** | **GrpcWebText** |      **65536** |           **True** | **248.41 ms** |  **3.881 ms** |  **2.567 ms** |  **1.29** |    **0.01** | **16000.0000** | **1000.0000** | **71,527 KB** |
-| RentedArray | GrpcWebText |      65536 |           True | 246.52 ms |  2.627 ms |  1.563 ms |  1.28 |    0.01 | 11000.0000 | 2000.0000 | 47,009 KB |
-|  HttpClient | GrpcWebText |      65536 |           True | 192.30 ms |  0.914 ms |  0.605 ms |  1.00 |    0.00 |          - |         - |    410 KB |
-|             |             |            |                |           |           |           |       |         |            |           |           |
-|     **Default** | **GrpcWebText** |      **81920** |          **False** | **186.51 ms** |  **5.703 ms** |  **3.772 ms** |  **7.08** |    **0.27** |  **5000.0000** | **1000.0000** | **25,271 KB** |
-| RentedArray | GrpcWebText |      81920 |          False |  53.55 ms |  0.559 ms |  0.370 ms |  2.03 |    0.06 |          - |         - |    430 KB |
-|  HttpClient | GrpcWebText |      81920 |          False |  26.42 ms |  1.434 ms |  0.854 ms |  1.00 |    0.00 |          - |         - |    179 KB |
-|             |             |            |                |           |           |           |       |         |            |           |           |
-|     **Default** | **GrpcWebText** |      **81920** |           **True** | **247.57 ms** | **11.360 ms** |  **6.760 ms** |  **1.09** |    **0.13** | **15000.0000** | **1000.0000** | **67,060 KB** |
-| RentedArray | GrpcWebText |      81920 |           True | 253.05 ms |  5.542 ms |  3.298 ms |  1.11 |    0.12 | 10000.0000 |  500.0000 | 42,575 KB |
-|  HttpClient | GrpcWebText |      81920 |           True | 227.77 ms | 38.034 ms | 25.157 ms |  1.00 |    0.00 |          - |         - |    391 KB |
+| Method      | Mode        | BufferSize | UseCompression | Mean      | Error     | StdDev    | Ratio | RatioSD | Gen0       | Gen1      | Allocated   | Alloc Ratio |
+|------------ |------------ |----------- |--------------- |----------:|----------:|----------:|------:|--------:|-----------:|----------:|------------:|------------:|
+| **Default**     | **GrpcWeb**     | **4096**       | **False**          | **147.93 ms** | **20.721 ms** | **10.838 ms** |  **1.24** |    **0.11** |  **7000.0000** |         **-** | **26971.11 KB** |       **27.58** |
+| RentedArray | GrpcWeb     | 4096       | False          | 151.62 ms | 70.290 ms | 41.828 ms |  1.28 |    0.38 |          - |         - |  1597.31 KB |        1.63 |
+| HttpClient  | GrpcWeb     | 4096       | False          | 119.49 ms |  9.875 ms |  5.876 ms |  1.00 |    0.00 |          - |         - |      978 KB |        1.00 |
+|             |             |            |                |           |           |           |       |         |            |           |             |             |
+| **Default**     | **GrpcWeb**     | **4096**       | **True**           | **596.92 ms** | **13.339 ms** |  **8.823 ms** |  **1.82** |    **0.04** | **20000.0000** |         **-** | **69975.52 KB** |       **62.67** |
+| RentedArray | GrpcWeb     | 4096       | True           | 594.54 ms | 12.112 ms |  7.207 ms |  1.82 |    0.03 | 12000.0000 |         - |  44245.8 KB |       39.63 |
+| HttpClient  | GrpcWeb     | 4096       | True           | 327.59 ms |  9.237 ms |  5.496 ms |  1.00 |    0.00 |          - |         - |  1116.58 KB |        1.00 |
+|             |             |            |                |           |           |           |       |         |            |           |             |             |
+| **Default**     | **GrpcWeb**     | **65536**      | **False**          |  **57.70 ms** |  **3.834 ms** |  **2.282 ms** |  **1.12** |    **0.06** |  **6625.0000** |  **375.0000** | **26169.82 KB** |       **83.25** |
+| RentedArray | GrpcWeb     | 65536      | False          |  52.47 ms |  3.695 ms |  2.199 ms |  1.02 |    0.06 |   111.1111 |         - |    715.7 KB |        2.28 |
+| HttpClient  | GrpcWeb     | 65536      | False          |  51.51 ms |  3.193 ms |  2.112 ms |  1.00 |    0.00 |          - |         - |   314.35 KB |        1.00 |
+|             |             |            |                |           |           |           |       |         |            |           |             |             |
+| **Default**     | **GrpcWeb**     | **65536**      | **True**           | **272.00 ms** |  **7.523 ms** |  **4.477 ms** |  **0.88** |    **0.05** | **19000.0000** | **2000.0000** | **74149.15 KB** |      **185.09** |
+| RentedArray | GrpcWeb     | 65536      | True           | 272.85 ms |  9.206 ms |  6.089 ms |  0.88 |    0.05 | 13000.0000 |  500.0000 | 48636.94 KB |      121.41 |
+| HttpClient  | GrpcWeb     | 65536      | True           | 309.13 ms | 24.317 ms | 16.084 ms |  1.00 |    0.00 |          - |         - |    400.6 KB |        1.00 |
+|             |             |            |                |           |           |           |       |         |            |           |             |             |
+| **Default**     | **GrpcWeb**     | **81920**      | **False**          |  **61.37 ms** |  **4.647 ms** |  **3.074 ms** |  **1.45** |    **0.06** |  **6250.0000** | **1250.0000** | **25968.76 KB** |      **155.11** |
+| RentedArray | GrpcWeb     | 81920      | False          |  51.86 ms |  3.554 ms |  2.351 ms |  1.23 |    0.06 |   100.0000 |         - |   533.78 KB |        3.19 |
+| HttpClient  | GrpcWeb     | 81920      | False          |  42.31 ms |  5.191 ms |  3.433 ms |  1.00 |    0.00 |          - |         - |   167.43 KB |        1.00 |
+|             |             |            |                |           |           |           |       |         |            |           |             |             |
+| **Default**     | **GrpcWeb**     | **81920**      | **True**           | **263.88 ms** |  **6.101 ms** |  **4.035 ms** |  **1.02** |    **0.02** | **15500.0000** | **5000.0000** | **69658.57 KB** |      **178.96** |
+| RentedArray | GrpcWeb     | 81920      | True           | 262.74 ms |  6.372 ms |  3.792 ms |  1.02 |    0.02 | 11500.0000 |  500.0000 | 44178.01 KB |      113.50 |
+| HttpClient  | GrpcWeb     | 81920      | True           | 258.15 ms |  9.593 ms |  6.345 ms |  1.00 |    0.00 |          - |         - |   389.24 KB |        1.00 |
+|             |             |            |                |           |           |           |       |         |            |           |             |             |
+| **Default**     | **GrpcWebText** | **4096**       | **False**          | **363.98 ms** | **10.681 ms** |  **7.065 ms** |  **3.18** |    **0.10** |  **9000.0000** |         **-** | **29035.36 KB** |       **29.72** |
+| RentedArray | GrpcWebText | 4096       | False          | 201.11 ms | 40.348 ms | 24.010 ms |  1.75 |    0.22 |          - |         - |  1626.68 KB |        1.67 |
+| HttpClient  | GrpcWebText | 4096       | False          | 114.83 ms |  5.730 ms |  3.410 ms |  1.00 |    0.00 |          - |         - |   976.98 KB |        1.00 |
+|             |             |            |                |           |           |           |       |         |            |           |             |             |
+| **Default**     | **GrpcWebText** | **4096**       | **True**           | **667.13 ms** | **32.868 ms** | **21.740 ms** |  **2.01** |    **0.07** | **19000.0000** |         **-** | **71028.75 KB** |       **63.85** |
+| RentedArray | GrpcWebText | 4096       | True           | 674.30 ms | 14.481 ms |  8.618 ms |  2.02 |    0.06 | 13000.0000 |         - | 46187.93 KB |       41.52 |
+| HttpClient  | GrpcWebText | 4096       | True           | 331.81 ms | 16.349 ms | 10.814 ms |  1.00 |    0.00 |          - |         - |  1112.42 KB |        1.00 |
+|             |             |            |                |           |           |           |       |         |            |           |             |             |
+| **Default**     | **GrpcWebText** | **65536**      | **False**          | **247.79 ms** | **43.136 ms** | **28.532 ms** |  **4.39** |    **0.59** |  **6000.0000** | **1000.0000** | **26479.41 KB** |       **84.44** |
+| RentedArray | GrpcWebText | 65536      | False          |  88.24 ms |  7.451 ms |  4.928 ms |  1.56 |    0.13 |          - |         - |   580.89 KB |        1.85 |
+| HttpClient  | GrpcWebText | 65536      | False          |  56.56 ms |  4.065 ms |  2.689 ms |  1.00 |    0.00 |          - |         - |    313.6 KB |        1.00 |
+|             |             |            |                |           |           |           |       |         |            |           |             |             |
+| **Default**     | **GrpcWebText** | **65536**      | **True**           | **318.59 ms** |  **9.199 ms** |  **4.811 ms** |  **1.22** |    **0.03** | **18000.0000** | **1000.0000** | **74222.05 KB** |      **188.13** |
+| RentedArray | GrpcWebText | 65536      | True           | 333.65 ms | 20.271 ms | 13.408 ms |  1.28 |    0.04 | 13000.0000 |         - | 48716.63 KB |      123.48 |
+| HttpClient  | GrpcWebText | 65536      | True           | 260.52 ms |  9.831 ms |  5.850 ms |  1.00 |    0.00 |          - |         - |   394.54 KB |        1.00 |
+|             |             |            |                |           |           |           |       |         |            |           |             |             |
+| **Default**     | **GrpcWebText** | **81920**      | **False**          | **235.03 ms** | **17.348 ms** | **11.474 ms** |  **6.35** |    **0.26** |  **6000.0000** | **2000.0000** | **26286.03 KB** |      **157.28** |
+| RentedArray | GrpcWebText | 81920      | False          |  86.07 ms |  8.671 ms |  5.736 ms |  2.35 |    0.12 |          - |         - |   470.26 KB |        2.81 |
+| HttpClient  | GrpcWebText | 81920      | False          |  37.41 ms |  1.601 ms |  0.837 ms |  1.00 |    0.00 |          - |         - |   167.13 KB |        1.00 |
+|             |             |            |                |           |           |           |       |         |            |           |             |             |
+| **Default**     | **GrpcWebText** | **81920**      | **True**           | **321.46 ms** | **24.680 ms** | **16.324 ms** |  **1.25** |    **0.05** | **15000.0000** | **5000.0000** | **69717.29 KB** |      **179.53** |
+| RentedArray | GrpcWebText | 81920      | True           | 316.19 ms | 11.792 ms |  6.167 ms |  1.23 |    0.02 | 11000.0000 | 5000.0000 | 44236.48 KB |      113.92 |
+| HttpClient  | GrpcWebText | 81920      | True           | 256.94 ms |  9.817 ms |  6.493 ms |  1.00 |    0.00 |          - |         - |   388.32 KB |        1.00 |
 
 #### uploading
 
-Uploading is not implemented because of grpc-web limitations, see [gRPC-Web and streaming](https://docs.microsoft.com/en-us/aspnet/core/grpc/browser?view=aspnetcore-6.0#grpc-web-and-streaming):  
+Uploading is not implemented because of grpc-web limitations, see [gRPC-Web and streaming](https://learn.microsoft.com/en-us/aspnet/core/grpc/grpcweb?view=aspnetcore-8.0#grpc-web-and-streaming):  
 
 *... clients don't support calling client streaming and bidirectional streaming methods ...* 
 
@@ -216,73 +216,73 @@ Base line is RentedArray.
 
 #### downloading
 
-``` ini
+```
 
-BenchmarkDotNet=v0.13.1, OS=Windows 10.0.19043.1348 (21H1/May2021Update)
-Intel Core i7-8750H CPU 2.20GHz (Coffee Lake), 1 CPU, 12 logical and 6 physical cores
-.NET SDK=6.0.100
-  [Host]   : .NET 6.0.0 (6.0.21.52210), X64 RyuJIT
-  ShortRun : .NET 6.0.0 (6.0.21.52210), X64 RyuJIT
+BenchmarkDotNet v0.13.10, Windows 11 (10.0.22621.2715/22H2/2022Update/SunValley2)
+Intel Core i7-8565U CPU 1.80GHz (Whiskey Lake), 1 CPU, 8 logical and 4 physical cores
+.NET SDK 8.0.100
+  [Host]   : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
+  ShortRun : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
 
 Job=ShortRun  Platform=X64  Force=True  
 Server=False  IterationCount=10  LaunchCount=1  
 RunStrategy=Throughput  WarmupCount=2  
 
 ```
-|      Method | BufferSize | UseCompression |        Mean |      Error |    StdDev | Ratio | RatioSD |     Gen 0 |     Gen 1 | Allocated |
-|------------ |----------- |--------------- |------------:|-----------:|----------:|------:|--------:|----------:|----------:|----------:|
-|     **Default** |       **4096** |          **False** |   **358.18 ms** |   **6.917 ms** |  **4.575 ms** |  **1.02** |    **0.02** | **8000.0000** |         **-** | **28,459 KB** |
-| RentedArray |       4096 |          False |   352.30 ms |   7.561 ms |  5.001 ms |  1.00 |    0.00 |         - |         - |  4,062 KB |
-|             |            |                |             |            |           |       |         |           |           |           |
-|     **Default** |       **4096** |           **True** | **1,337.67 ms** | **136.077 ms** | **90.007 ms** |  **0.95** |    **0.09** | **9000.0000** |         **-** | **28,457 KB** |
-| RentedArray |       4096 |           True | 1,411.86 ms | 117.042 ms | 77.416 ms |  1.00 |    0.00 |         - |         - |  4,062 KB |
-|             |            |                |             |            |           |       |         |           |           |           |
-|     **Default** |      **65536** |          **False** |    **41.95 ms** |   **8.258 ms** |  **5.462 ms** |  **1.13** |    **0.15** | **5833.3333** |  **416.6667** | **24,862 KB** |
-| RentedArray |      65536 |          False |    37.10 ms |   0.718 ms |  0.375 ms |  1.00 |    0.00 |         - |         - |    280 KB |
-|             |            |                |             |            |           |       |         |           |           |           |
-|     **Default** |      **65536** |           **True** | **1,334.83 ms** |   **6.416 ms** |  **4.244 ms** |  **1.00** |    **0.00** | **5000.0000** | **1000.0000** | **24,864 KB** |
-| RentedArray |      65536 |           True | 1,334.82 ms |   4.681 ms |  3.096 ms |  1.00 |    0.00 |         - |         - |    287 KB |
-|             |            |                |             |            |           |       |         |           |           |           |
-|     **Default** |      **81920** |          **False** |    **38.25 ms** |   **6.419 ms** |  **4.246 ms** |  **1.23** |    **0.14** | **5800.0000** |  **133.3333** | **24,798 KB** |
-| RentedArray |      81920 |          False |    31.06 ms |   0.666 ms |  0.440 ms |  1.00 |    0.00 |   31.2500 |         - |    230 KB |
-|             |            |                |             |            |           |       |         |           |           |           |
-|     **Default** |      **81920** |           **True** | **1,384.10 ms** |  **89.714 ms** | **59.340 ms** |  **0.98** |    **0.08** | **5000.0000** | **1000.0000** | **24,799 KB** |
-| RentedArray |      81920 |           True | 1,411.79 ms |  90.170 ms | 59.642 ms |  1.00 |    0.00 |         - |         - |    240 KB |
+| Method      | BufferSize | UseCompression | Mean        | Error     | StdDev    | Ratio | RatioSD | Gen0       | Gen1      | Allocated   | Alloc Ratio |
+|------------ |----------- |--------------- |------------:|----------:|----------:|------:|--------:|-----------:|----------:|------------:|------------:|
+| **Default**     | **4096**       | **False**          |   **629.18 ms** | **23.016 ms** | **13.697 ms** |  **1.00** |    **0.03** |  **9000.0000** |         **-** | **29741.66 KB** |        **6.90** |
+| RentedArray | 4096       | False          |   629.15 ms | 10.697 ms |  7.075 ms |  1.00 |    0.00 |  1000.0000 |         - |  4308.78 KB |        1.00 |
+|             |            |                |             |           |           |       |         |            |           |             |             |
+| **Default**     | **4096**       | **True**           | **1,593.62 ms** | **73.985 ms** | **48.937 ms** |  **0.86** |    **0.03** | **11000.0000** |         **-** | **29495.27 KB** |        **7.16** |
+| RentedArray | 4096       | True           | 1,861.84 ms | 60.837 ms | 36.203 ms |  1.00 |    0.00 |  1000.0000 |         - |  4120.49 KB |        1.00 |
+|             |            |                |             |           |           |       |         |            |           |             |             |
+| **Default**     | **65536**      | **False**          |    **70.82 ms** |  **2.398 ms** |  **1.586 ms** |  **1.06** |    **0.03** |  **6857.1429** | **1285.7143** |  **25872.7 KB** |       **87.30** |
+| RentedArray | 65536      | False          |    66.77 ms |  2.158 ms |  1.428 ms |  1.00 |    0.00 |          - |         - |   296.38 KB |        1.00 |
+|             |            |                |             |           |           |       |         |            |           |             |             |
+| **Default**     | **65536**      | **True**           | **1,430.41 ms** | **60.081 ms** | **39.740 ms** |  **1.00** |    **0.04** |  **6000.0000** | **2000.0000** | **25860.77 KB** |       **90.14** |
+| RentedArray | 65536      | True           | 1,428.20 ms | 59.777 ms | 39.539 ms |  1.00 |    0.00 |          - |         - |   286.91 KB |        1.00 |
+|             |            |                |             |           |           |       |         |            |           |             |             |
+| **Default**     | **81920**      | **False**          |    **63.51 ms** |  **1.776 ms** |  **1.175 ms** |  **1.05** |    **0.02** |  **6500.0000** | **1125.0000** | **25805.67 KB** |      **105.84** |
+| RentedArray | 81920      | False          |    60.55 ms |  1.977 ms |  1.308 ms |  1.00 |    0.00 |          - |         - |   243.82 KB |        1.00 |
+|             |            |                |             |           |           |       |         |            |           |             |             |
+| **Default**     | **81920**      | **True**           | **1,400.55 ms** | **16.810 ms** |  **8.792 ms** |  **0.95** |    **0.02** |  **6000.0000** |         **-** | **25795.41 KB** |      **109.85** |
+| RentedArray | 81920      | True           | 1,468.33 ms | 36.853 ms | 24.376 ms |  1.00 |    0.00 |          - |         - |   234.82 KB |        1.00 |
 
 #### uploading
 
-``` ini
+```
 
-BenchmarkDotNet=v0.13.1, OS=Windows 10.0.19043.1348 (21H1/May2021Update)
-Intel Core i7-8750H CPU 2.20GHz (Coffee Lake), 1 CPU, 12 logical and 6 physical cores
-.NET SDK=6.0.100
-  [Host]   : .NET 6.0.0 (6.0.21.52210), X64 RyuJIT
-  ShortRun : .NET 6.0.0 (6.0.21.52210), X64 RyuJIT
+BenchmarkDotNet v0.13.10, Windows 11 (10.0.22621.2715/22H2/2022Update/SunValley2)
+Intel Core i7-8565U CPU 1.80GHz (Whiskey Lake), 1 CPU, 8 logical and 4 physical cores
+.NET SDK 8.0.100
+  [Host]   : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
+  ShortRun : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
 
 Job=ShortRun  Platform=X64  Force=True  
 Server=False  IterationCount=10  LaunchCount=1  
 RunStrategy=Throughput  WarmupCount=2  
 
 ```
-|      Method | BufferSize | UseCompression |        Mean |      Error |    StdDev | Ratio | RatioSD |     Gen 0 |     Gen 1 | Allocated |
-|------------ |----------- |--------------- |------------:|-----------:|----------:|------:|--------:|----------:|----------:|----------:|
-|     **Default** |       **4096** |          **False** |   **314.45 ms** |   **4.290 ms** |  **2.553 ms** |  **1.00** |    **0.02** | **8000.0000** |         **-** | **28,354 KB** |
-| RentedArray |       4096 |          False |   313.99 ms |   5.032 ms |  3.328 ms |  1.00 |    0.00 |         - |         - |  3,957 KB |
-|             |            |                |             |            |           |       |         |           |           |           |
-|     **Default** |       **4096** |           **True** | **1,320.64 ms** | **144.151 ms** | **95.347 ms** |  **0.95** |    **0.07** | **8000.0000** |         **-** | **28,354 KB** |
-| RentedArray |       4096 |           True | 1,388.63 ms | 104.606 ms | 69.190 ms |  1.00 |    0.00 |         - |         - |  3,963 KB |
-|             |            |                |             |            |           |       |         |           |           |           |
-|     **Default** |      **65536** |          **False** |    **36.78 ms** |   **1.766 ms** |  **1.051 ms** |  **0.98** |    **0.03** | **5857.1429** |  **785.7143** | **24,853 KB** |
-| RentedArray |      65536 |          False |    37.56 ms |   0.614 ms |  0.406 ms |  1.00 |    0.00 |         - |         - |    271 KB |
-|             |            |                |             |            |           |       |         |           |           |           |
-|     **Default** |      **65536** |           **True** | **1,389.68 ms** |  **91.018 ms** | **60.203 ms** |  **0.96** |    **0.04** | **5000.0000** | **1000.0000** | **24,857 KB** |
-| RentedArray |      65536 |           True | 1,448.46 ms |   3.801 ms |  2.514 ms |  1.00 |    0.00 |         - |         - |    274 KB |
-|             |            |                |             |            |           |       |         |           |           |           |
-|     **Default** |      **81920** |          **False** |    **37.99 ms** |   **6.515 ms** |  **4.309 ms** |  **1.20** |    **0.15** | **5785.7143** |   **71.4286** | **24,790 KB** |
-| RentedArray |      81920 |          False |    32.27 ms |   4.185 ms |  2.490 ms |  1.00 |    0.00 |         - |         - |    222 KB |
-|             |            |                |             |            |           |       |         |           |           |           |
-|     **Default** |      **81920** |           **True** | **1,448.21 ms** |  **60.078 ms** | **39.738 ms** |  **1.05** |    **0.05** | **5000.0000** | **1000.0000** | **24,799 KB** |
-| RentedArray |      81920 |           True | 1,384.04 ms |  85.777 ms | 56.736 ms |  1.00 |    0.00 |         - |         - |    225 KB |
+| Method      | BufferSize | UseCompression | Mean        | Error      | StdDev     | Ratio | RatioSD | Gen0       | Gen1      | Allocated   | Alloc Ratio |
+|------------ |----------- |--------------- |------------:|-----------:|-----------:|------:|--------:|-----------:|----------:|------------:|------------:|
+| **Default**     | **4096**       | **False**          |   **646.74 ms** |   **9.141 ms** |   **6.046 ms** |  **1.00** |    **0.01** |  **9000.0000** |         **-** | **29590.13 KB** |        **6.97** |
+| RentedArray | 4096       | False          |   643.61 ms |   9.916 ms |   6.559 ms |  1.00 |    0.00 |  1000.0000 |         - |  4242.76 KB |        1.00 |
+|             |            |                |             |            |            |       |         |            |           |             |             |
+| **Default**     | **4096**       | **True**           | **1,620.29 ms** |  **56.620 ms** |  **37.451 ms** |  **0.81** |    **0.08** | **12000.0000** |         **-** | **29392.35 KB** |        **7.32** |
+| RentedArray | 4096       | True           | 2,029.47 ms | 338.871 ms | 224.142 ms |  1.00 |    0.00 |          - |         - |  4017.91 KB |        1.00 |
+|             |            |                |             |            |            |       |         |            |           |             |             |
+| **Default**     | **65536**      | **False**          |    **72.41 ms** |   **2.735 ms** |   **1.627 ms** |  **1.01** |    **0.03** |  **6857.1429** |  **285.7143** | **25861.56 KB** |       **90.46** |
+| RentedArray | 65536      | False          |    71.37 ms |   2.670 ms |   1.766 ms |  1.00 |    0.00 |          - |         - |    285.9 KB |        1.00 |
+|             |            |                |             |            |            |       |         |            |           |             |             |
+| **Default**     | **65536**      | **True**           | **1,475.59 ms** |  **56.640 ms** |  **33.705 ms** |  **1.02** |    **0.04** |  **6000.0000** | **2000.0000** | **25856.01 KB** |       **93.15** |
+| RentedArray | 65536      | True           | 1,448.76 ms |  62.727 ms |  41.490 ms |  1.00 |    0.00 |          - |         - |   277.57 KB |        1.00 |
+|             |            |                |             |            |            |       |         |            |           |             |             |
+| **Default**     | **81920**      | **False**          |    **64.43 ms** |   **1.627 ms** |   **1.076 ms** |  **1.03** |    **0.03** |  **6500.0000** |  **875.0000** | **25797.91 KB** |      **109.81** |
+| RentedArray | 81920      | False          |    62.52 ms |   2.135 ms |   1.412 ms |  1.00 |    0.00 |          - |         - |   234.93 KB |        1.00 |
+|             |            |                |             |            |            |       |         |            |           |             |             |
+| **Default**     | **81920**      | **True**           | **1,426.31 ms** |  **62.744 ms** |  **41.502 ms** |  **1.01** |    **0.04** |  **6000.0000** |         **-** |    **25788 KB** |      **113.23** |
+| RentedArray | 81920      | True           | 1,412.62 ms |  47.480 ms |  28.255 ms |  1.00 |    0.00 |          - |         - |   227.74 KB |        1.00 |
 
 ### Grpc.Net.Client vs Grpc.Core.Channel, server is Grpc.AspNetCore.Server
 
@@ -290,82 +290,82 @@ Base line is HttpClient.
 
 #### downloading
 
-``` ini
+```
 
-BenchmarkDotNet=v0.13.1, OS=Windows 10.0.19043.1348 (21H1/May2021Update)
-Intel Core i7-8750H CPU 2.20GHz (Coffee Lake), 1 CPU, 12 logical and 6 physical cores
-.NET SDK=6.0.100
-  [Host]   : .NET 6.0.0 (6.0.21.52210), X64 RyuJIT
-  ShortRun : .NET 6.0.0 (6.0.21.52210), X64 RyuJIT
+BenchmarkDotNet v0.13.10, Windows 11 (10.0.22621.2715/22H2/2022Update/SunValley2)
+Intel Core i7-8565U CPU 1.80GHz (Whiskey Lake), 1 CPU, 8 logical and 4 physical cores
+.NET SDK 8.0.100
+  [Host]   : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
+  ShortRun : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
 
 Job=ShortRun  Platform=X64  Force=True  
 Server=False  IterationCount=10  LaunchCount=1  
 RunStrategy=Throughput  WarmupCount=2  
 
 ```
-|      Method | BufferSize | UseCompression |      Mean |     Error |    StdDev | Ratio | RatioSD |      Gen 0 |     Gen 1 | Allocated |
-|------------ |----------- |--------------- |----------:|----------:|----------:|------:|--------:|-----------:|----------:|----------:|
-| **CoreChannel** |       **4096** |          **False** | **225.02 ms** | **11.710 ms** |  **7.745 ms** |  **2.90** |    **0.09** |          **-** |         **-** |  **3,297 KB** |
-|  NetChannel |       4096 |          False | 135.01 ms | 40.095 ms | 26.520 ms |  1.77 |    0.30 |          - |         - |  2,145 KB |
-|  HttpClient |       4096 |          False |  78.07 ms |  2.397 ms |  1.427 ms |  1.00 |    0.00 |   200.0000 |         - |    936 KB |
-|             |            |                |           |           |           |       |         |            |           |           |
-| **CoreChannel** |       **4096** |           **True** | **477.48 ms** | **14.665 ms** |  **9.700 ms** |  **1.90** |    **0.06** |  **3000.0000** |         **-** | **14,330 KB** |
-|  NetChannel |       4096 |           True | 438.07 ms |  3.567 ms |  1.866 ms |  1.74 |    0.03 | 11000.0000 |         - | 43,381 KB |
-|  HttpClient |       4096 |           True | 251.11 ms |  6.279 ms |  4.153 ms |  1.00 |    0.00 |          - |         - |  1,108 KB |
-|             |            |                |           |           |           |       |         |            |           |           |
-| **CoreChannel** |      **65536** |          **False** |  **39.81 ms** |  **0.741 ms** |  **0.490 ms** |  **1.23** |    **0.06** |    **76.9231** |         **-** |    **640 KB** |
-|  NetChannel |      65536 |          False |  48.31 ms |  0.284 ms |  0.188 ms |  1.49 |    0.07 |   181.8182 |         - |  1,030 KB |
-|  HttpClient |      65536 |          False |  32.56 ms |  2.513 ms |  1.496 ms |  1.00 |    0.00 |          - |         - |    281 KB |
-|             |            |                |           |           |           |       |         |            |           |           |
-| **CoreChannel** |      **65536** |           **True** | **218.03 ms** |  **7.324 ms** |  **4.845 ms** |  **1.13** |    **0.03** |  **4000.0000** |         **-** | **21,962 KB** |
-|  NetChannel |      65536 |           True | 210.41 ms |  3.505 ms |  2.318 ms |  1.09 |    0.01 | 11000.0000 | 2000.0000 | 46,848 KB |
-|  HttpClient |      65536 |           True | 192.27 ms |  1.021 ms |  0.675 ms |  1.00 |    0.00 |          - |         - |    412 KB |
-|             |            |                |           |           |           |       |         |            |           |           |
-| **CoreChannel** |      **81920** |          **False** |  **36.39 ms** |  **0.876 ms** |  **0.521 ms** |  **1.42** |    **0.03** |    **71.4286** |         **-** |    **518 KB** |
-|  NetChannel |      81920 |          False |  44.21 ms |  0.309 ms |  0.184 ms |  1.72 |    0.02 |   181.8182 |         - |    854 KB |
-|  HttpClient |      81920 |          False |  25.71 ms |  0.617 ms |  0.323 ms |  1.00 |    0.00 |    31.2500 |         - |    180 KB |
-|             |            |                |           |           |           |       |         |            |           |           |
-| **CoreChannel** |      **81920** |           **True** | **208.22 ms** |  **5.226 ms** |  **3.457 ms** |  **1.10** |    **0.02** |  **3000.0000** |         **-** | **17,636 KB** |
-|  NetChannel |      81920 |           True | 205.56 ms |  4.479 ms |  2.665 ms |  1.09 |    0.01 | 10000.0000 | 1000.0000 | 42,434 KB |
-|  HttpClient |      81920 |           True | 189.33 ms |  0.824 ms |  0.491 ms |  1.00 |    0.00 |          - |         - |    438 KB |
+| Method      | BufferSize | UseCompression | Mean      | Error     | StdDev    | Ratio | RatioSD | Gen0       | Gen1      | Allocated   | Alloc Ratio |
+|------------ |----------- |--------------- |----------:|----------:|----------:|------:|--------:|-----------:|----------:|------------:|------------:|
+| **CoreChannel** | **4096**       | **False**          | **411.24 ms** | **40.826 ms** | **27.004 ms** |  **3.33** |    **0.21** |  **2000.0000** |         **-** |  **8206.52 KB** |        **8.41** |
+| NetChannel  | 4096       | False          | 309.60 ms | 65.427 ms | 38.935 ms |  2.49 |    0.29 |  2000.0000 |         - |   9474.7 KB |        9.71 |
+| HttpClient  | 4096       | False          | 123.73 ms | 10.306 ms |  6.817 ms |  1.00 |    0.00 |          - |         - |   975.76 KB |        1.00 |
+|             |            |                |           |           |           |       |         |            |           |             |             |
+| **CoreChannel** | **4096**       | **True**           | **776.61 ms** | **38.810 ms** | **25.671 ms** |  **2.38** |    **0.06** |  **3000.0000** |         **-** | **14728.14 KB** |       **13.23** |
+| NetChannel  | 4096       | True           | 710.61 ms | 11.204 ms |  6.667 ms |  2.17 |    0.05 | 13000.0000 |         - | 46030.49 KB |       41.33 |
+| HttpClient  | 4096       | True           | 328.00 ms | 13.128 ms |  7.812 ms |  1.00 |    0.00 |          - |         - |  1113.61 KB |        1.00 |
+|             |            |                |           |           |           |       |         |            |           |             |             |
+| **CoreChannel** | **65536**      | **False**          |  **66.60 ms** |  **3.407 ms** |  **2.253 ms** |  **1.29** |    **0.05** |   **142.8571** |         **-** |   **746.04 KB** |        **2.38** |
+| NetChannel  | 65536      | False          |  92.41 ms | 10.809 ms |  7.150 ms |  1.79 |    0.12 |   250.0000 |         - |  1152.35 KB |        3.68 |
+| HttpClient  | 65536      | False          |  51.58 ms |  2.932 ms |  1.940 ms |  1.00 |    0.00 |          - |         - |   312.97 KB |        1.00 |
+|             |            |                |           |           |           |       |         |            |           |             |             |
+| **CoreChannel** | **65536**      | **True**           | **299.80 ms** |  **5.558 ms** |  **3.308 ms** |  **1.16** |    **0.02** |  **5500.0000** |  **500.0000** | **22998.85 KB** |       **58.05** |
+| NetChannel  | 65536      | True           | 327.81 ms | 17.172 ms | 11.359 ms |  1.27 |    0.03 | 12000.0000 | 2000.0000 | 48937.21 KB |      123.53 |
+| HttpClient  | 65536      | True           | 258.18 ms |  8.066 ms |  4.800 ms |  1.00 |    0.00 |          - |         - |   396.17 KB |        1.00 |
+|             |            |                |           |           |           |       |         |            |           |             |             |
+| **CoreChannel** | **81920**      | **False**          |  **59.92 ms** |  **4.120 ms** |  **2.725 ms** |  **1.56** |    **0.09** |   **125.0000** |         **-** |   **600.33 KB** |        **3.59** |
+| NetChannel  | 81920      | False          |  69.87 ms |  5.580 ms |  3.691 ms |  1.82 |    0.07 |   166.6667 |         - |  1003.44 KB |        6.00 |
+| HttpClient  | 81920      | False          |  38.49 ms |  3.187 ms |  2.108 ms |  1.00 |    0.00 |          - |         - |    167.3 KB |        1.00 |
+|             |            |                |           |           |           |       |         |            |           |             |             |
+| **CoreChannel** | **81920**      | **True**           | **290.93 ms** | **10.525 ms** |  **6.962 ms** |  **1.14** |    **0.02** |  **4500.0000** |  **500.0000** | **18548.43 KB** |       **47.74** |
+| NetChannel  | 81920      | True           | 324.17 ms | 33.095 ms | 21.890 ms |  1.29 |    0.07 | 11000.0000 | 1000.0000 | 44431.94 KB |      114.35 |
+| HttpClient  | 81920      | True           | 254.59 ms |  7.657 ms |  4.556 ms |  1.00 |    0.00 |          - |         - |   388.56 KB |        1.00 |
 
 #### uploading
 
-``` ini
+```
 
-BenchmarkDotNet=v0.13.1, OS=Windows 10.0.19043.1348 (21H1/May2021Update)
-Intel Core i7-8750H CPU 2.20GHz (Coffee Lake), 1 CPU, 12 logical and 6 physical cores
-.NET SDK=6.0.100
-  [Host]   : .NET 6.0.0 (6.0.21.52210), X64 RyuJIT
-  ShortRun : .NET 6.0.0 (6.0.21.52210), X64 RyuJIT
+BenchmarkDotNet v0.13.10, Windows 11 (10.0.22621.2715/22H2/2022Update/SunValley2)
+Intel Core i7-8565U CPU 1.80GHz (Whiskey Lake), 1 CPU, 8 logical and 4 physical cores
+.NET SDK 8.0.100
+  [Host]   : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
+  ShortRun : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
 
 Job=ShortRun  Platform=X64  Force=True  
 Server=False  IterationCount=10  LaunchCount=1  
 RunStrategy=Throughput  WarmupCount=2  
 
 ```
-|      Method | BufferSize | UseCompression |        Mean |     Error |    StdDev | Ratio | RatioSD |      Gen 0 |     Gen 1 | Allocated |
-|------------ |----------- |--------------- |------------:|----------:|----------:|------:|--------:|-----------:|----------:|----------:|
-| **CoreChannel** |       **4096** |          **False** |   **371.81 ms** |  **6.840 ms** |  **4.070 ms** |  **2.71** |    **0.08** |  **1000.0000** |         **-** |  **4,661 KB** |
-|  NetChannel |       4096 |          False |   248.31 ms | 60.477 ms | 40.002 ms |  1.81 |    0.30 |  2000.0000 |         - |  9,753 KB |
-|  HttpClient |       4096 |          False |   137.16 ms |  4.382 ms |  2.898 ms |  1.00 |    0.00 |   250.0000 |         - |  1,787 KB |
-|             |            |                |             |           |           |       |         |            |           |           |
-| **CoreChannel** |       **4096** |           **True** | **1,184.76 ms** |  **6.843 ms** |  **4.526 ms** |  **1.13** |    **0.00** |  **9000.0000** |         **-** | **31,985 KB** |
-|  NetChannel |       4096 |           True |   538.63 ms | 12.651 ms |  8.368 ms |  0.51 |    0.01 | 19000.0000 |         - | 74,219 KB |
-|  HttpClient |       4096 |           True | 1,047.47 ms |  3.066 ms |  2.028 ms |  1.00 |    0.00 |          - |         - |    969 KB |
-|             |            |                |             |           |           |       |         |            |           |           |
-| **CoreChannel** |      **65536** |          **False** |    **99.84 ms** | **27.737 ms** | **18.346 ms** |  **1.67** |    **0.32** |          **-** |         **-** |    **340 KB** |
-|  NetChannel |      65536 |          False |   168.23 ms | 26.512 ms | 15.777 ms |  2.69 |    0.19 |   200.0000 |         - |  1,046 KB |
-|  HttpClient |      65536 |          False |    61.60 ms |  4.394 ms |  2.298 ms |  1.00 |    0.00 |   166.6667 |         - |    929 KB |
-|             |            |                |             |           |           |       |         |            |           |           |
-| **CoreChannel** |      **65536** |           **True** | **1,341.30 ms** |  **3.696 ms** |  **2.444 ms** |  **1.37** |    **0.01** |  **5000.0000** | **1000.0000** | **24,981 KB** |
-|  NetChannel |      65536 |           True |   247.47 ms |  4.031 ms |  2.667 ms |  0.25 |    0.00 | 17000.0000 | 4000.0000 | 71,615 KB |
-|  HttpClient |      65536 |           True |   978.91 ms |  5.343 ms |  3.534 ms |  1.00 |    0.00 |          - |         - |    576 KB |
-|             |            |                |             |           |           |       |         |            |           |           |
-| **CoreChannel** |      **81920** |          **False** |    **65.71 ms** |  **6.724 ms** |  **4.001 ms** |  **1.06** |    **0.10** |          **-** |         **-** |    **277 KB** |
-|  NetChannel |      81920 |          False |   122.06 ms | 26.638 ms | 17.619 ms |  1.94 |    0.35 |   200.0000 |         - |    913 KB |
-|  HttpClient |      81920 |          False |    63.63 ms |  9.077 ms |  6.004 ms |  1.00 |    0.00 |   111.1111 |         - |    912 KB |
-|             |            |                |             |           |           |       |         |            |           |           |
-| **CoreChannel** |      **81920** |           **True** | **1,352.48 ms** |  **2.140 ms** |  **1.416 ms** |  **1.39** |    **0.00** |  **5000.0000** | **1000.0000** | **24,895 KB** |
-|  NetChannel |      81920 |           True |   236.48 ms |  5.517 ms |  3.649 ms |  0.24 |    0.00 | 15000.0000 | 4000.0000 | 67,114 KB |
-|  HttpClient |      81920 |           True |   973.06 ms |  1.798 ms |  1.189 ms |  1.00 |    0.00 |          - |         - |    497 KB |
+| Method      | BufferSize | UseCompression | Mean        | Error     | StdDev    | Ratio | RatioSD | Gen0       | Gen1      | Allocated   | Alloc Ratio |
+|------------ |----------- |--------------- |------------:|----------:|----------:|------:|--------:|-----------:|----------:|------------:|------------:|
+| **CoreChannel** | **4096**       | **False**          |   **637.82 ms** | **20.519 ms** | **12.210 ms** |  **2.12** |    **0.10** |  **1000.0000** |         **-** |  **4286.43 KB** |        **2.05** |
+| NetChannel  | 4096       | False          |   369.40 ms | 44.404 ms | 29.371 ms |  1.24 |    0.09 |  2000.0000 |         - |  10006.5 KB |        4.79 |
+| HttpClient  | 4096       | False          |   301.14 ms | 23.209 ms | 13.811 ms |  1.00 |    0.00 |          - |         - |  2090.03 KB |        1.00 |
+|             |            |                |             |           |           |       |         |            |           |             |             |
+| **CoreChannel** | **4096**       | **True**           | **1,484.24 ms** | **20.004 ms** | **13.231 ms** |  **1.25** |    **0.01** |  **9000.0000** |         **-** | **31809.13 KB** |       **33.62** |
+| NetChannel  | 4096       | True           |   808.76 ms | 12.949 ms |  7.706 ms |  0.68 |    0.01 | 22000.0000 |         - | 75958.02 KB |       80.28 |
+| HttpClient  | 4096       | True           | 1,187.51 ms | 17.150 ms |  8.970 ms |  1.00 |    0.00 |          - |         - |   946.22 KB |        1.00 |
+|             |            |                |             |           |           |       |         |            |           |             |             |
+| **CoreChannel** | **65536**      | **False**          |    **80.62 ms** |  **4.547 ms** |  **3.007 ms** |  **0.85** |    **0.07** |          **-** |         **-** |   **305.06 KB** |        **0.36** |
+| NetChannel  | 65536      | False          |   113.53 ms | 10.268 ms |  6.792 ms |  1.19 |    0.11 |          - |         - |   965.99 KB |        1.13 |
+| HttpClient  | 65536      | False          |    95.44 ms |  7.371 ms |  4.875 ms |  1.00 |    0.00 |          - |         - |   856.23 KB |        1.00 |
+|             |            |                |             |           |           |       |         |            |           |             |             |
+| **CoreChannel** | **65536**      | **True**           | **1,376.87 ms** | **12.393 ms** |  **8.197 ms** |  **1.31** |    **0.01** |  **6000.0000** | **1000.0000** | **25879.13 KB** |       **53.63** |
+| NetChannel  | 65536      | True           |   294.45 ms | 13.142 ms |  8.692 ms |  0.28 |    0.01 | 19000.0000 | 3500.0000 | 74211.34 KB |      153.78 |
+| HttpClient  | 65536      | True           | 1,053.40 ms |  6.539 ms |  4.325 ms |  1.00 |    0.00 |          - |         - |   482.58 KB |        1.00 |
+|             |            |                |             |           |           |       |         |            |           |             |             |
+| **CoreChannel** | **81920**      | **False**          |    **70.53 ms** |  **2.260 ms** |  **1.495 ms** |  **0.75** |    **0.03** |          **-** |         **-** |   **249.54 KB** |        **0.30** |
+| NetChannel  | 81920      | False          |   107.56 ms |  8.817 ms |  5.832 ms |  1.15 |    0.07 |          - |         - |    831.2 KB |        0.99 |
+| HttpClient  | 81920      | False          |    93.70 ms |  5.445 ms |  3.240 ms |  1.00 |    0.00 |          - |         - |    840.1 KB |        1.00 |
+|             |            |                |             |           |           |       |         |            |           |             |             |
+| **CoreChannel** | **81920**      | **True**           | **1,381.99 ms** |  **8.621 ms** |  **5.130 ms** |  **1.32** |    **0.01** |  **6000.0000** |         **-** | **25815.63 KB** |       **53.39** |
+| NetChannel  | 81920      | True           |   284.71 ms | 13.595 ms |  8.992 ms |  0.27 |    0.01 | 17500.0000 | 5500.0000 | 69703.09 KB |      144.16 |
+| HttpClient  | 81920      | True           | 1,046.93 ms |  6.212 ms |  3.696 ms |  1.00 |    0.00 |          - |         - |   483.52 KB |        1.00 |
