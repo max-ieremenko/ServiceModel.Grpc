@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,9 +34,9 @@ public static class Program
 
     private static async Task RunTests()
     {
-        await RunUnaryCallBenchmark<CombinedUnaryCallBenchmark>();
-        await RunUnaryCallBenchmark<ClientUnaryCallBenchmark>();
-        await RunUnaryCallBenchmark<ServerUnaryCallBenchmark>();
+        await RunUnaryCallBenchmark<CombinedUnaryCallBenchmark>().ConfigureAwait(false);
+        await RunUnaryCallBenchmark<ClientUnaryCallBenchmark>().ConfigureAwait(false);
+        await RunUnaryCallBenchmark<ServerUnaryCallBenchmark>().ConfigureAwait(false);
 
         RunMarshallerBenchmark<MessagePackMarshallerBenchmark>();
         RunMarshallerBenchmark<ProtobufMarshallerBenchmark>();
@@ -50,25 +50,25 @@ public static class Program
         benchmark.GlobalSetup();
 
         await benchmark.ServiceModelGrpcDataContract().ConfigureAwait(false);
-        Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcDataContract), await new T().GetServiceModelGrpcDataContractSize());
+        Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcDataContract), await new T().GetServiceModelGrpcDataContractSize().ConfigureAwait(false));
 
         await benchmark.ServiceModelGrpcProtobuf().ConfigureAwait(false);
-        Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcProtobuf), await new T().GetServiceModelGrpcProtobufSize());
+        Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcProtobuf), await new T().GetServiceModelGrpcProtobufSize().ConfigureAwait(false));
 
         await benchmark.ServiceModelGrpcMessagePack().ConfigureAwait(false);
-        Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcMessagePack), await new T().GetServiceModelGrpcMessagePackSize());
+        Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcMessagePack), await new T().GetServiceModelGrpcMessagePackSize().ConfigureAwait(false));
 
         await benchmark.ServiceModelGrpcProto().ConfigureAwait(false);
-        Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcProto), await new T().GetServiceModelGrpcProtoSize());
+        Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcProto), await new T().GetServiceModelGrpcProtoSize().ConfigureAwait(false));
 
         await benchmark.Native().ConfigureAwait(false);
-        Console.WriteLine("{0}: {1}", nameof(benchmark.Native), await new T().GetNativeSize());
+        Console.WriteLine("{0}: {1}", nameof(benchmark.Native), await new T().GetNativeSize().ConfigureAwait(false));
 
         await benchmark.ProtobufGrpc().ConfigureAwait(false);
-        Console.WriteLine("{0}: {1}", nameof(benchmark.ProtobufGrpc), await new T().GetProtobufGrpcSize());
+        Console.WriteLine("{0}: {1}", nameof(benchmark.ProtobufGrpc), await new T().GetProtobufGrpcSize().ConfigureAwait(false));
 
         await benchmark.MagicOnion().ConfigureAwait(false);
-        Console.WriteLine("{0}: {1}", nameof(benchmark.MagicOnion), await new T().GetMagicOnionSize());
+        Console.WriteLine("{0}: {1}", nameof(benchmark.MagicOnion), await new T().GetMagicOnionSize().ConfigureAwait(false));
 
         benchmark.GlobalCleanup();
     }

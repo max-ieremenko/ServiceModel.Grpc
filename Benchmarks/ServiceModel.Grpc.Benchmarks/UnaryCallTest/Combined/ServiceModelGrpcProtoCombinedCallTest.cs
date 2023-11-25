@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,9 +36,9 @@ internal sealed class ServiceModelGrpcProtoCombinedCallTest : IUnaryCallTest
     private readonly GrpcChannel _channel;
     private readonly ITestService _proxy;
 
-    public ServiceModelGrpcProtoCombinedCallTest(SomeObject payload)
+    public ServiceModelGrpcProtoCombinedCallTest(SomeObjectProto payload)
     {
-        _payload = DomainExtensions.CopyToProto(payload);
+        _payload = payload;
 
         var builder = new WebHostBuilder().UseStartup<Startup>();
         _server = new TestServer(builder);

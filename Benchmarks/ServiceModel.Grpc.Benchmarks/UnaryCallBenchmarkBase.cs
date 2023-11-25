@@ -39,11 +39,12 @@ public abstract class UnaryCallBenchmarkBase
     public void GlobalSetup()
     {
         var payload = DomainExtensions.CreateSomeObject();
+        var protoPayload = DomainExtensions.CopyToProto(payload);
         _serviceModelGrpcDataContract = CreateServiceModelGrpc(DataContractMarshallerFactory.Default, payload);
         _serviceModelGrpcProtobuf = CreateServiceModelGrpc(ProtobufMarshallerFactory.Default, payload);
         _serviceModelGrpcMessagePack = CreateServiceModelGrpc(MessagePackMarshallerFactory.Default, payload);
-        _serviceModelGrpcProto = CreateServiceModelGrpcProto(payload);
-        _native = CreateNativeGrpc(payload);
+        _serviceModelGrpcProto = CreateServiceModelGrpcProto(protoPayload);
+        _native = CreateNativeGrpc(protoPayload);
         _protobufGrpc = CreateProtobufGrpc(payload);
         _magicOnion = CreateMagicOnion(payload);
     }
@@ -72,13 +73,13 @@ public abstract class UnaryCallBenchmarkBase
     [PayloadSizeColumn(nameof(GetServiceModelGrpcMessagePackSize))]
     public Task ServiceModelGrpcMessagePack() => _serviceModelGrpcMessagePack.PingPongAsync();
 
-    [Benchmark(Description = "ServiceModelGrpc.proto-emulation")]
-    [PayloadSizeColumn(nameof(GetServiceModelGrpcProtoSize))]
-    public Task ServiceModelGrpcProto() => _serviceModelGrpcProto.PingPongAsync();
-
     [Benchmark(Baseline = true, Description = "grpc-dotnet")]
     [PayloadSizeColumn(nameof(GetNativeSize))]
     public Task Native() => _native.PingPongAsync();
+
+    [Benchmark(Description = "ServiceModelGrpc.proto-emulation")]
+    [PayloadSizeColumn(nameof(GetServiceModelGrpcProtoSize))]
+    public Task ServiceModelGrpcProto() => _serviceModelGrpcProto.PingPongAsync();
 
     [Benchmark(Description = "protobuf-net.Grpc")]
     [PayloadSizeColumn(nameof(GetProtobufGrpcSize))]
@@ -125,9 +126,9 @@ public abstract class UnaryCallBenchmarkBase
 
     internal abstract IUnaryCallTest CreateServiceModelGrpc(IMarshallerFactory marshallerFactory, SomeObject payload);
 
-    internal abstract IUnaryCallTest CreateServiceModelGrpcProto(SomeObject payload);
+    internal abstract IUnaryCallTest CreateServiceModelGrpcProto(SomeObjectProto payload);
 
-    internal abstract IUnaryCallTest CreateNativeGrpc(SomeObject payload);
+    internal abstract IUnaryCallTest CreateNativeGrpc(SomeObjectProto payload);
 
     internal abstract IUnaryCallTest CreateProtobufGrpc(SomeObject payload);
 

@@ -46,7 +46,7 @@ internal sealed class MagicOnionCombinedCallTest : IUnaryCallTest
     public async Task PingPongAsync()
     {
         var call = _proxy.PingPong(_payload);
-        await call;
+        await call.ResponseAsync.ConfigureAwait(false);
         call.Dispose();
     }
 

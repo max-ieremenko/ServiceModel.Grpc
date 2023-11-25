@@ -27,25 +27,33 @@ internal sealed class GoogleProtoMarshallerFactory : IMarshallerFactory
 {
     public static readonly IMarshallerFactory Default = new GoogleProtoMarshallerFactory();
 
+    private readonly object _someObjectProtoMarshaller = Marshallers.Create(Serialize, Deserialize);
+
     public Marshaller<T> CreateMarshaller<T>()
     {
-        Action<T, SerializationContext> serializer = Serialize;
-        Func<DeserializationContext, T> deserializer = Deserialize<T>;
-        return new Marshaller<T>(serializer, deserializer);
+        if (typeof(T) == typeof(Message<SomeObjectProto>))
+        {
+            return (Marshaller<T>)_someObjectProtoMarshaller;
+        }
+
+        return Marshallers.Create(FailSerialize, FailDeserialize<T>);
     }
 
-    private static void Serialize<T>(T value, SerializationContext context)
+    private static void Serialize(Message<SomeObjectProto> value, SerializationContext context)
     {
-        var message = (Message<SomeObjectProto>)((object)value!);
-        context.SetPayloadLength(message.Value1.CalculateSize());
-        message.Value1.WriteTo(context.GetBufferWriter());
+        var message = value.Value1;
+        context.SetPayloadLength(message.CalculateSize());
+        message.WriteTo(context.GetBufferWriter());
         context.Complete();
     }
 
-    private static T Deserialize<T>(DeserializationContext context)
+    private static Message<SomeObjectProto> Deserialize(DeserializationContext context)
     {
         var value = SomeObjectProto.Parser.ParseFrom(context.PayloadAsReadOnlySequence());
-        object result = new Message<SomeObjectProto>(value);
-        return (T)result;
+        return new Message<SomeObjectProto>(value);
     }
+
+    private static T FailDeserialize<T>(DeserializationContext value) => throw new NotImplementedException();
+
+    private static void FailSerialize<T>(T value, SerializationContext context) => throw new NotImplementedException();
 }
