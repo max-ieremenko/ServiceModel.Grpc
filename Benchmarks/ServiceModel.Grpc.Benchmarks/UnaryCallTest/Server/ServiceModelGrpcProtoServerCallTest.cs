@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,18 +32,17 @@ internal sealed class ServiceModelGrpcProtoServerCallTest : IUnaryCallTest
     private readonly HttpClient _client;
     private readonly StubHttpRequest _request;
 
-    public ServiceModelGrpcProtoServerCallTest(SomeObject payload)
+    public ServiceModelGrpcProtoServerCallTest(SomeObjectProto payload)
     {
         var builder = new WebHostBuilder().UseStartup<Startup>();
 
         _server = new TestServer(builder);
         _client = _server.CreateClient();
 
-        var proto = DomainExtensions.CopyToProto(payload);
         _request = new StubHttpRequest(
             _client,
             "/ITestService/PingPongProto",
-            MessageSerializer.Create(GoogleProtoMarshallerFactory.Default, new Message<SomeObjectProto>(proto)));
+            MessageSerializer.Create(GoogleProtoMarshallerFactory.Default, new Message<SomeObjectProto>(payload)));
     }
 
     public Task PingPongAsync() => _request.SendAsync();

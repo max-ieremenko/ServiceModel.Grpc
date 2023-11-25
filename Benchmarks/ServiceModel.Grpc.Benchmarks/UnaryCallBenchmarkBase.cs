@@ -39,11 +39,12 @@ public abstract class UnaryCallBenchmarkBase
     public void GlobalSetup()
     {
         var payload = DomainExtensions.CreateSomeObject();
+        var protoPayload = DomainExtensions.CopyToProto(payload);
         _serviceModelGrpcDataContract = CreateServiceModelGrpc(DataContractMarshallerFactory.Default, payload);
         _serviceModelGrpcProtobuf = CreateServiceModelGrpc(ProtobufMarshallerFactory.Default, payload);
         _serviceModelGrpcMessagePack = CreateServiceModelGrpc(MessagePackMarshallerFactory.Default, payload);
-        _serviceModelGrpcProto = CreateServiceModelGrpcProto(payload);
-        _native = CreateNativeGrpc(payload);
+        _serviceModelGrpcProto = CreateServiceModelGrpcProto(protoPayload);
+        _native = CreateNativeGrpc(protoPayload);
         _protobufGrpc = CreateProtobufGrpc(payload);
         _magicOnion = CreateMagicOnion(payload);
     }
@@ -125,9 +126,9 @@ public abstract class UnaryCallBenchmarkBase
 
     internal abstract IUnaryCallTest CreateServiceModelGrpc(IMarshallerFactory marshallerFactory, SomeObject payload);
 
-    internal abstract IUnaryCallTest CreateServiceModelGrpcProto(SomeObject payload);
+    internal abstract IUnaryCallTest CreateServiceModelGrpcProto(SomeObjectProto payload);
 
-    internal abstract IUnaryCallTest CreateNativeGrpc(SomeObject payload);
+    internal abstract IUnaryCallTest CreateNativeGrpc(SomeObjectProto payload);
 
     internal abstract IUnaryCallTest CreateProtobufGrpc(SomeObject payload);
 

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright 2021-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,12 +28,12 @@ public class CombinedUnaryCallBenchmark : UnaryCallBenchmarkBase
         return new ServiceModelGrpcCombinedCallTest(marshallerFactory, payload);
     }
 
-    internal override IUnaryCallTest CreateServiceModelGrpcProto(SomeObject payload)
+    internal override IUnaryCallTest CreateServiceModelGrpcProto(SomeObjectProto payload)
     {
         return new ServiceModelGrpcProtoCombinedCallTest(payload);
     }
 
-    internal override IUnaryCallTest CreateNativeGrpc(SomeObject payload)
+    internal override IUnaryCallTest CreateNativeGrpc(SomeObjectProto payload)
     {
         return new NativeGrpcCombinedCallTest(payload);
     }
