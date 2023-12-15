@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,4 +40,9 @@ public sealed class ImportGrpcServiceAttribute : Attribute
     /// Gets a service contract type to map requests to.
     /// </summary>
     public Type ServiceContract { get; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to generate extension methods for ServiceModel.Grpc.Client.DependencyInjection.
+    /// </summary>
+    public bool GenerateDependencyInjectionExtensions { get; set; }
 }

@@ -15,10 +15,13 @@
 // </copyright>
 
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using ServiceModel.Grpc.AspNetCore.TestApi;
+using ServiceModel.Grpc.Client.DependencyInjection;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
+using Shouldly;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Test.AspNetCore;
 
@@ -39,6 +42,9 @@ public partial class MultipurposeServiceTest : MultipurposeServiceTestBase
                     o =>
                     {
                     });
+
+                services.AddServiceModelGrpcClient<IMultipurposeService>();
+                services.AddMultipurposeServiceClient();
             })
             .ConfigureEndpoints(endpoints =>
             {
@@ -47,8 +53,7 @@ public partial class MultipurposeServiceTest : MultipurposeServiceTestBase
 
         await _host.StartAsync().ConfigureAwait(false);
 
-        _host.ClientFactory.AddMultipurposeServiceClient();
-        DomainService = _host.ClientFactory.CreateClient<IMultipurposeService>(_host.Channel);
+        DomainService = _host.Services.GetRequiredService<IMultipurposeService>().ShouldBeOfType<GrpcServices.MultipurposeServiceClient>();
     }
 
     [OneTimeTearDown]

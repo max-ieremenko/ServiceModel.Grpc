@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright 2020-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ using ServiceModel.Grpc.TestApi.Domain;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Test;
 
-[ImportGrpcService(typeof(IMultipurposeService))]
+[ImportGrpcService(typeof(IMultipurposeService), GenerateDependencyInjectionExtensions = true)]
 [ExportGrpcService(typeof(IMultipurposeService))]
 [ImportGrpcService(typeof(IContract))]
 [ImportGrpcService(typeof(IGenericContract<int, string>))]
