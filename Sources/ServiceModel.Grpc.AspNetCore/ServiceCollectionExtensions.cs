@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright 2020-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,17 +38,55 @@ public static class ServiceCollectionExtensions
     /// Enables ServiceModel.Grpc services for the specific <see cref="IServiceCollection"/>.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <returns>The <see cref="IGrpcServerBuilder"/>.</returns>
+    public static IGrpcServerBuilder AddServiceModelGrpc(this IServiceCollection services)
+    {
+        GrpcPreconditions.CheckNotNull(services, nameof(services));
+
+        return AddServiceModelGrpc(services, (Action<ServiceModelGrpcServiceOptions>)null!);
+    }
+
+    /// <summary>
+    /// Enables ServiceModel.Grpc services for the specific <see cref="IServiceCollection"/>.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <param name="configure">The optional configuration action to provide default configuration for all ServiceModel.Grpc services.</param>
     /// <returns>The <see cref="IGrpcServerBuilder"/>.</returns>
     public static IGrpcServerBuilder AddServiceModelGrpc(
         this IServiceCollection services,
-        Action<ServiceModelGrpcServiceOptions>? configure = default)
+        Action<ServiceModelGrpcServiceOptions> configure)
     {
         GrpcPreconditions.CheckNotNull(services, nameof(services));
 
+        Action<ServiceModelGrpcServiceOptions, IServiceProvider>? providerConfigure = null;
+
+        //// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         if (configure != null)
+            //// ReSharper restore ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         {
-            services.Configure(configure);
+            providerConfigure = (options, _) => configure(options);
+        }
+
+        return AddServiceModelGrpc(services, providerConfigure!);
+    }
+
+    /// <summary>
+    /// Enables ServiceModel.Grpc services for the specific <see cref="IServiceCollection"/>.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <param name="configure">The optional configuration action to provide default configuration for all ServiceModel.Grpc services.</param>
+    /// <returns>The <see cref="IGrpcServerBuilder"/>.</returns>
+    public static IGrpcServerBuilder AddServiceModelGrpc(
+        this IServiceCollection services,
+        Action<ServiceModelGrpcServiceOptions, IServiceProvider> configure)
+    {
+        GrpcPreconditions.CheckNotNull(services, nameof(services));
+
+        //// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        if (configure != null)
+            //// ReSharper restore ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        {
+            services.AddOptions<ServiceModelGrpcServiceOptions>().Configure(configure);
             services.TryAddTransient<IPostConfigureOptions<GrpcServiceOptions>, PostConfigureGrpcServiceOptions>();
         }
 
@@ -76,6 +114,24 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
+    /// Registers a configuration for the specific ServiceModel.Grpc service in the <see cref="IGrpcServerBuilder"/>.
+    /// </summary>
+    /// <typeparam name="TService">The implementation type of ServiceModel.Grpc service.</typeparam>
+    /// <param name="builder">The <see cref="IGrpcServerBuilder"/>.</param>
+    /// <param name="configure">The configuration action to provide a configuration the specific ServiceModel.Grpc service.</param>
+    /// <returns><see cref="IGrpcServerBuilder"/>.</returns>
+    public static IGrpcServerBuilder AddServiceModelGrpcServiceOptions<TService>(
+        this IGrpcServerBuilder builder,
+        Action<ServiceModelGrpcServiceOptions<TService>, IServiceProvider> configure)
+        where TService : class
+    {
+        GrpcPreconditions.CheckNotNull(builder, nameof(builder));
+
+        AddServiceModelGrpcServiceOptions(builder.Services, configure);
+        return builder;
+    }
+
+    /// <summary>
     /// Registers a configuration for the specific ServiceModel.Grpc service in the <see cref="IServiceCollection"/>.
     /// </summary>
     /// <typeparam name="TService">The implementation type of ServiceModel.Grpc service.</typeparam>
@@ -90,7 +146,27 @@ public static class ServiceCollectionExtensions
         GrpcPreconditions.CheckNotNull(services, nameof(services));
         GrpcPreconditions.CheckNotNull(configure, nameof(configure));
 
-        services.Configure(configure);
+        Action<ServiceModelGrpcServiceOptions<TService>, IServiceProvider> providerConfigure = (options, _) => configure(options);
+
+        return AddServiceModelGrpcServiceOptions(services, providerConfigure);
+    }
+
+    /// <summary>
+    /// Registers a configuration for the specific ServiceModel.Grpc service in the <see cref="IServiceCollection"/>.
+    /// </summary>
+    /// <typeparam name="TService">The implementation type of ServiceModel.Grpc service.</typeparam>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <param name="configure">The configuration action to provide a configuration the specific ServiceModel.Grpc service.</param>
+    /// <returns><see cref="IServiceCollection"/>.</returns>
+    public static IServiceCollection AddServiceModelGrpcServiceOptions<TService>(
+        this IServiceCollection services,
+        Action<ServiceModelGrpcServiceOptions<TService>, IServiceProvider> configure)
+        where TService : class
+    {
+        GrpcPreconditions.CheckNotNull(services, nameof(services));
+        GrpcPreconditions.CheckNotNull(configure, nameof(configure));
+
+        services.AddOptions<ServiceModelGrpcServiceOptions<TService>>().Configure(configure);
         services.TryAddTransient<IPostConfigureOptions<GrpcServiceOptions<TService>>, PostConfigureGrpcServiceOptions<TService>>();
 
         return services;
