@@ -23,6 +23,27 @@
           "Version": "6.0.0"
         }
       ]
+    },
+    {
+      "Name": "ClientDI",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net6.0",
+        "net7.0",
+        "net8.0",
+        "netstandard2.0",
+        "netstandard2.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.Extensions.DependencyInjection.Abstractions",
+          "Version": "6.0.0"
+        },
+        {
+          "Name": "Microsoft.Extensions.Primitives",
+          "Version": "6.0.0"
+        }
+      ]
     }
   ],
   "Licenses": [

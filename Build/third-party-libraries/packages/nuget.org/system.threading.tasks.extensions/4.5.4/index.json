@@ -6,6 +6,23 @@
   },
   "UsedBy": [
     {
+      "Name": "ClientDI",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net6.0",
+        "net7.0",
+        "net8.0",
+        "netstandard2.0",
+        "netstandard2.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Runtime.CompilerServices.Unsafe",
+          "Version": "6.0.0"
+        }
+      ]
+    },
+    {
       "Name": "Core",
       "InternalOnly": false,
       "TargetFrameworks": [
