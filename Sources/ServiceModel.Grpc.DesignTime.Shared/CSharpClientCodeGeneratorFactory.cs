@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2022 Max Ieremenko
+// Copyright 2020-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,18 +23,26 @@ namespace ServiceModel.Grpc.DesignTime.Generator;
 internal sealed class CSharpClientCodeGeneratorFactory : ICodeGeneratorFactory
 {
     private readonly ContractDescription _contract;
+    private readonly bool _generateDiExtensions;
     private readonly bool _canUseStaticExtensions;
 
     public CSharpClientCodeGeneratorFactory(
         ContractDescription contract,
+        bool generateDiExtensions,
         bool canUseStaticExtensions)
     {
         _contract = contract;
+        _generateDiExtensions = generateDiExtensions;
         _canUseStaticExtensions = canUseStaticExtensions;
     }
 
     public IEnumerable<CodeGeneratorBase> GetGenerators()
     {
+        if (_generateDiExtensions)
+        {
+            yield return new CSharpClientDiExtensionBuilder(_contract, _canUseStaticExtensions);
+        }
+
         yield return new CSharpClientFactoryExtensionBuilder(_contract, _canUseStaticExtensions);
         yield return new CSharpClientBuilderBuilder(_contract);
         yield return new CSharpClientBuilder(_contract);

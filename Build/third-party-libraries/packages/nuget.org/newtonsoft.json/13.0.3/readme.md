@@ -1,7 +1,7 @@
 Newtonsoft.Json [13.0.3](https://www.nuget.org/packages/Newtonsoft.Json/13.0.3)
 --------------------
 
-Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, Core internal, DesignTime internal, SelfHost internal
+Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, SelfHost internal
 
 Target frameworks: net462, net6.0, net7.0, net8.0
 

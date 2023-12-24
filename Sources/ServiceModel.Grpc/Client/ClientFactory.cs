@@ -57,6 +57,19 @@ public sealed class ClientFactory : IClientFactory
     }
 
     /// <summary>
+    /// Determines whether the <typeparamref name="TContract"/> is valid for creating proxy instances.
+    /// </summary>
+    /// <typeparam name="TContract">The service contract type.</typeparam>
+    public static void VerifyClient<TContract>()
+    {
+        var contractType = typeof(TContract);
+        if (!ReflectionTools.IsPublicInterface(contractType) || contractType.IsGenericTypeDefinition)
+        {
+            throw new NotSupportedException("{0} is not supported. Client contract must be public interface.".FormatWith(contractType));
+        }
+    }
+
+    /// <summary>
     /// Configures the factory to generate a proxy automatically for gRPC service contract <typeparamref name="TContract"/> with specific options.
     /// </summary>
     /// <typeparam name="TContract">The service contract type.</typeparam>
@@ -68,7 +81,8 @@ public sealed class ClientFactory : IClientFactory
     }
 
     /// <summary>
-    /// Configures the factory to use a builder for proxy creation with specific options.
+    /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+    /// This API may change or be removed in future releases.
     /// </summary>
     /// <typeparam name="TContract">The service contract type.</typeparam>
     /// <param name="builder">The proxy builder.</param>
@@ -139,11 +153,9 @@ public sealed class ClientFactory : IClientFactory
     private object RegisterClient<TContract>(IClientBuilder<TContract>? userBuilder, Action<ServiceModelGrpcClientOptions>? configure)
         where TContract : class
     {
-        var contractType = typeof(TContract);
-
-        if (userBuilder == null && (!ReflectionTools.IsPublicInterface(contractType) || contractType.IsGenericTypeDefinition))
+        if (userBuilder == null)
         {
-            throw new NotSupportedException("{0} is not supported. Client contract must be public interface.".FormatWith(contractType));
+            VerifyClient<TContract>();
         }
 
         var options = ConfigureClient(configure);
@@ -160,6 +172,7 @@ public sealed class ClientFactory : IClientFactory
         IClientBuilder<TContract> builder;
         lock (_syncRoot)
         {
+            var contractType = typeof(TContract);
             if (_builderByContract.ContainsKey(contractType))
             {
                 throw new InvalidOperationException("Client for contract {0} is already initialized and cannot be changed.".FormatWith(contractType.FullName));

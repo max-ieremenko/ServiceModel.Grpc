@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Net.Http;
 using Contract;
 using Grpc.Core;
 using Grpc.Net.Client;
 using Microsoft.Extensions.DependencyInjection;
-using ServiceModel.Grpc.Client;
+using ServiceModel.Grpc.Client.DependencyInjection;
 
 namespace Client.Services;
 
@@ -22,9 +23,10 @@ internal static class ServiceProviderBuilder
             return new Channel(address.Host, address.Port, ChannelCredentials.Insecure);
         });
 
-        AddClientFactoryWithAuthorization(services);
-        AddDemoService(services);
-        AddTokenProvider(services);
+        services
+            .AddTokenProvider()
+            .AddClientFactoryWithAuthorization()
+            .AddClient<IDemoService>();
 
         return services.BuildServiceProvider();
     }
@@ -33,65 +35,71 @@ internal static class ServiceProviderBuilder
     {
         var services = new ServiceCollection();
 
-        // register Grpc.Net.Client.GrpcChannel
+        // Grpc.Net.Client.GrpcChannel
         services.AddSingleton<ChannelBase>(_ => GrpcChannel.ForAddress(ServerAddress, new GrpcChannelOptions()));
 
-        AddClientFactoryWithAuthorization(services);
-        AddDemoService(services);
-        AddTokenProvider(services);
+        services
+            .AddTokenProvider()
+            .AddClientFactoryWithAuthorization()
+            .AddClient<IDemoService>();
 
         return services.BuildServiceProvider();
     }
 
-    public static ServiceProvider BuildWithAuthorizationMessageHandler()
+    public static ServiceProvider BuildWithAuthorizationMessageHandler1()
     {
         var services = new ServiceCollection();
 
-        // register Grpc.Net.Client.GrpcChannel
+        // Grpc.Net.Client.GrpcChannel
         services.AddSingleton<ChannelBase>(provider =>
         {
-            var handler = new HttpMessageHandlerWithAuthorization(provider.GetRequiredService<IJwtTokenProvider>());
+            var handler = new HttpMessageHandlerWithAuthorization(
+                new HttpClientHandler(),
+                provider.GetRequiredService<IJwtTokenProvider>());
+
             var options = new GrpcChannelOptions { HttpHandler = handler };
 
             return GrpcChannel.ForAddress(ServerAddress, options);
         });
 
-        // register ClientFactory with default options
-        services.AddSingleton<IClientFactory, ClientFactory>();
+        services
+            .AddTokenProvider()
+            .AddClientFactoryWithAuthorization()
+            .AddClient<IDemoService>();
 
-        AddDemoService(services);
+        return services.BuildServiceProvider();
+    }
+
+    public static ServiceProvider BuildWithAuthorizationMessageHandler2()
+    {
+        var services = new ServiceCollection();
+
+        // register Grpc.Net.Client.GrpcChannel
+        services
+            .AddGrpcClient<IDemoService>(options =>
+            {
+                options.Address = new Uri(ServerAddress);
+            })
+            .AddHttpMessageHandler(provider =>
+            {
+                return new HttpMessageHandlerWithAuthorization(provider.GetRequiredService<IJwtTokenProvider>());
+            })
+            .ConfigureServiceModelGrpcClientCreator<IDemoService>();
+
         AddTokenProvider(services);
 
         return services.BuildServiceProvider();
     }
 
-    private static void AddDemoService(IServiceCollection services)
-    {
-        // resolve IDemoService from ClientFactory
-        services.AddTransient<IDemoService>(provider =>
-        {
-            var channel = provider.GetRequiredService<ChannelBase>();
-            var clientFactory = provider.GetRequiredService<IClientFactory>();
-            return clientFactory.CreateClient<IDemoService>(channel);
-        });
-    }
+    private static IServiceCollection AddTokenProvider(this IServiceCollection services) => services.AddSingleton<IJwtTokenProvider, JwtTokenProvider>();
 
-    private static void AddTokenProvider(IServiceCollection services)
-    {
-        services.AddSingleton<IJwtTokenProvider, JwtTokenProvider>();
-    }
-
-    private static void AddClientFactoryWithAuthorization(IServiceCollection services)
+    private static IClientFactoryBuilder AddClientFactoryWithAuthorization(this IServiceCollection services)
     {
         // register ClientFactory with Authorization
-        services.AddSingleton<IClientFactory>(provider =>
+        return services.AddServiceModelGrpcClientFactory((options, provider) =>
         {
             var callOptionsFactory = new CallOptionsFactoryWithAuthorization(provider.GetRequiredService<IJwtTokenProvider>());
-
-            // setup authorization header for all calls, by all proxies created by this factory
-            var options = new ServiceModelGrpcClientOptions { DefaultCallOptionsFactory = callOptionsFactory.Create };
-
-            return new ClientFactory(options);
+            options.DefaultCallOptionsFactory = callOptionsFactory.Create;
         });
     }
 }

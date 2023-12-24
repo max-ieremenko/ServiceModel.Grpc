@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright 2020-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,22 +23,24 @@ using Grpc.Core;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using ServiceModel.Grpc.Client;
+using ServiceModel.Grpc.Client.DependencyInjection;
 using ServiceModel.Grpc.TestApi;
 
 namespace ServiceModel.Grpc.AspNetCore.TestApi;
 
 public sealed class KestrelHost : IAsyncDisposable
 {
-    private int _port;
     private GrpcChannelType _channelType;
     private IWebHost? _host;
-    private ServiceModelGrpcClientOptions? _clientFactoryDefaultOptions;
+    private Action<ServiceModelGrpcClientOptions>? _clientFactoryDefaultOptions;
     private Action<IServiceCollection>? _configureServices;
     private Action<IEndpointRouteBuilder>? _configureEndpoints;
     private Action<IApplicationBuilder>? _configureApp;
@@ -48,57 +50,33 @@ public sealed class KestrelHost : IAsyncDisposable
         _channelType = GrpcChannelType.GrpcCore;
     }
 
-    public ChannelBase Channel { get; private set; } = null!;
+    public ChannelBase Channel => Services.GetRequiredService<ChannelBase>();
 
-    public IClientFactory ClientFactory { get; private set; } = null!;
+    public IClientFactory ClientFactory => Services.GetRequiredService<IClientFactory>();
+
+    public IServiceProvider Services => _host!.Services;
 
     public KestrelHost ConfigureClientFactory(Action<ServiceModelGrpcClientOptions> configuration)
     {
-        var options = new ServiceModelGrpcClientOptions();
-        configuration(options);
-        _clientFactoryDefaultOptions = options;
+        _clientFactoryDefaultOptions += configuration;
         return this;
     }
 
     public KestrelHost ConfigureApp(Action<IApplicationBuilder> configuration)
     {
-        if (_configureApp == null)
-        {
-            _configureApp = configuration;
-        }
-        else
-        {
-            _configureApp += configuration;
-        }
-
+        _configureApp += configuration;
         return this;
     }
 
     public KestrelHost ConfigureServices(Action<IServiceCollection> configuration)
     {
-        if (_configureServices == null)
-        {
-            _configureServices = configuration;
-        }
-        else
-        {
-            _configureServices += configuration;
-        }
-
+        _configureServices += configuration;
         return this;
     }
 
     public KestrelHost ConfigureEndpoints(Action<IEndpointRouteBuilder> configuration)
     {
-        if (_configureEndpoints == null)
-        {
-            _configureEndpoints = configuration;
-        }
-        else
-        {
-            _configureEndpoints += configuration;
-        }
-
+        _configureEndpoints += configuration;
         return this;
     }
 
@@ -110,7 +88,7 @@ public sealed class KestrelHost : IAsyncDisposable
 
     public string GetLocation(string? relativePath = default)
     {
-        var root = string.Format("http://localhost:{0}", _port);
+        var root = "http://" + Channel.Target;
         if (string.IsNullOrEmpty(relativePath))
         {
             return root;
@@ -128,10 +106,30 @@ public sealed class KestrelHost : IAsyncDisposable
             .ConfigureServices(services =>
             {
                 services.AddGrpc();
-                services.AddServiceModelGrpc(options =>
+                services.AddServiceModelGrpc((options, provider) =>
                 {
-                    options.DefaultMarshallerFactory = _clientFactoryDefaultOptions?.MarshallerFactory;
+                    var clientOptions = provider.GetRequiredService<IOptions<ServiceModelGrpcClientOptions>>().Value;
+                    options.DefaultMarshallerFactory = clientOptions.MarshallerFactory;
                 });
+
+                services.AddSingleton<ChannelBase>(provider =>
+                {
+                    var address = provider
+                        .GetRequiredService<IServer>()
+                        .Features
+                        .Get<IServerAddressesFeature>()
+                        !.Addresses
+                        .First();
+
+                    return GrpcChannelFactory.CreateChannel(_channelType, "localhost", new Uri(address).Port);
+                });
+
+                services
+                    .AddServiceModelGrpcClientFactory((options, _) =>
+                    {
+                        _clientFactoryDefaultOptions?.Invoke(options);
+                    });
+
                 _configureServices?.Invoke(services);
             })
             .Configure(app =>
@@ -152,17 +150,12 @@ public sealed class KestrelHost : IAsyncDisposable
         try
         {
             await _host.StartAsync().ConfigureAwait(false);
-            var address = _host.ServerFeatures.Get<IServerAddressesFeature>()!.Addresses.First();
-            _port = new Uri(address).Port;
         }
         catch
         {
             await DisposeAsync().ConfigureAwait(false);
             throw;
         }
-
-        ClientFactory = new ClientFactory(_clientFactoryDefaultOptions);
-        Channel = GrpcChannelFactory.CreateChannel(_channelType, "localhost", _port);
 
         return this;
     }
@@ -173,10 +166,7 @@ public sealed class KestrelHost : IAsyncDisposable
         _configureServices = null;
         _configureEndpoints = null;
 
-        if (Channel != null)
-        {
-            await Channel.ShutdownAsync().ConfigureAwait(false);
-        }
+        await Channel.ShutdownAsync().ConfigureAwait(false);
 
         if (_host != null)
         {

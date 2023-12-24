@@ -47,12 +47,11 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ServiceModel.Grpc.DesignTim
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DesignTime", "DesignTime", "{BA316DD1-23F6-46B2-BB03-4B2B8057B523}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceModel.Grpc.Client.DependencyInjection", "ServiceModel.Grpc.Client.DependencyInjection\ServiceModel.Grpc.Client.DependencyInjection.csproj", "{CC3F021F-6498-42E5-9F12-9159CBEA85A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceModel.Grpc.Client.DependencyInjection.Test", "ServiceModel.Grpc.Client.DependencyInjection.Test\ServiceModel.Grpc.Client.DependencyInjection.Test.csproj", "{01E16E60-6BF6-44F2-8107-D37B3A9FD3F1}"
+EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		ServiceModel.Grpc.DesignTime.Shared\ServiceModel.Grpc.DesignTime.Shared.projitems*{7eb0dd5d-3387-4a60-b334-46eb93f6f3fb}*SharedItemsImports = 5
-		ServiceModel.Grpc.DesignTime.Shared\ServiceModel.Grpc.DesignTime.Shared.projitems*{b2ce2b41-a3fa-4395-8aaa-b567e10d4653}*SharedItemsImports = 5
-		ServiceModel.Grpc.DesignTime.Shared\ServiceModel.Grpc.DesignTime.Shared.projitems*{fef9e10e-9993-44aa-97ac-d5a582aaf755}*SharedItemsImports = 13
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -134,6 +133,14 @@ Global
 		{B2CE2B41-A3FA-4395-8AAA-B567E10D4653}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2CE2B41-A3FA-4395-8AAA-B567E10D4653}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2CE2B41-A3FA-4395-8AAA-B567E10D4653}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC3F021F-6498-42E5-9F12-9159CBEA85A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC3F021F-6498-42E5-9F12-9159CBEA85A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC3F021F-6498-42E5-9F12-9159CBEA85A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC3F021F-6498-42E5-9F12-9159CBEA85A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01E16E60-6BF6-44F2-8107-D37B3A9FD3F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01E16E60-6BF6-44F2-8107-D37B3A9FD3F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01E16E60-6BF6-44F2-8107-D37B3A9FD3F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01E16E60-6BF6-44F2-8107-D37B3A9FD3F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -151,8 +158,14 @@ Global
 		{7EB0DD5D-3387-4A60-B334-46EB93F6F3FB} = {BA316DD1-23F6-46B2-BB03-4B2B8057B523}
 		{B2CE2B41-A3FA-4395-8AAA-B567E10D4653} = {BA316DD1-23F6-46B2-BB03-4B2B8057B523}
 		{FEF9E10E-9993-44AA-97AC-D5A582AAF755} = {BA316DD1-23F6-46B2-BB03-4B2B8057B523}
+		{01E16E60-6BF6-44F2-8107-D37B3A9FD3F1} = {2B957488-05AA-4B3F-B954-321B3ACE98B7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A48B878D-6D95-484D-9585-1BD5C3A3610B}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		ServiceModel.Grpc.DesignTime.Shared\ServiceModel.Grpc.DesignTime.Shared.projitems*{7eb0dd5d-3387-4a60-b334-46eb93f6f3fb}*SharedItemsImports = 5
+		ServiceModel.Grpc.DesignTime.Shared\ServiceModel.Grpc.DesignTime.Shared.projitems*{b2ce2b41-a3fa-4395-8aaa-b567e10d4653}*SharedItemsImports = 5
+		ServiceModel.Grpc.DesignTime.Shared\ServiceModel.Grpc.DesignTime.Shared.projitems*{fef9e10e-9993-44aa-97ac-d5a582aaf755}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

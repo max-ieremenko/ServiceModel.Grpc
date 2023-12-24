@@ -24,7 +24,7 @@ Enter-Build {
     $releaseVersion = (Select-Xml -Path (Join-Path $Sources "Versions.props") -XPath "Project/PropertyGroup/ServiceModelGrpcVersion").Node.InnerText
 }
 
-task Default Core, AspNetCore, Swashbuckle, NSwag, DesignTime, SelfHost, ProtoBufMarshaller, MessagePackMarshaller
+task Default Core, AspNetCore, Swashbuckle, NSwag, DesignTime, SelfHost, ClientDI, ProtoBufMarshaller, MessagePackMarshaller
 
 task Core {
     $projects = @(
@@ -110,7 +110,6 @@ task DesignTime {
         -GithubToken $GithubToken
 }
 
-
 task SelfHost {
     $projects = @(
         (Join-Path $Sources "ServiceModel.Grpc.SelfHost"),
@@ -122,6 +121,21 @@ task SelfHost {
         -Sources $projects `
         -Repository $Repository `
         -Title "ServiceModel.Grpc.SelfHost $releaseVersion" `
+        -Out $BuildOut `
+        -GithubToken $GithubToken
+}
+
+task ClientDI {
+    $projects = @(
+        (Join-Path $Sources "ServiceModel.Grpc.Client.DependencyInjection"),
+        (Join-Path $Sources "ServiceModel.Grpc.Client.DependencyInjection.Test")
+    )
+
+    Write-ThirdPartyNotices `
+        -AppNames "ClientDI", "Core" `
+        -Sources $projects `
+        -Repository $Repository `
+        -Title "ServiceModel.Grpc.Client.DependencyInjection $releaseVersion" `
         -Out $BuildOut `
         -GithubToken $GithubToken
 }

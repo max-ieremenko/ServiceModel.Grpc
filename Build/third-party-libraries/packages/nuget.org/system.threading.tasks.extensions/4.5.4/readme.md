@@ -1,7 +1,7 @@
 System.Threading.Tasks.Extensions [4.5.4](https://www.nuget.org/packages/System.Threading.Tasks.Extensions/4.5.4)
 --------------------
 
-Used by: Core, DesignTime, MessagePack
+Used by: ClientDI, Core, DesignTime, MessagePack
 
 Target frameworks: net462, net6.0, net7.0, net8.0, netstandard2.0, netstandard2.1
 

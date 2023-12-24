@@ -1,9 +1,9 @@
 Grpc.Net.Client [2.59.0](https://www.nuget.org/packages/Grpc.Net.Client/2.59.0)
 --------------------
 
-Used by: Core internal
+Used by: ClientDI, Core internal
 
-Target frameworks: net462, net6.0, net7.0, net8.0
+Target frameworks: net462, net6.0, net7.0, net8.0, netstandard2.0, netstandard2.1
 
 License: [Apache-2.0](../../../../licenses/apache-2.0) 
 
