@@ -63,6 +63,26 @@
       ]
     },
     {
+      "Name": "ClientDI",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "NuGet.Frameworks",
+          "Version": "6.5.0"
+        },
+        {
+          "Name": "System.Reflection.Metadata",
+          "Version": "1.6.0"
+        }
+      ]
+    },
+    {
       "Name": "Core",
       "InternalOnly": true,
       "TargetFrameworks": [

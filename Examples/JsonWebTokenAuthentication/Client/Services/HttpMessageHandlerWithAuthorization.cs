@@ -5,11 +5,17 @@ using System.Threading.Tasks;
 
 namespace Client.Services;
 
-internal sealed class HttpMessageHandlerWithAuthorization : HttpClientHandler
+internal sealed class HttpMessageHandlerWithAuthorization : DelegatingHandler
 {
     private readonly IJwtTokenProvider _tokenProvider;
 
     public HttpMessageHandlerWithAuthorization(IJwtTokenProvider tokenProvider)
+    {
+        _tokenProvider = tokenProvider;
+    }
+
+    public HttpMessageHandlerWithAuthorization(HttpMessageHandler innerHandler, IJwtTokenProvider tokenProvider)
+        : base(innerHandler)
     {
         _tokenProvider = tokenProvider;
     }

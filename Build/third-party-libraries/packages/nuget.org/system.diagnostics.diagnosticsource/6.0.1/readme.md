@@ -1,9 +1,9 @@
 System.Diagnostics.DiagnosticSource [6.0.1](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/6.0.1)
 --------------------
 
-Used by: Core internal
+Used by: ClientDI, Core internal
 
-Target frameworks: net462, net6.0, net7.0, net8.0
+Target frameworks: net462, net6.0, net7.0, net8.0, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 
@@ -24,11 +24,12 @@ Remarks
 no remarks
 
 
-Dependencies 2
+Dependencies 3
 -----------
 
 |Name|Version|
 |----------|:----|
+|[System.Memory](../../../../packages/nuget.org/system.memory/4.5.4)|4.5.4|
 |[System.Memory](../../../../packages/nuget.org/system.memory/4.5.5)|4.5.5|
 |[System.Runtime.CompilerServices.Unsafe](../../../../packages/nuget.org/system.runtime.compilerservices.unsafe/6.0.0)|6.0.0|
 

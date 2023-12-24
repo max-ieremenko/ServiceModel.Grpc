@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Client.Services;
 using Contract;
 using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
 
 namespace Client;
 
@@ -26,8 +27,15 @@ public static class Program
         }
 
         // demo with Grpc.Net.Client.GrpcChannel and HttpMessageHandlerWithAuthorization
-        Console.WriteLine("--- HttpMessageHandlerWithAuthorization ---");
-        await using (var serviceProvider = ServiceProviderBuilder.BuildWithAuthorizationMessageHandler())
+        Console.WriteLine("--- HttpMessageHandlerWithAuthorization 1 ---");
+        await using (var serviceProvider = ServiceProviderBuilder.BuildWithAuthorizationMessageHandler1())
+        {
+            await Run(serviceProvider);
+        }
+
+        // demo with Grpc.Net.Client.GrpcChannel and HttpMessageHandlerWithAuthorization
+        Console.WriteLine("--- HttpMessageHandlerWithAuthorization 2 ---");
+        await using (var serviceProvider = ServiceProviderBuilder.BuildWithAuthorizationMessageHandler2())
         {
             await Run(serviceProvider);
         }
@@ -56,6 +64,7 @@ public static class Program
         Console.WriteLine("Invoke PingAsync");
         var response = await demoServiceProxy.PingAsync();
         Console.WriteLine(response);
+        response.ShouldBe("pong <unauthorized>");
     }
 
     private static async Task CallAsDemoUser(IDemoService demoServiceProxy)
@@ -63,9 +72,11 @@ public static class Program
         Console.WriteLine("Invoke GetCurrentUserNameAsync");
         var userName = await demoServiceProxy.GetCurrentUserNameAsync();
         Console.WriteLine(userName);
+        userName.ShouldBe("demo-user");
 
         Console.WriteLine("Invoke PingAsync");
         var response = await demoServiceProxy.PingAsync();
         Console.WriteLine(response);
+        response.ShouldBe("pong demo-user");
     }
 }

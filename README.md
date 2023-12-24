@@ -15,7 +15,8 @@ The solution is built on top of [gRPC C#](https://github.com/grpc/grpc/tree/mast
   - [service and operation names](https://max-ieremenko.github.io/ServiceModel.Grpc/ServiceAndOperationName.html)
   - [service and operation bindings](https://max-ieremenko.github.io/ServiceModel.Grpc/ServiceAndOperationBinding.html)
   - [client configuration](https://max-ieremenko.github.io/ServiceModel.Grpc/ClientConfiguration.html)
-  - [client code generation](https://max-ieremenko.github.io/ServiceModel.Grpc/client-code-generation.html)
+  - [client configuration](https://max-ieremenko.github.io/ServiceModel.Grpc/ClientConfiguration.html)
+  - [client dependency injection](https://max-ieremenko.github.io/ServiceModel.Grpc/client-dependency-injection.html)
   - [server code generation](https://max-ieremenko.github.io/ServiceModel.Grpc/server-code-generation.html)
   - operations
     - [unary](https://max-ieremenko.github.io/ServiceModel.Grpc/operation-unary.html)
@@ -246,6 +247,7 @@ internal sealed class LoggingServerFilter : IServerFilter
 Name | Package | Supported platforms | Description
 -----| :------ |:------------------- | :----------
 ServiceModel.Grpc | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.svg)](https://www.nuget.org/packages/ServiceModel.Grpc) | netstandard2.0/2.1, net462 | main functionality, basic Grpc.Core.Api extensions and ClientFactory. ClientFactory is fully compatible with Grpc.Net.Client.
+ServiceModel.Grpc.Client.DependencyInjection | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.Client.DependencyInjection.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.Client.DependencyInjection) | netstandard2.0/2.1, net8.0, net7.0, net6.0 | Dependency injection extensions for ClientFactory and Grpc.Net.ClientFactory
 ServiceModel.Grpc.AspNetCore | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.AspNetCore.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.AspNetCore) | net8.0, net7.0, net6.0 | Grpc.AspNetCore.Server extensions
 ServiceModel.Grpc.AspNetCore.Swashbuckle | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.AspNetCore.Swashbuckle.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.AspNetCore.Swashbuckle) | net8.0, net7.0, net6.0 | Swagger integration, based on [Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore)
 ServiceModel.Grpc.AspNetCore.NSwag | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.AspNetCore.NSwag.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.AspNetCore.NSwag) | net8.0, net7.0, net6.0 | Swagger integration, based on [NSwag](https://github.com/RicoSuter/NSwag)

@@ -11,7 +11,7 @@ param(
     $BuildOut
 )
 
-task Default Core, AspNetCore, Swashbuckle, NSwag, DesignTime, SelfHost, ProtoBufMarshaller, MessagePackMarshaller, Test
+task Default Core, AspNetCore, Swashbuckle, NSwag, DesignTime, SelfHost, ClientDI, ProtoBufMarshaller, MessagePackMarshaller, Test
 
 task Core {
     $projectFile = Join-Path $Sources "ServiceModel.Grpc\ServiceModel.Grpc.csproj"
@@ -70,6 +70,17 @@ task DesignTime {
 
 task SelfHost {
     $projectFile = Join-Path $Sources "ServiceModel.Grpc.SelfHost\ServiceModel.Grpc.SelfHost.csproj"
+    exec {
+        dotnet pack `
+            -c Release `
+            --no-build `
+            -o $BuildOut `
+            $projectFile
+    }
+}
+
+task ClientDI {
+    $projectFile = Join-Path $Sources "ServiceModel.Grpc.Client.DependencyInjection\ServiceModel.Grpc.Client.DependencyInjection.csproj"
     exec {
         dotnet pack `
             -c Release `

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2022 Max Ieremenko
+// Copyright 2022-2023 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ internal readonly ref struct CodeGeneratorFactoryResolver
         contract = new ContractDescription(serviceType);
         ShowCommonWarnings(logger, contract, serviceType);
 
-        factory = isImport ? new CSharpClientCodeGeneratorFactory(contract, _canUseStaticExtensions) : CreateServiceCodeFactory(contract, attributeData);
+        factory = isImport ? CreateClientCodeFactory(contract, attributeData) : CreateServiceCodeFactory(contract, attributeData);
         return true;
     }
 
@@ -94,6 +94,27 @@ internal readonly ref struct CodeGeneratorFactoryResolver
                 logger.IsNotSupportedOperation(serviceType, method.Error);
             }
         }
+    }
+
+    private CSharpClientCodeGeneratorFactory CreateClientCodeFactory(ContractDescription contract, AttributeData attributeData)
+    {
+        var generateDiExtensions = false;
+
+        for (var i = 0; i < attributeData.NamedArguments.Length; i++)
+        {
+            var arg = attributeData.NamedArguments[i];
+            if ("GenerateDependencyInjectionExtensions".Equals(arg.Key, StringComparison.Ordinal))
+            {
+                if (arg.Value.Value is bool flag)
+                {
+                    generateDiExtensions = flag;
+                }
+
+                break;
+            }
+        }
+
+        return new CSharpClientCodeGeneratorFactory(contract, generateDiExtensions, _canUseStaticExtensions);
     }
 
     private CSharpServiceCodeGeneratorFactory CreateServiceCodeFactory(ContractDescription contract, AttributeData attributeData)

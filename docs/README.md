@@ -12,6 +12,7 @@ The solution is built on top of [gRPC C#](https://github.com/grpc/grpc/tree/mast
 - [service and operation bindings](ServiceAndOperationBinding.md)
 - [client configuration](ClientConfiguration.md)
 - [client code generation](client-code-generation.md)
+- [client dependency injection](client-dependency-injection.md)
 - [server code generation](server-code-generation.md)
 - operations
   - [unary](operation-unary.md)

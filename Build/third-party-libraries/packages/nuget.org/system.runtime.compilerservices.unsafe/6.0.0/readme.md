@@ -1,9 +1,9 @@
 System.Runtime.CompilerServices.Unsafe [6.0.0](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/6.0.0)
 --------------------
 
-Used by: AspNetCoreNSwag, Core internal, DesignTime internal, MessagePack
+Used by: AspNetCoreNSwag, ClientDI, Core internal, DesignTime internal, MessagePack
 
-Target frameworks: net462, net6.0, net7.0, net8.0, netstandard2.0
+Target frameworks: net462, net6.0, net7.0, net8.0, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 

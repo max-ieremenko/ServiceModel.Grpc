@@ -14,8 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System.Collections.Generic;
-
 namespace ServiceModel.Grpc.DesignTime.Generator.Internal.CSharp;
 
 internal sealed class CSharpServiceAspNetMapGrpcServiceBuilder : CodeGeneratorBase
