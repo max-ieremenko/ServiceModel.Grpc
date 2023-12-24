@@ -135,8 +135,9 @@ internal sealed class CSharpClientDiExtensionBuilder : CodeGeneratorBase
         Output
             .Append("public static ")
             .AppendTypeName("Microsoft.Extensions.DependencyInjection", "IHttpClientBuilder")
-            .Append(" Add")
+            .Append(" Configure")
             .Append(_contract.ClientClassName)
+            .Append("Creator")
             .AppendLine("(");
 
         using (Output.Indent())
