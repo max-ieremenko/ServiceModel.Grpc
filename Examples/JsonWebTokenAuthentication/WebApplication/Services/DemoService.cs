@@ -22,7 +22,7 @@ internal sealed class DemoService : IDemoService
         return Task.FromResult("pong " + userName);
     }
 
-    // see Startup.cs: RequireAuthenticatedUser by default
+    // see Program.cs: RequireAuthenticatedUser by default
     public Task<string> GetCurrentUserNameAsync()
     {
         var userName = GetHttpContextUserName();

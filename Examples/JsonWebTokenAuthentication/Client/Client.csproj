@@ -7,10 +7,9 @@
 
   <ItemGroup>
     <PackageReference Include="Grpc.Core" />
-    <PackageReference Include="Grpc.Net.Client" />
-    <PackageReference Include="ServiceModel.Grpc" />
+    <PackageReference Include="ServiceModel.Grpc.Client.DependencyInjection" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Shouldly" />
   </ItemGroup>
 
   <ItemGroup>
