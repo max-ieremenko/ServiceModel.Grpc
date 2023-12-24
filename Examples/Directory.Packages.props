@@ -5,6 +5,7 @@
 
   <ItemGroup>
     <PackageVersion Include="ServiceModel.Grpc" Version="$(ServiceModelGrpcVersion)" />
+    <PackageVersion Include="ServiceModel.Grpc.Client.DependencyInjection" Version="$(ServiceModelGrpcVersion)" />
     <PackageVersion Include="ServiceModel.Grpc.AspNetCore" Version="$(ServiceModelGrpcVersion)" />
     <PackageVersion Include="ServiceModel.Grpc.DesignTime" Version="$(ServiceModelGrpcVersion)" />
     <PackageVersion Include="ServiceModel.Grpc.SelfHost" Version="$(ServiceModelGrpcVersion)" />
@@ -21,10 +22,12 @@
     <PackageVersion Include="Grpc.Tools" Version="2.59.0" />
     <PackageVersion Include="Google.Protobuf" Version="3.25.1" />
 
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
 	<PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
 	<PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />

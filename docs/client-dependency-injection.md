@@ -1,5 +1,7 @@
 # ServiceModel.Grpc.Client.DependencyInjection
 
+see [example](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/ClientDependencyInjection)
+
 ## Integration with [Grpc.Net.ClientFactory](https://www.nuget.org/packages/Grpc.Net.ClientFactory)
 
 ``` c#
