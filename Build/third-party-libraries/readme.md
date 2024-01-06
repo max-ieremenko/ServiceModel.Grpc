@@ -23,13 +23,13 @@ Packages 158
 |[DiffEngine](packages/nuget.org/diffengine/11.3.0)|11.3.0|[nuget.org](https://www.nuget.org/packages/DiffEngine/11.3.0)|[MIT](licenses/mit)|Core internal|
 |[EmptyFiles](packages/nuget.org/emptyfiles/4.4.0)|4.4.0|[nuget.org](https://www.nuget.org/packages/EmptyFiles/4.4.0)|[MIT](licenses/mit)|Core internal|
 |[Google.Protobuf](packages/nuget.org/google.protobuf/3.25.1)|3.25.1|[nuget.org](https://www.nuget.org/packages/Google.Protobuf/3.25.1)|[BSD-3-Clause](licenses/bsd-3-clause)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
-|[Grpc.AspNetCore.Server](packages/nuget.org/grpc.aspnetcore.server/2.59.0)|2.59.0|[nuget.org](https://www.nuget.org/packages/Grpc.AspNetCore.Server/2.59.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore|
+|[Grpc.AspNetCore.Server](packages/nuget.org/grpc.aspnetcore.server/2.60.0)|2.60.0|[nuget.org](https://www.nuget.org/packages/Grpc.AspNetCore.Server/2.60.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore|
 |[Grpc.Core](packages/nuget.org/grpc.core/2.46.6)|2.46.6|[nuget.org](https://www.nuget.org/packages/Grpc.Core/2.46.6)|[Apache-2.0](licenses/apache-2.0)|Core internal, SelfHost|
-|[Grpc.Core.Api](packages/nuget.org/grpc.core.api/2.59.0)|2.59.0|[nuget.org](https://www.nuget.org/packages/Grpc.Core.Api/2.59.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore, ClientDI, Core, DesignTime, SelfHost|
-|[Grpc.Net.Client](packages/nuget.org/grpc.net.client/2.59.0)|2.59.0|[nuget.org](https://www.nuget.org/packages/Grpc.Net.Client/2.59.0)|[Apache-2.0](licenses/apache-2.0)|ClientDI, Core internal|
-|[Grpc.Net.ClientFactory](packages/nuget.org/grpc.net.clientfactory/2.59.0)|2.59.0|[nuget.org](https://www.nuget.org/packages/Grpc.Net.ClientFactory/2.59.0)|[Apache-2.0](licenses/apache-2.0)|ClientDI|
-|[Grpc.Net.Common](packages/nuget.org/grpc.net.common/2.59.0)|2.59.0|[nuget.org](https://www.nuget.org/packages/Grpc.Net.Common/2.59.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore, ClientDI, Core internal|
-|[Grpc.Tools](packages/nuget.org/grpc.tools/2.59.0)|2.59.0|[nuget.org](https://www.nuget.org/packages/Grpc.Tools/2.59.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
+|[Grpc.Core.Api](packages/nuget.org/grpc.core.api/2.60.0)|2.60.0|[nuget.org](https://www.nuget.org/packages/Grpc.Core.Api/2.60.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore, ClientDI, Core, DesignTime, SelfHost|
+|[Grpc.Net.Client](packages/nuget.org/grpc.net.client/2.60.0)|2.60.0|[nuget.org](https://www.nuget.org/packages/Grpc.Net.Client/2.60.0)|[Apache-2.0](licenses/apache-2.0)|ClientDI, Core internal|
+|[Grpc.Net.ClientFactory](packages/nuget.org/grpc.net.clientfactory/2.60.0)|2.60.0|[nuget.org](https://www.nuget.org/packages/Grpc.Net.ClientFactory/2.60.0)|[Apache-2.0](licenses/apache-2.0)|ClientDI|
+|[Grpc.Net.Common](packages/nuget.org/grpc.net.common/2.60.0)|2.60.0|[nuget.org](https://www.nuget.org/packages/Grpc.Net.Common/2.60.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore, ClientDI, Core internal|
+|[Grpc.Tools](packages/nuget.org/grpc.tools/2.60.0)|2.60.0|[nuget.org](https://www.nuget.org/packages/Grpc.Tools/2.60.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
 |[MessagePack](packages/nuget.org/messagepack/2.4.59)|2.4.59|[nuget.org](https://www.nuget.org/packages/MessagePack/2.4.59)|[MIT](licenses/mit)|MessagePack|
 |[MessagePack.Annotations](packages/nuget.org/messagepack.annotations/2.4.59)|2.4.59|[nuget.org](https://www.nuget.org/packages/MessagePack.Annotations/2.4.59)|[MIT](licenses/mit)|MessagePack|
 |[Microsoft.AspNetCore.Authentication.JwtBearer](packages/nuget.org/microsoft.aspnetcore.authentication.jwtbearer/6.0.21)|6.0.21|[nuget.org](https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.JwtBearer/6.0.21)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
