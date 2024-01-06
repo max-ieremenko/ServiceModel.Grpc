@@ -47,7 +47,7 @@ public class HeadersHandlingTest
             .ConfigureApp(app =>
             {
                 app.UseOpenApi(); // serve OpenAPI/Swagger documents
-                app.UseSwaggerUi3(); // serve Swagger UI
+                app.UseSwaggerUi(); // serve Swagger UI
                 app.UseReDoc(); // serve ReDoc UI
 
                 app.UseServiceModelGrpcSwaggerGateway();
