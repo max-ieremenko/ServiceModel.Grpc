@@ -16,7 +16,7 @@
     },
     {
       "Name": "AspNetCoreNSwag",
-      "InternalOnly": true,
+      "InternalOnly": false,
       "TargetFrameworks": [
         "net6.0",
         "net7.0",
