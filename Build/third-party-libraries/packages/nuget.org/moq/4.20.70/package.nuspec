@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Moq</id>
+    <version>4.20.70</version>
+    <title>Moq: an enjoyable mocking library</title>
+    <authors>Daniel Cazzulino, kzu</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">BSD-3-Clause</license>
+    <licenseUrl>https://licenses.nuget.org/BSD-3-Clause</licenseUrl>
+    <icon>icon.png</icon>
+    <readme>readme.md</readme>
+    <projectUrl>https://github.com/moq/moq</projectUrl>
+    <description>Moq is the most popular and friendly mocking framework for .NET.</description>
+    <releaseNotes>https://github.com/moq/moq/blob/main/changelog.md</releaseNotes>
+    <copyright>Copyright (c) 2007, Clarius Consulting, Manas Technology Solutions, InSTEDD, and Contributors. All rights reserved.</copyright>
+    <tags>moq;tdd;mocking;mocks;unittesting;agile;unittest</tags>
+    <repository type="git" url="https://github.com/moq/moq" branch="v4.20.70" commit="2b556597ddc4638d4b6235df6f83580ce2be6a56" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.6.2">
+        <dependency id="Castle.Core" version="5.1.1" />
+        <dependency id="System.Threading.Tasks.Extensions" version="4.5.4" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Castle.Core" version="5.1.1" />
+        <dependency id="System.Threading.Tasks.Extensions" version="4.5.4" />
+      </group>
+      <group targetFramework=".NETStandard2.1">
+        <dependency id="Castle.Core" version="5.1.1" />
+      </group>
+      <group targetFramework="net6.0">
+        <dependency id="Castle.Core" version="5.1.1" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
