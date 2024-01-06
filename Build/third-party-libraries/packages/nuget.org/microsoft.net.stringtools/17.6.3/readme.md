@@ -1,4 +1,4 @@
-Microsoft.NET.StringTools [17.4.0](https://www.nuget.org/packages/Microsoft.NET.StringTools/17.4.0)
+Microsoft.NET.StringTools [17.6.3](https://www.nuget.org/packages/Microsoft.NET.StringTools/17.6.3)
 --------------------
 
 Used by: MessagePack
@@ -9,7 +9,7 @@ License: [MIT](../../../../licenses/mit)
 
 - package license: [MIT](https://licenses.nuget.org/MIT) 
 - repository license: [MIT](https://github.com/dotnet/msbuild) 
-- project license: [Unknown](http://go.microsoft.com/fwlink/?LinkId=624683) , License should be verified on http://go.microsoft.com/fwlink/?LinkId=624683
+- project license: [Unknown](http://go.microsoft.com/fwlink/?LinkId=624683) 
 
 Description
 -----------

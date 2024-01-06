@@ -17,11 +17,15 @@
       "Dependencies": [
         {
           "Name": "MessagePack.Annotations",
-          "Version": "2.4.59"
+          "Version": "2.5.140"
         },
         {
           "Name": "Microsoft.NET.StringTools",
-          "Version": "17.4.0"
+          "Version": "17.6.3"
+        },
+        {
+          "Name": "System.Runtime.CompilerServices.Unsafe",
+          "Version": "6.0.0"
         }
       ]
     }
@@ -35,14 +39,14 @@
     {
       "Subject": "repository",
       "Code": null,
-      "HRef": "https://github.com/neuecc/MessagePack-CSharp",
-      "Description": "License should be verified on https://github.com/neuecc/MessagePack-CSharp"
+      "HRef": "https://github.com/MessagePack-CSharp/MessagePack-CSharp",
+      "Description": "License code NOASSERTION"
     },
     {
       "Subject": "project",
       "Code": null,
       "HRef": "https://github.com/neuecc/MessagePack-CSharp",
-      "Description": "License should be verified on https://github.com/neuecc/MessagePack-CSharp"
+      "Description": "License code NOASSERTION"
     }
   ]
 }
