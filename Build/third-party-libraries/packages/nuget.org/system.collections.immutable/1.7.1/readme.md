@@ -1,9 +1,9 @@
 System.Collections.Immutable [1.7.1](https://www.nuget.org/packages/System.Collections.Immutable/1.7.1)
 --------------------
 
-Used by: MessagePack, ProtoBuf
+Used by: MessagePack
 
-Target frameworks: net462, net6.0, net7.0, net8.0, netstandard2.0, netstandard2.1
+Target frameworks: net6.0, net7.0, net8.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 

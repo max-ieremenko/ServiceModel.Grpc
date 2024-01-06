@@ -25,7 +25,7 @@
     <PackageVersion Include="NSwag.AspNetCore" Version="13.18.2" />
     <PackageVersion Include="NUnit" Version="4.0.1" />
     <PackageVersion Include="NUnit3TestAdapter" Version="4.5.0" />
-    <PackageVersion Include="protobuf-net" Version="3.1.33" />
+    <PackageVersion Include="protobuf-net" Version="3.2.30" />
     <PackageVersion Include="Shouldly" Version="4.2.1" />
     <PackageVersion Include="StyleCop.Analyzers.Unstable" Version="1.2.0.556" />
     <PackageVersion Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
