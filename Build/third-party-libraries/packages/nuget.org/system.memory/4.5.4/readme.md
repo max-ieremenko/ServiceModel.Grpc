@@ -1,9 +1,9 @@
 System.Memory [4.5.4](https://www.nuget.org/packages/System.Memory/4.5.4)
 --------------------
 
-Used by: ClientDI, DesignTime, ProtoBuf
+Used by: ClientDI, DesignTime
 
-Target frameworks: net462, net6.0, net7.0, net8.0, netstandard2.0, netstandard2.1
+Target frameworks: net6.0, net7.0, net8.0, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 
@@ -32,14 +32,13 @@ Remarks
 no remarks
 
 
-Dependencies 5
+Dependencies 4
 -----------
 
 |Name|Version|
 |----------|:----|
 |[System.Buffers](../../../../packages/nuget.org/system.buffers/4.5.1)|4.5.1|
 |[System.Numerics.Vectors](../../../../packages/nuget.org/system.numerics.vectors/4.4.0)|4.4.0|
-|[System.Runtime.CompilerServices.Unsafe](../../../../packages/nuget.org/system.runtime.compilerservices.unsafe/4.5.3)|4.5.3|
 |[System.Runtime.CompilerServices.Unsafe](../../../../packages/nuget.org/system.runtime.compilerservices.unsafe/4.7.1)|4.7.1|
 |[System.Runtime.CompilerServices.Unsafe](../../../../packages/nuget.org/system.runtime.compilerservices.unsafe/6.0.0)|6.0.0|
 
