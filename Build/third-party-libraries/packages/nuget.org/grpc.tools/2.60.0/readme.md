@@ -1,4 +1,4 @@
-Grpc.Tools [2.59.0](https://www.nuget.org/packages/Grpc.Tools/2.59.0)
+Grpc.Tools [2.60.0](https://www.nuget.org/packages/Grpc.Tools/2.60.0)
 --------------------
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal

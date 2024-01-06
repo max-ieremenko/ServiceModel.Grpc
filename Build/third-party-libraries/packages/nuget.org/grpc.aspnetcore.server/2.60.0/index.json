@@ -16,7 +16,7 @@
       "Dependencies": [
         {
           "Name": "Grpc.Net.Common",
-          "Version": "2.59.0"
+          "Version": "2.60.0"
         }
       ]
     }
