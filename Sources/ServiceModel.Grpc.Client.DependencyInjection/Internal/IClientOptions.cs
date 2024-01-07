@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2023 Max Ieremenko
+// Copyright 2024 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,9 +18,7 @@ using System;
 
 namespace ServiceModel.Grpc.Client.DependencyInjection.Internal;
 
-internal interface IClientResolver
+internal interface IClientOptions
 {
-    IChannelProvider? Channel { get; set; }
-
     void Setup(IServiceProvider provider, IClientFactory clientFactory);
 }

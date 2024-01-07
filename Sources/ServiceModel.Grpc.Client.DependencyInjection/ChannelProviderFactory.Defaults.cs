@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2023 Max Ieremenko
+// Copyright 2023-2024 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 using System;
 using Grpc.Core;
 using Grpc.Core.Utils;
-using Microsoft.Extensions.DependencyInjection;
+using ServiceModel.Grpc.Client.DependencyInjection.Internal;
 
 namespace ServiceModel.Grpc.Client.DependencyInjection;
 
@@ -31,26 +31,50 @@ public partial class ChannelProviderFactory
         }
     }
 
-    private sealed class TransientProvider(Func<IServiceProvider, CallInvoker> provider) : IChannelProvider
+    private sealed class TransientProvider : IChannelProvider
     {
-        public CallInvoker GetCallInvoker(IServiceProvider serviceProvider)
+        private readonly Func<IServiceProvider, object?, CallInvoker> _provider;
+
+        public TransientProvider(Func<IServiceProvider, CallInvoker> provider)
+            : this((p, _) => provider(p))
+        {
+        }
+
+        public TransientProvider(Func<IServiceProvider, object?, CallInvoker> provider)
+        {
+            _provider = provider;
+        }
+
+        public CallInvoker GetCallInvoker(IServiceProvider serviceProvider, object? serviceKey)
         {
             GrpcPreconditions.CheckNotNull(serviceProvider, nameof(serviceProvider));
 
-            var result = provider(serviceProvider);
+            var result = _provider(serviceProvider, serviceKey);
             AssertNotNull(result, nameof(CallInvoker));
 
             return result;
         }
     }
 
-    private sealed class TransientChannelProvider(Func<IServiceProvider, ChannelBase> provider) : IChannelProvider
+    private sealed class TransientChannelProvider : IChannelProvider
     {
-        public CallInvoker GetCallInvoker(IServiceProvider serviceProvider)
+        private readonly Func<IServiceProvider, object?, ChannelBase> _provider;
+
+        public TransientChannelProvider(Func<IServiceProvider, ChannelBase> provider)
+            : this((p, _) => provider(p))
+        {
+        }
+
+        public TransientChannelProvider(Func<IServiceProvider, object?, ChannelBase> provider)
+        {
+            _provider = provider;
+        }
+
+        public CallInvoker GetCallInvoker(IServiceProvider serviceProvider, object? serviceKey)
         {
             GrpcPreconditions.CheckNotNull(serviceProvider, nameof(serviceProvider));
 
-            var channel = provider(serviceProvider);
+            var channel = _provider(serviceProvider, serviceKey);
             AssertNotNull(channel, nameof(ChannelBase));
 
             var result = channel.CreateCallInvoker();
@@ -62,12 +86,12 @@ public partial class ChannelProviderFactory
 
     private sealed class SingletonProvider(CallInvoker instance) : IChannelProvider
     {
-        public CallInvoker GetCallInvoker(IServiceProvider serviceProvider) => instance;
+        public CallInvoker GetCallInvoker(IServiceProvider serviceProvider, object? serviceKey) => instance;
     }
 
     private sealed class SingletonChannelProvider(ChannelBase channel) : IChannelProvider
     {
-        public CallInvoker GetCallInvoker(IServiceProvider serviceProvider)
+        public CallInvoker GetCallInvoker(IServiceProvider serviceProvider, object? serviceKey)
         {
             var result = channel.CreateCallInvoker();
             AssertNotNull(result, nameof(CallInvoker));
@@ -80,11 +104,11 @@ public partial class ChannelProviderFactory
     {
         public static readonly DefaultProvider Instance = new();
 
-        public CallInvoker GetCallInvoker(IServiceProvider serviceProvider)
+        public CallInvoker GetCallInvoker(IServiceProvider serviceProvider, object? serviceKey)
         {
             GrpcPreconditions.CheckNotNull(serviceProvider, nameof(serviceProvider));
 
-            var channel = serviceProvider.GetService<ChannelBase>();
+            var channel = serviceProvider.TryResolve<ChannelBase>(serviceKey);
             if (channel != null)
             {
                 var invoker = channel.CreateCallInvoker();
@@ -92,10 +116,10 @@ public partial class ChannelProviderFactory
                 return invoker;
             }
 
-            var result = serviceProvider.GetService<CallInvoker>();
+            var result = serviceProvider.TryResolve<CallInvoker>(serviceKey);
             if (result == null)
             {
-                throw new InvalidOperationException("Fail to resolve default CallInvoker: neither CallInvoker nor ChannelBase are not registered.");
+                throw new InvalidOperationException($"Fail to resolve default CallInvoker: neither CallInvoker nor ChannelBase are not registered with key [{serviceKey}].");
             }
 
             return result;

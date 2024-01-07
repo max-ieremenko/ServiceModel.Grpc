@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2023 Max Ieremenko
+// Copyright 2023-2024 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,6 +30,11 @@ public interface IClientFactoryBuilder
     /// Gets the application service collection.
     /// </summary>
     IServiceCollection Services { get; }
+
+    /// <summary>
+    /// Gets the key of the service, if applicable.
+    /// </summary>
+    object? ServiceKey { get; }
 
     /// <summary>
     /// Configures default <see cref="IChannelProvider"/> for the <see cref="ClientFactory"/>.

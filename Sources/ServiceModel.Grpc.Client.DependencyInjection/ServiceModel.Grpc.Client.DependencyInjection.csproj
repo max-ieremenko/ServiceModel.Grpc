@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Grpc.Net.ClientFactory" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)' != 'Debug'">

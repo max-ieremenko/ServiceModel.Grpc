@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2023 Max Ieremenko
+// Copyright 2023-2024 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,11 +38,35 @@ public static partial class ChannelProviderFactory
     }
 
     /// <summary>
+    /// Creates an <see cref="IChannelProvider"/> that will be used for resolving <see cref="CallInvoker"/> from the current <see cref="IServiceProvider"/>.
+    /// </summary>
+    /// <param name="provider">A delegate that is used for resolving <see cref="CallInvoker"/>.</param>
+    /// <returns>An <see cref="IChannelProvider"/> that can be used for resolving <see cref="CallInvoker"/>.</returns>
+    public static IChannelProvider KeyedTransient(Func<IServiceProvider, object?, CallInvoker> provider)
+    {
+        GrpcPreconditions.CheckNotNull(provider, nameof(provider));
+
+        return new TransientProvider(provider);
+    }
+
+    /// <summary>
     /// Creates an <see cref="IChannelProvider"/> that will be used for resolving <see cref="ChannelBase"/> from the current <see cref="IServiceProvider"/>.
     /// </summary>
     /// <param name="provider">A delegate that is used for resolving <see cref="ChannelBase"/>.</param>
     /// <returns>An <see cref="IChannelProvider"/> that can be used for resolving <see cref="ChannelBase"/>.</returns>
     public static IChannelProvider Transient(Func<IServiceProvider, ChannelBase> provider)
+    {
+        GrpcPreconditions.CheckNotNull(provider, nameof(provider));
+
+        return new TransientChannelProvider(provider);
+    }
+
+    /// <summary>
+    /// Creates an <see cref="IChannelProvider"/> that will be used for resolving <see cref="ChannelBase"/> from the current <see cref="IServiceProvider"/>.
+    /// </summary>
+    /// <param name="provider">A delegate that is used for resolving <see cref="ChannelBase"/>.</param>
+    /// <returns>An <see cref="IChannelProvider"/> that can be used for resolving <see cref="ChannelBase"/>.</returns>
+    public static IChannelProvider KeyedTransient(Func<IServiceProvider, object?, ChannelBase> provider)
     {
         GrpcPreconditions.CheckNotNull(provider, nameof(provider));
 

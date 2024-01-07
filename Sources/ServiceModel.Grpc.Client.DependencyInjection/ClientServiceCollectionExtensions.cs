@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2023 Max Ieremenko
+// Copyright 2023-2024 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,12 +40,31 @@ public static class ClientServiceCollectionExtensions
     {
         GrpcPreconditions.CheckNotNull(services, nameof(services));
 
+        return AddKeyedServiceModelGrpcClientFactory(services, serviceKey: null, configure);
+    }
+
+    /// <summary>
+    /// Registers singleton <see cref="ClientFactory"/> and related services to the <see cref="IServiceCollection"/>.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <param name="serviceKey">The service key.</param>
+    /// <param name="configure">A delegate that is used to configure all clients, created by this <see cref="ClientFactory"/>.</param>
+    /// <returns>An <see cref="IClientFactoryBuilder"/> that can be used to configure the factory.</returns>
+    public static IClientFactoryBuilder AddKeyedServiceModelGrpcClientFactory(
+        this IServiceCollection services,
+        object? serviceKey,
+        Action<ServiceModelGrpcClientOptions, IServiceProvider>? configure = null)
+    {
+        GrpcPreconditions.CheckNotNull(services, nameof(services));
+
+        var optionsKey = KeyedServiceExtensions.GetOptionsKey(serviceKey);
         if (configure != null)
         {
-            services.AddOptions<ServiceModelGrpcClientOptions>().Configure(configure);
+            services.AddOptions<ServiceModelGrpcClientOptions>(optionsKey).Configure(configure);
         }
 
-        return new ClientFactoryBuilder(services, GetOrCreateResolver(services));
+        ClientFactoryResolver.Register(services, serviceKey, optionsKey);
+        return new ClientFactoryBuilder(services, serviceKey, optionsKey);
     }
 
     /// <summary>
@@ -67,6 +86,32 @@ public static class ClientServiceCollectionExtensions
 
         services
             .AddServiceModelGrpcClientFactory()
+            .AddClient<TContract>(configure, channel);
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers transient <typeparamref name="TContract"/> client and related services to the <see cref="IServiceCollection"/> and configures
+    /// a binding between the <typeparamref name="TContract"/> type and the <see cref="ClientFactory"/>.
+    /// </summary>
+    /// <typeparam name="TContract">The service contract type.</typeparam>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <param name="serviceKey">The service key.</param>
+    /// <param name="configure">A delegate that is used to configure a client.</param>
+    /// <param name="channel">An instance that can provide <see cref="CallInvoker"/> instance for gRPC client calls, see also <see cref="ChannelProviderFactory"/>.</param>
+    /// <returns>The <paramref name="services"/>.</returns>
+    public static IServiceCollection AddKeyedServiceModelGrpcClient<TContract>(
+        this IServiceCollection services,
+        object? serviceKey,
+        Action<ServiceModelGrpcClientOptions, IServiceProvider>? configure = null,
+        IChannelProvider? channel = null)
+        where TContract : class
+    {
+        GrpcPreconditions.CheckNotNull(services, nameof(services));
+
+        services
+            .AddKeyedServiceModelGrpcClientFactory(serviceKey)
             .AddClient<TContract>(configure, channel);
 
         return services;
@@ -99,26 +144,32 @@ public static class ClientServiceCollectionExtensions
         return services;
     }
 
-    private static ClientFactoryResolver GetOrCreateResolver(IServiceCollection services)
+    /// <summary>
+    /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+    /// This API may change or be removed in future releases.
+    /// </summary>
+    /// <typeparam name="TContract">The service contract type.</typeparam>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <param name="serviceKey">The service key.</param>
+    /// <param name="builder">The proxy builder.</param>
+    /// <param name="configure">A delegate that is used to configure a client.</param>
+    /// <param name="channel">An instance that can provide <see cref="CallInvoker"/> instance for gRPC client calls, see also <see cref="ChannelProviderFactory"/>.</param>
+    /// <returns>The <paramref name="services"/>.</returns>
+    public static IServiceCollection AddKeyedServiceModelGrpcClientBuilder<TContract>(
+        IServiceCollection services,
+        object? serviceKey,
+        IClientBuilder<TContract> builder,
+        Action<ServiceModelGrpcClientOptions, IServiceProvider>? configure,
+        IChannelProvider? channel)
+        where TContract : class
     {
-        for (var i = 0; i < services.Count; i++)
-        {
-            var descriptor = services[i];
+        GrpcPreconditions.CheckNotNull(services, nameof(services));
+        GrpcPreconditions.CheckNotNull(builder, nameof(builder));
 
-            /* || descriptor.IsKeyedService*/
-            if (descriptor.ServiceType != typeof(IClientFactory))
-            {
-                continue;
-            }
+        services
+            .AddKeyedServiceModelGrpcClientFactory(serviceKey)
+            .AddClientBuilder(builder, configure, channel);
 
-            if (descriptor.ImplementationFactory?.Target is ClientFactoryResolver result)
-            {
-                return result;
-            }
-        }
-
-        var resolver = new ClientFactoryResolver();
-        services.AddSingleton(resolver.Resolve);
-        return resolver;
+        return services;
     }
 }

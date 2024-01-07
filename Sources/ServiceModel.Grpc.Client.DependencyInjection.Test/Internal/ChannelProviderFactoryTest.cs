@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using Grpc.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -28,7 +27,7 @@ public class ChannelProviderFactoryTest
 {
     private CallInvoker _callInvoker = null!;
     private ChannelBase _channel = null!;
-    private Mock<IServiceProvider> _serviceProvider = null!;
+    private Mock<IKeyedServiceProvider> _serviceProvider = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -41,7 +40,7 @@ public class ChannelProviderFactoryTest
             .Returns(_callInvoker);
         _channel = channel.Object;
 
-        _serviceProvider = new Mock<IServiceProvider>(MockBehavior.Strict);
+        _serviceProvider = new Mock<IKeyedServiceProvider>(MockBehavior.Strict);
     }
 
     [Test]
@@ -52,7 +51,22 @@ public class ChannelProviderFactoryTest
             .Returns(_callInvoker);
         var sut = ChannelProviderFactory.Transient(provider => provider.GetRequiredService<CallInvoker>());
 
-        var actual = sut.GetCallInvoker(_serviceProvider.Object);
+        var actual = sut.GetCallInvoker(_serviceProvider.Object, null);
+
+        actual.ShouldBe(_callInvoker);
+    }
+
+    [Test]
+    public void TransientKeyedCallInvoker()
+    {
+        var key = new object();
+
+        _serviceProvider
+            .Setup(p => p.GetRequiredKeyedService(typeof(CallInvoker), key))
+            .Returns(_callInvoker);
+        var sut = ChannelProviderFactory.KeyedTransient((provider, k) => provider.GetRequiredKeyedService<CallInvoker>(k));
+
+        var actual = sut.GetCallInvoker(_serviceProvider.Object, key);
 
         actual.ShouldBe(_callInvoker);
     }
@@ -65,7 +79,22 @@ public class ChannelProviderFactoryTest
             .Returns(_channel);
         var sut = ChannelProviderFactory.Transient(provider => provider.GetRequiredService<ChannelBase>());
 
-        var actual = sut.GetCallInvoker(_serviceProvider.Object);
+        var actual = sut.GetCallInvoker(_serviceProvider.Object, null);
+
+        actual.ShouldBe(_callInvoker);
+    }
+
+    [Test]
+    public void TransientKeyedChannel()
+    {
+        var key = new object();
+
+        _serviceProvider
+            .Setup(p => p.GetRequiredKeyedService(typeof(ChannelBase), key))
+            .Returns(_channel);
+        var sut = ChannelProviderFactory.KeyedTransient((provider, k) => provider.GetRequiredKeyedService<ChannelBase>(k));
+
+        var actual = sut.GetCallInvoker(_serviceProvider.Object, key);
 
         actual.ShouldBe(_callInvoker);
     }
@@ -75,7 +104,7 @@ public class ChannelProviderFactoryTest
     {
         var sut = ChannelProviderFactory.Singleton(_callInvoker);
 
-        var actual = sut.GetCallInvoker(null!);
+        var actual = sut.GetCallInvoker(null!, null);
 
         actual.ShouldBe(_callInvoker);
     }
@@ -85,7 +114,7 @@ public class ChannelProviderFactoryTest
     {
         var sut = ChannelProviderFactory.Singleton(_channel);
 
-        var actual = sut.GetCallInvoker(null!);
+        var actual = sut.GetCallInvoker(null!, null);
 
         actual.ShouldBe(_callInvoker);
     }
@@ -101,7 +130,25 @@ public class ChannelProviderFactoryTest
             .Returns(_callInvoker);
         var sut = ChannelProviderFactory.Default();
 
-        var actual = sut.GetCallInvoker(_serviceProvider.Object);
+        var actual = sut.GetCallInvoker(_serviceProvider.Object, null);
+
+        actual.ShouldBe(_callInvoker);
+    }
+
+    [Test]
+    public void DefaultKeyedCallInvoker()
+    {
+        var key = new object();
+
+        _serviceProvider
+            .Setup(p => p.GetKeyedService(typeof(ChannelBase), key))
+            .Returns((ChannelBase)null!);
+        _serviceProvider
+            .Setup(p => p.GetKeyedService(typeof(CallInvoker), key))
+            .Returns(_callInvoker);
+        var sut = ChannelProviderFactory.Default();
+
+        var actual = sut.GetCallInvoker(_serviceProvider.Object, key);
 
         actual.ShouldBe(_callInvoker);
     }
@@ -114,7 +161,22 @@ public class ChannelProviderFactoryTest
             .Returns(_channel);
         var sut = ChannelProviderFactory.Default();
 
-        var actual = sut.GetCallInvoker(_serviceProvider.Object);
+        var actual = sut.GetCallInvoker(_serviceProvider.Object, null);
+
+        actual.ShouldBe(_callInvoker);
+    }
+
+    [Test]
+    public void DefaultKeyedChannel()
+    {
+        var key = new object();
+
+        _serviceProvider
+            .Setup(p => p.GetKeyedService(typeof(ChannelBase), key))
+            .Returns(_channel);
+        var sut = ChannelProviderFactory.Default();
+
+        var actual = sut.GetCallInvoker(_serviceProvider.Object, key);
 
         actual.ShouldBe(_callInvoker);
     }

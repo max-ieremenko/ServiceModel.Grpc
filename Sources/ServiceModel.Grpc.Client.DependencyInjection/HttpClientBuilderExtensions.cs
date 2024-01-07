@@ -42,7 +42,7 @@ public static class HttpClientBuilderExtensions
         GrpcPreconditions.CheckNotNull(builder, nameof(builder));
         ClientFactory.VerifyClient<TContract>();
 
-        builder.ConfigureGrpcClientCreator(ClientResolver<TContract>.Resolve);
+        ClientResolver<TContract>.Register(builder);
 
         var factoryBuilder = (ClientFactoryBuilder)builder.Services.AddServiceModelGrpcClientFactory();
         factoryBuilder.AddGrpcClient<TContract>(null, configure);
@@ -68,7 +68,7 @@ public static class HttpClientBuilderExtensions
         GrpcPreconditions.CheckNotNull(httpBuilder, nameof(httpBuilder));
         GrpcPreconditions.CheckNotNull(serviceModelBuilder, nameof(serviceModelBuilder));
 
-        httpBuilder.ConfigureGrpcClientCreator(ClientResolver<TContract>.Resolve);
+        ClientResolver<TContract>.Register(httpBuilder);
 
         var factoryBuilder = (ClientFactoryBuilder)httpBuilder.Services.AddServiceModelGrpcClientFactory();
         factoryBuilder.AddGrpcClient(serviceModelBuilder, configure);

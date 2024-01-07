@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2023 Max Ieremenko
+// Copyright 2023-2024 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Grpc.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -26,6 +25,7 @@ using ServiceModel.Grpc.Client.DependencyInjection.Internal;
 using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Interceptors;
+using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
 
@@ -63,6 +63,7 @@ public class ClientServiceCollectionExtensionsTest
 
         var provider = _services.BuildServiceProvider();
         provider.GetService<IOptions<ServiceModelGrpcClientOptions>>().ShouldBeNull();
+        provider.GetService<IOptionsSnapshot<ServiceModelGrpcClientOptions>>().ShouldBeNull();
 
         provider.GetService<IClientFactory>().ShouldBe(_clientFactory.Object);
     }
@@ -113,12 +114,13 @@ public class ClientServiceCollectionExtensionsTest
     [Test]
     public void OverrideCustomFactoryRegistration()
     {
-        _services.AddTransient<IClientFactory>(_ => throw new InvalidOperationException());
+        _services.AddTransient<IClientFactory>(_ => throw new ApplicationException());
 
         _services.AddServiceModelGrpcClientFactory();
 
         var provider = _services.BuildServiceProvider();
-        provider.GetRequiredService<IClientFactory>().ShouldBeOfType<ClientFactory>();
+
+        Should.Throw<ApplicationException>(provider.GetService<IClientFactory>);
     }
 
     [Test]
@@ -213,14 +215,27 @@ public class ClientServiceCollectionExtensionsTest
         provider.GetRequiredService<IContract>().ShouldBe(_client.Object);
     }
 
+    [Test(Description = "not supported: requires on-fly proxy generation")]
+    public void OpenGenerics()
+    {
+        _services
+            .AddServiceModelGrpcClientFactory();
+
+        _services.AddTransient(
+            typeof(IGenericContract<,>),
+            provider =>
+            {
+                provider.GetRequiredService<IClientFactory>();
+                return new object();
+            });
+
+        // ArgumentException : Open generic service type 'ServiceModel.Grpc.TestApi.Domain.IGenericContract`2[T1,T2]' requires registering an open generic implementation type. (Parameter 'descriptors')
+        var ex = Should.Throw<ArgumentException>(_services.BuildServiceProvider);
+        TestOutput.WriteLine(ex);
+    }
+
     private void OverrideClientFactory(Action<ServiceModelGrpcClientOptions>? configure = null)
     {
-        var resolver = _services
-            .Single(i => i.ServiceType == typeof(IClientFactory))
-            .ImplementationFactory
-            ?.Target
-            .ShouldBeOfType<ClientFactoryResolver>();
-
         Func<ServiceModelGrpcClientOptions, IClientFactory> test = options =>
         {
             options.ShouldNotBeNull();
@@ -228,7 +243,7 @@ public class ClientServiceCollectionExtensionsTest
             return _clientFactory.Object;
         };
 
-        _services.AddSingleton(provider => resolver!.Build(provider, test));
+        _services.AddSingleton(provider => new ClientFactoryResolver(KeyedServiceExtensions.GetOptionsKey(null)).Create(provider, test));
     }
 
     private void OverrideClientBuilder()
@@ -245,17 +260,19 @@ public class ClientServiceCollectionExtensionsTest
 
     private void OverrideClient(Action<ServiceModelGrpcClientOptions>? configure = null)
     {
-        if (configure != null)
-        {
-            _clientFactory
-                .Setup(f => f.AddClient<IContract>(It.IsNotNull<Action<ServiceModelGrpcClientOptions>>()))
-                .Callback<Action<ServiceModelGrpcClientOptions>>(setup =>
+        _clientFactory
+            .Setup(f => f.AddClient<IContract>(It.IsAny<Action<ServiceModelGrpcClientOptions>>()))
+            .Callback<Action<ServiceModelGrpcClientOptions>>(setup =>
+            {
+                if (configure != null)
                 {
+                    setup.ShouldNotBeNull();
+
                     var options = new ServiceModelGrpcClientOptions();
                     setup(options);
                     configure(options);
-                });
-        }
+                }
+            });
 
         _clientFactory
             .Setup(f => f.CreateClient<IContract>(_callInvoker))

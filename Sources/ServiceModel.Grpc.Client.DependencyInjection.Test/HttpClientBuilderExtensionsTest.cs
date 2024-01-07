@@ -21,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
+using ServiceModel.Grpc.Client.DependencyInjection.Internal;
 using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
@@ -95,9 +96,12 @@ public class HttpClientBuilderExtensionsTest
         _services
             .AddServiceModelGrpcClient<IContract>(channel: ChannelProviderFactory.Default());
 
-        var builder = AddGrpcClient();
+        AddGrpcClient()
+            .ConfigureServiceModelGrpcClientCreator<IContract>();
 
-        var ex = Should.Throw<NotSupportedException>(() => builder.ConfigureServiceModelGrpcClientCreator<IContract>());
+        var provider = _services.BuildServiceProvider();
+
+        var ex = Should.Throw<NotSupportedException>(provider.GetRequiredService<IContract>);
         TestOutput.WriteLine(ex);
     }
 
@@ -107,7 +111,12 @@ public class HttpClientBuilderExtensionsTest
         AddGrpcClient()
             .ConfigureServiceModelGrpcClientCreator<IContract>();
 
-        var ex = Should.Throw<NotSupportedException>(() => _services.AddServiceModelGrpcClient<IContract>(channel: ChannelProviderFactory.Default()));
+        _services
+            .AddServiceModelGrpcClient<IContract>(channel: ChannelProviderFactory.Default());
+
+        var provider = _services.BuildServiceProvider();
+
+        var ex = Should.Throw<NotSupportedException>(provider.GetRequiredService<IContract>);
         TestOutput.WriteLine(ex);
     }
 

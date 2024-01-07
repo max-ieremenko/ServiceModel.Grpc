@@ -10,6 +10,11 @@
     <PackageReference Include="System.Net.Http.WinHttpHandler" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' != 'net7.0'">
+    <!-- override 6.0 (transitioned from Grpc.Net.ClientFactory) -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\ServiceModel.Grpc.Client.DependencyInjection\ServiceModel.Grpc.Client.DependencyInjection.csproj" />
     <ProjectReference Include="..\ServiceModel.Grpc.TestApi\ServiceModel.Grpc.TestApi.csproj" />

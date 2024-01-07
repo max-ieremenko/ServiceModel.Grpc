@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2023 Max Ieremenko
+// Copyright 2023-2024 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,50 +15,52 @@
 // </copyright>
 
 using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace ServiceModel.Grpc.Client.DependencyInjection.Internal;
 
 internal sealed class ClientFactoryResolver
 {
     private const string LoggerName = "ServiceModel.Grpc.Client";
+    private readonly string _optionsKey;
 
-    public List<IClientResolver> Clients { get; } = new();
-
-    public IChannelProvider? Channel { get; set; }
-
-    public IClientFactory Resolve(IServiceProvider provider) => Build(provider, null);
-
-    internal IClientFactory Build(IServiceProvider provider, Func<ServiceModelGrpcClientOptions, IClientFactory>? test)
+    public ClientFactoryResolver(string optionsKey)
     {
-        var options = provider.GetService<IOptions<ServiceModelGrpcClientOptions>>()?.Value ?? new ServiceModelGrpcClientOptions();
+        _optionsKey = optionsKey;
+    }
 
-        if (options.ServiceProvider == null)
+    public static void Register(IServiceCollection services, object? serviceKey, string optionsKey)
+    {
+        services.TryAddKeyedSingleton(serviceKey, new ClientFactoryResolver(optionsKey).Create);
+    }
+
+    internal IClientFactory Create(IServiceProvider provider, Func<ServiceModelGrpcClientOptions, IClientFactory>? test)
+    {
+        var clientOptions = KeyedServiceExtensions.ResolveOptions<ServiceModelGrpcClientOptions>(provider, _optionsKey);
+        if (clientOptions.ServiceProvider == null)
         {
-            options.ServiceProvider = provider;
+            clientOptions.ServiceProvider = provider;
         }
 
-        if (options.Logger == null)
+        if (clientOptions.Logger == null)
         {
             var logger = provider.GetService<ILoggerFactory>()?.CreateLogger(LoggerName);
-            options.Logger = LogAdapter.Wrap(logger);
+            clientOptions.Logger = LogAdapter.Wrap(logger);
         }
 
-        var result = test == null ? new ClientFactory(options) : test(options);
-        for (var i = 0; i < Clients.Count; i++)
+        var clientFactory = test == null ? new ClientFactory(clientOptions) : test(clientOptions);
+
+        var factoryOptions = KeyedServiceExtensions.ResolveOptions<ClientFactoryOptions>(provider, _optionsKey);
+        for (var i = 0; i < factoryOptions.Clients.Count; i++)
         {
-            var client = Clients[i];
-            if (client.Channel == null)
-            {
-                client.Channel = Channel;
-            }
-
-            client.Setup(provider, result);
+            var client = factoryOptions.Clients[i];
+            client.Setup(provider, clientFactory);
         }
 
-        return result;
+        return clientFactory;
     }
+
+    private IClientFactory Create(IServiceProvider provider, object? key) => Create(provider, null);
 }

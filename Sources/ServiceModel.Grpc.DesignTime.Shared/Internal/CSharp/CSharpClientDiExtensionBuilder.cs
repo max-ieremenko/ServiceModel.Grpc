@@ -1,5 +1,5 @@
 // <copyright>
-// Copyright 2023 Max Ieremenko
+// Copyright 2023-2024 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,6 +38,9 @@ internal sealed class CSharpClientDiExtensionBuilder : CodeGeneratorBase
 
         Output.AppendLine();
         GenerateServiceCollection();
+
+        Output.AppendLine();
+        GenerateKeyedServiceCollection();
 
         Output.AppendLine();
         GenerateHttpClientBuilder();
@@ -122,6 +125,50 @@ internal sealed class CSharpClientDiExtensionBuilder : CodeGeneratorBase
 
             Output
                 .Append("return ServiceModel.Grpc.Client.DependencyInjection.ClientServiceCollectionExtensions.AddServiceModelGrpcClientBuilder(services, new ")
+                .Append(_contract.ClientBuilderClassName)
+                .AppendLine("(), configure, channel);");
+        }
+
+        Output.AppendLine("}");
+    }
+
+    private void GenerateKeyedServiceCollection()
+    {
+        WriteMetadata();
+        Output
+            .Append("public static ")
+            .AppendTypeName("Microsoft.Extensions.DependencyInjection", "IServiceCollection")
+            .Append(" AddKeyed")
+            .Append(_contract.ClientClassName)
+            .AppendLine("(");
+
+        using (Output.Indent())
+        {
+            if (_isStaticClass)
+            {
+                Output.Append("this ");
+            }
+
+            Output
+                .AppendTypeName("Microsoft.Extensions.DependencyInjection", "IServiceCollection")
+                .AppendLine(" services,")
+                .AppendLine("object serviceKey,")
+                .Append("Action<")
+                .AppendType(typeof(ServiceModelGrpcClientOptions))
+                .Append(", ")
+                .AppendType(typeof(IServiceProvider))
+                .AppendLine("> configure = null,")
+                .AppendTypeName("ServiceModel.Grpc.Client.DependencyInjection", "IChannelProvider")
+                .AppendLine(" channel = null)");
+        }
+
+        Output.AppendLine("{");
+        using (Output.Indent())
+        {
+            Output.AppendArgumentNullException("services");
+
+            Output
+                .Append("return ServiceModel.Grpc.Client.DependencyInjection.ClientServiceCollectionExtensions.AddKeyedServiceModelGrpcClientBuilder(services, serviceKey, new ")
                 .Append(_contract.ClientBuilderClassName)
                 .AppendLine("(), configure, channel);");
         }

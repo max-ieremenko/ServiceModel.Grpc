@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2023 Max Ieremenko
+// Copyright 2023-2024 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,7 +28,8 @@ public interface IChannelProvider
     /// Provides <see cref="CallInvoker"/> instance from the current <see cref="IServiceProvider"/>.
     /// </summary>
     /// <param name="serviceProvider">An instance of current <see cref="IServiceProvider"/>.</param>
+    /// <param name="serviceKey">An object that specifies the key of CallInvoker object to get.</param>
     /// <returns>An instance of <see cref="CallInvoker"/>.</returns>
     /// <see cref="ChannelProviderFactory"/>
-    CallInvoker GetCallInvoker(IServiceProvider serviceProvider);
+    CallInvoker GetCallInvoker(IServiceProvider serviceProvider, object? serviceKey);
 }
