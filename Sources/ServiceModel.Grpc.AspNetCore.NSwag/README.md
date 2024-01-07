@@ -61,7 +61,7 @@ var app = builder.Build();
 
 // NSwag.AspNetCore
 app.UseOpenApi();
-app.UseSwaggerUi3();
+app.UseSwaggerUi();
 app.UseReDoc();
 
 // Enable ServiceModel.Grpc HTTP/1.1 JSON gateway for Swagger UI, button "Try it out"
