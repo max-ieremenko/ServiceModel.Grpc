@@ -27,7 +27,7 @@
     <Product>ServiceModel.Grpc</Product>
     <Authors>Max Ieremenko</Authors>
     <Description>Library that enables applications to communicate with gRPC services using code-first approach, helps to get around some limitations of gRPC protocol. Provides exception handling. Helps to migrate existing WCF solution to gRPC with minimum effort.</Description>
-    <PackageReleaseNotes>https://github.com/max-ieremenko/ServiceModel.Grpc/releases</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/max-ieremenko/ServiceModel.Grpc/releases/tag/$(ServiceModelGrpcVersion)</PackageReleaseNotes>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageProjectUrl>https://max-ieremenko.github.io/ServiceModel.Grpc/</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
