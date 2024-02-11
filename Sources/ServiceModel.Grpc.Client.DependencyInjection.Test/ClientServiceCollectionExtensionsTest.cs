@@ -61,9 +61,9 @@ public class ClientServiceCollectionExtensionsTest
             options.ServiceProvider.ShouldNotBeNull();
         });
 
-        var provider = _services.BuildServiceProvider();
+        var provider = _services.BuildProviderWithValidations();
         provider.GetService<IOptions<ServiceModelGrpcClientOptions>>().ShouldBeNull();
-        provider.GetService<IOptionsSnapshot<ServiceModelGrpcClientOptions>>().ShouldBeNull();
+        provider.GetService<IOptionsMonitor<ServiceModelGrpcClientOptions>>().ShouldBeNull();
 
         provider.GetService<IClientFactory>().ShouldBe(_clientFactory.Object);
     }
@@ -102,7 +102,7 @@ public class ClientServiceCollectionExtensionsTest
             options.ErrorHandler.ShouldBe(errorHandler);
         });
 
-        var provider = _services.BuildServiceProvider();
+        var provider = _services.BuildProviderWithValidations();
         provider.GetService<IOptions<ServiceModelGrpcClientOptions>>().ShouldNotBeNull();
 
         stack.ShouldBeEmpty();
@@ -118,7 +118,7 @@ public class ClientServiceCollectionExtensionsTest
 
         _services.AddServiceModelGrpcClientFactory();
 
-        var provider = _services.BuildServiceProvider();
+        var provider = _services.BuildProviderWithValidations();
 
         Should.Throw<ApplicationException>(provider.GetService<IClientFactory>);
     }
@@ -132,7 +132,7 @@ public class ClientServiceCollectionExtensionsTest
         OverrideClientFactory();
         OverrideClient();
 
-        var provider = _services.BuildServiceProvider();
+        var provider = _services.BuildProviderWithValidations();
 
         provider.GetRequiredService<IContract>().ShouldBe(_client.Object);
     }
@@ -148,7 +148,7 @@ public class ClientServiceCollectionExtensionsTest
         OverrideClientFactory();
         OverrideClient();
 
-        var provider = _services.BuildServiceProvider();
+        var provider = _services.BuildProviderWithValidations();
 
         provider.GetRequiredService<IContract>().ShouldBe(_client.Object);
     }
@@ -161,7 +161,7 @@ public class ClientServiceCollectionExtensionsTest
         OverrideClientFactory();
         OverrideClient();
 
-        var provider = _services.BuildServiceProvider();
+        var provider = _services.BuildProviderWithValidations();
 
         provider.GetRequiredService<IContract>().ShouldBe(_client.Object);
     }
@@ -195,7 +195,7 @@ public class ClientServiceCollectionExtensionsTest
             options.ErrorHandler.ShouldBe(errorHandler);
         });
 
-        var provider = _services.BuildServiceProvider();
+        var provider = _services.BuildProviderWithValidations();
 
         provider.GetRequiredService<IContract>().ShouldBe(_client.Object);
         stack.ShouldBe(new[] { "1", "2" });
@@ -210,7 +210,7 @@ public class ClientServiceCollectionExtensionsTest
         OverrideClientFactory();
         OverrideClientBuilder();
 
-        var provider = _services.BuildServiceProvider();
+        var provider = _services.BuildProviderWithValidations();
 
         provider.GetRequiredService<IContract>().ShouldBe(_client.Object);
     }
@@ -230,7 +230,7 @@ public class ClientServiceCollectionExtensionsTest
             });
 
         // ArgumentException : Open generic service type 'ServiceModel.Grpc.TestApi.Domain.IGenericContract`2[T1,T2]' requires registering an open generic implementation type. (Parameter 'descriptors')
-        var ex = Should.Throw<ArgumentException>(_services.BuildServiceProvider);
+        var ex = Should.Throw<ArgumentException>(_services.BuildProviderWithValidations);
         TestOutput.WriteLine(ex);
     }
 

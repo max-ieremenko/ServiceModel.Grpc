@@ -14,25 +14,14 @@
 // limitations under the License.
 // </copyright>
 
-#if NET7_0
-using System;
 using Microsoft.Extensions.DependencyInjection;
-using NUnit.Framework;
-using Shouldly;
 
 namespace ServiceModel.Grpc.Client.DependencyInjection;
 
-[TestFixture]
-public class ClientKeyedServiceCollectionExtensions70Test
+internal static class ServiceCollectionContainerBuilderExtensions
 {
-    [Test]
-    public void NotSupported()
+    public static ServiceProvider BuildProviderWithValidations(this IServiceCollection services)
     {
-        var services = new ServiceCollection();
-        services.AddKeyedServiceModelGrpcClientFactory(new object());
-
-        // InvalidOperationException : This service descriptor is keyed. Your service provider may not support keyed services.
-        Should.Throw<InvalidOperationException>(services.BuildProviderWithValidations);
+        return services.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
     }
 }
-#endif

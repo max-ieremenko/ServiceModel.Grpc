@@ -92,7 +92,7 @@ public class ClientKeyedServiceCollectionExtensions80Test
                 options.MarshallerFactory.ShouldBe(_keyedMarshallerFactory);
             });
 
-        var provider = _services.BuildServiceProvider();
+        var provider = _services.BuildProviderWithValidations();
 
         provider.GetRequiredKeyedService<IClientFactory>(null).ShouldBe(_defaultClientFactory.Object);
         provider.GetRequiredKeyedService<IClientFactory>(_key).ShouldBe(_keyedClientFactory.Object);
@@ -116,7 +116,7 @@ public class ClientKeyedServiceCollectionExtensions80Test
         OverrideClient(null);
         OverrideClient(_key);
 
-        var provider = _services.BuildServiceProvider();
+        var provider = _services.BuildProviderWithValidations();
 
         provider.GetRequiredService<IContract>().ShouldBe(_defaultClient);
         provider.GetRequiredKeyedService<IContract>(_key).ShouldBe(_keyedClient);
@@ -137,7 +137,7 @@ public class ClientKeyedServiceCollectionExtensions80Test
         OverrideClient(null);
         OverrideClient(_key);
 
-        var provider = _services.BuildServiceProvider();
+        var provider = _services.BuildProviderWithValidations();
 
         provider.GetRequiredService<IContract>().ShouldBe(_defaultClient);
         provider.GetRequiredKeyedService<IContract>(_key).ShouldBe(_keyedClient);
@@ -176,7 +176,7 @@ public class ClientKeyedServiceCollectionExtensions80Test
                 options.MarshallerFactory.ShouldBe(_keyedMarshallerFactory);
             });
 
-        var provider = _services.BuildServiceProvider();
+        var provider = _services.BuildProviderWithValidations();
 
         provider.GetRequiredService<IContract>().ShouldBe(_defaultClient);
         provider.GetRequiredKeyedService<IContract>(_key).ShouldBe(_keyedClient);
@@ -203,7 +203,7 @@ public class ClientKeyedServiceCollectionExtensions80Test
             });
         OverrideClient(KeyedService.AnyKey);
 
-        var provider = _services.BuildServiceProvider();
+        var provider = _services.BuildProviderWithValidations();
 
         provider.GetRequiredKeyedService<IClientFactory>("foo").ShouldBe(_keyedClientFactory.Object);
         provider.GetRequiredKeyedService<IClientFactory>("bar").ShouldBe(_keyedClientFactory.Object);
@@ -224,7 +224,7 @@ public class ClientKeyedServiceCollectionExtensions80Test
         OverrideClientFactory(KeyedService.AnyKey);
         OverrideClient(KeyedService.AnyKey);
 
-        var provider = _services.BuildServiceProvider();
+        var provider = _services.BuildProviderWithValidations();
 
         provider.GetRequiredKeyedService<IClientFactory>("foo").ShouldBe(_keyedClientFactory.Object);
         provider.GetRequiredKeyedService<IContract>("foo").ShouldBe(_keyedClient);

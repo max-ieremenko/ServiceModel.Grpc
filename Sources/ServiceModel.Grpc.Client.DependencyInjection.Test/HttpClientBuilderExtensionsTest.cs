@@ -99,7 +99,7 @@ public class HttpClientBuilderExtensionsTest
         AddGrpcClient()
             .ConfigureServiceModelGrpcClientCreator<IContract>();
 
-        var provider = _services.BuildServiceProvider();
+        var provider = _services.BuildProviderWithValidations();
 
         var ex = Should.Throw<NotSupportedException>(provider.GetRequiredService<IContract>);
         TestOutput.WriteLine(ex);
@@ -114,7 +114,7 @@ public class HttpClientBuilderExtensionsTest
         _services
             .AddServiceModelGrpcClient<IContract>(channel: ChannelProviderFactory.Default());
 
-        var provider = _services.BuildServiceProvider();
+        var provider = _services.BuildProviderWithValidations();
 
         var ex = Should.Throw<NotSupportedException>(provider.GetRequiredService<IContract>);
         TestOutput.WriteLine(ex);
@@ -146,7 +146,7 @@ public class HttpClientBuilderExtensionsTest
             })
             .Returns(_proxy);
 
-        var provider = _services.BuildServiceProvider();
+        var provider = _services.BuildProviderWithValidations();
 
         var actual = provider.GetRequiredService<IContract>();
 

@@ -31,7 +31,8 @@ internal static class KeyedServiceExtensions
     public static T ResolveOptions<T>(IServiceProvider provider, string key)
         where T : class, new()
     {
-        var snapshot = provider.GetService<IOptionsSnapshot<T>>();
+        // do not use IOptionsSnapshot: it is scoped service
+        var snapshot = provider.GetService<IOptionsMonitor<T>>();
         var options = snapshot?.Get(key) ?? new T();
         return options;
     }
