@@ -1,5 +1,5 @@
 <Project>
   <PropertyGroup>
-    <ServiceModelGrpcVersion>1.8.0</ServiceModelGrpcVersion>
+    <ServiceModelGrpcVersion>1.8.1</ServiceModelGrpcVersion>
   </PropertyGroup>
 </Project>
