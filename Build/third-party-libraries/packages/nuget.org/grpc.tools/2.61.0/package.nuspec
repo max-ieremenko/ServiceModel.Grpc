@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>Grpc.Tools</id>
-    <version>2.60.0</version>
+    <version>2.61.0</version>
     <authors>The gRPC Authors</authors>
     <developmentDependency>true</developmentDependency>
     <license type="expression">Apache-2.0</license>
@@ -13,7 +13,7 @@
     <description>gRPC and Protocol Buffer compiler for C# projects</description>
     <copyright>Copyright 2018 The gRPC Authors</copyright>
     <tags>gRPC RPC HTTP/2</tags>
-    <repository type="git" url="https://github.com/grpc/grpc.git" commit="0ef13a7555dbaadd4633399242524129eef5e231" />
+    <repository type="git" url="https://github.com/grpc/grpc.git" commit="a13178cb2537822bcdc552faba98fd9fa3c35b3e" />
     <dependencies>
       <group targetFramework=".NETFramework4.5" />
       <group targetFramework=".NETStandard1.3" />

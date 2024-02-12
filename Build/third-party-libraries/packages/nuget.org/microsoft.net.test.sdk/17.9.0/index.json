@@ -15,12 +15,12 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "17.8.0"
+          "Name": "Microsoft.CodeCoverage",
+          "Version": "17.9.0"
         },
         {
-          "Name": "Newtonsoft.Json",
-          "Version": "13.0.3"
+          "Name": "Microsoft.TestPlatform.TestHost",
+          "Version": "17.9.0"
         }
       ]
     },
@@ -34,12 +34,12 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "17.8.0"
+          "Name": "Microsoft.CodeCoverage",
+          "Version": "17.9.0"
         },
         {
-          "Name": "Newtonsoft.Json",
-          "Version": "13.0.3"
+          "Name": "Microsoft.TestPlatform.TestHost",
+          "Version": "17.9.0"
         }
       ]
     },
@@ -53,12 +53,12 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "17.8.0"
+          "Name": "Microsoft.CodeCoverage",
+          "Version": "17.9.0"
         },
         {
-          "Name": "Newtonsoft.Json",
-          "Version": "13.0.3"
+          "Name": "Microsoft.TestPlatform.TestHost",
+          "Version": "17.9.0"
         }
       ]
     },
@@ -73,12 +73,12 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "17.8.0"
+          "Name": "Microsoft.CodeCoverage",
+          "Version": "17.9.0"
         },
         {
-          "Name": "Newtonsoft.Json",
-          "Version": "13.0.3"
+          "Name": "Microsoft.TestPlatform.TestHost",
+          "Version": "17.9.0"
         }
       ]
     },
@@ -93,12 +93,12 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "17.8.0"
+          "Name": "Microsoft.CodeCoverage",
+          "Version": "17.9.0"
         },
         {
-          "Name": "Newtonsoft.Json",
-          "Version": "13.0.3"
+          "Name": "Microsoft.TestPlatform.TestHost",
+          "Version": "17.9.0"
         }
       ]
     },
@@ -112,12 +112,12 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "17.8.0"
+          "Name": "Microsoft.CodeCoverage",
+          "Version": "17.9.0"
         },
         {
-          "Name": "Newtonsoft.Json",
-          "Version": "13.0.3"
+          "Name": "Microsoft.TestPlatform.TestHost",
+          "Version": "17.9.0"
         }
       ]
     },
@@ -132,12 +132,12 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "17.8.0"
+          "Name": "Microsoft.CodeCoverage",
+          "Version": "17.9.0"
         },
         {
-          "Name": "Newtonsoft.Json",
-          "Version": "13.0.3"
+          "Name": "Microsoft.TestPlatform.TestHost",
+          "Version": "17.9.0"
         }
       ]
     }

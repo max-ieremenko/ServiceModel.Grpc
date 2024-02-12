@@ -15,12 +15,12 @@
       ],
       "Dependencies": [
         {
-          "Name": "NuGet.Frameworks",
-          "Version": "6.5.0"
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "17.9.0"
         },
         {
-          "Name": "System.Reflection.Metadata",
-          "Version": "1.6.0"
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     },
@@ -34,12 +34,12 @@
       ],
       "Dependencies": [
         {
-          "Name": "NuGet.Frameworks",
-          "Version": "6.5.0"
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "17.9.0"
         },
         {
-          "Name": "System.Reflection.Metadata",
-          "Version": "1.6.0"
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     },
@@ -53,12 +53,12 @@
       ],
       "Dependencies": [
         {
-          "Name": "NuGet.Frameworks",
-          "Version": "6.5.0"
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "17.9.0"
         },
         {
-          "Name": "System.Reflection.Metadata",
-          "Version": "1.6.0"
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     },
@@ -73,12 +73,12 @@
       ],
       "Dependencies": [
         {
-          "Name": "NuGet.Frameworks",
-          "Version": "6.5.0"
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "17.9.0"
         },
         {
-          "Name": "System.Reflection.Metadata",
-          "Version": "1.6.0"
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     },
@@ -93,12 +93,12 @@
       ],
       "Dependencies": [
         {
-          "Name": "NuGet.Frameworks",
-          "Version": "6.5.0"
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "17.9.0"
         },
         {
-          "Name": "System.Reflection.Metadata",
-          "Version": "1.6.0"
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     },
@@ -112,12 +112,12 @@
       ],
       "Dependencies": [
         {
-          "Name": "NuGet.Frameworks",
-          "Version": "6.5.0"
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "17.9.0"
         },
         {
-          "Name": "System.Reflection.Metadata",
-          "Version": "5.0.0"
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     },
@@ -132,12 +132,12 @@
       ],
       "Dependencies": [
         {
-          "Name": "NuGet.Frameworks",
-          "Version": "6.5.0"
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "17.9.0"
         },
         {
-          "Name": "System.Reflection.Metadata",
-          "Version": "1.6.0"
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     }
