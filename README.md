@@ -15,7 +15,7 @@ The solution is built on top of [gRPC C#](https://github.com/grpc/grpc/tree/mast
   - [service and operation names](https://max-ieremenko.github.io/ServiceModel.Grpc/ServiceAndOperationName.html)
   - [service and operation bindings](https://max-ieremenko.github.io/ServiceModel.Grpc/ServiceAndOperationBinding.html)
   - [client configuration](https://max-ieremenko.github.io/ServiceModel.Grpc/ClientConfiguration.html)
-  - [client configuration](https://max-ieremenko.github.io/ServiceModel.Grpc/ClientConfiguration.html)
+  - [client code generation](https://max-ieremenko.github.io/ServiceModel.Grpc/client-code-generation.html)
   - [client dependency injection](https://max-ieremenko.github.io/ServiceModel.Grpc/client-dependency-injection.html)
   - [server code generation](https://max-ieremenko.github.io/ServiceModel.Grpc/server-code-generation.html)
   - operations
