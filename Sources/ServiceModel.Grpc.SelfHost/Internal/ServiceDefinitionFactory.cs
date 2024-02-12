@@ -58,7 +58,10 @@ internal static class ServiceDefinitionFactory
 
         var definition = definitionBuilder.Build();
 
-        options?.ConfigureServiceDefinition?.Invoke(definition);
+        if (options?.ConfigureServiceDefinition != null)
+        {
+            definition = options.ConfigureServiceDefinition(definition);
+        }
 
         if (options?.ErrorHandler != null)
         {
