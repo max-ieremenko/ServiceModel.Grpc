@@ -1,7 +1,7 @@
 {
   "Source": "https://api.nuget.org/v3/index.json",
   "License": {
-    "Code": "Apache-2.0",
+    "Code": "MIT",
     "Status": "AutomaticallyApproved"
   },
   "UsedBy": [
@@ -12,6 +12,12 @@
         "net6.0",
         "net7.0",
         "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Reflection.Metadata",
+          "Version": "1.6.0"
+        }
       ]
     },
     {
@@ -21,6 +27,12 @@
         "net6.0",
         "net7.0",
         "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Reflection.Metadata",
+          "Version": "1.6.0"
+        }
       ]
     },
     {
@@ -30,6 +42,12 @@
         "net6.0",
         "net7.0",
         "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Reflection.Metadata",
+          "Version": "1.6.0"
+        }
       ]
     },
     {
@@ -40,6 +58,12 @@
         "net6.0",
         "net7.0",
         "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Reflection.Metadata",
+          "Version": "1.6.0"
+        }
       ]
     },
     {
@@ -50,6 +74,12 @@
         "net6.0",
         "net7.0",
         "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Reflection.Metadata",
+          "Version": "1.6.0"
+        }
       ]
     },
     {
@@ -59,6 +89,12 @@
         "net6.0",
         "net7.0",
         "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Reflection.Metadata",
+          "Version": "5.0.0"
+        }
       ]
     },
     {
@@ -69,26 +105,31 @@
         "net6.0",
         "net7.0",
         "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Reflection.Metadata",
+          "Version": "1.6.0"
+        }
       ]
     }
   ],
   "Licenses": [
     {
       "Subject": "package",
-      "Code": "Apache-2.0",
-      "HRef": "https://licenses.nuget.org/Apache-2.0"
+      "Code": "MIT",
+      "HRef": "LICENSE_MIT.txt",
+      "Description": "The license file is identical to the repository license file."
     },
     {
       "Subject": "repository",
-      "Code": null,
-      "HRef": "https://github.com/NuGet/NuGet.Client",
-      "Description": "License should be verified on https://github.com/NuGet/NuGet.Client"
+      "Code": "MIT",
+      "HRef": "https://github.com/microsoft/vstest"
     },
     {
       "Subject": "project",
-      "Code": null,
-      "HRef": "https://aka.ms/nugetprj",
-      "Description": "License should be verified on https://aka.ms/nugetprj"
+      "Code": "MIT",
+      "HRef": "https://github.com/microsoft/vstest"
     }
   ]
 }
