@@ -33,6 +33,6 @@ internal sealed class DemoService : IDemoService
     private string GetHttpContextUserName()
     {
         var identity = _httpContextAccessor.HttpContext!.User.Identity;
-        return identity?.IsAuthenticated == true ? identity.Name : "<unauthorized>";
+        return identity?.IsAuthenticated == true ? identity.Name! : "<unauthorized>";
     }
 }

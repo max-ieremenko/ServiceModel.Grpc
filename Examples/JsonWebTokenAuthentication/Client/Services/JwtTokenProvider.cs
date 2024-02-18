@@ -7,9 +7,9 @@ namespace Client.Services;
 
 internal sealed class JwtTokenProvider : IJwtTokenProvider
 {
-    public string CurrentUser { get; private set; }
+    public string? CurrentUser { get; private set; }
 
-    public string GetToken()
+    public string? GetToken()
     {
         if (CurrentUser == null)
         {
@@ -19,7 +19,7 @@ internal sealed class JwtTokenProvider : IJwtTokenProvider
         return CreateToken(CurrentUser);
     }
 
-    internal void SetCurrentUser(string userName)
+    internal void SetCurrentUser(string? userName)
     {
         CurrentUser = string.IsNullOrEmpty(userName) ? null : userName;
     }
