@@ -1,8 +1,12 @@
 ﻿using System.Threading.Tasks;
 using Client;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Service;
+using ServiceModel.Grpc.Configuration;
 
 namespace Demo.ServerAspNetCore;
 
@@ -22,17 +26,24 @@ public static class Program
 
     private static async Task<IHost> StartWebHost()
     {
-        var host = Host
-            .CreateDefaultBuilder()
-            .ConfigureWebHostDefaults(webBuilder =>
+        var builder = WebApplication.CreateBuilder();
+
+        builder.Services
+            .AddServiceModelGrpc(options =>
             {
-                webBuilder.UseStartup<Startup>();
-                webBuilder.UseKestrel(o => o.ListenLocalhost(Port, l => l.Protocols = HttpProtocols.Http2));
+                // set MessagePackMarshaller as default Marshaller
+                options.DefaultMarshallerFactory = MessagePackMarshallerFactory.Default;
+            });
 
-            })
-            .Build();
+        builder.WebHost.ConfigureKestrel(options => options.ListenLocalhost(Port, l => l.Protocols = HttpProtocols.Http2));
 
-        await host.StartAsync();
-        return host;
+        var app = builder.Build();
+
+        app.UseRouting();
+
+        app.MapGrpcService<PersonService>();
+
+        await app.StartAsync();
+        return app;
     }
 }
