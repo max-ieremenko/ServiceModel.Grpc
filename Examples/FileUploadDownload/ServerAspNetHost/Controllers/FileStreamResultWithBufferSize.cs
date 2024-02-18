@@ -44,13 +44,13 @@ internal sealed class FileStreamResultWithBufferSize : FileStreamResult
             _bufferSize = bufferSize;
         }
 
-        protected override Task WriteFileAsync(ActionContext context, FileStreamResult result, RangeItemHeaderValue range, long rangeLength)
+        protected override Task WriteFileAsync(ActionContext context, FileStreamResult result, RangeItemHeaderValue? range, long rangeLength)
         {
             return WriteFileCoreAsync(context.HttpContext, result.FileStream, range, rangeLength);
         }
 
         // FileResultExecutorBase.WriteFileAsync with custom bufferSize
-        private async Task WriteFileCoreAsync(HttpContext context, Stream fileStream, RangeItemHeaderValue range, long rangeLength)
+        private async Task WriteFileCoreAsync(HttpContext context, Stream fileStream, RangeItemHeaderValue? range, long rangeLength)
         {
             var outputStream = context.Response.Body;
             await using (fileStream)
@@ -63,7 +63,7 @@ internal sealed class FileStreamResultWithBufferSize : FileStreamResult
                     }
                     else
                     {
-                        fileStream.Seek(range.From.Value, SeekOrigin.Begin);
+                        fileStream.Seek(range.From!.Value, SeekOrigin.Begin);
                         await StreamCopyOperation.CopyToAsync(fileStream, outputStream, rangeLength, _bufferSize, context.RequestAborted);
                     }
                 }

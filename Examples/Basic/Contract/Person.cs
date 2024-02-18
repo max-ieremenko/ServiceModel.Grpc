@@ -8,11 +8,11 @@ namespace Contract;
 public class Person
 {
     [DataMember]
-    public string FullName { get; set; }
+    public string? FullName { get; set; }
 
     [DataMember]
     public DateTime DateOfBirth { get; set; }
 
     [DataMember]
-    public IList<Address> Addresses { get; set; }
+    public IList<Address>? Addresses { get; set; }
 }

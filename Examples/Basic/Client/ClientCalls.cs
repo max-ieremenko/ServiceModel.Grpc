@@ -69,6 +69,7 @@ public sealed class ClientCalls
 
         person.FullName.ShouldBe(personFullName);
         person.DateOfBirth.ShouldBe(personDateOfBirth);
+        person.Addresses.ShouldNotBeNull();
         person.Addresses.Count.ShouldBe(1);
         person.Addresses[0].Country.ShouldBe(personAddress.Country);
         person.Addresses[0].City.ShouldBe(personAddress.City);
@@ -96,6 +97,7 @@ public sealed class ClientCalls
 
         person.FullName.ShouldBe(personFullName);
         person.DateOfBirth.ShouldBe(personDateOfBirth);
+        person.Addresses.ShouldNotBeNull();
         person.Addresses.Count.ShouldBe(1);
         person.Addresses[0].Country.ShouldBe(personAddress.Country);
         person.Addresses[0].City.ShouldBe(personAddress.City);
@@ -124,12 +126,13 @@ public sealed class ClientCalls
             }
         };
 
-        Person mostOldestPerson;
+        Person? mostOldestPerson;
         using (var cancellationTokenSource = new CancellationTokenSource())
         {
             mostOldestPerson = await proxy.FindMostOldestPerson(persons.AsAsyncEnumerable(), cancellationTokenSource.Token);
         }
 
+        mostOldestPerson.ShouldNotBeNull();
         mostOldestPerson.FullName.ShouldBe("person 40 years old");
     }
         
@@ -154,12 +157,13 @@ public sealed class ClientCalls
             }
         };
 
-        Person person;
+        Person? person;
         using (var cancellationTokenSource = new CancellationTokenSource())
         {
             person = await proxy.FindPersonOlderThan(persons.AsAsyncEnumerable(), TimeSpan.FromDays(35 * 360), cancellationTokenSource.Token);
         }
 
+        person.ShouldNotBeNull();
         person.FullName.ShouldBe("person 40 years old");
     }
 

@@ -6,7 +6,7 @@ namespace Service;
 
 public sealed class PersonRepository : IPersonRepository
 {
-    public Task<Person> LoadByIdAsync(int id)
+    public Task<Person?> LoadByIdAsync(int id)
     {
         var person = id > 0 ? CreatePerson(id) : null;
         return Task.FromResult(person);

@@ -19,11 +19,11 @@ public interface IPersonService
 
     // async client streaming call
     [OperationContract]
-    Task<Person> FindMostOldestPerson(IAsyncEnumerable<Person> persons, CancellationToken token = default);
+    Task<Person?> FindMostOldestPerson(IAsyncEnumerable<Person> persons, CancellationToken token = default);
 
     // async client streaming call with external parameters
     [OperationContract]
-    Task<Person> FindPersonOlderThan(IAsyncEnumerable<Person> persons, TimeSpan age, CancellationToken token = default);
+    Task<Person?> FindPersonOlderThan(IAsyncEnumerable<Person> persons, TimeSpan age, CancellationToken token = default);
 
     // async server streaming call
     [OperationContract]

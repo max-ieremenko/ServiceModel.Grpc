@@ -2,5 +2,5 @@
 
 internal interface IJwtTokenProvider
 {
-    string GetToken();
+    string? GetToken();
 }

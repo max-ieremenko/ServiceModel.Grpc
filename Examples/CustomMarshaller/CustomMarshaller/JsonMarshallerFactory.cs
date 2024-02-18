@@ -16,10 +16,7 @@ public sealed class JsonMarshallerFactory : IMarshallerFactory
 
     public JsonMarshallerFactory(JsonSerializerOptions options)
     {
-        if (options == null)
-        {
-            throw new ArgumentNullException(nameof(options));
-        }
+        ArgumentNullException.ThrowIfNull(options);
 
         Options = options;
     }
@@ -52,6 +49,6 @@ public sealed class JsonMarshallerFactory : IMarshallerFactory
     {
         var jsonData = context.PayloadAsReadOnlySequence();
         var reader = new Utf8JsonReader(jsonData);
-        return JsonSerializer.Deserialize<T>(ref reader, Options);
+        return JsonSerializer.Deserialize<T>(ref reader, Options)!;
     }
 }

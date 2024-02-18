@@ -27,7 +27,7 @@ internal sealed class HackMultiplyClientFilter : IClientFilter
     private async ValueTask DoHack(IClientFilterContext context, Func<ValueTask> next)
     {
         var inputMultiplier = (int)context.Request["multiplier"]!;
-        var inputValues = (IAsyncEnumerable<int>)context.Request.Stream;
+        var inputValues = (IAsyncEnumerable<int>)context.Request.Stream!;
 
         // increase multiplier by 2
         context.Request["multiplier"] = inputMultiplier + 2;
@@ -37,7 +37,7 @@ internal sealed class HackMultiplyClientFilter : IClientFilter
 
         await next().ConfigureAwait(false);
 
-        var outputValues = (IAsyncEnumerable<int>)context.Response.Stream;
+        var outputValues = (IAsyncEnumerable<int>)context.Response.Stream!;
 
         // increase each output value by 1
         context.Response.Stream = IncreaseValuesBy1(outputValues, context.CallOptions.CancellationToken);

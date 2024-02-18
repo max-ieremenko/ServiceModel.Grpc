@@ -6,7 +6,7 @@ namespace Service;
 
 public interface IPersonRepository
 {
-    Task<Person> LoadByIdAsync(int id);
+    Task<Person?> LoadByIdAsync(int id);
 
     Task<IList<Person>> LoadAllAsync();
 }

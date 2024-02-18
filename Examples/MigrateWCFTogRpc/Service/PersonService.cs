@@ -12,14 +12,8 @@ public sealed class PersonService : IPersonService
     }
 
     public IPersonRepository Repository { get; }
-        
-    public Task<Person> Get(int personId)
-    {
-        return Repository.LoadByIdAsync(personId);
-    }
 
-    public Task<IList<Person>> GetAll()
-    {
-        return Repository.LoadAllAsync();
-    }
+    public Task<Person?> Get(int personId) => Repository.LoadByIdAsync(personId);
+
+    public Task<IList<Person>> GetAll() => Repository.LoadAllAsync();
 }

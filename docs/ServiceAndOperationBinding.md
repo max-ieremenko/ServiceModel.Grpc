@@ -33,23 +33,15 @@ internal sealed class CalculatorService : IStandardCalculator, IScientificCalcul
     public int Multiply(int x, int y) { /*...*/ }
 }
 
-internal sealed class Startup
-{
-    public void ConfigureServices(IServiceCollection services)
-    {
-        // enable ServiceModel.Grpc
-        services.AddServiceModelGrpc();
-    }
+var builder = WebApplication.CreateBuilder();
 
-    public void Configure(IApplicationBuilder app)
-    {
-        app.UseEndpoints(endpoints =>
-        {
-            // bind CalculatorService
-            endpoints.MapGrpcService<CalculatorService>();
-        });
-    }
-}
+// enable ServiceModel.Grpc
+builder.Services.AddServiceModelGrpc();
+
+var app = builder.Build();
+
+// bind CalculatorService
+app.MapGrpcService<CalculatorService>();
 ```
 
 ## call from the client-side

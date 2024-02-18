@@ -6,8 +6,8 @@ namespace Contract;
 public class InvalidOperationExceptionFaultDetail
 {
     [DataMember]
-    public string Message { get; set; }
+    public string Message { get; set; } = null!;
 
     [DataMember]
-    public string StackTrace { get; set; }
+    public string StackTrace { get; set; } = null!;
 }

@@ -21,8 +21,5 @@ internal sealed class AppExitTokenSource : IDisposable
         _tokenSource.Dispose();
     }
 
-    private void ConsoleCancelKeyPress(object sender, ConsoleCancelEventArgs e)
-    {
-        _tokenSource.Cancel();
-    }
+    private void ConsoleCancelKeyPress(object? sender, ConsoleCancelEventArgs e) => _tokenSource.Cancel();
 }

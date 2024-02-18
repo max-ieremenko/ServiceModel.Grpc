@@ -61,7 +61,7 @@ internal sealed class HttpClientCalls : IClientCalls
             var json = await response.Content.ReadAsStringAsync(token);
             metadata = JsonSerializer.Deserialize<FileMetadata>(
                 json,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
         }
 
         metadata.FileName.ShouldBe(fileName);

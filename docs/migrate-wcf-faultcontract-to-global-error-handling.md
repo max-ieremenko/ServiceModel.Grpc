@@ -131,18 +131,16 @@ Register a global error handler.
 
 ``` c#
 // DebugModule.cs
-container.RegisterType<IServerErrorHandler, FaultExceptionServerHandler>(new ContainerControlledLifetimeManager());
+services.AddSingleton<IServerErrorHandler, FaultExceptionServerHandler>();
 
-// Startup.cs
-public void ConfigureServices(IServiceCollection services)
+// Program.cs
+
+// enable ServiceModel.Grpc
+builder.Services.AddServiceModelGrpc(options =>
 {
-    // enable ServiceModel.Grpc
-    services.AddServiceModelGrpc(options =>
-    {
-        // register server error handler
-        options.DefaultErrorHandlerFactory = serviceProvider => serviceProvider.GetRequiredService<IServerErrorHandler>();
-    });
-}
+    // register server error handler
+    options.DefaultErrorHandlerFactory = serviceProvider => serviceProvider.GetRequiredService<IServerErrorHandler>();
+});
 ```
 
 ## Configure global error handling in Grpc.Core.Server
