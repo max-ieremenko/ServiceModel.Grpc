@@ -131,11 +131,11 @@ public sealed class LoggingServerFilter : IServerFilter
             .GenericTypeArguments[0];
             
         var logStream = typeof(LoggingServerFilter)
-            .GetMethod(nameof(LogStream), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
+            .GetMethod(nameof(LogStream), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)!
             .MakeGenericMethod(itemType);
 
         var result = logStream.Invoke(null, new object[] { logger, streamName, stream, token });
-        return result;
+        return result!;
     }
 
     private static async IAsyncEnumerable<T> LogStream<T>(ILogger logger, string streamName, IAsyncEnumerable<T> stream, [EnumeratorCancellation] CancellationToken token)

@@ -42,7 +42,7 @@ internal sealed class LoggingClientFilter : IClientFilter
 
     public async ValueTask InvokeAsync(IClientFilterContext context, Func<ValueTask> next)
     {
-        var logger = CreateLogger(context); ;
+        var logger = CreateLogger(context);
 
         OnRequest(context, logger);
 
@@ -126,11 +126,11 @@ internal sealed class LoggingClientFilter : IClientFilter
             .GenericTypeArguments[0];
             
         var logStream = typeof(LoggingClientFilter)
-            .GetMethod(nameof(LogStream), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
+            .GetMethod(nameof(LogStream), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)!
             .MakeGenericMethod(itemType);
 
         var result = logStream.Invoke(null, new object[] { logger, streamName, stream, token });
-        return result;
+        return result!;
     }
 
     private static async IAsyncEnumerable<T> LogStream<T>(ILogger logger, string streamName, IAsyncEnumerable<T> stream, [EnumeratorCancellation] CancellationToken token)
