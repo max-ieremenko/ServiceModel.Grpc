@@ -1,19 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
-	</PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Grpc.Net.Client" />
-		<PackageReference Include="ServiceModel.Grpc" />
-		<PackageReference Include="Shouldly" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Console" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Grpc.Net.Client" />
+    <PackageReference Include="ServiceModel.Grpc" />
+    <PackageReference Include="Shouldly" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\Contract\Contract.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Contract\Contract.csproj" />
+  </ItemGroup>
 
 </Project>
