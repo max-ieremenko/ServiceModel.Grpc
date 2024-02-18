@@ -32,9 +32,9 @@ public sealed class PersonService : IPersonService
         };
     }
 
-    public async Task<Person> FindMostOldestPerson(IAsyncEnumerable<Person> persons, CancellationToken token)
+    public async Task<Person?> FindMostOldestPerson(IAsyncEnumerable<Person> persons, CancellationToken token)
     {
-        Person result = null;
+        Person? result = null;
         await foreach (var person in persons.WithCancellation(token))
         {
             if (result == null || person.DateOfBirth < result.DateOfBirth)
@@ -46,7 +46,7 @@ public sealed class PersonService : IPersonService
         return result;
     }
 
-    public async Task<Person> FindPersonOlderThan(IAsyncEnumerable<Person> persons, TimeSpan age, CancellationToken token)
+    public async Task<Person?> FindPersonOlderThan(IAsyncEnumerable<Person> persons, TimeSpan age, CancellationToken token)
     {
         await foreach (var person in persons.WithCancellation(token))
         {
