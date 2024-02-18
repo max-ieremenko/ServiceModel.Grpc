@@ -6,8 +6,8 @@ namespace Contract;
 public class Person
 {
     [DataMember]
-    public string FirstName { get; set; }
+    public string? FirstName { get; set; }
 
     [DataMember]
-    public string SecondName { get; set; }
+    public string? SecondName { get; set; }
 }
