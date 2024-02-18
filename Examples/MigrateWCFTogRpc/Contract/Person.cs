@@ -9,13 +9,10 @@ public class Person
     public int Id { get; set; }
 
     [DataMember]
-    public string FirstName { get; set; }
+    public string? FirstName { get; set; }
 
     [DataMember]
-    public string SecondName { get; set; }
+    public string? SecondName { get; set; }
 
-    public override string ToString()
-    {
-        return $"Id:{Id}, {FirstName} {SecondName}";
-    }
+    public override string ToString() => $"Id:{Id}, {FirstName} {SecondName}";
 }

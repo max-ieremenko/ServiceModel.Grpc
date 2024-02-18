@@ -8,7 +8,7 @@ namespace Contract;
 public interface IPersonService
 {
     [OperationContract]
-    Task<Person> Get(int personId);
+    Task<Person?> Get(int personId);
 
     [OperationContract]
     Task<IList<Person>> GetAll();
