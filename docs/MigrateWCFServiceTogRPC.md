@@ -57,31 +57,17 @@ With ServiceModel.Grpc migration is simple:
 
 The project [AspNetServiceHost](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/AspNetServiceHost) is already configured and has reference to the nuget package [ServiceModel.Grpc.AspNetCore](https://www.nuget.org/packages/ServiceModel.Grpc.AspNetCore/).
 
-All required configuration to host PersonService is done in the Startup.cs:
+All required configuration to host PersonService is done in the Program.cs:
 
 ``` c#
-internal sealed class Startup
-{
-    public void ConfigureServices(IServiceCollection services)
-    {
-        // configure service provider
-        PersonModule.ConfigureContainer(services);
+// configure service provider
+PersonModule.ConfigureServices(builder.Services);
 
-        // enable ServiceModel.Grpc
-        services.AddServiceModelGrpc();
-    }
+// enable ServiceModel.Grpc
+builder.Services.AddServiceModelGrpc();
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-    {
-        app.UseRouting();
-
-        app.UseEndpoints(endpoints =>
-        {
-            // host PersonService
-            endpoints.MapGrpcService<PersonService>();
-        });
-    }
-}
+// host PersonService
+app.MapGrpcService<PersonService>();
 ```
 
 ## Host PersonService in Grpc.Core server

@@ -1,8 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Contract;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Service;
+using ServiceModel.Grpc.Interceptors;
 
 namespace AspNetServiceHost;
 
@@ -10,18 +13,27 @@ public static class Program
 {
     public static Task Main()
     {
-        return Host
-            .CreateDefaultBuilder()
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
+        var builder = WebApplication.CreateBuilder();
 
-                webBuilder.UseKestrel(o => o.ListenLocalhost(
-                    SharedConfiguration.AspNetgRPCDebugServicePort,
-                    l => l.Protocols = HttpProtocols.Http2));
+        // configure container
+        DebugModule.ConfigureServices(builder.Services);
 
-            })
-            .Build()
-            .RunAsync();
+        // enable ServiceModel.Grpc
+        builder.Services.AddServiceModelGrpc(options =>
+        {
+            // register server error handler
+            options.DefaultErrorHandlerFactory = serviceProvider => serviceProvider.GetRequiredService<IServerErrorHandler>();
+        });
+
+        builder.WebHost.ConfigureKestrel(options => options.ListenLocalhost(SharedConfiguration.AspNetgRPCDebugServicePort, l => l.Protocols = HttpProtocols.Http2));
+
+        var app = builder.Build();
+
+        app.UseRouting();
+
+        // host DebugService
+        app.MapGrpcService<DebugService>();
+
+        return app.RunAsync();
     }
 }
