@@ -13,7 +13,7 @@ public class GrpcWebDownloadBenchmark : AspNetDownloadBenchmark
     [GrpcWebModeParams]
     public GrpcWebMode Mode
     {
-        get => ModeInternal.Value;
+        get => ModeInternal!.Value;
         set => ModeInternal = value;
     }
 }

@@ -29,7 +29,7 @@ public static class Program
     {
         const string FileName = "Files/taxi-fare-test.csv";
 
-        string result = null;
+        string? result = null;
 
         var directory = AppDomain.CurrentDomain.BaseDirectory;
         while (!string.IsNullOrEmpty(directory))
@@ -46,7 +46,7 @@ public static class Program
 
         if (result == null)
         {
-            throw new InvalidOperationException(string.Format("{0} not found.", FileName));
+            throw new InvalidOperationException($"{FileName} not found.");
         }
 
         return Path.GetFullPath(result);

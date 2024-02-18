@@ -6,14 +6,14 @@ namespace Contract;
 public class Address
 {
     [DataMember]
-    public string Country { get; set; }
+    public string? Country { get; set; }
 
     [DataMember]
-    public string City { get; set; }
+    public string? City { get; set; }
 
     [DataMember]
-    public string PostCode { get; set; }
+    public string? PostCode { get; set; }
 
     [DataMember]
-    public string Street { get; set; }
+    public string? Street { get; set; }
 }

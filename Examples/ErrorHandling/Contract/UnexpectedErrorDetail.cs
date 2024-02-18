@@ -6,14 +6,14 @@ namespace Contract;
 public class UnexpectedErrorDetail
 {
     [DataMember(Order = 1)]
-    public string Message { get; set; }
+    public string Message { get; set; } = null!;
 
     [DataMember(Order = 2)]
-    public string MethodName { get; set; }
+    public string MethodName { get; set; } = null!;
 
     [DataMember(Order = 3)]
-    public string ExceptionType { get; set; }
+    public string? ExceptionType { get; set; }
 
     [DataMember(Order = 4)]
-    public string FullException { get; set; }
+    public string FullException { get; set; } = null!;
 }

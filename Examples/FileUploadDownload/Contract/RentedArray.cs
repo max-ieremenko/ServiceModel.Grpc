@@ -25,7 +25,7 @@ public sealed class RentedArray : IDisposable
 
     public int Length { get; private set; }
 
-    public static RentedArray Rent(int length, ArrayPool<byte> owner = default)
+    public static RentedArray Rent(int length, ArrayPool<byte>? owner = default)
     {
         var pool = owner ?? ArrayPool<byte>.Shared;
         return new RentedArray(pool, length);

@@ -10,8 +10,8 @@ namespace BlazorApp.Client.Pages;
 public partial class Streaming : IDisposable
 {
     private string _buttonText = "Start streaming";
-    private WeatherForecast _currentForecast;
-    private CancellationTokenSource _streamingCancellationSource;
+    private WeatherForecast? _currentForecast;
+    private CancellationTokenSource? _streamingCancellationSource;
 
     [Inject]
     public IWeatherForecastService Service { get; set; } = null!;

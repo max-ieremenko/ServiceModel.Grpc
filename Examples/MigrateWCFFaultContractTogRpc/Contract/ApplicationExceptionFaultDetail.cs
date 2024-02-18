@@ -6,5 +6,5 @@ namespace Contract;
 public class ApplicationExceptionFaultDetail
 {
     [DataMember]
-    public string Message { get; set; }
+    public string Message { get; set; } = null!;
 }

@@ -21,7 +21,7 @@ public interface IFigureService
     double CalculateArea(FigureBase figure);
 
     [OperationContract]
-    Task<FigureBase> FindSmallestFigure(IAsyncEnumerable<FigureBase> figures, CancellationToken token = default);
+    Task<FigureBase?> FindSmallestFigure(IAsyncEnumerable<FigureBase> figures, CancellationToken token = default);
 
     [OperationContract]
     IAsyncEnumerable<FigureBase> CreateRandomFigures(int count, CancellationToken token = default);

@@ -16,13 +16,10 @@ public class FileMetadata
     }
 
     [DataMember]
-    public string FileName { get; set; }
+    public string FileName { get; set; } = null!;
 
     [DataMember]
     public long Size { get; set; }
 
-    public override string ToString()
-    {
-        return string.Format("{0} {1}", FileName, StreamExtensions.SizeToString(Size));
-    }
+    public override string ToString() => $"{FileName} {StreamExtensions.SizeToString(Size)}";
 }

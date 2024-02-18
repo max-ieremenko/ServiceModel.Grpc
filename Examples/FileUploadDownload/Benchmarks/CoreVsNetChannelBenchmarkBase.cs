@@ -11,7 +11,7 @@ namespace Benchmarks;
 [Config(typeof(BenchmarkConfig))]
 public abstract class CoreVsNetChannelBenchmarkBase
 {
-    private IHost _serverAspNetHost;
+    private IHost _serverAspNetHost = null!;
 
     [BufferSizeParams]
     public int BufferSize { get; set; }
@@ -19,13 +19,13 @@ public abstract class CoreVsNetChannelBenchmarkBase
     [CompressionParams]
     public bool UseCompression { get; set; }
 
-    protected IClientCalls CallsCoreChannel { get; private set; }
+    protected IClientCalls CallsCoreChannel { get; private set; } = null!;
 
-    protected IClientCalls CallsNetChannel { get; private set; }
+    protected IClientCalls CallsNetChannel { get; private set; } = null!;
 
-    protected IClientCalls CallsHttpClient { get; private set; }
+    protected IClientCalls CallsHttpClient { get; private set; } = null!;
 
-    protected string FilePath { get; private set; }
+    protected string FilePath { get; private set; } = null!;
 
     [GlobalSetup]
     public async Task GlobalSetup()

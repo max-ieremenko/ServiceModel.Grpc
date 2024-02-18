@@ -43,9 +43,9 @@ internal sealed class FigureService : IFigureService
     }
 
     // call to this method from Swagger UI is not supported
-    public async Task<FigureBase> FindSmallestFigure(IAsyncEnumerable<FigureBase> figures, CancellationToken token)
+    public async Task<FigureBase?> FindSmallestFigure(IAsyncEnumerable<FigureBase> figures, CancellationToken token)
     {
-        FigureBase result = null;
+        FigureBase? result = null;
         var resultArea = .0;
 
         await foreach (var figure in figures.WithCancellation(token))

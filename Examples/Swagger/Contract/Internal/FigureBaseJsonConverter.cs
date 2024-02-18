@@ -17,7 +17,7 @@ internal sealed class FigureBaseJsonConverter : JsonConverter<FigureBase>
         using (var document = JsonDocument.ParseValue(ref reader))
         {
             var figureType = GetFigureConcreteType(document.RootElement);
-            result = JsonSerializer.Deserialize(document.RootElement.GetRawText(), figureType, options);
+            result = JsonSerializer.Deserialize(document.RootElement.GetRawText(), figureType, options)!;
         }
 
         return (FigureBase)result;
