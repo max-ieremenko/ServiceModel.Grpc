@@ -141,23 +141,15 @@ PS> Install-Package ServiceModel.Grpc.AspNetCore
 ```
 
 ``` c#
-internal sealed class Startup
-{
-    public void ConfigureServices(IServiceCollection services)
-    {
-        // enable ServiceModel.Grpc
-        services.AddServiceModelGrpc();
-    }
+var builder = WebApplication.CreateBuilder();
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-    {
-        app.UseEndpoints(endpoints =>
-        {
-            // bind Calculator service
-            endpoints.MapGrpcService<Calculator>();
-        });
-    }
-}
+// enable ServiceModel.Grpc
+builder.Services.AddServiceModelGrpc();
+
+var app = builder.Build();
+
+// bind Calculator service
+app.MapGrpcService<Calculator>();
 ```
 
 Integrate with Swagger, see [example](Examples/Swagger)
@@ -185,18 +177,16 @@ server.Services.AddServiceModelTransient(() => new Calculator());
 see [example](Examples/ServerFilters)
 
 ``` c#
-// Startup.cs
-public void ConfigureServices(IServiceCollection services)
-{
-    // setup filter life time
-    services.AddSingleton<LoggingServerFilter>();
+var builder = WebApplication.CreateBuilder();
 
-    // attach the filter globally
-    services.AddServiceModelGrpc(options =>
-    {
-        options.Filters.Add(1, provider => provider.GetRequiredService<LoggingServerFilter>());
-    });
-}
+// setup filter life time
+builder.Services.AddSingleton<LoggingServerFilter>();
+
+// attach the filter globally
+builder.Services.AddServiceModelGrpc(options =>
+{
+	options.Filters.Add(1, provider => provider.GetRequiredService<LoggingServerFilter>());
+});
 
 internal sealed class LoggingServerFilter : IServerFilter
 {
