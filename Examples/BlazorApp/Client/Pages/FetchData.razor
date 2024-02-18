@@ -1,6 +1,4 @@
 ﻿@page "/fetchdata"
-@using BlazorApp.Shared
-@inject IWeatherForecastService Service
 
 <h1>Weather forecast</h1>
 
@@ -35,21 +33,4 @@ else
     </table>
 
     <button class="btn btn-primary" @onclick="Reload">Reload</button>
-}
-
-@code {
-    private IList<WeatherForecast> _forecasts;
-
-    protected override Task OnInitializedAsync()
-    {
-        return Reload();
-    }
-
-    private async Task Reload()
-    {
-        _forecasts = null;
-        StateHasChanged();
-
-        _forecasts = await Service.GetForecasts();
-    }
 }
