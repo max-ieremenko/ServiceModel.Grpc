@@ -7,15 +7,12 @@ namespace BlazorApp.Client.Pages;
 
 public partial class FetchData
 {
-    private IList<WeatherForecast> _forecasts;
+    private IList<WeatherForecast>? _forecasts;
 
     [Inject]
-    public IWeatherForecastService Service { get; set; }
+    public IWeatherForecastService Service { get; set; } = null!;
 
-    protected override Task OnInitializedAsync()
-    {
-        return Reload();
-    }
+    protected override Task OnInitializedAsync() => Reload();
 
     private async Task Reload()
     {
