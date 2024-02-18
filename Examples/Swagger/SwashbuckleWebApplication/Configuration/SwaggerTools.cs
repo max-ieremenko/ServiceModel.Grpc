@@ -25,9 +25,14 @@ public static class SwaggerTools
             return new[] { attribute.Type };
         }
 
+        if (attribute.MethodName == null)
+        {
+            return Array.Empty<Type>();
+        }
+
         var types = (IEnumerable<Type>)type
-            .GetMethod(attribute.MethodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
-            .Invoke(null, new object[0]);
+            .GetMethod(attribute.MethodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)!
+            .Invoke(null, Array.Empty<object>())!;
 
         return types;
     }
