@@ -10,10 +10,12 @@ namespace SwashbuckleWebApplication;
 
 public static class Program
 {
-    public static void Main(string[] args)
+    public static void Main()
     {
-        var builder = WebApplication.CreateBuilder(args);
+        var builder = WebApplication.CreateBuilder();
+        builder.Configuration.Sources.Clear();
         builder.Configuration.SetBasePath(AppContext.BaseDirectory);
+        builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
 
         // enable detailed errors in gRPC response
         builder.Services.AddGrpc(options => options.EnableDetailedErrors = true);
