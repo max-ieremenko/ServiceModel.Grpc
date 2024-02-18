@@ -1,52 +1,42 @@
 # ServiceModel.Grpc ASP.NET Core server configuration
 
-## Startup.cs
+## Program.cs
 
 To configure services use the ConfigureServices method.
 To bind service use Grpc.AspNetCore.Server binding in Configure method.
 
 ``` c#
-public class Startup
+var builder = WebApplication.CreateBuilder();
+
+// Grpc.AspNetCore.Server configuration
+builder.Services.AddGrpc(options =>
 {
-    public void ConfigureServices(IServiceCollection services)
+    options.ResponseCompressionLevel = CompressionLevel.Optimal;
+    // ...
+});
+
+// enable ServiceModel.Grpc
+builder.Services
+    .AddServiceModelGrpc(options =>
     {
-        // Grpc.AspNetCore.Server configuration
-        services.AddGrpc(options =>
-        {
-            options.ResponseCompressionLevel = CompressionLevel.Optimal;
-            // ...
-        });
+        options.DefaultMarshallerFactory = ...
+        options.DefaultErrorHandlerFactory = ...
+        options.Filters = ...
+    });
 
-        // enable ServiceModel.Grpc
-        services
-            .AddServiceModelGrpc(options =>
-            {
-                options.DefaultMarshallerFactory = ...
-                options.DefaultErrorHandlerFactory = ...
-                options.Filters = ...
-            });
-
-        // optional configuration for a specific service
-        services
-            .AddServiceModelGrpcServiceOptions<MyService>(options =>
-            {
-                options.MarshallerFactory = ...
-                options.ErrorHandlerFactory = ...
-                options.Filters = ...
-            });
-    }
-
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+// optional configuration for a specific service
+builder.Services
+    .AddServiceModelGrpcServiceOptions<MyService>(options =>
     {
-        app.UseRouting();
+        options.MarshallerFactory = ...
+        options.ErrorHandlerFactory = ...
+        options.Filters = ...
+    });
 
-        app.UseEndpoints(endpoints =>
-        {
-            // bind the service
-            endpoints.MapGrpcService<MyService>();
-        });
-    }
-}
+var app = builder.Build();
+
+// bind the service
+app.MapGrpcService<MyService>();
 ```
 
 #### ServiceModelGrpcServiceOptions
@@ -73,55 +63,42 @@ There are two options to bind a service:
 - option 2: via interface `IMyService`
 
 ``` c#
-public class Startup
+var builder = WebApplication.CreateBuilder();
+
+// option 1: via implementation `MyService`
 {
-    // option 1: via implementation `MyService`
-    public void ConfigureServices(IServiceCollection services)
-    {
-        // dependency injection
-        services.AddTransient<MyService>();
+    // dependency injection
+    builder.Services.AddTransient<MyService>();
 
-        // optional configuration
-        services
-            .AddServiceModelGrpcServiceOptions<MyService>(options =>
-            {
-                // ...
-            });
-    }
-
-    // option 1: via implementation `MyService`
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-    {
-        app.UseEndpoints(endpoints =>
+    // optional configuration
+    builder.Services
+        .AddServiceModelGrpcServiceOptions<MyService>(options =>
         {
-            // bind the service
-            endpoints.MapGrpcService<MyService>();
+            // ...
         });
-    }
 
-    // option 2: via interface `IMyService`
-    public void ConfigureServices(IServiceCollection services)
-    {
-        // dependency injection
-        services.AddTransient<IMyService, MyService>();
+    var app = builder.Build();
 
-        // optional configuration
-        services
-            .AddServiceModelGrpcServiceOptions<IMyService>(options =>
-            {
-                // ...
-            });
-    }
+    // bind the service
+    app.MapGrpcService<MyService>();
+}
 
-    // option 2: via interface `IMyService`
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-    {
-        app.UseEndpoints(endpoints =>
+// option 2: via interface `IMyService`
+{
+    // dependency injection
+    builder.Services.AddTransient<IMyService, MyService>();
+
+    // optional configuration
+    builder.Services
+        .AddServiceModelGrpcServiceOptions<IMyService>(options =>
         {
-            // bind the service, use interface
-            endpoints.MapGrpcService<IMyService>();
+            // ...
         });
-    }
+
+    var app = builder.Build();
+
+    // bind the service, use interface
+    app.MapGrpcService<IMyService>();
 }
 ```
 

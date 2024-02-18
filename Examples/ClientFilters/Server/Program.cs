@@ -3,8 +3,9 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Client;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Server;
@@ -13,10 +14,10 @@ public static class Program
 {
     public static async Task Main()
     {
-        using (var host = await StartWebHost().ConfigureAwait(false))
+        using (var host = await StartWebHost())
         {
-            await ClientCalls.CallCalculator(new Uri("http://localhost:8080"), CancellationToken.None).ConfigureAwait(false);
-            await host.StopAsync().ConfigureAwait(false);
+            await ClientCalls.CallCalculator(new Uri("http://localhost:8080"), CancellationToken.None);
+            await host.StopAsync();
         }
 
         if (Debugger.IsAttached)
@@ -28,13 +29,19 @@ public static class Program
 
     private static async Task<IHost> StartWebHost()
     {
-        var host = Host
-            .CreateDefaultBuilder()
-            .ConfigureAppConfiguration(builder => builder.SetBasePath(AppContext.BaseDirectory))
-            .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>())
-            .Build();
+        var builder = WebApplication.CreateBuilder();
+        builder.Configuration.Sources.Clear();
+        builder.Configuration.SetBasePath(AppContext.BaseDirectory);
+        builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
 
-        await host.StartAsync().ConfigureAwait(false);
-        return host;
+        builder.Services.AddServiceModelGrpc();
+
+        var app = builder.Build();
+        app.UseRouting();
+
+        app.MapGrpcService<Calculator>();
+
+        await app.StartAsync();
+        return app;
     }
 }

@@ -61,28 +61,28 @@ A filter can be attached
 ### in asp.net core server (ServiceModel.Grpc.AspNetCore)
 
 ``` c#
-// Startup.cs
-public void ConfigureServices(IServiceCollection services)
+// Program.cs
+
+var builder = WebApplication.CreateBuilder();
+
+// decide the filter lifetime
+builder.Services.AddTransient<LoggingServerFilter>();
+
+// attach the filter globally to all methods from all services
+builder.Services.AddServiceModelGrpc(options =>
 {
-    // decide the filter lifetime
-    services.AddSingleton<MySingletonFilter>();
+    options.Filters.Add(1, provider => provider.GetRequiredService<MySingletonFilter>());
+    
+    options.Filters.Add(2, _ => new MyTransientFilter());
+});
 
-    // attach the filter globally to all methods from all services
-    services.AddServiceModelGrpc(options =>
-    {
-        options.Filters.Add(1, provider => provider.GetRequiredService<MySingletonFilter>());
-        
-        options.Filters.Add(2, _ => new MyTransientFilter());
-    });
+// or attach the filter to all methods from MyService
+builder.Services.AddServiceModelGrpcServiceOptions<MyService>(options =>
+{
+    options.Filters.Add(1, provider => provider.GetRequiredService<MySingletonFilter>());
 
-    // or attach the filter to all methods from MyService
-    services.AddServiceModelGrpcServiceOptions<MyService>(options =>
-    {
-        options.Filters.Add(1, provider => provider.GetRequiredService<MySingletonFilter>());
-
-        options.Filters.Add(2, _ => new MyTransientFilter());
-    });
-}
+    options.Filters.Add(2, _ => new MyTransientFilter());
+});
 ```
 
 ### in Grpc.Core.Server (ServiceModel.Grpc.SelfHost)

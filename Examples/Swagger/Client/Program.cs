@@ -41,7 +41,7 @@ public static class Program
         }
 
         var smallest = await figureServiceProxy.FindSmallestFigure(AsAsyncEnumerable(rectangle, triangle));
-        Console.WriteLine("Smallest one is {0}", smallest.GetType().Name);
+        Console.WriteLine("Smallest one is {0}", smallest?.GetType().Name);
 
         var areas = figureServiceProxy.CalculateAreas(AsAsyncEnumerable(rectangle, triangle));
         await foreach (var area in areas)

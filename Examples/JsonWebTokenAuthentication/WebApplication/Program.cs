@@ -12,11 +12,12 @@ namespace WebApplication;
 
 public static class Program
 {
-    public static Task Main(string[] args)
+    public static Task Main()
     {
-        var builder = Microsoft.AspNetCore.Builder.WebApplication.CreateBuilder(args);
-
+        var builder = Microsoft.AspNetCore.Builder.WebApplication.CreateBuilder();
+        builder.Configuration.Sources.Clear();
         builder.Configuration.SetBasePath(AppContext.BaseDirectory);
+        builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
 
         // enable ServiceModel.Grpc
         builder.Services.AddServiceModelGrpc();

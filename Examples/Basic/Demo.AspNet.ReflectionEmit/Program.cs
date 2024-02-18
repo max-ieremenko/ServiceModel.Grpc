@@ -1,8 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Client;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Service;
 
 namespace Demo.AspNet.ReflectionEmit;
 
@@ -25,18 +28,21 @@ public static class Program
 
     private static async Task<IHost> StartWebHost()
     {
-        var host = Host
-            .CreateDefaultBuilder()
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<WebHostStartup>();
+        var builder = WebApplication.CreateBuilder();
 
-                webBuilder.UseKestrel(o => o.ListenLocalhost(Port, l => l.Protocols = HttpProtocols.Http2));
+        // enable ServiceModel.Grpc
+        builder.Services.AddServiceModelGrpc();
 
-            })
-            .Build();
+        builder.WebHost.ConfigureKestrel(options => options.ListenLocalhost(Port, l => l.Protocols = HttpProtocols.Http2));
 
-        await host.StartAsync();
-        return host;
+        var app = builder.Build();
+
+        app.UseRouting();
+
+        // host PersonService, gRPC endpoint will be generated at runtime by ServiceModel.Grpc
+        app.MapGrpcService<PersonService>();
+
+        await app.StartAsync();
+        return app;
     }
 }
