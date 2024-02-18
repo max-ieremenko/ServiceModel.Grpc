@@ -2,9 +2,11 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Client;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Service;
 
 namespace Demo.ServerAspNetCore;
 
@@ -31,19 +33,20 @@ public static class Program
 
     private static async Task<IHost> StartWebHost()
     {
-        var host = Host
-            .CreateDefaultBuilder()
-            .ConfigureAppConfiguration(builder =>
-            {
-                builder.SetBasePath(AppContext.BaseDirectory);
-            })
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-            })
-            .Build();
+        var builder = WebApplication.CreateBuilder();
+        builder.Configuration.Sources.Clear();
+        builder.Configuration.SetBasePath(AppContext.BaseDirectory);
+        builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
 
-        await host.StartAsync();
-        return host;
+        builder.Services.AddServiceModelGrpc();
+
+        var app = builder.Build();
+
+        app.UseRouting();
+
+        app.MapGrpcService<PersonService>();
+
+        await app.StartAsync();
+        return app;
     }
 }
