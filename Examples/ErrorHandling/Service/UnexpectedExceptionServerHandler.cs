@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using Contract;
 using ServiceModel.Grpc.Interceptors;
 
@@ -16,9 +15,9 @@ public sealed class UnexpectedExceptionServerHandler : IServerErrorHandler
             var detail = new UnexpectedErrorDetail
             {
                 Message = error.Message,
-                ExceptionType = error.GetType().FullName,
+                ExceptionType = error.GetType()?.FullName,
                 FullException = error.ToString(),
-                MethodName = Process.GetCurrentProcess().ProcessName
+                MethodName = context.ServerCallContext.Method
             };
 
             return new ServerFaultDetail { Detail = detail };
