@@ -1,0 +1,9 @@
+﻿<div class="card mb-3">
+    <div class="card-header text-white bg-danger">Oops, something went wrong !!!</div>
+    <div class="card-body">
+        <h5 class="card-title">@Error.Message</h5>
+        <p class="card-text"><em><pre style="white-space: pre-wrap;">@Error.ToString()</pre></em></p>
+        
+        <button type="button" class="btn btn-danger" @onclick="@Reload">Reload the page</button>
+    </div>
+</div>

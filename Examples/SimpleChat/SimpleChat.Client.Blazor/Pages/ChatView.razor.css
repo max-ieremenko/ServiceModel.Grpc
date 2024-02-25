@@ -1,0 +1,83 @@
+﻿/*
+    you can find the source at https://codepen.io/mehedihtml/pen/ZExjpeo
+    created by Mehedi Hasan
+    license MIT: https://blog.codepen.io/documentation/licensing/
+*/
+
+.chat-area {
+    position: relative;
+    width: 100%;
+    background-color: #fff;
+    height: 90vh;
+    overflow: hidden;
+    min-height: calc(100% - 1rem);
+}
+
+    .chat-area .modal-content {
+        border: none;
+        border-radius: 0;
+        outline: 0;
+        height: 100%;
+    }
+
+    .chat-area .modal-dialog-scrollable {
+        height: 100% !important;
+    }
+
+    .chat-area .form-control {
+        display: block;
+        width: 80%;
+        padding: 0.375rem 0.75rem;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #222;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ccc;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border-radius: 0.25rem;
+        transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+
+        .chat-area .form-control:focus {
+            outline: 0;
+            box-shadow: inherit;
+        }
+
+
+.msg-body ul {
+    overflow: hidden;
+}
+
+.send-box {
+    padding: 15px;
+    border-top: 1px solid #ccc;
+}
+
+    .send-box form {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+
+    .send-box .form-control {
+        display: block;
+        width: 85%;
+        padding: 0.375rem 0.75rem;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #222;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ccc;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border-radius: 0.25rem;
+        transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }

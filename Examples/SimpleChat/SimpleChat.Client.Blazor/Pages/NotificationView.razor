@@ -1,0 +1,27 @@
+﻿@using SimpleChat.Client.Shared
+
+@switch (Notification.Source)
+{
+    case ChatNotificationSource.Administrator:
+        <li>
+            <div class="divider">
+                <h6>@Notification.Author @Notification.Content</h6>
+                <span class="time">@Notification.TimeAsText</span>
+            </div>
+        </li>
+        break;
+
+    case ChatNotificationSource.Me:
+        <li class="repaly">
+            <p>@Notification.Content</p>
+            <span class="time">@Notification.TimeAsText</span>
+        </li>
+        break;
+
+    default:
+        <li class="sender">
+            <p>@Notification.Content</p>
+            <span class="time">@Notification.Author at @Notification.TimeAsText</span>
+        </li>
+        break;
+}
