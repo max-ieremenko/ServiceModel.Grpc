@@ -1,0 +1,12 @@
+﻿<h2>Chat</h2>
+
+<div class="send-box">
+    <p>
+        Enter your name to join the chat
+    </p>
+
+    <form @onsubmit="JoinAsync">
+        <input type="text" placeholder="your name…" @bind="@_userName">
+        <Button Text="Join" OnClick="JoinAsync"></Button>
+    </form>
+</div>
