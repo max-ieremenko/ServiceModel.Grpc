@@ -1,0 +1,25 @@
+﻿<div class="chat-area">
+    <div class="modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="msg-body">
+                    <ul>
+                        @foreach (var notification in _notifications)
+                        {
+                            <NotificationView Notification="notification" />
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <div class="send-box">
+                <form @onsubmit="SendAsync">
+                    <input type="text" class="form-control" placeholder="@AuthenticationProvider.CurrentUserName, write message…" @bind="@_newMessageContent" disabled="@(!Room.IsConnected)">
+
+                    <Button Text="Send" OnClick="SendAsync" Enabled="@Room.IsConnected"></Button>
+                    <Button Text="Disconnect" OnClick="Disconnect"></Button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

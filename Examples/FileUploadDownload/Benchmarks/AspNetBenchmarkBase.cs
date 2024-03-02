@@ -11,7 +11,7 @@ namespace Benchmarks;
 [Config(typeof(BenchmarkConfig))]
 public abstract class AspNetBenchmarkBase
 {
-    private IHost _serverAspNetHost;
+    private IHost _serverAspNetHost = null!;
 
     [BufferSizeParams]
     public int BufferSize { get; set; }
@@ -21,13 +21,13 @@ public abstract class AspNetBenchmarkBase
 
     internal GrpcWebMode? ModeInternal { get; set; }
 
-    protected IClientCalls CallsDefault { get; private set; }
+    protected IClientCalls CallsDefault { get; private set; } = null!;
 
-    protected IClientCalls CallsRentedArray { get; private set; }
+    protected IClientCalls CallsRentedArray { get; private set; } = null!;
 
-    protected IClientCalls CallsHttpClient { get; private set; }
+    protected IClientCalls CallsHttpClient { get; private set; } = null!;
 
-    protected string FilePath { get; private set; }
+    protected string FilePath { get; private set; } = null!;
 
     [GlobalSetup]
     public async Task GlobalSetup()

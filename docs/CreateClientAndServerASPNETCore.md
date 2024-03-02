@@ -93,59 +93,52 @@ namespace Service
 
 #### Configure ServiceModel.Grpc
 
-In the Startup.cs, ConfigureServices method register ServiceModel.Grpc
+In the Program.cs register ServiceModel.Grpc
 
 ``` c#
-public class Startup
-{
-    public void ConfigureServices(IServiceCollection services)
-    {
-        // register ServiceModel.Grpc
-        services.AddServiceModelGrpc();
-    }
+var builder = WebApplication.CreateBuilder();
 
-    // ....
-}
+// register ServiceModel.Grpc
+builder.Services.AddServiceModelGrpc();
+
+// ....
 ```
 
 #### Bind Greeter
 
-In the Startup.cs, Configure method bind Greeter service
+In the Program.cs bind Greeter service
 
 ``` c#
-public class Startup
-{
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-    {
-        app.UseRouting();
+var app = builder.Build();
 
-        app.UseEndpoints(endpoints =>
-        {
-            // bind Greeter service
-            endpoints.MapGrpcService<Greeter>();
-        });
-    }
-}
+// bind Greeter service
+app.MapGrpcService<Greeter>();
 ```
 
 #### Configure http2
 
 http2 is a precondition for gRPC commination [protocol](https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md).
 
-In the Program.cs, method CreateHostBuilder add kestrel configuration
+In the Program.cs add `appsettings.json` to the configuration
 
 ``` c#
-public static IHostBuilder CreateHostBuilder(string[] args) =>
-    Host.CreateDefaultBuilder(args)
-        .ConfigureWebHostDefaults(webBuilder =>
-        {
-            webBuilder.UseStartup<Startup>();
-            webBuilder.UseKestrel(options =>
-            {
-                // set http2 protocol
-                options.ConfigureEndpointDefaults(endpoints => endpoints.Protocols = HttpProtocols.Http2);
-            });
-        });
+var builder = WebApplication.CreateBuilder();
+
+builder.Configuration.SetBasePath(AppContext.BaseDirectory);
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+```
+
+`appsettings.json` instructs Kestrel to listen `Http2` on port `5000`
+
+``` json
+"Kestrel": {
+    "Endpoints": {
+        "default": {
+        "Url": "http://*:5000",
+        "Protocols": "Http2"
+        }
+    }
+}
 ```
 
 In the "Service" project properties -> Debug tab -> Profile select "Service".

@@ -17,7 +17,7 @@ internal sealed class HackMultiplyFilterByAttribute : ServerFilterAttribute
     public override async ValueTask InvokeAsync(IServerFilterContext context, Func<ValueTask> next)
     {
         var inputMultiplier = (int)context.Request["multiplier"]!;
-        var inputValues = (IAsyncEnumerable<int>)context.Request.Stream;
+        var inputValues = (IAsyncEnumerable<int>)context.Request.Stream!;
 
         // increase multiplier by 2
         context.Request["multiplier"] = inputMultiplier + 2;
@@ -27,7 +27,7 @@ internal sealed class HackMultiplyFilterByAttribute : ServerFilterAttribute
 
         await next().ConfigureAwait(false);
 
-        var outputValues = (IAsyncEnumerable<int>)context.Response.Stream;
+        var outputValues = (IAsyncEnumerable<int>)context.Response.Stream!;
 
         // increase each output value by 1
         context.Response.Stream = IncreaseValuesBy1(outputValues, context.ServerCallContext.CancellationToken);

@@ -6,7 +6,7 @@ namespace Service.Filters;
 [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = true)]
 public abstract class ValidateParameterAttribute : Attribute
 {
-    public abstract void Validate(object parameterValue, string parameterName, DivideByResult result);
+    public abstract void Validate(object? parameterValue, string? parameterName, DivideByResult result);
 }
 
 public sealed class NotAttribute : ValidateParameterAttribute
@@ -16,14 +16,14 @@ public sealed class NotAttribute : ValidateParameterAttribute
         Value = value;
     }
 
-    public object Value { get; }
+    public object? Value { get; }
 
-    public override void Validate(object parameterValue, string parameterName, DivideByResult result)
+    public override void Validate(object? parameterValue, string? parameterName, DivideByResult result)
     {
         if (Equals(Value, parameterValue))
         {
             result.IsSuccess = false;
-            result.ErrorMessages.Add(string.Format("{0} cannot be {1}.", parameterName, Value));
+            result.ErrorMessages.Add($"{parameterName} cannot be {Value}.");
         }
     }
 }
@@ -37,20 +37,20 @@ public sealed class GreaterThanAttribute : ValidateParameterAttribute
 
     public int Value { get; }
 
-    public override void Validate(object parameterValue, string parameterName, DivideByResult result)
+    public override void Validate(object? parameterValue, string? parameterName, DivideByResult result)
     {
         if (parameterValue is int typedValue)
         {
             if (typedValue <= Value)
             {
                 result.IsSuccess = false;
-                result.ErrorMessages.Add(string.Format("{0} must be greater than {1}.", parameterName, Value));
+                result.ErrorMessages.Add($"{parameterName} must be greater than {Value}.");
             }
         }
         else
         {
             result.IsSuccess = false;
-            result.ErrorMessages.Add(string.Format("{0} must be Int32.", parameterName));
+            result.ErrorMessages.Add($"{parameterName} must be Int32.");
         }
     }
 }

@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Contract;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
 
 namespace ServerAspNetHost.Controllers;
 
@@ -19,7 +18,7 @@ public sealed class FileServiceController : Controller
     [DisableFormValueModelBinding]
     public async Task<FileMetadata> UploadAsync([FromQuery] int bufferSize, CancellationToken token)
     {
-        var fileName = new ContentDisposition(HttpContext.Request.Headers[HeaderNames.ContentDisposition]).FileName;
+        var fileName = new ContentDisposition(HttpContext.Request.Headers.ContentDisposition!).FileName;
 
         long fileSize;
         var tempFileName = Path.GetTempFileName();
@@ -27,7 +26,7 @@ public sealed class FileServiceController : Controller
         {
             var source = HttpContext.Request.Body;
 
-            var encoding = HttpContext.Request.Headers[HeaderNames.ContentEncoding];
+            var encoding = HttpContext.Request.Headers.ContentEncoding;
             if (encoding.Contains(CompressionSettings.Algorithm))
             {
                 using (var zip = new GZipStream(source, CompressionMode.Decompress, true))
@@ -43,7 +42,7 @@ public sealed class FileServiceController : Controller
             fileSize = tempFile.Length;
         }
 
-        var metadata = new FileMetadata(fileName, fileSize);
+        var metadata = new FileMetadata(fileName!, fileSize);
         System.IO.File.Delete(tempFileName);
 
         return metadata;

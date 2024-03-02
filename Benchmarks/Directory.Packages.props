@@ -3,9 +3,9 @@
 
   <ItemGroup>
     <PackageVersion Include="BenchmarkDotNet" Version="0.13.12" />
-    <PackageVersion Include="MagicOnion" Version="5.1.8" />
-    <PackageVersion Include="MagicOnion.Server" Version="5.1.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="8.0.1" />
+    <PackageVersion Include="MagicOnion" Version="6.0.0" />
+    <PackageVersion Include="MagicOnion.Server" Version="6.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="8.0.2" />
     <PackageVersion Include="protobuf-net.Grpc" Version="1.1.1" />
     <PackageVersion Include="protobuf-net.Grpc.AspNetCore" Version="1.1.1" />
   </ItemGroup>

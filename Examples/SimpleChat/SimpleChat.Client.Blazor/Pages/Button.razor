@@ -1,0 +1,4 @@
+﻿<button type="button" class="btn btn-primary" @onclick="@HandleClickAsync" disabled="@(!Enabled)">
+    <span class="spinner-border spinner-border-sm" role="status" hidden="@(!IsBusy)"></span>
+    @Text
+</button>

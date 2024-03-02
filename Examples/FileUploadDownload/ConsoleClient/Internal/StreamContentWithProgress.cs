@@ -35,12 +35,12 @@ internal sealed class StreamContentWithProgress : StreamContent
         }
     }
 
-    protected override void SerializeToStream(Stream stream, TransportContext context, CancellationToken cancellationToken)
+    protected override void SerializeToStream(Stream stream, TransportContext? context, CancellationToken cancellationToken)
     {
         throw new NotSupportedException();
     }
 
-    protected override Task SerializeToStreamAsync(Stream stream, TransportContext context, CancellationToken cancellationToken)
+    protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken cancellationToken)
     {
         if (_useCompression)
         {

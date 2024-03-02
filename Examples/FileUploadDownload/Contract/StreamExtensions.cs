@@ -45,7 +45,7 @@ public static class StreamExtensions
     public static async IAsyncEnumerable<byte[]> ToAsyncEnumerable(
         this Stream stream,
         [EnumeratorCancellation] CancellationToken token,
-        Action<long> onProgress = default,
+        Action<long>? onProgress = default,
         int? maxBufferSize = default)
     {
         var chunkSize = CalculateChunkSize(maxBufferSize, stream);
@@ -85,7 +85,7 @@ public static class StreamExtensions
         this IAsyncEnumerable<byte[]> stream,
         Stream destination,
         CancellationToken token,
-        Action<long> onProgress = default)
+        Action<long>? onProgress = default)
     {
         var progressValue = 0L;
 
@@ -101,7 +101,7 @@ public static class StreamExtensions
     public static async IAsyncEnumerable<RentedArray> ToAsyncEnumerableRented(
         this Stream stream,
         [EnumeratorCancellation] CancellationToken token,
-        Action<long> onProgress = default,
+        Action<long>? onProgress = default,
         int? maxBufferSize = default)
     {
         var chunkSize = CalculateChunkSize(maxBufferSize, stream);
@@ -140,7 +140,7 @@ public static class StreamExtensions
         this IAsyncEnumerable<RentedArray> stream,
         Stream destination,
         CancellationToken token,
-        Action<long> onProgress = default)
+        Action<long>? onProgress = default)
     {
         var progressValue = 0L;
 
@@ -161,7 +161,7 @@ public static class StreamExtensions
         Stream destination,
         int bufferSize,
         CancellationToken token,
-        Action<long> onProgress = default)
+        Action<long>? onProgress = default)
     {
         var buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
         try

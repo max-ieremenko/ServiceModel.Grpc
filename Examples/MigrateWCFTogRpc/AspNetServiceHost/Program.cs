@@ -1,8 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Contract;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Service;
 
 namespace AspNetServiceHost;
 
@@ -10,18 +12,22 @@ public static class Program
 {
     public static Task Main()
     {
-        return Host
-            .CreateDefaultBuilder()
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
+        var builder = WebApplication.CreateBuilder();
 
-                webBuilder.UseKestrel(o => o.ListenLocalhost(
-                    SharedConfiguration.AspNetgRPCPersonServicePort,
-                    l => l.Protocols = HttpProtocols.Http2));
+        PersonModule.ConfigureServices(builder.Services);
 
-            })
-            .Build()
-            .RunAsync();
+        // enable ServiceModel.Grpc
+        builder.Services.AddServiceModelGrpc();
+
+        builder.WebHost.ConfigureKestrel(options => options.ListenLocalhost(SharedConfiguration.AspNetgRPCPersonServicePort, l => l.Protocols = HttpProtocols.Http2));
+
+        var app = builder.Build();
+
+        app.UseRouting();
+
+        // host PersonService
+        app.MapGrpcService<PersonService>();
+
+        return app.RunAsync();
     }
 }

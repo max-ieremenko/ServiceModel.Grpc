@@ -7,7 +7,7 @@ namespace Contract;
 public class Person
 {
     [DataMember]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     [DataMember]
     public DateTime BirthDay { get; set; }

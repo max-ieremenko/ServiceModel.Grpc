@@ -215,27 +215,25 @@ All other exceptions are handled by gRPC API.
 An error handler can be attached globally, for all ServiceModel.Grpc services.
 
 ``` c#
-public void ConfigureServices(IServiceCollection services)
-{
-    services
-        .AddServiceModelGrpc(options =>
-        {
-            options.DefaultErrorHandlerFactory = serviceProvider => serviceProvider.GetRequiredService<IServerErrorHandler>();
-        });
-}
+var builder = WebApplication.CreateBuilder();
+
+builder.Services
+    .AddServiceModelGrpc(options =>
+    {
+        options.DefaultErrorHandlerFactory = serviceProvider => serviceProvider.GetRequiredService<IServerErrorHandler>();
+    });
 ```
 
 Or can be attached for a specific service.
 
 ``` c#
-public void ConfigureServices(IServiceCollection services)
-{
-    services
-        .AddServiceModelGrpcServiceOptions<DebugService>(options =>
-        {
-            options.ErrorHandlerFactory = serviceProvider => serviceProvider.GetRequiredService<IServerErrorHandler>();
-        });
-}
+var builder = WebApplication.CreateBuilder();
+
+builder.Services
+    .AddServiceModelGrpcServiceOptions<DebugService>(options =>
+    {
+        options.ErrorHandlerFactory = serviceProvider => serviceProvider.GetRequiredService<IServerErrorHandler>();
+    });
 ```
 
 In case there is a global error handler and a handler for a specific service. The global one is ignored.
@@ -243,24 +241,23 @@ In case there is a global error handler and a handler for a specific service. Th
 In this example, we register a global error handler.
 
 ``` c#
-public void ConfigureServices(IServiceCollection services)
+var builder = WebApplication.CreateBuilder();
+
+builder.Services.AddSingleton<IServerErrorHandler>(_ =>
 {
-    services.AddSingleton<IServerErrorHandler>(_ =>
+    // combine application and unexpected handlers into one handler
+    var collection = new ServerErrorHandlerCollection(
+        new ApplicationExceptionServerHandler(),
+        new UnexpectedExceptionServerHandler());
+
+    return collection;
+});
+
+builder.Services
+    .AddServiceModelGrpc(options =>
     {
-        // combine application and unexpected handlers into one handler
-        var collection = new ServerErrorHandlerCollection(
-            new ApplicationExceptionServerHandler(),
-            new UnexpectedExceptionServerHandler());
-
-        return collection;
+        options.DefaultErrorHandlerFactory = serviceProvider => serviceProvider.GetRequiredService<IServerErrorHandler>();
     });
-
-    services
-        .AddServiceModelGrpc(options =>
-        {
-            options.DefaultErrorHandlerFactory = serviceProvider => serviceProvider.GetRequiredService<IServerErrorHandler>();
-        });
-}
 ```
 
 ## Configure global error handling in Grpc.Core.Server

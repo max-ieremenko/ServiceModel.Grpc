@@ -10,7 +10,7 @@ namespace Benchmarks;
 [Config(typeof(BenchmarkConfig))]
 public abstract class SelfHostBenchmarkBase
 {
-    private Server _serverSelfHost;
+    private Server _serverSelfHost = null!;
 
     [BufferSizeParams]
     public int BufferSize { get; set; }
@@ -18,11 +18,11 @@ public abstract class SelfHostBenchmarkBase
     [CompressionParams]
     public bool UseCompression { get; set; }
 
-    protected IClientCalls CallsDefault { get; private set; }
+    protected IClientCalls CallsDefault { get; private set; } = null!;
 
-    protected IClientCalls CallsRentedArray { get; private set; }
+    protected IClientCalls CallsRentedArray { get; private set; } = null!;
 
-    protected string FilePath { get; private set; }
+    protected string FilePath { get; private set; } = null!;
 
     [GlobalSetup]
     public void GlobalSetup()
