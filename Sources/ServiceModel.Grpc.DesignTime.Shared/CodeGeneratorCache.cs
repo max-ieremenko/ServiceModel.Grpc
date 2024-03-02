@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2024 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ namespace ServiceModel.Grpc.DesignTime.Generator;
 
 internal sealed class CodeGeneratorCache
 {
-    private readonly IDictionary<string, HashSet<string>> _memberNamesByOwner = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
+    private readonly Dictionary<string, HashSet<string>> _memberNamesByOwner = new(StringComparer.Ordinal);
 
     public bool AddNew(ClassDeclarationSyntax owner, string memberName)
     {

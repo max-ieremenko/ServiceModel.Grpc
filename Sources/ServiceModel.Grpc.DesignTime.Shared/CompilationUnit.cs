@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2024 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
 // </copyright>
 
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -78,16 +75,6 @@ internal readonly ref struct CompilationUnit
         output.AppendLine("using System.Threading;");
         output.AppendLine("using System.Threading.Tasks;");
         output.AppendLine();
-    }
-
-    private static void InsertImports(StringBuilder text, IEnumerable<string> imports)
-    {
-        text.Insert(0, Environment.NewLine);
-
-        foreach (var import in imports.OrderByDescending(i => i, StringComparer.Ordinal))
-        {
-            text.Insert(0, "using " + import + ";" + Environment.NewLine);
-        }
     }
 
     private static IDisposable[] DeclareClass(ClassDeclarationSyntax node, CodeStringBuilder output)
