@@ -6,6 +6,21 @@
   },
   "UsedBy": [
     {
+      "Name": "AspNetCore",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Grpc.Core.Api",
+          "Version": "2.61.0"
+        }
+      ]
+    },
+    {
       "Name": "ClientDI",
       "InternalOnly": false,
       "TargetFrameworks": [
@@ -17,12 +32,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "Grpc.Net.Common",
-          "Version": "2.60.0"
-        },
-        {
-          "Name": "Microsoft.Extensions.Logging.Abstractions",
-          "Version": "6.0.0"
+          "Name": "Grpc.Core.Api",
+          "Version": "2.61.0"
         }
       ]
     },
@@ -37,12 +48,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "Grpc.Net.Common",
-          "Version": "2.60.0"
-        },
-        {
-          "Name": "Microsoft.Extensions.Logging.Abstractions",
-          "Version": "6.0.0"
+          "Name": "Grpc.Core.Api",
+          "Version": "2.61.0"
         }
       ]
     }

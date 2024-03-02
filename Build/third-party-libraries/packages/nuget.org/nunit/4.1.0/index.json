@@ -20,8 +20,7 @@
     {
       "Subject": "package",
       "Code": "MIT",
-      "HRef": "LICENSE.txt",
-      "Description": "The license file is identical to the repository license file."
+      "HRef": "https://licenses.nuget.org/MIT"
     },
     {
       "Subject": "repository",

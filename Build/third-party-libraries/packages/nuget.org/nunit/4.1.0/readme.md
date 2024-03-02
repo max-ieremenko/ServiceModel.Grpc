@@ -1,4 +1,4 @@
-NUnit [4.0.1](https://www.nuget.org/packages/NUnit/4.0.1)
+NUnit [4.1.0](https://www.nuget.org/packages/NUnit/4.1.0)
 --------------------
 
 Used by: Core internal
@@ -7,7 +7,7 @@ Target frameworks: net462, net6.0, net7.0, net8.0
 
 License: [MIT](../../../../licenses/mit) 
 
-- package license: [MIT]() , The license file is identical to the repository license file.
+- package license: [MIT](https://licenses.nuget.org/MIT) 
 - repository license: [MIT](https://github.com/nunit/nunit) 
 - project license: [Unknown](https://nunit.org/) 
 
@@ -15,7 +15,7 @@ Description
 -----------
 NUnit is a unit-testing framework for all .NET languages.
         It can run on macOS, Linux and Windows operating systems.
-        NUnit can be used for a wide range of testing, from unit testing with TDD to full fledged system and integration testing.
+        NUnit can be used for a wide range of testing, from unit testing with TDD to full-fledged system and integration testing.
         It is a non-opinionated, broad and deep framework with multiple different ways to assert that your code behaves as expected. Many aspects of NUnit can be extended to suit your specific purposes.
 
         The latest version, version 4, is an upgrade from the groundbreaking NUnit 3 framework. It is a modernized version, aimed at taking advantage of the latest .NET features and C# language constructs.
