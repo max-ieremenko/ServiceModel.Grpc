@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2022 Max Ieremenko
+// Copyright 2020-2024 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ internal sealed class CSharpMessageBuilder : CodeGeneratorBase
         Output
             .AppendAttribute(typeof(SerializableAttribute))
             .AppendAttribute(typeof(DataContractAttribute), "Name = \"m\"", "Namespace = \"s\"")
-            .Append("public sealed class ")
+            .Append("public sealed partial class ")
             .Append(nameof(Message))
             .Append("<");
 
