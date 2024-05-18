@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -45,6 +46,7 @@ internal sealed class EmitContractBuilder
         return Expression.Lambda<Func<IMarshallerFactory, object>>(factory, marshaller).Compile();
     }
 
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Method<,>))]
     public TypeInfo Build(ModuleBuilder moduleBuilder, string? className = default)
     {
         var typeBuilder = moduleBuilder.DefineType(

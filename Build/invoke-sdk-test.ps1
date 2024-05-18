@@ -44,6 +44,10 @@ foreach ($configuration in $configurations) {
     $example.BuildParallelizable = $distinctPath.Add($path)
     $example.Solution = Join-Path $path $example.Solution
 
+    if (-not $example["BuildMode"]) {
+        $example.BuildMode = "Rebuild"
+    }
+
     if ($example.Tests -isnot [object[]]) {
         throw "Tests must be array of objects: $configuration"
     }
