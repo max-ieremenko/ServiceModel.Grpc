@@ -51,6 +51,7 @@ task BuildParallel {
                 File          = "task-build.ps1"
                 Path          = $example.Solution
                 Configuration = $example.Configuration
+                Mode          = $example.BuildMode
             }
         }
     }
