@@ -2,8 +2,11 @@ obj/
 bin/
 .vs/
 .vscode/
+.config/
 build-out/
+PublishProfiles/
 
 *.sln.DotSettings.user
+*.csproj.user
 
 todo.txt
