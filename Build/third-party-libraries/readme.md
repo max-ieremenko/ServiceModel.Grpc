@@ -7,13 +7,13 @@ Licenses
 |[BSD-2-Clause](licenses/bsd-2-clause)|no|no|1|
 |[BSD-3-Clause](licenses/bsd-3-clause)|no|no|2|
 |[Google.Protobuf](licenses/google.protobuf)|yes|no|0|
-|[MIT](licenses/mit)|no|no|126|
+|[MIT](licenses/mit)|no|no|123|
 |[ms-net-library](licenses/ms-net-library)|no|no|10|
 |[MS-PL](licenses/ms-pl)|no|no|1|
 
 
 
-Packages 151
+Packages 148
 --------
 
 |Name|Version|Source|License|Used by|
@@ -36,9 +36,7 @@ Packages 151
 |[Microsoft.Bcl.AsyncInterfaces](packages/nuget.org/microsoft.bcl.asyncinterfaces/1.1.1)|1.1.1|[nuget.org](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/1.1.1)|[MIT](licenses/mit)|Core|
 |[Microsoft.Bcl.AsyncInterfaces](packages/nuget.org/microsoft.bcl.asyncinterfaces/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/5.0.0)|[MIT](licenses/mit)|Core internal|
 |[Microsoft.Bcl.AsyncInterfaces](packages/nuget.org/microsoft.bcl.asyncinterfaces/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/6.0.0)|[MIT](licenses/mit)|ClientDI, MessagePack|
-|[Microsoft.CodeAnalysis.Common](packages/nuget.org/microsoft.codeanalysis.common/3.8.0)|3.8.0|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeAnalysis.Common/3.8.0)|[MIT](licenses/mit)|DesignTime|
 |[Microsoft.CodeAnalysis.Common](packages/nuget.org/microsoft.codeanalysis.common/4.0.1)|4.0.1|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeAnalysis.Common/4.0.1)|[MIT](licenses/mit)|DesignTime|
-|[Microsoft.CodeAnalysis.CSharp](packages/nuget.org/microsoft.codeanalysis.csharp/3.8.0)|3.8.0|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeAnalysis.CSharp/3.8.0)|[MIT](licenses/mit)|DesignTime|
 |[Microsoft.CodeAnalysis.CSharp](packages/nuget.org/microsoft.codeanalysis.csharp/4.0.1)|4.0.1|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeAnalysis.CSharp/4.0.1)|[MIT](licenses/mit)|DesignTime|
 |[Microsoft.CodeCoverage](packages/nuget.org/microsoft.codecoverage/17.9.0)|17.9.0|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeCoverage/17.9.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, SelfHost internal|
 |[Microsoft.CSharp](packages/nuget.org/microsoft.csharp/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/Microsoft.CSharp/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
@@ -128,11 +126,11 @@ Packages 151
 |[System.Management](packages/nuget.org/system.management/6.0.1)|6.0.1|[nuget.org](https://www.nuget.org/packages/System.Management/6.0.1)|[MIT](licenses/mit)|Core internal|
 |[System.Memory](packages/nuget.org/system.memory/4.5.3)|4.5.3|[nuget.org](https://www.nuget.org/packages/System.Memory/4.5.3)|[MIT](licenses/mit)|Core, DesignTime, SelfHost|
 |[System.Memory](packages/nuget.org/system.memory/4.5.4)|4.5.4|[nuget.org](https://www.nuget.org/packages/System.Memory/4.5.4)|[MIT](licenses/mit)|ClientDI, DesignTime|
-|[System.Memory](packages/nuget.org/system.memory/4.5.5)|4.5.5|[nuget.org](https://www.nuget.org/packages/System.Memory/4.5.5)|[MIT](licenses/mit)|ClientDI internal, Core internal, MessagePack, ProtoBuf|
+|[System.Memory](packages/nuget.org/system.memory/4.5.5)|4.5.5|[nuget.org](https://www.nuget.org/packages/System.Memory/4.5.5)|[MIT](licenses/mit)|ClientDI internal, Core internal, DesignTime internal, MessagePack, ProtoBuf|
 |[System.Net.Http.WinHttpHandler](packages/nuget.org/system.net.http.winhttphandler/7.0.0)|7.0.0|[nuget.org](https://www.nuget.org/packages/System.Net.Http.WinHttpHandler/7.0.0)|[MIT](licenses/mit)|Core internal|
 |[System.Net.Http.WinHttpHandler](packages/nuget.org/system.net.http.winhttphandler/8.0.0)|8.0.0|[nuget.org](https://www.nuget.org/packages/System.Net.Http.WinHttpHandler/8.0.0)|[MIT](licenses/mit)|ClientDI internal|
 |[System.Numerics.Vectors](packages/nuget.org/system.numerics.vectors/4.4.0)|4.4.0|[nuget.org](https://www.nuget.org/packages/System.Numerics.Vectors/4.4.0)|[MIT](licenses/mit)|ClientDI, Core, DesignTime, MessagePack, ProtoBuf, SelfHost|
-|[System.Numerics.Vectors](packages/nuget.org/system.numerics.vectors/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Numerics.Vectors/4.5.0)|[MIT](licenses/mit)|ClientDI internal, Core internal, ProtoBuf|
+|[System.Numerics.Vectors](packages/nuget.org/system.numerics.vectors/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Numerics.Vectors/4.5.0)|[MIT](licenses/mit)|ClientDI internal, Core internal, DesignTime internal, ProtoBuf|
 |[System.ObjectModel](packages/nuget.org/system.objectmodel/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.ObjectModel/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
 |[System.Private.ServiceModel](packages/nuget.org/system.private.servicemodel/4.10.3)|4.10.3|[nuget.org](https://www.nuget.org/packages/System.Private.ServiceModel/4.10.3)|[MIT](licenses/mit)|Core internal|
 |[System.Reflection.DispatchProxy](packages/nuget.org/system.reflection.dispatchproxy/4.7.1)|4.7.1|[nuget.org](https://www.nuget.org/packages/System.Reflection.DispatchProxy/4.7.1)|[MIT](licenses/mit)|Core internal|
@@ -146,7 +144,6 @@ Packages 151
 |[System.Reflection.TypeExtensions](packages/nuget.org/system.reflection.typeextensions/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Reflection.TypeExtensions/4.3.0)|[ms-net-library](licenses/ms-net-library)|AspNetCoreNSwag|
 |[System.Runtime.CompilerServices.Unsafe](packages/nuget.org/system.runtime.compilerservices.unsafe/4.5.2)|4.5.2|[nuget.org](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/4.5.2)|[MIT](licenses/mit)|SelfHost|
 |[System.Runtime.CompilerServices.Unsafe](packages/nuget.org/system.runtime.compilerservices.unsafe/4.5.3)|4.5.3|[nuget.org](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/4.5.3)|[MIT](licenses/mit)|Core, DesignTime, SelfHost|
-|[System.Runtime.CompilerServices.Unsafe](packages/nuget.org/system.runtime.compilerservices.unsafe/4.7.1)|4.7.1|[nuget.org](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/4.7.1)|[MIT](licenses/mit)|DesignTime|
 |[System.Runtime.CompilerServices.Unsafe](packages/nuget.org/system.runtime.compilerservices.unsafe/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/5.0.0)|[MIT](licenses/mit)|DesignTime|
 |[System.Runtime.CompilerServices.Unsafe](packages/nuget.org/system.runtime.compilerservices.unsafe/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/6.0.0)|[MIT](licenses/mit)|AspNetCoreNSwag, ClientDI, Core internal, DesignTime internal, MessagePack, ProtoBuf|
 |[System.Runtime.InteropServices.RuntimeInformation](packages/nuget.org/system.runtime.interopservices.runtimeinformation/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Runtime.InteropServices.RuntimeInformation/4.3.0)|[ms-net-library](licenses/ms-net-library)|Core internal|
