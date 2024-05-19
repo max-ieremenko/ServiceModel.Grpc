@@ -15,11 +15,20 @@
 // </copyright>
 
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 namespace ServiceModel.Grpc.Internal;
 
-internal static class NamingContract
+/// <summary>
+/// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+/// This API may change or be removed in future releases.
+/// </summary>
+[Browsable(false)]
+[EditorBrowsable(EditorBrowsableState.Never)]
+public static class NamingContract
 {
     public static string GetServiceName(
         string serviceTypeName,
