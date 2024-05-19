@@ -95,10 +95,12 @@ task NSwag {
 task DesignTime {
     $projects = @(
         (Join-Path $Sources "ServiceModel.Grpc.DesignTime"),
-        (Join-Path $Sources "ServiceModel.Grpc.DesignTime.Roslyn3"),
-        (Join-Path $Sources "ServiceModel.Grpc.DesignTime.Roslyn4"),
-        (Join-Path $Sources "ServiceModel.Grpc.DesignTime.Test"),
-        (Join-Path $Sources "ServiceModel.Grpc.DesignTime.Generator.Test")
+        (Join-Path $Sources "ServiceModel.Grpc.DesignTime.CodeAnalysis"),
+        (Join-Path $Sources "ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp"),
+        (Join-Path $Sources "ServiceModel.Grpc.DesignTime.CodeAnalysis.Internal"),
+        (Join-Path $Sources "ServiceModel.Grpc.DesignTime.CodeAnalysis.Internal.Test"),
+        (Join-Path $Sources "ServiceModel.Grpc.DesignTime.Generator.Test"),
+        (Join-Path $Sources "ServiceModel.Grpc.DesignTime.Generators")
     )
 
     Write-ThirdPartyNotices `

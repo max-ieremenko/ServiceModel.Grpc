@@ -48,12 +48,20 @@
       "Name": "DesignTime",
       "InternalOnly": false,
       "TargetFrameworks": [
+        "net462",
+        "net6.0",
+        "net7.0",
+        "net8.0",
         "netstandard2.0"
       ],
       "Dependencies": [
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "4.7.1"
+          "Version": "5.0.0"
+        },
+        {
+          "Name": "System.Runtime.CompilerServices.Unsafe",
+          "Version": "6.0.0"
         }
       ]
     },

@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp\ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.csproj" />
+    <ProjectReference Include="..\ServiceModel.Grpc.DesignTime.CodeAnalysis.Internal\ServiceModel.Grpc.DesignTime.CodeAnalysis.Internal.csproj" />
+  </ItemGroup>
+
+</Project>

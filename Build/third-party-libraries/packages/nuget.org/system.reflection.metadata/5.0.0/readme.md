@@ -3,7 +3,7 @@ System.Reflection.Metadata [5.0.0](https://www.nuget.org/packages/System.Reflect
 
 Used by: DesignTime
 
-Target frameworks: net6.0, net7.0, net8.0, netstandard2.0
+Target frameworks: net462, net6.0, net7.0, net8.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 

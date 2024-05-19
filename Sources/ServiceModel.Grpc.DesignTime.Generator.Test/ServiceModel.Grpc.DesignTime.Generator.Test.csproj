@@ -10,15 +10,8 @@
     <PackageReference Include="System.Collections.Immutable" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <ProjectReference Include="..\ServiceModel.Grpc.DesignTime.Roslyn4\ServiceModel.Grpc.DesignTime.Roslyn4.csproj" OutputItemType="Analyzer" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)' != 'Debug'">
-    <ProjectReference Include="..\ServiceModel.Grpc.DesignTime.Roslyn3\ServiceModel.Grpc.DesignTime.Roslyn3.csproj" OutputItemType="Analyzer" />
-  </ItemGroup>
-
   <ItemGroup>
+    <ProjectReference Include="..\ServiceModel.Grpc.DesignTime.Generators\ServiceModel.Grpc.DesignTime.Generators.csproj" OutputItemType="Analyzer" />
     <ProjectReference Include="..\ServiceModel.Grpc.AspNetCore.TestApi\ServiceModel.Grpc.AspNetCore.TestApi.csproj" />
     <ProjectReference Include="..\ServiceModel.Grpc.DesignTime\ServiceModel.Grpc.DesignTime.csproj" />
     <ProjectReference Include="..\ServiceModel.Grpc.SelfHost\ServiceModel.Grpc.SelfHost.csproj" />
@@ -27,10 +20,18 @@
   <Import Project="..\ServiceModel.Grpc.DesignTime\build\ServiceModel.Grpc.DesignTime.props" />
 
   <PropertyGroup>
-    <ServiceModelGrpcDesignTime_Dependencies>$(SolutionDir)ServiceModel.Grpc.DesignTime\bin\$(Configuration)\netstandard2.0\dependencies</ServiceModelGrpcDesignTime_Dependencies>
+    <ServiceModelGrpcDesignTime_Dependencies>$(SolutionDir)ServiceModel.Grpc.DesignTime\bin\$(Configuration)\dependencies</ServiceModelGrpcDesignTime_Dependencies>
     <ServiceModelGrpcDesignTime_LocalBuild>true</ServiceModelGrpcDesignTime_LocalBuild>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <ServiceModelGrpcDesignTime_DebugLogFilename>$(MSBuildThisFileDirectory)/bin/_generator.log</ServiceModelGrpcDesignTime_DebugLogFilename>
+    <ServiceModelGrpcDesignTime_DebugGeneratedOutput>$(MSBuildThisFileDirectory)/bin/_generated</ServiceModelGrpcDesignTime_DebugGeneratedOutput>
+  </PropertyGroup>
+
   <ItemGroup>
     <CompilerVisibleProperty Include="ServiceModelGrpcDesignTime_LocalBuild" />
+    <CompilerVisibleProperty Include="ServiceModelGrpcDesignTime_DebugLogFilename" />
+    <CompilerVisibleProperty Include="ServiceModelGrpcDesignTime_DebugGeneratedOutput" />
   </ItemGroup>
 </Project>

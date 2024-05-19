@@ -15,10 +15,19 @@
 // </copyright>
 
 using System;
+using System.ComponentModel;
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 namespace ServiceModel.Grpc.Internal;
 
-internal readonly struct OperationKey : IEquatable<OperationKey>
+/// <summary>
+/// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+/// This API may change or be removed in future releases.
+/// </summary>
+[Browsable(false)]
+[EditorBrowsable(EditorBrowsableState.Never)]
+public readonly struct OperationKey : IEquatable<OperationKey>
 {
     private readonly string _serviceName;
     private readonly string _operationName;
@@ -29,13 +38,11 @@ internal readonly struct OperationKey : IEquatable<OperationKey>
         _operationName = operationName;
     }
 
-    public bool Equals(OperationKey other)
-    {
-        return StringComparer.OrdinalIgnoreCase.Equals(_serviceName, _serviceName)
-               && StringComparer.OrdinalIgnoreCase.Equals(_operationName, _operationName);
-    }
+    public bool Equals(OperationKey other) =>
+        StringComparer.OrdinalIgnoreCase.Equals(_serviceName, _serviceName)
+        && StringComparer.OrdinalIgnoreCase.Equals(_operationName, _operationName);
 
-    public override bool Equals(object obj) => throw new NotSupportedException();
+    public override bool Equals(object? obj) => throw new NotSupportedException();
 
     public override int GetHashCode()
     {
