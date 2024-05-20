@@ -9,6 +9,8 @@ using System;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 
+#nullable enable
+
 namespace ServiceModel.Grpc.Channel;
 
 /// <summary>
@@ -38,22 +40,20 @@ public sealed class Message
 [EditorBrowsable(EditorBrowsableState.Never)]
 public sealed class Message<T1>
 {
-    private T1 _value1;
-
     /// <exclude />
     public Message()
     {
     }
 
     /// <exclude />
-    public Message(T1 value1)
+    public Message(T1? value1)
     {
-        _value1 = value1;
+        Value1 = value1;
     }
 
     /// <exclude />
     [DataMember(Name = "v1", Order = 1)]
-    public T1 Value1 { get => _value1; set => _value1 = value; }
+    public T1? Value1 { get; set; }
 
 }
 
@@ -67,29 +67,25 @@ public sealed class Message<T1>
 [EditorBrowsable(EditorBrowsableState.Never)]
 public sealed class Message<T1, T2>
 {
-    private T1 _value1;
-
-    private T2 _value2;
-
     /// <exclude />
     public Message()
     {
     }
 
     /// <exclude />
-    public Message(T1 value1, T2 value2)
+    public Message(T1? value1, T2? value2)
     {
-        _value1 = value1;
-        _value2 = value2;
+        Value1 = value1;
+        Value2 = value2;
     }
 
     /// <exclude />
     [DataMember(Name = "v1", Order = 1)]
-    public T1 Value1 { get => _value1; set => _value1 = value; }
+    public T1? Value1 { get; set; }
 
     /// <exclude />
     [DataMember(Name = "v2", Order = 2)]
-    public T2 Value2 { get => _value2; set => _value2 = value; }
+    public T2? Value2 { get; set; }
 
 }
 
@@ -103,36 +99,30 @@ public sealed class Message<T1, T2>
 [EditorBrowsable(EditorBrowsableState.Never)]
 public sealed class Message<T1, T2, T3>
 {
-    private T1 _value1;
-
-    private T2 _value2;
-
-    private T3 _value3;
-
     /// <exclude />
     public Message()
     {
     }
 
     /// <exclude />
-    public Message(T1 value1, T2 value2, T3 value3)
+    public Message(T1? value1, T2? value2, T3? value3)
     {
-        _value1 = value1;
-        _value2 = value2;
-        _value3 = value3;
+        Value1 = value1;
+        Value2 = value2;
+        Value3 = value3;
     }
 
     /// <exclude />
     [DataMember(Name = "v1", Order = 1)]
-    public T1 Value1 { get => _value1; set => _value1 = value; }
+    public T1? Value1 { get; set; }
 
     /// <exclude />
     [DataMember(Name = "v2", Order = 2)]
-    public T2 Value2 { get => _value2; set => _value2 = value; }
+    public T2? Value2 { get; set; }
 
     /// <exclude />
     [DataMember(Name = "v3", Order = 3)]
-    public T3 Value3 { get => _value3; set => _value3 = value; }
+    public T3? Value3 { get; set; }
 
 }
 

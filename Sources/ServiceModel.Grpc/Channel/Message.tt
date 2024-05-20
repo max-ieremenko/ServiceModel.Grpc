@@ -15,6 +15,8 @@ using System;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 
+#nullable enable
+
 namespace ServiceModel.Grpc.Channel;
 
 <#
@@ -26,7 +28,7 @@ for (var argsCount=0; argsCount<=3; argsCount++)
         genericArgs = "<" + genericArgs + ">";
     }
     //         private T1 _value1;
-    var ctorArgs = string.Join(", ", Enumerable.Range(1, argsCount).Select(i => "T" + i + " value" + i));
+    var ctorArgs = string.Join(", ", Enumerable.Range(1, argsCount).Select(i => "T" + i + "? value" + i));
 #>
 /// <summary>
 /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
@@ -38,15 +40,6 @@ for (var argsCount=0; argsCount<=3; argsCount++)
 [EditorBrowsable(EditorBrowsableState.Never)]
 public sealed class Message<#= genericArgs #>
 {
-<#
-            for (var a=1; a<=argsCount; a++)
-            {
-#>
-    private T<#= a #> _value<#= a #>;
-
-<#
-            }
-#>
 <#
 if (argsCount > 0)
 {
@@ -66,7 +59,7 @@ if (argsCount > 0)
             for (var a=1; a<=argsCount; a++)
             {
 #>
-        _value<#= a #> = value<#= a #>;
+        Value<#= a #> = value<#= a #>;
 <#
             }
 #>
@@ -78,7 +71,7 @@ if (argsCount > 0)
 #>
     /// <exclude />
     [DataMember(Name = "v<#= a #>", Order = <#= a #>)]
-    public T<#= a #> Value<#= a #> { get => _value<#= a #>; set => _value<#= a #> = value; }
+    public T<#= a #>? Value<#= a #> { get; set; }
 
 <#
             }

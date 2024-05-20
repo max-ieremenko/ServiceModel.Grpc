@@ -32,13 +32,13 @@ public static class CompatibilityToolsTestExtensions
         return CompatibilityTools.SerializeMethodInputHeader(marshallerFactory.CreateMarshaller<Message<T1, T2>>(), new Message<T1, T2>(value1, value2));
     }
 
-    public static T DeserializeMethodInput<T>(IMarshallerFactory marshallerFactory, Metadata? requestHeaders)
+    public static T? DeserializeMethodInput<T>(IMarshallerFactory marshallerFactory, Metadata? requestHeaders)
     {
         var message = CompatibilityTools.DeserializeMethodInputHeader(marshallerFactory.CreateMarshaller<Message<T>>(), requestHeaders);
         return message.Value1;
     }
 
-    public static (T1 Value1, T2 Value2) DeserializeMethodInput<T1, T2>(IMarshallerFactory marshallerFactory, Metadata? requestHeaders)
+    public static (T1? Value1, T2? Value2) DeserializeMethodInput<T1, T2>(IMarshallerFactory marshallerFactory, Metadata? requestHeaders)
     {
         var message = CompatibilityTools.DeserializeMethodInputHeader(marshallerFactory.CreateMarshaller<Message<T1, T2>>(), requestHeaders);
         return (message.Value1, message.Value2);
@@ -54,13 +54,13 @@ public static class CompatibilityToolsTestExtensions
         return CompatibilityTools.SerializeMethodOutputHeader(marshallerFactory.CreateMarshaller<Message<T1, T2>>(), new Message<T1, T2>(value1, value2));
     }
 
-    public static T DeserializeMethodOutput<T>(IMarshallerFactory marshallerFactory, Metadata requestHeaders)
+    public static T? DeserializeMethodOutput<T>(IMarshallerFactory marshallerFactory, Metadata requestHeaders)
     {
         var message = CompatibilityTools.DeserializeMethodOutputHeader(marshallerFactory.CreateMarshaller<Message<T>>(), requestHeaders);
         return message.Value1;
     }
 
-    public static (T1 Value1, T2 Value2) DeserializeMethodOutput<T1, T2>(IMarshallerFactory marshallerFactory, Metadata requestHeaders)
+    public static (T1? Value1, T2? Value2) DeserializeMethodOutput<T1, T2>(IMarshallerFactory marshallerFactory, Metadata requestHeaders)
     {
         var message = CompatibilityTools.DeserializeMethodOutputHeader(marshallerFactory.CreateMarshaller<Message<T1, T2>>(), requestHeaders);
         return (message.Value1, message.Value2);

@@ -41,7 +41,7 @@ internal sealed class GoogleProtoMarshallerFactory : IMarshallerFactory
 
     private static void Serialize(Message<SomeObjectProto> value, SerializationContext context)
     {
-        var message = value.Value1;
+        var message = value.Value1!;
         context.SetPayloadLength(message.CalculateSize());
         message.WriteTo(context.GetBufferWriter());
         context.Complete();

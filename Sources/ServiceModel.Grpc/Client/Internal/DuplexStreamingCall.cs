@@ -44,7 +44,7 @@ public ref struct DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader,
     //// ReSharper disable StaticMemberInGenericType
     private static readonly Action<IClientFilterContext> BlockingFilterLast = FilterLast;
     private static readonly Func<IClientFilterContext, ValueTask> AsyncFilterLast = FilterLastAsync;
-    private static readonly Func<TResponseHeader, IAsyncEnumerable<TResponse>, IAsyncEnumerable<TResponse>> GetStream = (_, stream) => stream;
+    private static readonly Func<TResponseHeader, IAsyncEnumerable<TResponse?>, IAsyncEnumerable<TResponse?>> GetStream = (_, stream) => stream;
     //// ReSharper restore StaticMemberInGenericType
 
     private readonly Method<Message<TRequest>, Message<TResponse>> _method;
@@ -88,11 +88,11 @@ public ref struct DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader,
         return this;
     }
 
-    public IAsyncEnumerable<TResponse> Invoke(IAsyncEnumerable<TRequest> request)
+    public IAsyncEnumerable<TResponse?> Invoke(IAsyncEnumerable<TRequest?> request)
     {
         var filter = CreateFilter(request);
 
-        IAsyncEnumerable<TResponse> result;
+        IAsyncEnumerable<TResponse?> result;
         if (filter == null)
         {
             var callOptions = ClientChannelAdapter.AddRequestHeader(_callOptions, _requestHeaderMarshaller, _requestHeader);
@@ -103,17 +103,17 @@ public ref struct DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader,
         {
             filter.Invoke(BlockingFilterLast);
             var stream = ((IClientFilterContextInternal)filter.Context).ResponseInternal.GetRaw().Stream;
-            result = (IAsyncEnumerable<TResponse>)stream!;
+            result = (IAsyncEnumerable<TResponse?>)stream!;
         }
 
         return result;
     }
 
-    public Task<IAsyncEnumerable<TResponse>> InvokeAsync(IAsyncEnumerable<TRequest> request) => InvokeAsync(request, GetStream);
+    public Task<IAsyncEnumerable<TResponse?>> InvokeAsync(IAsyncEnumerable<TRequest?> request) => InvokeAsync(request, GetStream);
 
     public Task<TResult> InvokeAsync<TResult>(
-        IAsyncEnumerable<TRequest> request,
-        Func<TResponseHeader, IAsyncEnumerable<TResponse>, TResult> continuationFunction)
+        IAsyncEnumerable<TRequest?> request,
+        Func<TResponseHeader, IAsyncEnumerable<TResponse?>, TResult> continuationFunction)
     {
         var filter = CreateFilter(request);
         if (filter == null)
@@ -187,9 +187,9 @@ public ref struct DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader,
         return result;
     }
 
-    private static IAsyncEnumerable<TResponse> InvokeCore(
+    private static IAsyncEnumerable<TResponse?> InvokeCore(
         AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>> call,
-        IAsyncEnumerable<TRequest> request,
+        IAsyncEnumerable<TRequest?> request,
         CallContext? context,
         CancellationToken token)
     {
@@ -211,11 +211,11 @@ public ref struct DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader,
 
     private static async Task<TResult> InvokeCoreAsync<TResult>(
         AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>> call,
-        IAsyncEnumerable<TRequest> request,
+        IAsyncEnumerable<TRequest?> request,
         CallContext? context,
         CancellationToken token,
         Marshaller<TResponseHeader>? marshaller,
-        Func<TResponseHeader, IAsyncEnumerable<TResponse>, TResult> continuationFunction)
+        Func<TResponseHeader, IAsyncEnumerable<TResponse?>, TResult> continuationFunction)
     {
         ClientStreamWriter<TRequest>? writer;
         try
@@ -235,7 +235,7 @@ public ref struct DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader,
         return continuationFunction(header!, stream);
     }
 
-    private static async IAsyncEnumerable<TResponse> ReadServerStreamAsync(
+    private static async IAsyncEnumerable<TResponse?> ReadServerStreamAsync(
         AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>> call,
         ClientStreamWriter<TRequest> writer,
         CallContext? context,

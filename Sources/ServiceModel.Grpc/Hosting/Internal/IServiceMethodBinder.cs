@@ -55,7 +55,7 @@ public interface IServiceMethodBinder<TService>
         Func<MethodInfo> resolveContractMethodDefinition,
         Marshaller<TRequestHeader>? requestHeaderMarshaller,
         IList<object> metadata,
-        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, Task<TResponse>> handler)
+        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest?>, ServerCallContext, Task<TResponse>> handler)
         where TRequestHeader : class
         where TResponse : class;
 
@@ -64,7 +64,7 @@ public interface IServiceMethodBinder<TService>
         Func<MethodInfo> resolveContractMethodDefinition,
         Marshaller<TResponseHeader>? responseHeaderMarshaller,
         IList<object> metadata,
-        Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> handler)
+        Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse?> Response)>> handler)
         where TRequest : class
         where TResponseHeader : class;
 
@@ -74,7 +74,7 @@ public interface IServiceMethodBinder<TService>
         Marshaller<TRequestHeader>? requestHeaderMarshaller,
         Marshaller<TResponseHeader>? responseHeaderMarshaller,
         IList<object> metadata,
-        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> handler)
+        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest?>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse?> Response)>> handler)
         where TRequestHeader : class
         where TResponseHeader : class;
 }

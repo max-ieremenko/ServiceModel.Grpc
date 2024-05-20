@@ -34,7 +34,7 @@ internal sealed class ByteArrayMarshaller
 
     private static void Serialize(Message<byte[]> message, SerializationContext context)
     {
-        var array = message.Value1;
+        var array = message.Value1!;
         context.Complete(array);
     }
 
@@ -53,7 +53,7 @@ internal sealed class RentedArrayMarshaller
     {
         var rentedArray = message.Value1;
 
-        context.SetPayloadLength(rentedArray.Length);
+        context.SetPayloadLength(rentedArray!.Length);
             
         var writer = context.GetBufferWriter();
         var span = writer.GetSpan(rentedArray.Length);

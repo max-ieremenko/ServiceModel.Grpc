@@ -40,9 +40,9 @@ public static class StreamsMock
         SetupMoveNext(reader, token, source, 0, converter);
     }
 
-    public static IList<T> Setup<T>(this Mock<IServerStreamWriter<Message<T>>> writer)
+    public static IList<T?> Setup<T>(this Mock<IServerStreamWriter<Message<T>>> writer)
     {
-        var values = new List<T>();
+        var values = new List<T?>();
 
         writer
             .Setup(s => s.WriteAsync(It.IsNotNull<Message<T>>()))
@@ -55,7 +55,7 @@ public static class StreamsMock
         return values;
     }
 
-    public static void Setup<T>(this Mock<IClientStreamWriter<Message<T>>> writer, IList<T> output)
+    public static void Setup<T>(this Mock<IClientStreamWriter<Message<T>>> writer, IList<T?> output)
     {
         writer
             .Setup(s => s.WriteAsync(It.IsNotNull<Message<T>>()))

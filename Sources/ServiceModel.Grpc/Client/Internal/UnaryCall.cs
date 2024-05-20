@@ -67,7 +67,7 @@ public readonly ref struct UnaryCall<TRequest, TResponse>
 
     public void Invoke(TRequest request) => InvokeCore(request);
 
-    public TResult Invoke<TResult>(TRequest request)
+    public TResult? Invoke<TResult>(TRequest request)
     {
         var result = InvokeCore(request);
         return ((Message<TResult>)result).Value1;
@@ -75,7 +75,7 @@ public readonly ref struct UnaryCall<TRequest, TResponse>
 
     public Task InvokeAsync(TRequest request) => InvokeCoreAsync(request);
 
-    public Task<TResult> InvokeAsync<TResult>(TRequest request)
+    public Task<TResult?> InvokeAsync<TResult>(TRequest request)
     {
         var responseTask = InvokeCoreAsync(request);
         return AdaptResultAsync<TResult>(responseTask);
@@ -118,7 +118,7 @@ public readonly ref struct UnaryCall<TRequest, TResponse>
         return (TResponse)response;
     }
 
-    private static async Task<TResult> AdaptResultAsync<TResult>(Task<TResponse> responseTask)
+    private static async Task<TResult?> AdaptResultAsync<TResult>(Task<TResponse> responseTask)
     {
         object response = await responseTask.ConfigureAwait(false);
         var result = (Message<TResult>)response;

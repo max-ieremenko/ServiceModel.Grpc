@@ -80,7 +80,7 @@ public ref struct ClientStreamingCall<TRequestHeader, TRequest, TResponse>
 
     public Task InvokeAsync(IAsyncEnumerable<TRequest> request) => InvokeCoreAsync(request);
 
-    public Task<TResult> InvokeAsync<TResult>(IAsyncEnumerable<TRequest> request)
+    public Task<TResult?> InvokeAsync<TResult>(IAsyncEnumerable<TRequest> request)
     {
         var responseTask = InvokeCoreAsync(request);
         return AdaptResultAsync<TResult>(responseTask);
@@ -88,7 +88,7 @@ public ref struct ClientStreamingCall<TRequestHeader, TRequest, TResponse>
 
     private static async Task<TResponse> CallAsync(
         AsyncClientStreamingCall<Message<TRequest>, TResponse> call,
-        IAsyncEnumerable<TRequest> request,
+        IAsyncEnumerable<TRequest?> request,
         CallContext? context,
         CancellationToken token)
     {
@@ -123,7 +123,7 @@ public ref struct ClientStreamingCall<TRequestHeader, TRequest, TResponse>
         return response;
     }
 
-    private static async Task<TResult> AdaptResultAsync<TResult>(Task<TResponse> responseTask)
+    private static async Task<TResult?> AdaptResultAsync<TResult>(Task<TResponse> responseTask)
     {
         object response = await responseTask.ConfigureAwait(false);
         var result = (Message<TResult>)response;
@@ -153,7 +153,7 @@ public ref struct ClientStreamingCall<TRequestHeader, TRequest, TResponse>
         var call = contextInternal.CallInvoker.AsyncClientStreamingCall(method, null, callOptions);
         var response = await CallAsync(
                 call,
-                (IAsyncEnumerable<TRequest>)request.Stream!,
+                (IAsyncEnumerable<TRequest?>)request.Stream!,
                 contextInternal.CallContext,
                 callOptions.CancellationToken)
             .ConfigureAwait(false);
