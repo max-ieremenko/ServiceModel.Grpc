@@ -92,7 +92,7 @@ public static class CallInvokerMock
 
     public static void SetupBlockingUnaryCallInOut<TRequest, TResponse>(
         this Mock<CallInvoker> invoker,
-        Func<TRequest, TResponse> handler,
+        Func<TRequest?, TResponse> handler,
         Action<CallOptions>? callOptions = null)
     {
         invoker

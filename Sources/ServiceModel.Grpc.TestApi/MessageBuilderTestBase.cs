@@ -119,21 +119,6 @@ public abstract class MessageBuilderTestBase
 
     [Test]
     [TestCaseSource(nameof(GetTestCases))]
-    public void Fields(Type[] typeArguments)
-    {
-        var messageType = GetMessageType(typeArguments);
-
-        for (var i = 0; i < typeArguments.Length; i++)
-        {
-            var field = messageType.InstanceFiled("_value" + (i + 1));
-            field.FieldType.ShouldBe(typeArguments[i]);
-            field.IsPrivate.ShouldBeTrue();
-            field.Attributes.ShouldNotHaveFlag(FieldAttributes.InitOnly);
-        }
-    }
-
-    [Test]
-    [TestCaseSource(nameof(GetTestCases))]
     public void PropertyAndFieldValues(Type[] typeArguments)
     {
         var messageType = GetMessageType(typeArguments);
@@ -143,14 +128,11 @@ public abstract class MessageBuilderTestBase
         for (var i = 0; i < typeArguments.Length; i++)
         {
             var property = messageType.InstanceProperty("Value" + (i + 1));
-            var field = messageType.InstanceFiled("_value" + (i + 1));
 
             property.GetValue(sut).ShouldBe(null);
-            field.GetValue(sut).ShouldBe(null);
 
             property.SetValue(sut, "new " + i);
             property.GetValue(sut).ShouldBe("new " + i);
-            field.GetValue(sut).ShouldBe("new " + i);
         }
     }
 

@@ -30,7 +30,7 @@ namespace ServiceModel.Grpc.Hosting.Internal;
 internal static class ServerChannelAdapter
 {
     internal static async Task WriteServerStreamingResult<THeader, TResult>(
-        ValueTask<(THeader? Header, IAsyncEnumerable<TResult> Response)> result,
+        ValueTask<(THeader? Header, IAsyncEnumerable<TResult?> Response)> result,
         Marshaller<THeader>? headerMarshaller,
         IServerStreamWriter<Message<TResult>> stream,
         ServerCallContext context)
@@ -70,7 +70,7 @@ internal static class ServerChannelAdapter
         }
     }
 
-    internal static async IAsyncEnumerable<T> ReadClientStream<T>(IAsyncStreamReader<Message<T>> stream, ServerCallContext context)
+    internal static async IAsyncEnumerable<T?> ReadClientStream<T>(IAsyncStreamReader<Message<T>> stream, ServerCallContext context)
     {
         // in case of client does not read the whole response
         // TaskCanceledException A task was canceled, test MultipurposeServiceTestBase.see DuplexStreamingClientStopReading.

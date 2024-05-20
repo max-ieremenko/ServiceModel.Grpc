@@ -25,13 +25,13 @@ namespace ServiceModel.Grpc.Client.Internal;
 
 internal sealed class ClientStreamWriter<TRequest> : IDisposable
 {
-    private readonly IAsyncEnumerable<TRequest> _request;
+    private readonly IAsyncEnumerable<TRequest?> _request;
     private readonly IClientStreamWriter<Message<TRequest>> _stream;
     private readonly CancellationTokenSource _writeCancellation;
     private readonly Task _writer;
 
     public ClientStreamWriter(
-        IAsyncEnumerable<TRequest> request,
+        IAsyncEnumerable<TRequest?> request,
         IClientStreamWriter<Message<TRequest>> stream,
         CancellationToken token)
     {

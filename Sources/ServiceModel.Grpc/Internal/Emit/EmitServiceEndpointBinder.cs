@@ -162,7 +162,7 @@ internal sealed class EmitServiceEndpointBinder<TService> : IServiceEndpointBind
         where TResponse : class
     {
         var method = (Method<Message<TRequest>, TResponse>)grpcMethod;
-        var handler = channelMethod.CreateDelegate<Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, Task<TResponse>>>(channelInstance);
+        var handler = channelMethod.CreateDelegate<Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest?>, ServerCallContext, Task<TResponse>>>(channelInstance);
         binder.AddClientStreamingMethod(
             method,
             () => contractMethodDefinition,
@@ -183,7 +183,7 @@ internal sealed class EmitServiceEndpointBinder<TService> : IServiceEndpointBind
         where TResponseHeader : class
     {
         var method = (Method<TRequest, Message<TResponse>>)grpcMethod;
-        var handler = channelMethod.CreateDelegate<Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader?, IAsyncEnumerable<TResponse>)>>>(channelInstance);
+        var handler = channelMethod.CreateDelegate<Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader?, IAsyncEnumerable<TResponse?>)>>>(channelInstance);
         binder.AddServerStreamingMethod(
             method,
             () => contractMethodDefinition,
@@ -205,7 +205,7 @@ internal sealed class EmitServiceEndpointBinder<TService> : IServiceEndpointBind
         where TResponseHeader : class
     {
         var method = (Method<Message<TRequest>, Message<TResponse>>)grpcMethod;
-        var handler = channelMethod.CreateDelegate<Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, ValueTask<(TResponseHeader?, IAsyncEnumerable<TResponse>)>>>(channelInstance);
+        var handler = channelMethod.CreateDelegate<Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest?>, ServerCallContext, ValueTask<(TResponseHeader?, IAsyncEnumerable<TResponse?>)>>>(channelInstance);
         binder.AddDuplexStreamingMethod(
             method,
             () => contractMethodDefinition,

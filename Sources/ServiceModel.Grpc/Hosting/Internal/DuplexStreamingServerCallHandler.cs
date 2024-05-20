@@ -28,7 +28,7 @@ internal sealed class DuplexStreamingServerCallHandler<TService, TRequestHeader,
     where TResponseHeader : class
 {
     private readonly Func<TService> _serviceFactory;
-    private readonly Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, ValueTask<(TResponseHeader?, IAsyncEnumerable<TResponse>)>> _invoker;
+    private readonly Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest?>, ServerCallContext, ValueTask<(TResponseHeader?, IAsyncEnumerable<TResponse?>)>> _invoker;
     private readonly Marshaller<TRequestHeader>? _requestHeaderMarshaller;
     private readonly Marshaller<TResponseHeader>? _responseHeaderMarshaller;
     private readonly ServerCallFilterHandlerFactory? _filterHandlerFactory;
@@ -36,7 +36,7 @@ internal sealed class DuplexStreamingServerCallHandler<TService, TRequestHeader,
 
     public DuplexStreamingServerCallHandler(
         Func<TService> serviceFactory,
-        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> invoker,
+        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest?>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse?> Response)>> invoker,
         Marshaller<TRequestHeader>? requestHeaderMarshaller,
         Marshaller<TResponseHeader>? responseHeaderMarshaller,
         ServerCallFilterHandlerFactory? filterHandlerFactory)
@@ -58,7 +58,7 @@ internal sealed class DuplexStreamingServerCallHandler<TService, TRequestHeader,
     }
 
     public DuplexStreamingServerCallHandler(
-        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> invoker,
+        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest?>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse?> Response)>> invoker,
         Marshaller<TRequestHeader>? requestHeaderMarshaller,
         Marshaller<TResponseHeader>? responseHeaderMarshaller,
         ServerCallFilterHandlerFactory? filterHandlerFactory)
@@ -100,7 +100,7 @@ internal sealed class DuplexStreamingServerCallHandler<TService, TRequestHeader,
     private async Task HandleWithFilter(
         TService service,
         TRequestHeader? inputHeader,
-        IAsyncEnumerable<TRequest> input,
+        IAsyncEnumerable<TRequest?> input,
         IServerStreamWriter<Message<TResponse>> output,
         ServerCallContext context)
     {
@@ -111,8 +111,8 @@ internal sealed class DuplexStreamingServerCallHandler<TService, TRequestHeader,
         var (rawHeader, rawData) = handler.Context.ResponseInternal.GetRaw();
 
         var outputHeader = (TResponseHeader?)rawHeader;
-        var outputData = (IAsyncEnumerable<TResponse>)rawData!;
-        var result = new ValueTask<(TResponseHeader?, IAsyncEnumerable<TResponse>)>((outputHeader, outputData));
+        var outputData = (IAsyncEnumerable<TResponse?>)rawData!;
+        var result = new ValueTask<(TResponseHeader?, IAsyncEnumerable<TResponse?>)>((outputHeader, outputData));
 
         await ServerChannelAdapter.WriteServerStreamingResult(result, _responseHeaderMarshaller, output, context).ConfigureAwait(false);
     }

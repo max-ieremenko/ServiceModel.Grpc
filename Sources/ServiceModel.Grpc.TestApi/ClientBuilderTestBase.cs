@@ -591,7 +591,7 @@ public abstract class ClientBuilderTestBase
     {
         TestOutput.WriteLine(GetClientInstanceMethod(nameof(IContract.DuplicateClientStreaming), typeof(IAsyncEnumerable<string>)).Disassemble());
 
-        var serverValues = new List<string>();
+        var serverValues = new List<string?>();
 
         var requestStream = new Mock<IClientStreamWriter<Message<string>>>(MockBehavior.Strict);
         requestStream.Setup(serverValues);
@@ -738,7 +738,7 @@ public abstract class ClientBuilderTestBase
     {
         TestOutput.WriteLine(GetClientInstanceMethod(nameof(IContract.DuplicateDuplexStreaming), typeof(IAsyncEnumerable<string>)).Disassemble());
 
-        var requestValues = new List<string>();
+        var requestValues = new List<string?>();
 
         var responseStream = new Mock<IAsyncStreamReader<Message<string>>>(MockBehavior.Strict);
         responseStream.Setup(default, requestValues, i => i + "1");

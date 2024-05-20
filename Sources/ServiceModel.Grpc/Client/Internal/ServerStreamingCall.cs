@@ -44,7 +44,7 @@ public ref struct ServerStreamingCall<TRequest, TResponseHeader, TResponse>
     //// ReSharper disable StaticMemberInGenericType
     private static readonly Action<IClientFilterContext> BlockingFilterLast = FilterLast;
     private static readonly Func<IClientFilterContext, ValueTask> AsyncFilterLast = FilterLastAsync;
-    private static readonly Func<TResponseHeader, IAsyncEnumerable<TResponse>, IAsyncEnumerable<TResponse>> GetStream = (_, stream) => stream;
+    private static readonly Func<TResponseHeader, IAsyncEnumerable<TResponse?>, IAsyncEnumerable<TResponse?>> GetStream = (_, stream) => stream;
     //// ReSharper restore StaticMemberInGenericType
 
     private readonly Method<TRequest, Message<TResponse>> _method;
@@ -77,11 +77,11 @@ public ref struct ServerStreamingCall<TRequest, TResponseHeader, TResponse>
         return this;
     }
 
-    public IAsyncEnumerable<TResponse> Invoke(TRequest request)
+    public IAsyncEnumerable<TResponse?> Invoke(TRequest request)
     {
         var filter = CreateFilter(request);
 
-        IAsyncEnumerable<TResponse> result;
+        IAsyncEnumerable<TResponse?> result;
         if (filter == null)
         {
             var call = _callInvoker.AsyncServerStreamingCall(_method, null, _callOptions, request);
@@ -91,17 +91,17 @@ public ref struct ServerStreamingCall<TRequest, TResponseHeader, TResponse>
         {
             filter.Invoke(BlockingFilterLast);
             var stream = ((IClientFilterContextInternal)filter.Context).ResponseInternal.GetRaw().Stream;
-            result = (IAsyncEnumerable<TResponse>)stream!;
+            result = (IAsyncEnumerable<TResponse?>)stream!;
         }
 
         return result;
     }
 
-    public Task<IAsyncEnumerable<TResponse>> InvokeAsync(TRequest request) => InvokeAsync(request, GetStream);
+    public Task<IAsyncEnumerable<TResponse?>> InvokeAsync(TRequest request) => InvokeAsync(request, GetStream);
 
     public Task<TResult> InvokeAsync<TResult>(
         TRequest request,
-        Func<TResponseHeader, IAsyncEnumerable<TResponse>, TResult> continuationFunction)
+        Func<TResponseHeader, IAsyncEnumerable<TResponse?>, TResult> continuationFunction)
     {
         var filter = CreateFilter(request);
         if (filter == null)
@@ -118,7 +118,7 @@ public ref struct ServerStreamingCall<TRequest, TResponseHeader, TResponse>
         Marshaller<TResponseHeader>? responseHeaderMarshaller,
         CallContext? callContext,
         CallOptions callOptions,
-        Func<TResponseHeader, IAsyncEnumerable<TResponse>, TResult> continuationFunction)
+        Func<TResponseHeader, IAsyncEnumerable<TResponse?>, TResult> continuationFunction)
     {
         var header = await ReadResponseHeaderAsync(call, responseHeaderMarshaller, callContext, callOptions.CancellationToken).ConfigureAwait(false);
         var stream = ReadServerStreamAsync(call, callContext, callOptions.CancellationToken);
@@ -128,12 +128,12 @@ public ref struct ServerStreamingCall<TRequest, TResponseHeader, TResponse>
 
     private static async Task<TResult> InvokeWithFilterAsync<TResult>(
         IClientCallFilterHandler filter,
-        Func<TResponseHeader, IAsyncEnumerable<TResponse>, TResult> continuationFunction)
+        Func<TResponseHeader, IAsyncEnumerable<TResponse?>, TResult> continuationFunction)
     {
         await filter.InvokeAsync(AsyncFilterLast).ConfigureAwait(false);
 
         var (responseHeader, response) = ((IClientFilterContextInternal)filter.Context).ResponseInternal.GetRaw();
-        var stream = (IAsyncEnumerable<TResponse>)response!;
+        var stream = (IAsyncEnumerable<TResponse?>)response!;
         var header = (TResponseHeader?)responseHeader;
 
         return continuationFunction(header!, stream);
@@ -185,7 +185,7 @@ public ref struct ServerStreamingCall<TRequest, TResponseHeader, TResponse>
         return result;
     }
 
-    private static async IAsyncEnumerable<TResponse> ReadServerStreamAsync(
+    private static async IAsyncEnumerable<TResponse?> ReadServerStreamAsync(
         AsyncServerStreamingCall<Message<TResponse>> call,
         CallContext? context,
         [EnumeratorCancellation] CancellationToken token)
