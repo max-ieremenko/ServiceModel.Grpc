@@ -38,7 +38,7 @@ for (var argsCount=0; argsCount<=3; argsCount++)
 [DataContract(Name = "m", Namespace = "s")]
 [Browsable(false)]
 [EditorBrowsable(EditorBrowsableState.Never)]
-public sealed class Message<#= genericArgs #>
+public sealed partial class Message<#= genericArgs #>
 {
 <#
 if (argsCount > 0)
