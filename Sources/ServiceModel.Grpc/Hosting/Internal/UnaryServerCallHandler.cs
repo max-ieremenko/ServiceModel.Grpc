@@ -56,10 +56,7 @@ internal sealed class UnaryServerCallHandler<TService, TRequest, TResponse>
     {
     }
 
-    public Task<TResponse> Handle(TRequest request, ServerCallContext context)
-    {
-        return Handle(_serviceFactory(), request, context);
-    }
+    public Task<TResponse> Handle(TRequest request, ServerCallContext context) => Handle(_serviceFactory(), request, context);
 
     public Task<TResponse> Handle(TService service, TRequest request, ServerCallContext context)
     {

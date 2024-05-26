@@ -166,28 +166,59 @@ internal sealed class EndpointBinderCodeGenerator : ICodeGenerator
                     output
                         .Append("methodBinder.Add")
                         .Append(method.OperationType.ToString())
-                        .Append("Method(contract.")
+                        .Append("Method<");
+
+                    switch (method.OperationType)
+                    {
+                        case MethodType.Unary:
+                            output
+                                .WriteMessage(method.RequestType)
+                                .Append(", ")
+                                .WriteMessage(method.ResponseType);
+                            break;
+                        case MethodType.ClientStreaming:
+                            output
+                                .WriteMessageOrDefault(method.HeaderRequestType)
+                                .Append(", ")
+                                .WriteMessage(method.RequestType)
+                                .Append(", ")
+                                .WriteType(method.RequestType.Properties[0])
+                                .Append(", ")
+                                .WriteMessage(method.ResponseType);
+                            break;
+                        case MethodType.ServerStreaming:
+                            output
+                                .WriteMessage(method.RequestType)
+                                .Append(", ")
+                                .WriteMessageOrDefault(method.HeaderResponseType)
+                                .Append(", ")
+                                .WriteMessage(method.ResponseType)
+                                .Append(", ")
+                                .WriteType(method.ResponseType.Properties[0]);
+                            break;
+                        case MethodType.DuplexStreaming:
+                            output
+                                .WriteMessageOrDefault(method.HeaderRequestType)
+                                .Append(", ")
+                                .WriteMessage(method.RequestType)
+                                .Append(", ")
+                                .WriteType(method.RequestType.Properties[0])
+                                .Append(", ")
+                                .WriteMessageOrDefault(method.HeaderResponseType)
+                                .Append(", ")
+                                .WriteMessage(method.ResponseType)
+                                .Append(", ")
+                                .WriteType(method.ResponseType.Properties[0]);
+                            break;
+                    }
+
+                    output
+                        .Append(">(contract.")
                         .Append(NamingConventions.Contract.GrpcMethod(method.OperationName))
                         .Append(", ")
                         .Append(NamingConventions.Contract.Class(_contract.BaseClassName))
                         .Append(".")
-                        .Append(method.ClrDefinitionMethodName);
-
-                    if (method.OperationType == MethodType.ClientStreaming)
-                    {
-                        WriteHeaderMarshaller(output, method.HeaderRequestType, NamingConventions.Contract.GrpcMethodInputHeader(method.OperationName));
-                    }
-                    else if (method.OperationType == MethodType.ServerStreaming)
-                    {
-                        WriteHeaderMarshaller(output, method.HeaderResponseType, NamingConventions.Contract.GrpcMethodOutputHeader(method.OperationName));
-                    }
-                    else if (method.OperationType == MethodType.DuplexStreaming)
-                    {
-                        WriteHeaderMarshaller(output, method.HeaderRequestType, NamingConventions.Contract.GrpcMethodInputHeader(method.OperationName));
-                        WriteHeaderMarshaller(output, method.HeaderResponseType, NamingConventions.Contract.GrpcMethodOutputHeader(method.OperationName));
-                    }
-
-                    output
+                        .Append(method.ClrDefinitionMethodName)
                         .Append(", ")
                         .Append(GetMethodMetadataName(method))
                         .Append("(), endpoint.")
@@ -198,26 +229,6 @@ internal sealed class EndpointBinderCodeGenerator : ICodeGenerator
         }
 
         output.AppendLine("}");
-    }
-
-    private void WriteHeaderMarshaller(ICodeStringBuilder output, IMessageDescription? description, string propertyName)
-    {
-        output.Append(", ");
-        if (description == null)
-        {
-            // (Marshaller<Message>)null
-            output
-                .Append("(")
-                .WriteType(typeof(Marshaller<>))
-                .WriteType(typeof(Message))
-                .Append(">)null");
-        }
-        else
-        {
-            output
-                .Append("contract.")
-                .Append(propertyName);
-        }
     }
 
     private void BuildGetServiceMetadata(ICodeStringBuilder output)

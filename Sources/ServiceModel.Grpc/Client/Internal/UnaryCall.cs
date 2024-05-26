@@ -52,12 +52,12 @@ public readonly ref struct UnaryCall<TRequest, TResponse>
     private readonly CallContext? _callContext;
 
     public UnaryCall(
-        Method<TRequest, TResponse> method,
+        IMethod method,
         CallInvoker callInvoker,
         in CallOptionsBuilder callOptionsBuilder,
         IClientCallFilterHandlerFactory? filterHandlerFactory)
     {
-        _method = method;
+        _method = (Method<TRequest, TResponse>)method;
         _callInvoker = callInvoker;
         _filterHandlerFactory = filterHandlerFactory;
 
@@ -70,7 +70,7 @@ public readonly ref struct UnaryCall<TRequest, TResponse>
     public TResult? Invoke<TResult>(TRequest request)
     {
         var result = InvokeCore(request);
-        return ((Message<TResult>)result).Value1;
+        return ((IMessage<TResult>)result).GetValue1();
     }
 
     public Task InvokeAsync(TRequest request) => InvokeCoreAsync(request);
@@ -120,9 +120,9 @@ public readonly ref struct UnaryCall<TRequest, TResponse>
 
     private static async Task<TResult?> AdaptResultAsync<TResult>(Task<TResponse> responseTask)
     {
-        object response = await responseTask.ConfigureAwait(false);
-        var result = (Message<TResult>)response;
-        return result.Value1;
+        var response = await responseTask.ConfigureAwait(false);
+        var result = (IMessage<TResult>)response;
+        return result.GetValue1();
     }
 
     private static void FilterLast(IClientFilterContext context)

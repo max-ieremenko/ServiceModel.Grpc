@@ -24,10 +24,6 @@ internal interface IClientFilterContextInternal : IClientFilterContext
 
     CallContext? CallContext { get; set; }
 
-    object? RequestHeaderMarshaller { get; set; }
-
-    object? ResponseHeaderMarshaller { get; set; }
-
     IRequestContextInternal RequestInternal { get; }
 
     IResponseContextInternal ResponseInternal { get; }

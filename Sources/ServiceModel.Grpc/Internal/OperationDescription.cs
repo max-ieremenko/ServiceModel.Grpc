@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright 2020-2024 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,8 +27,6 @@ internal sealed class OperationDescription
         OperationName = operationName;
         Message = message;
         GrpcMethodName = "Method" + OperationName;
-        GrpcMethodInputHeaderName = "MethodHeader" + OperationName;
-        GrpcMethodOutputHeaderName = "MethodOutputHeader" + OperationName;
         ClrDefinitionMethodName = OperationName + "Definition";
     }
 
@@ -39,10 +37,6 @@ internal sealed class OperationDescription
     public MessageAssembler Message { get; }
 
     public string GrpcMethodName { get; }
-
-    public string GrpcMethodInputHeaderName { get; }
-
-    public string GrpcMethodOutputHeaderName { get; }
 
     public string ClrDefinitionMethodName { get; set; }
 

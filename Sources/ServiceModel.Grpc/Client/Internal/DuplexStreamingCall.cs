@@ -23,6 +23,7 @@ using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Filters;
 using ServiceModel.Grpc.Filters.Internal;
+using ServiceModel.Grpc.Internal;
 
 #pragma warning disable SA1642 // Constructor summary documentation should begin with standard text
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
@@ -37,65 +38,49 @@ namespace ServiceModel.Grpc.Client.Internal;
 /// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
 /// This API may change or be removed in future releases.
 /// </summary>
-public ref struct DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader, TResponse>
+public readonly ref struct DuplexStreamingCall<TRequestHeader, TRequest, TRequestValue, TResponseHeader, TResponse, TResponseValue>
     where TRequestHeader : class
+    where TRequest : class, IMessage<TRequestValue>, new()
     where TResponseHeader : class
+    where TResponse : class, IMessage<TResponseValue>
 {
     //// ReSharper disable StaticMemberInGenericType
     private static readonly Action<IClientFilterContext> BlockingFilterLast = FilterLast;
     private static readonly Func<IClientFilterContext, ValueTask> AsyncFilterLast = FilterLastAsync;
-    private static readonly Func<TResponseHeader, IAsyncEnumerable<TResponse?>, IAsyncEnumerable<TResponse?>> GetStream = (_, stream) => stream;
+    private static readonly Func<TResponseHeader, IAsyncEnumerable<TResponseValue?>, IAsyncEnumerable<TResponseValue?>> GetStream = (_, stream) => stream;
     //// ReSharper restore StaticMemberInGenericType
 
-    private readonly Method<Message<TRequest>, Message<TResponse>> _method;
+    private readonly GrpcMethod<TRequestHeader, TRequest, TResponseHeader, TResponse> _method;
+    private readonly TRequestHeader? _requestHeader;
     private readonly CallInvoker _callInvoker;
     private readonly CallOptions _callOptions;
     private readonly IClientCallFilterHandlerFactory? _filterHandlerFactory;
-
     private readonly CallContext? _callContext;
-    private Marshaller<TRequestHeader>? _requestHeaderMarshaller;
-    private TRequestHeader? _requestHeader;
-    private Marshaller<TResponseHeader>? _responseHeaderMarshaller;
 
     public DuplexStreamingCall(
-        Method<Message<TRequest>, Message<TResponse>> method,
+        IMethod method,
         CallInvoker callInvoker,
         in CallOptionsBuilder callOptionsBuilder,
-        IClientCallFilterHandlerFactory? filterHandlerFactory)
+        IClientCallFilterHandlerFactory? filterHandlerFactory,
+        TRequestHeader? requestHeader)
     {
-        _method = method;
+        _method = (GrpcMethod<TRequestHeader, TRequest, TResponseHeader, TResponse>)method;
+        _requestHeader = requestHeader;
         _callInvoker = callInvoker;
         _filterHandlerFactory = filterHandlerFactory;
 
         _callContext = callOptionsBuilder.CallContext;
         _callOptions = callOptionsBuilder.Build();
-        _responseHeaderMarshaller = null;
     }
 
-    public DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader, TResponse> WithRequestHeader(
-        Marshaller<TRequestHeader> marshaller,
-        TRequestHeader header)
-    {
-        _requestHeaderMarshaller = marshaller;
-        _requestHeader = header;
-        return this;
-    }
-
-    public DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader, TResponse> WithResponseHeader(
-        Marshaller<TResponseHeader> marshaller)
-    {
-        _responseHeaderMarshaller = marshaller;
-        return this;
-    }
-
-    public IAsyncEnumerable<TResponse?> Invoke(IAsyncEnumerable<TRequest?> request)
+    public IAsyncEnumerable<TResponseValue?> Invoke(IAsyncEnumerable<TRequestValue?> request)
     {
         var filter = CreateFilter(request);
 
-        IAsyncEnumerable<TResponse?> result;
+        IAsyncEnumerable<TResponseValue?> result;
         if (filter == null)
         {
-            var callOptions = ClientChannelAdapter.AddRequestHeader(_callOptions, _requestHeaderMarshaller, _requestHeader);
+            var callOptions = ClientChannelAdapter.AddRequestHeader(_callOptions, _method.RequestHeaderMarshaller, _requestHeader);
             var call = _callInvoker.AsyncDuplexStreamingCall(_method, null, callOptions);
             result = InvokeCore(call, request, _callContext, callOptions.CancellationToken);
         }
@@ -103,24 +88,24 @@ public ref struct DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader,
         {
             filter.Invoke(BlockingFilterLast);
             var stream = ((IClientFilterContextInternal)filter.Context).ResponseInternal.GetRaw().Stream;
-            result = (IAsyncEnumerable<TResponse?>)stream!;
+            result = (IAsyncEnumerable<TResponseValue?>)stream!;
         }
 
         return result;
     }
 
-    public Task<IAsyncEnumerable<TResponse?>> InvokeAsync(IAsyncEnumerable<TRequest?> request) => InvokeAsync(request, GetStream);
+    public Task<IAsyncEnumerable<TResponseValue?>> InvokeAsync(IAsyncEnumerable<TRequestValue?> request) => InvokeAsync(request, GetStream);
 
     public Task<TResult> InvokeAsync<TResult>(
-        IAsyncEnumerable<TRequest?> request,
-        Func<TResponseHeader, IAsyncEnumerable<TResponse?>, TResult> continuationFunction)
+        IAsyncEnumerable<TRequestValue?> request,
+        Func<TResponseHeader, IAsyncEnumerable<TResponseValue?>, TResult> continuationFunction)
     {
         var filter = CreateFilter(request);
         if (filter == null)
         {
-            var callOptions = ClientChannelAdapter.AddRequestHeader(_callOptions, _requestHeaderMarshaller, _requestHeader);
+            var callOptions = ClientChannelAdapter.AddRequestHeader(_callOptions, _method.RequestHeaderMarshaller, _requestHeader);
             var call = _callInvoker.AsyncDuplexStreamingCall(_method, null, callOptions);
-            return InvokeCoreAsync(call, request, _callContext, callOptions.CancellationToken, _responseHeaderMarshaller, continuationFunction);
+            return InvokeCoreAsync(call, request, _callContext, callOptions.CancellationToken, _method.ResponseHeaderMarshaller, continuationFunction);
         }
 
         return InvokeWithFilterAsync(filter, continuationFunction);
@@ -128,20 +113,20 @@ public ref struct DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader,
 
     private static async Task<TResult> InvokeWithFilterAsync<TResult>(
         IClientCallFilterHandler filter,
-        Func<TResponseHeader, IAsyncEnumerable<TResponse>, TResult> continuationFunction)
+        Func<TResponseHeader, IAsyncEnumerable<TResponseValue>, TResult> continuationFunction)
     {
         await filter.InvokeAsync(AsyncFilterLast).ConfigureAwait(false);
 
         var (responseHeader, response) = ((IClientFilterContextInternal)filter.Context).ResponseInternal.GetRaw();
-        var stream = (IAsyncEnumerable<TResponse>)response!;
+        var stream = (IAsyncEnumerable<TResponseValue>)response!;
         var header = (TResponseHeader?)responseHeader;
 
         return continuationFunction(header!, stream);
     }
 
     private static async Task<TResponseHeader?> ReadResponseHeaderAsync(
-        AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>> call,
-        ClientStreamWriter<TRequest> writer,
+        AsyncDuplexStreamingCall<TRequest, TResponse> call,
+        ClientStreamWriter<TRequest, TRequestValue> writer,
         Marshaller<TResponseHeader>? marshaller,
         CallContext? context,
         CancellationToken token)
@@ -187,16 +172,16 @@ public ref struct DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader,
         return result;
     }
 
-    private static IAsyncEnumerable<TResponse?> InvokeCore(
-        AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>> call,
-        IAsyncEnumerable<TRequest?> request,
+    private static IAsyncEnumerable<TResponseValue?> InvokeCore(
+        AsyncDuplexStreamingCall<TRequest, TResponse> call,
+        IAsyncEnumerable<TRequestValue?> request,
         CallContext? context,
         CancellationToken token)
     {
-        ClientStreamWriter<TRequest>? writer = null;
+        ClientStreamWriter<TRequest, TRequestValue>? writer = null;
         try
         {
-            writer = new ClientStreamWriter<TRequest>(request, call.RequestStream, token);
+            writer = new ClientStreamWriter<TRequest, TRequestValue>(request, call.RequestStream, token);
             context?.TraceClientStreaming?.Invoke(writer.Task);
         }
         catch
@@ -210,17 +195,17 @@ public ref struct DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader,
     }
 
     private static async Task<TResult> InvokeCoreAsync<TResult>(
-        AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>> call,
-        IAsyncEnumerable<TRequest?> request,
+        AsyncDuplexStreamingCall<TRequest, TResponse> call,
+        IAsyncEnumerable<TRequestValue?> request,
         CallContext? context,
         CancellationToken token,
         Marshaller<TResponseHeader>? marshaller,
-        Func<TResponseHeader, IAsyncEnumerable<TResponse?>, TResult> continuationFunction)
+        Func<TResponseHeader, IAsyncEnumerable<TResponseValue?>, TResult> continuationFunction)
     {
-        ClientStreamWriter<TRequest>? writer;
+        ClientStreamWriter<TRequest, TRequestValue>? writer;
         try
         {
-            writer = new ClientStreamWriter<TRequest>(request, call.RequestStream, token);
+            writer = new ClientStreamWriter<TRequest, TRequestValue>(request, call.RequestStream, token);
             context?.TraceClientStreaming?.Invoke(writer.Task);
         }
         catch
@@ -235,9 +220,9 @@ public ref struct DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader,
         return continuationFunction(header!, stream);
     }
 
-    private static async IAsyncEnumerable<TResponse?> ReadServerStreamAsync(
-        AsyncDuplexStreamingCall<Message<TRequest>, Message<TResponse>> call,
-        ClientStreamWriter<TRequest> writer,
+    private static async IAsyncEnumerable<TResponseValue?> ReadServerStreamAsync(
+        AsyncDuplexStreamingCall<TRequest, TResponse> call,
+        ClientStreamWriter<TRequest, TRequestValue> writer,
         CallContext? context,
         [EnumeratorCancellation] CancellationToken token)
     {
@@ -255,7 +240,7 @@ public ref struct DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader,
 
             while (await call.ResponseStream.MoveNext(token).ConfigureAwait(false))
             {
-                yield return call.ResponseStream.Current.Value1;
+                yield return call.ResponseStream.Current.GetValue1();
             }
 
             if (context != null && !token.IsCancellationRequested)
@@ -273,21 +258,19 @@ public ref struct DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader,
     private static void FilterLast(IClientFilterContext context)
     {
         var contextInternal = (IClientFilterContextInternal)context;
+        var method = (GrpcMethod<TRequestHeader, TRequest, TResponseHeader, TResponse>)contextInternal.Method;
         var request = contextInternal.RequestInternal.GetRaw();
 
         var callOptions = ClientChannelAdapter.AddRequestHeader(
             contextInternal.CallOptions,
-            (Marshaller<TRequestHeader>?)contextInternal.RequestHeaderMarshaller,
+            method.RequestHeaderMarshaller,
             (TRequestHeader?)request.Request);
 
-        var call = contextInternal.CallInvoker.AsyncDuplexStreamingCall(
-            (Method<Message<TRequest>, Message<TResponse>>)contextInternal.Method,
-            null,
-            callOptions);
+        var call = contextInternal.CallInvoker.AsyncDuplexStreamingCall(method, null, callOptions);
 
         var stream = InvokeCore(
             call,
-            (IAsyncEnumerable<TRequest>)request.Stream!,
+            (IAsyncEnumerable<TRequestValue?>)request.Stream!,
             contextInternal.CallContext,
             callOptions.CancellationToken);
 
@@ -297,22 +280,20 @@ public ref struct DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader,
     private static async ValueTask FilterLastAsync(IClientFilterContext context)
     {
         var contextInternal = (IClientFilterContextInternal)context;
+        var method = (GrpcMethod<TRequestHeader, TRequest, TResponseHeader, TResponse>)contextInternal.Method;
         var request = contextInternal.RequestInternal.GetRaw();
 
         var callOptions = ClientChannelAdapter.AddRequestHeader(
             contextInternal.CallOptions,
-            (Marshaller<TRequestHeader>?)contextInternal.RequestHeaderMarshaller,
+            method.RequestHeaderMarshaller,
             (TRequestHeader?)request.Request);
 
-        var call = contextInternal.CallInvoker.AsyncDuplexStreamingCall(
-            (Method<Message<TRequest>, Message<TResponse>>)contextInternal.Method,
-            null,
-            callOptions);
+        var call = contextInternal.CallInvoker.AsyncDuplexStreamingCall(method, null, callOptions);
 
-        ClientStreamWriter<TRequest>? writer;
+        ClientStreamWriter<TRequest, TRequestValue>? writer;
         try
         {
-            writer = new ClientStreamWriter<TRequest>((IAsyncEnumerable<TRequest>)request.Stream!, call.RequestStream, callOptions.CancellationToken);
+            writer = new ClientStreamWriter<TRequest, TRequestValue>((IAsyncEnumerable<TRequestValue?>)request.Stream!, call.RequestStream, callOptions.CancellationToken);
             contextInternal.CallContext?.TraceClientStreaming?.Invoke(writer.Task);
         }
         catch
@@ -324,7 +305,7 @@ public ref struct DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader,
         var header = await ReadResponseHeaderAsync(
                 call,
                 writer,
-                (Marshaller<TResponseHeader>?)contextInternal.ResponseHeaderMarshaller,
+                method.ResponseHeaderMarshaller,
                 contextInternal.CallContext,
                 callOptions.CancellationToken)
             .ConfigureAwait(false);
@@ -341,8 +322,6 @@ public ref struct DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader,
             var contextInternal = (IClientFilterContextInternal)filter.Context;
             contextInternal.RequestInternal.SetRaw(_requestHeader, request);
             contextInternal.CallContext = _callContext;
-            contextInternal.RequestHeaderMarshaller = _requestHeaderMarshaller;
-            contextInternal.ResponseHeaderMarshaller = _responseHeaderMarshaller;
         }
 
         return filter;

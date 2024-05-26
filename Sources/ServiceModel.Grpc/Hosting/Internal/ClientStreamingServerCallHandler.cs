@@ -23,19 +23,20 @@ using ServiceModel.Grpc.Filters.Internal;
 
 namespace ServiceModel.Grpc.Hosting.Internal;
 
-internal sealed class ClientStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponse>
+internal sealed class ClientStreamingServerCallHandler<TService, TRequestHeader, TRequest, TRequestValue, TResponse>
     where TRequestHeader : class
+    where TRequest : class, IMessage<TRequestValue>
     where TResponse : class
 {
     private readonly ServerCallFilterHandlerFactory? _filterHandlerFactory;
     private readonly Func<TService> _serviceFactory;
-    private readonly Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest?>, ServerCallContext, Task<TResponse>> _invoker;
+    private readonly Func<TService, TRequestHeader?, IAsyncEnumerable<TRequestValue?>, ServerCallContext, Task<TResponse>> _invoker;
     private readonly Marshaller<TRequestHeader>? _requestHeaderMarshaller;
     private readonly Func<IServerFilterContextInternal, ValueTask> _filterLastAsync;
 
     public ClientStreamingServerCallHandler(
         Func<TService> serviceFactory,
-        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest?>, ServerCallContext, Task<TResponse>> invoker,
+        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequestValue?>, ServerCallContext, Task<TResponse>> invoker,
         Marshaller<TRequestHeader>? requestHeaderMarshaller,
         ServerCallFilterHandlerFactory? filterHandlerFactory)
     {
@@ -55,23 +56,18 @@ internal sealed class ClientStreamingServerCallHandler<TService, TRequestHeader,
     }
 
     public ClientStreamingServerCallHandler(
-        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest?>, ServerCallContext, Task<TResponse>> invoker,
+        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequestValue?>, ServerCallContext, Task<TResponse>> invoker,
         Marshaller<TRequestHeader>? requestHeaderMarshaller,
         ServerCallFilterHandlerFactory? filterHandlerFactory)
         : this(null!, invoker, requestHeaderMarshaller, filterHandlerFactory)
     {
     }
 
-    public Task<TResponse> Handle(
-        IAsyncStreamReader<Message<TRequest>> stream,
-        ServerCallContext serverCallContext)
-    {
-        return Handle(_serviceFactory(), stream, serverCallContext);
-    }
+    public Task<TResponse> Handle(IAsyncStreamReader<TRequest> stream, ServerCallContext serverCallContext) => Handle(_serviceFactory(), stream, serverCallContext);
 
     public Task<TResponse> Handle(
         TService service,
-        IAsyncStreamReader<Message<TRequest>> stream,
+        IAsyncStreamReader<TRequest> stream,
         ServerCallContext serverCallContext)
     {
         TRequestHeader? header = null;
@@ -80,7 +76,7 @@ internal sealed class ClientStreamingServerCallHandler<TService, TRequestHeader,
             header = CompatibilityTools.DeserializeMethodInputHeader(_requestHeaderMarshaller, serverCallContext.RequestHeaders);
         }
 
-        var request = ServerChannelAdapter.ReadClientStream(stream, serverCallContext);
+        var request = ServerChannelAdapter.ReadClientStream<TRequest, TRequestValue>(stream, serverCallContext);
 
         if (_filterHandlerFactory == null)
         {
@@ -90,7 +86,7 @@ internal sealed class ClientStreamingServerCallHandler<TService, TRequestHeader,
         return HandleWithFilter(service, header, request, serverCallContext);
     }
 
-    private async Task<TResponse> HandleWithFilter(TService service, TRequestHeader? header, IAsyncEnumerable<TRequest?> stream, ServerCallContext context)
+    private async Task<TResponse> HandleWithFilter(TService service, TRequestHeader? header, IAsyncEnumerable<TRequestValue?> stream, ServerCallContext context)
     {
         var handler = _filterHandlerFactory!.CreateHandler(service!, context);
         handler.Context.RequestInternal.SetRaw(header!, stream);
@@ -104,7 +100,7 @@ internal sealed class ClientStreamingServerCallHandler<TService, TRequestHeader,
     {
         var service = (TService)context.ServiceInstance;
         var (header, stream) = context.RequestInternal.GetRaw();
-        var response = await _invoker(service, (TRequestHeader?)header, (IAsyncEnumerable<TRequest?>)stream!, context.ServerCallContext).ConfigureAwait(false);
+        var response = await _invoker(service, (TRequestHeader?)header, (IAsyncEnumerable<TRequestValue?>)stream!, context.ServerCallContext).ConfigureAwait(false);
         context.ResponseInternal.SetRaw(response, null);
     }
 }

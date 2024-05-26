@@ -20,6 +20,12 @@ namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
 
 internal static partial class CodeStringBuilderExtensions
 {
+    public static ICodeStringBuilder WriteString(this ICodeStringBuilder output, string value) =>
+        output.Append("\"").Append(value).Append("\"");
+
+    public static ICodeStringBuilder WriteBoolean(this ICodeStringBuilder output, bool value) =>
+        output.Append(value ? "true" : "false");
+
     public static ICodeStringBuilder WriteCommaIf(this ICodeStringBuilder output, bool condition)
     {
         if (condition)

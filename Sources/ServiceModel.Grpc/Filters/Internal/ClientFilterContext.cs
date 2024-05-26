@@ -69,10 +69,6 @@ internal sealed class ClientFilterContext : IClientFilterContextInternal
 
     public CallContext? CallContext { get; set; }
 
-    public object? RequestHeaderMarshaller { get; set; }
-
-    public object? ResponseHeaderMarshaller { get; set; }
-
     public MethodInfo ContractMethodInfo
     {
         get

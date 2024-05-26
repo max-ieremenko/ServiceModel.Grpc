@@ -24,8 +24,8 @@ namespace ServiceModel.Grpc.Client.Internal;
 
 internal static class ClientChannelAdapter
 {
-    internal static async Task WaitForServerStreamExceptionAsync<THeader, TResult>(
-        IAsyncStreamReader<Message<TResult>> responseStream,
+    internal static async Task WaitForServerStreamExceptionAsync<THeader, TResponse>(
+        IAsyncStreamReader<TResponse> responseStream,
         Metadata? responseHeaders,
         Marshaller<THeader> marshaller,
         CancellationToken token)
