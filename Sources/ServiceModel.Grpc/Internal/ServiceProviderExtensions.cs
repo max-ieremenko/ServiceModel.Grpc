@@ -29,7 +29,7 @@ internal static class ServiceProviderExtensions
         var service = provider.GetService(serviceType);
         if (service == null)
         {
-            throw new InvalidOperationException("No service for type '{0}' has been registered.".FormatWith(serviceType.FullName));
+            throw new InvalidOperationException($"No service for type '{serviceType.FullName}' has been registered.");
         }
 
         return service;

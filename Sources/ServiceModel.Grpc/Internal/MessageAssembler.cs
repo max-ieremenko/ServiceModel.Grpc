@@ -92,7 +92,7 @@ internal sealed class MessageAssembler
 
             if (string.IsNullOrEmpty(name))
             {
-                name = "Item{0}".FormatWith((i + 1).ToString(CultureInfo.InvariantCulture));
+                name = $"Item{(i + 1).ToString(CultureInfo.InvariantCulture)}";
             }
 
             result[i] = name!;

@@ -72,7 +72,7 @@ internal sealed class EmitServiceEndpointBuilder
                 }
                 else
                 {
-                    var error = "Context options in [{0}] are not supported.".FormatWith(ReflectionTools.GetSignature(operation.Message.Operation));
+                    var error = $"Context options in [{ReflectionTools.GetSignature(operation.Message.Operation)}] are not supported.";
                     logger?.LogError("Service {0}: {1}", _description.ServiceType.FullName, error);
                     BuildNotSupportedOperation(operation, interfaceDescription.InterfaceType, error);
                 }
@@ -398,7 +398,7 @@ internal sealed class EmitServiceEndpointBuilder
             }
         }
 
-        throw new NotImplementedException("{0} operation is not implemented.".FormatWith(message.OperationType));
+        throw new NotImplementedException($"{message.OperationType} operation is not implemented.");
     }
 
     private void AdaptSyncUnaryCallResult(ILGenerator body, MessageAssembler message)

@@ -134,10 +134,7 @@ internal sealed class ContractDescription
 
     private static MethodDescription CreateNonServiceOperation(Type interfaceType, MethodInfo method)
     {
-        var error = "Method {0}.{1}.{2} is not service operation.".FormatWith(
-            ReflectionTools.GetNamespace(interfaceType),
-            interfaceType.Name,
-            method.Name);
+        var error = $"Method {ReflectionTools.GetNamespace(interfaceType)}.{interfaceType.Name}.{method.Name} is not service operation.";
 
         return new MethodDescription(method, error);
     }

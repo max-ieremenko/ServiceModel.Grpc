@@ -118,9 +118,8 @@ internal static partial class ReflectionTools
 
         if (result == null)
         {
-            throw new ArgumentOutOfRangeException("{0} has no .ctor ({1}).".FormatWith(
-                type.Name,
-                string.Join(",", parameters.Select(i => i.Name))));
+            var ctor = string.Join(",", parameters.Select(i => i.Name));
+            throw new ArgumentOutOfRangeException($"{type.Name} has no .ctor ({ctor}).");
         }
 
         return result;
@@ -138,7 +137,7 @@ internal static partial class ReflectionTools
             {
                 if (result != null)
                 {
-                    throw new ArgumentException("{0} contains too many ctors with {1} parameters.".FormatWith(type.Name, parametersCount));
+                    throw new ArgumentException($"{type.Name} contains too many ctors with {parametersCount} parameters.");
                 }
 
                 result = ctor;
@@ -147,7 +146,7 @@ internal static partial class ReflectionTools
 
         if (result == null)
         {
-            throw new ArgumentException("{0} does not contain ctor with {1} parameters.".FormatWith(type.Name, parametersCount));
+            throw new ArgumentException($"{type.Name} does not contain ctor with {parametersCount} parameters.");
         }
 
         return result;
@@ -166,7 +165,7 @@ internal static partial class ReflectionTools
 
         if (result == null)
         {
-            throw new ArgumentOutOfRangeException("{0} does not implement instance property {1}.".FormatWith(type.Name, name));
+            throw new ArgumentOutOfRangeException($"{type.Name} does not implement instance property {name}.");
         }
 
         return result;
@@ -178,7 +177,7 @@ internal static partial class ReflectionTools
 
         if (result == null)
         {
-            throw new ArgumentOutOfRangeException("{0} does not implement method {1}.".FormatWith(type.Name, name));
+            throw new ArgumentOutOfRangeException($"{type.Name} does not implement method {name}.");
         }
 
         return result;
@@ -195,7 +194,7 @@ internal static partial class ReflectionTools
 
         if (result == null)
         {
-            throw new ArgumentOutOfRangeException("{0} does not implement method {1}.".FormatWith(type.Name, name));
+            throw new ArgumentOutOfRangeException($"{type.Name} does not implement method {name}.");
         }
 
         return result;
@@ -217,7 +216,7 @@ internal static partial class ReflectionTools
 
             if (result != null)
             {
-                throw new ArgumentOutOfRangeException("{0} implements too many methods {1} with {2} generic arguments.".FormatWith(type.Name, name, genericArgsCount));
+                throw new ArgumentOutOfRangeException($"{type.Name} implements too many methods {name} with {genericArgsCount} generic arguments.");
             }
 
             result = candidate;
@@ -225,7 +224,7 @@ internal static partial class ReflectionTools
 
         if (result == null)
         {
-            throw new ArgumentOutOfRangeException("{0} does not implement method {1} with {2} generic arguments.".FormatWith(type.Name, name, genericArgsCount));
+            throw new ArgumentOutOfRangeException($"{type.Name} does not implement method {name} with {genericArgsCount} generic arguments.");
         }
 
         return result;
@@ -237,7 +236,7 @@ internal static partial class ReflectionTools
 
         if (result == null)
         {
-            throw new ArgumentOutOfRangeException("{0} does not have instance field {1}.".FormatWith(type.Name, name));
+            throw new ArgumentOutOfRangeException($"{type.Name} does not have instance field {name}.");
         }
 
         return result;
@@ -249,7 +248,7 @@ internal static partial class ReflectionTools
 
         if (result == null)
         {
-            throw new ArgumentOutOfRangeException("{0} does not have static field {1}.".FormatWith(type.Name, name));
+            throw new ArgumentOutOfRangeException($"{type.Name} does not have static field {name}.");
         }
 
         return result;
@@ -261,7 +260,7 @@ internal static partial class ReflectionTools
 
         if (result == null)
         {
-            throw new ArgumentOutOfRangeException("{0} does not implement static method {1}.".FormatWith(type.Name, name));
+            throw new ArgumentOutOfRangeException($"{type.Name} does not implement static method {name}.");
         }
 
         return result;
@@ -276,7 +275,7 @@ internal static partial class ReflectionTools
 
         if (result == null)
         {
-            throw new ArgumentOutOfRangeException("{0} does not implement method {1}*.".FormatWith(type.Name, nameStartWith));
+            throw new ArgumentOutOfRangeException($"{type.Name} does not implement method {nameStartWith}*.");
         }
 
         return result;
@@ -293,7 +292,7 @@ internal static partial class ReflectionTools
             }
         }
 
-        throw new ArgumentOutOfRangeException("Implementation of method {0}.{1} not found in {2}.".FormatWith(methodDeclaringType.Name, method.Name, instance.FullName));
+        throw new ArgumentOutOfRangeException($"Implementation of method {methodDeclaringType.Name}.{method.Name} not found in {instance.FullName}.");
     }
 
     public static string GetSignature(MethodInfo method)

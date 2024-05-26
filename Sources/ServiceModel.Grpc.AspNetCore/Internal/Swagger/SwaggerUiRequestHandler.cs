@@ -72,7 +72,7 @@ internal sealed partial class SwaggerUiRequestHandler : ISwaggerUiRequestHandler
                 catch (Exception ex)
                 {
                     throw new InvalidOperationException(
-                        "Fail to deserialize parameter [{0}] with type [{1}] from request.".FormatWith(entry.Name, parameterType),
+                        $"Fail to deserialize parameter [{entry.Name}] with type [{parameterType}] from request.",
                         ex);
                 }
             }

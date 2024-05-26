@@ -81,7 +81,7 @@ internal static class CompatibilityTools
         var header = headers.FindHeader(headerName, true);
         if (header == null)
         {
-            throw new InvalidOperationException("Fail to resolve header parameters, {0} header not found.".FormatWith(headerName));
+            throw new InvalidOperationException($"Fail to resolve header parameters, {headerName} header not found.");
         }
 
         return marshaller.ContextualDeserializer(new DefaultDeserializationContext(header.ValueBytes));

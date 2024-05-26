@@ -60,8 +60,5 @@ public sealed class FilterRegistration<TFilter> : IComparable<FilterRegistration
     }
 
     /// <inheritdoc />
-    public override string ToString()
-    {
-        return "{0}: {1}".FormatWith(Order.ToString(CultureInfo.InvariantCulture), typeof(TFilter).Name);
-    }
+    public override string ToString() => $"{Order}: {typeof(TFilter).Name}";
 }

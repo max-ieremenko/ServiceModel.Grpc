@@ -63,8 +63,5 @@ internal sealed class ServerFilterContext : IServerFilterContextInternal
 
     public IResponseContextInternal ResponseInternal { get; }
 
-    public override string ToString()
-    {
-        return "{0} - {1}.{2}()".FormatWith(ServerCallContext.Method, ContractMethodInfo.DeclaringType, ContractMethodInfo.Name);
-    }
+    public override string ToString() => $"{ServerCallContext.Method} - {ContractMethodInfo.DeclaringType}.{ContractMethodInfo.Name}()";
 }
