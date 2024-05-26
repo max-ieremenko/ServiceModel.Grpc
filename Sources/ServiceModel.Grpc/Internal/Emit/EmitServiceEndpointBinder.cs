@@ -117,7 +117,7 @@ internal sealed class EmitServiceEndpointBinder<TService> : IServiceEndpointBind
                 }
                 else
                 {
-                    throw new NotImplementedException("{0} operation is not implemented.".FormatWith(grpcMethodMethod.Type));
+                    throw new NotImplementedException($"{grpcMethodMethod.Type} operation is not implemented.");
                 }
             }
         }

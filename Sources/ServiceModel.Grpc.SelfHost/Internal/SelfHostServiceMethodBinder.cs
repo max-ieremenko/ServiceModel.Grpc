@@ -131,9 +131,9 @@ internal sealed class SelfHostServiceMethodBinder<TService> : IServiceMethodBind
     {
         if (filterHandlerFactory != null && filterHandlerFactory.ServiceProvider == null)
         {
-            var message = @"Server filters require ServiceProvider instance. Share your IServiceProvider via service configuration:
-Server.Services.AddServiceModel...<{0}>(options => options.ServiceProvider = [your provider here]);";
-            throw new NotSupportedException(message.FormatWith(typeof(TService).Name));
+            var message = $@"Server filters require ServiceProvider instance. Share your IServiceProvider via service configuration:
+Server.Services.AddServiceModel...<{typeof(TService).Name}>(options => options.ServiceProvider = [your provider here]);";
+            throw new NotSupportedException(message);
         }
     }
 }

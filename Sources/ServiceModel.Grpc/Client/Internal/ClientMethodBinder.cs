@@ -84,7 +84,7 @@ internal sealed class ClientMethodBinder : IClientMethodBinder
 
         if (method.Type != MethodType.Unary || metadata.AlternateMethod != null)
         {
-            throw new InvalidOperationException("A unary gRPC method [{0}] cannot have more than 2 definitions.".FormatWith(method.FullName));
+            throw new InvalidOperationException($"A unary gRPC method [{method.FullName}] cannot have more than 2 definitions.");
         }
 
         _methodMetadataByGrpc[method] = CreateSyncOverAsync(metadata.Method.ContractMethodDefinition, resolveContractMethodDefinition);

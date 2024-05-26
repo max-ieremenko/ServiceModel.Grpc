@@ -29,6 +29,6 @@ public static class GrpcChannelFactory
             return new GrpcCoreChannel(host, port, ChannelCredentials.Insecure);
         }
 
-        return GrpcChannel.ForAddress("http://{0}:{1}".FormatWith(host, port));
+        return GrpcChannel.ForAddress($"http://{host}:{port}");
     }
 }

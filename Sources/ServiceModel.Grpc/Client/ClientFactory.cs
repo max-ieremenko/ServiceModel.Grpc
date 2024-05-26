@@ -65,7 +65,7 @@ public sealed class ClientFactory : IClientFactory
         var contractType = typeof(TContract);
         if (!ReflectionTools.IsPublicInterface(contractType) || contractType.IsGenericTypeDefinition)
         {
-            throw new NotSupportedException("{0} is not supported. Client contract must be public interface.".FormatWith(contractType));
+            throw new NotSupportedException($"{contractType} is not supported. Client contract must be public interface.");
         }
     }
 
@@ -175,7 +175,7 @@ public sealed class ClientFactory : IClientFactory
             var contractType = typeof(TContract);
             if (_builderByContract.ContainsKey(contractType))
             {
-                throw new InvalidOperationException("Client for contract {0} is already initialized and cannot be changed.".FormatWith(contractType.FullName));
+                throw new InvalidOperationException($"Client for contract {contractType.FullName} is already initialized and cannot be changed.");
             }
 
             builder = userBuilder ?? generator!.GenerateClientBuilder<TContract>();

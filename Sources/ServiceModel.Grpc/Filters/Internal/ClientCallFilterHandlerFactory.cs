@@ -84,7 +84,7 @@ internal sealed class ClientCallFilterHandlerFactory : IClientCallFilterHandlerF
         }
         catch (Exception ex)
         {
-            throw new InvalidOperationException("Failed to create a client filter: {0}. Please check client filter registrations.".FormatWith(ex.Message), ex);
+            throw new InvalidOperationException($"Failed to create a client filter: {ex.Message}. Please check client filter registrations.", ex);
         }
 
         if (filter == null)

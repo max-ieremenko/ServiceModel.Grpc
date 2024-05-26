@@ -79,7 +79,7 @@ internal static class ServiceDefinitionFactory
     {
         if (ServiceContract.IsNativeGrpcService(serviceType))
         {
-            throw new NotSupportedException("{0} is native grpc service.".FormatWith(serviceType.FullName));
+            throw new NotSupportedException($"{serviceType.FullName} is native grpc service.");
         }
     }
 

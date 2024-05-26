@@ -48,7 +48,7 @@ internal sealed class WithLoggerFactory<T>
             result = _factory();
             if (result == null)
             {
-                throw new InvalidOperationException("{0} factory return null.".FormatWith(typeof(T).Name));
+                throw new InvalidOperationException($"{typeof(T).Name} factory return null.");
             }
         }
         catch (Exception ex)

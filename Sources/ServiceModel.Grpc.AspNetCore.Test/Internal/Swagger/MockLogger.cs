@@ -34,13 +34,8 @@ internal sealed class MockLogger : Microsoft.Extensions.Logging.ILogger
         throw new NotSupportedException();
     }
 
-    public bool IsEnabled(LogLevel logLevel)
-    {
-        throw new NotSupportedException();
-    }
+    public bool IsEnabled(LogLevel logLevel) => throw new NotSupportedException();
 
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
-    {
-        Output.Add("{0}: {1}".FormatWith(logLevel, state));
-    }
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) =>
+        Output.Add($"{logLevel}: {state}");
 }

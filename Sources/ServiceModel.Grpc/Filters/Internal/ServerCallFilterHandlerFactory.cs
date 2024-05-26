@@ -82,7 +82,7 @@ internal sealed class ServerCallFilterHandlerFactory
         }
         catch (Exception ex)
         {
-            throw new InvalidOperationException("Failed to create a server filter: {0}. Please check server filter registrations.".FormatWith(ex.Message), ex);
+            throw new InvalidOperationException($"Fail to create a server filter: {ex.Message}. Please check server filter registrations.", ex);
         }
 
         if (filter == null)

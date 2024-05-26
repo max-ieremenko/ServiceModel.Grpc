@@ -53,7 +53,7 @@ internal sealed class MessageProxy
             }
         }
 
-        throw new ArgumentOutOfRangeException(nameof(name), "Parameter [{0}] not found.".FormatWith(name));
+        throw new ArgumentOutOfRangeException(nameof(name), $"Parameter [{name}] not found.");
     }
 
     public object? GetValue(object message, int property)

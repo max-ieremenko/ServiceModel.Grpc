@@ -164,7 +164,7 @@ internal sealed class EmitClientBuilder
                 BuildDuplexStreaming(body, operation);
                 break;
             default:
-                throw new NotImplementedException("{0} operation is not implemented.".FormatWith(decorator.OperationType));
+                throw new NotImplementedException($"{decorator.OperationType} operation is not implemented.");
         }
     }
 
