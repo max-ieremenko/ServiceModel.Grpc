@@ -43,38 +43,38 @@ public interface IServiceMethodBinder<TService>
     IMarshallerFactory MarshallerFactory { get; }
 
     void AddUnaryMethod<TRequest, TResponse>(
-        Method<TRequest, TResponse> method,
+        IMethod method,
         Func<MethodInfo> resolveContractMethodDefinition,
         IList<object> metadata,
         Func<TService, TRequest, ServerCallContext, Task<TResponse>> handler)
         where TRequest : class
         where TResponse : class;
 
-    void AddClientStreamingMethod<TRequestHeader, TRequest, TResponse>(
-        Method<Message<TRequest>, TResponse> method,
+    void AddClientStreamingMethod<TRequestHeader, TRequest, TRequestValue, TResponse>(
+        IMethod method,
         Func<MethodInfo> resolveContractMethodDefinition,
-        Marshaller<TRequestHeader>? requestHeaderMarshaller,
         IList<object> metadata,
-        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest?>, ServerCallContext, Task<TResponse>> handler)
+        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequestValue?>, ServerCallContext, Task<TResponse>> handler)
         where TRequestHeader : class
+        where TRequest : class, IMessage<TRequestValue>
         where TResponse : class;
 
-    void AddServerStreamingMethod<TRequest, TResponseHeader, TResponse>(
-        Method<TRequest, Message<TResponse>> method,
+    void AddServerStreamingMethod<TRequest, TResponseHeader, TResponse, TResponseValue>(
+        IMethod method,
         Func<MethodInfo> resolveContractMethodDefinition,
-        Marshaller<TResponseHeader>? responseHeaderMarshaller,
         IList<object> metadata,
-        Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse?> Response)>> handler)
+        Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponseValue?> Response)>> handler)
         where TRequest : class
-        where TResponseHeader : class;
+        where TResponseHeader : class
+        where TResponse : class, IMessage<TResponseValue>, new();
 
-    void AddDuplexStreamingMethod<TRequestHeader, TRequest, TResponseHeader, TResponse>(
-        Method<Message<TRequest>, Message<TResponse>> method,
+    void AddDuplexStreamingMethod<TRequestHeader, TRequest, TRequestValue, TResponseHeader, TResponse, TResponseValue>(
+        IMethod method,
         Func<MethodInfo> resolveContractMethodDefinition,
-        Marshaller<TRequestHeader>? requestHeaderMarshaller,
-        Marshaller<TResponseHeader>? responseHeaderMarshaller,
         IList<object> metadata,
-        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest?>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse?> Response)>> handler)
+        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequestValue?>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponseValue?> Response)>> handler)
         where TRequestHeader : class
-        where TResponseHeader : class;
+        where TRequest : class, IMessage<TRequestValue>
+        where TResponseHeader : class
+        where TResponse : class, IMessage<TResponseValue>, new();
 }

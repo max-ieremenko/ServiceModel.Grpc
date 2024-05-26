@@ -301,11 +301,13 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
     {
         InitializeCallOptionsBuilderVariable(output, operation);
 
-        // var __response = new ClientStreamingCall<TRequestHeader, TRequest, TResponse>(method, CallInvoker, __callOptionsBuilder, __filterHandlerFactory)
+        // var __response = new ClientStreamingCall<TRequestHeader, TRequest, TRequestValue, TResponse>(method, CallInvoker, __callOptionsBuilder, __filterHandlerFactory)
         output
             .Append("var __response = new ")
-            .WriteType(typeof(ClientStreamingCall<,,>))
+            .WriteType(typeof(ClientStreamingCall<,,,>))
             .WriteMessageOrDefault(operation.HeaderRequestType)
+            .Append(", ")
+            .WriteMessage(operation.RequestType)
             .Append(", ")
             .WriteType(operation.RequestType.Properties[0])
             .Append(", ")
@@ -314,15 +316,13 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
             .Append(NamingConventions.Contract.GrpcMethod(operation.OperationName))
             .Append(", CallInvoker, ")
             .Append(VarCallOptionsBuilder)
-            .AppendLine(", FilterHandlerFactory)");
+            .Append(", FilterHandlerFactory, ");
+
+        WithRequestHeader(output, operation);
+        output.AppendLine(")");
 
         using (output.Indent())
         {
-            if (operation.HeaderRequestType != null)
-            {
-                WithRequestHeader(output, operation);
-            }
-
             if (operation.ResponseType.Properties.Length > 0)
             {
                 output
@@ -361,37 +361,27 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
     {
         InitializeCallOptionsBuilderVariable(output, operation);
 
-        // var __response = new ServerStreamingCall<TRequest, TResponseHeader, TResponse>(method, CallInvoker, __callOptionsBuilder, __filterHandlerFactory)
+        // var __response = new ServerStreamingCall<TRequest, TResponseHeader, TResponse, TResponseValue>(method, CallInvoker, __callOptionsBuilder, __filterHandlerFactory)
         output
             .Append("var __response = new ")
-            .WriteType(typeof(ServerStreamingCall<,,>))
+            .WriteType(typeof(ServerStreamingCall<,,,>))
             .WriteMessage(operation.RequestType)
             .Append(", ")
             .WriteMessageOrDefault(operation.HeaderResponseType)
+            .Append(", ")
+            .WriteMessage(operation.ResponseType)
             .Append(", ")
             .WriteType(operation.ResponseType.Properties[0])
             .Append(">(Contract.")
             .Append(NamingConventions.Contract.GrpcMethod(operation.OperationName))
             .Append(", CallInvoker, ")
             .Append(VarCallOptionsBuilder)
-            .AppendLine(", FilterHandlerFactory)");
+            .Append(", FilterHandlerFactory)");
 
         Action? adapterBuilder = null;
         using (output.Indent())
         {
-            if (operation.HeaderResponseType != null)
-            {
-                WithResponseHeader(output, operation);
-            }
-
-            if (operation.IsAsync)
-            {
-                output.Append(".InvokeAsync(");
-            }
-            else
-            {
-                output.Append(".Invoke(");
-            }
+            output.Append(operation.IsAsync ? ".InvokeAsync(" : ".Invoke(");
 
             CreateRequestMessage(output, operation);
 
@@ -478,36 +468,33 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
     {
         InitializeCallOptionsBuilderVariable(output, operation);
 
-        // var __response = new DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader, TResponse>(method, CallInvoker, __callOptionsBuilder, __filterHandlerFactory)
+        // var __response = new DuplexStreamingCall<TRequestHeader, TRequest, TRequestValue, TResponseHeader, TResponse, TResponseValue>(method, CallInvoker, __callOptionsBuilder, __filterHandlerFactory)
         output
             .Append("var __response = new ")
-            .WriteType(typeof(DuplexStreamingCall<,,,>))
+            .WriteType(typeof(DuplexStreamingCall<,,,,,>))
             .WriteMessageOrDefault(operation.HeaderRequestType)
+            .Append(", ")
+            .WriteMessage(operation.RequestType)
             .Append(", ")
             .WriteType(operation.RequestType.Properties[0])
             .Append(", ")
             .WriteMessageOrDefault(operation.HeaderResponseType)
+            .Append(", ")
+            .WriteMessage(operation.ResponseType)
             .Append(", ")
             .WriteType(operation.ResponseType.Properties[0])
             .Append(">(Contract.")
             .Append(NamingConventions.Contract.GrpcMethod(operation.OperationName))
             .Append(", CallInvoker, ")
             .Append(VarCallOptionsBuilder)
-            .AppendLine(", FilterHandlerFactory)");
+            .Append(", FilterHandlerFactory, ");
+
+        WithRequestHeader(output, operation);
+        output.AppendLine(")");
 
         Action? adapterBuilder = null;
         using (output.Indent())
         {
-            if (operation.HeaderRequestType != null)
-            {
-                WithRequestHeader(output, operation);
-            }
-
-            if (operation.HeaderResponseType != null)
-            {
-                WithResponseHeader(output, operation);
-            }
-
             if (operation.HeaderResponseType == null)
             {
                 output
@@ -655,11 +642,15 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
 
     private void WithRequestHeader(ICodeStringBuilder output, IOperationDescription operation)
     {
+        if (operation.HeaderRequestType == null)
+        {
+            output.Append("null");
+            return;
+        }
+
         output
-            .Append(".WithRequestHeader(Contract.")
-            .Append(NamingConventions.Contract.GrpcMethodInputHeader(operation.OperationName))
-            .Append(", new ")
-            .WriteMessage(operation.HeaderRequestType!)
+            .Append("new ")
+            .WriteMessage(operation.HeaderRequestType)
             .Append("(");
 
         for (var i = 0; i < operation.HeaderRequestTypeInput.Length; i++)
@@ -670,15 +661,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
                 .Append(parameter.Name);
         }
 
-        output.AppendLine("))");
-    }
-
-    private void WithResponseHeader(ICodeStringBuilder output, IOperationDescription operation)
-    {
-        output
-            .Append(".WithResponseHeader(Contract.")
-            .Append(NamingConventions.Contract.GrpcMethodOutputHeader(operation.OperationName))
-            .AppendLine(")");
+        output.Append(")");
     }
 
     private string GetUniqueMemberName(string suggestedName)

@@ -21,7 +21,7 @@ namespace ServiceModel.Grpc.Channel;
 [DataContract(Name = "m", Namespace = "s")]
 [Browsable(false)]
 [EditorBrowsable(EditorBrowsableState.Never)]
-public sealed class Message
+public sealed partial class Message
 {
     /// <exclude />
     public Message()
@@ -38,7 +38,7 @@ public sealed class Message
 [DataContract(Name = "m", Namespace = "s")]
 [Browsable(false)]
 [EditorBrowsable(EditorBrowsableState.Never)]
-public sealed class Message<T1>
+public sealed partial class Message<T1>
 {
     /// <exclude />
     public Message()
@@ -65,7 +65,7 @@ public sealed class Message<T1>
 [DataContract(Name = "m", Namespace = "s")]
 [Browsable(false)]
 [EditorBrowsable(EditorBrowsableState.Never)]
-public sealed class Message<T1, T2>
+public sealed partial class Message<T1, T2>
 {
     /// <exclude />
     public Message()
@@ -97,7 +97,7 @@ public sealed class Message<T1, T2>
 [DataContract(Name = "m", Namespace = "s")]
 [Browsable(false)]
 [EditorBrowsable(EditorBrowsableState.Never)]
-public sealed class Message<T1, T2, T3>
+public sealed partial class Message<T1, T2, T3>
 {
     /// <exclude />
     public Message()

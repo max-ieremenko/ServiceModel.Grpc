@@ -174,8 +174,7 @@ internal sealed class EmitClientBuilder
         InitializeCallOptionsBuilder(body, decorator);
 
         // var call = new UnaryCall<TRequest, TResponse>(method, CallInvoker, optionsBuilder)
-        var callType = typeof(UnaryCall<,>)
-            .MakeGenericType(decorator.RequestType, decorator.ResponseType);
+        var callType = typeof(UnaryCall<,>).MakeGenericType(decorator.RequestType, decorator.ResponseType);
         InitializeCall(body, operation, callType);
 
         // call.Invoke(message)
@@ -207,9 +206,10 @@ internal sealed class EmitClientBuilder
         InitializeCallOptionsBuilder(body, operation.Message);
 
         // var call = new ServerStreamingCall<TRequest, TResponseHeader, TResponse>(method, CallInvoker, optionsBuilder)
-        var callType = typeof(ServerStreamingCall<,,>).MakeGenericType(
+        var callType = typeof(ServerStreamingCall<,,,>).MakeGenericType(
             operation.Message.RequestType,
             operation.Message.HeaderResponseType ?? typeof(Message),
+            operation.Message.ResponseType,
             operation.Message.ResponseType.GenericTypeArguments[0]);
         InitializeCall(body, operation, callType);
 
@@ -268,8 +268,9 @@ internal sealed class EmitClientBuilder
         InitializeCallOptionsBuilder(body, operation.Message);
 
         // var call = new ClientStreamingCall<TRequestHeader, TRequest, TResponse>(method, CallInvoker, optionsBuilder)
-        var callType = typeof(ClientStreamingCall<,,>).MakeGenericType(
+        var callType = typeof(ClientStreamingCall<,,,>).MakeGenericType(
             operation.Message.HeaderRequestType ?? typeof(Message),
+            operation.Message.RequestType,
             operation.Message.RequestType.GenericTypeArguments[0],
             operation.Message.ResponseType);
         InitializeCall(body, operation, callType);
@@ -307,10 +308,12 @@ internal sealed class EmitClientBuilder
         InitializeCallOptionsBuilder(body, operation.Message);
 
         // var call = DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader, TResponse>(method, CallInvoker, optionsBuilder)
-        var callType = typeof(DuplexStreamingCall<,,,>).MakeGenericType(
+        var callType = typeof(DuplexStreamingCall<,,,,,>).MakeGenericType(
             operation.Message.HeaderRequestType ?? typeof(Message),
+            operation.Message.RequestType,
             operation.Message.RequestType.GenericTypeArguments[0],
             operation.Message.HeaderResponseType ?? typeof(Message),
+            operation.Message.ResponseType,
             operation.Message.ResponseType.GenericTypeArguments[0]);
         InitializeCall(body, operation, callType);
 
@@ -371,29 +374,22 @@ internal sealed class EmitClientBuilder
         body.Emit(OpCodes.Ldarg_0); // filterHandlerFactory
         body.Emit(OpCodes.Ldfld, _filterHandlerFactoryField);
 
-        body.Emit(OpCodes.Newobj, callType.Constructor(4));
+        var ctorParametersCount = 4;
+        if (operation.Message.OperationType == MethodType.ClientStreaming || operation.Message.OperationType == MethodType.DuplexStreaming)
+        {
+            ctorParametersCount = 5;
+            if (operation.Message.HeaderRequestType == null)
+            {
+                body.Emit(OpCodes.Ldnull);
+            }
+            else
+            {
+                PushMessage(body, operation.Message.HeaderRequestType, operation.Message.HeaderRequestTypeInput);
+            }
+        }
+
+        body.Emit(OpCodes.Newobj, callType.Constructor(ctorParametersCount));
         body.Emit(OpCodes.Stloc_1);
-
-        if (operation.Message.HeaderResponseType != null)
-        {
-            body.Emit(OpCodes.Ldloca_S, 1); // call
-
-            PushContractField(body, operation.GrpcMethodOutputHeaderName);
-
-            body.Emit(OpCodes.Call, callType.InstanceMethod("WithResponseHeader"));
-            body.Emit(OpCodes.Stloc_1);
-        }
-
-        if (operation.Message.HeaderRequestType != null)
-        {
-            body.Emit(OpCodes.Ldloca_S, 1); // call
-
-            PushContractField(body, operation.GrpcMethodInputHeaderName);
-            PushMessage(body, operation.Message.HeaderRequestType, operation.Message.HeaderRequestTypeInput);
-
-            body.Emit(OpCodes.Call, callType.InstanceMethod("WithRequestHeader"));
-            body.Emit(OpCodes.Stloc_1);
-        }
     }
 
     private void DoServerStreamingCall(ILGenerator body, OperationDescription operation, Type callType)
@@ -481,7 +477,7 @@ internal sealed class EmitClientBuilder
         var ctor = _typeBuilder.DefineConstructor(
             MethodAttributes.Public,
             CallingConventions.HasThis,
-            new[] { typeof(CallInvoker), _contractType, typeof(Func<CallOptions>), typeof(IClientCallFilterHandlerFactory) });
+            [typeof(CallInvoker), _contractType, typeof(Func<CallOptions>), typeof(IClientCallFilterHandlerFactory)]);
 
         var il = ctor.GetILGenerator();
         il.Emit(OpCodes.Ldarg_0);

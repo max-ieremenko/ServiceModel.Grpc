@@ -23,10 +23,6 @@ public static class NamingConventions
         public static string Class(string baseClassName) => $"{baseClassName}Contract";
 
         public static string GrpcMethod(string operationName) => $"Method{operationName}";
-
-        public static string GrpcMethodInputHeader(string operationName) => $"MethodInputHeader{operationName}";
-
-        public static string GrpcMethodOutputHeader(string operationName) => $"MethodOutputHeader{operationName}";
     }
 
     public static class Client

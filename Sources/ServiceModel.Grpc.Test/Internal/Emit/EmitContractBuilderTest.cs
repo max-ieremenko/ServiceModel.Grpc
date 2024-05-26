@@ -17,6 +17,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Grpc.Core;
 using NUnit.Framework;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.TestApi;
@@ -75,36 +76,15 @@ public class EmitContractBuilderTest
         foreach (var operation in operations)
         {
             var field = _contractType
-                .GetField(operation.GrpcMethodName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+                .GetField(operation.GrpcMethodName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+                .ShouldNotBeNull()
+                .GetValue(instance)
+                .ShouldBeAssignableTo<IMethod>()
+                .ShouldNotBeNull();
 
-            field.ShouldNotBeNull();
-            field.GetValue(instance).ShouldNotBeNull();
-
-            field = _contractType
-                .GetField(operation.GrpcMethodInputHeaderName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-
-            if (operation.Message.HeaderRequestType == null)
-            {
-                field.ShouldBeNull();
-            }
-            else
-            {
-                field.ShouldNotBeNull();
-                field.GetValue(instance).ShouldNotBeNull();
-            }
-
-            field = _contractType
-                .GetField(operation.GrpcMethodOutputHeaderName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-
-            if (operation.Message.HeaderResponseType == null)
-            {
-                field.ShouldBeNull();
-            }
-            else
-            {
-                field.ShouldNotBeNull();
-                field.GetValue(instance).ShouldNotBeNull();
-            }
+            field.Type.ShouldBe(operation.Message.OperationType);
+            field.Name.ShouldBe(operation.OperationName);
+            field.ServiceName.ShouldBe(operation.ServiceName);
         }
     }
 

@@ -23,6 +23,7 @@ using Microsoft.CodeAnalysis;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
 
@@ -75,8 +76,6 @@ internal sealed class ContractCodeGenerator : ICodeGenerator
             foreach (var operation in GetAllOperations())
             {
                 BuildMethodInitializer(output, operation);
-                BuildRequestHeaderInitializer(output, operation);
-                BuildResponseHeaderInitializer(output, operation);
             }
         }
 
@@ -89,105 +88,90 @@ internal sealed class ContractCodeGenerator : ICodeGenerator
         {
             output
                 .Append("public ")
-                .WriteType(typeof(Method<,>))
-                .WriteMessage(operation.RequestType)
-                .Append(", ")
-                .WriteMessage(operation.ResponseType)
-                .Append("> ")
+                .WriteType(typeof(IMethod))
+                .Append(" ")
                 .Append(NamingConventions.Contract.GrpcMethod(operation.OperationName))
                 .AppendLine(" { get; }")
                 .AppendLine();
-
-            if (operation.HeaderRequestType != null)
-            {
-                output
-                    .Append("public ")
-                    .WriteType(typeof(Marshaller<>))
-                    .WriteMessage(operation.HeaderRequestType)
-                    .Append("> ")
-                    .Append(NamingConventions.Contract.GrpcMethodInputHeader(operation.OperationName))
-                    .AppendLine(" { get; }")
-                    .AppendLine();
-            }
-
-            if (operation.HeaderResponseType != null)
-            {
-                output
-                    .Append("public ")
-                    .WriteType(typeof(Marshaller<>))
-                    .WriteMessage(operation.HeaderResponseType)
-                    .Append("> ")
-                    .Append(NamingConventions.Contract.GrpcMethodOutputHeader(operation.OperationName))
-                    .AppendLine(" { get; }")
-                    .AppendLine();
-            }
         }
     }
 
     private void BuildMethodInitializer(ICodeStringBuilder output, IOperationDescription operation)
     {
+        // Method = GrpcMethodFactory.Unary<>()
         output
             .Append(NamingConventions.Contract.GrpcMethod(operation.OperationName))
-            .Append(" = new ")
-            .WriteType(typeof(Method<,>))
-            .WriteMessage(operation.RequestType)
-            .Append(", ")
-            .WriteMessage(operation.ResponseType)
-            .Append(">(");
-
-        output
-            .WriteType(typeof(MethodType))
+            .Append(" = ")
+            .WriteType(typeof(GrpcMethodFactory))
             .Append(".")
             .Append(operation.OperationType.ToString())
-            .Append(",");
+            .Append("<");
 
-        output
-            .Append(" \"")
-            .Append(operation.ServiceName)
-            .Append("\",");
-
-        output
-            .Append(" \"")
-            .Append(operation.OperationName)
-            .Append("\",");
-
-        output
-            .Append(" marshallerFactory.CreateMarshaller<")
-            .WriteMessage(operation.RequestType)
-            .Append(">(),");
-
-        output
-            .Append(" marshallerFactory.CreateMarshaller<")
-            .WriteMessage(operation.ResponseType)
-            .AppendLine(">());");
-    }
-
-    private void BuildRequestHeaderInitializer(ICodeStringBuilder output, IOperationDescription operation)
-    {
-        if (operation.HeaderRequestType == null)
+        switch (operation.OperationType)
         {
-            return;
+            case MethodType.Unary:
+                output
+                    .WriteMessage(operation.RequestType)
+                    .Append(", ")
+                    .WriteMessage(operation.ResponseType);
+                break;
+            case MethodType.ClientStreaming:
+                output
+                    .WriteMessageOrDefault(operation.HeaderRequestType)
+                    .Append(", ")
+                    .WriteMessage(operation.RequestType)
+                    .Append(", ")
+                    .WriteMessage(operation.ResponseType);
+                break;
+            case MethodType.ServerStreaming:
+                output
+                    .WriteMessage(operation.RequestType)
+                    .Append(", ")
+                    .WriteMessageOrDefault(operation.HeaderResponseType)
+                    .Append(", ")
+                    .WriteMessage(operation.ResponseType);
+                break;
+            case MethodType.DuplexStreaming:
+                output
+                    .WriteMessageOrDefault(operation.HeaderRequestType)
+                    .Append(", ")
+                    .WriteMessage(operation.RequestType)
+                    .Append(", ")
+                    .WriteMessageOrDefault(operation.HeaderResponseType)
+                    .Append(", ")
+                    .WriteMessage(operation.ResponseType);
+                break;
         }
 
         output
-            .Append(NamingConventions.Contract.GrpcMethodInputHeader(operation.OperationName))
-            .Append(" = marshallerFactory.CreateMarshaller<")
-            .WriteMessage(operation.HeaderRequestType)
-            .AppendLine(">();");
-    }
+            .Append(">(marshallerFactory, ")
+            .WriteString(operation.ServiceName)
+            .Append(", ")
+            .WriteString(operation.OperationName);
 
-    private void BuildResponseHeaderInitializer(ICodeStringBuilder output, IOperationDescription operation)
-    {
-        if (operation.HeaderResponseType == null)
+        switch (operation.OperationType)
         {
-            return;
+            case MethodType.ClientStreaming:
+                output
+                    .Append(", ")
+                    .WriteBoolean(operation.HeaderRequestType != null);
+                break;
+            case MethodType.ServerStreaming:
+                output
+                    .Append(", ")
+                    .WriteBoolean(operation.HeaderResponseType != null);
+                break;
+            case MethodType.DuplexStreaming:
+                output
+                    .Append(", ")
+                    .WriteBoolean(operation.HeaderRequestType != null)
+                    .Append(", ")
+                    .WriteBoolean(operation.HeaderResponseType != null);
+                break;
         }
 
         output
-            .Append(NamingConventions.Contract.GrpcMethodOutputHeader(operation.OperationName))
-            .Append(" = marshallerFactory.CreateMarshaller<")
-            .WriteMessage(operation.HeaderResponseType)
-            .AppendLine(">();");
+            .AppendLine(");");
     }
 
     private void BuildGetDefinition(ICodeStringBuilder output)

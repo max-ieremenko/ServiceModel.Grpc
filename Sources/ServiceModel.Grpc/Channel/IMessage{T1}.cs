@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2023 Max Ieremenko
+// Copyright 2024 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,17 +14,23 @@
 // limitations under the License.
 // </copyright>
 
-using Grpc.Core;
+namespace ServiceModel.Grpc.Channel;
 
-namespace ServiceModel.Grpc.Filters.Internal;
-
-internal interface IClientFilterContextInternal : IClientFilterContext
+/// <summary>
+/// Represents a type which is the unit of communication between endpoints.
+/// </summary>
+/// <typeparam name="T1">The value type.</typeparam>
+public interface IMessage<T1>
 {
-    CallInvoker CallInvoker { get; }
+    /// <summary>
+    /// Gets the current value.
+    /// </summary>
+    /// <returns>The current value.</returns>
+    T1? GetValue1();
 
-    CallContext? CallContext { get; set; }
-
-    IRequestContextInternal RequestInternal { get; }
-
-    IResponseContextInternal ResponseInternal { get; }
+    /// <summary>
+    /// Sets the current value.
+    /// </summary>
+    /// <param name="value">The new value.</param>
+    void SetValue1(T1? value);
 }

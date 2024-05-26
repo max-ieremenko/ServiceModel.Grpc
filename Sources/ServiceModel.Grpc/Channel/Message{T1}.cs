@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2023 Max Ieremenko
+// Copyright 2024 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,17 +14,18 @@
 // limitations under the License.
 // </copyright>
 
-using Grpc.Core;
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable SA1619
 
-namespace ServiceModel.Grpc.Filters.Internal;
+namespace ServiceModel.Grpc.Channel;
 
-internal interface IClientFilterContextInternal : IClientFilterContext
+/// <summary>
+/// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+/// This API may change or be removed in future releases.
+/// </summary>
+public partial class Message<T1> : IMessage<T1>
 {
-    CallInvoker CallInvoker { get; }
+    public T1? GetValue1() => Value1;
 
-    CallContext? CallContext { get; set; }
-
-    IRequestContextInternal RequestInternal { get; }
-
-    IResponseContextInternal ResponseInternal { get; }
+    public void SetValue1(T1? value) => Value1 = value;
 }

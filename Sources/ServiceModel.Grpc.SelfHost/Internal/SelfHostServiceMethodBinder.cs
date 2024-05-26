@@ -23,6 +23,7 @@ using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Filters.Internal;
 using ServiceModel.Grpc.Hosting.Internal;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.SelfHost.Internal;
 
@@ -47,7 +48,7 @@ internal sealed class SelfHostServiceMethodBinder<TService> : IServiceMethodBind
     public IMarshallerFactory MarshallerFactory { get; }
 
     public void AddUnaryMethod<TRequest, TResponse>(
-        Method<TRequest, TResponse> method,
+        IMethod method,
         Func<MethodInfo> resolveContractMethodDefinition,
         IList<object> metadata,
         Func<TService, TRequest, ServerCallContext, Task<TResponse>> handler)
@@ -58,69 +59,72 @@ internal sealed class SelfHostServiceMethodBinder<TService> : IServiceMethodBind
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
         var invoker = new UnaryServerCallHandler<TService, TRequest, TResponse>(_serviceFactory, handler, filterHandlerFactory);
-        _builder.AddMethod(method, invoker.Handle);
+        _builder.AddMethod((Method<TRequest, TResponse>)method, invoker.Handle);
     }
 
-    public void AddClientStreamingMethod<TRequestHeader, TRequest, TResponse>(
-        Method<Message<TRequest>, TResponse> method,
+    public void AddClientStreamingMethod<TRequestHeader, TRequest, TRequestValue, TResponse>(
+        IMethod method,
         Func<MethodInfo> resolveContractMethodDefinition,
-        Marshaller<TRequestHeader>? requestHeaderMarshaller,
         IList<object> metadata,
-        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest?>, ServerCallContext, Task<TResponse>> handler)
+        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequestValue?>, ServerCallContext, Task<TResponse>> handler)
         where TRequestHeader : class
+        where TRequest : class, IMessage<TRequestValue>
         where TResponse : class
     {
         var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
-        var invoker = new ClientStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponse>(
+        var grpcMethod = (GrpcMethod<TRequestHeader, TRequest, Message, TResponse>)method;
+        var invoker = new ClientStreamingServerCallHandler<TService, TRequestHeader, TRequest, TRequestValue, TResponse>(
             _serviceFactory,
             handler,
-            requestHeaderMarshaller,
+            grpcMethod.RequestHeaderMarshaller,
             filterHandlerFactory);
-        _builder.AddMethod(method, invoker.Handle);
+        _builder.AddMethod(grpcMethod, invoker.Handle);
     }
 
-    public void AddServerStreamingMethod<TRequest, TResponseHeader, TResponse>(
-        Method<TRequest, Message<TResponse>> method,
+    public void AddServerStreamingMethod<TRequest, TResponseHeader, TResponse, TResponseValue>(
+        IMethod method,
         Func<MethodInfo> resolveContractMethodDefinition,
-        Marshaller<TResponseHeader>? responseHeaderMarshaller,
         IList<object> metadata,
-        Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse?> Response)>> handler)
+        Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponseValue?> Response)>> handler)
         where TRequest : class
         where TResponseHeader : class
+        where TResponse : class, IMessage<TResponseValue>, new()
     {
         var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
-        var invoker = new ServerStreamingServerCallHandler<TService, TRequest, TResponseHeader, TResponse>(
+        var grpcMethod = (GrpcMethod<Message, TRequest, TResponseHeader, TResponse>)method;
+        var invoker = new ServerStreamingServerCallHandler<TService, TRequest, TResponseHeader, TResponse, TResponseValue>(
             _serviceFactory,
             handler,
-            responseHeaderMarshaller,
+            grpcMethod.ResponseHeaderMarshaller,
             filterHandlerFactory);
-        _builder.AddMethod(method, invoker.Handle);
+        _builder.AddMethod(grpcMethod, invoker.Handle);
     }
 
-    public void AddDuplexStreamingMethod<TRequestHeader, TRequest, TResponseHeader, TResponse>(
-        Method<Message<TRequest>, Message<TResponse>> method,
+    public void AddDuplexStreamingMethod<TRequestHeader, TRequest, TRequestValue, TResponseHeader, TResponse, TResponseValue>(
+        IMethod method,
         Func<MethodInfo> resolveContractMethodDefinition,
-        Marshaller<TRequestHeader>? requestHeaderMarshaller,
-        Marshaller<TResponseHeader>? responseHeaderMarshaller,
         IList<object> metadata,
-        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest?>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse?> Response)>> handler)
+        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequestValue?>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponseValue?> Response)>> handler)
         where TRequestHeader : class
+        where TRequest : class, IMessage<TRequestValue>
         where TResponseHeader : class
+        where TResponse : class, IMessage<TResponseValue>, new()
     {
         var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
-        var invoker = new DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponseHeader, TResponse>(
+        var grpcMethod = (GrpcMethod<TRequestHeader, TRequest, TResponseHeader, TResponse>)method;
+        var invoker = new DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TRequestValue, TResponseHeader, TResponse, TResponseValue>(
             _serviceFactory,
             handler,
-            requestHeaderMarshaller,
-            responseHeaderMarshaller,
+            grpcMethod.RequestHeaderMarshaller,
+            grpcMethod.ResponseHeaderMarshaller,
             filterHandlerFactory);
-        _builder.AddMethod(method, invoker.Handle);
+        _builder.AddMethod(grpcMethod, invoker.Handle);
     }
 
     private void ValidateFilterFactoryConfiguration(ServerCallFilterHandlerFactory? filterHandlerFactory)
