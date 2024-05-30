@@ -1,7 +1,7 @@
 System.Reflection.DispatchProxy [4.7.1](https://www.nuget.org/packages/System.Reflection.DispatchProxy/4.7.1)
 --------------------
 
-Used by: Core internal
+Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, SelfHost internal
 
 Target frameworks: net462, net6.0, net7.0, net8.0
 

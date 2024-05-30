@@ -1,7 +1,7 @@
 System.Numerics.Vectors [4.5.0](https://www.nuget.org/packages/System.Numerics.Vectors/4.5.0)
 --------------------
 
-Used by: ClientDI internal, Core internal, DesignTime internal, ProtoBuf
+Used by: ClientDI internal, Core internal, DesignTime internal, ProtoBuf, SelfHost internal
 
 Target frameworks: net462, net6.0, net7.0, net8.0, netstandard2.0, netstandard2.1
 

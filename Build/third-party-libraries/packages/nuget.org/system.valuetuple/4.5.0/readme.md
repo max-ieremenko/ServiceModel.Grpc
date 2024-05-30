@@ -1,7 +1,7 @@
 System.ValueTuple [4.5.0](https://www.nuget.org/packages/System.ValueTuple/4.5.0)
 --------------------
 
-Used by: Core internal
+Used by: ClientDI internal, Core internal, DesignTime internal, SelfHost internal
 
 Target frameworks: net462, net6.0, net7.0, net8.0
 

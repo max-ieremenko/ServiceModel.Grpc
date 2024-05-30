@@ -6,7 +6,124 @@
   },
   "UsedBy": [
     {
+      "Name": "AspNetCore",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "DiffEngine",
+          "Version": "11.3.0"
+        },
+        {
+          "Name": "EmptyFiles",
+          "Version": "4.4.0"
+        }
+      ]
+    },
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "DiffEngine",
+          "Version": "11.3.0"
+        },
+        {
+          "Name": "EmptyFiles",
+          "Version": "4.4.0"
+        }
+      ]
+    },
+    {
+      "Name": "AspNetCoreSwashbuckle",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "DiffEngine",
+          "Version": "11.3.0"
+        },
+        {
+          "Name": "EmptyFiles",
+          "Version": "4.4.0"
+        }
+      ]
+    },
+    {
+      "Name": "ClientDI",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "DiffEngine",
+          "Version": "11.3.0"
+        },
+        {
+          "Name": "EmptyFiles",
+          "Version": "4.4.0"
+        }
+      ]
+    },
+    {
       "Name": "Core",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "DiffEngine",
+          "Version": "11.3.0"
+        },
+        {
+          "Name": "EmptyFiles",
+          "Version": "4.4.0"
+        }
+      ]
+    },
+    {
+      "Name": "DesignTime",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "DiffEngine",
+          "Version": "11.3.0"
+        },
+        {
+          "Name": "EmptyFiles",
+          "Version": "4.4.0"
+        }
+      ]
+    },
+    {
+      "Name": "SelfHost",
       "InternalOnly": true,
       "TargetFrameworks": [
         "net462",
