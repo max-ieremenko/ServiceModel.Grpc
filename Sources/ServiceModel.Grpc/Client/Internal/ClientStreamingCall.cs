@@ -89,23 +89,17 @@ public readonly ref struct ClientStreamingCall<TRequestHeader, TRequest, TReques
         {
             if (context != null && !token.IsCancellationRequested)
             {
-                context.TraceClientStreaming?.Invoke(writer.Task);
+                CallContextExtensions.TraceClientStreaming(context, writer.Task);
 
                 var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
-                context.ServerResponse = new ServerResponse(
-                    headers,
-                    call.GetStatus,
-                    call.GetTrailers);
+                CallContextExtensions.SetResponse(context, headers, call.GetStatus, call.GetTrailers);
             }
 
             response = await call.ResponseAsync.ConfigureAwait(false);
 
             if (!token.IsCancellationRequested && context != null)
             {
-                context.ServerResponse = new ServerResponse(
-                    context.ResponseHeaders!,
-                    call.GetStatus(),
-                    call.GetTrailers());
+                CallContextExtensions.SetResponse(context, context.ResponseHeaders!, call.GetStatus(), call.GetTrailers());
             }
 
             await writer.WaitAsync(token).ConfigureAwait(false);

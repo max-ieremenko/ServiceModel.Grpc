@@ -89,20 +89,14 @@ public readonly ref struct UnaryCall<TRequest, TResponse>
             if (callContext != null && !token.IsCancellationRequested)
             {
                 var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
-                callContext.ServerResponse = new ServerResponse(
-                    headers,
-                    call.GetStatus,
-                    call.GetTrailers);
+                CallContextExtensions.SetResponse(callContext, headers, call.GetStatus, call.GetTrailers);
             }
 
             response = await call.ResponseAsync.ConfigureAwait(false);
 
             if (callContext != null && !token.IsCancellationRequested)
             {
-                callContext.ServerResponse = new ServerResponse(
-                    callContext.ResponseHeaders!,
-                    call.GetStatus(),
-                    call.GetTrailers());
+                CallContextExtensions.SetResponse(callContext, callContext.ResponseHeaders!, call.GetStatus(), call.GetTrailers());
             }
         }
 

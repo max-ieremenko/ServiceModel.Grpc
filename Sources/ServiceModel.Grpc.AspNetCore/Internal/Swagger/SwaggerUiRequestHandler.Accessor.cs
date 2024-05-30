@@ -17,6 +17,7 @@
 using System;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
+using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger;
@@ -43,15 +44,12 @@ internal partial class SwaggerUiRequestHandler
             _method = (Method<TRequest, TResponse>)method;
         }
 
-        public Type[] GetParameterTypes()
-        {
-            return typeof(TRequest).GetGenericArguments()!;
-        }
+        public Type[] GetParameterTypes() => typeof(TRequest).GetGenericArguments();
 
         public byte[] SerializeRequest(object?[] values)
         {
             var message = Activator.CreateInstance(typeof(TRequest), values)!;
-            return CompatibilityTools.SerializeValue(_method.RequestMarshaller, (TRequest)message);
+            return MarshallerExtensions.Serialize(_method.RequestMarshaller, (TRequest)message);
         }
 
         public Type? GetResponseType()
@@ -62,7 +60,7 @@ internal partial class SwaggerUiRequestHandler
 
         public object? DeserializeResponse(byte[] payload)
         {
-            var message = CompatibilityTools.DeserializeValue(_method.ResponseMarshaller, payload);
+            var message = MarshallerExtensions.Deserialize(_method.ResponseMarshaller, payload);
             return message!
                 .GetType()
                 .InstanceProperty(nameof(Message<int>.Value1))

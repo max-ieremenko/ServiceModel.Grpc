@@ -146,10 +146,7 @@ public readonly ref struct ServerStreamingCall<TRequest, TResponseHeader, TRespo
                 headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
                 if (context != null)
                 {
-                    context.ServerResponse = new ServerResponse(
-                        headers,
-                        call.GetStatus,
-                        call.GetTrailers);
+                    CallContextExtensions.SetResponse(context, headers, call.GetStatus, call.GetTrailers);
                 }
             }
 
@@ -184,13 +181,10 @@ public readonly ref struct ServerStreamingCall<TRequest, TResponseHeader, TRespo
     {
         using (call)
         {
-            if (context != null && !context.ServerResponse.HasValue && !token.IsCancellationRequested)
+            if (context != null && !CallContextExtensions.ContainsResponse(context) && !token.IsCancellationRequested)
             {
                 var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
-                context.ServerResponse = new ServerResponse(
-                    headers,
-                    call.GetStatus,
-                    call.GetTrailers);
+                CallContextExtensions.SetResponse(context, headers, call.GetStatus, call.GetTrailers);
             }
 
             while (await call.ResponseStream.MoveNext(token).ConfigureAwait(false))
@@ -200,10 +194,7 @@ public readonly ref struct ServerStreamingCall<TRequest, TResponseHeader, TRespo
 
             if (context != null && !token.IsCancellationRequested)
             {
-                context.ServerResponse = new ServerResponse(
-                    context.ResponseHeaders!,
-                    call.GetStatus(),
-                    call.GetTrailers());
+                CallContextExtensions.SetResponse(context, context.ResponseHeaders!, call.GetStatus(), call.GetTrailers());
             }
         }
     }

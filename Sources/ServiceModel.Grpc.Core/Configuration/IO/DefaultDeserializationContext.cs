@@ -18,7 +18,7 @@ using System;
 using System.Buffers;
 using Grpc.Core;
 
-namespace ServiceModel.Grpc.Internal.IO;
+namespace ServiceModel.Grpc.Configuration.IO;
 
 internal sealed class DefaultDeserializationContext : DeserializationContext
 {

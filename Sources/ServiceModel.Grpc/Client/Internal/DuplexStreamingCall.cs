@@ -140,10 +140,7 @@ public readonly ref struct DuplexStreamingCall<TRequestHeader, TRequest, TReques
                 headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
                 if (context != null)
                 {
-                    context.ServerResponse = new ServerResponse(
-                        headers,
-                        call.GetStatus,
-                        call.GetTrailers);
+                    CallContextExtensions.SetResponse(context, headers, call.GetStatus, call.GetTrailers);
                 }
             }
 
@@ -182,7 +179,7 @@ public readonly ref struct DuplexStreamingCall<TRequestHeader, TRequest, TReques
         try
         {
             writer = new ClientStreamWriter<TRequest, TRequestValue>(request, call.RequestStream, token);
-            context?.TraceClientStreaming?.Invoke(writer.Task);
+            CallContextExtensions.TraceClientStreaming(context, writer.Task);
         }
         catch
         {
@@ -206,7 +203,7 @@ public readonly ref struct DuplexStreamingCall<TRequestHeader, TRequest, TReques
         try
         {
             writer = new ClientStreamWriter<TRequest, TRequestValue>(request, call.RequestStream, token);
-            context?.TraceClientStreaming?.Invoke(writer.Task);
+            CallContextExtensions.TraceClientStreaming(context, writer.Task);
         }
         catch
         {
@@ -229,13 +226,10 @@ public readonly ref struct DuplexStreamingCall<TRequestHeader, TRequest, TReques
         using (call)
         using (writer)
         {
-            if (context != null && !context.ServerResponse.HasValue && !token.IsCancellationRequested)
+            if (context != null && !CallContextExtensions.ContainsResponse(context) && !token.IsCancellationRequested)
             {
                 var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
-                context.ServerResponse = new ServerResponse(
-                    headers,
-                    call.GetStatus,
-                    call.GetTrailers);
+                CallContextExtensions.SetResponse(context, headers, call.GetStatus, call.GetTrailers);
             }
 
             while (await call.ResponseStream.MoveNext(token).ConfigureAwait(false))
@@ -245,10 +239,7 @@ public readonly ref struct DuplexStreamingCall<TRequestHeader, TRequest, TReques
 
             if (context != null && !token.IsCancellationRequested)
             {
-                context.ServerResponse = new ServerResponse(
-                    context.ResponseHeaders!,
-                    call.GetStatus(),
-                    call.GetTrailers());
+                CallContextExtensions.SetResponse(context, context.ResponseHeaders!, call.GetStatus(), call.GetTrailers());
             }
 
             await writer.WaitAsync(token).ConfigureAwait(false);
@@ -294,7 +285,7 @@ public readonly ref struct DuplexStreamingCall<TRequestHeader, TRequest, TReques
         try
         {
             writer = new ClientStreamWriter<TRequest, TRequestValue>((IAsyncEnumerable<TRequestValue?>)request.Stream!, call.RequestStream, callOptions.CancellationToken);
-            contextInternal.CallContext?.TraceClientStreaming?.Invoke(writer.Task);
+            CallContextExtensions.TraceClientStreaming(contextInternal.CallContext, writer.Task);
         }
         catch
         {

@@ -61,11 +61,11 @@ internal sealed class ClientCallErrorInterceptor : IClientCallInterceptor
         for (var i = 0; i < metadata.Count; i++)
         {
             var entry = metadata[i];
-            if (entry.Equals(CallContext.HeaderNameErrorDetailType, false))
+            if (MetadataExtensions.Is(entry, CompatibilityTools.HeaderNameErrorDetailType, false))
             {
                 detailTypeName = entry.Value;
             }
-            else if (entry.Equals(CallContext.HeaderNameErrorDetail, true))
+            else if (MetadataExtensions.Is(entry, CompatibilityTools.HeaderNameErrorDetail, true))
             {
                 detailContent = entry.ValueBytes;
             }
@@ -103,7 +103,7 @@ internal sealed class ClientCallErrorInterceptor : IClientCallInterceptor
 
         try
         {
-            return MarshallerFactory.DeserializeHeader(detailType, detailContent);
+            return MarshallerExtensions.DeserializeObject(MarshallerFactory, detailType, detailContent);
         }
         catch (Exception ex)
         {

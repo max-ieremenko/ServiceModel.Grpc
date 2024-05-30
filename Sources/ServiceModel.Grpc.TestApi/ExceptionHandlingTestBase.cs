@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
+using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
 
@@ -143,7 +144,7 @@ public abstract class ExceptionHandlingTestBase
             channel.Reader.AsAsyncEnumerable(_cancellationSource.Token),
             0,
             "some text",
-            new CallContext { TraceClientStreaming = i => clientStreamWriter = i });
+            CallContextExtensions.WithClientStreamingTracer(new(), i => clientStreamWriter = i));
 
         var ex = Assert.ThrowsAsync<ServerException>(() => call);
 
@@ -166,7 +167,7 @@ public abstract class ExceptionHandlingTestBase
             channel.Reader.AsAsyncEnumerable(_cancellationSource.Token),
             1,
             "some text",
-            new CallContext { TraceClientStreaming = i => clientStreamWriter = i });
+            CallContextExtensions.WithClientStreamingTracer(new(), i => clientStreamWriter = i));
 
         await channel.Writer.WriteAsync(1).ConfigureAwait(false);
 
@@ -193,7 +194,7 @@ public abstract class ExceptionHandlingTestBase
             channel.Reader.AsAsyncEnumerable(_cancellationSource.Token),
             2,
             "some text",
-            new CallContext { TraceClientStreaming = i => clientStreamWriter = i });
+            CallContextExtensions.WithClientStreamingTracer(new(), i => clientStreamWriter = i));
 
         await channel.Writer.WriteAsync(1).ConfigureAwait(false);
         channel.Writer.Complete();
@@ -264,7 +265,7 @@ public abstract class ExceptionHandlingTestBase
                 channel.Reader.AsAsyncEnumerable(_cancellationSource.Token),
                 "some text",
                 0,
-                new CallContext { TraceClientStreaming = i => clientStreamWriter = i })
+                CallContextExtensions.WithClientStreamingTracer(new(), i => clientStreamWriter = i))
             .ToListAsync();
         var ex = Assert.ThrowsAsync<ServerException>(() => call);
 
@@ -286,7 +287,7 @@ public abstract class ExceptionHandlingTestBase
                 channel.Reader.AsAsyncEnumerable(_cancellationSource.Token),
                 "some text",
                 1,
-                new CallContext { TraceClientStreaming = i => clientStreamWriter = i })
+                CallContextExtensions.WithClientStreamingTracer(new(), i => clientStreamWriter = i))
             .ToListAsync();
 
         await channel.Writer.WriteAsync(1).ConfigureAwait(false);
@@ -313,7 +314,7 @@ public abstract class ExceptionHandlingTestBase
                 channel.Reader.AsAsyncEnumerable(_cancellationSource.Token),
                 "some text",
                 1,
-                new CallContext { TraceClientStreaming = i => clientStreamWriter = i })
+                CallContextExtensions.WithClientStreamingTracer(new(), i => clientStreamWriter = i))
             .ToListAsync();
 
         channel.Writer.Complete();
@@ -340,7 +341,7 @@ public abstract class ExceptionHandlingTestBase
             channel.Reader.AsAsyncEnumerable(_cancellationSource.Token),
             "some text",
             0,
-            new CallContext { TraceClientStreaming = i => clientStreamWriter = i });
+            CallContextExtensions.WithClientStreamingTracer(new(), i => clientStreamWriter = i));
         var ex = Assert.ThrowsAsync<ServerException>(async () => await call.ConfigureAwait(false));
 
         ex.ShouldNotBeNull();
@@ -361,7 +362,7 @@ public abstract class ExceptionHandlingTestBase
             channel.Reader.AsAsyncEnumerable(_cancellationSource.Token),
             "some text",
             1,
-            new CallContext { TraceClientStreaming = i => clientStreamWriter = i });
+            CallContextExtensions.WithClientStreamingTracer(new(), i => clientStreamWriter = i));
 
         await channel.Writer.WriteAsync(1).ConfigureAwait(false);
 
@@ -387,7 +388,7 @@ public abstract class ExceptionHandlingTestBase
             channel.Reader.AsAsyncEnumerable(_cancellationSource.Token),
             "some text",
             1,
-            new CallContext { TraceClientStreaming = i => clientStreamWriter = i });
+            CallContextExtensions.WithClientStreamingTracer(new(), i => clientStreamWriter = i));
 
         channel.Writer.Complete();
 

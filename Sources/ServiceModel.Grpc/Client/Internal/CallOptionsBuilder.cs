@@ -114,7 +114,7 @@ public ref struct CallOptionsBuilder
         for (var i = 0; i < current.Count; i++)
         {
             var entry = current[i];
-            if (!result.ContainsHeader(entry))
+            if (!MetadataExtensions.ContainsHeader(result, entry))
             {
                 result.Add(entry);
             }

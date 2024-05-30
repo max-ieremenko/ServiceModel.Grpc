@@ -14,44 +14,58 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Internal.IO;
+namespace ServiceModel.Grpc.Configuration.IO;
 
 [TestFixture]
-public class DefaultSerializationContextTest
+public class BufferWriterTest
 {
-    private DefaultSerializationContext _sut = null!;
+    private BufferWriter<int> _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()
     {
-        _sut = new DefaultSerializationContext();
+        _sut = new BufferWriter<int>(1);
+    }
+
+    [TearDown]
+    public void AfterEachTest()
+    {
+        _sut.Dispose();
     }
 
     [Test]
-    public void EmulateContextualSerializer()
+    public void Empty()
     {
-        var payload = Guid.NewGuid().ToByteArray();
+        _sut.ToArray().ShouldBeEmpty();
+    }
 
-        _sut.Complete(payload);
+    [Test]
+    public void WriteByte()
+    {
+        var span = _sut.GetSpan(1);
+        span[0] = 10;
+        _sut.Advance(1);
 
-        _sut.GetContent().ShouldBe(payload);
+        var actual = _sut.ToArray();
+
+        actual.Length.ShouldBe(1);
+        actual[0].ShouldBe(10);
     }
 
     [Test]
     public void Write()
     {
-        var payload = Guid.NewGuid().ToByteArray();
+        var span = _sut.GetSpan(10);
+        for (var i = 0; i < 10; i++)
+        {
+            span[i] = i;
+        }
 
-        var writer = _sut.GetBufferWriter();
-        var span = writer.GetSpan(payload.Length);
-        payload.AsSpan(0).CopyTo(span);
-        writer.Advance(payload.Length);
+        _sut.Advance(5);
 
-        _sut.Complete();
-        _sut.GetContent().ShouldBe(payload);
+        _sut.ToArray().ShouldBe(new[] { 0, 1, 2, 3, 4 });
     }
 }

@@ -14,15 +14,19 @@
 // limitations under the License.
 // </copyright>
 
-using System.Runtime.CompilerServices;
+using System;
 
 namespace ServiceModel.Grpc.Configuration;
 
-internal static class MarshallerFactoryExtensions
+internal static class MarshallerSerializers
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IMarshallerFactory ThisOrDefault(this IMarshallerFactory? factory)
+    public static IMarshallerSerializer Get(Type valueType) =>
+        (IMarshallerSerializer)Activator.CreateInstance(typeof(MarshallerSerializer<>).MakeGenericType(valueType))!;
+
+    private sealed class MarshallerSerializer<T> : IMarshallerSerializer
     {
-        return factory ?? DataContractMarshallerFactory.Default;
+        public byte[] Serialize(IMarshallerFactory factory, object value) => MarshallerExtensions.Serialize(factory.CreateMarshaller<T>(), (T)value);
+
+        public object Deserialize(IMarshallerFactory factory, byte[] payload) => MarshallerExtensions.Deserialize(factory.CreateMarshaller<T>(), payload)!;
     }
 }

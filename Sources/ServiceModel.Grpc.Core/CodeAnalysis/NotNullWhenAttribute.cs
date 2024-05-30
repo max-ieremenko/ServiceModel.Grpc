@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright Max Ieremenko
+// Copyright 2020 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,13 @@
 // limitations under the License.
 // </copyright>
 
-using System.Runtime.CompilerServices;
+#if !NETSTANDARD2_1
+namespace System.Diagnostics.CodeAnalysis;
 
-namespace ServiceModel.Grpc.Configuration;
-
-internal static class MarshallerFactoryExtensions
+internal sealed class NotNullWhenAttribute : Attribute
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IMarshallerFactory ThisOrDefault(this IMarshallerFactory? factory)
-    {
-        return factory ?? DataContractMarshallerFactory.Default;
-    }
+    public NotNullWhenAttribute(bool returnValue) => ReturnValue = returnValue;
+
+    public bool ReturnValue { get; }
 }
+#endif

@@ -14,15 +14,11 @@
 // limitations under the License.
 // </copyright>
 
-using System.Runtime.CompilerServices;
-
 namespace ServiceModel.Grpc.Configuration;
 
-internal static class MarshallerFactoryExtensions
+internal interface IMarshallerSerializer
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IMarshallerFactory ThisOrDefault(this IMarshallerFactory? factory)
-    {
-        return factory ?? DataContractMarshallerFactory.Default;
-    }
+    byte[] Serialize(IMarshallerFactory factory, object value);
+
+    object Deserialize(IMarshallerFactory factory, byte[] payload);
 }
