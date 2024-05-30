@@ -1,27 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\Test.csproj.props" />
 
   <PropertyGroup>
     <TargetFrameworks>net462;net6.0;net7.0;net8.0</TargetFrameworks>
     <AssemblyTitle>ServiceModel.Grpc.TestApi</AssemblyTitle>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
-    <Reference Include="System.ServiceModel" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' != 'net462'">
-    <PackageReference Include="System.ServiceModel.Primitives" />
-  </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Grpc.Core" />
     <PackageReference Include="Grpc.Net.Client" />
     <PackageReference Include="Mono.Reflection" />
-    <PackageReference Include="NUnit" />
-    <PackageReference Include="Moq" />
-    <PackageReference Include="Shouldly" />
-    <PackageReference Include="Newtonsoft.Json" />
-    <PackageReference Include="System.Threading.Channels" />
   </ItemGroup>
 
   <ItemGroup>
