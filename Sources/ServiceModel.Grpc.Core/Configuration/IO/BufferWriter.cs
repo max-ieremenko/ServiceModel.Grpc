@@ -17,7 +17,7 @@
 using System;
 using System.Buffers;
 
-namespace ServiceModel.Grpc.Internal.IO;
+namespace ServiceModel.Grpc.Configuration.IO;
 
 internal sealed class BufferWriter<T> : IBufferWriter<T>, IDisposable
 {

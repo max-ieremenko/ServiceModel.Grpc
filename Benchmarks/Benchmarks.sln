@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31129.286
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34902.65
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.Benchmarks", "ServiceModel.Grpc.Benchmarks\ServiceModel.Grpc.Benchmarks.csproj", "{DE8A134A-B4CC-423A-8DF2-4426F642E3A6}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.MessagePackMarshaller", "..\Sources\ServiceModel.Grpc.MessagePackMarshaller\ServiceModel.Grpc.MessagePackMarshaller.csproj", "{B1F1DA21-8091-4B28-AFF6-1A8950C0CDA6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sources", "Sources", "{A23E8031-76DC-4F7E-A2CA-B115E36BC296}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModel.Grpc.Core", "..\Sources\ServiceModel.Grpc.Core\ServiceModel.Grpc.Core.csproj", "{7CFE3A1B-287D-47DC-A70C-E7B350E75CB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{B1F1DA21-8091-4B28-AFF6-1A8950C0CDA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1F1DA21-8091-4B28-AFF6-1A8950C0CDA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1F1DA21-8091-4B28-AFF6-1A8950C0CDA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CFE3A1B-287D-47DC-A70C-E7B350E75CB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CFE3A1B-287D-47DC-A70C-E7B350E75CB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CFE3A1B-287D-47DC-A70C-E7B350E75CB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CFE3A1B-287D-47DC-A70C-E7B350E75CB2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,6 +56,7 @@ Global
 		{43CB4140-19E9-4EF4-844E-C273B8347883} = {A23E8031-76DC-4F7E-A2CA-B115E36BC296}
 		{3F3E8589-9DD7-4E34-B234-EE549A241013} = {A23E8031-76DC-4F7E-A2CA-B115E36BC296}
 		{B1F1DA21-8091-4B28-AFF6-1A8950C0CDA6} = {A23E8031-76DC-4F7E-A2CA-B115E36BC296}
+		{7CFE3A1B-287D-47DC-A70C-E7B350E75CB2} = {A23E8031-76DC-4F7E-A2CA-B115E36BC296}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F8A2DD7E-58D3-40EE-8EFC-310E69149C27}

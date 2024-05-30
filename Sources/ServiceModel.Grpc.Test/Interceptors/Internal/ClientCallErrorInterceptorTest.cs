@@ -17,6 +17,7 @@
 using Grpc.Core;
 using Moq;
 using NUnit.Framework;
+using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.TestApi;
@@ -48,11 +49,11 @@ public class ClientCallErrorInterceptorTest
     public void UserHandlerWithDetail()
     {
         _error.Trailers.Add(
-            CallContext.HeaderNameErrorDetailType,
+            CompatibilityTools.HeaderNameErrorDetailType,
             typeof(string).GetShortAssemblyQualifiedName());
         _error.Trailers.Add(
-            CallContext.HeaderNameErrorDetail,
-            _sut.MarshallerFactory.SerializeHeader("abc"));
+            CompatibilityTools.HeaderNameErrorDetail,
+            MarshallerExtensions.SerializeObject(_sut.MarshallerFactory, "abc"));
 
         _errorHandler
             .Setup(h => h.ThrowOrIgnore(_context, It.IsAny<ClientFaultDetail>()))
@@ -89,11 +90,11 @@ public class ClientCallErrorInterceptorTest
     public void FailToResolveDetailType()
     {
         _error.Trailers.Add(
-            CallContext.HeaderNameErrorDetailType,
+            CompatibilityTools.HeaderNameErrorDetailType,
             "invalid type");
         _error.Trailers.Add(
-            CallContext.HeaderNameErrorDetail,
-            _sut.MarshallerFactory.SerializeHeader("dummy"));
+            CompatibilityTools.HeaderNameErrorDetail,
+            MarshallerExtensions.SerializeObject(_sut.MarshallerFactory, "dummy"));
 
         _errorHandler
             .Setup(h => h.ThrowOrIgnore(_context, It.IsAny<ClientFaultDetail>()))

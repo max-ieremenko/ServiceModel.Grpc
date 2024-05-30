@@ -110,11 +110,11 @@ public sealed class HeadersService : IHeadersService
     {
         ServerCallContext serverContext = context!;
 
-        var defaultHeader = serverContext.RequestHeaders.FindHeader(DefaultHeaderName, false);
+        MetadataExtensions.TryFindHeader(serverContext.RequestHeaders, DefaultHeaderName, false, out var defaultHeader).ShouldBeTrue();
         defaultHeader.ShouldNotBeNull();
         defaultHeader.Value.ShouldBe(DefaultHeaderValue);
 
-        var callHeader = serverContext.RequestHeaders.FindHeader(CallHeaderName, false);
+        MetadataExtensions.TryFindHeader(serverContext.RequestHeaders, CallHeaderName, false, out var callHeader).ShouldBeTrue();
         callHeader.ShouldNotBeNull();
         callHeader.Value.ShouldBe(CallHeaderValue);
 

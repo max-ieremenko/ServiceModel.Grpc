@@ -19,7 +19,7 @@ using System.Buffers;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Internal.IO;
+namespace ServiceModel.Grpc.Configuration.IO;
 
 [TestFixture]
 public class BufferReaderStreamTest

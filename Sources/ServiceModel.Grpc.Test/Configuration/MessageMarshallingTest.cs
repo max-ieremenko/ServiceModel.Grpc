@@ -24,7 +24,6 @@ using NUnit.Framework;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.Internal.Emit;
-using ServiceModel.Grpc.Internal.IO;
 using ServiceModel.Grpc.TestApi;
 using Shouldly;
 
@@ -82,15 +81,10 @@ public partial class MessageMarshallingTest
 
     private static T ContextualClone<T>(T value, Marshaller<T> marshaller)
     {
-        byte[] content;
-        using (var serializationContext = new DefaultSerializationContext())
-        {
-            marshaller.ContextualSerializer(value, serializationContext);
-            content = serializationContext.GetContent();
-        }
+        var payload = MarshallerExtensions.Serialize(marshaller, value);
 
-        TestOutput.WriteLine("Size: {0}", content.Length);
-        return marshaller.ContextualDeserializer(new DefaultDeserializationContext(content));
+        TestOutput.WriteLine("Size: {0}", payload.Length);
+        return MarshallerExtensions.Deserialize(marshaller, payload);
     }
 
     private static IEnumerable<object> GetDefaultMessages()

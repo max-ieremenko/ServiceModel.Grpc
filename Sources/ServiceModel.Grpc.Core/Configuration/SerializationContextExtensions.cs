@@ -17,7 +17,7 @@
 using System.IO;
 using Grpc.Core;
 using Grpc.Core.Utils;
-using ServiceModel.Grpc.Internal.IO;
+using ServiceModel.Grpc.Configuration.IO;
 
 namespace ServiceModel.Grpc.Configuration;
 

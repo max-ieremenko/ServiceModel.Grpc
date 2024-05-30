@@ -6,6 +6,15 @@
   },
   "UsedBy": [
     {
+      "Name": "Core",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net462",
+        "netstandard2.0",
+        "netstandard2.1"
+      ]
+    },
+    {
       "Name": "SelfHost",
       "InternalOnly": false,
       "TargetFrameworks": [

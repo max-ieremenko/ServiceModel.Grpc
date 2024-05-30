@@ -182,11 +182,11 @@ public abstract class HeadersHandlingTestBase
     {
         context.ResponseHeaders.ShouldNotBeNull();
 
-        var defaultHeader = context.ResponseHeaders.FindHeader(HeadersService.DefaultHeaderName, false);
+        MetadataExtensions.TryFindHeader(context.ResponseHeaders, HeadersService.DefaultHeaderName, false, out var defaultHeader).ShouldBeTrue();
         defaultHeader.ShouldNotBeNull();
         defaultHeader.Value.ShouldBe(HeadersService.DefaultHeaderValue);
 
-        var callHeader = context.ResponseHeaders.FindHeader(HeadersService.CallHeaderName, false);
+        MetadataExtensions.TryFindHeader(context.ResponseHeaders, HeadersService.CallHeaderName, false, out var callHeader).ShouldBeTrue();
         callHeader.ShouldNotBeNull();
         callHeader.Value.ShouldBe(HeadersService.CallHeaderValue);
 
@@ -199,7 +199,7 @@ public abstract class HeadersHandlingTestBase
         {
             context.ResponseTrailers.ShouldNotBeNull();
 
-            var callTrailer = context.ResponseTrailers.FindHeader(HeadersService.CallTrailerName, false);
+            MetadataExtensions.TryFindHeader(context.ResponseTrailers, HeadersService.CallTrailerName, false, out var callTrailer).ShouldBeTrue();
             callTrailer.ShouldNotBeNull();
             callTrailer.Value.ShouldBe(HeadersService.CallTrailerValue);
         }

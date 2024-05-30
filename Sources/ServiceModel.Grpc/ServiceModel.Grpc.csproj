@@ -28,15 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Channel\Message.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Message.cs</LastGenOutput>
-    </None>
-    <Compile Update="Channel\Message.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Message.tt</DependentUpon>
-    </Compile>
+    <ProjectReference Include="..\ServiceModel.Grpc.Core\ServiceModel.Grpc.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021-2023 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 using System;
 using System.Buffers.Binary;
-using System.Reflection;
 using Google.Protobuf;
 using ServiceModel.Grpc.Configuration;
 
@@ -24,34 +23,28 @@ namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest;
 
 internal static class MessageSerializer
 {
-    private static readonly Func<IMarshallerFactory, object, byte[]> MarshallerSerialize = ResolveMarshallerSerialize();
+    public static byte[] Create(IMessage message) => Create(message.ToByteArray());
 
-    public static byte[] Create(IMessage data) => Create(data.ToByteArray());
-
-    public static byte[] Create(IMarshallerFactory marshallerFactory, object data) => Create(MarshallerSerialize(marshallerFactory, data));
-
-    private static byte[] Create(byte[] data)
+    public static byte[] Create<TMessage>(IMarshallerFactory marshallerFactory, TMessage message)
     {
-        var result = new byte[data.Length + 5];
+        var marshaller = marshallerFactory.CreateMarshaller<TMessage>();
+        var payload = MarshallerExtensions.Serialize(marshaller, message);
+        return Create(payload);
+    }
+
+    private static byte[] Create(byte[] payload)
+    {
+        var result = new byte[payload.Length + 5];
 
         // not compressed
         result[0] = 0;
 
         // length
-        BinaryPrimitives.WriteUInt32BigEndian(result.AsSpan(1), (uint)data.Length);
+        BinaryPrimitives.WriteUInt32BigEndian(result.AsSpan(1), (uint)payload.Length);
 
-        // data
-        Array.Copy(data, 0, result, 5, data.Length);
+        // payload
+        Array.Copy(payload, 0, result, 5, payload.Length);
 
         return result;
-    }
-
-    private static Func<IMarshallerFactory, object, byte[]> ResolveMarshallerSerialize()
-    {
-        return typeof(IMarshallerFactory)
-            .Assembly
-            .GetType("ServiceModel.Grpc.Configuration.MarshallerFactoryExtensions", true, false)!
-            .GetMethod("SerializeHeader", BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)!
-            .CreateDelegate<Func<IMarshallerFactory, object, byte[]>>();
     }
 }

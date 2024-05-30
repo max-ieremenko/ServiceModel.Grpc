@@ -28,6 +28,8 @@ task Default Core, AspNetCore, Swashbuckle, NSwag, DesignTime, SelfHost, ClientD
 
 task Core {
     $projects = @(
+        (Join-Path $Sources "ServiceModel.Grpc.Core"),
+        (Join-Path $Sources "ServiceModel.Grpc.Core.Test"),
         (Join-Path $Sources "ServiceModel.Grpc"),
         (Join-Path $Sources "ServiceModel.Grpc.Test"),
         (Join-Path $Sources "ServiceModel.Grpc.TestApi")

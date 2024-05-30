@@ -21,7 +21,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core.Utils;
 
-namespace ServiceModel.Grpc.Internal.IO;
+namespace ServiceModel.Grpc.Configuration.IO;
 
 internal sealed class BufferWriterStream : Stream
 {

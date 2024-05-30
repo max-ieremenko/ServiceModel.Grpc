@@ -28,11 +28,6 @@ namespace ServiceModel.Grpc;
 /// </summary>
 public sealed class CallContext
 {
-    internal const string HeaderNameMethodInput = "smgrpc-method-input-bin";
-    internal const string HeaderNameMethodOutput = "smgrpc-method-output-bin";
-    internal const string HeaderNameErrorDetail = "smgrpc-error-detail-bin";
-    internal const string HeaderNameErrorDetailType = "smgrpc-error-detail-type";
-
     /// <summary>
     /// Initializes a new instance of the <see cref="CallContext"/> class for a client call.
     /// </summary>
@@ -105,13 +100,13 @@ public sealed class CallContext
     /// Crates <see cref="CallContext"/> with CallOptions based on <see cref="CallOptions"/>.
     /// </summary>
     /// <param name="clientCallContext">The context.</param>
-    public static implicit operator CallContext(CallOptions clientCallContext) => new CallContext(clientCallContext);
+    public static implicit operator CallContext(CallOptions clientCallContext) => new(clientCallContext);
 
     /// <summary>
     /// Crates <see cref="CallContext"/> with ServerCallContext based on <see cref="ServerCallContext"/>.
     /// </summary>
     /// <param name="serverCallContext">The context.</param>
-    public static implicit operator CallContext(ServerCallContext serverCallContext) => new CallContext(serverCallContext);
+    public static implicit operator CallContext(ServerCallContext serverCallContext) => new(serverCallContext);
 
     /// <summary>
     /// Crates <see cref="ServerCallContext"/> based on <see cref="CallContext"/>.ServerCallContext.

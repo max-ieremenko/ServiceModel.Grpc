@@ -20,7 +20,7 @@ using System.Runtime.CompilerServices;
 using Grpc.Core;
 using Grpc.Core.Utils;
 
-namespace ServiceModel.Grpc.Internal.IO;
+namespace ServiceModel.Grpc.Configuration.IO;
 
 internal sealed class DefaultSerializationContext : SerializationContext, IDisposable
 {

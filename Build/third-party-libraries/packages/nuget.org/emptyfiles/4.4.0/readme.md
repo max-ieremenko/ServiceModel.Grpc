@@ -1,7 +1,7 @@
 EmptyFiles [4.4.0](https://www.nuget.org/packages/EmptyFiles/4.4.0)
 --------------------
 
-Used by: Core internal
+Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, SelfHost internal
 
 Target frameworks: net462, net6.0, net7.0, net8.0
 

@@ -17,6 +17,7 @@
 using System;
 using Grpc.Core;
 using Grpc.Core.Utils;
+using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Internal;
 
@@ -94,7 +95,7 @@ internal sealed class ServerCallErrorInterceptor : IServerCallInterceptor
     {
         try
         {
-            metadata.Add(CallContext.HeaderNameErrorDetail, _marshallerFactory.SerializeHeader(detail));
+            metadata.Add(CompatibilityTools.HeaderNameErrorDetail, MarshallerExtensions.SerializeObject(_marshallerFactory, detail));
         }
         catch (Exception ex)
         {
@@ -107,6 +108,6 @@ internal sealed class ServerCallErrorInterceptor : IServerCallInterceptor
             throw;
         }
 
-        metadata.Add(CallContext.HeaderNameErrorDetailType, detail.GetType().GetShortAssemblyQualifiedName());
+        metadata.Add(CompatibilityTools.HeaderNameErrorDetailType, detail.GetType().GetShortAssemblyQualifiedName());
     }
 }

@@ -19,6 +19,7 @@ using System.Linq;
 using Grpc.Core;
 using Moq;
 using NUnit.Framework;
+using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.TestApi;
 using Shouldly;
@@ -95,11 +96,11 @@ public class ServerCallErrorInterceptorTest
         var header = ex.Trailers.First(i => "user-header".Equals(i.Key, StringComparison.OrdinalIgnoreCase));
         header.Value.ShouldBe("user-header-value");
 
-        header = ex.Trailers.First(i => CallContext.HeaderNameErrorDetailType.Equals(i.Key, StringComparison.OrdinalIgnoreCase));
+        header = ex.Trailers.First(i => CompatibilityTools.HeaderNameErrorDetailType.Equals(i.Key, StringComparison.OrdinalIgnoreCase));
         Type.GetType(header.Value, true, false).ShouldBe(typeof(string));
 
-        header = ex.Trailers.First(i => CallContext.HeaderNameErrorDetail.Equals(i.Key, StringComparison.OrdinalIgnoreCase));
-        var detail = DataContractMarshallerFactory.Default.DeserializeHeader(typeof(string), header.ValueBytes).ShouldBeOfType<string>();
+        header = ex.Trailers.First(i => CompatibilityTools.HeaderNameErrorDetail.Equals(i.Key, StringComparison.OrdinalIgnoreCase));
+        var detail = MarshallerExtensions.DeserializeObject(DataContractMarshallerFactory.Default, typeof(string), header.ValueBytes).ShouldBeOfType<string>();
         detail.ShouldBe("some detail");
     }
 
