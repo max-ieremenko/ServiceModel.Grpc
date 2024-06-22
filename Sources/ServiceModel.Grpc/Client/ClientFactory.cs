@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2023 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ using Grpc.Core.Interceptors;
 using Grpc.Core.Utils;
 using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Interceptors.Internal;
-using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.Internal.Emit;
 
 namespace ServiceModel.Grpc.Client;
@@ -185,10 +185,10 @@ public sealed class ClientFactory : IClientFactory
 
             if (options.ErrorHandler != null)
             {
-                _interceptorByContract.Add(contractType, new ClientNativeInterceptor(new ClientCallErrorInterceptor(
+                _interceptorByContract.Add(contractType, ErrorHandlerInterceptorFactory.CreateClientHandler(
                     options.ErrorHandler,
                     methodBinder.MarshallerFactory,
-                    options.Logger)));
+                    options.Logger));
             }
         }
 

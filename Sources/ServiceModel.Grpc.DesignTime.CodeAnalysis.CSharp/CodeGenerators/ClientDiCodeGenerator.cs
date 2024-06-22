@@ -15,18 +15,19 @@
 // </copyright>
 
 using System;
+using Microsoft.CodeAnalysis;
 using ServiceModel.Grpc.Client;
+using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
-using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
 
 internal sealed class ClientDiCodeGenerator : ICodeGenerator
 {
-    private readonly IContractDescription _contract;
+    private readonly ContractDescription<ITypeSymbol> _contract;
     private readonly bool _isStaticClass;
 
-    public ClientDiCodeGenerator(IContractDescription contract, bool isStaticClass)
+    public ClientDiCodeGenerator(ContractDescription<ITypeSymbol> contract, bool isStaticClass)
     {
         _contract = contract;
         _isStaticClass = isStaticClass;

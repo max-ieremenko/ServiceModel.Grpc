@@ -16,6 +16,7 @@
 
 using NUnit.Framework;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Emit.Descriptions;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 
@@ -27,7 +28,7 @@ public class EmitClientBuilderNotSupportedTest : ClientBuilderNotSupportedTestBa
     [OneTimeSetUp]
     public void BeforeAllTests()
     {
-        var description = new ContractDescription(typeof(IInvalidContract));
+        var description = ContractDescriptionBuilder.Build(typeof(IInvalidContract));
 
         var moduleBuilder = ProxyAssembly.CreateModule(nameof(EmitClientBuilderNotSupportedTest));
 

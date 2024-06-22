@@ -22,6 +22,8 @@ using Moq;
 using NUnit.Framework;
 using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Emit;
+using ServiceModel.Grpc.Emit.Descriptions;
 using Shouldly;
 
 namespace ServiceModel.Grpc.Internal.Emit;
@@ -41,7 +43,7 @@ public partial class EmitClientBuilderBuilderTest
     [OneTimeSetUp]
     public void BeforeAllTests()
     {
-        var description = new ContractDescription(typeof(ISomeContract));
+        var description = ContractDescriptionBuilder.Build(typeof(ISomeContract));
 
         _sut = new EmitClientBuilderBuilder(description, typeof(ContractMock), typeof(ClientMock));
         _builderType = _sut.Build(ProxyAssembly.DefaultModule, nameof(EmitClientBuilderBuilderTest) + "ClientBuilder");

@@ -20,6 +20,7 @@ using Grpc.Core;
 using Moq;
 using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Emit;
 
 namespace ServiceModel.Grpc.Internal.Emit;
 
@@ -35,7 +36,7 @@ public partial class EmitClientBuilderBuilderTest
     public sealed class ContractMock
     {
 #pragma warning disable SA1401
-        public static RuntimeMethodHandle SomeOperationDefinition;
+        public static RuntimeMethodHandle GetSomeOperationDefinition;
 
         public IMethod MethodSomeOperation;
 #pragma warning restore SA1401
@@ -44,7 +45,7 @@ public partial class EmitClientBuilderBuilderTest
         {
             MarshallerFactory = marshallerFactory;
             MethodSomeOperation = new Mock<IMethod>(MockBehavior.Strict).Object;
-            SomeOperationDefinition = typeof(ISomeContract).InstanceMethod(nameof(ISomeContract.SomeOperation)).MethodHandle;
+            GetSomeOperationDefinition = typeof(ISomeContract).InstanceMethod(nameof(ISomeContract.SomeOperation)).MethodHandle;
         }
 
         public IMarshallerFactory MarshallerFactory { get; }

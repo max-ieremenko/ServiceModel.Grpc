@@ -21,6 +21,7 @@ using System.Reflection;
 using Grpc.Core;
 using Microsoft.CodeAnalysis;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 using ServiceModel.Grpc.Internal;
@@ -29,9 +30,9 @@ namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
 
 internal sealed class ContractCodeGenerator : ICodeGenerator
 {
-    private readonly IContractDescription _contract;
+    private readonly ContractDescription<ITypeSymbol> _contract;
 
-    public ContractCodeGenerator(IContractDescription contract)
+    public ContractCodeGenerator(ContractDescription<ITypeSymbol> contract)
     {
         _contract = contract;
     }
@@ -96,7 +97,7 @@ internal sealed class ContractCodeGenerator : ICodeGenerator
         }
     }
 
-    private void BuildMethodInitializer(ICodeStringBuilder output, IOperationDescription operation)
+    private void BuildMethodInitializer(ICodeStringBuilder output, OperationDescription<ITypeSymbol> operation)
     {
         // Method = GrpcMethodFactory.Unary<>()
         output
@@ -178,35 +179,36 @@ internal sealed class ContractCodeGenerator : ICodeGenerator
     {
         foreach (var interfaceDescription in _contract.Services)
         {
-            foreach (var method in interfaceDescription.Operations)
+            foreach (var operation in interfaceDescription.Operations)
             {
-                AddGetDefinition(output, interfaceDescription.InterfaceType, method);
+                AddGetDefinition(output, interfaceDescription.InterfaceType, operation, NamingContract.Contract.ClrDefinitionMethod(operation.OperationName));
                 output.AppendLine();
             }
 
             foreach (var entry in interfaceDescription.SyncOverAsync)
             {
-                AddGetDefinition(output, interfaceDescription.InterfaceType, entry.Sync);
+                AddGetDefinition(output, interfaceDescription.InterfaceType, entry.Sync, NamingContract.Contract.ClrDefinitionMethodSync(entry.Async.OperationName));
                 output.AppendLine();
             }
         }
     }
 
-    private void AddGetDefinition(ICodeStringBuilder output, INamedTypeSymbol interfaceType, IOperationDescription operation)
+    private void AddGetDefinition(ICodeStringBuilder output, ITypeSymbol interfaceType, OperationDescription<ITypeSymbol> operation, string methodName)
     {
         output
             .Append("public static ")
             .WriteType(typeof(MethodInfo))
             .Append(" ")
-            .Append(operation.ClrDefinitionMethodName)
+            .Append(methodName)
             .AppendLine("()")
             .AppendLine("{");
 
         using (output.Indent())
         {
-            for (var i = 0; i < operation.Method.Parameters.Length; i++)
+            var source = operation.GetSource();
+            for (var i = 0; i < source.Parameters.Length; i++)
             {
-                var p = operation.Method.Parameters[i];
+                var p = source.Parameters[i];
                 if (p.IsOut())
                 {
                     output
@@ -234,14 +236,14 @@ internal sealed class ContractCodeGenerator : ICodeGenerator
                 .Append(operation.Method.Name)
                 .Append("(");
 
-            for (var i = 0; i < operation.Method.Parameters.Length; i++)
+            for (var i = 0; i < source.Parameters.Length; i++)
             {
                 if (i > 0)
                 {
                     output.Append(", ");
                 }
 
-                var p = operation.Method.Parameters[i];
+                var p = source.Parameters[i];
                 if (p.IsOut())
                 {
                     output
@@ -274,5 +276,5 @@ internal sealed class ContractCodeGenerator : ICodeGenerator
         output.AppendLine("}");
     }
 
-    private IEnumerable<IOperationDescription> GetAllOperations() => _contract.Services.SelectMany(i => i.Operations);
+    private IEnumerable<OperationDescription<ITypeSymbol>> GetAllOperations() => _contract.Services.SelectMany(i => i.Operations);
 }

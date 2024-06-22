@@ -55,7 +55,7 @@ internal sealed class SelfHostServiceMethodBinder<TService> : IServiceMethodBind
         where TRequest : class
         where TResponse : class
     {
-        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
+        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, new FiltersReflectOperationDescription(resolveContractMethodDefinition));
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
         var invoker = new UnaryServerCallHandler<TService, TRequest, TResponse>(_serviceFactory, handler, filterHandlerFactory);
@@ -71,7 +71,7 @@ internal sealed class SelfHostServiceMethodBinder<TService> : IServiceMethodBind
         where TRequest : class, IMessage<TRequestValue>
         where TResponse : class
     {
-        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
+        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, new FiltersReflectOperationDescription(resolveContractMethodDefinition));
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
         var grpcMethod = (GrpcMethod<TRequestHeader, TRequest, Message, TResponse>)method;
@@ -92,7 +92,7 @@ internal sealed class SelfHostServiceMethodBinder<TService> : IServiceMethodBind
         where TResponseHeader : class
         where TResponse : class, IMessage<TResponseValue>, new()
     {
-        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
+        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, new FiltersReflectOperationDescription(resolveContractMethodDefinition));
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
         var grpcMethod = (GrpcMethod<Message, TRequest, TResponseHeader, TResponse>)method;
@@ -114,7 +114,7 @@ internal sealed class SelfHostServiceMethodBinder<TService> : IServiceMethodBind
         where TResponseHeader : class
         where TResponse : class, IMessage<TResponseValue>, new()
     {
-        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
+        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, new FiltersReflectOperationDescription(resolveContractMethodDefinition));
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
         var grpcMethod = (GrpcMethod<TRequestHeader, TRequest, TResponseHeader, TResponse>)method;

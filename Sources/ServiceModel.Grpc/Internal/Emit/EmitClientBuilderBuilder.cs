@@ -20,12 +20,14 @@ using System.Reflection.Emit;
 using Grpc.Core;
 using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Descriptions;
+using ServiceModel.Grpc.Emit;
 
 namespace ServiceModel.Grpc.Internal.Emit;
 
 internal sealed class EmitClientBuilderBuilder
 {
-    private readonly ContractDescription _description;
+    private readonly ContractDescription<Type> _description;
     private readonly Type _contractType;
     private readonly Type _clientType;
     private readonly Type _clientBuilderType;
@@ -34,18 +36,18 @@ internal sealed class EmitClientBuilderBuilder
     private FieldBuilder _callOptionsFactoryField = null!;
     private FieldBuilder _filterHandlerFactoryField = null!;
 
-    public EmitClientBuilderBuilder(ContractDescription description, Type contractType, Type clientType)
+    public EmitClientBuilderBuilder(ContractDescription<Type> description, Type contractType, Type clientType)
     {
         _description = description;
         _contractType = contractType;
         _clientType = clientType;
-        _clientBuilderType = typeof(IClientBuilder<>).MakeGenericType(_description.ServiceType);
+        _clientBuilderType = typeof(IClientBuilder<>).MakeGenericType(_description.ContractInterface);
     }
 
     public TypeInfo Build(ModuleBuilder moduleBuilder, string? className = default)
     {
         var typeBuilder = moduleBuilder.DefineType(
-            className ?? _description.ClientBuilderClassName,
+            className ?? NamingContract.ClientBuilder.Class(_description.BaseClassName),
             TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit);
 
         typeBuilder.AddInterfaceImplementation(_clientBuilderType);
@@ -71,7 +73,7 @@ internal sealed class EmitClientBuilderBuilder
                 "Initialize",
                 MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
                 typeof(void),
-                new[] { typeof(IClientMethodBinder) });
+                [typeof(IClientMethodBinder)]);
 
         typeBuilder.DefineMethodOverride(
             method,
@@ -97,12 +99,12 @@ internal sealed class EmitClientBuilderBuilder
         {
             foreach (var operation in interfaceDescription.Operations)
             {
-                InvokeEmitAdapterAddMethod(body, operation.GrpcMethodName, operation.ClrDefinitionMethodName);
+                InvokeEmitAdapterAddMethod(body, NamingContract.Contract.GrpcMethod(operation.OperationName), NamingContract.Contract.ClrDefinitionMethod(operation.OperationName));
             }
 
             foreach (var entry in interfaceDescription.SyncOverAsync)
             {
-                InvokeEmitAdapterAddMethod(body, entry.Async.GrpcMethodName, entry.Async.ClrDefinitionMethodNameSyncVersion);
+                InvokeEmitAdapterAddMethod(body, NamingContract.Contract.GrpcMethod(entry.Async.OperationName), NamingContract.Contract.ClrDefinitionMethodSync(entry.Async.OperationName));
             }
         }
 
@@ -121,8 +123,8 @@ internal sealed class EmitClientBuilderBuilder
             .DefineMethod(
                 "Build",
                 MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
-                _description.ServiceType,
-                new[] { typeof(CallInvoker) });
+                _description.ContractInterface,
+                [typeof(CallInvoker)]);
 
         typeBuilder.DefineMethodOverride(
             method,

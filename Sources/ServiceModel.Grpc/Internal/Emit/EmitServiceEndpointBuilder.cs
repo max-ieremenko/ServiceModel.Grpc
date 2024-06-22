@@ -23,20 +23,22 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
 using Grpc.Core;
-using ServiceModel.Grpc.Channel;
+using ServiceModel.Grpc.Descriptions;
+using ServiceModel.Grpc.Emit;
+using ServiceModel.Grpc.Emit.Descriptions;
 using ServiceModel.Grpc.Hosting.Internal;
 
 namespace ServiceModel.Grpc.Internal.Emit;
 
 internal sealed class EmitServiceEndpointBuilder
 {
-    private readonly ContractDescription _description;
+    private readonly ContractDescription<Type> _description;
     private readonly HashSet<string> _uniqueMemberNames;
 
     private TypeBuilder _typeBuilder = null!;
     private ILGenerator _ctor = null!;
 
-    public EmitServiceEndpointBuilder(ContractDescription description)
+    public EmitServiceEndpointBuilder(ContractDescription<Type> description)
     {
         _description = description;
         _uniqueMemberNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -53,7 +55,7 @@ internal sealed class EmitServiceEndpointBuilder
     public TypeInfo Build(ModuleBuilder moduleBuilder, ILogger? logger = default, string? className = default)
     {
         _typeBuilder = moduleBuilder.DefineType(
-            className ?? _description.EndpointClassName,
+            className ?? NamingContract.Endpoint.Class(_description.BaseClassName),
             TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit);
 
         _ctor = _typeBuilder
@@ -66,14 +68,14 @@ internal sealed class EmitServiceEndpointBuilder
         {
             foreach (var operation in interfaceDescription.Operations)
             {
-                if (IsSupportedContextInput(operation.Message))
+                if (IsSupportedContextInput(operation))
                 {
                     BuildOperation(operation, interfaceDescription.InterfaceType);
                 }
                 else
                 {
-                    var error = $"Context options in [{ReflectionTools.GetSignature(operation.Message.Operation)}] are not supported.";
-                    logger?.LogError("Service {0}: {1}", _description.ServiceType.FullName, error);
+                    var error = $"Context options in [{ReflectionTools.GetSignature(operation.GetSource())}] are not supported.";
+                    logger?.LogError("Service {0}: {1}", _description.ContractInterface.FullName, error);
                     BuildNotSupportedOperation(operation, interfaceDescription.InterfaceType, error);
                 }
             }
@@ -84,12 +86,12 @@ internal sealed class EmitServiceEndpointBuilder
         return _typeBuilder.CreateTypeInfo()!;
     }
 
-    private static bool IsSupportedContextInput(MessageAssembler message)
+    private static bool IsSupportedContextInput(OperationDescription<Type> operation)
     {
-        for (var i = 0; i < message.ContextInput.Length; i++)
+        for (var i = 0; i < operation.ContextInput.Length; i++)
         {
-            var input = message.ContextInput[i];
-            if (!ServerChannelAdapter.TryGetServiceContextOptionMethod(message.Parameters[input].ParameterType))
+            var input = operation.ContextInput[i];
+            if (!ServerChannelAdapter.TryGetServiceContextOptionMethod(operation.Method.Parameters[input].Type))
             {
                 return false;
             }
@@ -98,9 +100,9 @@ internal sealed class EmitServiceEndpointBuilder
         return true;
     }
 
-    private void BuildNotSupportedOperation(OperationDescription operation, Type serviceType, string error)
+    private void BuildNotSupportedOperation(OperationDescription<Type> operation, Type serviceType, string error)
     {
-        var body = CreateMethodWithSignature(operation.Message, serviceType, operation.OperationName);
+        var body = CreateMethodWithSignature(operation, serviceType, operation.OperationName);
 
         // throw new NotSupportedException("...");
         body.Emit(OpCodes.Ldstr, error);
@@ -108,94 +110,94 @@ internal sealed class EmitServiceEndpointBuilder
         body.Emit(OpCodes.Throw);
     }
 
-    private void BuildOperation(OperationDescription operation, Type serviceType)
+    private void BuildOperation(OperationDescription<Type> operation, Type serviceType)
     {
-        var body = CreateMethodWithSignature(operation.Message, serviceType, operation.OperationName);
+        var body = CreateMethodWithSignature(operation, serviceType, operation.OperationName);
 
-        switch (operation.Message.OperationType)
+        switch (operation.OperationType)
         {
             case MethodType.Unary:
-                BuildUnary(body, operation.Message, serviceType);
+                BuildUnary(body, operation, serviceType);
                 break;
 
             case MethodType.ClientStreaming:
-                BuildClientStreaming(body, operation.Message, serviceType);
+                BuildClientStreaming(body, operation, serviceType);
                 break;
 
             case MethodType.ServerStreaming:
-                BuildServerStreaming(body, operation.Message, serviceType);
+                BuildServerStreaming(body, operation, serviceType);
                 break;
 
             case MethodType.DuplexStreaming:
-                BuildDuplexStreaming(body, operation.Message, serviceType);
+                BuildDuplexStreaming(body, operation, serviceType);
                 break;
         }
     }
 
-    private void BuildUnary(ILGenerator body, MessageAssembler message, Type serviceType)
+    private void BuildUnary(ILGenerator body, OperationDescription<Type> operation, Type serviceType)
     {
         // service
         body.Emit(OpCodes.Ldarg_1);
 
-        for (var i = 0; i < message.Parameters.Length; i++)
+        for (var i = 0; i < operation.Method.Parameters.Length; i++)
         {
-            var parameter = message.Parameters[i];
-            if (message.ContextInput.Contains(i))
+            var parameter = operation.Method.Parameters[i];
+            if (operation.ContextInput.Contains(i))
             {
-                PushContext(body, 3, parameter.ParameterType);
+                PushContext(body, 3, parameter.Type);
             }
             else
             {
-                var propertyName = "Value" + (Array.IndexOf(message.RequestTypeInput, i) + 1);
+                var propertyName = "Value" + (Array.IndexOf(operation.RequestTypeInput, i) + 1);
 
                 // request.Value1
                 body.Emit(OpCodes.Ldarg_2);
-                body.Emit(OpCodes.Callvirt, message.RequestType.InstanceProperty(propertyName).GetMethod);
+                body.Emit(OpCodes.Callvirt, operation.RequestType.GetClrType().InstanceProperty(propertyName).GetMethod);
             }
         }
 
         // service.Method
-        CallContractMethod(body, message, serviceType);
+        CallContractMethod(body, operation, serviceType);
 
-        if (message.IsAsync)
+        if (operation.IsAsync)
         {
-            AdaptSyncUnaryCallResult(body, message);
+            AdaptSyncUnaryCallResult(body, operation);
         }
         else
         {
-            if (message.ResponseType.IsGenericType)
+            if (operation.ResponseType.IsGenericType())
             {
                 // new Message<T>
-                body.Emit(OpCodes.Newobj, message.ResponseType.Constructor(message.ResponseType.GenericTypeArguments));
+                body.Emit(OpCodes.Newobj, operation.ResponseType.GetClrType().Constructor(operation.ResponseType.Properties));
             }
             else
             {
                 // new Message
-                body.Emit(OpCodes.Newobj, message.ResponseType.Constructor());
+                body.Emit(OpCodes.Newobj, operation.ResponseType.GetClrType().Constructor());
             }
 
             // Task.FromResult
-            body.Emit(OpCodes.Call, typeof(Task).StaticMethod(nameof(Task.FromResult)).MakeGenericMethod(message.ResponseType));
+            body.Emit(OpCodes.Call, typeof(Task).StaticMethod(nameof(Task.FromResult)).MakeGenericMethod(operation.ResponseType.GetClrType()));
         }
 
         body.Emit(OpCodes.Ret);
     }
 
-    private void BuildClientStreaming(ILGenerator body, MessageAssembler message, Type serviceType)
+    private void BuildClientStreaming(ILGenerator body, OperationDescription<Type> operation, Type serviceType)
     {
         // service
         body.Emit(OpCodes.Ldarg_1);
 
-        for (var i = 0; i < message.Parameters.Length; i++)
+        for (var i = 0; i < operation.Method.Parameters.Length; i++)
         {
-            var parameter = message.Parameters[i];
-            if (message.ContextInput.Contains(i))
+            var parameter = operation.Method.Parameters[i];
+            if (operation.ContextInput.Contains(i))
             {
-                PushContext(body, 4, parameter.ParameterType);
+                PushContext(body, 4, parameter.Type);
             }
-            else if (message.HeaderRequestTypeInput.Contains(i))
+            else if (operation.HeaderRequestTypeInput.Contains(i))
             {
-                PushHeaderProperty(body, message, i);
+                PushHeaderProperty(body, operation, i);
             }
             else
             {
@@ -204,77 +206,77 @@ internal sealed class EmitServiceEndpointBuilder
         }
 
         // service.Method
-        CallContractMethod(body, message, serviceType);
+        CallContractMethod(body, operation, serviceType);
 
-        AdaptSyncUnaryCallResult(body, message);
+        AdaptSyncUnaryCallResult(body, operation);
 
         body.Emit(OpCodes.Ret);
     }
 
-    private void BuildServerStreaming(ILGenerator body, MessageAssembler message, Type serviceType)
+    private void BuildServerStreaming(ILGenerator body, OperationDescription<Type> operation, Type serviceType)
     {
         // service
         body.Emit(OpCodes.Ldarg_1);
 
-        for (var i = 0; i < message.Parameters.Length; i++)
+        for (var i = 0; i < operation.Method.Parameters.Length; i++)
         {
-            var parameter = message.Parameters[i];
-            if (message.ContextInput.Contains(i))
+            var parameter = operation.Method.Parameters[i];
+            if (operation.ContextInput.Contains(i))
             {
-                PushContext(body, 3, parameter.ParameterType);
+                PushContext(body, 3, parameter.Type);
             }
             else
             {
-                var propertyName = "Value" + (Array.IndexOf(message.RequestTypeInput, i) + 1);
+                var propertyName = "Value" + (Array.IndexOf(operation.RequestTypeInput, i) + 1);
 
                 // request.Value1
                 body.Emit(OpCodes.Ldarg_2);
-                body.Emit(OpCodes.Callvirt, message.RequestType.InstanceProperty(propertyName).GetMethod);
+                body.Emit(OpCodes.Callvirt, operation.RequestType.GetClrType().InstanceProperty(propertyName).GetMethod);
             }
         }
 
         // service.Method
-        CallContractMethod(body, message, serviceType);
+        CallContractMethod(body, operation, serviceType);
 
-        BuildWriteServerStreamingResult(body, message);
+        BuildWriteServerStreamingResult(body, operation);
 
         body.Emit(OpCodes.Ret);
     }
 
-    private FieldBuilder BuildServerStreamingResultAdapter(MessageAssembler message)
+    private FieldBuilder BuildServerStreamingResultAdapter(OperationDescription<Type> operation)
     {
         // private static (Message<string, int>, IAsyncEnumerable<int>) AdaptHeaderTask((string, IAsyncEnumerable<int>, int) result)
-        var parameterType = message.Operation.ReturnType.GetGenericArguments()[0];
+        var parameterType = operation.Method.ReturnType.GetGenericArguments()[0];
         var returnType = typeof(ValueTuple<,>).MakeGenericType(
-            message.HeaderResponseType,
-            typeof(IAsyncEnumerable<>).MakeGenericType(message.ResponseType.GenericTypeArguments[0]));
+            operation.HeaderResponseType.GetClrType(),
+            typeof(IAsyncEnumerable<>).MakeGenericType(operation.ResponseType.Properties[0]));
 
         var method = _typeBuilder
             .DefineMethod(
-                GetUniqueMemberName("__Adapt" + message.Operation.Name + "Response"),
+                GetUniqueMemberName("__Adapt" + operation.Method.Name + "Response"),
                 MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static,
                 returnType,
-                new[] { parameterType });
+                [parameterType]);
 
         var body = method.GetILGenerator();
 
         // return (new Message<string, int>(result.Item1, result.Item3), result.Item2);
-        var headerPropertiesCount = message.HeaderResponseTypeInput.Length;
+        var headerPropertiesCount = operation.HeaderResponseTypeInput.Length;
         for (var i = 0; i < headerPropertiesCount; i++)
         {
             body.Emit(OpCodes.Ldarg_0);
 
-            var index = message.HeaderResponseTypeInput[i] + 1;
+            var index = operation.HeaderResponseTypeInput[i] + 1;
             var fieldName = "Item" + index.ToString(CultureInfo.InvariantCulture);
 
             body.Emit(OpCodes.Ldfld, parameterType.InstanceFiled(fieldName));
         }
 
         // new Message<string, int>()
-        body.Emit(OpCodes.Newobj, message.HeaderResponseType!.Constructor(headerPropertiesCount));
+        body.Emit(OpCodes.Newobj, operation.HeaderResponseType.GetClrType().Constructor(headerPropertiesCount));
 
         // push stream
-        var streamFieldName = "Item" + (message.ResponseTypeIndex + 1).ToString(CultureInfo.InvariantCulture);
+        var streamFieldName = "Item" + (operation.ResponseTypeIndex + 1).ToString(CultureInfo.InvariantCulture);
         body.Emit(OpCodes.Ldarg_0);
         body.Emit(OpCodes.Ldfld, parameterType.InstanceFiled(streamFieldName));
 
@@ -286,7 +288,7 @@ internal sealed class EmitServiceEndpointBuilder
         // private readonly Func<(string, IAsyncEnumerable<int>, int), (Message<string, int>, IAsyncEnumerable<int>)> _adaptHeaderTask = AdaptHeaderTask;
         var field = _typeBuilder
             .DefineField(
-                GetUniqueMemberName("__" + message.Operation.Name + "ResponseAdapter"),
+                GetUniqueMemberName("__" + operation.Method.Name + "ResponseAdapter"),
                 delegateType,
                 FieldAttributes.Private | FieldAttributes.InitOnly);
 
@@ -300,20 +302,20 @@ internal sealed class EmitServiceEndpointBuilder
         return field;
     }
 
-    private void BuildDuplexStreaming(ILGenerator body, MessageAssembler message, Type serviceType)
+    private void BuildDuplexStreaming(ILGenerator body, OperationDescription<Type> operation, Type serviceType)
     {
         body.Emit(OpCodes.Ldarg_1); // service
 
-        for (var i = 0; i < message.Parameters.Length; i++)
+        for (var i = 0; i < operation.Method.Parameters.Length; i++)
         {
-            var parameter = message.Parameters[i];
-            if (message.ContextInput.Contains(i))
+            var parameter = operation.Method.Parameters[i];
+            if (operation.ContextInput.Contains(i))
             {
-                PushContext(body, 4, parameter.ParameterType);
+                PushContext(body, 4, parameter.Type);
             }
-            else if (message.HeaderRequestTypeInput.Contains(i))
+            else if (operation.HeaderRequestTypeInput.Contains(i))
             {
-                PushHeaderProperty(body, message, i);
+                PushHeaderProperty(body, operation, i);
             }
             else
             {
@@ -322,16 +324,16 @@ internal sealed class EmitServiceEndpointBuilder
         }
 
         // service.Method
-        CallContractMethod(body, message, serviceType);
+        CallContractMethod(body, operation, serviceType);
 
-        BuildWriteServerStreamingResult(body, message);
+        BuildWriteServerStreamingResult(body, operation);
 
         body.Emit(OpCodes.Ret);
     }
 
-    private ILGenerator CreateMethodWithSignature(MessageAssembler message, Type serviceType, string methodName)
+    private ILGenerator CreateMethodWithSignature(OperationDescription<Type> operation, Type serviceType, string methodName)
     {
-        switch (message.OperationType)
+        switch (operation.OperationType)
         {
             case MethodType.Unary:
                 // Task<TResponse> Invoke(TService service, TRequest request, ServerCallContext context)
@@ -339,8 +341,8 @@ internal sealed class EmitServiceEndpointBuilder
                     .DefineMethod(
                         methodName,
                         MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
-                        typeof(Task<>).MakeGenericType(message.ResponseType),
-                        new[] { serviceType, message.RequestType, typeof(ServerCallContext) })
+                        typeof(Task<>).MakeGenericType(operation.ResponseType.GetClrType()),
+                        [serviceType, operation.RequestType.GetClrType(), typeof(ServerCallContext)])
                     .GetILGenerator();
 
             case MethodType.ClientStreaming:
@@ -349,12 +351,12 @@ internal sealed class EmitServiceEndpointBuilder
                     .DefineMethod(
                         methodName,
                         MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
-                        typeof(Task<>).MakeGenericType(message.ResponseType),
+                        typeof(Task<>).MakeGenericType(operation.ResponseType.GetClrType()),
                         new[]
                         {
                             serviceType,
-                            message.HeaderRequestType ?? typeof(Message),
-                            typeof(IAsyncEnumerable<>).MakeGenericType(message.RequestType.GenericTypeArguments[0]),
+                            operation.HeaderRequestType.GetClrType(),
+                            typeof(IAsyncEnumerable<>).MakeGenericType(operation.RequestType.Properties[0]),
                             typeof(ServerCallContext)
                         })
                     .GetILGenerator();
@@ -362,8 +364,8 @@ internal sealed class EmitServiceEndpointBuilder
             case MethodType.ServerStreaming:
             {
                 var response = typeof(ValueTuple<,>).MakeGenericType(
-                    message.HeaderResponseType ?? typeof(Message),
-                    typeof(IAsyncEnumerable<>).MakeGenericType(message.ResponseType.GenericTypeArguments[0]));
+                    operation.HeaderResponseType.GetClrType(),
+                    typeof(IAsyncEnumerable<>).MakeGenericType(operation.ResponseType.Properties[0]));
 
                 // ValueTask<(TResponseHeader, IAsyncEnumerable<TResponse>)> Invoke(TService service, TRequest request, ServerCallContext context)
                 return _typeBuilder
@@ -371,15 +373,15 @@ internal sealed class EmitServiceEndpointBuilder
                         methodName,
                         MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
                         typeof(ValueTask<>).MakeGenericType(response),
-                        new[] { serviceType, message.RequestType, typeof(ServerCallContext) })
+                        [serviceType, operation.RequestType.GetClrType(), typeof(ServerCallContext)])
                     .GetILGenerator();
             }
 
             case MethodType.DuplexStreaming:
             {
                 var response = typeof(ValueTuple<,>).MakeGenericType(
-                    message.HeaderResponseType ?? typeof(Message),
-                    typeof(IAsyncEnumerable<>).MakeGenericType(message.ResponseType.GenericTypeArguments[0]));
+                    operation.HeaderResponseType.GetClrType(),
+                    typeof(IAsyncEnumerable<>).MakeGenericType(operation.ResponseType.Properties[0]));
 
                 // ValueTask<(TResponseHeader, IAsyncEnumerable<TResponse>)> Invoke(TService service, TRequestHeader requestHeader, IAsyncEnumerable<TRequest> request, ServerCallContext context)
                 return _typeBuilder
@@ -387,27 +389,26 @@ internal sealed class EmitServiceEndpointBuilder
                         methodName,
                         MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
                         typeof(ValueTask<>).MakeGenericType(response),
-                        new[]
-                        {
+                        [
                             serviceType,
-                            message.HeaderRequestType ?? typeof(Message),
-                            typeof(IAsyncEnumerable<>).MakeGenericType(message.RequestType.GenericTypeArguments[0]),
+                            operation.HeaderRequestType.GetClrType(),
+                            typeof(IAsyncEnumerable<>).MakeGenericType(operation.RequestType.Properties[0]),
                             typeof(ServerCallContext)
-                        })
+                        ])
                     .GetILGenerator();
             }
         }
 
-        throw new NotImplementedException($"{message.OperationType} operation is not implemented.");
+        throw new NotImplementedException($"{operation.OperationType} operation is not implemented.");
     }
 
-    private void AdaptSyncUnaryCallResult(ILGenerator body, MessageAssembler message)
+    private void AdaptSyncUnaryCallResult(ILGenerator body, OperationDescription<Type> message)
     {
-        if (message.ResponseType.IsGenericType)
+        if (message.ResponseType.IsGenericType())
         {
             var adapter = typeof(ServerChannelAdapter)
-                .StaticMethod(message.Operation.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.GetUnaryCallResultValueTask) : nameof(ServerChannelAdapter.GetUnaryCallResultTask))
-                .MakeGenericMethod(message.ResponseType.GenericTypeArguments[0]);
+                .StaticMethod(message.Method.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.GetUnaryCallResultValueTask) : nameof(ServerChannelAdapter.GetUnaryCallResultTask))
+                .MakeGenericMethod(message.ResponseType.Properties[0]);
 
             // ServerChannelAdapter.GetUnaryCallResult
             body.Emit(OpCodes.Call, adapter);
@@ -415,7 +416,7 @@ internal sealed class EmitServiceEndpointBuilder
         else
         {
             var adapter = typeof(ServerChannelAdapter)
-                .StaticMethod(message.Operation.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.UnaryCallWaitValueTask) : nameof(ServerChannelAdapter.UnaryCallWaitTask));
+                .StaticMethod(message.Method.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.UnaryCallWaitValueTask) : nameof(ServerChannelAdapter.UnaryCallWaitTask));
 
             // ServerChannelAdapter.UnaryCallWait
             body.Emit(OpCodes.Call, adapter);
@@ -429,53 +430,53 @@ internal sealed class EmitServiceEndpointBuilder
         body.Emit(OpCodes.Call, ServerChannelAdapter.GetServiceContextOptionMethod(contextType));
     }
 
-    private void PushHeaderProperty(ILGenerator body, MessageAssembler message, int parameterIndex)
+    private void PushHeaderProperty(ILGenerator body, OperationDescription<Type> operation, int parameterIndex)
     {
-        var propertyName = "Value" + (Array.IndexOf(message.HeaderRequestTypeInput, parameterIndex) + 1);
+        var propertyName = "Value" + (Array.IndexOf(operation.HeaderRequestTypeInput, parameterIndex) + 1);
         body.Emit(OpCodes.Ldarg_2); // requestHeader
-        body.Emit(OpCodes.Callvirt, message.HeaderRequestType!.InstanceProperty(propertyName).GetMethod); // requestHeader
+        body.Emit(OpCodes.Callvirt, operation.HeaderRequestType.GetClrType().InstanceProperty(propertyName).GetMethod); // requestHeader
     }
 
-    private void CallContractMethod(ILGenerator body, MessageAssembler message, Type serviceType)
+    private void CallContractMethod(ILGenerator body, OperationDescription<Type> operation, Type serviceType)
     {
-        var parameters = new Type[message.Parameters.Length];
+        var parameters = new Type[operation.Method.Parameters.Length];
         for (var i = 0; i < parameters.Length; i++)
         {
-            parameters[i] = message.Parameters[i].ParameterType;
+            parameters[i] = operation.Method.Parameters[i].Type;
         }
 
-        var method = serviceType.InstanceMethod(message.Operation.Name, parameters);
+        var method = serviceType.InstanceMethod(operation.Method.Name, parameters);
         body.Emit(OpCodes.Callvirt, method);
     }
 
-    private void BuildWriteServerStreamingResult(ILGenerator body, MessageAssembler message)
+    private void BuildWriteServerStreamingResult(ILGenerator body, OperationDescription<Type> operation)
     {
-        if (message.HeaderResponseType == null && !message.IsAsync)
+        if (operation.HeaderResponseType == null && !operation.IsAsync)
         {
             // return ServerChannelAdapter.ServerStreaming(service.Simple());
             var channelAdapter = typeof(ServerChannelAdapter)
                 .StaticMethod(nameof(ServerChannelAdapter.ServerStreaming))
-                .MakeGenericMethod(message.ResponseType.GenericTypeArguments[0]);
+                .MakeGenericMethod(operation.ResponseType.Properties[0]);
             body.Emit(OpCodes.Call, channelAdapter);
         }
-        else if (message.HeaderResponseType == null && message.IsAsync)
+        else if (operation.HeaderResponseType == null && operation.IsAsync)
         {
             // return ServerChannelAdapter.ServerStreamingTask(service.SimpleTask());
             var channelAdapter = typeof(ServerChannelAdapter)
-                .StaticMethod(message.Operation.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.ServerStreamingValueTask) : nameof(ServerChannelAdapter.ServerStreamingTask))
-                .MakeGenericMethod(message.ResponseType.GenericTypeArguments[0]);
+                .StaticMethod(operation.Method.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.ServerStreamingValueTask) : nameof(ServerChannelAdapter.ServerStreamingTask))
+                .MakeGenericMethod(operation.ResponseType.Properties[0]);
             body.Emit(OpCodes.Call, channelAdapter);
         }
         else
         {
             // return ServerChannelAdapter.ServerStreamingHeaderTask(service.HeaderTask(), AdaptHeaderTask);
-            var adapterField = BuildServerStreamingResultAdapter(message);
+            var adapterField = BuildServerStreamingResultAdapter(operation);
             body.Emit(OpCodes.Ldarg_0);
             body.Emit(OpCodes.Ldfld, adapterField);
 
             var channelAdapter = typeof(ServerChannelAdapter)
-                .StaticMethod(message.Operation.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.ServerStreamingHeaderValueTask) : nameof(ServerChannelAdapter.ServerStreamingHeaderTask))
-                .MakeGenericMethod(message.Operation.ReturnType.GetGenericArguments()[0], message.HeaderResponseType, message.ResponseType.GenericTypeArguments[0]);
+                .StaticMethod(operation.Method.ReturnType.IsValueTask() ? nameof(ServerChannelAdapter.ServerStreamingHeaderValueTask) : nameof(ServerChannelAdapter.ServerStreamingHeaderTask))
+                .MakeGenericMethod(operation.Method.ReturnType.GetGenericArguments()[0], operation.HeaderResponseType.GetClrType(), operation.ResponseType.Properties[0]);
             body.Emit(OpCodes.Call, channelAdapter);
         }
     }

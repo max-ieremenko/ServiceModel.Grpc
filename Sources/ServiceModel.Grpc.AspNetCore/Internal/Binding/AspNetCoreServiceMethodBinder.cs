@@ -57,12 +57,13 @@ internal sealed class AspNetCoreServiceMethodBinder<TService> : IServiceMethodBi
         where TRequest : class
         where TResponse : class
     {
-        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
+        var filterDescription = new FiltersReflectOperationDescription(resolveContractMethodDefinition);
+        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, filterDescription);
         var invoker = new UnaryServerCallHandler<TService, TRequest, TResponse>(handler, filterHandlerFactory);
 
         if (_requiresGrpcMarker)
         {
-            metadata = AddServiceModelGrpcMarker(metadata, filterHandlerFactory?.ContractMethodDefinition ?? resolveContractMethodDefinition());
+            metadata = AddServiceModelGrpcMarker(metadata, filterDescription.GetContractMethod());
         }
 
         _context.AddUnaryMethod((Method<TRequest, TResponse>)method, metadata, invoker.Handle);
@@ -78,7 +79,8 @@ internal sealed class AspNetCoreServiceMethodBinder<TService> : IServiceMethodBi
         where TResponse : class
     {
         var grpcMethod = (GrpcMethod<TRequestHeader, TRequest, Message, TResponse>)method;
-        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
+        var filterDescription = new FiltersReflectOperationDescription(resolveContractMethodDefinition);
+        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, filterDescription);
         var invoker = new ClientStreamingServerCallHandler<TService, TRequestHeader, TRequest, TRequestValue, TResponse>(
             handler,
             grpcMethod.RequestHeaderMarshaller,
@@ -86,7 +88,7 @@ internal sealed class AspNetCoreServiceMethodBinder<TService> : IServiceMethodBi
 
         if (_requiresGrpcMarker)
         {
-            metadata = AddServiceModelGrpcMarker(metadata, filterHandlerFactory?.ContractMethodDefinition ?? resolveContractMethodDefinition());
+            metadata = AddServiceModelGrpcMarker(metadata, filterDescription.GetContractMethod());
         }
 
         _context.AddClientStreamingMethod(grpcMethod, metadata, invoker.Handle);
@@ -102,7 +104,8 @@ internal sealed class AspNetCoreServiceMethodBinder<TService> : IServiceMethodBi
         where TResponse : class, IMessage<TResponseValue>, new()
     {
         var grpcMethod = (GrpcMethod<Message, TRequest, TResponseHeader, TResponse>)method;
-        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
+        var filterDescription = new FiltersReflectOperationDescription(resolveContractMethodDefinition);
+        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, filterDescription);
         var invoker = new ServerStreamingServerCallHandler<TService, TRequest, TResponseHeader, TResponse, TResponseValue>(
             handler,
             grpcMethod.ResponseHeaderMarshaller,
@@ -110,7 +113,7 @@ internal sealed class AspNetCoreServiceMethodBinder<TService> : IServiceMethodBi
 
         if (_requiresGrpcMarker)
         {
-            metadata = AddServiceModelGrpcMarker(metadata, filterHandlerFactory?.ContractMethodDefinition ?? resolveContractMethodDefinition());
+            metadata = AddServiceModelGrpcMarker(metadata, filterDescription.GetContractMethod());
         }
 
         _context.AddServerStreamingMethod(grpcMethod, metadata, invoker.Handle);
@@ -127,7 +130,8 @@ internal sealed class AspNetCoreServiceMethodBinder<TService> : IServiceMethodBi
         where TResponse : class, IMessage<TResponseValue>, new()
     {
         var grpcMethod = (GrpcMethod<TRequestHeader, TRequest, TResponseHeader, TResponse>)method;
-        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
+        var filterDescription = new FiltersReflectOperationDescription(resolveContractMethodDefinition);
+        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, filterDescription);
         var invoker = new DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TRequestValue, TResponseHeader, TResponse, TResponseValue>(
             handler,
             grpcMethod.RequestHeaderMarshaller,
@@ -136,7 +140,7 @@ internal sealed class AspNetCoreServiceMethodBinder<TService> : IServiceMethodBi
 
         if (_requiresGrpcMarker)
         {
-            metadata = AddServiceModelGrpcMarker(metadata, filterHandlerFactory?.ContractMethodDefinition ?? resolveContractMethodDefinition());
+            metadata = AddServiceModelGrpcMarker(metadata, filterDescription.GetContractMethod());
         }
 
         _context.AddDuplexStreamingMethod(grpcMethod, metadata, invoker.Handle);

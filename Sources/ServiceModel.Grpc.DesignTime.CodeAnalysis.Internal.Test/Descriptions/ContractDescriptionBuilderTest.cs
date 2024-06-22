@@ -16,8 +16,10 @@
 
 using System;
 using System.Linq;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
+using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.TestApi;
 using ServiceModel.Grpc.TestApi;
 using Shouldly;
@@ -68,7 +70,6 @@ public partial class ContractDescriptionBuilderTest
         var sum = calculator.Operations[0];
         sum.OperationName.ShouldBe("Sum");
         sum.ServiceName.ShouldBe("ICalculator-Some-Value");
-        sum.ClrDefinitionMethodName.ShouldBe("GetSumDefinition");
 
         var service = actual.Services.First(i => i.InterfaceType.Name == "IGenericService");
         service.Methods.ShouldBeEmpty();
@@ -78,7 +79,6 @@ public partial class ContractDescriptionBuilderTest
         var ping = service.Operations[0];
         ping.OperationName.ShouldBe("Ping");
         ping.ServiceName.ShouldBe("IGenericService-Some-Value");
-        ping.ClrDefinitionMethodName.ShouldBe("GetPingDefinition");
     }
 
     [Test]
@@ -94,17 +94,15 @@ public partial class ContractDescriptionBuilderTest
 
         actual.Services[0].Operations.Length.ShouldBe(1);
         actual.Services[0].Operations[0].OperationName.ShouldBe(nameof(ISyncOveAsync.PingAsync));
-        actual.Services[0].Operations[0].ClrDefinitionMethodName.ShouldBe("GetPingAsyncDefinition");
 
         actual.Services[0].SyncOverAsync.Length.ShouldBe(1);
         actual.Services[0].SyncOverAsync[0].Async.ShouldBe(actual.Services[0].Operations[0]);
         actual.Services[0].SyncOverAsync[0].Sync.Method.Name.ShouldBe(nameof(ISyncOveAsync.Ping));
-        actual.Services[0].SyncOverAsync[0].Sync.ClrDefinitionMethodName.ShouldBe("GetPingAsyncDefinitionSync");
     }
 
-    private ContractDescription Build(Type serviceType)
+    private ContractDescription<ITypeSymbol> Build(Type serviceType)
     {
         var symbol = _compilation.ResolveTypeSymbol(serviceType);
-        return new ContractDescriptionBuilder(symbol).Build().ShouldBeOfType<ContractDescription>();
+        return ContractDescriptionBuilder.Build(symbol);
     }
 }

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2022-2024 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,13 +30,13 @@ public partial class InterfaceTreeTest
     [Test]
     public void NonServiceContractTree()
     {
-        var rootType = _compilation.ResolveTypeSymbol(typeof(NonServiceContract.IService));
-        var sut = new InterfaceTree(rootType);
+        var symbol = _compilation.ResolveTypeSymbol(typeof(NonServiceContract.IService));
+        var actual = ContractDescriptionBuilder.Build(symbol);
 
-        sut.Interfaces.Count.ShouldBe(1);
-        sut.Interfaces[0].ShouldBe(rootType);
+        actual.Interfaces.Length.ShouldBe(1);
+        actual.Interfaces[0].InterfaceType.ShouldBe(symbol);
 
-        sut.Services.ShouldBeEmpty();
+        actual.Services.ShouldBeEmpty();
     }
 
     [Test]
@@ -45,100 +45,138 @@ public partial class InterfaceTreeTest
     public void OneContractRootTree(Type rootType)
     {
         var rootTypeSymbol = _compilation.ResolveTypeSymbol(rootType);
-        var sut = new InterfaceTree(rootTypeSymbol);
+        var actual = ContractDescriptionBuilder.Build(rootTypeSymbol);
 
-        sut.Interfaces.Count.ShouldBe(1);
-        sut.Interfaces[0].Name.ShouldBe(nameof(IDisposable));
+        actual.Interfaces.Length.ShouldBe(1);
+        actual.Interfaces[0].InterfaceType.Name.ShouldBe(nameof(IDisposable));
 
-        sut.Services.Count.ShouldBe(3);
+        actual.Services.Length.ShouldBe(3);
 
-        sut.Services[0].ServiceName.ShouldBe(nameof(OneContractRoot.IContract));
-        sut.Services[0].ServiceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(OneContractRoot.IContract)));
+        actual.Services[0].InterfaceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(OneContractRoot.IContract)));
+        actual.Services[0].Operations.ShouldBeEmpty();
+        actual.Services[0].Methods.ShouldBeEmpty();
+        actual.Services[0].NotSupportedOperations.ShouldBeEmpty();
 
-        sut.Services[1].ServiceName.ShouldBe(nameof(OneContractRoot.IContract));
-        sut.Services[1].ServiceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(OneContractRoot.IService1)));
+        actual.Services[1].InterfaceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(OneContractRoot.IService1)));
+        actual.Services[1].Operations.Length.ShouldBe(1);
+        actual.Services[1].Operations[0].ServiceName.ShouldBe(nameof(OneContractRoot.IContract));
+        actual.Services[1].Methods.ShouldBeEmpty();
+        actual.Services[1].NotSupportedOperations.ShouldBeEmpty();
 
-        sut.Services[2].ServiceName.ShouldBe(nameof(OneContractRoot.IContract));
-        sut.Services[2].ServiceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(OneContractRoot.IService2)));
+        actual.Services[2].InterfaceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(OneContractRoot.IService2)));
+        actual.Services[1].Operations.Length.ShouldBe(1);
+        actual.Services[1].Operations[0].ServiceName.ShouldBe(nameof(OneContractRoot.IContract));
+        actual.Services[1].Methods.ShouldBeEmpty();
+        actual.Services[1].NotSupportedOperations.ShouldBeEmpty();
     }
 
     [Test]
     public void AttachToMostTopContractTree()
     {
         var rootType = _compilation.ResolveTypeSymbol(typeof(AttachToMostTopContract.IContract2));
-        var sut = new InterfaceTree(rootType);
+        var actual = ContractDescriptionBuilder.Build(rootType);
 
-        sut.Interfaces.ShouldBeEmpty();
+        actual.Interfaces.ShouldBeEmpty();
 
-        sut.Services.Count.ShouldBe(4);
+        actual.Services.Length.ShouldBe(4);
 
-        sut.Services[0].ServiceName.ShouldBe(nameof(AttachToMostTopContract.IContract2));
-        sut.Services[0].ServiceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(AttachToMostTopContract.IContract2)));
+        actual.Services[0].InterfaceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(AttachToMostTopContract.IContract1)));
+        actual.Services[0].Operations.ShouldBeEmpty();
+        actual.Services[0].Methods.ShouldBeEmpty();
+        actual.Services[0].NotSupportedOperations.ShouldBeEmpty();
 
-        sut.Services[1].ServiceName.ShouldBe(nameof(AttachToMostTopContract.IContract1));
-        sut.Services[1].ServiceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(AttachToMostTopContract.IContract1)));
+        actual.Services[1].InterfaceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(AttachToMostTopContract.IContract2)));
+        actual.Services[1].Operations.ShouldBeEmpty();
+        actual.Services[1].Methods.ShouldBeEmpty();
+        actual.Services[1].NotSupportedOperations.ShouldBeEmpty();
 
-        sut.Services[2].ServiceName.ShouldBe(nameof(AttachToMostTopContract.IContract2));
-        sut.Services[2].ServiceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(AttachToMostTopContract.IService1)));
+        actual.Services[2].InterfaceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(AttachToMostTopContract.IService1)));
+        actual.Services[2].Operations.Length.ShouldBe(1);
+        actual.Services[2].Operations[0].ServiceName.ShouldBe(nameof(AttachToMostTopContract.IContract2));
+        actual.Services[2].Methods.ShouldBeEmpty();
+        actual.Services[2].NotSupportedOperations.ShouldBeEmpty();
 
-        sut.Services[3].ServiceName.ShouldBe(nameof(AttachToMostTopContract.IContract2));
-        sut.Services[3].ServiceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(AttachToMostTopContract.IService2)));
+        actual.Services[3].InterfaceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(AttachToMostTopContract.IService2)));
+        actual.Services[2].Operations.Length.ShouldBe(1);
+        actual.Services[2].Operations[0].ServiceName.ShouldBe(nameof(AttachToMostTopContract.IContract2));
+        actual.Services[3].Methods.ShouldBeEmpty();
+        actual.Services[3].NotSupportedOperations.ShouldBeEmpty();
     }
 
     [Test]
     public void RootNotFoundTree()
     {
         var rootType = _compilation.ResolveTypeSymbol(typeof(RootNotFound.Contract));
-        var sut = new InterfaceTree(rootType);
+        var actual = ContractDescriptionBuilder.Build(rootType);
 
-        sut.Interfaces.ShouldBeEmpty();
+        actual.Interfaces.ShouldBeEmpty();
 
-        sut.Services.Count.ShouldBe(3);
+        actual.Services.Length.ShouldBe(3);
 
-        sut.Services[0].ServiceName.ShouldBe(nameof(RootNotFound.IContract1));
-        sut.Services[0].ServiceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(RootNotFound.IContract1)));
+        actual.Services[0].InterfaceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(RootNotFound.IContract1)));
+        actual.Services[0].Operations.ShouldBeEmpty();
+        actual.Services[0].Methods.ShouldBeEmpty();
+        actual.Services[0].NotSupportedOperations.ShouldBeEmpty();
 
-        sut.Services[1].ServiceName.ShouldBe(nameof(RootNotFound.IContract2));
-        sut.Services[1].ServiceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(RootNotFound.IContract2)));
+        actual.Services[1].InterfaceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(RootNotFound.IContract2)));
+        actual.Services[1].Operations.ShouldBeEmpty();
+        actual.Services[1].Methods.ShouldBeEmpty();
+        actual.Services[1].NotSupportedOperations.ShouldBeEmpty();
 
-        sut.Services[2].ServiceName.ShouldBe(nameof(RootNotFound.IContract1));
-        sut.Services[2].ServiceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(RootNotFound.IService)));
+        actual.Services[2].InterfaceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(RootNotFound.IService)));
+        actual.Services[2].Operations.Length.ShouldBe(1);
+        actual.Services[2].Operations[0].ServiceName.ShouldBe(nameof(RootNotFound.IContract1));
+        actual.Services[2].Methods.ShouldBeEmpty();
+        actual.Services[2].NotSupportedOperations.ShouldBeEmpty();
     }
 
     [Test]
     public void TransientInterfaceTree()
     {
         var rootType = _compilation.ResolveTypeSymbol(typeof(TransientInterface.IContract));
-        var sut = new InterfaceTree(rootType);
+        var actual = ContractDescriptionBuilder.Build(rootType);
 
-        sut.Interfaces.Count.ShouldBe(1);
-        sut.Interfaces[0].ShouldBe(_compilation.ResolveTypeSymbol(typeof(TransientInterface.IService2)));
+        actual.Interfaces.Length.ShouldBe(1);
+        actual.Interfaces[0].InterfaceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(TransientInterface.IService2)));
 
-        sut.Services.Count.ShouldBe(2);
+        actual.Services.Length.ShouldBe(2);
 
-        sut.Services[0].ServiceName.ShouldBe(nameof(TransientInterface.IContract));
-        sut.Services[0].ServiceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(TransientInterface.IContract)));
+        actual.Services[0].InterfaceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(TransientInterface.IContract)));
+        actual.Services[0].Operations.ShouldBeEmpty();
+        actual.Services[0].Methods.ShouldBeEmpty();
+        actual.Services[0].NotSupportedOperations.ShouldBeEmpty();
 
-        sut.Services[1].ServiceName.ShouldBe(nameof(TransientInterface.IContract));
-        sut.Services[1].ServiceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(TransientInterface.IService1)));
+        actual.Services[1].InterfaceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(TransientInterface.IService1)));
+        actual.Services[1].Operations.Length.ShouldBe(1);
+        actual.Services[1].Operations[0].ServiceName.ShouldBe(nameof(TransientInterface.IContract));
+        actual.Services[1].Methods.ShouldBeEmpty();
+        actual.Services[1].NotSupportedOperations.ShouldBeEmpty();
     }
 
     [Test]
     public void TransientGenericInterfaceTree()
     {
         var rootType = _compilation.ResolveTypeSymbol(typeof(TransientGenericInterface.IContract<int>));
-        var sut = new InterfaceTree(rootType);
+        var actual = ContractDescriptionBuilder.Build(rootType);
 
-        sut.Interfaces.ShouldBeEmpty();
-        sut.Services.Count.ShouldBe(3);
+        actual.Interfaces.ShouldBeEmpty();
+        actual.Services.Length.ShouldBe(3);
 
-        sut.Services[0].ServiceName.ShouldBe("IContract-Int32");
-        sut.Services[0].ServiceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(TransientGenericInterface.IContract<int>)));
+        actual.Services[0].InterfaceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(TransientGenericInterface.IContract<int>)));
+        actual.Services[0].Operations.ShouldBeEmpty();
+        actual.Services[0].Methods.ShouldBeEmpty();
+        actual.Services[0].NotSupportedOperations.ShouldBeEmpty();
 
-        sut.Services[1].ServiceName.ShouldBe("IContract-Int32");
-        sut.Services[1].ServiceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(TransientGenericInterface.IService2<int>)));
+        actual.Services[1].InterfaceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(TransientGenericInterface.IService1)));
+        actual.Services[1].Operations.Length.ShouldBe(1);
+        actual.Services[1].Operations[0].ServiceName.ShouldBe("IContract-Int32");
+        actual.Services[1].Methods.ShouldBeEmpty();
+        actual.Services[1].NotSupportedOperations.ShouldBeEmpty();
 
-        sut.Services[2].ServiceName.ShouldBe("IContract-Int32");
-        sut.Services[2].ServiceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(TransientGenericInterface.IService1)));
+        actual.Services[2].InterfaceType.ShouldBe(_compilation.ResolveTypeSymbol(typeof(TransientGenericInterface.IService2<int>)));
+        actual.Services[1].Operations.Length.ShouldBe(1);
+        actual.Services[1].Operations[0].ServiceName.ShouldBe("IContract-Int32");
+        actual.Services[2].Methods.ShouldBeEmpty();
+        actual.Services[2].NotSupportedOperations.ShouldBeEmpty();
     }
 }

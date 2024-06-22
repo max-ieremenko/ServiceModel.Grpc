@@ -21,6 +21,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.Serialization;
 using ServiceModel.Grpc.Channel;
+using ServiceModel.Grpc.Emit;
 
 namespace ServiceModel.Grpc.Internal.Emit;
 

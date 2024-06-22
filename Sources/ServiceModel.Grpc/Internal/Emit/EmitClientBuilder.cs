@@ -22,14 +22,16 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
 using Grpc.Core;
-using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Client.Internal;
+using ServiceModel.Grpc.Descriptions;
+using ServiceModel.Grpc.Emit;
+using ServiceModel.Grpc.Emit.Descriptions;
 
 namespace ServiceModel.Grpc.Internal.Emit;
 
 internal sealed class EmitClientBuilder
 {
-    private readonly ContractDescription _description;
+    private readonly ContractDescription<Type> _description;
     private readonly Type _contractType;
     private readonly HashSet<string> _uniqueMemberNames;
 
@@ -39,7 +41,7 @@ internal sealed class EmitClientBuilder
     private FieldBuilder _callOptionsFactoryField = null!;
     private FieldBuilder _filterHandlerFactoryField = null!;
 
-    public EmitClientBuilder(ContractDescription description, Type contractType)
+    public EmitClientBuilder(ContractDescription<Type> description, Type contractType)
     {
         _description = description;
         _contractType = contractType;
@@ -50,7 +52,7 @@ internal sealed class EmitClientBuilder
     {
         _typeBuilder = moduleBuilder
             .DefineType(
-                _description.ClientClassName,
+                NamingContract.Client.Class(_description.BaseClassName),
                 TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit);
 
         _contractField = _typeBuilder
@@ -85,7 +87,7 @@ internal sealed class EmitClientBuilder
 
             foreach (var method in interfaceDescription.Methods)
             {
-                ImplementNotSupportedMethod(method.Method, method.Error);
+                ImplementNotSupportedMethod(method.GetSource(), method.Error);
             }
         }
 
@@ -95,22 +97,22 @@ internal sealed class EmitClientBuilder
 
             foreach (var method in interfaceDescription.Methods)
             {
-                ImplementNotSupportedMethod(method.Method, method.Error);
+                ImplementNotSupportedMethod(method.GetSource(), method.Error);
             }
 
             foreach (var method in interfaceDescription.NotSupportedOperations)
             {
-                ImplementNotSupportedMethod(method.Method, method.Error);
+                ImplementNotSupportedMethod(method.GetSource(), method.Error);
             }
 
             foreach (var operation in interfaceDescription.Operations)
             {
-                ImplementMethod(operation.Message, operation);
+                ImplementMethod(operation, null);
             }
 
             foreach (var entry in interfaceDescription.SyncOverAsync)
             {
-                ImplementMethod(entry.Sync, entry.Async);
+                ImplementMethod(entry.Sync, NamingContract.Contract.GrpcMethod(entry.Async.OperationName));
             }
         }
 
@@ -145,14 +147,14 @@ internal sealed class EmitClientBuilder
         body.Emit(OpCodes.Throw);
     }
 
-    private void ImplementMethod(MessageAssembler decorator, OperationDescription operation)
+    private void ImplementMethod(OperationDescription<Type> operation, string? grpcMethodName)
     {
-        var body = CreateMethodWithSignature(decorator.Operation);
+        var body = CreateMethodWithSignature(operation.GetSource());
 
-        switch (decorator.OperationType)
+        switch (operation.OperationType)
         {
             case MethodType.Unary:
-                BuildUnary(body, decorator, operation);
+                BuildUnary(body, operation, grpcMethodName);
                 break;
             case MethodType.ClientStreaming:
                 BuildClientStreaming(body, operation);
@@ -164,90 +166,90 @@ internal sealed class EmitClientBuilder
                 BuildDuplexStreaming(body, operation);
                 break;
             default:
-                throw new NotImplementedException($"{decorator.OperationType} operation is not implemented.");
+                throw new NotImplementedException($"{operation.OperationType} operation is not implemented.");
         }
     }
 
-    private void BuildUnary(ILGenerator body, MessageAssembler decorator, OperationDescription operation)
+    private void BuildUnary(ILGenerator body, OperationDescription<Type> operation, string? grpcMethodName)
     {
         // optionsBuilder
-        InitializeCallOptionsBuilder(body, decorator);
+        InitializeCallOptionsBuilder(body, operation);
 
         // var call = new UnaryCall<TRequest, TResponse>(method, CallInvoker, optionsBuilder)
-        var callType = typeof(UnaryCall<,>).MakeGenericType(decorator.RequestType, decorator.ResponseType);
-        InitializeCall(body, operation, callType);
+        var callType = typeof(UnaryCall<,>).MakeGenericType(operation.RequestType.GetClrType(), operation.ResponseType.GetClrType());
+        InitializeCall(body, operation, callType, grpcMethodName);
 
         // call.Invoke(message)
         body.Emit(OpCodes.Ldloca_S, 1); // call
-        PushMessage(body, decorator.RequestType, decorator.RequestTypeInput); // message
+        PushMessage(body, operation.RequestType.GetClrType(), operation.RequestTypeInput); // message
 
         var invokeMethod = callType.InstanceGenericMethod(
-            decorator.IsAsync ? "InvokeAsync" : "Invoke",
-            decorator.ResponseType.IsGenericType ? 1 : 0);
-        if (decorator.ResponseType.IsGenericType)
+            operation.IsAsync ? "InvokeAsync" : "Invoke",
+            operation.ResponseType.IsGenericType() ? 1 : 0);
+        if (operation.ResponseType.IsGenericType())
         {
-            invokeMethod = invokeMethod.MakeGenericMethod(decorator.ResponseType.GenericTypeArguments);
+            invokeMethod = invokeMethod.MakeGenericMethod(operation.ResponseType.Properties);
         }
 
         body.Emit(OpCodes.Call, invokeMethod);
 
         // Task => new ValueTask
-        if (decorator.Operation.ReturnType.IsValueTask())
+        if (operation.Method.ReturnType.IsValueTask())
         {
-            body.Emit(OpCodes.Newobj, decorator.Operation.ReturnType.Constructor(invokeMethod.ReturnType));
+            body.Emit(OpCodes.Newobj, operation.Method.ReturnType.Constructor(invokeMethod.ReturnType));
         }
 
         body.Emit(OpCodes.Ret);
     }
 
-    private void BuildServerStreaming(ILGenerator body, OperationDescription operation)
+    private void BuildServerStreaming(ILGenerator body, OperationDescription<Type> operation)
     {
         // optionsBuilder
-        InitializeCallOptionsBuilder(body, operation.Message);
+        InitializeCallOptionsBuilder(body, operation);
 
         // var call = new ServerStreamingCall<TRequest, TResponseHeader, TResponse>(method, CallInvoker, optionsBuilder)
         var callType = typeof(ServerStreamingCall<,,,>).MakeGenericType(
-            operation.Message.RequestType,
-            operation.Message.HeaderResponseType ?? typeof(Message),
-            operation.Message.ResponseType,
-            operation.Message.ResponseType.GenericTypeArguments[0]);
-        InitializeCall(body, operation, callType);
+            operation.RequestType.GetClrType(),
+            operation.HeaderResponseType.GetClrType(),
+            operation.ResponseType.GetClrType(),
+            operation.ResponseType.Properties[0]);
+        InitializeCall(body, operation, callType, null);
 
         // call.InvokeAsync(message)
         body.Emit(OpCodes.Ldloca_S, 1); // call
-        PushMessage(body, operation.Message.RequestType, operation.Message.RequestTypeInput); // message
+        PushMessage(body, operation.RequestType.GetClrType(), operation.RequestTypeInput); // message
 
         DoServerStreamingCall(body, operation, callType);
 
         body.Emit(OpCodes.Ret);
     }
 
-    private (MethodInfo Method, Type DelegateType) BuildServerStreamingResultAdapter(OperationDescription operation)
+    private (MethodInfo Method, Type DelegateType) BuildServerStreamingResultAdapter(OperationDescription<Type> operation)
     {
-        var parameterHeaderType = operation.Message.HeaderResponseType!;
-        var parameterStreamType = typeof(IAsyncEnumerable<>).MakeGenericType(operation.Message.ResponseType.GetGenericArguments()[0]);
+        var parameterHeaderType = operation.HeaderResponseType!.GetClrType();
+        var parameterStreamType = typeof(IAsyncEnumerable<>).MakeGenericType(operation.ResponseType.Properties[0]);
 
-        var returnType = operation.Message.Operation.ReturnType.GetGenericArguments()[0];
+        var returnType = operation.Method.ReturnType.GetGenericArguments()[0];
 
         var method = _typeBuilder
             .DefineMethod(
-                GetUniqueMemberName("Adapt" + operation.Message.Operation.Name + "Response"),
+                GetUniqueMemberName("Adapt" + operation.Method.Name + "Response"),
                 MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static,
                 returnType,
-                new[] { parameterHeaderType, parameterStreamType });
+                [parameterHeaderType, parameterStreamType]);
 
         var body = method.GetILGenerator();
 
-        var propertiesCount = operation.Message.HeaderResponseTypeInput.Length + 1;
+        var propertiesCount = operation.HeaderResponseTypeInput.Length + 1;
         for (var i = 0; i < propertiesCount; i++)
         {
-            if (i == operation.Message.ResponseTypeIndex)
+            if (i == operation.ResponseTypeIndex)
             {
                 body.Emit(OpCodes.Ldarg_1);
             }
             else
             {
-                var index = Array.IndexOf(operation.Message.HeaderResponseTypeInput, i) + 1;
+                var index = Array.IndexOf(operation.HeaderResponseTypeInput, i) + 1;
                 var propertyName = "Value" + index.ToString(CultureInfo.InvariantCulture);
 
                 body.Emit(OpCodes.Ldarg_0);
@@ -262,29 +264,29 @@ internal sealed class EmitClientBuilder
         return (method, delegateType);
     }
 
-    private void BuildClientStreaming(ILGenerator body, OperationDescription operation)
+    private void BuildClientStreaming(ILGenerator body, OperationDescription<Type> operation)
     {
         // optionsBuilder
-        InitializeCallOptionsBuilder(body, operation.Message);
+        InitializeCallOptionsBuilder(body, operation);
 
         // var call = new ClientStreamingCall<TRequestHeader, TRequest, TResponse>(method, CallInvoker, optionsBuilder)
         var callType = typeof(ClientStreamingCall<,,,>).MakeGenericType(
-            operation.Message.HeaderRequestType ?? typeof(Message),
-            operation.Message.RequestType,
-            operation.Message.RequestType.GenericTypeArguments[0],
-            operation.Message.ResponseType);
-        InitializeCall(body, operation, callType);
+            operation.HeaderRequestType.GetClrType(),
+            operation.RequestType.GetClrType(),
+            operation.RequestType.Properties[0],
+            operation.ResponseType.GetClrType());
+        InitializeCall(body, operation, callType, null);
 
         // call.InvokeAsync(stream)
         body.Emit(OpCodes.Ldloca_S, 1); // call
-        body.EmitLdarg(operation.Message.RequestTypeInput[0] + 1);
+        body.EmitLdarg(operation.RequestTypeInput[0] + 1);
 
         MethodInfo invokeMethod;
-        if (operation.Message.ResponseType.IsGenericType)
+        if (operation.ResponseType.IsGenericType())
         {
             invokeMethod = callType
                 .InstanceGenericMethod("InvokeAsync", 1)
-                .MakeGenericMethod(operation.Message.ResponseType.GenericTypeArguments[0]);
+                .MakeGenericMethod(operation.ResponseType.Properties[0]);
         }
         else
         {
@@ -293,40 +295,40 @@ internal sealed class EmitClientBuilder
 
         body.Emit(OpCodes.Call, invokeMethod);
 
-        if (operation.Message.Operation.ReturnType.IsValueTask())
+        if (operation.Method.ReturnType.IsValueTask())
         {
             // new ValueTask<>()
-            body.Emit(OpCodes.Newobj, operation.Message.Operation.ReturnType.Constructor(invokeMethod.ReturnType));
+            body.Emit(OpCodes.Newobj, operation.Method.ReturnType.Constructor(invokeMethod.ReturnType));
         }
 
         body.Emit(OpCodes.Ret);
     }
 
-    private void BuildDuplexStreaming(ILGenerator body, OperationDescription operation)
+    private void BuildDuplexStreaming(ILGenerator body, OperationDescription<Type> operation)
     {
         // optionsBuilder
-        InitializeCallOptionsBuilder(body, operation.Message);
+        InitializeCallOptionsBuilder(body, operation);
 
         // var call = DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader, TResponse>(method, CallInvoker, optionsBuilder)
         var callType = typeof(DuplexStreamingCall<,,,,,>).MakeGenericType(
-            operation.Message.HeaderRequestType ?? typeof(Message),
-            operation.Message.RequestType,
-            operation.Message.RequestType.GenericTypeArguments[0],
-            operation.Message.HeaderResponseType ?? typeof(Message),
-            operation.Message.ResponseType,
-            operation.Message.ResponseType.GenericTypeArguments[0]);
-        InitializeCall(body, operation, callType);
+            operation.HeaderRequestType.GetClrType(),
+            operation.RequestType.GetClrType(),
+            operation.RequestType.Properties[0],
+            operation.HeaderResponseType.GetClrType(),
+            operation.ResponseType.GetClrType(),
+            operation.ResponseType.Properties[0]);
+        InitializeCall(body, operation, callType, null);
 
         // call.InvokeAsync(stream)
         body.Emit(OpCodes.Ldloca_S, 1); // call
-        body.EmitLdarg(operation.Message.RequestTypeInput[0] + 1);
+        body.EmitLdarg(operation.RequestTypeInput[0] + 1);
 
         DoServerStreamingCall(body, operation, callType);
 
         body.Emit(OpCodes.Ret);
     }
 
-    private void InitializeCallOptionsBuilder(ILGenerator body, MessageAssembler operation)
+    private void InitializeCallOptionsBuilder(ILGenerator body, OperationDescription<Type> operation)
     {
         // var optionsBuilder = new CallOptionsBuilder(DefaultOptions)
         body.DeclareLocal(typeof(CallOptionsBuilder));
@@ -341,7 +343,7 @@ internal sealed class EmitClientBuilder
             body.Emit(OpCodes.Ldloca_S, 0); // optionsBuilder
             body.EmitLdarg(i + 1); // parameter
 
-            var parameterType = operation.Parameters[i].ParameterType;
+            var parameterType = operation.Method.Parameters[i].Type;
 
             Type? nullable = null;
             if (parameterType.IsValueType)
@@ -360,11 +362,11 @@ internal sealed class EmitClientBuilder
         }
     }
 
-    private void InitializeCall(ILGenerator body, OperationDescription operation, Type callType)
+    private void InitializeCall(ILGenerator body, OperationDescription<Type> operation, Type callType, string? grpcMethodName)
     {
         // var call = new callType(...)
         body.DeclareLocal(callType); // var call
-        PushContractField(body, operation.GrpcMethodName); // method
+        PushContractField(body, grpcMethodName ?? NamingContract.Contract.GrpcMethod(operation.OperationName)); // method
 
         body.Emit(OpCodes.Ldarg_0); // CallInvoker
         body.Emit(OpCodes.Ldfld, _callInvokerField);
@@ -375,16 +377,16 @@ internal sealed class EmitClientBuilder
         body.Emit(OpCodes.Ldfld, _filterHandlerFactoryField);
 
         var ctorParametersCount = 4;
-        if (operation.Message.OperationType == MethodType.ClientStreaming || operation.Message.OperationType == MethodType.DuplexStreaming)
+        if (operation.OperationType == MethodType.ClientStreaming || operation.OperationType == MethodType.DuplexStreaming)
         {
             ctorParametersCount = 5;
-            if (operation.Message.HeaderRequestType == null)
+            if (operation.HeaderRequestType == null)
             {
                 body.Emit(OpCodes.Ldnull);
             }
             else
             {
-                PushMessage(body, operation.Message.HeaderRequestType, operation.Message.HeaderRequestTypeInput);
+                PushMessage(body, operation.HeaderRequestType.GetClrType(), operation.HeaderRequestTypeInput);
             }
         }
 
@@ -392,20 +394,20 @@ internal sealed class EmitClientBuilder
         body.Emit(OpCodes.Stloc_1);
     }
 
-    private void DoServerStreamingCall(ILGenerator body, OperationDescription operation, Type callType)
+    private void DoServerStreamingCall(ILGenerator body, OperationDescription<Type> operation, Type callType)
     {
-        if (operation.Message.HeaderResponseType == null && operation.Message.IsAsync)
+        if (operation.HeaderResponseType == null && operation.IsAsync)
         {
             var invokeMethod = callType.InstanceGenericMethod("InvokeAsync", 0);
             body.Emit(OpCodes.Call, invokeMethod);
 
-            if (operation.Message.Operation.ReturnType.IsValueTask())
+            if (operation.Method.ReturnType.IsValueTask())
             {
                 // new ValueTask<>()
-                body.Emit(OpCodes.Newobj, operation.Message.Operation.ReturnType.Constructor(invokeMethod.ReturnType));
+                body.Emit(OpCodes.Newobj, operation.Method.ReturnType.Constructor(invokeMethod.ReturnType));
             }
         }
-        else if (operation.Message.HeaderResponseType == null)
+        else if (operation.HeaderResponseType == null)
         {
             var invokeMethod = callType.InstanceMethod("Invoke");
             body.Emit(OpCodes.Call, invokeMethod);
@@ -421,13 +423,13 @@ internal sealed class EmitClientBuilder
 
             var invokeMethod = callType
                 .InstanceGenericMethod("InvokeAsync", 1)
-                .MakeGenericMethod(operation.Message.Operation.ReturnType.GetGenericArguments()[0]);
+                .MakeGenericMethod(operation.Method.ReturnType.GetGenericArguments()[0]);
             body.Emit(OpCodes.Call, invokeMethod);
 
-            if (operation.Message.Operation.ReturnType.IsValueTask())
+            if (operation.Method.ReturnType.IsValueTask())
             {
                 // new ValueTask<>()
-                body.Emit(OpCodes.Newobj, operation.Message.Operation.ReturnType.Constructor(invokeMethod.ReturnType));
+                body.Emit(OpCodes.Newobj, operation.Method.ReturnType.Constructor(invokeMethod.ReturnType));
             }
         }
     }

@@ -18,6 +18,7 @@ using System;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger;

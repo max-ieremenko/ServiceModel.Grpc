@@ -26,7 +26,7 @@ public sealed class ImportGrpcService : IExtensionProvider
     public void ProvideExtensions(ExtensionProviderDeclaration declaration, IExtensionCollection extensions, IExtensionContext context)
     {
         var serviceType = (INamedTypeSymbol)declaration.Attribute.ConstructorArguments[0].Value!;
-        if (!ServiceContract.IsServiceContractInterface(serviceType))
+        if (!DescriptionExtensions.IsServiceContractInterface(serviceType))
         {
             context.ReportIsNotServiceContract(declaration.Attribute, serviceType);
             return;

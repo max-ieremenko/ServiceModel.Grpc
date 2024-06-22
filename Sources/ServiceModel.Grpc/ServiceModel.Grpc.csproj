@@ -4,6 +4,7 @@
     <TargetFrameworks>netstandard2.0;netstandard2.1;net462</TargetFrameworks>
     <AssemblyTitle>ServiceModel.Grpc</AssemblyTitle>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
@@ -29,6 +30,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ServiceModel.Grpc.Core\ServiceModel.Grpc.Core.csproj" />
+    <ProjectReference Include="..\ServiceModel.Grpc.Emit\ServiceModel.Grpc.Emit.csproj" />
+    <ProjectReference Include="..\ServiceModel.Grpc.Filters\ServiceModel.Grpc.Filters.csproj" />
+    <ProjectReference Include="..\ServiceModel.Grpc.Interceptors\ServiceModel.Grpc.Interceptors.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">

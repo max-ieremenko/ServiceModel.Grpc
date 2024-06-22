@@ -17,10 +17,11 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis;
+using ServiceModel.Grpc.Descriptions;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
-public interface IContractDescriptionCollection : IList<IContractDescription>
+public interface IContractDescriptionCollection : IList<ContractDescription<ITypeSymbol>>
 {
-    bool TryGet(INamedTypeSymbol typeSymbol, [NotNullWhen(true)] out IContractDescription? description);
+    bool TryGet(INamedTypeSymbol typeSymbol, [NotNullWhen(true)] out ContractDescription<ITypeSymbol>? description);
 }

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2022 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,9 +20,8 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using NUnit.Framework;
-using ServiceModel.Grpc.Internal;
+using ServiceModel.Grpc.Emit;
 using Shouldly;
-using Shouldly.ShouldlyExtensionMethods;
 
 namespace ServiceModel.Grpc.TestApi;
 

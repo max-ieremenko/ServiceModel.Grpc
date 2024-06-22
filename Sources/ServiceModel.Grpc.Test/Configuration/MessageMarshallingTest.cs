@@ -22,7 +22,7 @@ using Grpc.Core;
 using KellermanSoftware.CompareNetObjects;
 using NUnit.Framework;
 using ServiceModel.Grpc.Channel;
-using ServiceModel.Grpc.Internal;
+using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Internal.Emit;
 using ServiceModel.Grpc.TestApi;
 using Shouldly;

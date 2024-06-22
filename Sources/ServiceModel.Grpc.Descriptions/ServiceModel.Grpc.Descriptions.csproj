@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net462</TargetFrameworks>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'netstandard2.1'">
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ServiceModel.Grpc.Core\ServiceModel.Grpc.Core.csproj" />
+  </ItemGroup>
+
+</Project>

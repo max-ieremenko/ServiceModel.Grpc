@@ -16,6 +16,8 @@
 
 using System;
 using ServiceModel.Grpc.Client.Internal;
+using ServiceModel.Grpc.Descriptions;
+using ServiceModel.Grpc.Emit.Descriptions;
 using ServiceModel.Grpc.Hosting.Internal;
 
 namespace ServiceModel.Grpc.Internal.Emit;
@@ -31,7 +33,7 @@ internal sealed class EmitGenerator : IEmitGenerator
         Type? clientBuilderType;
         lock (ProxyAssembly.SyncRoot)
         {
-            clientBuilderType = ProxyAssembly.DefaultModule.GetType(ContractDescription.GetClientBuilderClassName(serviceType), false, false);
+            clientBuilderType = ProxyAssembly.DefaultModule.GetType(ContractDescriptionBuilder.GetClientBuilderClassName(serviceType), false, false);
             if (clientBuilderType == null)
             {
                 var (description, contractType) = GenerateContract(serviceType);
@@ -52,13 +54,13 @@ internal sealed class EmitGenerator : IEmitGenerator
 
         var serviceType = typeof(TService);
 
-        ContractDescription description;
+        ContractDescription<Type> description;
         Type contractType;
         Type? channelType;
         lock (ProxyAssembly.SyncRoot)
         {
             (description, contractType) = GenerateContract(serviceType);
-            channelType = ProxyAssembly.DefaultModule.GetType(ContractDescription.GetEndpointClassName(serviceType), false, false);
+            channelType = ProxyAssembly.DefaultModule.GetType(ContractDescriptionBuilder.GetEndpointClassName(serviceType), false, false);
             if (channelType == null)
             {
                 var serviceBuilder = new EmitServiceEndpointBuilder(description);
@@ -69,9 +71,9 @@ internal sealed class EmitGenerator : IEmitGenerator
         return new EmitServiceEndpointBinder<TService>(description, serviceInstanceType, contractType, channelType, Logger);
     }
 
-    private static ContractDescription CreateDescription(Type serviceType, ILogger? logger)
+    private static ContractDescription<Type> CreateDescription(Type serviceType, ILogger? logger)
     {
-        var contractDescription = new ContractDescription(serviceType);
+        var contractDescription = ContractDescriptionBuilder.Build(serviceType);
 
         foreach (var interfaceDescription in contractDescription.Interfaces)
         {
@@ -94,12 +96,12 @@ internal sealed class EmitGenerator : IEmitGenerator
         return contractDescription;
     }
 
-    private (ContractDescription Description, Type ContractType) GenerateContract(Type serviceType)
+    private (ContractDescription<Type> Description, Type ContractType) GenerateContract(Type serviceType)
     {
-        var className = ContractDescription.GetContractClassName(serviceType);
+        var className = ContractDescriptionBuilder.GetContractClassName(serviceType);
         var contractType = ProxyAssembly.DefaultModule.GetType(className, false, false);
 
-        ContractDescription description;
+        ContractDescription<Type> description;
         if (contractType == null)
         {
             description = CreateDescription(serviceType, Logger);

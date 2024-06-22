@@ -15,17 +15,18 @@
 // </copyright>
 
 using Grpc.Core;
+using Microsoft.CodeAnalysis;
 using ServiceModel.Grpc.Client.Internal;
+using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
-using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
 
 internal sealed class ClientBuilderCodeGenerator : ICodeGenerator
 {
-    private readonly IContractDescription _contract;
+    private readonly ContractDescription<ITypeSymbol> _contract;
 
-    public ClientBuilderCodeGenerator(IContractDescription contract)
+    public ClientBuilderCodeGenerator(ContractDescription<ITypeSymbol> contract)
     {
         _contract = contract;
     }
@@ -133,7 +134,7 @@ internal sealed class ClientBuilderCodeGenerator : ICodeGenerator
                             .Append(", ")
                             .Append(NamingConventions.Contract.Class(_contract.BaseClassName))
                             .Append(".")
-                            .Append(method.ClrDefinitionMethodName)
+                            .Append(NamingContract.Contract.ClrDefinitionMethod(method.OperationName))
                             .AppendLine(");");
                     }
 
@@ -147,7 +148,7 @@ internal sealed class ClientBuilderCodeGenerator : ICodeGenerator
                             .Append(", ")
                             .Append(NamingConventions.Contract.Class(_contract.BaseClassName))
                             .Append(".")
-                            .Append(entry.Sync.ClrDefinitionMethodName)
+                            .Append(NamingContract.Contract.ClrDefinitionMethodSync(entry.Async.OperationName))
                             .AppendLine(");");
                     }
                 }

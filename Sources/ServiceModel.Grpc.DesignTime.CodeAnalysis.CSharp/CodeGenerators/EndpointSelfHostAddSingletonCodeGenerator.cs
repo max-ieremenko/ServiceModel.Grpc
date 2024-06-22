@@ -14,17 +14,18 @@
 // limitations under the License.
 // </copyright>
 
+using Microsoft.CodeAnalysis;
+using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
-using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
 
 internal sealed class EndpointSelfHostAddSingletonCodeGenerator : ICodeGenerator
 {
-    private readonly IContractDescription _contract;
+    private readonly ContractDescription<ITypeSymbol> _contract;
     private readonly bool _isStaticClass;
 
-    public EndpointSelfHostAddSingletonCodeGenerator(IContractDescription contract, bool isStaticClass)
+    public EndpointSelfHostAddSingletonCodeGenerator(ContractDescription<ITypeSymbol> contract, bool isStaticClass)
     {
         _contract = contract;
         _isStaticClass = isStaticClass;

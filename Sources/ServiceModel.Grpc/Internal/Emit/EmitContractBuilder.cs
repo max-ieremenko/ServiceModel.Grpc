@@ -22,16 +22,18 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
 using Grpc.Core;
-using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Descriptions;
+using ServiceModel.Grpc.Emit;
+using ServiceModel.Grpc.Emit.Descriptions;
 
 namespace ServiceModel.Grpc.Internal.Emit;
 
 internal sealed class EmitContractBuilder
 {
-    private readonly ContractDescription _description;
+    private readonly ContractDescription<Type> _description;
 
-    public EmitContractBuilder(ContractDescription description)
+    public EmitContractBuilder(ContractDescription<Type> description)
     {
         _description = description;
     }
@@ -51,7 +53,7 @@ internal sealed class EmitContractBuilder
     public TypeInfo Build(ModuleBuilder moduleBuilder, string? className = default)
     {
         var typeBuilder = moduleBuilder.DefineType(
-            className ?? _description.ContractClassName,
+            className ?? NamingContract.Contract.Class(_description.BaseClassName),
             TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit);
 
         // public (IMarshallerFactory marshallerFactory)
@@ -59,7 +61,7 @@ internal sealed class EmitContractBuilder
             .DefineConstructor(
                 MethodAttributes.Public,
                 CallingConventions.HasThis,
-                new[] { typeof(IMarshallerFactory) })
+                [typeof(IMarshallerFactory)])
             .GetILGenerator();
 
         ctor.Emit(OpCodes.Ldarg_0);
@@ -74,12 +76,12 @@ internal sealed class EmitContractBuilder
         {
             foreach (var operation in interfaceDescription.Operations)
             {
-                BuildDefinition(typeBuilder, operation.ClrDefinitionMethodName);
+                BuildDefinition(typeBuilder, NamingContract.Contract.ClrDefinitionMethod(operation.OperationName));
             }
 
             foreach (var entry in interfaceDescription.SyncOverAsync)
             {
-                BuildDefinition(typeBuilder, entry.Async.ClrDefinitionMethodNameSyncVersion);
+                BuildDefinition(typeBuilder, NamingContract.Contract.ClrDefinitionMethodSync(entry.Async.OperationName));
             }
         }
 
@@ -91,30 +93,34 @@ internal sealed class EmitContractBuilder
         {
             foreach (var operation in interfaceDescription.Operations)
             {
-                result.StaticFiled(operation.ClrDefinitionMethodName).SetValue(null, operation.Message.Operation.MethodHandle);
+                result
+                    .StaticFiled(NamingContract.Contract.ClrDefinitionMethod(operation.OperationName))
+                    .SetValue(null, operation.GetSource().MethodHandle);
             }
 
             foreach (var entry in interfaceDescription.SyncOverAsync)
             {
-                result.StaticFiled(entry.Async.ClrDefinitionMethodNameSyncVersion).SetValue(null, entry.Sync.Operation.MethodHandle);
+                result
+                    .StaticFiled(NamingContract.Contract.ClrDefinitionMethodSync(entry.Async.OperationName))
+                    .SetValue(null, entry.Sync.GetSource().MethodHandle);
             }
         }
 
         return result;
     }
 
-    private void BuildMethod(OperationDescription operation, TypeBuilder typeBuilder, ILGenerator ctor)
+    private void BuildMethod(OperationDescription<Type> operation, TypeBuilder typeBuilder, ILGenerator ctor)
     {
         var filedType = typeof(GrpcMethod<,,,>).MakeGenericType(
-            operation.Message.HeaderRequestType ?? typeof(Message),
-            operation.Message.RequestType,
-            operation.Message.HeaderResponseType ?? typeof(Message),
-            operation.Message.ResponseType);
+            operation.HeaderRequestType.GetClrType(),
+            operation.RequestType.GetClrType(),
+            operation.HeaderResponseType.GetClrType(),
+            operation.ResponseType.GetClrType());
 
         // public IMethod MethodX;
         var field = typeBuilder
             .DefineField(
-                operation.GrpcMethodName,
+                NamingContract.Contract.GrpcMethod(operation.OperationName),
                 filedType,
                 FieldAttributes.Public | FieldAttributes.InitOnly);
 
@@ -124,34 +130,34 @@ internal sealed class EmitContractBuilder
         ctor.Emit(OpCodes.Ldstr, operation.ServiceName);
         ctor.Emit(OpCodes.Ldstr, operation.OperationName);
 
-        var factoryMethod = typeof(GrpcMethodFactory).StaticMethod(operation.Message.OperationType.ToString());
-        switch (operation.Message.OperationType)
+        var factoryMethod = typeof(GrpcMethodFactory).StaticMethod(operation.OperationType.ToString());
+        switch (operation.OperationType)
         {
             case MethodType.Unary:
-                factoryMethod = factoryMethod.MakeGenericMethod(operation.Message.RequestType, operation.Message.ResponseType);
+                factoryMethod = factoryMethod.MakeGenericMethod(operation.RequestType.GetClrType(), operation.ResponseType.GetClrType());
                 break;
             case MethodType.ClientStreaming:
-                ctor.EmitLdcI4(operation.Message.HeaderRequestType == null ? 0 : 1);
+                ctor.EmitLdcI4(operation.HeaderRequestType == null ? 0 : 1);
                 factoryMethod = factoryMethod.MakeGenericMethod(
-                    operation.Message.HeaderRequestType ?? typeof(Message),
-                    operation.Message.RequestType,
-                    operation.Message.ResponseType);
+                    operation.HeaderRequestType.GetClrType(),
+                    operation.RequestType.GetClrType(),
+                    operation.ResponseType.GetClrType());
                 break;
             case MethodType.ServerStreaming:
-                ctor.EmitLdcI4(operation.Message.HeaderResponseType == null ? 0 : 1);
+                ctor.EmitLdcI4(operation.HeaderResponseType == null ? 0 : 1);
                 factoryMethod = factoryMethod.MakeGenericMethod(
-                    operation.Message.RequestType,
-                    operation.Message.HeaderResponseType ?? typeof(Message),
-                    operation.Message.ResponseType);
+                    operation.RequestType.GetClrType(),
+                    operation.HeaderResponseType.GetClrType(),
+                    operation.ResponseType.GetClrType());
                 break;
             case MethodType.DuplexStreaming:
-                ctor.EmitLdcI4(operation.Message.HeaderRequestType == null ? 0 : 1);
-                ctor.EmitLdcI4(operation.Message.HeaderResponseType == null ? 0 : 1);
+                ctor.EmitLdcI4(operation.HeaderRequestType == null ? 0 : 1);
+                ctor.EmitLdcI4(operation.HeaderResponseType == null ? 0 : 1);
                 factoryMethod = factoryMethod.MakeGenericMethod(
-                    operation.Message.HeaderRequestType ?? typeof(Message),
-                    operation.Message.RequestType,
-                    operation.Message.HeaderResponseType ?? typeof(Message),
-                    operation.Message.ResponseType);
+                    operation.HeaderRequestType.GetClrType(),
+                    operation.RequestType.GetClrType(),
+                    operation.HeaderResponseType.GetClrType(),
+                    operation.ResponseType.GetClrType());
                 break;
             default:
                 throw new NotSupportedException();
@@ -161,17 +167,12 @@ internal sealed class EmitContractBuilder
         ctor.Emit(OpCodes.Stfld, field);
     }
 
-    private void BuildDefinition(TypeBuilder typeBuilder, string fieldName)
-    {
+    private void BuildDefinition(TypeBuilder typeBuilder, string fieldName) =>
         typeBuilder
             .DefineField(
                 fieldName,
                 typeof(RuntimeMethodHandle),
                 FieldAttributes.Public | FieldAttributes.Static);
-    }
 
-    private IEnumerable<OperationDescription> GetAllOperations()
-    {
-        return _description.Services.SelectMany(i => i.Operations);
-    }
+    private IEnumerable<OperationDescription<Type>> GetAllOperations() => _description.Services.SelectMany(i => i.Operations);
 }

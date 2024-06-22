@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2023 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,10 +20,9 @@ using Moq;
 using NUnit.Framework;
 using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Filters;
 using ServiceModel.Grpc.Interceptors;
-using ServiceModel.Grpc.Interceptors.Internal;
-using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.Internal.Emit;
 using ServiceModel.Grpc.TestApi;
 using Shouldly;
@@ -220,11 +219,15 @@ public partial class ClientFactoryTest
             {
                 var (interceptor, callInvoker) = i.ShouldBeIntercepted();
 
-                interceptor
-                    .ShouldBeOfType<ClientNativeInterceptor>()
-                    .CallInterceptor
-                    .ShouldBeOfType<ClientCallErrorInterceptor>()
-                    .ErrorHandler
+                var callInterceptor = interceptor
+                    .GetType()
+                    .InstanceProperty("CallInterceptor")
+                    .GetValue(interceptor)
+                    .ShouldNotBeNull();
+                callInterceptor
+                    .GetType()
+                    .InstanceProperty("ErrorHandler")
+                    .GetValue(callInterceptor)
                     .ShouldBe(_globalErrorHandler);
 
                 callInvoker.ShouldBe(_callInvoker.Object);
@@ -253,11 +256,15 @@ public partial class ClientFactoryTest
             {
                 var (interceptor, callInvoker) = i.ShouldBeIntercepted();
 
-                interceptor
-                    .ShouldBeOfType<ClientNativeInterceptor>()
-                    .CallInterceptor
-                    .ShouldBeOfType<ClientCallErrorInterceptor>()
-                    .ErrorHandler
+                var callInterceptor = interceptor
+                    .GetType()
+                    .InstanceProperty("CallInterceptor")
+                    .GetValue(interceptor)
+                    .ShouldNotBeNull();
+                callInterceptor
+                    .GetType()
+                    .InstanceProperty("ErrorHandler")
+                    .GetValue(callInterceptor)
                     .ShouldBe(_localErrorHandler);
 
                 callInvoker.ShouldBe(_callInvoker.Object);
@@ -289,11 +296,15 @@ public partial class ClientFactoryTest
             {
                 var (interceptor, callInvoker) = i.ShouldBeIntercepted();
 
-                interceptor
-                    .ShouldBeOfType<ClientNativeInterceptor>()
-                    .CallInterceptor
-                    .ShouldBeOfType<ClientCallErrorInterceptor>()
-                    .ErrorHandler
+                var callInterceptor = interceptor
+                    .GetType()
+                    .InstanceProperty("CallInterceptor")
+                    .GetValue(interceptor)
+                    .ShouldNotBeNull();
+                callInterceptor
+                    .GetType()
+                    .InstanceProperty("ErrorHandler")
+                    .GetValue(callInterceptor)
                     .ShouldBe(_localErrorHandler);
 
                 callInvoker.ShouldBe(_callInvoker.Object);

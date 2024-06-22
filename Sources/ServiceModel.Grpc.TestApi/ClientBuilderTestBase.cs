@@ -24,6 +24,7 @@ using Moq;
 using NUnit.Framework;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;

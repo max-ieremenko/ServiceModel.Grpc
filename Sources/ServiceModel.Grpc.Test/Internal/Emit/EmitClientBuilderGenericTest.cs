@@ -16,6 +16,7 @@
 
 using NUnit.Framework;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Emit.Descriptions;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 
@@ -27,7 +28,7 @@ public class EmitClientBuilderGenericTest : ClientBuilderGenericTestBase
     [OneTimeSetUp]
     public void BeforeAllTests()
     {
-        var description = new ContractDescription(typeof(IGenericContract<int, string>));
+        var description = ContractDescriptionBuilder.Build(typeof(IGenericContract<int, string>));
 
         var moduleBuilder = ProxyAssembly.CreateModule(nameof(EmitClientBuilderGenericTest));
 

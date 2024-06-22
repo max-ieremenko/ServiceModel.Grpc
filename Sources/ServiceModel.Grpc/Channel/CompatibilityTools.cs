@@ -25,8 +25,6 @@ internal static class CompatibilityTools
 {
     internal const string HeaderNameMethodInput = $"smgrpc-method-input{Metadata.BinaryHeaderSuffix}";
     internal const string HeaderNameMethodOutput = $"smgrpc-method-output{Metadata.BinaryHeaderSuffix}";
-    internal const string HeaderNameErrorDetail = $"smgrpc-error-detail{Metadata.BinaryHeaderSuffix}";
-    internal const string HeaderNameErrorDetailType = "smgrpc-error-detail-type";
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Metadata SerializeMethodInputHeader<T>(Marshaller<T> marshaller, T value) =>

@@ -30,6 +30,13 @@ task Core {
     $projects = @(
         (Join-Path $Sources "ServiceModel.Grpc.Core"),
         (Join-Path $Sources "ServiceModel.Grpc.Core.Test"),
+        (Join-Path $Sources "ServiceModel.Grpc.Descriptions"),
+        (Join-Path $Sources "ServiceModel.Grpc.Emit"),
+        (Join-Path $Sources "ServiceModel.Grpc.Emit.Test"),
+        (Join-Path $Sources "ServiceModel.Grpc.Filters"),
+        (Join-Path $Sources "ServiceModel.Grpc.Filters.Test"),
+        (Join-Path $Sources "ServiceModel.Grpc.Interceptors"),
+        (Join-Path $Sources "ServiceModel.Grpc.Interceptors.Test"),
         (Join-Path $Sources "ServiceModel.Grpc"),
         (Join-Path $Sources "ServiceModel.Grpc.Test"),
         (Join-Path $Sources "ServiceModel.Grpc.TestApi")

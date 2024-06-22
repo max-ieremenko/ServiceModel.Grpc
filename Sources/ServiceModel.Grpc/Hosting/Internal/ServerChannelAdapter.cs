@@ -23,6 +23,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
+using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Hosting.Internal;

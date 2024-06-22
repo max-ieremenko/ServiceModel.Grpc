@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2023 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,8 +27,7 @@ namespace ServiceModel.Grpc.Client.Internal;
 
 internal sealed class ClientMethodBinder : IClientMethodBinder
 {
-    private List<FilterRegistration<IClientFilter>>? _filterRegistrations;
-    private Dictionary<IMethod, ClientMethodMetadata>? _methodMetadataByGrpc;
+    private ClientMethodFilterRegistration? _filterRegistrations;
 
     public ClientMethodBinder(
         IServiceProvider? serviceProvider,
@@ -57,75 +56,16 @@ internal sealed class ClientMethodBinder : IClientMethodBinder
 
         if (_filterRegistrations == null)
         {
-            _filterRegistrations = new List<FilterRegistration<IClientFilter>>();
+            _filterRegistrations = new ClientMethodFilterRegistration();
         }
 
-        _filterRegistrations.AddRange(registrations);
+        _filterRegistrations.Registrations.AddRange(registrations);
     }
 
-    public void Add(IMethod method, Func<MethodInfo> resolveContractMethodDefinition)
-    {
-        if (_filterRegistrations == null)
-        {
-            return;
-        }
+    public void Add(IMethod method, Func<MethodInfo> resolveContractMethodDefinition) =>
+        _filterRegistrations?.AddMethod(method, new FiltersReflectOperationDescription(resolveContractMethodDefinition));
 
-        if (_methodMetadataByGrpc == null)
-        {
-            _methodMetadataByGrpc = new Dictionary<IMethod, ClientMethodMetadata>(GrpcMethodEqualityComparer.Instance);
-        }
+    public IClientCallFilterHandlerFactory? CreateFilterHandlerFactory() => _filterRegistrations?.CreateFactory(ServiceProvider);
 
-        if (!_methodMetadataByGrpc.TryGetValue(method, out var metadata))
-        {
-            metadata = new ClientMethodMetadata(resolveContractMethodDefinition, null);
-            _methodMetadataByGrpc.Add(method, metadata);
-            return;
-        }
-
-        if (method.Type != MethodType.Unary || metadata.AlternateMethod != null)
-        {
-            throw new InvalidOperationException($"A unary gRPC method [{method.FullName}] cannot have more than 2 definitions.");
-        }
-
-        _methodMetadataByGrpc[method] = CreateSyncOverAsync(metadata.Method.ContractMethodDefinition, resolveContractMethodDefinition);
-    }
-
-    public IClientCallFilterHandlerFactory? CreateFilterHandlerFactory()
-    {
-        if (_filterRegistrations == null || _methodMetadataByGrpc == null)
-        {
-            return null;
-        }
-
-        _filterRegistrations.Sort();
-
-        var filterFactories = new Func<IServiceProvider, IClientFilter>[_filterRegistrations.Count];
-        for (var i = 0; i < _filterRegistrations.Count; i++)
-        {
-            filterFactories[i] = _filterRegistrations[i].Factory;
-        }
-
-        foreach (var metadata in _methodMetadataByGrpc.Values)
-        {
-            metadata.Method.FilterFactories = filterFactories;
-            if (metadata.AlternateMethod != null)
-            {
-                metadata.AlternateMethod.FilterFactories = filterFactories;
-            }
-        }
-
-        return new ClientCallFilterHandlerFactory(ServiceProvider, _methodMetadataByGrpc);
-    }
-
-    internal IList<FilterRegistration<IClientFilter>>? GetFilterRegistrations() => _filterRegistrations;
-
-    private static ClientMethodMetadata CreateSyncOverAsync(Func<MethodInfo> method1, Func<MethodInfo> method2)
-    {
-        if (ReflectionTools.IsTask(method1().ReturnType))
-        {
-            return new ClientMethodMetadata(method1, method2);
-        }
-
-        return new ClientMethodMetadata(method2, method1);
-    }
+    internal IList<FilterRegistration<IClientFilter>>? GetFilterRegistrations() => _filterRegistrations?.Registrations;
 }

@@ -18,14 +18,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis;
+using ServiceModel.Grpc.Descriptions;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
-internal sealed class ContractDescriptionCollection : Collection<IContractDescription>, IContractDescriptionCollection
+internal sealed class ContractDescriptionCollection : Collection<ContractDescription<ITypeSymbol>>, IContractDescriptionCollection
 {
-    private readonly Dictionary<ITypeSymbol, IContractDescription> _descriptionBySymbol = SyntaxTools.CreateTypeSymbolDictionary<IContractDescription>();
+    private readonly Dictionary<ITypeSymbol, ContractDescription<ITypeSymbol>> _descriptionBySymbol = SyntaxTools.CreateTypeSymbolDictionary<ContractDescription<ITypeSymbol>>();
 
-    public bool TryGet(INamedTypeSymbol typeSymbol, [NotNullWhen(true)] out IContractDescription? description) =>
+    public bool TryGet(INamedTypeSymbol typeSymbol, [NotNullWhen(true)] out ContractDescription<ITypeSymbol>? description) =>
         _descriptionBySymbol.TryGetValue(typeSymbol, out description);
 
     protected override void ClearItems()
@@ -40,13 +41,13 @@ internal sealed class ContractDescriptionCollection : Collection<IContractDescri
         base.RemoveItem(index);
     }
 
-    protected override void InsertItem(int index, IContractDescription item)
+    protected override void InsertItem(int index, ContractDescription<ITypeSymbol> item)
     {
         _descriptionBySymbol.Add(item.ContractInterface, item);
         base.InsertItem(index, item);
     }
 
-    protected override void SetItem(int index, IContractDescription item)
+    protected override void SetItem(int index, ContractDescription<ITypeSymbol> item)
     {
         _descriptionBySymbol.Remove(this[index].ContractInterface);
         base.SetItem(index, item);

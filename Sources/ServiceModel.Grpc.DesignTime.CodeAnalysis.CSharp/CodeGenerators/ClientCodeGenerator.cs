@@ -20,6 +20,7 @@ using System.Globalization;
 using Grpc.Core;
 using Microsoft.CodeAnalysis;
 using ServiceModel.Grpc.Client.Internal;
+using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
@@ -29,10 +30,10 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
 {
     private const string VarCallOptionsBuilder = "__callOptionsBuilder";
 
-    private readonly IContractDescription _contract;
+    private readonly ContractDescription<ITypeSymbol> _contract;
     private readonly HashSet<string> _uniqueMemberNames;
 
-    public ClientCodeGenerator(IContractDescription contract)
+    public ClientCodeGenerator(ContractDescription<ITypeSymbol> contract)
     {
         _contract = contract;
         _uniqueMemberNames = new(StringComparer.OrdinalIgnoreCase);
@@ -205,9 +206,9 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
             .AppendLine();
     }
 
-    private void ImplementMethod(ICodeStringBuilder output, INamedTypeSymbol interfaceType, IOperationDescription operation, string? grpcMethodName)
+    private void ImplementMethod(ICodeStringBuilder output, ITypeSymbol interfaceType, OperationDescription<ITypeSymbol> operation, string? grpcMethodName)
     {
-        CreateMethodWithSignature(output, interfaceType, operation.Method);
+        CreateMethodWithSignature(output, interfaceType, operation.GetSource());
         output.AppendLine("{");
 
         Action? adapterBuilder = null;
@@ -237,7 +238,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         adapterBuilder?.Invoke();
     }
 
-    private void BuildUnary(ICodeStringBuilder output, IOperationDescription operation, string? grpcMethodName)
+    private void BuildUnary(ICodeStringBuilder output, OperationDescription<ITypeSymbol> operation, string? grpcMethodName)
     {
         InitializeCallOptionsBuilderVariable(output, operation);
 
@@ -297,7 +298,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         }
     }
 
-    private void BuildClientStreaming(ICodeStringBuilder output, IOperationDescription operation)
+    private void BuildClientStreaming(ICodeStringBuilder output, OperationDescription<ITypeSymbol> operation)
     {
         InitializeCallOptionsBuilderVariable(output, operation);
 
@@ -357,7 +358,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         output.AppendLine(";");
     }
 
-    private Action? BuildServerStreaming(ICodeStringBuilder output, IOperationDescription operation)
+    private Action? BuildServerStreaming(ICodeStringBuilder output, OperationDescription<ITypeSymbol> operation)
     {
         InitializeCallOptionsBuilderVariable(output, operation);
 
@@ -415,7 +416,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         return adapterBuilder;
     }
 
-    private void BuildServerStreamingResultAdapter(ICodeStringBuilder output, IOperationDescription operation, string functionName)
+    private void BuildServerStreamingResultAdapter(ICodeStringBuilder output, OperationDescription<ITypeSymbol> operation, string functionName)
     {
         var returnType = operation.Method.ReturnType.GenericTypeArguments()[0];
         output
@@ -464,7 +465,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         output.AppendLine("}");
     }
 
-    private Action? BuildDuplexStreaming(ICodeStringBuilder output, IOperationDescription operation)
+    private Action? BuildDuplexStreaming(ICodeStringBuilder output, OperationDescription<ITypeSymbol> operation)
     {
         InitializeCallOptionsBuilderVariable(output, operation);
 
@@ -533,9 +534,9 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         return adapterBuilder;
     }
 
-    private void ImplementNotSupportedMethod(ICodeStringBuilder output, INamedTypeSymbol interfaceType, INotSupportedMethodDescription method)
+    private void ImplementNotSupportedMethod(ICodeStringBuilder output, ITypeSymbol interfaceType, NotSupportedMethodDescription<ITypeSymbol> method)
     {
-        CreateMethodWithSignature(output, interfaceType, method.Method);
+        CreateMethodWithSignature(output, interfaceType, method.GetSource());
 
         output.AppendLine("{");
         using (output.Indent())
@@ -546,7 +547,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         output.AppendLine("}");
     }
 
-    private void CreateMethodWithSignature(ICodeStringBuilder output, INamedTypeSymbol interfaceType, IMethodSymbol method)
+    private void CreateMethodWithSignature(ICodeStringBuilder output, ITypeSymbol interfaceType, IMethodSymbol method)
     {
         output
             .WriteType(method.ReturnType)
@@ -598,7 +599,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         output.AppendLine(")");
     }
 
-    private void InitializeCallOptionsBuilderVariable(ICodeStringBuilder output, IOperationDescription operation)
+    private void InitializeCallOptionsBuilderVariable(ICodeStringBuilder output, OperationDescription<ITypeSymbol> operation)
     {
         output
             .Append("var ")
@@ -622,7 +623,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         }
     }
 
-    private void CreateRequestMessage(ICodeStringBuilder output, IOperationDescription operation)
+    private void CreateRequestMessage(ICodeStringBuilder output, OperationDescription<ITypeSymbol> operation)
     {
         output
             .Append("new ")
@@ -640,7 +641,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         output.Append(")");
     }
 
-    private void WithRequestHeader(ICodeStringBuilder output, IOperationDescription operation)
+    private void WithRequestHeader(ICodeStringBuilder output, OperationDescription<ITypeSymbol> operation)
     {
         if (operation.HeaderRequestType == null)
         {

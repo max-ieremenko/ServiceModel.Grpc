@@ -16,6 +16,7 @@
 
 using System;
 using Grpc.Core.Utils;
+using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Hosting.Internal;
 using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.SelfHost.Internal;

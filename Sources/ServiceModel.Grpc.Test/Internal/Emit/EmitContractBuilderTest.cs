@@ -20,6 +20,9 @@ using System.Reflection;
 using Grpc.Core;
 using NUnit.Framework;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Descriptions;
+using ServiceModel.Grpc.Emit;
+using ServiceModel.Grpc.Emit.Descriptions;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
@@ -32,12 +35,12 @@ public class EmitContractBuilderTest
 {
     private Type _contractType = null!;
     private Func<IMarshallerFactory, object> _factory = null!;
-    private ContractDescription _description = null!;
+    private ContractDescription<Type> _description = null!;
 
     [OneTimeSetUp]
     public void BeforeAllTests()
     {
-        _description = new ContractDescription(typeof(IContract));
+        _description = ContractDescriptionBuilder.Build(typeof(IContract));
 
         var builder = new EmitContractBuilder(_description);
         _contractType = builder.Build(ProxyAssembly.CreateModule(nameof(EmitContractBuilderTest)));
@@ -47,7 +50,7 @@ public class EmitContractBuilderTest
     [Test]
     public void ValidateContractTypeFullName()
     {
-        var actual = _contractType.Assembly.GetType(_description.ContractClassName, true, false);
+        var actual = _contractType.Assembly.GetType(NamingContract.Contract.Class(_description.BaseClassName), true, false);
 
         actual.ShouldBe(_contractType);
     }
@@ -76,13 +79,13 @@ public class EmitContractBuilderTest
         foreach (var operation in operations)
         {
             var field = _contractType
-                .GetField(operation.GrpcMethodName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+                .GetField(NamingContract.Contract.GrpcMethod(operation.OperationName), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
                 .ShouldNotBeNull()
                 .GetValue(instance)
                 .ShouldBeAssignableTo<IMethod>()
                 .ShouldNotBeNull();
 
-            field.Type.ShouldBe(operation.Message.OperationType);
+            field.Type.ShouldBe(operation.OperationType);
             field.Name.ShouldBe(operation.OperationName);
             field.ServiceName.ShouldBe(operation.ServiceName);
         }
@@ -96,25 +99,25 @@ public class EmitContractBuilderTest
             foreach (var operation in interfaceDescription.Operations)
             {
                 var handle = _contractType
-                    .StaticFiled(operation.ClrDefinitionMethodName)
+                    .StaticFiled(NamingContract.Contract.ClrDefinitionMethod(operation.OperationName))
                     .GetValue(null)
                     .ShouldBeOfType<RuntimeMethodHandle>();
 
                 var actual = MethodBase.GetMethodFromHandle(handle).ShouldNotBeNull();
 
-                actual.ShouldBe(operation.Message.Operation);
+                actual.ShouldBe(operation.GetSource());
             }
 
             foreach (var entry in interfaceDescription.SyncOverAsync)
             {
                 var handle = _contractType
-                    .StaticFiled(entry.Async.ClrDefinitionMethodNameSyncVersion)
+                    .StaticFiled(NamingContract.Contract.ClrDefinitionMethodSync(entry.Async.OperationName))
                     .GetValue(null)
                     .ShouldBeOfType<RuntimeMethodHandle>();
 
                 var actual = MethodBase.GetMethodFromHandle(handle).ShouldNotBeNull();
 
-                actual.ShouldBe(entry.Sync.Operation);
+                actual.ShouldBe(entry.Sync.GetSource());
             }
         }
     }

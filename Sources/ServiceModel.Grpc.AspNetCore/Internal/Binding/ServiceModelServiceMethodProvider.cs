@@ -21,9 +21,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Filters.Internal;
 using ServiceModel.Grpc.Hosting.Internal;
-using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.Internal.Emit;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.Binding;
@@ -90,7 +90,7 @@ internal sealed class ServiceModelServiceMethodProvider<TService> : IServiceMeth
         catch (Exception ex)
         {
             throw new InvalidOperationException(
-                $"A gRPC service binding is registered via {serviceInstanceType.GetShortAssemblyQualifiedName()}. Failed to resolve the implementation: {ex.Message}.",
+                $"A gRPC service binding is registered via {serviceInstanceType.GetUserFriendlyName()}. Failed to resolve the implementation: {ex.Message}.",
                 ex);
         }
     }
