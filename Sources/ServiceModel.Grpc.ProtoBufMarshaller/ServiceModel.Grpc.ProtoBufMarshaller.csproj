@@ -5,6 +5,7 @@
     <RootNamespace>ServiceModel.Grpc</RootNamespace>
     <AssemblyTitle>ServiceModel.Grpc.ProtoBufMarshaller</AssemblyTitle>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
