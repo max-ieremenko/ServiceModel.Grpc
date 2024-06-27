@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2022 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,20 +22,9 @@ using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Filters;
 using ServiceModel.Grpc.Filters.Internal;
 
-#pragma warning disable SA1642 // Constructor summary documentation should begin with standard text
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable SA1611 // Element parameters should be documented
-#pragma warning disable SA1604 // Element documentation should have summary
-#pragma warning disable SA1615 // Element return value should be documented
-#pragma warning disable SA1618 // Generic type parameters should be documented
-
 namespace ServiceModel.Grpc.Client.Internal;
 
-/// <summary>
-/// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
-/// This API may change or be removed in future releases.
-/// </summary>
-public readonly ref struct UnaryCall<TRequest, TResponse>
+internal readonly ref struct UnaryCall<TRequest, TResponse>
     where TRequest : class
     where TResponse : class
 {

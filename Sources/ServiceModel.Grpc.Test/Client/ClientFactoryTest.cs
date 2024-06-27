@@ -69,7 +69,7 @@ public partial class ClientFactoryTest
             .Callback<IClientMethodBinder>(binder =>
             {
                 binder.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
-                binder.DefaultCallOptionsFactory.ShouldBeNull();
+                ((ClientMethodBinder)binder).DefaultCallOptionsFactory.ShouldBeNull();
                 ((ClientMethodBinder)binder).ServiceProvider.ShouldBeNull();
             });
 
@@ -90,7 +90,7 @@ public partial class ClientFactoryTest
             .Callback<IClientMethodBinder>(binder =>
             {
                 binder.MarshallerFactory.ShouldBe(marshaller.Object);
-                binder.DefaultCallOptionsFactory.ShouldBe(callOptions);
+                ((ClientMethodBinder)binder).DefaultCallOptionsFactory.ShouldBe(callOptions);
                 ((ClientMethodBinder)binder).ServiceProvider.ShouldBe(serviceProvider);
             });
 
@@ -134,7 +134,7 @@ public partial class ClientFactoryTest
             .Callback<IClientMethodBinder>(binder =>
             {
                 binder.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
-                binder.DefaultCallOptionsFactory.ShouldBeNull();
+                ((ClientMethodBinder)binder).DefaultCallOptionsFactory.ShouldBeNull();
             });
 
         _generator
@@ -158,7 +158,7 @@ public partial class ClientFactoryTest
             .Callback<IClientMethodBinder>(binder =>
             {
                 binder.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
-                binder.DefaultCallOptionsFactory.ShouldBeNull();
+                ((ClientMethodBinder)binder).DefaultCallOptionsFactory.ShouldBeNull();
             });
 
         _emitClientBuilder
@@ -176,7 +176,7 @@ public partial class ClientFactoryTest
             .Callback<IClientMethodBinder>(binder =>
             {
                 binder.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
-                binder.DefaultCallOptionsFactory.ShouldBeNull();
+                ((ClientMethodBinder)binder).DefaultCallOptionsFactory.ShouldBeNull();
             });
 
         _sut.AddClient<IDisposable>();
@@ -210,7 +210,7 @@ public partial class ClientFactoryTest
             .Callback<IClientMethodBinder>(binder =>
             {
                 binder.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
-                binder.DefaultCallOptionsFactory.ShouldBeNull();
+                ((ClientMethodBinder)binder).DefaultCallOptionsFactory.ShouldBeNull();
             });
 
         _emitClientBuilder
@@ -247,7 +247,7 @@ public partial class ClientFactoryTest
             .Callback<IClientMethodBinder>(binder =>
             {
                 binder.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
-                binder.DefaultCallOptionsFactory.ShouldBeNull();
+                ((ClientMethodBinder)binder).DefaultCallOptionsFactory.ShouldBeNull();
             });
 
         _emitClientBuilder
@@ -287,7 +287,7 @@ public partial class ClientFactoryTest
             .Callback<IClientMethodBinder>(binder =>
             {
                 binder.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
-                binder.DefaultCallOptionsFactory.ShouldBeNull();
+                ((ClientMethodBinder)binder).DefaultCallOptionsFactory.ShouldBeNull();
             });
 
         _emitClientBuilder

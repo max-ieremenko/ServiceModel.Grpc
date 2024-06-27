@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2022 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,18 +34,19 @@ internal sealed class EmitClientBuilder
     private readonly ContractDescription<Type> _description;
     private readonly Type _contractType;
     private readonly HashSet<string> _uniqueMemberNames;
+    private readonly ReflectClientCallInvoker _reflectClientCallInvoker;
 
     private TypeBuilder _typeBuilder = null!;
     private FieldBuilder _contractField = null!;
     private FieldBuilder _callInvokerField = null!;
-    private FieldBuilder _callOptionsFactoryField = null!;
-    private FieldBuilder _filterHandlerFactoryField = null!;
+    private FieldBuilder _clientCallInvokerField = null!;
 
     public EmitClientBuilder(ContractDescription<Type> description, Type contractType)
     {
         _description = description;
         _contractType = contractType;
         _uniqueMemberNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        _reflectClientCallInvoker = new ReflectClientCallInvoker();
     }
 
     public TypeInfo Build(ModuleBuilder moduleBuilder)
@@ -67,16 +68,10 @@ internal sealed class EmitClientBuilder
                 typeof(CallInvoker),
                 FieldAttributes.Private | FieldAttributes.InitOnly);
 
-        _callOptionsFactoryField = _typeBuilder
+        _clientCallInvokerField = _typeBuilder
             .DefineField(
-                "__callOptionsFactory",
-                typeof(Func<CallOptions>),
-                FieldAttributes.Private | FieldAttributes.InitOnly);
-
-        _filterHandlerFactoryField = _typeBuilder
-            .DefineField(
-                "__filterHandlerFactory",
-                typeof(IClientCallFilterHandlerFactory),
+                "_clientCallInvoker",
+                typeof(IClientCallInvoker),
                 FieldAttributes.Private | FieldAttributes.InitOnly);
 
         BuildCtor();
@@ -119,22 +114,20 @@ internal sealed class EmitClientBuilder
         return _typeBuilder.CreateTypeInfo()!;
     }
 
-    public Func<CallInvoker, object, Func<CallOptions>?, IClientCallFilterHandlerFactory?, TContract> CreateFactory<TContract>(Type implementationType)
+    public Func<CallInvoker, object, IClientCallInvoker, TContract> CreateFactory<TContract>(Type implementationType)
     {
         var callInvoker = Expression.Parameter(typeof(CallInvoker), "callInvoker");
         var contract = Expression.Parameter(typeof(object), "contract");
-        var callOptions = Expression.Parameter(typeof(Func<CallOptions>), "callOptions");
-        var filterHandlerFactory = Expression.Parameter(typeof(IClientCallFilterHandlerFactory), "filterHandlerFactory");
+        var clientCallInvoker = Expression.Parameter(typeof(IClientCallInvoker), "clientCallInvoker");
 
-        var ctor = implementationType.Constructor(typeof(CallInvoker), _contractType, typeof(Func<CallOptions>), typeof(IClientCallFilterHandlerFactory));
+        var ctor = implementationType.Constructor(callInvoker.Type, _contractType, clientCallInvoker.Type);
         var factory = Expression.New(
             ctor,
             callInvoker,
             Expression.Convert(contract, _contractType),
-            callOptions,
-            filterHandlerFactory);
+            clientCallInvoker);
 
-        return Expression.Lambda<Func<CallInvoker, object, Func<CallOptions>?, IClientCallFilterHandlerFactory?, TContract>>(factory, callInvoker, contract, callOptions, filterHandlerFactory).Compile();
+        return Expression.Lambda<Func<CallInvoker, object, IClientCallInvoker, TContract>>(factory, callInvoker, contract, clientCallInvoker).Compile();
     }
 
     private void ImplementNotSupportedMethod(MethodInfo method, string error)
@@ -175,23 +168,14 @@ internal sealed class EmitClientBuilder
         // optionsBuilder
         InitializeCallOptionsBuilder(body, operation);
 
-        // var call = new UnaryCall<TRequest, TResponse>(method, CallInvoker, optionsBuilder)
-        var callType = typeof(UnaryCall<,>).MakeGenericType(operation.RequestType.GetClrType(), operation.ResponseType.GetClrType());
-        InitializeCall(body, operation, callType, grpcMethodName);
+        // _clientCallInvoker.Unary(
+        var invokeMethod = _reflectClientCallInvoker.Unary(operation.RequestType, operation.ResponseType, operation.IsAsync);
 
-        // call.Invoke(message)
-        body.Emit(OpCodes.Ldloca_S, 1); // call
+        InitializeCall(body, operation, grpcMethodName);
+
         PushMessage(body, operation.RequestType.GetClrType(), operation.RequestTypeInput); // message
 
-        var invokeMethod = callType.InstanceGenericMethod(
-            operation.IsAsync ? "InvokeAsync" : "Invoke",
-            operation.ResponseType.IsGenericType() ? 1 : 0);
-        if (operation.ResponseType.IsGenericType())
-        {
-            invokeMethod = invokeMethod.MakeGenericMethod(operation.ResponseType.Properties);
-        }
-
-        body.Emit(OpCodes.Call, invokeMethod);
+        body.Emit(OpCodes.Callvirt, invokeMethod);
 
         // Task => new ValueTask
         if (operation.Method.ReturnType.IsValueTask())
@@ -207,19 +191,18 @@ internal sealed class EmitClientBuilder
         // optionsBuilder
         InitializeCallOptionsBuilder(body, operation);
 
-        // var call = new ServerStreamingCall<TRequest, TResponseHeader, TResponse>(method, CallInvoker, optionsBuilder)
-        var callType = typeof(ServerStreamingCall<,,,>).MakeGenericType(
-            operation.RequestType.GetClrType(),
-            operation.HeaderResponseType.GetClrType(),
-            operation.ResponseType.GetClrType(),
-            operation.ResponseType.Properties[0]);
-        InitializeCall(body, operation, callType, null);
+        // _clientCallInvoker.Server(
+        var invokeMethod = _reflectClientCallInvoker.Server(
+            operation.RequestType,
+            operation.HeaderResponseType,
+            operation.ResponseType,
+            operation.Method.ReturnType,
+            operation.IsAsync);
+        InitializeCall(body, operation, null);
 
-        // call.InvokeAsync(message)
-        body.Emit(OpCodes.Ldloca_S, 1); // call
         PushMessage(body, operation.RequestType.GetClrType(), operation.RequestTypeInput); // message
 
-        DoServerStreamingCall(body, operation, callType);
+        DoServerStreamingCall(body, operation, invokeMethod);
 
         body.Emit(OpCodes.Ret);
     }
@@ -269,31 +252,23 @@ internal sealed class EmitClientBuilder
         // optionsBuilder
         InitializeCallOptionsBuilder(body, operation);
 
-        // var call = new ClientStreamingCall<TRequestHeader, TRequest, TResponse>(method, CallInvoker, optionsBuilder)
-        var callType = typeof(ClientStreamingCall<,,,>).MakeGenericType(
-            operation.HeaderRequestType.GetClrType(),
-            operation.RequestType.GetClrType(),
-            operation.RequestType.Properties[0],
-            operation.ResponseType.GetClrType());
-        InitializeCall(body, operation, callType, null);
+        // _clientCallInvoker.Server(
+        var invokeMethod = _reflectClientCallInvoker.Client(operation.HeaderRequestType, operation.RequestType, operation.ResponseType);
+        InitializeCall(body, operation, null);
 
-        // call.InvokeAsync(stream)
-        body.Emit(OpCodes.Ldloca_S, 1); // call
-        body.EmitLdarg(operation.RequestTypeInput[0] + 1);
-
-        MethodInfo invokeMethod;
-        if (operation.ResponseType.IsGenericType())
+        if (operation.HeaderRequestType == null)
         {
-            invokeMethod = callType
-                .InstanceGenericMethod("InvokeAsync", 1)
-                .MakeGenericMethod(operation.ResponseType.Properties[0]);
+            body.Emit(OpCodes.Ldnull);
         }
         else
         {
-            invokeMethod = callType.InstanceGenericMethod("InvokeAsync", 0);
+            PushMessage(body, operation.HeaderRequestType.GetClrType(), operation.HeaderRequestTypeInput);
         }
 
-        body.Emit(OpCodes.Call, invokeMethod);
+        // stream
+        body.EmitLdarg(operation.RequestTypeInput[0] + 1);
+
+        body.Emit(OpCodes.Callvirt, invokeMethod);
 
         if (operation.Method.ReturnType.IsValueTask())
         {
@@ -309,32 +284,40 @@ internal sealed class EmitClientBuilder
         // optionsBuilder
         InitializeCallOptionsBuilder(body, operation);
 
-        // var call = DuplexStreamingCall<TRequestHeader, TRequest, TResponseHeader, TResponse>(method, CallInvoker, optionsBuilder)
-        var callType = typeof(DuplexStreamingCall<,,,,,>).MakeGenericType(
-            operation.HeaderRequestType.GetClrType(),
-            operation.RequestType.GetClrType(),
-            operation.RequestType.Properties[0],
-            operation.HeaderResponseType.GetClrType(),
-            operation.ResponseType.GetClrType(),
-            operation.ResponseType.Properties[0]);
-        InitializeCall(body, operation, callType, null);
+        // _clientCallInvoker.Duplex(
+        var invokeMethod = _reflectClientCallInvoker.Duplex(
+            operation.HeaderRequestType,
+            operation.RequestType,
+            operation.HeaderResponseType,
+            operation.ResponseType,
+            operation.Method.ReturnType,
+            operation.IsAsync);
+        InitializeCall(body, operation, null);
 
-        // call.InvokeAsync(stream)
-        body.Emit(OpCodes.Ldloca_S, 1); // call
+        if (operation.HeaderRequestType == null)
+        {
+            body.Emit(OpCodes.Ldnull);
+        }
+        else
+        {
+            PushMessage(body, operation.HeaderRequestType.GetClrType(), operation.HeaderRequestTypeInput);
+        }
+
+        // stream
         body.EmitLdarg(operation.RequestTypeInput[0] + 1);
 
-        DoServerStreamingCall(body, operation, callType);
+        DoServerStreamingCall(body, operation, invokeMethod);
 
         body.Emit(OpCodes.Ret);
     }
 
     private void InitializeCallOptionsBuilder(ILGenerator body, OperationDescription<Type> operation)
     {
-        // var optionsBuilder = new CallOptionsBuilder(DefaultOptions)
+        // var optionsBuilder = _clientCallInvoker.CreateOptionsBuilder();
         body.DeclareLocal(typeof(CallOptionsBuilder));
         body.Emit(OpCodes.Ldarg_0); // this
-        body.Emit(OpCodes.Ldfld, _callOptionsFactoryField); // DefaultOptions
-        body.Emit(OpCodes.Newobj, typeof(CallOptionsBuilder).Constructor(typeof(Func<CallOptions>)));
+        body.Emit(OpCodes.Ldfld, _clientCallInvokerField); // _clientCallInvoker
+        body.Emit(OpCodes.Callvirt, _reflectClientCallInvoker.CreateOptionsBuilder()); // .CreateOptionsBuilder()
         body.Emit(OpCodes.Stloc_0);
 
         // optionsBuilder = optionsBuilder.With()
@@ -362,45 +345,25 @@ internal sealed class EmitClientBuilder
         }
     }
 
-    private void InitializeCall(ILGenerator body, OperationDescription<Type> operation, Type callType, string? grpcMethodName)
+    private void InitializeCall(ILGenerator body, OperationDescription<Type> operation, string? grpcMethodName)
     {
-        // var call = new callType(...)
-        body.DeclareLocal(callType); // var call
-        PushContractField(body, grpcMethodName ?? NamingContract.Contract.GrpcMethod(operation.OperationName)); // method
+        // _clientCallInvoker.method(_callInvoker, _contract.UnaryCall, in optionsBuilder)
+        body.Emit(OpCodes.Ldarg_0); // _clientCallInvoker
+        body.Emit(OpCodes.Ldfld, _clientCallInvokerField);
 
         body.Emit(OpCodes.Ldarg_0); // CallInvoker
         body.Emit(OpCodes.Ldfld, _callInvokerField);
 
-        body.Emit(OpCodes.Ldloca_S, 0); // optionsBuilder
+        PushContractField(body, grpcMethodName ?? NamingContract.Contract.GrpcMethod(operation.OperationName)); // method
 
-        body.Emit(OpCodes.Ldarg_0); // filterHandlerFactory
-        body.Emit(OpCodes.Ldfld, _filterHandlerFactoryField);
-
-        var ctorParametersCount = 4;
-        if (operation.OperationType == MethodType.ClientStreaming || operation.OperationType == MethodType.DuplexStreaming)
-        {
-            ctorParametersCount = 5;
-            if (operation.HeaderRequestType == null)
-            {
-                body.Emit(OpCodes.Ldnull);
-            }
-            else
-            {
-                PushMessage(body, operation.HeaderRequestType.GetClrType(), operation.HeaderRequestTypeInput);
-            }
-        }
-
-        body.Emit(OpCodes.Newobj, callType.Constructor(ctorParametersCount));
-        body.Emit(OpCodes.Stloc_1);
+        body.Emit(OpCodes.Ldloc_0); // optionsBuilder
     }
 
-    private void DoServerStreamingCall(ILGenerator body, OperationDescription<Type> operation, Type callType)
+    private void DoServerStreamingCall(ILGenerator body, OperationDescription<Type> operation, MethodInfo invokeMethod)
     {
         if (operation.HeaderResponseType == null && operation.IsAsync)
         {
-            var invokeMethod = callType.InstanceGenericMethod("InvokeAsync", 0);
-            body.Emit(OpCodes.Call, invokeMethod);
-
+            body.Emit(OpCodes.Callvirt, invokeMethod);
             if (operation.Method.ReturnType.IsValueTask())
             {
                 // new ValueTask<>()
@@ -409,8 +372,7 @@ internal sealed class EmitClientBuilder
         }
         else if (operation.HeaderResponseType == null)
         {
-            var invokeMethod = callType.InstanceMethod("Invoke");
-            body.Emit(OpCodes.Call, invokeMethod);
+            body.Emit(OpCodes.Callvirt, invokeMethod);
         }
         else
         {
@@ -421,10 +383,7 @@ internal sealed class EmitClientBuilder
             body.Emit(OpCodes.Ldftn, adapter);
             body.Emit(OpCodes.Newobj, adapterType.Constructor(typeof(object), typeof(IntPtr)));
 
-            var invokeMethod = callType
-                .InstanceGenericMethod("InvokeAsync", 1)
-                .MakeGenericMethod(operation.Method.ReturnType.GetGenericArguments()[0]);
-            body.Emit(OpCodes.Call, invokeMethod);
+            body.Emit(OpCodes.Callvirt, invokeMethod);
 
             if (operation.Method.ReturnType.IsValueTask())
             {
@@ -479,7 +438,7 @@ internal sealed class EmitClientBuilder
         var ctor = _typeBuilder.DefineConstructor(
             MethodAttributes.Public,
             CallingConventions.HasThis,
-            [typeof(CallInvoker), _contractType, typeof(Func<CallOptions>), typeof(IClientCallFilterHandlerFactory)]);
+            [typeof(CallInvoker), _contractType, typeof(IClientCallInvoker)]);
 
         var il = ctor.GetILGenerator();
         il.Emit(OpCodes.Ldarg_0);
@@ -495,15 +454,10 @@ internal sealed class EmitClientBuilder
         il.EmitLdarg(2);
         il.Emit(OpCodes.Stfld, _contractField);
 
-        // __callOptionsFactory
+        // __clientCallInvoker
         il.Emit(OpCodes.Ldarg_0);
         il.EmitLdarg(3);
-        il.Emit(OpCodes.Stfld, _callOptionsFactoryField);
-
-        // __filterHandlerFactory
-        il.Emit(OpCodes.Ldarg_0);
-        il.EmitLdarg(4);
-        il.Emit(OpCodes.Stfld, _filterHandlerFactoryField);
+        il.Emit(OpCodes.Stfld, _clientCallInvokerField);
 
         il.Emit(OpCodes.Ret);
     }

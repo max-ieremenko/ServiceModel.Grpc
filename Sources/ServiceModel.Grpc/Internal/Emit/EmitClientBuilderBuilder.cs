@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2023 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,8 +33,7 @@ internal sealed class EmitClientBuilderBuilder
     private readonly Type _clientBuilderType;
 
     private FieldBuilder _contractField = null!;
-    private FieldBuilder _callOptionsFactoryField = null!;
-    private FieldBuilder _filterHandlerFactoryField = null!;
+    private FieldBuilder _clientCallInvokerField = null!;
 
     public EmitClientBuilderBuilder(ContractDescription<Type> description, Type contractType, Type clientType)
     {
@@ -62,8 +61,7 @@ internal sealed class EmitClientBuilderBuilder
     private void BuildFields(TypeBuilder typeBuilder)
     {
         _contractField = typeBuilder.DefineField("_contract", _contractType, FieldAttributes.Private);
-        _callOptionsFactoryField = typeBuilder.DefineField("_defaultCallOptionsFactory", typeof(Func<CallOptions>), FieldAttributes.Private);
-        _filterHandlerFactoryField = typeBuilder.DefineField("_filterHandlerFactory", typeof(IClientCallFilterHandlerFactory), FieldAttributes.Private);
+        _clientCallInvokerField = typeBuilder.DefineField("_clientCallInvoker", typeof(IClientCallInvoker), FieldAttributes.Private);
     }
 
     private void BuildInitializeMethod(TypeBuilder typeBuilder)
@@ -88,12 +86,6 @@ internal sealed class EmitClientBuilderBuilder
         body.Emit(OpCodes.Newobj, _contractType.Constructor(typeof(IMarshallerFactory)));
         body.Emit(OpCodes.Stfld, _contractField);
 
-        // _defaultCallOptionsFactory = methodBinder.DefaultCallOptionsFactory
-        body.Emit(OpCodes.Ldarg_0);
-        body.Emit(OpCodes.Ldarg_1);
-        body.Emit(OpCodes.Callvirt, typeof(IClientMethodBinder).InstanceProperty(nameof(IClientMethodBinder.DefaultCallOptionsFactory)).GetMethod);
-        body.Emit(OpCodes.Stfld, _callOptionsFactoryField);
-
         // EmitAdapter.AddMethod(methodBinder, _contract.Method, Contract.Handle);
         foreach (var interfaceDescription in _description.Services)
         {
@@ -108,11 +100,11 @@ internal sealed class EmitClientBuilderBuilder
             }
         }
 
-        // _filterHandlerFactory = methodBinder.CreateFilterHandlerFactory()
+        // _clientCallInvokerField = methodBinder.CreateCallInvoker()
         body.Emit(OpCodes.Ldarg_0);
         body.Emit(OpCodes.Ldarg_1);
-        body.Emit(OpCodes.Callvirt, typeof(IClientMethodBinder).InstanceMethod(nameof(IClientMethodBinder.CreateFilterHandlerFactory)));
-        body.Emit(OpCodes.Stfld, _filterHandlerFactoryField);
+        body.Emit(OpCodes.Callvirt, typeof(IClientMethodBinder).InstanceMethod(nameof(IClientMethodBinder.CreateCallInvoker)));
+        body.Emit(OpCodes.Stfld, _clientCallInvokerField);
 
         body.Emit(OpCodes.Ret);
     }
@@ -137,10 +129,8 @@ internal sealed class EmitClientBuilderBuilder
         body.Emit(OpCodes.Ldarg_0);
         body.Emit(OpCodes.Ldfld, _contractField);
         body.Emit(OpCodes.Ldarg_0);
-        body.Emit(OpCodes.Ldfld, _callOptionsFactoryField);
-        body.Emit(OpCodes.Ldarg_0);
-        body.Emit(OpCodes.Ldfld, _filterHandlerFactoryField);
-        body.Emit(OpCodes.Newobj, _clientType.Constructor(typeof(CallInvoker), _contractType, _callOptionsFactoryField.FieldType, _filterHandlerFactoryField.FieldType));
+        body.Emit(OpCodes.Ldfld, _clientCallInvokerField);
+        body.Emit(OpCodes.Newobj, _clientType.Constructor(typeof(CallInvoker), _contractType, _clientCallInvokerField.FieldType));
         body.Emit(OpCodes.Ret);
     }
 

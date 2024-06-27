@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -42,18 +41,6 @@ public static partial class ReflectionTools
         }
 
         return result;
-    }
-
-    public static string GetNonGenericName(Type type)
-    {
-        var name = type.Name;
-        if (!type.IsGenericType)
-        {
-            return name;
-        }
-
-        var index = name.IndexOf('`');
-        return name.Substring(0, index);
     }
 
     public static string GetNamespace(Type type)
@@ -83,8 +70,6 @@ public static partial class ReflectionTools
         return typeof(ValueTask) == type
                || (type.FullName ?? string.Empty).StartsWith(typeof(ValueTask<>).FullName, StringComparison.Ordinal);
     }
-
-    public static bool IsStream(Type type) => typeof(Stream).IsAssignableFrom(type);
 
     public static bool IsAsyncEnumerable(Type type)
     {

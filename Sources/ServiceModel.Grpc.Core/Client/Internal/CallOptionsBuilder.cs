@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2022 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -50,6 +50,15 @@ public ref struct CallOptionsBuilder
     public CallContext? CallContext { get; private set; }
 
     /// <exclude />
+    public static CallOptions MergeCallOptions(CallOptions current, CallOptions mergeWith) => new(
+        headers: MergeMetadata(current.Headers, mergeWith.Headers),
+        deadline: mergeWith.Deadline ?? current.Deadline,
+        cancellationToken: MergeToken(current.CancellationToken, mergeWith.CancellationToken),
+        writeOptions: mergeWith.WriteOptions ?? current.WriteOptions,
+        propagationToken: mergeWith.PropagationToken ?? current.PropagationToken,
+        credentials: mergeWith.Credentials ?? current.Credentials);
+
+    /// <exclude />
     public CallOptionsBuilder WithCallOptions(CallOptions? options)
     {
         if (options.HasValue)
@@ -84,7 +93,7 @@ public ref struct CallOptionsBuilder
     {
         if (context != null)
         {
-            throw new NotSupportedException("ServerCallContext cannot be propagated from client call.");
+            throw new NotSupportedException($"{nameof(ServerCallContext)} cannot be propagated from client call.");
         }
 
         return this;
@@ -121,17 +130,6 @@ public ref struct CallOptionsBuilder
         }
 
         return result;
-    }
-
-    internal static CallOptions MergeCallOptions(CallOptions current, CallOptions mergeWith)
-    {
-        return new CallOptions(
-            headers: MergeMetadata(current.Headers, mergeWith.Headers),
-            deadline: mergeWith.Deadline ?? current.Deadline,
-            cancellationToken: MergeToken(current.CancellationToken, mergeWith.CancellationToken),
-            writeOptions: mergeWith.WriteOptions ?? current.WriteOptions,
-            propagationToken: mergeWith.PropagationToken ?? current.PropagationToken,
-            credentials: mergeWith.Credentials ?? current.Credentials);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

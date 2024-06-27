@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2023 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,11 +41,8 @@ public interface IClientMethodBinder
     IMarshallerFactory MarshallerFactory { get; }
 
     /// <exclude />
-    Func<CallOptions>? DefaultCallOptionsFactory { get; }
-
-    /// <exclude />
     void Add(IMethod method, Func<MethodInfo> resolveContractMethodDefinition);
 
     /// <exclude />
-    IClientCallFilterHandlerFactory? CreateFilterHandlerFactory();
+    IClientCallInvoker CreateCallInvoker();
 }

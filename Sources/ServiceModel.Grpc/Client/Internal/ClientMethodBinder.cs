@@ -41,11 +41,11 @@ internal sealed class ClientMethodBinder : IClientMethodBinder
 
     public IServiceProvider? ServiceProvider { get; }
 
-    public bool RequiresMetadata => _filterRegistrations != null;
-
     public IMarshallerFactory MarshallerFactory { get; }
 
     public Func<CallOptions>? DefaultCallOptionsFactory { get; }
+
+    public bool RequiresMetadata => _filterRegistrations != null;
 
     public void AddFilters(IList<FilterRegistration<IClientFilter>>? registrations)
     {
@@ -65,7 +65,8 @@ internal sealed class ClientMethodBinder : IClientMethodBinder
     public void Add(IMethod method, Func<MethodInfo> resolveContractMethodDefinition) =>
         _filterRegistrations?.AddMethod(method, new FiltersReflectOperationDescription(resolveContractMethodDefinition));
 
-    public IClientCallFilterHandlerFactory? CreateFilterHandlerFactory() => _filterRegistrations?.CreateFactory(ServiceProvider);
+    public IClientCallInvoker CreateCallInvoker() =>
+        new ClientCallInvoker(DefaultCallOptionsFactory, _filterRegistrations?.CreateFactory(ServiceProvider));
 
     internal IList<FilterRegistration<IClientFilter>>? GetFilterRegistrations() => _filterRegistrations?.Registrations;
 }

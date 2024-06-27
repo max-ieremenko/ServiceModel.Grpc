@@ -53,25 +53,18 @@ public partial class EmitClientBuilderBuilderTest
 
     public sealed class ClientMock : ISomeContract
     {
-        public ClientMock(
-            CallInvoker callInvoker,
-            ContractMock contract,
-            Func<CallOptions> defaultCallOptionsFactory,
-            IClientCallFilterHandlerFactory? filterHandlerFactory)
+        public ClientMock(CallInvoker callInvoker, ContractMock contract, IClientCallInvoker clientCallInvoker)
         {
             CallInvoker = callInvoker;
             Contract = contract;
-            DefaultCallOptionsFactory = defaultCallOptionsFactory;
-            FilterHandlerFactory = filterHandlerFactory;
+            ClientCallInvoker = clientCallInvoker;
         }
 
         public CallInvoker CallInvoker { get; }
 
         public ContractMock Contract { get; }
 
-        public Func<CallOptions> DefaultCallOptionsFactory { get; }
-
-        public IClientCallFilterHandlerFactory? FilterHandlerFactory { get; }
+        public IClientCallInvoker ClientCallInvoker { get; }
 
         public void SomeOperation() => throw new NotSupportedException();
     }

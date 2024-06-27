@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2024 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -80,14 +80,9 @@ internal sealed class ClientBuilderCodeGenerator : ICodeGenerator
             .AppendLine(" _contract;");
 
         output
-            .Append("private Func<")
-            .WriteType(typeof(CallOptions))
-            .AppendLine("> _defaultCallOptionsFactory;");
-
-        output
             .Append("private ")
-            .WriteType(typeof(IClientCallFilterHandlerFactory))
-            .AppendLine(" _filterHandlerFactory;");
+            .WriteType(typeof(IClientCallInvoker))
+            .AppendLine(" _clientCallInvoker;");
     }
 
     private void BuildMethodInitialize(ICodeStringBuilder output)
@@ -108,11 +103,6 @@ internal sealed class ClientBuilderCodeGenerator : ICodeGenerator
                 .Append("(methodBinder.")
                 .Append(nameof(IClientMethodBinder.MarshallerFactory))
                 .AppendLine(");");
-
-            output
-                .Append("_defaultCallOptionsFactory = methodBinder.")
-                .Append(nameof(IClientMethodBinder.DefaultCallOptionsFactory))
-                .AppendLine(";");
 
             output
                 .AppendLine()
@@ -159,8 +149,8 @@ internal sealed class ClientBuilderCodeGenerator : ICodeGenerator
                 .AppendLine();
 
             output
-                .Append("_filterHandlerFactory = methodBinder.")
-                .Append(nameof(IClientMethodBinder.CreateFilterHandlerFactory))
+                .Append("_clientCallInvoker = methodBinder.")
+                .Append(nameof(IClientMethodBinder.CreateCallInvoker))
                 .AppendLine("();");
         }
 
@@ -184,7 +174,7 @@ internal sealed class ClientBuilderCodeGenerator : ICodeGenerator
             output
                 .Append("return new ")
                 .Append(NamingConventions.Client.Class(_contract.BaseClassName))
-                .AppendLine("(callInvoker, _contract, _defaultCallOptionsFactory, _filterHandlerFactory);");
+                .AppendLine("(callInvoker, _contract, _clientCallInvoker);");
         }
 
         output.AppendLine("}");

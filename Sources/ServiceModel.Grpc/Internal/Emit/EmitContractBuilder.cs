@@ -111,17 +111,11 @@ internal sealed class EmitContractBuilder
 
     private void BuildMethod(OperationDescription<Type> operation, TypeBuilder typeBuilder, ILGenerator ctor)
     {
-        var filedType = typeof(GrpcMethod<,,,>).MakeGenericType(
-            operation.HeaderRequestType.GetClrType(),
-            operation.RequestType.GetClrType(),
-            operation.HeaderResponseType.GetClrType(),
-            operation.ResponseType.GetClrType());
-
         // public IMethod MethodX;
         var field = typeBuilder
             .DefineField(
                 NamingContract.Contract.GrpcMethod(operation.OperationName),
-                filedType,
+                typeof(IMethod),
                 FieldAttributes.Public | FieldAttributes.InitOnly);
 
         // GrpcMethodFactory.Unary<,>(marshallerFactory, "serviceName", "name");

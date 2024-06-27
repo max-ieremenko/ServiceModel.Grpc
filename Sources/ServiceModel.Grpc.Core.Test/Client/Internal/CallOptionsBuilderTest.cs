@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2022 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ namespace ServiceModel.Grpc.Client.Internal;
 [TestFixture]
 public class CallOptionsBuilderTest
 {
-    private readonly CancellationTokenSource _tokenSource = new CancellationTokenSource();
+    private readonly CancellationTokenSource _tokenSource = new();
 
     [Test]
     public void BuildDefault()

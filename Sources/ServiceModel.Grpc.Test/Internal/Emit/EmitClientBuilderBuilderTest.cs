@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,8 +36,7 @@ public partial class EmitClientBuilderBuilderTest
     private Mock<IClientMethodBinder> _methodBinder = null!;
     private Mock<CallInvoker> _callInvoker = null!;
     private Mock<IMarshallerFactory> _marshallerFactory = null!;
-    private Func<CallOptions> _callOptionsFactory = null!;
-    private IClientCallFilterHandlerFactory _filterHandlerFactory = null!;
+    private IClientCallInvoker _clientCallInvoker = null!;
     private EmitClientBuilderBuilder _sut = null!;
 
     [OneTimeSetUp]
@@ -54,9 +53,8 @@ public partial class EmitClientBuilderBuilderTest
     {
         _callInvoker = new Mock<CallInvoker>(MockBehavior.Strict);
         _marshallerFactory = new Mock<IMarshallerFactory>(MockBehavior.Strict);
-        _callOptionsFactory = () => throw new NotSupportedException();
         _builder = (IClientBuilder<ISomeContract>)Activator.CreateInstance(_builderType)!;
-        _filterHandlerFactory = new Mock<IClientCallFilterHandlerFactory>(MockBehavior.Strict).Object;
+        _clientCallInvoker = new Mock<IClientCallInvoker>(MockBehavior.Strict).Object;
 
         _methodBinder = new Mock<IClientMethodBinder>(MockBehavior.Strict);
         _methodBinder
@@ -66,11 +64,8 @@ public partial class EmitClientBuilderBuilderTest
             .SetupGet(b => b.MarshallerFactory)
             .Returns(_marshallerFactory.Object);
         _methodBinder
-            .SetupGet(b => b.DefaultCallOptionsFactory)
-            .Returns(_callOptionsFactory);
-        _methodBinder
-            .Setup(b => b.CreateFilterHandlerFactory())
-            .Returns(_filterHandlerFactory);
+            .Setup(b => b.CreateCallInvoker())
+            .Returns(_clientCallInvoker);
     }
 
     [Test]
@@ -83,8 +78,7 @@ public partial class EmitClientBuilderBuilderTest
         var mock = actual.ShouldBeOfType<ClientMock>();
         mock.CallInvoker.ShouldBe(_callInvoker.Object);
         mock.Contract.MarshallerFactory.ShouldBe(_marshallerFactory.Object);
-        mock.DefaultCallOptionsFactory.ShouldBe(_callOptionsFactory);
-        mock.FilterHandlerFactory.ShouldBe(_filterHandlerFactory);
+        mock.ClientCallInvoker.ShouldBe(_clientCallInvoker);
     }
 
     [Test]
@@ -99,12 +93,6 @@ public partial class EmitClientBuilderBuilderTest
             .SetupGet(b => b.MarshallerFactory)
             .Returns(DataContractMarshallerFactory.Default);
         _methodBinder
-            .SetupGet(b => b.DefaultCallOptionsFactory)
-            .Returns((Func<CallOptions>?)null);
-        _methodBinder
-            .Setup(b => b.CreateFilterHandlerFactory())
-            .Returns((IClientCallFilterHandlerFactory?)null);
-        _methodBinder
             .Setup(b => b.Add(It.IsNotNull<IMethod>(), It.IsNotNull<Func<MethodInfo>>()))
             .Callback<IMethod, Func<MethodInfo>>((method, resolver) => binderMethods.Add((method, resolver)));
 
@@ -115,8 +103,7 @@ public partial class EmitClientBuilderBuilderTest
         var mock = actual.ShouldBeOfType<ClientMock>();
         mock.CallInvoker.ShouldBe(_callInvoker.Object);
         mock.Contract.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
-        mock.DefaultCallOptionsFactory.ShouldBeNull();
-        mock.FilterHandlerFactory.ShouldBeNull();
+        mock.ClientCallInvoker.ShouldBe(_clientCallInvoker);
 
         binderMethods.Count.ShouldBe(1);
         binderMethods[0].Method.ShouldNotBeNull();
