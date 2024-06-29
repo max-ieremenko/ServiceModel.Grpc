@@ -16,9 +16,9 @@
 
 using Grpc.Core;
 using Microsoft.CodeAnalysis;
-using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
 

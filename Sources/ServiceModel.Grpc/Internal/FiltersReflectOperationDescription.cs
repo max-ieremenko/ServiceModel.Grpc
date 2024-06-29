@@ -21,7 +21,6 @@ using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Emit.Descriptions;
 using ServiceModel.Grpc.Filters.Internal;
-using ServiceModel.Grpc.Internal.Emit;
 
 namespace ServiceModel.Grpc.Internal;
 

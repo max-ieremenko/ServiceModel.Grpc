@@ -18,12 +18,15 @@ using System;
 using Grpc.Core;
 using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Client;
 
 public partial class ClientFactoryTest
 {
     public interface ISomeContract;
+
+    internal interface IInternalContract;
 
     private sealed class ManualClientBuilder : IClientBuilder<ISomeContract>
     {

@@ -21,6 +21,7 @@ using System.Threading;
 using Grpc.Core;
 using Moq;
 using NUnit.Framework;
+using ServiceModel.Grpc.Internal;
 using Shouldly;
 
 namespace ServiceModel.Grpc.Client.Internal;

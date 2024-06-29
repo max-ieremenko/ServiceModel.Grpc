@@ -5,6 +5,10 @@
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' != 'net462'">
+    <PackageReference Include="System.Reflection.Emit" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\ServiceModel.Grpc.Descriptions\ServiceModel.Grpc.Descriptions.csproj" />
   </ItemGroup>

@@ -21,6 +21,7 @@ using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Filters;
 using ServiceModel.Grpc.Filters.Internal;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Client.Internal;
 

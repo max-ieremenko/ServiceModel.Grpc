@@ -18,10 +18,11 @@ using System;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Filters.Internal;
 using ServiceModel.Grpc.Hosting.Internal;
 using ServiceModel.Grpc.Interceptors.Internal;
-using ServiceModel.Grpc.Internal.Emit;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.SelfHost.Internal;
 
@@ -90,6 +91,6 @@ internal static class ServiceDefinitionFactory
             serviceInstanceType = null;
         }
 
-        return new EmitGenerator { Logger = logger }.GenerateServiceEndpointBinder<TService>(serviceInstanceType);
+        return EmitGenerator.GenerateServiceEndpointBinder<TService>(serviceInstanceType, logger);
     }
 }

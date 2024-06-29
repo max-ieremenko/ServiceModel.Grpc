@@ -23,7 +23,7 @@ using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Interceptors.Internal;
-using ServiceModel.Grpc.Internal.Emit;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Client;
 
@@ -33,7 +33,6 @@ namespace ServiceModel.Grpc.Client;
 public sealed class ClientFactory : IClientFactory
 {
     private readonly object _syncRoot;
-    private readonly IEmitGenerator? _generator;
     private readonly ServiceModelGrpcClientOptions? _defaultOptions;
     private readonly IDictionary<Type, object> _builderByContract;
     private readonly IDictionary<Type, Interceptor> _interceptorByContract;
@@ -43,13 +42,7 @@ public sealed class ClientFactory : IClientFactory
     /// </summary>
     /// <param name="defaultOptions">Default configuration for all clients, created by this instance.</param>
     public ClientFactory(ServiceModelGrpcClientOptions? defaultOptions = null)
-        : this(null, defaultOptions)
     {
-    }
-
-    internal ClientFactory(IEmitGenerator? generator, ServiceModelGrpcClientOptions? defaultOptions)
-    {
-        _generator = generator;
         _defaultOptions = defaultOptions;
         _builderByContract = new Dictionary<Type, object>();
         _interceptorByContract = new Dictionary<Type, Interceptor>();
@@ -142,14 +135,6 @@ public sealed class ClientFactory : IClientFactory
         return builder.Build(callInvoker);
     }
 
-    private IEmitGenerator CreateGenerator(ServiceModelGrpcClientOptions clientOptions)
-    {
-        var generator = _generator ?? new EmitGenerator();
-        generator.Logger = clientOptions.Logger;
-
-        return generator;
-    }
-
     private object RegisterClient<TContract>(IClientBuilder<TContract>? userBuilder, Action<ServiceModelGrpcClientOptions>? configure)
         where TContract : class
     {
@@ -159,7 +144,6 @@ public sealed class ClientFactory : IClientFactory
         }
 
         var options = ConfigureClient(configure);
-        var generator = userBuilder == null ? CreateGenerator(options) : null;
 
         var methodBinder = new ClientMethodBinder(
             options.ServiceProvider,
@@ -178,7 +162,7 @@ public sealed class ClientFactory : IClientFactory
                 throw new InvalidOperationException($"Client for contract {contractType.FullName} is already initialized and cannot be changed.");
             }
 
-            builder = userBuilder ?? generator!.GenerateClientBuilder<TContract>();
+            builder = userBuilder ?? EmitGenerator.GenerateClientBuilder<TContract>(options.Logger);
             builder.Initialize(methodBinder);
 
             _builderByContract.Add(contractType, builder);

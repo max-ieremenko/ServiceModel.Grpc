@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Client.Internal;
 

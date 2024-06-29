@@ -29,8 +29,6 @@ using Microsoft.AspNetCore.Routing;
 using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Emit.Descriptions;
-using ServiceModel.Grpc.Internal;
-using ServiceModel.Grpc.Internal.Emit;
 #if NET6_0_OR_GREATER
 using RouteValuesType = System.Collections.Generic.Dictionary<string, string?>;
 #else

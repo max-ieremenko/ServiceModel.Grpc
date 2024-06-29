@@ -16,8 +16,10 @@
 
 using System;
 using System.Reflection;
+using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.Descriptions.Reflection;
+using ServiceModel.Grpc.Emit.CodeGenerators;
 using ServiceModel.Grpc.Emit.Descriptions.Reflection;
 
 namespace ServiceModel.Grpc.Emit.Descriptions;
@@ -31,4 +33,7 @@ public static class DescriptionExtensions
     public static ParameterInfo GetSource(this IParameterInfo<Type> parameter) => ((ReflectionParameterInfo)parameter).Source;
 
     public static bool IsGenericType(this MessageDescription<Type> message) => message.Properties.Length > 0;
+
+    public static Type GetClrType(this MessageDescription<Type>? message) =>
+        message == null ? typeof(Message) : MessageBuilder.GetMessageType(message.Properties);
 }

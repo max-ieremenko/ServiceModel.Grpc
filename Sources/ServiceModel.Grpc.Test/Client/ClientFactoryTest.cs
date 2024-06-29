@@ -23,7 +23,7 @@ using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Filters;
 using ServiceModel.Grpc.Interceptors;
-using ServiceModel.Grpc.Internal.Emit;
+using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.TestApi;
 using Shouldly;
 
@@ -37,7 +37,6 @@ public partial class ClientFactoryTest
     private Mock<CallInvoker> _callInvoker = null!;
     private IClientErrorHandler _globalErrorHandler = null!;
     private IClientErrorHandler _localErrorHandler = null!;
-    private Mock<IEmitGenerator> _generator = null!;
     private ClientFactory _sut = null!;
 
     [SetUp]
@@ -52,13 +51,7 @@ public partial class ClientFactoryTest
         _globalErrorHandler = new Mock<IClientErrorHandler>(MockBehavior.Strict).Object;
         _localErrorHandler = new Mock<IClientErrorHandler>(MockBehavior.Strict).Object;
 
-        _generator = new Mock<IEmitGenerator>(MockBehavior.Strict);
-        _generator.SetupProperty(g => g.Logger, null);
-        _generator
-            .Setup(g => g.GenerateClientBuilder<IDisposable>())
-            .Returns(_emitClientBuilder.Object);
-
-        _sut = new ClientFactory(_generator.Object, _defaultOptions);
+        _sut = new ClientFactory(_defaultOptions);
     }
 
     [Test]
@@ -137,14 +130,8 @@ public partial class ClientFactoryTest
                 ((ClientMethodBinder)binder).DefaultCallOptionsFactory.ShouldBeNull();
             });
 
-        _generator
-            .Setup(g => g.GenerateClientBuilder<IComparable<int>>())
-            .Returns(clientBuilder.Object)
-            .Verifiable();
+        _sut.AddClient(clientBuilder.Object);
 
-        _sut.AddClient<IComparable<int>>();
-
-        _generator.Verify();
         clientBuilder.VerifyAll();
     }
 
@@ -185,17 +172,17 @@ public partial class ClientFactoryTest
     }
 
     [Test]
-    [TestCase(typeof(object))] // class
-    [TestCase(typeof(IEmitGenerator))] // not public
-    public void InvalidContracts(Type contractType)
+    public void AddClientNonInterface()
     {
-        var addClient = (Action<Action<ServiceModelGrpcClientOptions>?>)_sut
-            .GetType()
-            .InstanceMethod(nameof(_sut.AddClient), typeof(Action<ServiceModelGrpcClientOptions>))
-            .MakeGenericMethod(contractType)
-            .CreateDelegate(typeof(Action<Action<ServiceModelGrpcClientOptions>?>), _sut);
+        var ex = Assert.Throws<NotSupportedException>(() => _sut.AddClient<object>());
 
-        var ex = Assert.Throws<NotSupportedException>(() => addClient(null));
+        TestOutput.WriteLine(ex);
+    }
+
+    [Test]
+    public void AddClientInternalInterface()
+    {
+        var ex = Assert.Throws<NotSupportedException>(() => _sut.AddClient<IInternalContract>());
 
         TestOutput.WriteLine(ex);
     }

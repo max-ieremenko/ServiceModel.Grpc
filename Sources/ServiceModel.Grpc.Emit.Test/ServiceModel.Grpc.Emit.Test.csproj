@@ -7,7 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CompareNETObjects" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ServiceModel.Grpc.Emit\ServiceModel.Grpc.Emit.csproj" />
+    <ProjectReference Include="..\ServiceModel.Grpc.TestApi\ServiceModel.Grpc.TestApi.csproj" />
+    <ProjectReference Include="..\ServiceModel.Grpc.ProtoBufMarshaller\ServiceModel.Grpc.ProtoBufMarshaller.csproj" />
   </ItemGroup>
 
 </Project>

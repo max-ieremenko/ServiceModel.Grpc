@@ -219,36 +219,6 @@ public static partial class ReflectionTools
     public static MethodInfo[] GetInstanceMethods(Type type) =>
         type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
-    public static MethodInfo InstanceGenericMethod(this Type type, string name, int genericArgsCount)
-    {
-        var candidates = type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-
-        MethodInfo? result = null;
-        for (var i = 0; i < candidates.Length; i++)
-        {
-            var candidate = candidates[i];
-            if (!name.Equals(candidate.Name, StringComparison.Ordinal)
-                || candidate.GetGenericArguments().Length != genericArgsCount)
-            {
-                continue;
-            }
-
-            if (result != null)
-            {
-                throw new ArgumentOutOfRangeException($"{type.Name} implements too many methods {name} with {genericArgsCount} generic arguments.");
-            }
-
-            result = candidate;
-        }
-
-        if (result == null)
-        {
-            throw new ArgumentOutOfRangeException($"{type.Name} does not implement method {name} with {genericArgsCount} generic arguments.");
-        }
-
-        return result;
-    }
-
     public static FieldInfo InstanceFiled(this Type type, string name)
     {
         var result = type.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);

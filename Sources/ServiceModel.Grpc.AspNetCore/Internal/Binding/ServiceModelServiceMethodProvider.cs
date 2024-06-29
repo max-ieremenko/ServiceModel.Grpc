@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Filters.Internal;
 using ServiceModel.Grpc.Hosting.Internal;
-using ServiceModel.Grpc.Internal.Emit;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.Binding;
 
@@ -99,7 +99,7 @@ internal sealed class ServiceModelServiceMethodProvider<TService> : IServiceMeth
     {
         if (_serviceConfiguration.EndpointBinderType == null)
         {
-            return new EmitGenerator { Logger = new LogAdapter(_logger) }.GenerateServiceEndpointBinder<TService>(GetServiceInstanceType());
+            return EmitGenerator.GenerateServiceEndpointBinder<TService>(GetServiceInstanceType(), new LogAdapter(_logger));
         }
 
         return (IServiceEndpointBinder<TService>)Activator.CreateInstance(_serviceConfiguration.EndpointBinderType)!;
