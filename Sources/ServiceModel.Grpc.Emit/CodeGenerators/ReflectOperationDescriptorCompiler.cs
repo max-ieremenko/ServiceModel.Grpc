@@ -21,32 +21,32 @@ using System.Globalization;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using ServiceModel.Grpc.Emit;
 using TMessageGet = System.Func<object, int, object?>;
+using TMessageGetType = System.Func<int, System.Type>;
 using TMessageSet = System.Action<object, int, object?>;
 using TStreamCast = System.Func<object, object>;
 using TStreamCreate = System.Func<object>;
 
-namespace ServiceModel.Grpc.Internal;
+namespace ServiceModel.Grpc.Emit.CodeGenerators;
 
-internal static class FiltersCompiler
+internal static class ReflectOperationDescriptorCompiler
 {
-    private static readonly ConcurrentDictionary<Type, (TMessageGet Get, TMessageSet Set)> MessageAccessorByType = new();
+    private static readonly ConcurrentDictionary<Type, (TMessageGet Get, TMessageSet Set, TMessageGetType GetType)> MessageAccessorByType = new();
 
     private static readonly ConcurrentDictionary<Type, (TStreamCreate Create, TStreamCast Cast)> StreamAccessorByType = new();
 
-    public static (TMessageGet GetValue, TMessageSet SetValue) GetMessageAccessors(Type messageType) =>
+    public static (TMessageGet GetValue, TMessageSet SetValue, TMessageGetType GetType) GetMessageAccessors(Type messageType) =>
         MessageAccessorByType.GetOrAdd(messageType, BuildAccessors);
 
     public static (TStreamCreate CreateDefault, TStreamCast Cast) GetStreamAccessors(Type itemType) =>
         StreamAccessorByType.GetOrAdd(itemType, BuildStreamAccessors);
 
-    private static (TMessageGet Get, TMessageSet Set) BuildAccessors(Type messageType)
+    private static (TMessageGet Get, TMessageSet Set, TMessageGetType GetType) BuildAccessors(Type messageType)
     {
         var valuesCount = messageType.GenericTypeArguments.Length;
         if (valuesCount == 0)
         {
-            return (GetMessageProperty, SetMessageProperty);
+            return (GetMessageProperty, SetMessageProperty, GetMessagePropertyType);
         }
 
         var messageArg = Expression.Parameter(typeof(object));
@@ -55,6 +55,7 @@ internal static class FiltersCompiler
         var typedMessage = Expression.Convert(messageArg, messageType);
 
         var getCases = new SwitchCase[valuesCount];
+        var getTypeCases = new SwitchCase[valuesCount];
         var setCases = new SwitchCase[valuesCount];
         for (var i = 0; i < valuesCount; i++)
         {
@@ -64,6 +65,10 @@ internal static class FiltersCompiler
 
             getCases[i] = Expression.SwitchCase(
                 Expression.Convert(property, typeof(object)),
+                testValue);
+
+            getTypeCases[i] = Expression.SwitchCase(
+                Expression.Constant(propertyInfo.PropertyType),
                 testValue);
 
             setCases[i] = Expression.SwitchCase(
@@ -77,6 +82,14 @@ internal static class FiltersCompiler
             getCases);
         var getValue = Expression.Lambda<TMessageGet>(getValueSwitch, messageArg, indexArg).Compile();
 
+        var getValueTypeSwitch = Expression.Switch(
+            typeof(Type),
+            indexArg,
+            Expression.Constant(null, typeof(Type)),
+            null,
+            getTypeCases);
+        var getValueType = Expression.Lambda<TMessageGetType>(getValueTypeSwitch, indexArg).Compile();
+
         var setValueSwitch = Expression.Switch(
             typeof(void),
             indexArg,
@@ -85,12 +98,12 @@ internal static class FiltersCompiler
             setCases);
         var setValue = Expression.Lambda<TMessageSet>(setValueSwitch, messageArg, indexArg, valueArg).Compile();
 
-        return (getValue, setValue);
+        return (getValue, setValue, getValueType);
     }
 
     private static (TStreamCreate Create, TStreamCast Cast) BuildStreamAccessors(Type itemType)
     {
-        var streamCreate = typeof(FiltersCompiler)
+        var streamCreate = typeof(ReflectOperationDescriptorCompiler)
             .StaticMethod(nameof(CreateEmptyStream))
             .MakeGenericMethod(itemType)
             .CreateDelegate<TStreamCreate>();
@@ -106,6 +119,8 @@ internal static class FiltersCompiler
     private static object GetMessageProperty(object message, int index) => throw new NotSupportedException();
 
     private static void SetMessageProperty(object message, int index, object? value) => throw new NotSupportedException();
+
+    private static Type GetMessagePropertyType(int index) => throw new NotSupportedException();
 
     private sealed class EmptyAsyncEnumerable<T> : IAsyncEnumerable<T>
     {

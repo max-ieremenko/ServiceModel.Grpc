@@ -18,19 +18,20 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Grpc.Core;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Filters.Internal;
 
 internal sealed class ServerFilterContext : IServerFilterContextInternal
 {
-    private readonly IOperationDescription _operation;
+    private readonly IOperationDescriptor _operation;
     private MethodInfo? _serviceMethodInfo;
 
     public ServerFilterContext(
         object serviceInstance,
         ServerCallContext serverCallContext,
         IServiceProvider serviceProvider,
-        IOperationDescription operation,
+        IOperationDescriptor operation,
         IRequestContextInternal request,
         IResponseContextInternal response)
     {
@@ -58,7 +59,7 @@ internal sealed class ServerFilterContext : IServerFilterContextInternal
         {
             if (_serviceMethodInfo == null)
             {
-                _serviceMethodInfo = _operation.GetImplementationMethod(ServiceInstance);
+                _serviceMethodInfo = ReflectionTools.ImplementationOfMethod(ServiceInstance.GetType(), ContractMethodInfo);
             }
 
             return _serviceMethodInfo;

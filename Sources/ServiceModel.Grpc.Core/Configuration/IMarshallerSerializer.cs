@@ -14,6 +14,8 @@
 // limitations under the License.
 // </copyright>
 
+using System.Buffers;
+
 namespace ServiceModel.Grpc.Configuration;
 
 internal interface IMarshallerSerializer
@@ -21,4 +23,6 @@ internal interface IMarshallerSerializer
     byte[] Serialize(IMarshallerFactory factory, object value);
 
     object Deserialize(IMarshallerFactory factory, byte[] payload);
+
+    object Deserialize(IMarshallerFactory factory, in ReadOnlySequence<byte> payload);
 }

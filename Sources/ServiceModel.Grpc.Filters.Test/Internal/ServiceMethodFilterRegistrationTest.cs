@@ -18,6 +18,7 @@ using System;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
+using ServiceModel.Grpc.Internal;
 using Shouldly;
 
 namespace ServiceModel.Grpc.Filters.Internal;
@@ -26,7 +27,7 @@ namespace ServiceModel.Grpc.Filters.Internal;
 public class ServiceMethodFilterRegistrationTest
 {
     private Mock<IServiceProvider> _serviceProvider = null!;
-    private Mock<IOperationDescription> _operation = null!;
+    private Mock<IOperationDescriptor> _operation = null!;
     private ServiceMethodFilterRegistration _sut = null!;
 
     [SetUp]
@@ -34,7 +35,7 @@ public class ServiceMethodFilterRegistrationTest
     {
         _serviceProvider = new Mock<IServiceProvider>(MockBehavior.Strict);
 
-        _operation = new Mock<IOperationDescription>(MockBehavior.Strict);
+        _operation = new Mock<IOperationDescriptor>(MockBehavior.Strict);
         _operation
             .Setup(o => o.GetRequestAccessor())
             .Returns((IMessageAccessor?)null!);
@@ -61,7 +62,7 @@ public class ServiceMethodFilterRegistrationTest
 
         for (var i = 0; i < 2; i++)
         {
-            var actual = _sut.CreateHandlerFactory(metadata, _operation.Object);
+            var actual = _sut.CreateHandlerFactory(metadata, () => _operation.Object);
 
             actual.ShouldBeNull();
         }
@@ -83,7 +84,7 @@ public class ServiceMethodFilterRegistrationTest
 
         for (var i = 0; i < 2; i++)
         {
-            var actual = _sut.CreateHandlerFactory(Array.Empty<object>(), _operation.Object);
+            var actual = _sut.CreateHandlerFactory(Array.Empty<object>(), () => _operation.Object);
 
             actual.ShouldNotBeNull();
             actual.ServiceProvider.ShouldBe(_serviceProvider.Object);
@@ -114,7 +115,7 @@ public class ServiceMethodFilterRegistrationTest
 
         for (var i = 0; i < 2; i++)
         {
-            var actual = _sut.CreateHandlerFactory(metadata, _operation.Object);
+            var actual = _sut.CreateHandlerFactory(metadata, () => _operation.Object);
 
             actual.ShouldNotBeNull();
             actual.ServiceProvider.ShouldBe(_serviceProvider.Object);
@@ -147,7 +148,7 @@ public class ServiceMethodFilterRegistrationTest
 
         for (var i = 0; i < 2; i++)
         {
-            var actual = _sut.CreateHandlerFactory(metadata, _operation.Object);
+            var actual = _sut.CreateHandlerFactory(metadata, () => _operation.Object);
 
             actual.ShouldNotBeNull();
             actual.ServiceProvider.ShouldBe(_serviceProvider.Object);

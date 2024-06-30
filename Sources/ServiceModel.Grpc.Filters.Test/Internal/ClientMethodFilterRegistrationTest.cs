@@ -18,6 +18,7 @@ using System;
 using Grpc.Core;
 using Moq;
 using NUnit.Framework;
+using ServiceModel.Grpc.Internal;
 using Shouldly;
 
 namespace ServiceModel.Grpc.Filters.Internal;
@@ -49,7 +50,7 @@ public class ClientMethodFilterRegistrationTest
             .SetupGet(m => m.FullName)
             .Returns("the-method");
 
-        var description = new Mock<IOperationDescription>(MockBehavior.Strict);
+        var description = new Mock<IOperationDescriptor>(MockBehavior.Strict);
 
         _sut.AddMethod(grpcMethod.Object, description.Object);
 
@@ -81,12 +82,12 @@ public class ClientMethodFilterRegistrationTest
             .SetupGet(m => m.FullName)
             .Returns("the-method-async");
 
-        var asyncDescription = new Mock<IOperationDescription>(MockBehavior.Strict);
+        var asyncDescription = new Mock<IOperationDescriptor>(MockBehavior.Strict);
         asyncDescription
             .Setup(d => d.IsAsync())
             .Returns(true);
 
-        var syncDescription = new Mock<IOperationDescription>(MockBehavior.Strict);
+        var syncDescription = new Mock<IOperationDescriptor>(MockBehavior.Strict);
         syncDescription
             .Setup(d => d.IsAsync())
             .Returns(false);

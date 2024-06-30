@@ -14,13 +14,15 @@
 // limitations under the License.
 // </copyright>
 
+using ServiceModel.Grpc.Internal;
+
 namespace ServiceModel.Grpc.Filters.Internal;
 
 internal sealed partial class ClientMethodMetadata
 {
     public ClientMethodMetadata(
-        IOperationDescription operation,
-        IOperationDescription? alternateOperation)
+        IOperationDescriptor operation,
+        IOperationDescriptor? alternateOperation)
     {
         Operation = new Metadata(operation);
         AlternateOperation = alternateOperation == null ? null : new Metadata(alternateOperation);

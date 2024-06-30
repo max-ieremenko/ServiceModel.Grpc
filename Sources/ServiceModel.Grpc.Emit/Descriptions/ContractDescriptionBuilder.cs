@@ -21,7 +21,7 @@ using ServiceModel.Grpc.Emit.Descriptions.Reflection;
 
 namespace ServiceModel.Grpc.Emit.Descriptions;
 
-public static class ContractDescriptionBuilder
+internal static class ContractDescriptionBuilder
 {
     public static ContractDescription<Type> Build(Type serviceType) =>
         ContractDescriptionBuilder<Type>.Build(serviceType, GetNamespace(serviceType), new ReflectType());

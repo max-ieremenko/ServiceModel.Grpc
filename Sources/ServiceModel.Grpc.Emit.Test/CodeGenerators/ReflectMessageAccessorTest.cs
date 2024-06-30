@@ -14,23 +14,24 @@
 // limitations under the License.
 // </copyright>
 
+using System;
 using NUnit.Framework;
 using ServiceModel.Grpc.Channel;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Internal;
+namespace ServiceModel.Grpc.Emit.CodeGenerators;
 
 [TestFixture]
-public class FiltersReflectMessageAccessorTest
+public class ReflectMessageAccessorTest
 {
     private Message<string, int> _message = null!;
-    private FiltersReflectMessageAccessor _sut = null!;
+    private ReflectMessageAccessor _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()
     {
         _message = new Message<string, int>();
-        _sut = new FiltersReflectMessageAccessor(_message.GetType(), ["p1", "p2"]);
+        _sut = new ReflectMessageAccessor(_message.GetType(), ["p1", "p2"]);
     }
 
     [Test]
@@ -50,5 +51,19 @@ public class FiltersReflectMessageAccessorTest
         var message = actual.ShouldBeOfType<Message<string, int>>();
         message.Value1.ShouldBeNull();
         message.Value2.ShouldBe(0);
+    }
+
+    [Test]
+    public void GetInstanceType()
+    {
+        _sut.GetInstanceType().ShouldBe(_message.GetType());
+    }
+
+    [Test]
+    [TestCase(0, typeof(string))]
+    [TestCase(1, typeof(int))]
+    public void GetValueType(int index, Type expected)
+    {
+        _sut.GetValueType(index).ShouldBe(expected);
     }
 }

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,13 +16,12 @@
 
 using Grpc.Core;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger;
 
 internal interface IApiDescriptionAdapter
 {
-    ApiDescription? FindApiDescription(string requestPath);
-
     IMethod? GetMethod(HttpContext context);
+
+    ServiceModelGrpcMarker? GetMarker(HttpContext context);
 }

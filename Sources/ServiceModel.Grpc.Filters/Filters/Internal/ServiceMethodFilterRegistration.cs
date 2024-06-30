@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Filters.Internal;
 
@@ -44,7 +45,7 @@ internal sealed class ServiceMethodFilterRegistration
         _registrations.AddRange(registrations);
     }
 
-    public ServerCallFilterHandlerFactory? CreateHandlerFactory(IList<object> metadata, IOperationDescription operation)
+    public ServerCallFilterHandlerFactory? CreateHandlerFactory(IList<object> metadata, Func<IOperationDescriptor> getOperation)
     {
         var registrations = CombineRegistrations(metadata);
         if (registrations == null)
@@ -60,7 +61,7 @@ internal sealed class ServiceMethodFilterRegistration
             filterFactories[i] = registrations[i].Factory;
         }
 
-        return new ServerCallFilterHandlerFactory(_serviceProvider, operation, filterFactories);
+        return new ServerCallFilterHandlerFactory(_serviceProvider, getOperation(), filterFactories);
     }
 
     private List<FilterRegistration<IServerFilter>>? CombineRegistrations(IList<object> metadata)

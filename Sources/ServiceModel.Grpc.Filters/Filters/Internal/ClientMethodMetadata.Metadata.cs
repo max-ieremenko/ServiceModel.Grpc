@@ -15,6 +15,7 @@
 // </copyright>
 
 using System;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Filters.Internal;
 
@@ -27,13 +28,13 @@ internal sealed partial class ClientMethodMetadata
         private IStreamAccessor? _requestStreamProxy;
         private IStreamAccessor? _responseStreamProxy;
 
-        public Metadata(IOperationDescription operation)
+        public Metadata(IOperationDescriptor operation)
         {
             Operation = operation;
             FilterFactories = [];
         }
 
-        public IOperationDescription Operation { get; }
+        public IOperationDescriptor Operation { get; }
 
         public Func<IServiceProvider, IClientFilter>[] FilterFactories { get; set; }
 

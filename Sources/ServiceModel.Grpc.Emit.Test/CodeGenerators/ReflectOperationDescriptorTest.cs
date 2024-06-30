@@ -20,18 +20,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using ServiceModel.Grpc.Channel;
-using ServiceModel.Grpc.Emit;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Internal;
+namespace ServiceModel.Grpc.Emit.CodeGenerators;
 
 [TestFixture]
-public class FiltersReflectOperationDescriptionTest
+public class ReflectOperationDescriptorTest
 {
     [Test]
     public void CreateCase1Proxy()
     {
-        var sut = new FiltersReflectOperationDescription(() => typeof(TestContract).InstanceMethod(nameof(TestContract.Case1)));
+        var sut = new ReflectOperationDescriptor(() => typeof(TestContract).InstanceMethod(nameof(TestContract.Case1)));
 
         sut.GetRequestAccessor().ShouldNotBeNull();
         sut.GetRequestAccessor().Names.ShouldBeEmpty();
@@ -43,29 +42,35 @@ public class FiltersReflectOperationDescriptionTest
 
         sut.GetRequestStreamAccessor().ShouldBeNull();
         sut.GetResponseStreamAccessor().ShouldBeNull();
+
+        sut.GetRequestHeaderParameters().ShouldBeEmpty();
+        sut.GetRequestParameters().ShouldBeEmpty();
     }
 
     [Test]
     public void CreateCase2Proxy()
     {
-        var sut = new FiltersReflectOperationDescription(() => typeof(TestContract).InstanceMethod(nameof(TestContract.Case2)));
+        var sut = new ReflectOperationDescriptor(() => typeof(TestContract).InstanceMethod(nameof(TestContract.Case2)));
 
         sut.GetRequestAccessor().ShouldNotBeNull();
         sut.GetRequestAccessor().Names.ShouldBe(["x", "y"]);
         sut.GetRequestAccessor().CreateNew().ShouldBeOfType<Message<string, int>>();
 
         sut.GetResponseAccessor().ShouldNotBeNull();
-        sut.GetResponseAccessor().Names.ShouldBe(FiltersReflectOperationDescription.UnaryResultNames);
+        sut.GetResponseAccessor().Names.ShouldBe(ReflectOperationDescriptor.UnaryResultNames);
         sut.GetResponseAccessor().CreateNew().ShouldBeOfType<Message<double>>();
 
         sut.GetRequestStreamAccessor().ShouldBeNull();
         sut.GetResponseStreamAccessor().ShouldBeNull();
+
+        sut.GetRequestHeaderParameters().ShouldBeEmpty();
+        sut.GetRequestParameters().ShouldBe([0, 2]);
     }
 
     [Test]
     public void CreateCase3Proxy()
     {
-        var sut = new FiltersReflectOperationDescription(() => typeof(TestContract).InstanceMethod(nameof(TestContract.Case3)));
+        var sut = new ReflectOperationDescriptor(() => typeof(TestContract).InstanceMethod(nameof(TestContract.Case3)));
 
         sut.GetRequestAccessor().ShouldNotBeNull();
         sut.GetRequestAccessor().Names.ShouldBeEmpty();
@@ -86,12 +91,15 @@ public class FiltersReflectOperationDescriptionTest
             .ShouldNotBeNull()
             .CreateEmpty()
             .ShouldBeAssignableTo<IAsyncEnumerable<double>>();
+
+        sut.GetRequestHeaderParameters().ShouldBeEmpty();
+        sut.GetRequestParameters().ShouldBe([0]);
     }
 
     [Test]
     public void CreateCase4Proxy()
     {
-        var sut = new FiltersReflectOperationDescription(() => typeof(TestContract).InstanceMethod(nameof(TestContract.Case4)));
+        var sut = new ReflectOperationDescriptor(() => typeof(TestContract).InstanceMethod(nameof(TestContract.Case4)));
 
         sut.GetRequestAccessor().ShouldNotBeNull();
         sut.GetRequestAccessor().Names.ShouldBe(["x", "y"]);
@@ -112,6 +120,9 @@ public class FiltersReflectOperationDescriptionTest
             .ShouldNotBeNull()
             .CreateEmpty()
             .ShouldBeAssignableTo<IAsyncEnumerable<double>>();
+
+        sut.GetRequestHeaderParameters().ShouldBe([1, 2]);
+        sut.GetRequestParameters().ShouldBe([0]);
     }
 
     private sealed class TestContract

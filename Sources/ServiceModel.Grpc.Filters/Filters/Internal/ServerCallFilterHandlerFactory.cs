@@ -16,6 +16,7 @@
 
 using System;
 using Grpc.Core;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Filters.Internal;
 
@@ -28,7 +29,7 @@ internal sealed class ServerCallFilterHandlerFactory
 
     public ServerCallFilterHandlerFactory(
         IServiceProvider serviceProvider,
-        IOperationDescription operation,
+        IOperationDescriptor operation,
         Func<IServiceProvider, IServerFilter>[] filterFactories)
     {
         ServiceProvider = serviceProvider;
@@ -43,7 +44,7 @@ internal sealed class ServerCallFilterHandlerFactory
 
     public IServiceProvider ServiceProvider { get; }
 
-    public IOperationDescription Operation { get; }
+    public IOperationDescriptor Operation { get; }
 
     public Func<IServiceProvider, IServerFilter>[] FilterFactories { get; }
 

@@ -16,7 +16,7 @@
 
 using System.Collections.Generic;
 using Moq;
-using ServiceModel.Grpc.Filters.Internal;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Filters.Api;
 

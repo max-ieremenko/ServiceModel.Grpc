@@ -18,12 +18,13 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Grpc.Core;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Filters.Internal;
 
 internal sealed class ClientFilterContext : IClientFilterContextInternal
 {
-    private readonly IOperationDescription _operation;
+    private readonly IOperationDescriptor _operation;
     private IDictionary<object, object>? _userState;
 
     public ClientFilterContext(
@@ -31,7 +32,7 @@ internal sealed class ClientFilterContext : IClientFilterContextInternal
         CallInvoker callInvoker,
         CallOptions callOptions,
         IMethod method,
-        IOperationDescription operation,
+        IOperationDescriptor operation,
         IRequestContextInternal request,
         IResponseContextInternal response)
     {

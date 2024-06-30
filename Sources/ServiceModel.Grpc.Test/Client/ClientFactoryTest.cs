@@ -66,7 +66,7 @@ public partial class ClientFactoryTest
                 ((ClientMethodBinder)binder).ServiceProvider.ShouldBeNull();
             });
 
-        _sut.AddClient<IDisposable>();
+        _sut.AddClient(_emitClientBuilder.Object);
 
         _emitClientBuilder.VerifyAll();
     }
@@ -87,12 +87,14 @@ public partial class ClientFactoryTest
                 ((ClientMethodBinder)binder).ServiceProvider.ShouldBe(serviceProvider);
             });
 
-        _sut.AddClient<IDisposable>(o =>
-        {
-            o.DefaultCallOptionsFactory = callOptions;
-            o.MarshallerFactory = marshaller.Object;
-            o.ServiceProvider = serviceProvider;
-        });
+        _sut.AddClient(
+            _emitClientBuilder.Object,
+            options =>
+            {
+                options.DefaultCallOptionsFactory = callOptions;
+                options.MarshallerFactory = marshaller.Object;
+                options.ServiceProvider = serviceProvider;
+            });
 
         _emitClientBuilder.VerifyAll();
     }
@@ -138,21 +140,7 @@ public partial class ClientFactoryTest
     [Test]
     public void CreateClientWithoutRegistration()
     {
-        var instance = new Mock<IDisposable>(MockBehavior.Strict);
-
-        _emitClientBuilder
-            .Setup(b => b.Initialize(It.IsNotNull<ClientMethodBinder>()))
-            .Callback<IClientMethodBinder>(binder =>
-            {
-                binder.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
-                ((ClientMethodBinder)binder).DefaultCallOptionsFactory.ShouldBeNull();
-            });
-
-        _emitClientBuilder
-            .Setup(b => b.Build(_callInvoker.Object))
-            .Returns(instance.Object);
-
-        _sut.CreateClient<IDisposable>(_callInvoker.Object).ShouldBe(instance.Object);
+        _sut.CreateClient<IDisposable>(_callInvoker.Object).ShouldNotBeNull();
     }
 
     [Test]
@@ -221,6 +209,7 @@ public partial class ClientFactoryTest
             })
             .Returns(new Mock<IDisposable>(MockBehavior.Strict).Object);
 
+        _sut.AddClient(_emitClientBuilder.Object);
         _sut.CreateClient<IDisposable>(_callInvoker.Object);
 
         _emitClientBuilder.VerifyAll();
@@ -258,7 +247,7 @@ public partial class ClientFactoryTest
             })
             .Returns(new Mock<IDisposable>(MockBehavior.Strict).Object);
 
-        _sut.AddClient<IDisposable>(options => options.ErrorHandler = _localErrorHandler);
+        _sut.AddClient(_emitClientBuilder.Object, options => options.ErrorHandler = _localErrorHandler);
         _sut.CreateClient<IDisposable>(_callInvoker.Object);
 
         _emitClientBuilder.VerifyAll();
@@ -298,7 +287,7 @@ public partial class ClientFactoryTest
             })
             .Returns(new Mock<IDisposable>(MockBehavior.Strict).Object);
 
-        _sut.AddClient<IDisposable>(options => options.ErrorHandler = _localErrorHandler);
+        _sut.AddClient(_emitClientBuilder.Object, options => options.ErrorHandler = _localErrorHandler);
         _sut.CreateClient<IDisposable>(_callInvoker.Object);
 
         _emitClientBuilder.VerifyAll();
@@ -324,7 +313,7 @@ public partial class ClientFactoryTest
                 filters[0].Factory(null!).ShouldBe(filter.Object);
             });
 
-        _sut.AddClient<IDisposable>();
+        _sut.AddClient(_emitClientBuilder.Object);
 
         _emitClientBuilder.VerifyAll();
     }
@@ -347,10 +336,12 @@ public partial class ClientFactoryTest
                 filters[0].Factory(null!).ShouldBe(filter.Object);
             });
 
-        _sut.AddClient<IDisposable>(o =>
-        {
-            o.Filters.Add(1, filter.Object);
-        });
+        _sut.AddClient<IDisposable>(
+            _emitClientBuilder.Object,
+            options =>
+            {
+                options.Filters.Add(1, filter.Object);
+            });
 
         _emitClientBuilder.VerifyAll();
     }

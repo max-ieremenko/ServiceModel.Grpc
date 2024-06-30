@@ -15,6 +15,7 @@
 // </copyright>
 
 using System;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Filters.Internal;
 

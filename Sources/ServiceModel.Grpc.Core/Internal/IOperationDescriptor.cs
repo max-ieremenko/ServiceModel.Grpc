@@ -16,15 +16,17 @@
 
 using System.Reflection;
 
-namespace ServiceModel.Grpc.Filters.Internal;
+namespace ServiceModel.Grpc.Internal;
 
-internal interface IOperationDescription
+public interface IOperationDescriptor
 {
     MethodInfo GetContractMethod();
 
-    MethodInfo GetImplementationMethod(object service);
-
     bool IsAsync();
+
+    int[] GetRequestHeaderParameters();
+
+    int[] GetRequestParameters();
 
     IMessageAccessor GetRequestAccessor();
 

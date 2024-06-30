@@ -14,11 +14,21 @@
 // limitations under the License.
 // </copyright>
 
-namespace ServiceModel.Grpc.Filters.Internal;
+using System;
 
-internal interface IStreamAccessor
+namespace ServiceModel.Grpc.Internal;
+
+public interface IMessageAccessor
 {
-    void Validate(object stream);
+    string[] Names { get; }
 
-    object CreateEmpty();
+    object CreateNew();
+
+    Type GetValueType(int property);
+
+    Type GetInstanceType();
+
+    object? GetValue(object message, int property);
+
+    void SetValue(object message, int property, object? value);
 }

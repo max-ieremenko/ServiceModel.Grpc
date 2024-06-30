@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021-2022 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,20 +15,17 @@
 // </copyright>
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
 using Grpc.AspNetCore.Server;
-using Grpc.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
-using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.Emit;
-using ServiceModel.Grpc.Emit.Descriptions;
+using ServiceModel.Grpc.Internal;
 #if NET6_0_OR_GREATER
 using RouteValuesType = System.Collections.Generic.Dictionary<string, string?>;
 #else
@@ -47,78 +44,19 @@ internal static class ApiDescriptionGenerator
             return null;
         }
 
-        var marker = FindServiceModelGrpcMarker(endpoint.Metadata);
+        var marker = endpoint.Metadata.GetMetadata<ServiceModelGrpcMarker>();
         if (marker == null)
         {
             return null;
         }
 
-        var operation = ContractDescriptionBuilder.BuildOperation(marker.ContractMethodDefinition, metadata.Method.ServiceName, metadata.Method.Name);
-        return CreateApiDescription(endpoint, metadata, operation);
-    }
-
-    internal static IEnumerable<ParameterInfo> GetRequestHeaderParameters(OperationDescription<Type> operation)
-    {
-        for (var i = 0; i < operation.HeaderRequestTypeInput.Length; i++)
-        {
-            yield return operation.Method.Parameters[operation.HeaderRequestTypeInput[i]].GetSource();
-        }
-    }
-
-    internal static IEnumerable<ParameterInfo> GetRequestParameters(OperationDescription<Type> operation)
-    {
-        for (var i = 0; i < operation.RequestTypeInput.Length; i++)
-        {
-            yield return operation.Method.Parameters[operation.RequestTypeInput[i]].GetSource();
-        }
-    }
-
-    internal static (Type? Type, ParameterInfo Parameter) GetResponseType(OperationDescription<Type> operation)
-    {
-        // do not return typeof(void) => Swashbuckle schema generation error
-        var arguments = operation.ResponseType.Properties;
-        var responseType = arguments.Length == 0 ? null : arguments[0];
-        if (operation.OperationType == MethodType.ServerStreaming || operation.OperationType == MethodType.DuplexStreaming)
-        {
-            responseType = typeof(IAsyncEnumerable<>).MakeGenericType(responseType!);
-        }
-
-        return (responseType, operation.GetSource().ReturnParameter);
-    }
-
-    internal static (Type Type, string Name)[] GetResponseHeaderParameters(OperationDescription<Type> operation)
-    {
-        var result = new (Type Type, string Name)[operation.HeaderResponseTypeInput.Length];
-        if (result.Length > 0)
-        {
-            var types = operation.HeaderResponseType!.Properties;
-            var names = operation.GetResponseHeaderNames();
-
-            for (var i = 0; i < result.Length; i++)
-            {
-                result[i] = (types[i], names[i]);
-            }
-        }
-
-        return result;
-    }
-
-    private static ApiDescription CreateApiDescription(
-        RouteEndpoint endpoint,
-        GrpcMethodMetadata metadata,
-        OperationDescription<Type> operation)
-    {
-        var method = operation.GetSource();
-        var serviceInstanceMethod = metadata.ServiceType.IsInterface
-            ? method
-            : ReflectionTools.ImplementationOfMethod(
-                metadata.ServiceType,
-                method.DeclaringType!,
-                method);
+        var requestParameters = GetRequestParameters(marker.Descriptor);
+        var response = GetResponseType(marker.Descriptor);
+        var responseHeaderParameters = GetResponseHeaderParameters(marker.Descriptor);
 
         var descriptor = new GrpcActionDescriptor
         {
-            MethodInfo = serviceInstanceMethod,
+            MethodInfo = marker.Descriptor.GetContractMethod(),
             ControllerTypeInfo = metadata.ServiceType.GetTypeInfo(),
             ActionName = metadata.Method.Name,
             ControllerName = metadata.Method.ServiceName,
@@ -127,7 +65,7 @@ internal static class ApiDescriptionGenerator
                 ["controller"] = metadata.Method.ServiceName
             },
             MethodType = metadata.Method.Type,
-            MethodSignature = GetSignature(operation, metadata.Method.Name),
+            MethodSignature = GetSignature(metadata.Method.Name, requestParameters, response.Type, responseHeaderParameters),
             EndpointMetadata = endpoint.Metadata.ToArray()
         };
 
@@ -138,50 +76,103 @@ internal static class ApiDescriptionGenerator
             RelativePath = ProtocolConstants.NormalizeRelativePath(endpoint.RoutePattern.RawText!)
         };
 
-        AddRequest(description, operation);
-        AddResponse(description, operation);
+        AddRequest(description, requestParameters);
+        AddResponse(description, response.Type, response.Parameter, responseHeaderParameters);
 
         return description;
     }
 
-    private static void AddRequest(ApiDescription description, OperationDescription<Type> operation)
+    internal static (BindingSource Source, ParameterInfo Parameter)[] GetRequestParameters(IOperationDescriptor descriptor)
+    {
+        var headerIndices = descriptor.GetRequestHeaderParameters();
+        var indices = descriptor.GetRequestParameters();
+        if (indices.Length == 0 && headerIndices.Length == 0)
+        {
+            return [];
+        }
+
+        var parameters = descriptor.GetContractMethod().GetParameters();
+        var result = new (BindingSource Source, ParameterInfo Parameter)[headerIndices.Length + indices.Length];
+
+        for (var i = 0; i < headerIndices.Length; i++)
+        {
+            result[i] = (BindingSource.Header, parameters[headerIndices[i]]);
+        }
+
+        for (var i = 0; i < indices.Length; i++)
+        {
+            result[i + headerIndices.Length] = (BindingSource.Form, parameters[indices[i]]);
+        }
+
+        return result;
+    }
+
+    internal static (Type? Type, ParameterInfo Parameter) GetResponseType(IOperationDescriptor descriptor)
+    {
+        // do not return typeof(void) => Swashbuckle schema generation error
+        var stream = descriptor.GetResponseStreamAccessor();
+
+        Type? responseType;
+        if (stream == null)
+        {
+            var response = descriptor.GetResponseAccessor();
+            responseType = response.Names.Length == 0 ? null : response.GetValueType(0);
+        }
+        else
+        {
+            responseType = stream.GetInstanceType();
+        }
+
+        return (responseType, descriptor.GetContractMethod().ReturnParameter);
+    }
+
+    internal static (Type Type, string Name)[] GetResponseHeaderParameters(IOperationDescriptor descriptor)
+    {
+        if (descriptor.GetResponseStreamAccessor() == null)
+        {
+            return [];
+        }
+
+        var response = descriptor.GetResponseAccessor();
+        var result = new (Type Type, string Name)[response.Names.Length];
+        for (var i = 0; i < result.Length; i++)
+        {
+            result[i] = (response.GetValueType(i), response.Names[i]);
+        }
+
+        return result;
+    }
+
+    private static void AddRequest(ApiDescription description, (BindingSource Source, ParameterInfo Parameter)[] requestParameters)
     {
         description.SupportedRequestFormats.Add(new ApiRequestFormat
         {
             MediaType = ProtocolConstants.MediaTypeNameSwaggerRequest
         });
 
-        foreach (var parameter in GetRequestHeaderParameters(operation))
+        foreach (var (source, parameter) in requestParameters)
         {
             description.ParameterDescriptions.Add(new ApiParameterDescription
             {
                 Name = parameter.Name!,
                 ModelMetadata = ApiModelMetadata.ForParameter(parameter),
-                Source = BindingSource.Header,
-                Type = parameter.ParameterType
-            });
-        }
-
-        foreach (var parameter in GetRequestParameters(operation))
-        {
-            description.ParameterDescriptions.Add(new ApiParameterDescription
-            {
-                Name = parameter.Name!,
-                ModelMetadata = ApiModelMetadata.ForParameter(parameter),
-                Source = BindingSource.Form,
+                Source = source,
                 Type = parameter.ParameterType
             });
         }
     }
 
-    private static void AddResponse(ApiDescription description, OperationDescription<Type> operation)
+    private static void AddResponse(
+        ApiDescription description,
+        Type? responseType,
+        ParameterInfo responseParameter,
+        (Type Type, string Name)[] responseHeaderParameters)
     {
-        var (responseType, parameter) = GetResponseType(operation);
         ApiModelMetadata? model = null;
         if (responseType != null)
         {
-            model = ApiModelMetadata.ForParameter(parameter, responseType);
-            model.Headers = GetResponseHeaderParameters(operation);
+            model = ApiModelMetadata.ForParameter(responseParameter, responseType);
+            model.Headers = responseHeaderParameters;
         }
 
         description.SupportedResponseTypes.Add(new ApiResponseType
@@ -196,61 +187,50 @@ internal static class ApiDescriptionGenerator
         });
     }
 
-    private static ServiceModelGrpcMarker? FindServiceModelGrpcMarker(IReadOnlyList<object> metadata)
-    {
-        for (var i = 0; i < metadata.Count; i++)
-        {
-            if (metadata[i] is ServiceModelGrpcMarker marker)
-            {
-                return marker;
-            }
-        }
-
-        return null;
-    }
-
-    private static string GetSignature(OperationDescription<Type> operation, string actionName)
+    private static string GetSignature(
+        string actionName,
+        (BindingSource Source, ParameterInfo Parameter)[] requestParameters,
+        Type? responseType,
+        (Type Type, string Name)[] responseHeaderParameters)
     {
         var result = new StringBuilder();
 
-        var response = GetResponseType(operation);
-        var responseHeader = GetResponseHeaderParameters(operation);
-        if (response.Type == null)
+        if (responseType == null)
         {
             result.Append("void ");
         }
         else
         {
-            if (responseHeader.Length > 0)
+            if (responseHeaderParameters.Length > 0)
             {
-                result.Append("(");
+                result.Append('(');
             }
 
-            result.Append(response.Type.GetUserFriendlyName());
+            result.Append(responseType.GetUserFriendlyName());
 
-            if (responseHeader.Length > 0)
+            if (responseHeaderParameters.Length > 0)
             {
-                for (var i = 0; i < responseHeader.Length; i++)
+                for (var i = 0; i < responseHeaderParameters.Length; i++)
                 {
-                    var header = responseHeader[i];
+                    var header = responseHeaderParameters[i];
                     result
                         .Append(", ")
                         .Append(header.Type.GetUserFriendlyName())
-                        .Append(" ")
+                        .Append(' ')
                         .Append(header.Name);
                 }
 
-                result.Append(")");
+                result.Append(')');
             }
         }
 
         result
-            .Append(" ")
+            .Append(' ')
             .Append(actionName)
-            .Append("(");
+            .Append('(');
 
         var index = 0;
-        foreach (var parameter in GetRequestParameters(operation).Concat(GetRequestHeaderParameters(operation)))
+        foreach (var (_, parameter) in requestParameters)
         {
             if (index > 0)
             {
@@ -260,11 +240,11 @@ internal static class ApiDescriptionGenerator
             index++;
             result
                 .Append(parameter.ParameterType.GetUserFriendlyName())
-                .Append(" ")
+                .Append(' ')
                 .Append(parameter.Name);
         }
 
-        result.Append(")");
+        result.Append(')');
         return result.ToString();
     }
 }

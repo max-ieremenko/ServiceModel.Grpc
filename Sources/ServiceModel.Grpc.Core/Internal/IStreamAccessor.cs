@@ -14,15 +14,16 @@
 // limitations under the License.
 // </copyright>
 
-namespace ServiceModel.Grpc.Filters.Internal;
+using System;
 
-internal interface IMessageAccessor
+namespace ServiceModel.Grpc.Internal;
+
+public interface IStreamAccessor
 {
-    string[] Names { get; }
+    void Validate(object stream);
 
-    object CreateNew();
+    object CreateEmpty();
 
-    object? GetValue(object message, int property);
-
-    void SetValue(object message, int property, object? value);
+    // typeof(IAsyncEnumerable<>).MakeGenericType(responseType!)
+    Type GetInstanceType();
 }

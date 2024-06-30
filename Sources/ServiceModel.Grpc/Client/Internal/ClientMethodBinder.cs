@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Filters;
 using ServiceModel.Grpc.Filters.Internal;
 using ServiceModel.Grpc.Internal;
@@ -63,7 +64,7 @@ internal sealed class ClientMethodBinder : IClientMethodBinder
     }
 
     public void Add(IMethod method, Func<MethodInfo> resolveContractMethodDefinition) =>
-        _filterRegistrations?.AddMethod(method, new FiltersReflectOperationDescription(resolveContractMethodDefinition));
+        _filterRegistrations?.AddMethod(method, EmitGenerator.GenerateOperationDescriptor(resolveContractMethodDefinition));
 
     public IClientCallInvoker CreateCallInvoker() =>
         new ClientCallInvoker(DefaultCallOptionsFactory, _filterRegistrations?.CreateFactory(ServiceProvider));

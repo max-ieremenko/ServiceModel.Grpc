@@ -21,17 +21,17 @@ using NUnit.Framework;
 using ServiceModel.Grpc.TestApi;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Internal;
+namespace ServiceModel.Grpc.Emit.CodeGenerators;
 
 [TestFixture]
-public class FiltersReflectStreamAccessorTest
+public class ReflectStreamAccessorTest
 {
-    private FiltersReflectStreamAccessor _sut = null!;
+    private ReflectStreamAccessor _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()
     {
-        _sut = new FiltersReflectStreamAccessor(typeof(int));
+        _sut = new ReflectStreamAccessor(typeof(int));
     }
 
     [Test]

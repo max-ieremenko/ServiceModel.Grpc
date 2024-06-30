@@ -15,11 +15,10 @@
 // </copyright>
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using NUnit.Framework;
 using ServiceModel.Grpc.Emit;
-using ServiceModel.Grpc.Emit.Descriptions;
 using Shouldly;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer;
@@ -31,23 +30,25 @@ public partial class ApiDescriptionGeneratorTest
     [TestCaseSource(nameof(GetTestCases))]
     public void GetRequestType(MethodInfo method)
     {
-        var expected = method.GetCustomAttribute<RequestMetadataAttribute>();
-        var operation = ContractDescriptionBuilder.BuildOperation(method, "dummy", "dummy");
+        var metadata = method.GetCustomAttribute<RequestMetadataAttribute>().ShouldNotBeNull();
+        var operation = EmitGenerator.GenerateOperationDescriptor(() => method);
 
-        var parameters = ApiDescriptionGenerator.GetRequestParameters(operation).ToArray();
-        var headerParameters = ApiDescriptionGenerator.GetRequestHeaderParameters(operation).ToArray();
+        var actual = ApiDescriptionGenerator.GetRequestParameters(operation);
 
-        parameters.Length.ShouldBe(expected!.Parameters.Length);
-        headerParameters.Length.ShouldBe(expected.HeaderParameters.Length);
+        actual.Length.ShouldBe(metadata.Parameters.Length + metadata.HeaderParameters.Length);
 
-        for (var i = 0; i < expected.Parameters.Length; i++)
+        for (var i = 0; i < metadata.HeaderParameters.Length; i++)
         {
-            parameters[i].ShouldBe(operation.Method.Parameters[expected.Parameters[i]].GetSource());
+            var expected = method.GetParameters()[metadata.HeaderParameters[i]];
+            actual[i].Parameter.ShouldBe(expected);
+            actual[i].Source.ShouldBe(BindingSource.Header);
         }
 
-        for (var i = 0; i < expected.HeaderParameters.Length; i++)
+        for (var i = 0; i < metadata.Parameters.Length; i++)
         {
-            headerParameters[i].ShouldBe(operation.Method.Parameters[expected.HeaderParameters[i]].GetSource());
+            var expected = method.GetParameters()[metadata.Parameters[i]];
+            actual[i + metadata.HeaderParameters.Length].Parameter.ShouldBe(expected);
+            actual[i + metadata.HeaderParameters.Length].Source.ShouldBe(BindingSource.Form);
         }
     }
 
@@ -55,13 +56,13 @@ public partial class ApiDescriptionGeneratorTest
     [TestCaseSource(nameof(GetTestCases))]
     public void GetResponseType(MethodInfo method)
     {
-        var expected = method.GetCustomAttribute<ResponseMetadataAttribute>();
-        var operation = ContractDescriptionBuilder.BuildOperation(method, "dummy", "dummy");
+        var expected = method.GetCustomAttribute<ResponseMetadataAttribute>().ShouldNotBeNull();
+        var operation = EmitGenerator.GenerateOperationDescriptor(() => method);
 
         var responseType = ApiDescriptionGenerator.GetResponseType(operation);
         var responseHeaders = ApiDescriptionGenerator.GetResponseHeaderParameters(operation);
 
-        responseType.Type.ShouldBe(expected!.Type);
+        responseType.Type.ShouldBe(expected.Type);
         responseType.Parameter.ShouldBe(method.ReturnParameter);
 
         responseHeaders.Length.ShouldBe(expected.HeaderTypes.Length);

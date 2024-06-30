@@ -15,6 +15,7 @@
 // </copyright>
 
 using System;
+using System.Buffers;
 using Grpc.Core;
 using Grpc.Core.Utils;
 using ServiceModel.Grpc.Configuration.IO;
@@ -63,6 +64,20 @@ public static class MarshallerExtensions
     }
 
     /// <summary>
+    /// Deserialize a value from byte array.
+    /// </summary>
+    /// <typeparam name="T">The value type.</typeparam>
+    /// <param name="marshaller">The <see cref="Marshaller{T}"/> instance to deserialize with.</param>
+    /// <param name="payload">The payload.</param>
+    /// <returns>A value deserialized by the <see cref="Marshaller{T}"/> instance.</returns>
+    public static T Deserialize<T>(Marshaller<T> marshaller, in ReadOnlySequence<byte> payload)
+    {
+        GrpcPreconditions.CheckNotNull(marshaller, nameof(marshaller));
+
+        return marshaller.ContextualDeserializer(new DefaultDeserializationContext(payload));
+    }
+
+    /// <summary>
     /// Serialize a value into byte array.
     /// </summary>
     /// <param name="factory">The <see cref="IMarshallerFactory"/> instance to serialize with.</param>
@@ -97,6 +112,27 @@ public static class MarshallerExtensions
         if (valueType == typeof(byte[]))
         {
             return payload;
+        }
+
+        return MarshallerSerializers.Get(valueType).Deserialize(factory, payload);
+    }
+
+    /// <summary>
+    /// Deserialize a value from <see cref="ReadOnlySequence{Byte}"/>.
+    /// </summary>
+    /// <param name="factory">The <see cref="IMarshallerFactory"/> instance to deserialize with.</param>
+    /// <param name="valueType">The value type.</param>
+    /// <param name="payload">The payload.</param>
+    /// <returns>A value deserialized by the <see cref="IMarshallerFactory"/> instance.</returns>
+    public static object DeserializeObject(IMarshallerFactory factory, Type valueType, in ReadOnlySequence<byte> payload)
+    {
+        GrpcPreconditions.CheckNotNull(factory, nameof(factory));
+        GrpcPreconditions.CheckNotNull(valueType, nameof(valueType));
+        GrpcPreconditions.CheckNotNull(payload, nameof(payload));
+
+        if (valueType == typeof(byte[]))
+        {
+            return payload.ToArray();
         }
 
         return MarshallerSerializers.Get(valueType).Deserialize(factory, payload);

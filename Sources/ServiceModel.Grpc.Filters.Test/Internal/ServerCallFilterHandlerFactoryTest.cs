@@ -19,6 +19,7 @@ using System.Reflection;
 using Grpc.Core;
 using Moq;
 using NUnit.Framework;
+using ServiceModel.Grpc.Internal;
 using Shouldly;
 
 namespace ServiceModel.Grpc.Filters.Internal;
@@ -27,9 +28,8 @@ namespace ServiceModel.Grpc.Filters.Internal;
 public class ServerCallFilterHandlerFactoryTest
 {
     private Mock<IServiceProvider> _serviceProvider = null!;
-    private Mock<IOperationDescription> _operation = null!;
+    private Mock<IOperationDescriptor> _operation = null!;
     private MethodInfo _contractMethod = null!;
-    private MethodInfo _implementationMethod = null!;
     private Func<IServiceProvider, IServerFilter>[] _filterFactories = null!;
     private object _service = null!;
     private Mock<ServerCallContext> _context = null!;
@@ -43,9 +43,8 @@ public class ServerCallFilterHandlerFactoryTest
 
         _service = new object();
         _contractMethod = new Mock<MethodInfo>().Object;
-        _implementationMethod = new Mock<MethodInfo>().Object;
 
-        _operation = new Mock<IOperationDescription>(MockBehavior.Strict);
+        _operation = new Mock<IOperationDescriptor>(MockBehavior.Strict);
         _operation
             .Setup(d => d.GetRequestAccessor())
             .Returns(new Mock<IMessageAccessor>(MockBehavior.Strict).Object);
@@ -61,9 +60,6 @@ public class ServerCallFilterHandlerFactoryTest
         _operation
             .Setup(d => d.GetContractMethod())
             .Returns(_contractMethod);
-        _operation
-            .Setup(d => d.GetImplementationMethod(_service))
-            .Returns(_implementationMethod);
 
         _context = new Mock<ServerCallContext>(MockBehavior.Strict);
         _sut = new ServerCallFilterHandlerFactory(_serviceProvider.Object, _operation.Object, _filterFactories);
@@ -83,7 +79,6 @@ public class ServerCallFilterHandlerFactoryTest
 
         actual.Context.ServerCallContext.ShouldBe(_context.Object);
         actual.Context.ContractMethodInfo.ShouldBe(_contractMethod);
-        actual.Context.ServiceMethodInfo.ShouldBe(_implementationMethod);
         actual.Context.ServiceInstance.ShouldBe(_service);
         actual.Context.ServiceProvider.ShouldBe(_serviceProvider.Object);
 

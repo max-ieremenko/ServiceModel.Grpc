@@ -18,25 +18,25 @@ using System;
 using System.Reflection;
 using Grpc.Core;
 using ServiceModel.Grpc.Descriptions;
-using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Emit.Descriptions;
-using ServiceModel.Grpc.Filters.Internal;
+using ServiceModel.Grpc.Internal;
 
-namespace ServiceModel.Grpc.Internal;
+namespace ServiceModel.Grpc.Emit.CodeGenerators;
 
-internal sealed class FiltersReflectOperationDescription : IOperationDescription
+internal sealed class ReflectOperationDescriptor : IOperationDescriptor
 {
     public static readonly string[] UnaryResultNames = { "result" };
 
     private readonly Func<MethodInfo> _getContractMethod;
     private MethodInfo? _contractMethod;
-    private MethodInfo? _implementationMethod;
     private IMessageAccessor? _request;
     private IStreamAccessor? _requestStream;
     private IMessageAccessor? _response;
     private IStreamAccessor? _responseStream;
+    private int[]? _requestHeaderParameters;
+    private int[]? _requestParameters;
 
-    public FiltersReflectOperationDescription(Func<MethodInfo> getContractMethod)
+    public ReflectOperationDescriptor(Func<MethodInfo> getContractMethod)
     {
         _getContractMethod = getContractMethod;
     }
@@ -51,44 +51,41 @@ internal sealed class FiltersReflectOperationDescription : IOperationDescription
         return _contractMethod;
     }
 
-    public MethodInfo GetImplementationMethod(object service)
+    public bool IsAsync() => ReflectionTools.IsTask(GetContractMethod().ReturnType);
+
+    public int[] GetRequestHeaderParameters()
     {
-        if (_implementationMethod == null)
-        {
-            var contractMethod = GetContractMethod();
-
-            _implementationMethod = ReflectionTools.ImplementationOfMethod(
-                service.GetType(),
-                contractMethod.DeclaringType!,
-                contractMethod);
-        }
-
-        return _implementationMethod;
+        Init();
+        return _requestHeaderParameters!;
     }
 
-    public bool IsAsync() => ReflectionTools.IsTask(GetContractMethod().ReturnType);
+    public int[] GetRequestParameters()
+    {
+        Init();
+        return _requestParameters!;
+    }
 
     public IMessageAccessor GetRequestAccessor()
     {
-        InitAccessors();
+        Init();
         return _request!;
     }
 
     public IStreamAccessor? GetRequestStreamAccessor()
     {
-        InitAccessors();
+        Init();
         return _requestStream;
     }
 
     public IMessageAccessor GetResponseAccessor()
     {
-        InitAccessors();
+        Init();
         return _response!;
     }
 
     public IStreamAccessor? GetResponseStreamAccessor()
     {
-        InitAccessors();
+        Init();
         return _responseStream;
     }
 
@@ -160,7 +157,7 @@ internal sealed class FiltersReflectOperationDescription : IOperationDescription
         return operation.ResponseType.Properties[0];
     }
 
-    private void InitAccessors()
+    private void Init()
     {
         if (_request != null)
         {
@@ -170,15 +167,18 @@ internal sealed class FiltersReflectOperationDescription : IOperationDescription
         var operation = ContractDescriptionBuilder.BuildOperation(GetContractMethod(), "dummy", "dummy");
 
         var (messageType, messageNames) = GetRequest(operation);
-        _request = new FiltersReflectMessageAccessor(messageType, messageNames);
+        _request = new ReflectMessageAccessor(messageType, messageNames);
 
         var streamType = GetRequestStream(operation);
-        _requestStream = streamType == null ? null : new FiltersReflectStreamAccessor(streamType);
+        _requestStream = streamType == null ? null : new ReflectStreamAccessor(streamType);
 
         (messageType, messageNames) = GetResponse(operation);
-        _response = new FiltersReflectMessageAccessor(messageType, messageNames);
+        _response = new ReflectMessageAccessor(messageType, messageNames);
 
         streamType = GetResponseStream(operation);
-        _responseStream = streamType == null ? null : new FiltersReflectStreamAccessor(streamType);
+        _responseStream = streamType == null ? null : new ReflectStreamAccessor(streamType);
+
+        _requestHeaderParameters = operation.HeaderRequestTypeInput;
+        _requestParameters = operation.RequestTypeInput;
     }
 }

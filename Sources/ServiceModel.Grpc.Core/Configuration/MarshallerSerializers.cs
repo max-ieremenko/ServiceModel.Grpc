@@ -15,6 +15,7 @@
 // </copyright>
 
 using System;
+using System.Buffers;
 
 namespace ServiceModel.Grpc.Configuration;
 
@@ -28,5 +29,7 @@ internal static class MarshallerSerializers
         public byte[] Serialize(IMarshallerFactory factory, object value) => MarshallerExtensions.Serialize(factory.CreateMarshaller<T>(), (T)value);
 
         public object Deserialize(IMarshallerFactory factory, byte[] payload) => MarshallerExtensions.Deserialize(factory.CreateMarshaller<T>(), payload)!;
+
+        public object Deserialize(IMarshallerFactory factory, in ReadOnlySequence<byte> payload) => MarshallerExtensions.Deserialize(factory.CreateMarshaller<T>(), payload)!;
     }
 }

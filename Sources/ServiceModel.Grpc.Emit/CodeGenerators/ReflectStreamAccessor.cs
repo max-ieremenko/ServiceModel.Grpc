@@ -15,21 +15,26 @@
 // </copyright>
 
 using System;
-using ServiceModel.Grpc.Filters.Internal;
+using System.Collections.Generic;
+using ServiceModel.Grpc.Internal;
 
-namespace ServiceModel.Grpc.Internal;
+namespace ServiceModel.Grpc.Emit.CodeGenerators;
 
-internal sealed class FiltersReflectStreamAccessor : IStreamAccessor
+internal sealed class ReflectStreamAccessor : IStreamAccessor
 {
+    private readonly Type _itemType;
     private readonly Func<object, object> _cast;
     private readonly Func<object> _factory;
 
-    public FiltersReflectStreamAccessor(Type itemType)
+    public ReflectStreamAccessor(Type itemType)
     {
-        (_factory, _cast) = FiltersCompiler.GetStreamAccessors(itemType);
+        _itemType = itemType;
+        (_factory, _cast) = ReflectOperationDescriptorCompiler.GetStreamAccessors(itemType);
     }
 
     public void Validate(object stream) => _cast(stream);
 
     public object CreateEmpty() => _factory();
+
+    public Type GetInstanceType() => typeof(IAsyncEnumerable<>).MakeGenericType(_itemType);
 }

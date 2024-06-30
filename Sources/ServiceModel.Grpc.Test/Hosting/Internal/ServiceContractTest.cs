@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ using NUnit.Framework;
 using ServiceModel.Grpc.Hosting.Internal;
 using Shouldly;
 
-namespace ServiceModel.Grpc.Internal;
+namespace ServiceModel.Grpc.Hosting.Internal;
 
 [TestFixture]
 public partial class ServiceContractTest

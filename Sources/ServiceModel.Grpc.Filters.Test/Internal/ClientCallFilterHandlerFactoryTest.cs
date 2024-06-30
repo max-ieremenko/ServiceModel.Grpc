@@ -20,6 +20,7 @@ using System.Reflection;
 using Grpc.Core;
 using Moq;
 using NUnit.Framework;
+using ServiceModel.Grpc.Internal;
 using Shouldly;
 
 namespace ServiceModel.Grpc.Filters.Internal;
@@ -29,8 +30,8 @@ public class ClientCallFilterHandlerFactoryTest
 {
     private IMethod _grpcMethod = null!;
     private CallInvoker _callInvoker = null!;
-    private Mock<IOperationDescription> _asyncOperation = null!;
-    private Mock<IOperationDescription> _syncOperation = null!;
+    private Mock<IOperationDescriptor> _asyncOperation = null!;
+    private Mock<IOperationDescriptor> _syncOperation = null!;
     private MethodInfo _asyncMethod = null!;
     private MethodInfo _syncMethod = null!;
     private IClientFilter _asyncMethodFilter = null!;
@@ -58,7 +59,7 @@ public class ClientCallFilterHandlerFactoryTest
         _asyncMethod = new Mock<MethodInfo>().Object;
         _syncMethod = new Mock<MethodInfo>().Object;
 
-        _asyncOperation = new Mock<IOperationDescription>(MockBehavior.Strict);
+        _asyncOperation = new Mock<IOperationDescriptor>(MockBehavior.Strict);
         _asyncOperation
             .Setup(d => d.GetContractMethod())
             .Returns(_asyncMethod);
@@ -75,7 +76,7 @@ public class ClientCallFilterHandlerFactoryTest
             .Setup(d => d.GetResponseStreamAccessor())
             .Returns(new Mock<IStreamAccessor>(MockBehavior.Strict).Object);
 
-        _syncOperation = new Mock<IOperationDescription>(MockBehavior.Strict);
+        _syncOperation = new Mock<IOperationDescriptor>(MockBehavior.Strict);
         _syncOperation
             .Setup(d => d.GetContractMethod())
             .Returns(_syncMethod);

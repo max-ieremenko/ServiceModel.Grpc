@@ -18,6 +18,7 @@ using System.Linq;
 using Moq;
 using NUnit.Framework;
 using ServiceModel.Grpc.Filters.Api;
+using ServiceModel.Grpc.Internal;
 using Shouldly;
 
 namespace ServiceModel.Grpc.Filters.Internal;

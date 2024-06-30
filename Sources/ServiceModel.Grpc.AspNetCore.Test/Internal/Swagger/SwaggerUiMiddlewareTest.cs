@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,10 +23,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Internal;
 using Shouldly;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger;
@@ -41,7 +42,7 @@ public class SwaggerUiMiddlewareTest
     private Mock<IApiDescriptionAdapter> _apiAdapter = null!;
     private Mock<ISwaggerUiRequestHandler> _requestHandler = null!;
     private bool _isNextCalled;
-    private ApiDescription _apiDescription = null!;
+    private ServiceModelGrpcMarker _marker = null!;
     private Mock<IMethod> _method = null!;
     private SwaggerUiMiddleware _sut = null!;
 
@@ -101,7 +102,7 @@ public class SwaggerUiMiddlewareTest
 
         _isNextCalled = false;
 
-        _apiDescription = new ApiDescription();
+        _marker = new ServiceModelGrpcMarker(new Mock<IOperationDescriptor>(MockBehavior.Strict).Object, new Mock<IMarshallerFactory>(MockBehavior.Strict).Object);
 
         _method = new Mock<IMethod>(MockBehavior.Strict);
         _method
@@ -134,26 +135,11 @@ public class SwaggerUiMiddlewareTest
     }
 
     [Test]
-    public async Task ApiDescriptionNotFound()
-    {
-        _apiAdapter
-            .Setup(a => a.FindApiDescription(_httpRequest.Object.Path))
-            .Returns((ApiDescription?)null);
-
-        await _sut.Invoke(_httpContext.Object).ConfigureAwait(false);
-
-        _isNextCalled.ShouldBeTrue();
-        _apiAdapter.VerifyAll();
-        _loggerOutput.Count.ShouldBe(2);
-        _loggerOutput[1].ShouldStartWith("Warning: ");
-    }
-
-    [Test]
     public async Task MethodNotFound()
     {
         _apiAdapter
-            .Setup(a => a.FindApiDescription(_httpRequest.Object.Path))
-            .Returns(_apiDescription);
+            .Setup(a => a.GetMarker(_httpContext.Object))
+            .Returns(_marker);
         _apiAdapter
             .Setup(a => a.GetMethod(_httpContext.Object))
             .Returns((IMethod?)null);
@@ -177,11 +163,12 @@ public class SwaggerUiMiddlewareTest
             .Returns(methodType);
 
         _apiAdapter
-            .Setup(a => a.FindApiDescription(_httpRequest.Object.Path))
-            .Returns(_apiDescription);
-        _apiAdapter
             .Setup(a => a.GetMethod(_httpContext.Object))
             .Returns(_method.Object);
+
+        _apiAdapter
+            .Setup(a => a.GetMarker(_httpContext.Object))
+            .Returns(_marker);
 
         await _sut.Invoke(_httpContext.Object).ConfigureAwait(false);
 

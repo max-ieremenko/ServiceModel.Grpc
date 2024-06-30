@@ -15,26 +15,31 @@
 // </copyright>
 
 using System;
-using ServiceModel.Grpc.Filters.Internal;
+using ServiceModel.Grpc.Internal;
 
-namespace ServiceModel.Grpc.Internal;
+namespace ServiceModel.Grpc.Emit.CodeGenerators;
 
-internal sealed class FiltersReflectMessageAccessor : IMessageAccessor
+internal sealed class ReflectMessageAccessor : IMessageAccessor
 {
     private readonly Type _messageType;
     private readonly Action<object, int, object?> _setter;
     private readonly Func<object, int, object?> _getter;
+    private readonly Func<int, Type> _getterType;
 
-    public FiltersReflectMessageAccessor(Type messageType, string[] names)
+    public ReflectMessageAccessor(Type messageType, string[] names)
     {
         _messageType = messageType;
         Names = names;
-        (_getter, _setter) = FiltersCompiler.GetMessageAccessors(messageType);
+        (_getter, _setter, _getterType) = ReflectOperationDescriptorCompiler.GetMessageAccessors(messageType);
     }
 
     public string[] Names { get; }
 
     public object CreateNew() => Activator.CreateInstance(_messageType);
+
+    public Type GetValueType(int property) => _getterType(property);
+
+    public Type GetInstanceType() => _messageType;
 
     public object? GetValue(object message, int property) => _getter(message, property);
 
