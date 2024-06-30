@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Filters.Internal;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Hosting.Internal;
 
@@ -37,12 +38,12 @@ internal sealed class ClientStreamingServerCallHandler<TService, TRequestHeader,
     public ClientStreamingServerCallHandler(
         Func<TService> serviceFactory,
         Func<TService, TRequestHeader?, IAsyncEnumerable<TRequestValue?>, ServerCallContext, Task<TResponse>> invoker,
-        Marshaller<TRequestHeader>? requestHeaderMarshaller,
+        IMethod method,
         ServerCallFilterHandlerFactory? filterHandlerFactory)
     {
         _serviceFactory = serviceFactory;
         _invoker = invoker;
-        _requestHeaderMarshaller = requestHeaderMarshaller;
+        _requestHeaderMarshaller = ((GrpcMethod<TRequestHeader, TRequest, Message, TResponse>)method).RequestHeaderMarshaller;
         _filterHandlerFactory = filterHandlerFactory;
 
         if (filterHandlerFactory == null)
@@ -57,9 +58,9 @@ internal sealed class ClientStreamingServerCallHandler<TService, TRequestHeader,
 
     public ClientStreamingServerCallHandler(
         Func<TService, TRequestHeader?, IAsyncEnumerable<TRequestValue?>, ServerCallContext, Task<TResponse>> invoker,
-        Marshaller<TRequestHeader>? requestHeaderMarshaller,
+        IMethod method,
         ServerCallFilterHandlerFactory? filterHandlerFactory)
-        : this(null!, invoker, requestHeaderMarshaller, filterHandlerFactory)
+        : this(null!, invoker, method, filterHandlerFactory)
     {
     }
 

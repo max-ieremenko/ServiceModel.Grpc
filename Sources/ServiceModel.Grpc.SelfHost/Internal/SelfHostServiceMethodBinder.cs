@@ -79,13 +79,12 @@ internal sealed class SelfHostServiceMethodBinder<TService> : IServiceMethodBind
         var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, getOperation);
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
-        var grpcMethod = (GrpcMethod<TRequestHeader, TRequest, Message, TResponse>)method;
         var invoker = new ClientStreamingServerCallHandler<TService, TRequestHeader, TRequest, TRequestValue, TResponse>(
             _serviceFactory,
             handler,
-            grpcMethod.RequestHeaderMarshaller,
+            method,
             filterHandlerFactory);
-        _builder.AddMethod(grpcMethod, invoker.Handle);
+        _builder.AddMethod((Method<TRequest, TResponse>)method, invoker.Handle);
     }
 
     public void AddServerStreamingMethod<TRequest, TResponseHeader, TResponse, TResponseValue>(
@@ -102,13 +101,12 @@ internal sealed class SelfHostServiceMethodBinder<TService> : IServiceMethodBind
         var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, getOperation);
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
-        var grpcMethod = (GrpcMethod<Message, TRequest, TResponseHeader, TResponse>)method;
         var invoker = new ServerStreamingServerCallHandler<TService, TRequest, TResponseHeader, TResponse, TResponseValue>(
             _serviceFactory,
             handler,
-            grpcMethod.ResponseHeaderMarshaller,
+            method,
             filterHandlerFactory);
-        _builder.AddMethod(grpcMethod, invoker.Handle);
+        _builder.AddMethod((Method<TRequest, TResponse>)method, invoker.Handle);
     }
 
     public void AddDuplexStreamingMethod<TRequestHeader, TRequest, TRequestValue, TResponseHeader, TResponse, TResponseValue>(
@@ -126,14 +124,12 @@ internal sealed class SelfHostServiceMethodBinder<TService> : IServiceMethodBind
         var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, getOperation);
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
-        var grpcMethod = (GrpcMethod<TRequestHeader, TRequest, TResponseHeader, TResponse>)method;
         var invoker = new DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TRequestValue, TResponseHeader, TResponse, TResponseValue>(
             _serviceFactory,
             handler,
-            grpcMethod.RequestHeaderMarshaller,
-            grpcMethod.ResponseHeaderMarshaller,
+            method,
             filterHandlerFactory);
-        _builder.AddMethod(grpcMethod, invoker.Handle);
+        _builder.AddMethod((Method<TRequest, TResponse>)method, invoker.Handle);
     }
 
     private void ValidateFilterFactoryConfiguration(ServerCallFilterHandlerFactory? filterHandlerFactory)

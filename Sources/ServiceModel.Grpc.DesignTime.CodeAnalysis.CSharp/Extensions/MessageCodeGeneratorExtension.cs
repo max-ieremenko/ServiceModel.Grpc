@@ -15,8 +15,6 @@
 // </copyright>
 
 using System.Collections.Generic;
-using Microsoft.CodeAnalysis;
-using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
@@ -40,7 +38,7 @@ internal sealed class MessageCodeGeneratorExtension : ICodeGeneratorExtension
         }
     }
 
-    private static void AddNonBuildInMessages(ContractDescription<ITypeSymbol> description, SortedSet<int> result)
+    private static void AddNonBuildInMessages(IContractDescription description, SortedSet<int> result)
     {
         for (var i = 0; i < description.Services.Length; i++)
         {
@@ -56,7 +54,7 @@ internal sealed class MessageCodeGeneratorExtension : ICodeGeneratorExtension
         }
     }
 
-    private static void AddPropertiesCount(MessageDescription<ITypeSymbol>? message, SortedSet<int> result)
+    private static void AddPropertiesCount(IMessageDescription? message, SortedSet<int> result)
     {
         if (message != null && !message.IsBuiltIn)
         {

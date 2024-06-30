@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright Max Ieremenko
+// Copyright 2024 Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,24 +14,14 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.ComponentModel;
+using Microsoft.CodeAnalysis;
+using ServiceModel.Grpc.Descriptions;
+using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions.Reflection;
 
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
-namespace ServiceModel.Grpc.Internal;
-
-/// <summary>
-/// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
-/// This API may change or be removed in future releases.
-/// </summary>
-[Browsable(false)]
-[EditorBrowsable(EditorBrowsableState.Never)]
-public interface IStreamAccessor
+internal sealed class DescriptionExtensions : IDescriptionExtensions
 {
-    void Validate(object stream);
-
-    object CreateEmpty();
-
-    Type GetInstanceType();
+    public bool IsServiceContractInterface(INamedTypeSymbol type) =>
+        ContractDescriptionBuilder<ITypeSymbol>.IsServiceContractInterface(type, ReflectTypeSymbol.Instance);
 }

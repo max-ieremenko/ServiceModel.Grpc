@@ -79,18 +79,18 @@ public partial class ReflectionToolsTest
         var i1 = typeof(I1);
         yield return new TestCaseData(
             i1,
-            i1.GetMethod(nameof(I1.Overload), Array.Empty<Type>()),
+            i1.GetMethod(nameof(I1.Overload), []),
             "I1.Overload");
 
         yield return new TestCaseData(
             i1,
-            i1.GetMethod(nameof(I1.Overload), new[] { typeof(int) }),
+            i1.GetMethod(nameof(I1.Overload), [typeof(int)]),
             "I1.Overload(int)");
 
         var i2 = typeof(I2);
         yield return new TestCaseData(
             i2,
-            i2.GetMethod(nameof(I2.Overload), new[] { typeof(int) }),
+            i2.GetMethod(nameof(I2.Overload), [typeof(int)]),
             "I2.Overload(int)");
     }
 

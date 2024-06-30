@@ -14,18 +14,18 @@
 // limitations under the License.
 // </copyright>
 
-using Microsoft.CodeAnalysis;
 using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
+using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
 
 internal sealed class EndpointAspNetMapGrpcCodeGenerator : ICodeGenerator
 {
-    private readonly ContractDescription<ITypeSymbol> _contract;
+    private readonly IContractDescription _contract;
     private readonly bool _isStaticClass;
 
-    public EndpointAspNetMapGrpcCodeGenerator(ContractDescription<ITypeSymbol> contract, bool isStaticClass)
+    public EndpointAspNetMapGrpcCodeGenerator(IContractDescription contract, bool isStaticClass)
     {
         _contract = contract;
         _isStaticClass = isStaticClass;
@@ -62,7 +62,7 @@ internal sealed class EndpointAspNetMapGrpcCodeGenerator : ICodeGenerator
                 .Append(".MapGrpcService<")
                 .WriteType(_contract.ContractInterface)
                 .Append(", ")
-                .Append(NamingConventions.EndpointBinder.Class(_contract.BaseClassName))
+                .Append(NamingContract.EndpointBinder.Class(_contract.BaseClassName))
                 .AppendLine(">(builder);");
         }
 

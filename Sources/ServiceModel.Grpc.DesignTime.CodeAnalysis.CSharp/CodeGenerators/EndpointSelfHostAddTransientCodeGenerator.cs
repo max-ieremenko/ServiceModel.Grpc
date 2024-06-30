@@ -14,18 +14,18 @@
 // limitations under the License.
 // </copyright>
 
-using Microsoft.CodeAnalysis;
 using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
+using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
 
 internal sealed class EndpointSelfHostAddTransientCodeGenerator : ICodeGenerator
 {
-    private readonly ContractDescription<ITypeSymbol> _contract;
+    private readonly IContractDescription _contract;
     private readonly bool _isStaticClass;
 
-    public EndpointSelfHostAddTransientCodeGenerator(ContractDescription<ITypeSymbol> contract, bool isStaticClass)
+    public EndpointSelfHostAddTransientCodeGenerator(IContractDescription contract, bool isStaticClass)
     {
         _contract = contract;
         _isStaticClass = isStaticClass;
@@ -63,7 +63,7 @@ internal sealed class EndpointSelfHostAddTransientCodeGenerator : ICodeGenerator
                 .Append(".AddServiceModelTransient<")
                 .WriteType(_contract.ContractInterface)
                 .Append(">(services, serviceFactory, new ")
-                .Append(NamingConventions.EndpointBinder.Class(_contract.BaseClassName))
+                .Append(NamingContract.EndpointBinder.Class(_contract.BaseClassName))
                 .AppendLine("(), configure);");
         }
 

@@ -31,9 +31,9 @@ public partial class ApiDescriptionGeneratorTest
     public void GetRequestType(MethodInfo method)
     {
         var metadata = method.GetCustomAttribute<RequestMetadataAttribute>().ShouldNotBeNull();
-        var operation = EmitGenerator.GenerateOperationDescriptor(() => method);
+        var descriptor = EmitGenerator.GenerateOperationDescriptor(() => method);
 
-        var actual = ApiDescriptionGenerator.GetRequestParameters(operation);
+        var actual = ApiDescriptionGenerator.GetRequestParameters(descriptor);
 
         actual.Length.ShouldBe(metadata.Parameters.Length + metadata.HeaderParameters.Length);
 
@@ -57,10 +57,10 @@ public partial class ApiDescriptionGeneratorTest
     public void GetResponseType(MethodInfo method)
     {
         var expected = method.GetCustomAttribute<ResponseMetadataAttribute>().ShouldNotBeNull();
-        var operation = EmitGenerator.GenerateOperationDescriptor(() => method);
+        var descriptor = EmitGenerator.GenerateOperationDescriptor(() => method);
 
-        var responseType = ApiDescriptionGenerator.GetResponseType(operation);
-        var responseHeaders = ApiDescriptionGenerator.GetResponseHeaderParameters(operation);
+        var responseType = ApiDescriptionGenerator.GetResponseType(descriptor);
+        var responseHeaders = ApiDescriptionGenerator.GetResponseHeaderParameters(descriptor);
 
         responseType.Type.ShouldBe(expected.Type);
         responseType.Parameter.ShouldBe(method.ReturnParameter);
@@ -71,6 +71,22 @@ public partial class ApiDescriptionGeneratorTest
             responseHeaders[i].Type.ShouldBe(expected.HeaderTypes[i]);
             responseHeaders[i].Name.ShouldBe(expected.HeaderNames[i]);
         }
+    }
+
+    [Test]
+    [TestCaseSource(nameof(GetTestCases))]
+    public void MethodSignature(MethodInfo method)
+    {
+        var expected = method.GetCustomAttribute<SignatureAttribute>().ShouldNotBeNull();
+        var descriptor = EmitGenerator.GenerateOperationDescriptor(() => method);
+
+        var actual = MethodSignatureBuilder.Build(
+            method.Name,
+            ApiDescriptionGenerator.GetRequestParameters(descriptor),
+            ApiDescriptionGenerator.GetResponseType(descriptor).Type,
+            ApiDescriptionGenerator.GetResponseHeaderParameters(descriptor));
+
+        actual.ShouldBe(expected.Signature);
     }
 
     private static IEnumerable<TestCaseData> GetTestCases()

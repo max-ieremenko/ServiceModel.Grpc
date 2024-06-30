@@ -14,24 +14,21 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.ComponentModel;
+using Microsoft.CodeAnalysis;
+using ServiceModel.Grpc.Descriptions;
+using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions.Reflection;
 
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
-namespace ServiceModel.Grpc.Internal;
-
-/// <summary>
-/// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
-/// This API may change or be removed in future releases.
-/// </summary>
-[Browsable(false)]
-[EditorBrowsable(EditorBrowsableState.Never)]
-public interface IStreamAccessor
+internal sealed class NotSupportedMethodDescription : INotSupportedMethodDescription
 {
-    void Validate(object stream);
+    public NotSupportedMethodDescription(NotSupportedMethodDescription<ITypeSymbol> source)
+    {
+        Error = source.Error;
+        Method = ((CodeAnalysisMethodInfo)source.Method).Source;
+    }
 
-    object CreateEmpty();
+    public IMethodSymbol Method { get; }
 
-    Type GetInstanceType();
+    public string Error { get; }
 }

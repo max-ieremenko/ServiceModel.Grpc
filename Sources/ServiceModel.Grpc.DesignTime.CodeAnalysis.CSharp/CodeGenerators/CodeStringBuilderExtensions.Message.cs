@@ -14,19 +14,18 @@
 // limitations under the License.
 // </copyright>
 
-using Microsoft.CodeAnalysis;
 using ServiceModel.Grpc.Channel;
-using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
+using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
 
 internal static partial class CodeStringBuilderExtensions
 {
-    public static ICodeStringBuilder WriteMessage(this ICodeStringBuilder output, MessageDescription<ITypeSymbol> message) =>
+    public static ICodeStringBuilder WriteMessage(this ICodeStringBuilder output, IMessageDescription message) =>
         WriteMessageOrDefault(output, message);
 
-    public static ICodeStringBuilder WriteMessageOrDefault(this ICodeStringBuilder output, MessageDescription<ITypeSymbol>? message)
+    public static ICodeStringBuilder WriteMessageOrDefault(this ICodeStringBuilder output, IMessageDescription? message)
     {
         if (message == null || message.IsBuiltIn)
         {

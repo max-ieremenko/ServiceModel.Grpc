@@ -19,7 +19,7 @@ using System.Text;
 
 namespace ServiceModel.Grpc.Emit;
 
-public static partial class ReflectionTools
+internal static partial class ReflectionTools
 {
     private readonly ref struct TypeUserFriendlyBuilder
     {

@@ -16,7 +16,7 @@
 
 namespace ServiceModel.Grpc.Descriptions.Reflection;
 
-public interface IAttributeInfo
+internal interface IAttributeInfo
 {
     object? GetPropertyValue(string propertyName);
 }

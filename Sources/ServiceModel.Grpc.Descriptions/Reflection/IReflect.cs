@@ -20,7 +20,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ServiceModel.Grpc.Descriptions.Reflection;
 
-public interface IReflect<TType>
+internal interface IReflect<TType>
 {
     ICollection<TType> GetInterfaces(TType type);
 

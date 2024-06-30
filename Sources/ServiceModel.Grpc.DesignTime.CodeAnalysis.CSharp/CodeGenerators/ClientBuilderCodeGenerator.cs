@@ -15,18 +15,18 @@
 // </copyright>
 
 using Grpc.Core;
-using Microsoft.CodeAnalysis;
 using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
+using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
 
 internal sealed class ClientBuilderCodeGenerator : ICodeGenerator
 {
-    private readonly ContractDescription<ITypeSymbol> _contract;
+    private readonly IContractDescription _contract;
 
-    public ClientBuilderCodeGenerator(ContractDescription<ITypeSymbol> contract)
+    public ClientBuilderCodeGenerator(IContractDescription contract)
     {
         _contract = contract;
     }
@@ -38,7 +38,7 @@ internal sealed class ClientBuilderCodeGenerator : ICodeGenerator
         output
             .WriteMetadata()
             .Append("public sealed class ")
-            .Append(NamingConventions.ClientBuilder.Class(_contract.BaseClassName))
+            .Append(NamingContract.ClientBuilder.Class(_contract.BaseClassName))
             .Append(" : ")
             .WriteType(typeof(IClientBuilder<>))
             .WriteType(_contract.ContractInterface)
@@ -66,7 +66,7 @@ internal sealed class ClientBuilderCodeGenerator : ICodeGenerator
     {
         output
             .Append("public ")
-            .Append(NamingConventions.ClientBuilder.Class(_contract.BaseClassName))
+            .Append(NamingContract.ClientBuilder.Class(_contract.BaseClassName))
             .AppendLine("()")
             .AppendLine("{")
             .AppendLine("}");
@@ -76,7 +76,7 @@ internal sealed class ClientBuilderCodeGenerator : ICodeGenerator
     {
         output
             .Append("private ")
-            .Append(NamingConventions.Contract.Class(_contract.BaseClassName))
+            .Append(NamingContract.Contract.Class(_contract.BaseClassName))
             .AppendLine(" _contract;");
 
         output
@@ -99,7 +99,7 @@ internal sealed class ClientBuilderCodeGenerator : ICodeGenerator
 
             output
                 .Append("_contract = new ")
-                .Append(NamingConventions.Contract.Class(_contract.BaseClassName))
+                .Append(NamingContract.Contract.Class(_contract.BaseClassName))
                 .Append("(methodBinder.")
                 .Append(nameof(IClientMethodBinder.MarshallerFactory))
                 .AppendLine(");");
@@ -120,9 +120,9 @@ internal sealed class ClientBuilderCodeGenerator : ICodeGenerator
                             .Append("methodBinder.")
                             .Append(nameof(IClientMethodBinder.Add))
                             .Append("(_contract.")
-                            .Append(NamingConventions.Contract.GrpcMethod(method.OperationName))
+                            .Append(NamingContract.Contract.GrpcMethod(method.OperationName))
                             .Append(", ")
-                            .Append(NamingConventions.Contract.Class(_contract.BaseClassName))
+                            .Append(NamingContract.Contract.Class(_contract.BaseClassName))
                             .Append(".")
                             .Append(NamingContract.Contract.ClrDefinitionMethod(method.OperationName))
                             .AppendLine(");");
@@ -134,9 +134,9 @@ internal sealed class ClientBuilderCodeGenerator : ICodeGenerator
                             .Append("methodBinder.")
                             .Append(nameof(IClientMethodBinder.Add))
                             .Append("(_contract.")
-                            .Append(NamingConventions.Contract.GrpcMethod(entry.Async.OperationName))
+                            .Append(NamingContract.Contract.GrpcMethod(entry.Async.OperationName))
                             .Append(", ")
-                            .Append(NamingConventions.Contract.Class(_contract.BaseClassName))
+                            .Append(NamingContract.Contract.Class(_contract.BaseClassName))
                             .Append(".")
                             .Append(NamingContract.Contract.ClrDefinitionMethodSync(entry.Async.OperationName))
                             .AppendLine(");");
@@ -173,7 +173,7 @@ internal sealed class ClientBuilderCodeGenerator : ICodeGenerator
 
             output
                 .Append("return new ")
-                .Append(NamingConventions.Client.Class(_contract.BaseClassName))
+                .Append(NamingContract.Client.Class(_contract.BaseClassName))
                 .AppendLine("(callInvoker, _contract, _clientCallInvoker);");
         }
 

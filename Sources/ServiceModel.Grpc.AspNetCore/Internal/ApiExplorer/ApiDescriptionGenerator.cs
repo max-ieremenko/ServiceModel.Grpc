@@ -18,13 +18,11 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Text;
 using Grpc.AspNetCore.Server;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
-using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Internal;
 #if NET6_0_OR_GREATER
 using RouteValuesType = System.Collections.Generic.Dictionary<string, string?>;
@@ -65,7 +63,7 @@ internal static class ApiDescriptionGenerator
                 ["controller"] = metadata.Method.ServiceName
             },
             MethodType = metadata.Method.Type,
-            MethodSignature = GetSignature(metadata.Method.Name, requestParameters, response.Type, responseHeaderParameters),
+            MethodSignature = MethodSignatureBuilder.Build(metadata.Method.Name, requestParameters, response.Type, responseHeaderParameters),
             EndpointMetadata = endpoint.Metadata.ToArray()
         };
 
@@ -185,66 +183,5 @@ internal static class ApiDescriptionGenerator
             Type = responseType,
             StatusCode = (int)HttpStatusCode.OK
         });
-    }
-
-    private static string GetSignature(
-        string actionName,
-        (BindingSource Source, ParameterInfo Parameter)[] requestParameters,
-        Type? responseType,
-        (Type Type, string Name)[] responseHeaderParameters)
-    {
-        var result = new StringBuilder();
-
-        if (responseType == null)
-        {
-            result.Append("void ");
-        }
-        else
-        {
-            if (responseHeaderParameters.Length > 0)
-            {
-                result.Append('(');
-            }
-
-            result.Append(responseType.GetUserFriendlyName());
-
-            if (responseHeaderParameters.Length > 0)
-            {
-                for (var i = 0; i < responseHeaderParameters.Length; i++)
-                {
-                    var header = responseHeaderParameters[i];
-                    result
-                        .Append(", ")
-                        .Append(header.Type.GetUserFriendlyName())
-                        .Append(' ')
-                        .Append(header.Name);
-                }
-
-                result.Append(')');
-            }
-        }
-
-        result
-            .Append(' ')
-            .Append(actionName)
-            .Append('(');
-
-        var index = 0;
-        foreach (var (_, parameter) in requestParameters)
-        {
-            if (index > 0)
-            {
-                result.Append(", ");
-            }
-
-            index++;
-            result
-                .Append(parameter.ParameterType.GetUserFriendlyName())
-                .Append(' ')
-                .Append(parameter.Name);
-        }
-
-        result.Append(')');
-        return result.ToString();
     }
 }

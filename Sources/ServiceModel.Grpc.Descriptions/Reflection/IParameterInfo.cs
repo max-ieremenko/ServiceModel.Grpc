@@ -16,7 +16,7 @@
 
 namespace ServiceModel.Grpc.Descriptions.Reflection;
 
-public interface IParameterInfo<TType>
+internal interface IParameterInfo<TType>
 {
     string Name { get; }
 

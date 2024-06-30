@@ -24,7 +24,7 @@ using ServiceModel.Grpc.Descriptions.Reflection;
 namespace ServiceModel.Grpc.Descriptions;
 
 [DebuggerDisplay("{OperationType} {OperationName}")]
-public sealed class OperationDescription<TType>
+internal sealed class OperationDescription<TType>
 {
     public OperationDescription(
         IMethodInfo<TType> method,

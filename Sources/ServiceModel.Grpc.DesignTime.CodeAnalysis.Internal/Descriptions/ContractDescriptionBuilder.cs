@@ -24,7 +24,7 @@ namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
 public static class ContractDescriptionBuilder
 {
-    public static ContractDescription<ITypeSymbol> Build(INamedTypeSymbol serviceType)
+    public static IContractDescription Build(INamedTypeSymbol serviceType)
     {
         var result = ContractDescriptionBuilder<ITypeSymbol>.Build(serviceType, null, ReflectTypeSymbol.Instance);
 
@@ -38,7 +38,23 @@ public static class ContractDescriptionBuilder
             Array.Sort(description.Operations, Compare);
         }
 
-        return result;
+        return new ContractDescription(result);
+    }
+
+    public static IOperationDescription BuildOperation(IMethodSymbol method, string serviceName, string operationName)
+    {
+        if (!ContractDescriptionBuilder<ITypeSymbol>.TryBuildOperation(
+                new CodeAnalysisMethodInfo(method),
+                serviceName,
+                operationName,
+                ReflectTypeSymbol.Instance,
+                out var result,
+                out var error))
+        {
+            throw new NotSupportedException(error);
+        }
+
+        return new OperationDescription(result);
     }
 
     private static int Compare(InterfaceDescription<ITypeSymbol> x, InterfaceDescription<ITypeSymbol> y) =>

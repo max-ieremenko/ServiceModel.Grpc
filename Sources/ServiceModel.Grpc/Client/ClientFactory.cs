@@ -56,7 +56,7 @@ public sealed class ClientFactory : IClientFactory
     public static void VerifyClient<TContract>()
     {
         var contractType = typeof(TContract);
-        if (!ReflectionTools.IsPublicInterface(contractType) || contractType.IsGenericTypeDefinition)
+        if (!contractType.IsInterface || !(contractType.IsPublic || contractType.IsNestedPublic) || contractType.IsGenericTypeDefinition)
         {
             throw new NotSupportedException($"{contractType} is not supported. Client contract must be public interface.");
         }

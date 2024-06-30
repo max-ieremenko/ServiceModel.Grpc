@@ -14,18 +14,38 @@
 // limitations under the License.
 // </copyright>
 
+using Grpc.Core;
 using Microsoft.CodeAnalysis;
-using ServiceModel.Grpc.Descriptions;
-using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions.Reflection;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
-public static class DescriptionExtensions
+public interface IOperationDescription
 {
-    public static bool IsServiceContractInterface(INamedTypeSymbol type) =>
-        ContractDescriptionBuilder<ITypeSymbol>.IsServiceContractInterface(type, ReflectTypeSymbol.Instance);
+    string ServiceName { get; }
 
-    public static IMethodSymbol GetSource(this OperationDescription<ITypeSymbol> operation) => ((CodeAnalysisMethodInfo)operation.Method).Source;
+    string OperationName { get; }
 
-    public static IMethodSymbol GetSource(this NotSupportedMethodDescription<ITypeSymbol> method) => ((CodeAnalysisMethodInfo)method.Method).Source;
+    IMethodSymbol Method { get; }
+
+    MethodType OperationType { get; }
+
+    bool IsAsync { get; }
+
+    IMessageDescription ResponseType { get; }
+
+    int ResponseTypeIndex { get; }
+
+    IMessageDescription? HeaderResponseType { get; }
+
+    int[] HeaderResponseTypeInput { get; }
+
+    IMessageDescription RequestType { get; }
+
+    int[] RequestTypeInput { get; }
+
+    IMessageDescription? HeaderRequestType { get; }
+
+    int[] HeaderRequestTypeInput { get; }
+
+    int[] ContextInput { get; }
 }

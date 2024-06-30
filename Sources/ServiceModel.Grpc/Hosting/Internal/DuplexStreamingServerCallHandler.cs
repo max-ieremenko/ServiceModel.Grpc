@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Filters.Internal;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Hosting.Internal;
 
@@ -39,14 +40,15 @@ internal sealed class DuplexStreamingServerCallHandler<TService, TRequestHeader,
     public DuplexStreamingServerCallHandler(
         Func<TService> serviceFactory,
         Func<TService, TRequestHeader?, IAsyncEnumerable<TRequestValue?>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponseValue?> Response)>> invoker,
-        Marshaller<TRequestHeader>? requestHeaderMarshaller,
-        Marshaller<TResponseHeader>? responseHeaderMarshaller,
+        IMethod method,
         ServerCallFilterHandlerFactory? filterHandlerFactory)
     {
+        var grpcMethod = (GrpcMethod<TRequestHeader, TRequest, TResponseHeader, TResponse>)method;
+
         _serviceFactory = serviceFactory;
         _invoker = invoker;
-        _requestHeaderMarshaller = requestHeaderMarshaller;
-        _responseHeaderMarshaller = responseHeaderMarshaller;
+        _requestHeaderMarshaller = grpcMethod.RequestHeaderMarshaller;
+        _responseHeaderMarshaller = grpcMethod.ResponseHeaderMarshaller;
         _filterHandlerFactory = filterHandlerFactory;
 
         if (filterHandlerFactory == null)
@@ -61,10 +63,9 @@ internal sealed class DuplexStreamingServerCallHandler<TService, TRequestHeader,
 
     public DuplexStreamingServerCallHandler(
         Func<TService, TRequestHeader?, IAsyncEnumerable<TRequestValue?>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponseValue?> Response)>> invoker,
-        Marshaller<TRequestHeader>? requestHeaderMarshaller,
-        Marshaller<TResponseHeader>? responseHeaderMarshaller,
+        IMethod method,
         ServerCallFilterHandlerFactory? filterHandlerFactory)
-        : this(null!, invoker, requestHeaderMarshaller, responseHeaderMarshaller, filterHandlerFactory)
+        : this(null!, invoker, method, filterHandlerFactory)
     {
     }
 

@@ -24,7 +24,7 @@ using ServiceModel.Grpc.Descriptions.Reflection;
 
 namespace ServiceModel.Grpc.Descriptions;
 
-public static class ContractDescriptionBuilder<TType>
+internal static class ContractDescriptionBuilder<TType>
 {
     public static bool IsServiceContractInterface(TType serviceType, IReflect<TType> reflect) => reflect.TryGetServiceName(serviceType, out _);
 

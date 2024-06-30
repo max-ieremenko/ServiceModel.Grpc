@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,13 +14,11 @@
 // limitations under the License.
 // </copyright>
 
-#if !NETSTANDARD2_1
-namespace System.Diagnostics.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 
-internal sealed class NotNullWhenAttribute : Attribute
+namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
+
+public interface IDescriptionExtensions
 {
-    public NotNullWhenAttribute(bool returnValue) => ReturnValue = returnValue;
-
-    public bool ReturnValue { get; }
+    bool IsServiceContractInterface(INamedTypeSymbol type);
 }
-#endif

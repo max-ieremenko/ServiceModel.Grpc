@@ -30,10 +30,10 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
 {
     private const string VarCallOptionsBuilder = "__callOptionsBuilder";
 
-    private readonly ContractDescription<ITypeSymbol> _contract;
+    private readonly IContractDescription _contract;
     private readonly HashSet<string> _uniqueMemberNames;
 
-    public ClientCodeGenerator(ContractDescription<ITypeSymbol> contract)
+    public ClientCodeGenerator(IContractDescription contract)
     {
         _contract = contract;
         _uniqueMemberNames = new(StringComparer.OrdinalIgnoreCase);
@@ -46,10 +46,10 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         output
             .WriteMetadata()
             .Append("internal sealed class ")
-            .Append(NamingConventions.Client.Class(_contract.BaseClassName))
+            .Append(NamingContract.Client.Class(_contract.BaseClassName))
             .Append(" : ")
             .WriteType(typeof(ClientBase<>))
-            .AppendFormat("{0}>, ", NamingConventions.Client.Class(_contract.BaseClassName))
+            .AppendFormat("{0}>, ", NamingContract.Client.Class(_contract.BaseClassName))
             .WriteType(_contract.ContractInterface)
             .AppendLine();
         output.AppendLine("{");
@@ -95,7 +95,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
 
                 foreach (var entry in interfaceDescription.SyncOverAsync)
                 {
-                    ImplementMethod(output, interfaceDescription.InterfaceType, entry.Sync, NamingConventions.Contract.GrpcMethod(entry.Async.OperationName));
+                    ImplementMethod(output, interfaceDescription.InterfaceType, entry.Sync, NamingContract.Contract.GrpcMethod(entry.Async.OperationName));
                     output.AppendLine();
                 }
             }
@@ -110,10 +110,10 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
     {
         output
             .Append("public ")
-            .Append(NamingConventions.Client.Class(_contract.BaseClassName))
+            .Append(NamingContract.Client.Class(_contract.BaseClassName))
             .Append("(")
             .WriteType(typeof(CallInvoker)).Append(" callInvoker, ")
-            .Append(NamingConventions.Contract.Class(_contract.BaseClassName)).Append(" contract, ")
+            .Append(NamingContract.Contract.Class(_contract.BaseClassName)).Append(" contract, ")
             .WriteType(typeof(IClientCallInvoker))
             .AppendLine(" clientCallInvoker)");
 
@@ -138,10 +138,10 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
     {
         output
             .Append("private ")
-            .Append(NamingConventions.Client.Class(_contract.BaseClassName))
+            .Append(NamingContract.Client.Class(_contract.BaseClassName))
             .Append("(")
             .Append("ClientBaseConfiguration configuration, ")
-            .Append(NamingConventions.Contract.Class(_contract.BaseClassName)).Append(" contract, ")
+            .Append(NamingContract.Contract.Class(_contract.BaseClassName)).Append(" contract, ")
             .WriteType(typeof(IClientCallInvoker))
             .AppendLine(" clientCallInvoker)");
 
@@ -164,7 +164,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
     {
         output
             .Append("protected override ")
-            .Append(NamingConventions.Client.Class(_contract.BaseClassName))
+            .Append(NamingContract.Client.Class(_contract.BaseClassName))
             .AppendLine(" NewInstance(ClientBaseConfiguration configuration)");
 
         output.AppendLine("{");
@@ -172,7 +172,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         {
             output
                 .Append("return new ")
-                .Append(NamingConventions.Client.Class(_contract.BaseClassName))
+                .Append(NamingContract.Client.Class(_contract.BaseClassName))
                 .AppendLine("(configuration, Contract, ClientCallInvoker);");
         }
 
@@ -183,7 +183,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
     {
         output
             .Append("public ")
-            .Append(NamingConventions.Contract.Class(_contract.BaseClassName))
+            .Append(NamingContract.Contract.Class(_contract.BaseClassName))
             .AppendLine(" Contract { get; }")
             .AppendLine();
 
@@ -194,9 +194,9 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
             .AppendLine();
     }
 
-    private void ImplementMethod(ICodeStringBuilder output, ITypeSymbol interfaceType, OperationDescription<ITypeSymbol> operation, string? grpcMethodName)
+    private void ImplementMethod(ICodeStringBuilder output, ITypeSymbol interfaceType, IOperationDescription operation, string? grpcMethodName)
     {
-        CreateMethodWithSignature(output, interfaceType, operation.GetSource());
+        CreateMethodWithSignature(output, interfaceType, operation.Method);
         output.AppendLine("{");
 
         Action? adapterBuilder = null;
@@ -226,7 +226,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         adapterBuilder?.Invoke();
     }
 
-    private void BuildUnary(ICodeStringBuilder output, OperationDescription<ITypeSymbol> operation, string? grpcMethodName)
+    private void BuildUnary(ICodeStringBuilder output, IOperationDescription operation, string? grpcMethodName)
     {
         InitializeCallOptionsBuilderVariable(output, operation);
 
@@ -251,7 +251,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
 
         output
             .Append(">(CallInvoker, Contract.")
-            .Append(grpcMethodName ?? NamingConventions.Contract.GrpcMethod(operation.OperationName))
+            .Append(grpcMethodName ?? NamingContract.Contract.GrpcMethod(operation.OperationName))
             .Append(", ")
             .Append(VarCallOptionsBuilder)
             .Append(", ");
@@ -278,7 +278,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         }
     }
 
-    private void BuildClientStreaming(ICodeStringBuilder output, OperationDescription<ITypeSymbol> operation)
+    private void BuildClientStreaming(ICodeStringBuilder output, IOperationDescription operation)
     {
         InitializeCallOptionsBuilderVariable(output, operation);
 
@@ -304,7 +304,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
 
         output
             .Append(">(CallInvoker, Contract.")
-            .Append(NamingConventions.Contract.GrpcMethod(operation.OperationName))
+            .Append(NamingContract.Contract.GrpcMethod(operation.OperationName))
             .Append(", ")
             .Append(VarCallOptionsBuilder)
             .Append(", ");
@@ -332,7 +332,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         output.AppendLine(";");
     }
 
-    private Action? BuildServerStreaming(ICodeStringBuilder output, OperationDescription<ITypeSymbol> operation)
+    private Action? BuildServerStreaming(ICodeStringBuilder output, IOperationDescription operation)
     {
         InitializeCallOptionsBuilderVariable(output, operation);
 
@@ -358,7 +358,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
 
         output
             .Append(">(CallInvoker, Contract.")
-            .Append(NamingConventions.Contract.GrpcMethod(operation.OperationName))
+            .Append(NamingContract.Contract.GrpcMethod(operation.OperationName))
             .Append(", ")
             .Append(VarCallOptionsBuilder)
             .Append(", ");
@@ -395,7 +395,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         return adapterBuilder;
     }
 
-    private void BuildServerStreamingResultAdapter(ICodeStringBuilder output, OperationDescription<ITypeSymbol> operation, string functionName)
+    private void BuildServerStreamingResultAdapter(ICodeStringBuilder output, IOperationDescription operation, string functionName)
     {
         var returnType = operation.Method.ReturnType.GenericTypeArguments()[0];
         output
@@ -444,7 +444,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         output.AppendLine("}");
     }
 
-    private Action? BuildDuplexStreaming(ICodeStringBuilder output, OperationDescription<ITypeSymbol> operation)
+    private Action? BuildDuplexStreaming(ICodeStringBuilder output, IOperationDescription operation)
     {
         InitializeCallOptionsBuilderVariable(output, operation);
 
@@ -474,7 +474,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
 
         output
             .Append(">(CallInvoker, Contract.")
-            .Append(NamingConventions.Contract.GrpcMethod(operation.OperationName))
+            .Append(NamingContract.Contract.GrpcMethod(operation.OperationName))
             .Append(", ")
             .Append(VarCallOptionsBuilder)
             .Append(", ");
@@ -515,9 +515,9 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         return adapterBuilder;
     }
 
-    private void ImplementNotSupportedMethod(ICodeStringBuilder output, ITypeSymbol interfaceType, NotSupportedMethodDescription<ITypeSymbol> method)
+    private void ImplementNotSupportedMethod(ICodeStringBuilder output, ITypeSymbol interfaceType, INotSupportedMethodDescription method)
     {
-        CreateMethodWithSignature(output, interfaceType, method.GetSource());
+        CreateMethodWithSignature(output, interfaceType, method.Method);
 
         output.AppendLine("{");
         using (output.Indent())
@@ -580,7 +580,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         output.AppendLine(")");
     }
 
-    private void InitializeCallOptionsBuilderVariable(ICodeStringBuilder output, OperationDescription<ITypeSymbol> operation)
+    private void InitializeCallOptionsBuilderVariable(ICodeStringBuilder output, IOperationDescription operation)
     {
         output
             .Append("var ")
@@ -604,7 +604,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         }
     }
 
-    private void CreateRequestMessage(ICodeStringBuilder output, OperationDescription<ITypeSymbol> operation)
+    private void CreateRequestMessage(ICodeStringBuilder output, IOperationDescription operation)
     {
         output
             .Append("new ")
@@ -622,7 +622,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         output.Append(")");
     }
 
-    private void WithRequestHeader(ICodeStringBuilder output, OperationDescription<ITypeSymbol> operation)
+    private void WithRequestHeader(ICodeStringBuilder output, IOperationDescription operation)
     {
         if (operation.HeaderRequestType == null)
         {

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2024 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,10 +16,8 @@
 
 using System;
 using System.Linq;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
-using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.TestApi;
 using ServiceModel.Grpc.TestApi;
 using Shouldly;
@@ -96,11 +94,11 @@ public partial class ContractDescriptionBuilderTest
         actual.Services[0].Operations[0].OperationName.ShouldBe(nameof(ISyncOveAsync.PingAsync));
 
         actual.Services[0].SyncOverAsync.Length.ShouldBe(1);
-        actual.Services[0].SyncOverAsync[0].Async.ShouldBe(actual.Services[0].Operations[0]);
+        actual.Services[0].SyncOverAsync[0].Async.Method.Name.ShouldBe(nameof(ISyncOveAsync.PingAsync));
         actual.Services[0].SyncOverAsync[0].Sync.Method.Name.ShouldBe(nameof(ISyncOveAsync.Ping));
     }
 
-    private ContractDescription<ITypeSymbol> Build(Type serviceType)
+    private IContractDescription Build(Type serviceType)
     {
         var symbol = _compilation.ResolveTypeSymbol(serviceType);
         return ContractDescriptionBuilder.Build(symbol);

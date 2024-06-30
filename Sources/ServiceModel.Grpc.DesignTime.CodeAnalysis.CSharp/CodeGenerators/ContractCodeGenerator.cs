@@ -30,9 +30,9 @@ namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
 
 internal sealed class ContractCodeGenerator : ICodeGenerator
 {
-    private readonly ContractDescription<ITypeSymbol> _contract;
+    private readonly IContractDescription _contract;
 
-    public ContractCodeGenerator(ContractDescription<ITypeSymbol> contract)
+    public ContractCodeGenerator(IContractDescription contract)
     {
         _contract = contract;
     }
@@ -44,7 +44,7 @@ internal sealed class ContractCodeGenerator : ICodeGenerator
         output
             .WriteMetadata()
             .Append("internal sealed class ")
-            .AppendLine(NamingConventions.Contract.Class(_contract.BaseClassName))
+            .AppendLine(NamingContract.Contract.Class(_contract.BaseClassName))
             .AppendLine("{");
 
         using (output.Indent())
@@ -63,7 +63,7 @@ internal sealed class ContractCodeGenerator : ICodeGenerator
     {
         output
             .Append("public ")
-            .Append(NamingConventions.Contract.Class(_contract.BaseClassName))
+            .Append(NamingContract.Contract.Class(_contract.BaseClassName))
             .Append("(")
             .WriteType(typeof(IMarshallerFactory))
             .AppendLine(" marshallerFactory)");
@@ -91,17 +91,17 @@ internal sealed class ContractCodeGenerator : ICodeGenerator
                 .Append("public ")
                 .WriteType(typeof(IMethod))
                 .Append(" ")
-                .Append(NamingConventions.Contract.GrpcMethod(operation.OperationName))
+                .Append(NamingContract.Contract.GrpcMethod(operation.OperationName))
                 .AppendLine(" { get; }")
                 .AppendLine();
         }
     }
 
-    private void BuildMethodInitializer(ICodeStringBuilder output, OperationDescription<ITypeSymbol> operation)
+    private void BuildMethodInitializer(ICodeStringBuilder output, IOperationDescription operation)
     {
         // Method = GrpcMethodFactory.Unary<>()
         output
-            .Append(NamingConventions.Contract.GrpcMethod(operation.OperationName))
+            .Append(NamingContract.Contract.GrpcMethod(operation.OperationName))
             .Append(" = ")
             .WriteType(typeof(GrpcMethodFactory))
             .Append(".")
@@ -193,7 +193,7 @@ internal sealed class ContractCodeGenerator : ICodeGenerator
         }
     }
 
-    private void AddGetDefinition(ICodeStringBuilder output, ITypeSymbol interfaceType, OperationDescription<ITypeSymbol> operation, string methodName)
+    private void AddGetDefinition(ICodeStringBuilder output, ITypeSymbol interfaceType, IOperationDescription operation, string methodName)
     {
         output
             .Append("public static ")
@@ -205,7 +205,7 @@ internal sealed class ContractCodeGenerator : ICodeGenerator
 
         using (output.Indent())
         {
-            var source = operation.GetSource();
+            var source = operation.Method;
             for (var i = 0; i < source.Parameters.Length; i++)
             {
                 var p = source.Parameters[i];
@@ -276,5 +276,5 @@ internal sealed class ContractCodeGenerator : ICodeGenerator
         output.AppendLine("}");
     }
 
-    private IEnumerable<OperationDescription<ITypeSymbol>> GetAllOperations() => _contract.Services.SelectMany(i => i.Operations);
+    private IEnumerable<IOperationDescription> GetAllOperations() => _contract.Services.SelectMany(i => i.Operations);
 }

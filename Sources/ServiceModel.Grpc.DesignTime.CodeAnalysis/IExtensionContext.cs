@@ -16,6 +16,7 @@
 
 using System.Threading;
 using Microsoft.CodeAnalysis;
+using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis;
 
@@ -26,6 +27,8 @@ public interface IExtensionContext
     Compilation Compilation { get; }
 
     IDebugLogger? DebugLogger { get; }
+
+    IDescriptionExtensions DescriptionExtensions { get; }
 
     void ReportDiagnostic(Diagnostic diagnostic);
 }

@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 
 namespace ServiceModel.Grpc.Emit;
 
-public static partial class ReflectionTools
+internal static partial class ReflectionTools
 {
     public static ICollection<Type> ExpandInterface(Type type)
     {
@@ -320,11 +320,7 @@ public static partial class ReflectionTools
         return result.ToString();
     }
 
-    public static bool IsPublicInterface(Type type)
-    {
-        return type.IsInterface
-               && (type.IsPublic || type.IsNestedPublic);
-    }
+    public static bool IsPublicInterface(Type type) => type.IsInterface && (type.IsPublic || type.IsNestedPublic);
 
     public static Attribute? GetCustomAttribute(MemberInfo owner, string attributeTypeFullName)
     {

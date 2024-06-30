@@ -90,7 +90,7 @@ internal sealed class ServiceModelServiceMethodProvider<TService> : IServiceMeth
         catch (Exception ex)
         {
             throw new InvalidOperationException(
-                $"A gRPC service binding is registered via {serviceInstanceType.GetUserFriendlyName()}. Failed to resolve the implementation: {ex.Message}.",
+                $"A gRPC service binding is registered via {serviceInstanceType.FullName}. Failed to resolve the implementation: {ex.Message}.",
                 ex);
         }
     }

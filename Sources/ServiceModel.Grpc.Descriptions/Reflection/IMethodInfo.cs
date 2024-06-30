@@ -18,7 +18,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ServiceModel.Grpc.Descriptions.Reflection;
 
-public interface IMethodInfo<TType>
+internal interface IMethodInfo<TType>
 {
     string Name { get; }
 

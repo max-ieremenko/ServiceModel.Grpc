@@ -29,9 +29,9 @@ namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
 
 internal sealed class EndpointBinderCodeGenerator : ICodeGenerator
 {
-    private readonly ContractDescription<ITypeSymbol> _contract;
+    private readonly IContractDescription _contract;
 
-    public EndpointBinderCodeGenerator(ContractDescription<ITypeSymbol> contract)
+    public EndpointBinderCodeGenerator(IContractDescription contract)
     {
         _contract = contract;
     }
@@ -43,7 +43,7 @@ internal sealed class EndpointBinderCodeGenerator : ICodeGenerator
         output
             .WriteMetadata()
             .Append("internal sealed partial class ")
-            .Append(NamingConventions.EndpointBinder.Class(_contract.BaseClassName))
+            .Append(NamingContract.EndpointBinder.Class(_contract.BaseClassName))
             .Append(" : ")
             .WriteType(typeof(IServiceEndpointBinder<>))
             .WriteType(_contract.ContractInterface)
@@ -151,12 +151,12 @@ internal sealed class EndpointBinderCodeGenerator : ICodeGenerator
 
             output
                 .Append("var contract = new ")
-                .Append(NamingConventions.Contract.Class(_contract.BaseClassName))
+                .Append(NamingContract.Contract.Class(_contract.BaseClassName))
                 .AppendLine("(methodBinder.MarshallerFactory);");
 
             output
                 .Append("var endpoint = new ")
-                .Append(NamingConventions.Endpoint.Class(_contract.BaseClassName))
+                .Append(NamingContract.Endpoint.Class(_contract.BaseClassName))
                 .AppendLine("();");
 
             foreach (var interfaceDescription in _contract.Services)
@@ -214,9 +214,9 @@ internal sealed class EndpointBinderCodeGenerator : ICodeGenerator
 
                     output
                         .Append(">(contract.")
-                        .Append(NamingConventions.Contract.GrpcMethod(method.OperationName))
+                        .Append(NamingContract.Contract.GrpcMethod(method.OperationName))
                         .Append(", ")
-                        .Append(NamingConventions.Contract.Class(_contract.BaseClassName))
+                        .Append(NamingContract.Contract.Class(_contract.BaseClassName))
                         .Append(".")
                         .Append(NamingContract.Contract.ClrDefinitionMethod(method.OperationName))
                         .Append(", ")
@@ -268,7 +268,7 @@ internal sealed class EndpointBinderCodeGenerator : ICodeGenerator
     private void BuildGetServiceMetadataOverride(ICodeStringBuilder output) =>
         output.AppendLine("partial void ServiceGetMetadataOverride(IList<object> metadata);");
 
-    private void BuildGetMethodMetadata(ICodeStringBuilder output, InterfaceDescription<ITypeSymbol> interfaceDescription, OperationDescription<ITypeSymbol> operation)
+    private void BuildGetMethodMetadata(ICodeStringBuilder output, IInterfaceDescription interfaceDescription, IOperationDescription operation)
     {
         output
             .Append("private IList<object> ")
@@ -282,7 +282,7 @@ internal sealed class EndpointBinderCodeGenerator : ICodeGenerator
                 .AppendLine("var metadata = new List<object>();")
                 .AppendLine("ServiceGetMetadata(metadata);");
 
-            var implementation = operation.GetSource();
+            var implementation = operation.Method;
             if (SyntaxTools.IsInterface(_contract.ContractInterface))
             {
                 output
@@ -293,7 +293,7 @@ internal sealed class EndpointBinderCodeGenerator : ICodeGenerator
             }
             else
             {
-                implementation = _contract.ContractInterface.GetInterfaceImplementation(operation.GetSource());
+                implementation = _contract.ContractInterface.GetInterfaceImplementation(operation.Method);
                 output
                     .Append("// copy attributes from method ")
                     .Append(implementation.Name)
@@ -326,7 +326,7 @@ internal sealed class EndpointBinderCodeGenerator : ICodeGenerator
         output.AppendLine("}");
     }
 
-    private void BuildGetMethodMetadataOverride(ICodeStringBuilder output, OperationDescription<ITypeSymbol> operation)
+    private void BuildGetMethodMetadataOverride(ICodeStringBuilder output, IOperationDescription operation)
     {
         output
             .Append("partial void ")
@@ -334,6 +334,6 @@ internal sealed class EndpointBinderCodeGenerator : ICodeGenerator
             .AppendLine("Override(IList<object> metadata);");
     }
 
-    private string GetMethodMetadataName(OperationDescription<ITypeSymbol> operation) =>
+    private string GetMethodMetadataName(IOperationDescription operation) =>
         "Method" + operation.OperationName + "GetMetadata";
 }

@@ -14,18 +14,17 @@
 // limitations under the License.
 // </copyright>
 
-using Microsoft.CodeAnalysis;
-using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
+using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
 
 internal sealed class EndpointAspNetAddOptionsCodeGenerator : ICodeGenerator
 {
-    private readonly ContractDescription<ITypeSymbol> _contract;
+    private readonly IContractDescription _contract;
     private readonly bool _isStaticClass;
 
-    public EndpointAspNetAddOptionsCodeGenerator(ContractDescription<ITypeSymbol> contract, bool isStaticClass)
+    public EndpointAspNetAddOptionsCodeGenerator(IContractDescription contract, bool isStaticClass)
     {
         _contract = contract;
         _isStaticClass = isStaticClass;

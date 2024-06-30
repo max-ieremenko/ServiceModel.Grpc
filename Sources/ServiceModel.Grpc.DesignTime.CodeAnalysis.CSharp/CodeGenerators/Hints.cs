@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2024 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
+using ServiceModel.Grpc.Descriptions;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
 
@@ -22,31 +22,31 @@ internal static class Hints
 {
     public const string Messages = "Messages";
 
-    public static string Contracts(string baseClassName) => NamingConventions.Contract.Class(baseClassName);
+    public static string Contracts(string baseClassName) => NamingContract.Contract.Class(baseClassName);
 
-    public static string Clients(string baseClassName) => NamingConventions.Client.Class(baseClassName);
+    public static string Clients(string baseClassName) => NamingContract.Client.Class(baseClassName);
 
-    public static string ClientBuilders(string baseClassName) => NamingConventions.Client.Class(baseClassName);
+    public static string ClientBuilders(string baseClassName) => NamingContract.Client.Class(baseClassName);
 
-    public static string ClientDiExtensions(string baseClassName) => NamingConventions.Client.Class(baseClassName);
+    public static string ClientDiExtensions(string baseClassName) => NamingContract.Client.Class(baseClassName);
 
-    public static string ClientFactoryExtensions(string baseClassName) => NamingConventions.Client.Class(baseClassName);
+    public static string ClientFactoryExtensions(string baseClassName) => NamingContract.Client.Class(baseClassName);
 
-    public static string Endpoints(string baseClassName) => NamingConventions.Endpoint.Class(baseClassName);
+    public static string Endpoints(string baseClassName) => NamingContract.Endpoint.Class(baseClassName);
 
-    public static string EndpointBinders(string baseClassName) => NamingConventions.Endpoint.Class(baseClassName);
+    public static string EndpointBinders(string baseClassName) => NamingContract.Endpoint.Class(baseClassName);
 
-    public static string EndpointAspNetAddOptions(string baseClassName) => NamingConventions.Endpoint.Class(baseClassName);
+    public static string EndpointAspNetAddOptions(string baseClassName) => NamingContract.Endpoint.Class(baseClassName);
 
-    public static string EndpointAspNetMapGrpc(string baseClassName) => NamingConventions.Endpoint.Class(baseClassName);
+    public static string EndpointAspNetMapGrpc(string baseClassName) => NamingContract.Endpoint.Class(baseClassName);
 
-    public static string EndpointSelfHostAddSingleton(string baseClassName) => NamingConventions.Endpoint.Class(baseClassName);
+    public static string EndpointSelfHostAddSingleton(string baseClassName) => NamingContract.Endpoint.Class(baseClassName);
 
-    public static string EndpointSelfHostAddTransient(string baseClassName) => NamingConventions.Endpoint.Class(baseClassName);
+    public static string EndpointSelfHostAddTransient(string baseClassName) => NamingContract.Endpoint.Class(baseClassName);
 
-    public static string EndpointSelfHostAddProvider(string baseClassName) => NamingConventions.Endpoint.Class(baseClassName);
+    public static string EndpointSelfHostAddProvider(string baseClassName) => NamingContract.Endpoint.Class(baseClassName);
 
-    public static string EndpointSelfHostBinderBaseBind(string baseClassName) => NamingConventions.Endpoint.Class(baseClassName);
+    public static string EndpointSelfHostBinderBaseBind(string baseClassName) => NamingContract.Endpoint.Class(baseClassName);
 
-    public static string EndpointSelfHostBinderBaseBindTransient(string baseClassName) => NamingConventions.Endpoint.Class(baseClassName);
+    public static string EndpointSelfHostBinderBaseBindTransient(string baseClassName) => NamingContract.Endpoint.Class(baseClassName);
 }

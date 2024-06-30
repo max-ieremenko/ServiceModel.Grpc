@@ -16,7 +16,7 @@
 
 namespace ServiceModel.Grpc.Descriptions;
 
-public sealed class ContractDescription<TType>
+internal sealed class ContractDescription<TType>
 {
     public ContractDescription(TType contractInterface, string baseClassName, InterfaceDescription<TType>[] interfaces, InterfaceDescription<TType>[] services)
     {

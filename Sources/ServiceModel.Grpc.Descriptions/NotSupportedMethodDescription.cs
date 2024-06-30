@@ -18,7 +18,7 @@ using ServiceModel.Grpc.Descriptions.Reflection;
 
 namespace ServiceModel.Grpc.Descriptions;
 
-public readonly struct NotSupportedMethodDescription<TType>
+internal readonly struct NotSupportedMethodDescription<TType>
 {
     public NotSupportedMethodDescription(IMethodInfo<TType> method, string error)
     {

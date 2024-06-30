@@ -21,8 +21,6 @@ using Grpc.Core;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
-using ServiceModel.Grpc.Descriptions;
-using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions.Reflection;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.TestApi;
 using Shouldly;
 
@@ -144,24 +142,11 @@ public partial class OperationDescriptionBuilderTest
         BuildFail(method);
     }
 
-    private static OperationDescription<ITypeSymbol> Build(IMethodSymbol method, string serviceName, string operationName)
-    {
-        var methodInfo = ReflectTypeSymbol.Instance.AsMethodInfo(method);
-        ContractDescriptionBuilder<ITypeSymbol>
-            .TryBuildOperation(methodInfo, serviceName, operationName, ReflectTypeSymbol.Instance, out var actual, out var error)
-            .ShouldBeTrue(error);
-        return actual.ShouldNotBeNull();
-    }
+    private static IOperationDescription Build(IMethodSymbol method, string serviceName, string operationName) =>
+        ContractDescriptionBuilder.BuildOperation(method, serviceName, operationName);
 
-    private static void BuildFail(IMethodSymbol method)
-    {
-        var methodInfo = ReflectTypeSymbol.Instance.AsMethodInfo(method);
-        ContractDescriptionBuilder<ITypeSymbol>
-            .TryBuildOperation(methodInfo, "s1", "dummy", ReflectTypeSymbol.Instance, out _, out var actual)
-            .ShouldBeFalse();
-
-        actual.ShouldNotBeNull().ShouldContain(method.Name);
-    }
+    private static void BuildFail(IMethodSymbol method) =>
+        Should.Throw<NotSupportedException>(() => Build(method, "dummy", "dummy"));
 
     private static IEnumerable<TestCaseData> GetResponseTypeCases()
     {

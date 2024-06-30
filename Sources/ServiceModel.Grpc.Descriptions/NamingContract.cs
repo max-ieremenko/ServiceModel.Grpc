@@ -20,7 +20,7 @@ namespace ServiceModel.Grpc.Descriptions;
 
 public static class NamingContract
 {
-    public static string GetBaseClassName<TType>(IReflect<TType> reflect, TType serviceType, string? @namespace)
+    internal static string GetBaseClassName<TType>(IReflect<TType> reflect, TType serviceType, string? @namespace)
         => ServiceContract.GetBaseClassName(reflect, serviceType, @namespace);
 
     public static class Contract

@@ -16,7 +16,7 @@
 
 namespace ServiceModel.Grpc.Descriptions;
 
-public sealed class InterfaceDescription<TType>
+internal sealed class InterfaceDescription<TType>
 {
     public InterfaceDescription(
         TType interfaceType,

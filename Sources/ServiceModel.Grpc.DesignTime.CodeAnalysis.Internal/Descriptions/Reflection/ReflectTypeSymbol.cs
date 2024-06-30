@@ -22,7 +22,7 @@ using ServiceModel.Grpc.Descriptions.Reflection;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions.Reflection;
 
-public sealed class ReflectTypeSymbol : IReflect<ITypeSymbol>
+internal sealed class ReflectTypeSymbol : IReflect<ITypeSymbol>
 {
     public static readonly ReflectTypeSymbol Instance = new();
 

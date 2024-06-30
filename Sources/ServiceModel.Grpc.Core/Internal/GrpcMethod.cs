@@ -18,7 +18,7 @@ using Grpc.Core;
 
 namespace ServiceModel.Grpc.Internal;
 
-public sealed class GrpcMethod<TRequestHeader, TRequest, TResponseHeader, TResponse> : Method<TRequest, TResponse>
+internal sealed class GrpcMethod<TRequestHeader, TRequest, TResponseHeader, TResponse> : Method<TRequest, TResponse>
 {
     public GrpcMethod(
         MethodType type,

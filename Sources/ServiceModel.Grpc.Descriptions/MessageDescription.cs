@@ -16,7 +16,7 @@
 
 namespace ServiceModel.Grpc.Descriptions;
 
-public sealed class MessageDescription<TType>
+internal sealed class MessageDescription<TType>
 {
     public MessageDescription(TType[] properties)
     {

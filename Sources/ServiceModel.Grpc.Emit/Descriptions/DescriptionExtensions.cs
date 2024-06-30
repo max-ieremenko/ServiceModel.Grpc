@@ -24,7 +24,7 @@ using ServiceModel.Grpc.Emit.Descriptions.Reflection;
 
 namespace ServiceModel.Grpc.Emit.Descriptions;
 
-public static class DescriptionExtensions
+internal static class DescriptionExtensions
 {
     public static MethodInfo GetSource(this OperationDescription<Type> operation) => ((ReflectionMethodInfo)operation.Method).Source;
 

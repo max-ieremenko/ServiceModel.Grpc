@@ -15,7 +15,6 @@
 // </copyright>
 
 using Microsoft.CodeAnalysis;
-using ServiceModel.Grpc.Descriptions;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
@@ -43,7 +42,7 @@ internal sealed class DefaultContractDescriptionExtension : IContractDescription
         descriptions.Add(description);
     }
 
-    private void ShowCommonWarnings(ContractDescription<ITypeSymbol> contract, IExtensionContext context)
+    private void ShowCommonWarnings(IContractDescription contract, IExtensionContext context)
     {
         foreach (var interfaceDescription in contract.Interfaces)
         {
