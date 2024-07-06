@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using System.Buffers.Binary;
 using Google.Protobuf;
 using ServiceModel.Grpc.Configuration;
