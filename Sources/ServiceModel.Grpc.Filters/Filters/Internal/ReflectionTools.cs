@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using System.Reflection;
 
 namespace ServiceModel.Grpc.Filters.Internal;

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System.Net.Http;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;

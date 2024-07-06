@@ -14,12 +14,8 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using ServiceModel.Grpc.TestApi;
-using Shouldly;
 
 namespace ServiceModel.Grpc.Emit.CodeGenerators;
 

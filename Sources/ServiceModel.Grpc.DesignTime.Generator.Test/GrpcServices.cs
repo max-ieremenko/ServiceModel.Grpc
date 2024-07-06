@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2023 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,4 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Test;
 [ImportGrpcService(typeof(ISomeService))]
 [ImportGrpcService(typeof(IFilteredService))]
 [ExportGrpcService(typeof(TrackedFilteredService), GenerateAspNetExtensions = true, GenerateSelfHostExtensions = true)]
-public static partial class GrpcServices
-{
-}
+public static partial class GrpcServices;

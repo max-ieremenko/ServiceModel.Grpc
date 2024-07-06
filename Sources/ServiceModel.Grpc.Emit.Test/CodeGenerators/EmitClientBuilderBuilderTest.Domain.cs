@@ -14,10 +14,8 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using System.ServiceModel;
 using Grpc.Core;
-using Moq;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Internal;
 

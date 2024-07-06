@@ -14,8 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using Grpc.Core;

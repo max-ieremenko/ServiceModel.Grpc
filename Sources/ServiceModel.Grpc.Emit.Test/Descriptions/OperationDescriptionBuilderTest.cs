@@ -14,12 +14,9 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 using Grpc.Core;
 using NUnit.Framework;
-using Shouldly;
 
 namespace ServiceModel.Grpc.Emit.Descriptions;
 

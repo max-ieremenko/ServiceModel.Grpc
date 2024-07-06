@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,11 +14,8 @@
 // limitations under the License.
 // </copyright>
 
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Channels;
-using System.Threading.Tasks;
 
 namespace ServiceModel.Grpc.TestApi;
 

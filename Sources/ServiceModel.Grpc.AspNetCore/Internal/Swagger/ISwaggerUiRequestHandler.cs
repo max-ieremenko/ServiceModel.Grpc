@@ -14,10 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-using System.IO;
 using System.IO.Pipelines;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Internal;

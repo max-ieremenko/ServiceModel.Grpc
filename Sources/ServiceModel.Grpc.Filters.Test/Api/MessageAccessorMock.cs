@@ -14,11 +14,9 @@
 // limitations under the License.
 // </copyright>
 
-using System.Collections.Generic;
-using Moq;
 using ServiceModel.Grpc.Internal;
 
-namespace ServiceModel.Grpc.Filters.Api;
+namespace ServiceModel.Grpc.Api;
 
 internal sealed partial class MessageAccessorMock
 {

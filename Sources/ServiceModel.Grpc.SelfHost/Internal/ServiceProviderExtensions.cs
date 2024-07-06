@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using Grpc.Core.Utils;
 
 namespace ServiceModel.Grpc.SelfHost.Internal;

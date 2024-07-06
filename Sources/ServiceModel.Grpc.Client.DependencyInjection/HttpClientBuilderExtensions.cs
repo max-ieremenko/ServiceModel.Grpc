@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using Grpc.Core.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceModel.Grpc.Client.DependencyInjection.Internal;

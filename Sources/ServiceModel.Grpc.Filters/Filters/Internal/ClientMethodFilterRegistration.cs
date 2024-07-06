@@ -14,8 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
 using Grpc.Core;
 using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Internal;

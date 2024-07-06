@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2024 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,12 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.ServiceModel;
-using System.Threading;
-using System.Threading.Tasks;
 using Grpc.Core;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;

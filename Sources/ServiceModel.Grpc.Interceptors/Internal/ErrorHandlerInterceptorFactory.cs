@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using Grpc.Core.Interceptors;
 using ServiceModel.Grpc.Configuration;
 

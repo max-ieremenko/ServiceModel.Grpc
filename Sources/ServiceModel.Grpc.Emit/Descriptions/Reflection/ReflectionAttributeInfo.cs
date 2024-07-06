@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using ServiceModel.Grpc.Descriptions.Reflection;
 
 namespace ServiceModel.Grpc.Emit.Descriptions.Reflection;

@@ -14,15 +14,10 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using System.Buffers;
 using System.Buffers.Binary;
-using System.Collections.Generic;
-using System.IO;
 using System.IO.Pipelines;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Internal;

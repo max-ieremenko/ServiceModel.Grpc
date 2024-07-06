@@ -14,10 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
 using System.ServiceModel;
-using System.Threading.Tasks;
 
 #pragma warning disable SA1414 // Tuple types in signatures should have element names
 

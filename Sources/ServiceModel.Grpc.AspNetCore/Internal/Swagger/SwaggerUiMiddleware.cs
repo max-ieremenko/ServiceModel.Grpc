@@ -14,10 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.IO;
 using System.Net;
-using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;

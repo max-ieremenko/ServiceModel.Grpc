@@ -14,9 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using NUnit.Framework;
-using Shouldly;
 
 namespace ServiceModel.Grpc.Filters;
 

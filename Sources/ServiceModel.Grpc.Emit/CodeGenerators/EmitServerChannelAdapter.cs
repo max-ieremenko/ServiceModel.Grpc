@@ -14,12 +14,8 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 

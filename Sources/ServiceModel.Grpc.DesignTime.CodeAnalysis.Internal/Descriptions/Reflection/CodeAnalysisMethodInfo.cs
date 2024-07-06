@@ -14,8 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis;
 using ServiceModel.Grpc.Descriptions.Reflection;
 

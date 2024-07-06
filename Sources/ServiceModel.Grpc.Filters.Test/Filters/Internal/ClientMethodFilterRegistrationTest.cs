@@ -14,12 +14,9 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using Grpc.Core;
-using Moq;
 using NUnit.Framework;
 using ServiceModel.Grpc.Internal;
-using Shouldly;
 
 namespace ServiceModel.Grpc.Filters.Internal;
 

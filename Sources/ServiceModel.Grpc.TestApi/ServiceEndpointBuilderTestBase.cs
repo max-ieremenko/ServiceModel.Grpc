@@ -14,18 +14,12 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Grpc.Core;
-using Moq;
 using Moq.Protected;
 using NUnit.Framework;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.TestApi.Domain;
-using Shouldly;
 
 namespace ServiceModel.Grpc.TestApi;
 

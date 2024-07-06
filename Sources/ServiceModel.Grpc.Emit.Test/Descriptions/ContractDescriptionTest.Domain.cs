@@ -16,7 +16,6 @@
 
 using System.Runtime.Serialization;
 using System.ServiceModel;
-using System.Threading.Tasks;
 
 namespace ServiceModel.Grpc.Emit.Descriptions;
 

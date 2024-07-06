@@ -14,9 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
 using Grpc.Core;
 using KellermanSoftware.CompareNetObjects;
@@ -25,7 +22,6 @@ using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Emit.CodeGenerators;
 using ServiceModel.Grpc.TestApi;
-using Shouldly;
 
 namespace ServiceModel.Grpc.Emit.Configuration;
 

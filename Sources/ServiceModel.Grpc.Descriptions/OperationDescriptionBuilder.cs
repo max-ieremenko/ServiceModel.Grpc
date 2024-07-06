@@ -14,11 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Text;
-using System.Threading;
 using Grpc.Core;
 using ServiceModel.Grpc.Descriptions.Reflection;
 
