@@ -1,7 +1,7 @@
 Microsoft.Win32.SystemEvents [8.0.0](https://www.nuget.org/packages/Microsoft.Win32.SystemEvents/8.0.0)
 --------------------
 
-Used by: Core internal
+Used by: Emit internal
 
 Target frameworks: net462, net6.0, net7.0, net8.0
 

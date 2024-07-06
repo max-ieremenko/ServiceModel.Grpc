@@ -99,6 +99,22 @@
       ]
     },
     {
+      "Name": "Emit",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Castle.Core",
+          "Version": "5.1.1"
+        }
+      ]
+    },
+    {
       "Name": "SelfHost",
       "InternalOnly": true,
       "TargetFrameworks": [

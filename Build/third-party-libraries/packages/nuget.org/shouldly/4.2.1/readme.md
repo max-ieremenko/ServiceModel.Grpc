@@ -1,7 +1,7 @@
 Shouldly [4.2.1](https://www.nuget.org/packages/Shouldly/4.2.1)
 --------------------
 
-Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, SelfHost internal
+Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, SelfHost internal
 
 Target frameworks: net462, net6.0, net7.0, net8.0
 
