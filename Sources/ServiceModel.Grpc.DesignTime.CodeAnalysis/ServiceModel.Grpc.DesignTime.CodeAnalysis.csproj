@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ServiceModel.Grpc.Descriptions\ServiceModel.Grpc.Descriptions.csproj" />
     <ProjectReference Include="..\ServiceModel.Grpc\ServiceModel.Grpc.csproj" />
   </ItemGroup>
 

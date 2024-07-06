@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2024 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,15 +15,17 @@
 // </copyright>
 
 using Microsoft.CodeAnalysis;
+using ServiceModel.Grpc.Descriptions;
+using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions.Reflection;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
 internal sealed class NotSupportedMethodDescription : INotSupportedMethodDescription
 {
-    public NotSupportedMethodDescription(IMethodSymbol method, string error)
+    public NotSupportedMethodDescription(NotSupportedMethodDescription<ITypeSymbol> source)
     {
-        Method = method;
-        Error = error;
+        Error = source.Error;
+        Method = ((CodeAnalysisMethodInfo)source.Method).Source;
     }
 
     public IMethodSymbol Method { get; }

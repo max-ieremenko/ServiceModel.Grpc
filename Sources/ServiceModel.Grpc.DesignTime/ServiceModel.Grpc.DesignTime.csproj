@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyTitle>ServiceModel.Grpc.DesignTime</AssemblyTitle>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
@@ -24,7 +25,9 @@
     <!-- https://github.com/dotnet/roslyn/discussions/47517#discussioncomment-64145 -->
     <Copy SourceFiles="$(PKGGrpc_Core_Api)\lib\netstandard2.0\Grpc.Core.Api.dll" DestinationFolder="$(OutDir)dependencies" />
     <Copy SourceFiles="$(OutDir)ServiceModel.Grpc.Core.dll" DestinationFolder="$(OutDir)dependencies" />
+    <Copy SourceFiles="$(OutDir)ServiceModel.Grpc.Descriptions.dll" DestinationFolder="$(OutDir)dependencies" />
     <Copy SourceFiles="$(OutDir)ServiceModel.Grpc.dll" DestinationFolder="$(OutDir)dependencies" />
+    <Copy SourceFiles="$(OutDir)ServiceModel.Grpc.Filters.dll" DestinationFolder="$(OutDir)dependencies" />
     <Copy SourceFiles="$(OutDir)ServiceModel.Grpc.DesignTime.CodeAnalysis.dll" DestinationFolder="$(OutDir)dependencies" />
     <Copy SourceFiles="$(OutDir)ServiceModel.Grpc.DesignTime.CodeAnalysis.Internal.dll" DestinationFolder="$(OutDir)dependencies" />
     <Copy SourceFiles="$(OutDir)ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.dll" DestinationFolder="$(OutDir)dependencies" />

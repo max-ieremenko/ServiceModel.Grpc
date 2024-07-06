@@ -15,7 +15,9 @@
 // </copyright>
 
 using System;
+using Microsoft.CodeAnalysis;
 using ServiceModel.Grpc.Client;
+using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
@@ -52,7 +54,7 @@ internal sealed class ClientDiCodeGenerator : ICodeGenerator
             .Append("public static ")
             .WriteTypeName("ServiceModel.Grpc.Client.DependencyInjection", "IClientFactoryBuilder")
             .Append(" Add")
-            .Append(NamingConventions.Client.Class(_contract.BaseClassName))
+            .Append(NamingContract.Client.Class(_contract.BaseClassName))
             .AppendLine("(");
 
         using (output.Indent())
@@ -81,7 +83,7 @@ internal sealed class ClientDiCodeGenerator : ICodeGenerator
 
             output
                 .Append("return factoryBuilder.AddClientBuilder(new ")
-                .Append(NamingConventions.ClientBuilder.Class(_contract.BaseClassName))
+                .Append(NamingContract.ClientBuilder.Class(_contract.BaseClassName))
                 .AppendLine("(), configure, channel);");
         }
 
@@ -95,7 +97,7 @@ internal sealed class ClientDiCodeGenerator : ICodeGenerator
             .Append("public static ")
             .WriteTypeName("Microsoft.Extensions.DependencyInjection", "IServiceCollection")
             .Append(" Add")
-            .Append(NamingConventions.Client.Class(_contract.BaseClassName))
+            .Append(NamingContract.Client.Class(_contract.BaseClassName))
             .AppendLine("(");
 
         using (output.Indent())
@@ -124,7 +126,7 @@ internal sealed class ClientDiCodeGenerator : ICodeGenerator
 
             output
                 .Append("return ServiceModel.Grpc.Client.DependencyInjection.ClientServiceCollectionExtensions.AddServiceModelGrpcClientBuilder(services, new ")
-                .Append(NamingConventions.ClientBuilder.Class(_contract.BaseClassName))
+                .Append(NamingContract.ClientBuilder.Class(_contract.BaseClassName))
                 .AppendLine("(), configure, channel);");
         }
 
@@ -138,7 +140,7 @@ internal sealed class ClientDiCodeGenerator : ICodeGenerator
             .Append("public static ")
             .WriteTypeName("Microsoft.Extensions.DependencyInjection", "IHttpClientBuilder")
             .Append(" Configure")
-            .Append(NamingConventions.Client.Class(_contract.BaseClassName))
+            .Append(NamingContract.Client.Class(_contract.BaseClassName))
             .Append("Creator")
             .AppendLine("(");
 
@@ -166,7 +168,7 @@ internal sealed class ClientDiCodeGenerator : ICodeGenerator
 
             output
                 .Append("return ServiceModel.Grpc.Client.DependencyInjection.HttpClientBuilderExtensions.ConfigureServiceModelGrpcClientBuilder(builder, new ")
-                .Append(NamingConventions.ClientBuilder.Class(_contract.BaseClassName))
+                .Append(NamingContract.ClientBuilder.Class(_contract.BaseClassName))
                 .AppendLine("(), configure);");
         }
 

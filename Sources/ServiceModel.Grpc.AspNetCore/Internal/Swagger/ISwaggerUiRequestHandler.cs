@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
 // limitations under the License.
 // </copyright>
 
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
-using Grpc.Core;
 using Microsoft.AspNetCore.Http;
+using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger;
 
@@ -28,8 +28,8 @@ internal interface ISwaggerUiRequestHandler
 {
     Task<byte[]> ReadRequestMessageAsync(
         PipeReader bodyReader,
-        IList<string> orderedParameterNames,
-        IMethod method,
+        IMarshallerFactory marshallerFactory,
+        IOperationDescriptor descriptor,
         CancellationToken token);
 
     void AppendResponseTrailers(
@@ -39,7 +39,8 @@ internal interface ISwaggerUiRequestHandler
     Task WriteResponseMessageAsync(
         MemoryStream original,
         PipeWriter bodyWriter,
-        IMethod method,
+        IMarshallerFactory marshallerFactory,
+        IOperationDescriptor descriptor,
         CancellationToken token);
 
     Task WriteResponseErrorAsync(

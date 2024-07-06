@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2024 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,33 +21,31 @@ namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
 public interface IOperationDescription
 {
-    IMethodSymbol Method { get; }
-
     string ServiceName { get; }
 
     string OperationName { get; }
 
+    IMethodSymbol Method { get; }
+
     MethodType OperationType { get; }
 
-    IMessageDescription? HeaderRequestType { get; }
-
-    int[] HeaderRequestTypeInput { get; }
-
-    IMessageDescription RequestType { get; }
-
-    int[] RequestTypeInput { get; }
-
-    IMessageDescription? HeaderResponseType { get; }
-
-    int[] HeaderResponseTypeInput { get; }
+    bool IsAsync { get; }
 
     IMessageDescription ResponseType { get; }
 
     int ResponseTypeIndex { get; }
 
+    IMessageDescription? HeaderResponseType { get; }
+
+    int[] HeaderResponseTypeInput { get; }
+
+    IMessageDescription RequestType { get; }
+
+    int[] RequestTypeInput { get; }
+
+    IMessageDescription? HeaderRequestType { get; }
+
+    int[] HeaderRequestTypeInput { get; }
+
     int[] ContextInput { get; }
-
-    bool IsAsync { get; }
-
-    string ClrDefinitionMethodName { get; }
 }

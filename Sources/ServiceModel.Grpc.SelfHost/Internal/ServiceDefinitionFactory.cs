@@ -18,11 +18,11 @@ using System;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Filters.Internal;
 using ServiceModel.Grpc.Hosting.Internal;
 using ServiceModel.Grpc.Interceptors.Internal;
 using ServiceModel.Grpc.Internal;
-using ServiceModel.Grpc.Internal.Emit;
 
 namespace ServiceModel.Grpc.SelfHost.Internal;
 
@@ -65,11 +65,11 @@ internal static class ServiceDefinitionFactory
 
         if (options?.ErrorHandler != null)
         {
-            var errorInterceptor = new ServerCallErrorInterceptor(
+            var errorInterceptor = ErrorHandlerInterceptorFactory.CreateServerHandler(
                 options.ErrorHandler,
                 options.MarshallerFactory.ThisOrDefault(),
                 loggerAdapter);
-            definition = definition.Intercept(new ServerNativeInterceptor(errorInterceptor));
+            definition = definition.Intercept(errorInterceptor);
         }
 
         return definition;
@@ -91,6 +91,6 @@ internal static class ServiceDefinitionFactory
             serviceInstanceType = null;
         }
 
-        return new EmitGenerator { Logger = logger }.GenerateServiceEndpointBinder<TService>(serviceInstanceType);
+        return EmitGenerator.GenerateServiceEndpointBinder<TService>(serviceInstanceType, logger);
     }
 }

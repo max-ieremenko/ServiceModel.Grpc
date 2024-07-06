@@ -15,7 +15,6 @@
 // </copyright>
 
 using Microsoft.CodeAnalysis;
-using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.Extensions;
 
@@ -26,7 +25,7 @@ public sealed class ImportGrpcService : IExtensionProvider
     public void ProvideExtensions(ExtensionProviderDeclaration declaration, IExtensionCollection extensions, IExtensionContext context)
     {
         var serviceType = (INamedTypeSymbol)declaration.Attribute.ConstructorArguments[0].Value!;
-        if (!ServiceContract.IsServiceContractInterface(serviceType))
+        if (!context.DescriptionExtensions.IsServiceContractInterface(serviceType))
         {
             context.ReportIsNotServiceContract(declaration.Attribute, serviceType);
             return;

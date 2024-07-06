@@ -21,22 +21,26 @@ param(
 )
 
 Enter-Build {
-    $releaseVersion = (Select-Xml -Path (Join-Path $Sources "Versions.props") -XPath "Project/PropertyGroup/ServiceModelGrpcVersion").Node.InnerText
+    $releaseVersion = Get-ReleaseVersion -Sources $Sources
 }
 
-task Default Core, AspNetCore, Swashbuckle, NSwag, DesignTime, SelfHost, ClientDI, ProtoBufMarshaller, MessagePackMarshaller
+task . Core, Emit, AspNetCore, Swashbuckle, NSwag, DesignTime, SelfHost, ClientDI, ProtoBufMarshaller, MessagePackMarshaller
 
 task Core {
     $projects = @(
-        (Join-Path $Sources "ServiceModel.Grpc.Core"),
-        (Join-Path $Sources "ServiceModel.Grpc.Core.Test"),
-        (Join-Path $Sources "ServiceModel.Grpc"),
-        (Join-Path $Sources "ServiceModel.Grpc.Test"),
-        (Join-Path $Sources "ServiceModel.Grpc.TestApi")
+        (Join-Path $Sources 'ServiceModel.Grpc.Core'),
+        (Join-Path $Sources 'ServiceModel.Grpc.Core.Test'),
+        (Join-Path $Sources 'ServiceModel.Grpc.Filters'),
+        (Join-Path $Sources 'ServiceModel.Grpc.Filters.Test'),
+        (Join-Path $Sources 'ServiceModel.Grpc.Interceptors'),
+        (Join-Path $Sources 'ServiceModel.Grpc.Interceptors.Test'),
+        (Join-Path $Sources 'ServiceModel.Grpc'),
+        (Join-Path $Sources 'ServiceModel.Grpc.Test'),
+        (Join-Path $Sources 'ServiceModel.Grpc.TestApi')
     )
 
     Write-ThirdPartyNotices `
-        -AppNames "Core" `
+        -AppNames 'Core' `
         -Sources $projects `
         -Repository $Repository `
         -Title "ServiceModel.Grpc $releaseVersion" `
@@ -44,15 +48,33 @@ task Core {
         -GithubToken $GithubToken
 }
 
-task AspNetCore {
+task Default Core, Emit, AspNetCore, Swashbuckle, NSwag, DesignTime, SelfHost, ClientDI, ProtoBufMarshaller, MessagePackMarshaller
+
+task Emit {
     $projects = @(
-        (Join-Path $Sources "ServiceModel.Grpc.AspNetCore"),
-        (Join-Path $Sources "ServiceModel.Grpc.AspNetCore.Test"),
-        (Join-Path $Sources "ServiceModel.Grpc.AspNetCore.TestApi")
+        (Join-Path $Sources 'ServiceModel.Grpc.Descriptions'),
+        (Join-Path $Sources 'ServiceModel.Grpc.Emit'),
+        (Join-Path $Sources 'ServiceModel.Grpc.Emit.Test')
     )
 
     Write-ThirdPartyNotices `
-        -AppNames "AspNetCore", "Core" `
+        -AppNames 'Emit' `
+        -Sources $projects `
+        -Repository $Repository `
+        -Title "ServiceModel.Grpc.Emit $releaseVersion" `
+        -Out $BuildOut `
+        -GithubToken $GithubToken
+}
+
+task AspNetCore {
+    $projects = @(
+        (Join-Path $Sources 'ServiceModel.Grpc.AspNetCore'),
+        (Join-Path $Sources 'ServiceModel.Grpc.AspNetCore.Test'),
+        (Join-Path $Sources 'ServiceModel.Grpc.AspNetCore.TestApi')
+    )
+
+    Write-ThirdPartyNotices `
+        -AppNames 'AspNetCore', 'Core' `
         -Sources $projects `
         -Repository $Repository `
         -Title "ServiceModel.Grpc.AspNetCore $releaseVersion" `
@@ -62,14 +84,14 @@ task AspNetCore {
 
 task Swashbuckle {
     $projects = @(
-        (Join-Path $Sources "ServiceModel.Grpc.AspNetCore.Swashbuckle"),
-        (Join-Path $Sources "ServiceModel.Grpc.AspNetCore.Swashbuckle.Test"),
-        (Join-Path $Sources "ServiceModel.Grpc.AspNetCore.Test"),
-        (Join-Path $Sources "ServiceModel.Grpc.AspNetCore.TestApi")
+        (Join-Path $Sources 'ServiceModel.Grpc.AspNetCore.Swashbuckle'),
+        (Join-Path $Sources 'ServiceModel.Grpc.AspNetCore.Swashbuckle.Test'),
+        (Join-Path $Sources 'ServiceModel.Grpc.AspNetCore.Test'),
+        (Join-Path $Sources 'ServiceModel.Grpc.AspNetCore.TestApi')
     )
 
     Write-ThirdPartyNotices `
-        -AppNames "AspNetCoreSwashbuckle", "Core" `
+        -AppNames 'AspNetCoreSwashbuckle', 'Core' `
         -Sources $projects `
         -Repository $Repository `
         -Title "ServiceModel.Grpc.AspNetCore.Swashbuckle $releaseVersion" `
@@ -79,14 +101,14 @@ task Swashbuckle {
 
 task NSwag {
     $projects = @(
-        (Join-Path $Sources "ServiceModel.Grpc.AspNetCore.NSwag"),
-        (Join-Path $Sources "ServiceModel.Grpc.AspNetCore.NSwag.Test"),
-        (Join-Path $Sources "ServiceModel.Grpc.AspNetCore.Test"),
-        (Join-Path $Sources "ServiceModel.Grpc.AspNetCore.TestApi")
+        (Join-Path $Sources 'ServiceModel.Grpc.AspNetCore.NSwag'),
+        (Join-Path $Sources 'ServiceModel.Grpc.AspNetCore.NSwag.Test'),
+        (Join-Path $Sources 'ServiceModel.Grpc.AspNetCore.Test'),
+        (Join-Path $Sources 'ServiceModel.Grpc.AspNetCore.TestApi')
     )
 
     Write-ThirdPartyNotices `
-        -AppNames "AspNetCoreNSwag", "Core" `
+        -AppNames 'AspNetCoreNSwag', 'Core' `
         -Sources $projects `
         -Repository $Repository `
         -Title "ServiceModel.Grpc.AspNetCore.NSwag $releaseVersion" `
@@ -96,17 +118,17 @@ task NSwag {
 
 task DesignTime {
     $projects = @(
-        (Join-Path $Sources "ServiceModel.Grpc.DesignTime"),
-        (Join-Path $Sources "ServiceModel.Grpc.DesignTime.CodeAnalysis"),
-        (Join-Path $Sources "ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp"),
-        (Join-Path $Sources "ServiceModel.Grpc.DesignTime.CodeAnalysis.Internal"),
-        (Join-Path $Sources "ServiceModel.Grpc.DesignTime.CodeAnalysis.Internal.Test"),
-        (Join-Path $Sources "ServiceModel.Grpc.DesignTime.Generator.Test"),
-        (Join-Path $Sources "ServiceModel.Grpc.DesignTime.Generators")
+        (Join-Path $Sources 'ServiceModel.Grpc.DesignTime'),
+        (Join-Path $Sources 'ServiceModel.Grpc.DesignTime.CodeAnalysis'),
+        (Join-Path $Sources 'ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp'),
+        (Join-Path $Sources 'ServiceModel.Grpc.DesignTime.CodeAnalysis.Internal'),
+        (Join-Path $Sources 'ServiceModel.Grpc.DesignTime.CodeAnalysis.Internal.Test'),
+        (Join-Path $Sources 'ServiceModel.Grpc.DesignTime.Generator.Test'),
+        (Join-Path $Sources 'ServiceModel.Grpc.DesignTime.Generators')
     )
 
     Write-ThirdPartyNotices `
-        -AppNames "DesignTime" `
+        -AppNames 'DesignTime' `
         -Sources $projects `
         -Repository $Repository `
         -Title "ServiceModel.Grpc.DesignTime $releaseVersion" `
@@ -116,12 +138,12 @@ task DesignTime {
 
 task SelfHost {
     $projects = @(
-        (Join-Path $Sources "ServiceModel.Grpc.SelfHost"),
-        (Join-Path $Sources "ServiceModel.Grpc.SelfHost.Test")
+        (Join-Path $Sources 'ServiceModel.Grpc.SelfHost'),
+        (Join-Path $Sources 'ServiceModel.Grpc.SelfHost.Test')
     )
 
     Write-ThirdPartyNotices `
-        -AppNames "SelfHost", "Core" `
+        -AppNames 'SelfHost', 'Core' `
         -Sources $projects `
         -Repository $Repository `
         -Title "ServiceModel.Grpc.SelfHost $releaseVersion" `
@@ -131,12 +153,12 @@ task SelfHost {
 
 task ClientDI {
     $projects = @(
-        (Join-Path $Sources "ServiceModel.Grpc.Client.DependencyInjection"),
-        (Join-Path $Sources "ServiceModel.Grpc.Client.DependencyInjection.Test")
+        (Join-Path $Sources 'ServiceModel.Grpc.Client.DependencyInjection'),
+        (Join-Path $Sources 'ServiceModel.Grpc.Client.DependencyInjection.Test')
     )
 
     Write-ThirdPartyNotices `
-        -AppNames "ClientDI", "Core" `
+        -AppNames 'ClientDI', 'Core' `
         -Sources $projects `
         -Repository $Repository `
         -Title "ServiceModel.Grpc.Client.DependencyInjection $releaseVersion" `
@@ -146,11 +168,11 @@ task ClientDI {
 
 task ProtoBufMarshaller {
     $projects = @(
-        (Join-Path $Sources "ServiceModel.Grpc.ProtoBufMarshaller")
+        (Join-Path $Sources 'ServiceModel.Grpc.ProtoBufMarshaller')
     )
 
     Write-ThirdPartyNotices `
-        -AppNames "ProtoBuf", "Core" `
+        -AppNames 'ProtoBuf', 'Core' `
         -Sources $projects `
         -Repository $Repository `
         -Title "ServiceModel.Grpc.ProtoBufMarshaller $releaseVersion" `
@@ -160,11 +182,11 @@ task ProtoBufMarshaller {
 
 task MessagePackMarshaller {
     $projects = @(
-        (Join-Path $Sources "ServiceModel.Grpc.MessagePackMarshaller")
+        (Join-Path $Sources 'ServiceModel.Grpc.MessagePackMarshaller')
     )
     
     Write-ThirdPartyNotices `
-        -AppNames "MessagePack", "Core" `
+        -AppNames 'MessagePack', 'Core' `
         -Sources $projects `
         -Repository $Repository `
         -Title "ServiceModel.Grpc.MessagePackMarshaller $releaseVersion" `

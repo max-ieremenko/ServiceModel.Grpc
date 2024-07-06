@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2024 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
 public interface IInterfaceDescription
 {
-    INamedTypeSymbol InterfaceType { get; }
+    ITypeSymbol InterfaceType { get; }
 
     IOperationDescription[] Operations { get; }
 

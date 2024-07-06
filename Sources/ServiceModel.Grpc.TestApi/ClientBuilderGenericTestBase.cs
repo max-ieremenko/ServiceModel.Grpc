@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2022 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ using System.Reflection;
 using Grpc.Core;
 using Moq;
 using NUnit.Framework;
-using ServiceModel.Grpc.Internal;
+using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
 
@@ -68,8 +68,5 @@ public abstract class ClientBuilderGenericTestBase
         CallInvoker.VerifyAll();
     }
 
-    protected virtual MethodInfo GetClientInstanceMethod(string name)
-    {
-        return Factory().GetType().InstanceMethod(name);
-    }
+    protected virtual MethodInfo GetClientInstanceMethod(string name) => Factory().GetType().InstanceMethod(name);
 }

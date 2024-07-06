@@ -14,6 +14,7 @@
 // limitations under the License.
 // </copyright>
 
+using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
@@ -62,7 +63,7 @@ internal sealed class EndpointSelfHostAddSingletonCodeGenerator : ICodeGenerator
                 .Append(".AddServiceModelSingleton<")
                 .WriteType(_contract.ContractInterface)
                 .Append(">(services, service, new ")
-                .Append(NamingConventions.EndpointBinder.Class(_contract.BaseClassName))
+                .Append(NamingContract.EndpointBinder.Class(_contract.BaseClassName))
                 .AppendLine("(), configure);");
         }
 

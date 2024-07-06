@@ -11,33 +11,43 @@ param(
     $BuildOut
 )
 
-task Default DotnetPack, JoinServiceModelGrpc, Test
+Enter-Build {
+    $releaseVersion = Get-ReleaseVersion -Sources $Sources
+}
+
+task . DotnetPack, JoinServiceModelGrpc, JoinServiceModelGrpcEmit, Test
 
 task DotnetPack {
-    $projects = 'ServiceModel.Grpc.Core\ServiceModel.Grpc.Core.csproj' `
-        , 'ServiceModel.Grpc\ServiceModel.Grpc.csproj' `
-        , 'ServiceModel.Grpc.AspNetCore\ServiceModel.Grpc.AspNetCore.csproj' `
-        , 'ServiceModel.Grpc.AspNetCore.Swashbuckle\ServiceModel.Grpc.AspNetCore.Swashbuckle.csproj' `
-        , 'ServiceModel.Grpc.AspNetCore.NSwag\ServiceModel.Grpc.AspNetCore.NSwag.csproj' `
-        , 'ServiceModel.Grpc.DesignTime\ServiceModel.Grpc.DesignTime.csproj' `
-        , 'ServiceModel.Grpc.SelfHost\ServiceModel.Grpc.SelfHost.csproj' `
-        , 'ServiceModel.Grpc.Client.DependencyInjection\ServiceModel.Grpc.Client.DependencyInjection.csproj' `
-        , 'ServiceModel.Grpc.ProtoBufMarshaller\ServiceModel.Grpc.ProtoBufMarshaller.csproj' `
-        , 'ServiceModel.Grpc.MessagePackMarshaller\ServiceModel.Grpc.MessagePackMarshaller.csproj'
+    $projects = @()
+    foreach ($file in (Get-ChildItem -Path $Sources -Recurse -Filter *.csproj)) {
+        $test = Select-Xml -Path $file -XPath 'Project/PropertyGroup/IsPackable'
+        if ($test -and $test.Node.InnerText -eq 'true') {
+            $projects += $file.FullName
+        }
+    }
 
     $builds = @()
     foreach ($project in $projects) {
-        $builds += @{ File = 'task-dotnet-pack.ps1'; ProjectFile = (Join-Path $Sources $project); BuildOut = $BuildOut }
+        $builds += @{ File = 'task-dotnet-pack.ps1'; ProjectFile = $project; BuildOut = $BuildOut }
     }
 
     Build-Parallel $builds -ShowParameter ProjectFile -MaximumBuilds 1
 }
 
 task JoinServiceModelGrpc {
-    $releaseVersion = (Select-Xml -Path (Join-Path $Sources 'Versions.props') -XPath 'Project/PropertyGroup/ServiceModelGrpcVersion').Node.InnerText
+    $sources = 'ServiceModel.Grpc.Filters', 'ServiceModel.Grpc.Interceptors'
+    
+    foreach ($source in $sources) {
+        Merge-NugetPackages -Source (Join-Path $BuildOut "$source.$releaseVersion.nupkg") -Destination (Join-Path $BuildOut "ServiceModel.Grpc.$releaseVersion.nupkg")
+        Merge-NugetPackages -Source (Join-Path $BuildOut "$source.$releaseVersion.snupkg") -Destination (Join-Path $BuildOut "ServiceModel.Grpc.$releaseVersion.snupkg")
+    }
+}
 
-    Merge-NugetPackages -Source (Join-Path $BuildOut "ServiceModel.Grpc.Core.$releaseVersion.nupkg") -Destination (Join-Path $BuildOut "ServiceModel.Grpc.$releaseVersion.nupkg")
-    Merge-NugetPackages -Source (Join-Path $BuildOut "ServiceModel.Grpc.Core.$releaseVersion.snupkg") -Destination (Join-Path $BuildOut "ServiceModel.Grpc.$releaseVersion.snupkg")
+task JoinServiceModelGrpcEmit {
+    $source = 'ServiceModel.Grpc.Descriptions'
+    
+    Merge-NugetPackages -Source (Join-Path $BuildOut "$source.$releaseVersion.nupkg") -Destination (Join-Path $BuildOut "ServiceModel.Grpc.Emit.$releaseVersion.nupkg")
+    Merge-NugetPackages -Source (Join-Path $BuildOut "$source.$releaseVersion.snupkg") -Destination (Join-Path $BuildOut "ServiceModel.Grpc.Emit.$releaseVersion.snupkg")
 }
 
 task Test {

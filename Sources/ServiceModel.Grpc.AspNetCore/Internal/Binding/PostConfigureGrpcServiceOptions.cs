@@ -28,6 +28,8 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Binding;
 
 internal sealed class PostConfigureGrpcServiceOptions : IPostConfigureOptions<GrpcServiceOptions>
 {
+    private const string ErrorInterceptorLoggerName = "ServiceModel.Grpc.Interceptors.ServerCallErrorInterceptor";
+
     private readonly IOptions<ServiceModelGrpcServiceOptions> _serviceModelOptions;
     private readonly ILoggerFactory _loggerFactory;
 
@@ -54,18 +56,18 @@ internal sealed class PostConfigureGrpcServiceOptions : IPostConfigureOptions<Gr
     {
         if (errorHandlerFactory != null)
         {
-            var factory = new ErrorHandlerServerCallInterceptorFactory(
-                marshallerFactory.ThisOrDefault(),
+            var args = ErrorHandlerInterceptorFactory.CreateServerHandlerArgs(
                 errorHandlerFactory,
+                marshallerFactory.ThisOrDefault(),
                 CreateLogger(loggerFactory));
 
-            interceptors.Add<ServerNativeInterceptor>(factory);
+            interceptors.Add(ErrorHandlerInterceptorFactory.GetServerHandlerType(), args);
         }
     }
 
     private static ILogger CreateLogger(ILoggerFactory loggerFactory)
     {
-        var logger = loggerFactory.CreateLogger(ErrorHandlerServerCallInterceptorFactory.LoggerName);
+        var logger = loggerFactory.CreateLogger(ErrorInterceptorLoggerName);
         return new LogAdapter(logger);
     }
 }

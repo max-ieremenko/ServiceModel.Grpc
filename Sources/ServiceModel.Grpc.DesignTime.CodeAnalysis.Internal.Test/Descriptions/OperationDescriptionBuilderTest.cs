@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2024 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public partial class OperationDescriptionBuilderTest
         INamedTypeSymbol[]? headerValueType,
         int? streamIndex)
     {
-        var actual = Build(method, "s1", ServiceContract.GetServiceOperationName(method));
+        var actual = Build(method, "s1", "o1");
 
         if (valueType == null)
         {
@@ -80,7 +80,7 @@ public partial class OperationDescriptionBuilderTest
     [TestCaseSource(nameof(GetOperationTypeCases))]
     public void OperationType(IMethodSymbol method, MethodType expectedType)
     {
-        var actual = Build(method, "s1", ServiceContract.GetServiceOperationName(method));
+        var actual = Build(method, "s1", "o1");
 
         actual.OperationType.ShouldBe(expectedType);
     }
@@ -101,7 +101,7 @@ public partial class OperationDescriptionBuilderTest
         int[] headerIndexes,
         INamedTypeSymbol[]? headerValueType)
     {
-        var actual = Build(method, "s1", ServiceContract.GetServiceOperationName(method));
+        var actual = Build(method, "s1", "o1");
 
         actual.RequestType.Properties.ShouldBe(requestValueType, SymbolEqualityComparer.Default);
         actual.RequestTypeInput.ShouldBe(requestIndexes);
@@ -123,7 +123,7 @@ public partial class OperationDescriptionBuilderTest
     [TestCaseSource(nameof(GetContextInputCases))]
     public void ContextInput(IMethodSymbol method, int[] indexes)
     {
-        var actual = Build(method, "s1", ServiceContract.GetServiceOperationName(method));
+        var actual = Build(method, "s1", "o1");
 
         actual.ContextInput.ShouldBe(indexes);
     }
@@ -142,32 +142,11 @@ public partial class OperationDescriptionBuilderTest
         BuildFail(method);
     }
 
-    [Test]
-    [TestCaseSource(nameof(GetIsCompatibleToCases))]
-    public void IsCompatibleWith(IMethodSymbol method, IMethodSymbol other, bool expected)
-    {
-        var sut = Build(method, "service", "operation");
-        var otherSut = Build(other, "service", "operation");
+    private static IOperationDescription Build(IMethodSymbol method, string serviceName, string operationName) =>
+        ContractDescriptionBuilder.BuildOperation(method, serviceName, operationName);
 
-        sut.IsCompatibleWith(otherSut).ShouldBe(expected);
-        otherSut.IsCompatibleWith(sut).ShouldBe(expected);
-    }
-
-    private static OperationDescription Build(IMethodSymbol method, string serviceName, string operationName)
-    {
-        var sut = new OperationDescriptionBuilder(method, serviceName, operationName);
-        sut.TryBuild(out var actual, out var error).ShouldBeTrue(error);
-        return actual.ShouldNotBeNull();
-    }
-
-    private static void BuildFail(IMethodSymbol method)
-    {
-        new OperationDescriptionBuilder(method, "s1", "dummy")
-            .TryBuild(out _, out var actual)
-            .ShouldBeFalse();
-
-        actual.ShouldNotBeNull().ShouldContain(method.Name);
-    }
+    private static void BuildFail(IMethodSymbol method) =>
+        Should.Throw<NotSupportedException>(() => Build(method, "dummy", "dummy"));
 
     private static IEnumerable<TestCaseData> GetResponseTypeCases()
     {
@@ -273,47 +252,6 @@ public partial class OperationDescriptionBuilderTest
         foreach (var method in SyntaxTools.GetInstanceMethods(type))
         {
             yield return new TestCaseData(method) { TestName = method.Name };
-        }
-    }
-
-    private static IEnumerable<TestCaseData> GetIsCompatibleToCases()
-    {
-        var type = Compilation.ResolveTypeSymbol(typeof(IsCompatibleToCases));
-
-#pragma warning disable RS1024 // Compare symbols correctly
-        var methodByName = SyntaxTools
-            .GetInstanceMethods(type)
-            .ToDictionary(i => i.Name, StringComparer.OrdinalIgnoreCase);
-#pragma warning restore RS1024 // Compare symbols correctly
-
-        foreach (var method in methodByName.Values)
-        {
-            yield return new TestCaseData(method, method, true)
-            {
-                TestName = $"{method.Name} vs {method.Name}"
-            };
-
-            foreach (var compatibleTo in method.GetAttributes().Where(i => i.AttributeClass!.Name == nameof(CompatibleToAttribute)))
-            {
-                var otherName = (string)compatibleTo.ConstructorArguments[0].Value!;
-                var other = methodByName[otherName];
-
-                yield return new TestCaseData(method, other, true)
-                {
-                    TestName = $"{method.Name} vs {other.Name}"
-                };
-            }
-
-            foreach (var notCompatibleTo in method.GetAttributes().Where(i => i.AttributeClass!.Name == nameof(NotCompatibleToAttribute)))
-            {
-                var otherName = (string)notCompatibleTo.ConstructorArguments[0].Value!;
-                var other = methodByName[otherName];
-
-                yield return new TestCaseData(method, other, false)
-                {
-                    TestName = $"{method.Name} vs {other.Name}"
-                };
-            }
         }
     }
 }

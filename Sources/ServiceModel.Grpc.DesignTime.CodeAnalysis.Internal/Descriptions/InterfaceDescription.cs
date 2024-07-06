@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2024 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,33 +14,48 @@
 // limitations under the License.
 // </copyright>
 
-using System.Diagnostics;
 using Microsoft.CodeAnalysis;
+using ServiceModel.Grpc.Descriptions;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
-[DebuggerDisplay("{InterfaceType.ToString()}")]
 internal sealed class InterfaceDescription : IInterfaceDescription
 {
-    public InterfaceDescription(
-        INamedTypeSymbol interfaceType,
-        INotSupportedMethodDescription[] methods,
-        IOperationDescription[] operations,
-        INotSupportedMethodDescription[] notSupportedOperations,
-        (IOperationDescription Sync, IOperationDescription Async)[] syncOverAsync)
+    public InterfaceDescription(InterfaceDescription<ITypeSymbol> source)
     {
-        InterfaceType = interfaceType;
-        Methods = methods;
-        Operations = operations;
-        NotSupportedOperations = notSupportedOperations;
-        SyncOverAsync = syncOverAsync;
+        InterfaceType = source.InterfaceType;
+
+        Operations = new IOperationDescription[source.Operations.Length];
+        for (var i = 0; i < source.Operations.Length; i++)
+        {
+            Operations[i] = new OperationDescription(source.Operations[i]);
+        }
+
+        Methods = new INotSupportedMethodDescription[source.Methods.Length];
+        for (var i = 0; i < source.Methods.Length; i++)
+        {
+            Methods[i] = new NotSupportedMethodDescription(source.Methods[i]);
+        }
+
+        NotSupportedOperations = new INotSupportedMethodDescription[source.NotSupportedOperations.Length];
+        for (var i = 0; i < source.NotSupportedOperations.Length; i++)
+        {
+            NotSupportedOperations[i] = new NotSupportedMethodDescription(source.NotSupportedOperations[i]);
+        }
+
+        SyncOverAsync = new (IOperationDescription Sync, IOperationDescription Async)[source.SyncOverAsync.Length];
+        for (var i = 0; i < source.SyncOverAsync.Length; i++)
+        {
+            var syncOverAsync = source.SyncOverAsync[i];
+            SyncOverAsync[i] = (new OperationDescription(syncOverAsync.Sync), new OperationDescription(syncOverAsync.Async));
+        }
     }
 
-    public INamedTypeSymbol InterfaceType { get; }
-
-    public INotSupportedMethodDescription[] Methods { get; }
+    public ITypeSymbol InterfaceType { get; }
 
     public IOperationDescription[] Operations { get; }
+
+    public INotSupportedMethodDescription[] Methods { get; }
 
     public INotSupportedMethodDescription[] NotSupportedOperations { get; }
 

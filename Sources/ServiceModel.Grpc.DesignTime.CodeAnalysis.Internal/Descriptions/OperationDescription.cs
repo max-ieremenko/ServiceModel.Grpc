@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2024 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,56 +14,42 @@
 // limitations under the License.
 // </copyright>
 
-using System.Diagnostics;
 using Grpc.Core;
 using Microsoft.CodeAnalysis;
+using ServiceModel.Grpc.Descriptions;
+using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions.Reflection;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
-[DebuggerDisplay("{OperationType} {OperationName}")]
 internal sealed class OperationDescription : IOperationDescription
 {
-    public OperationDescription(
-        IMethodSymbol method,
-        string serviceName,
-        string operationName,
-        IMessageDescription responseType,
-        int responseTypeIndex,
-        IMessageDescription? headerResponseType,
-        int[] headerResponseTypeInput,
-        IMessageDescription requestType,
-        int[] requestTypeInput,
-        IMessageDescription? headerRequestType,
-        int[] headerRequestTypeInput,
-        int[] contextInput,
-        MethodType operationType)
+    public OperationDescription(OperationDescription<ITypeSymbol> source)
     {
-        Method = method;
-        ServiceName = serviceName;
-        OperationName = operationName;
-        ResponseType = responseType;
-        ResponseTypeIndex = responseTypeIndex;
-        HeaderResponseType = headerResponseType;
-        HeaderResponseTypeInput = headerResponseTypeInput;
-        RequestType = requestType;
-        RequestTypeInput = requestTypeInput;
-        HeaderRequestType = headerRequestType;
-        HeaderRequestTypeInput = headerRequestTypeInput;
-        ContextInput = contextInput;
-        OperationType = operationType;
-        IsAsync = SyntaxTools.IsTask(method.ReturnType);
-
-        GrpcMethodName = "Method" + OperationName;
-        GrpcMethodInputHeaderName = "MethodInputHeader" + OperationName;
-        GrpcMethodOutputHeaderName = "MethodOutputHeader" + OperationName;
-        ClrDefinitionMethodName = "Get" + OperationName + "Definition";
+        Method = ((CodeAnalysisMethodInfo)source.Method).Source;
+        ServiceName = source.ServiceName;
+        OperationName = source.OperationName;
+        OperationType = source.OperationType;
+        IsAsync = source.IsAsync;
+        ResponseType = new MessageDescription(source.ResponseType);
+        ResponseTypeIndex = source.ResponseTypeIndex;
+        HeaderResponseType = source.HeaderResponseType == null ? null : new MessageDescription(source.HeaderResponseType);
+        HeaderResponseTypeInput = source.HeaderResponseTypeInput;
+        RequestType = new MessageDescription(source.RequestType);
+        RequestTypeInput = source.RequestTypeInput;
+        HeaderRequestType = source.HeaderRequestType == null ? null : new MessageDescription(source.HeaderRequestType);
+        HeaderRequestTypeInput = source.HeaderRequestTypeInput;
+        ContextInput = source.ContextInput;
     }
-
-    public IMethodSymbol Method { get; }
 
     public string ServiceName { get; }
 
     public string OperationName { get; }
+
+    public IMethodSymbol Method { get; }
+
+    public MethodType OperationType { get; }
+
+    public bool IsAsync { get; }
 
     public IMessageDescription ResponseType { get; }
 
@@ -82,16 +68,4 @@ internal sealed class OperationDescription : IOperationDescription
     public int[] HeaderRequestTypeInput { get; }
 
     public int[] ContextInput { get; }
-
-    public MethodType OperationType { get; }
-
-    public bool IsAsync { get; }
-
-    public string GrpcMethodName { get; }
-
-    public string GrpcMethodInputHeaderName { get; }
-
-    public string GrpcMethodOutputHeaderName { get; }
-
-    public string ClrDefinitionMethodName { get; set; }
 }

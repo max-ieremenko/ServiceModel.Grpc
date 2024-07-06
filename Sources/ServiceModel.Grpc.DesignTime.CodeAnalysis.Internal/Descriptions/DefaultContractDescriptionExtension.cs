@@ -37,7 +37,7 @@ internal sealed class DefaultContractDescriptionExtension : IContractDescription
             return;
         }
 
-        var description = new ContractDescriptionBuilder(ServiceType).Build();
+        var description = ContractDescriptionBuilder.Build(ServiceType);
         ShowCommonWarnings(description, context);
         descriptions.Add(description);
     }

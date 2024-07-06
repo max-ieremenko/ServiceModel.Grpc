@@ -44,8 +44,8 @@ public static class DiagnosticReport
     public static void ReportInheritsNotServiceContract(
         this IExtensionContext context,
         AttributeData attribute,
-        INamedTypeSymbol serviceType,
-        INamedTypeSymbol parent)
+        ITypeSymbol serviceType,
+        ITypeSymbol parent)
     {
         context.ReportDiagnostic(
             CreateDescriptor(

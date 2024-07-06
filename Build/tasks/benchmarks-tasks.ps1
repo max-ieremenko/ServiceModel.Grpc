@@ -14,7 +14,7 @@ param(
     $Configuration
 )
 
-task Default Clean, Build, Run, CopyResults
+task . Clean, Build, Run, CopyResults
 
 Enter-Build {
     $pathApp = Join-Path $PathSources "ServiceModel.Grpc.Benchmarks/bin" $Configuration "net8.0"

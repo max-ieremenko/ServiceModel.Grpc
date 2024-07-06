@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2024 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,29 +14,34 @@
 // limitations under the License.
 // </copyright>
 
-using System.Diagnostics;
 using Microsoft.CodeAnalysis;
+using ServiceModel.Grpc.Descriptions;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
-[DebuggerDisplay("{ContractInterface.ToString()}")]
 internal sealed class ContractDescription : IContractDescription
 {
-    public ContractDescription(
-        INamedTypeSymbol contractInterface,
-        string baseClassName,
-        IInterfaceDescription[] interfaces,
-        IInterfaceDescription[] services)
+    public ContractDescription(ContractDescription<ITypeSymbol> source)
     {
-        ContractInterface = contractInterface;
-        BaseClassName = baseClassName;
-        Interfaces = interfaces;
-        Services = services;
+        ContractInterface = source.ContractInterface;
+        BaseClassName = source.BaseClassName;
+
+        Interfaces = new IInterfaceDescription[source.Interfaces.Length];
+        for (var i = 0; i < source.Interfaces.Length; i++)
+        {
+            Interfaces[i] = new InterfaceDescription(source.Interfaces[i]);
+        }
+
+        Services = new IInterfaceDescription[source.Services.Length];
+        for (var i = 0; i < source.Services.Length; i++)
+        {
+            Services[i] = new InterfaceDescription(source.Services[i]);
+        }
     }
 
-    public INamedTypeSymbol ContractInterface { get; }
-
     public string BaseClassName { get; }
+
+    public ITypeSymbol ContractInterface { get; }
 
     public IInterfaceDescription[] Interfaces { get; }
 

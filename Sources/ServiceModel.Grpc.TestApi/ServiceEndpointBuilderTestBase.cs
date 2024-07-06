@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2022 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ using Moq;
 using Moq.Protected;
 using NUnit.Framework;
 using ServiceModel.Grpc.Channel;
-using ServiceModel.Grpc.Internal;
+using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
 

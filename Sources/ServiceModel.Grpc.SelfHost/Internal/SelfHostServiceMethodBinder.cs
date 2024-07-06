@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Filters.Internal;
 using ServiceModel.Grpc.Hosting.Internal;
 using ServiceModel.Grpc.Internal;
@@ -55,7 +56,9 @@ internal sealed class SelfHostServiceMethodBinder<TService> : IServiceMethodBind
         where TRequest : class
         where TResponse : class
     {
-        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
+        Func<IOperationDescriptor> getOperation = () => EmitGenerator.GenerateOperationDescriptor(resolveContractMethodDefinition);
+
+        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, getOperation);
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
         var invoker = new UnaryServerCallHandler<TService, TRequest, TResponse>(_serviceFactory, handler, filterHandlerFactory);
@@ -71,16 +74,17 @@ internal sealed class SelfHostServiceMethodBinder<TService> : IServiceMethodBind
         where TRequest : class, IMessage<TRequestValue>
         where TResponse : class
     {
-        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
+        Func<IOperationDescriptor> getOperation = () => EmitGenerator.GenerateOperationDescriptor(resolveContractMethodDefinition);
+
+        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, getOperation);
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
-        var grpcMethod = (GrpcMethod<TRequestHeader, TRequest, Message, TResponse>)method;
         var invoker = new ClientStreamingServerCallHandler<TService, TRequestHeader, TRequest, TRequestValue, TResponse>(
             _serviceFactory,
             handler,
-            grpcMethod.RequestHeaderMarshaller,
+            method,
             filterHandlerFactory);
-        _builder.AddMethod(grpcMethod, invoker.Handle);
+        _builder.AddMethod((Method<TRequest, TResponse>)method, invoker.Handle);
     }
 
     public void AddServerStreamingMethod<TRequest, TResponseHeader, TResponse, TResponseValue>(
@@ -92,16 +96,17 @@ internal sealed class SelfHostServiceMethodBinder<TService> : IServiceMethodBind
         where TResponseHeader : class
         where TResponse : class, IMessage<TResponseValue>, new()
     {
-        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
+        Func<IOperationDescriptor> getOperation = () => EmitGenerator.GenerateOperationDescriptor(resolveContractMethodDefinition);
+
+        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, getOperation);
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
-        var grpcMethod = (GrpcMethod<Message, TRequest, TResponseHeader, TResponse>)method;
         var invoker = new ServerStreamingServerCallHandler<TService, TRequest, TResponseHeader, TResponse, TResponseValue>(
             _serviceFactory,
             handler,
-            grpcMethod.ResponseHeaderMarshaller,
+            method,
             filterHandlerFactory);
-        _builder.AddMethod(grpcMethod, invoker.Handle);
+        _builder.AddMethod((Method<TRequest, TResponse>)method, invoker.Handle);
     }
 
     public void AddDuplexStreamingMethod<TRequestHeader, TRequest, TRequestValue, TResponseHeader, TResponse, TResponseValue>(
@@ -114,17 +119,17 @@ internal sealed class SelfHostServiceMethodBinder<TService> : IServiceMethodBind
         where TResponseHeader : class
         where TResponse : class, IMessage<TResponseValue>, new()
     {
-        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
+        Func<IOperationDescriptor> getOperation = () => EmitGenerator.GenerateOperationDescriptor(resolveContractMethodDefinition);
+
+        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, getOperation);
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
-        var grpcMethod = (GrpcMethod<TRequestHeader, TRequest, TResponseHeader, TResponse>)method;
         var invoker = new DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TRequestValue, TResponseHeader, TResponse, TResponseValue>(
             _serviceFactory,
             handler,
-            grpcMethod.RequestHeaderMarshaller,
-            grpcMethod.ResponseHeaderMarshaller,
+            method,
             filterHandlerFactory);
-        _builder.AddMethod(grpcMethod, invoker.Handle);
+        _builder.AddMethod((Method<TRequest, TResponse>)method, invoker.Handle);
     }
 
     private void ValidateFilterFactoryConfiguration(ServerCallFilterHandlerFactory? filterHandlerFactory)

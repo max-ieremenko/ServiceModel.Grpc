@@ -20,10 +20,10 @@ using System.Collections.Immutable;
 using Grpc.Core;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using ServiceModel.Grpc.Channel;
+using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
-using ServiceModel.Grpc.Hosting.Internal;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
 
@@ -43,7 +43,7 @@ internal sealed class EndpointBinderCodeGenerator : ICodeGenerator
         output
             .WriteMetadata()
             .Append("internal sealed partial class ")
-            .Append(NamingConventions.EndpointBinder.Class(_contract.BaseClassName))
+            .Append(NamingContract.EndpointBinder.Class(_contract.BaseClassName))
             .Append(" : ")
             .WriteType(typeof(IServiceEndpointBinder<>))
             .WriteType(_contract.ContractInterface)
@@ -151,12 +151,12 @@ internal sealed class EndpointBinderCodeGenerator : ICodeGenerator
 
             output
                 .Append("var contract = new ")
-                .Append(NamingConventions.Contract.Class(_contract.BaseClassName))
+                .Append(NamingContract.Contract.Class(_contract.BaseClassName))
                 .AppendLine("(methodBinder.MarshallerFactory);");
 
             output
                 .Append("var endpoint = new ")
-                .Append(NamingConventions.Endpoint.Class(_contract.BaseClassName))
+                .Append(NamingContract.Endpoint.Class(_contract.BaseClassName))
                 .AppendLine("();");
 
             foreach (var interfaceDescription in _contract.Services)
@@ -214,11 +214,11 @@ internal sealed class EndpointBinderCodeGenerator : ICodeGenerator
 
                     output
                         .Append(">(contract.")
-                        .Append(NamingConventions.Contract.GrpcMethod(method.OperationName))
+                        .Append(NamingContract.Contract.GrpcMethod(method.OperationName))
                         .Append(", ")
-                        .Append(NamingConventions.Contract.Class(_contract.BaseClassName))
+                        .Append(NamingContract.Contract.Class(_contract.BaseClassName))
                         .Append(".")
-                        .Append(method.ClrDefinitionMethodName)
+                        .Append(NamingContract.Contract.ClrDefinitionMethod(method.OperationName))
                         .Append(", ")
                         .Append(GetMethodMetadataName(method))
                         .Append("(), endpoint.")

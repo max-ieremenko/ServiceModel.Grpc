@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2024 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,9 +19,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using Grpc.Core;
 using Microsoft.CodeAnalysis;
-using ServiceModel.Grpc.Client.Internal;
+using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
 
@@ -45,10 +46,10 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         output
             .WriteMetadata()
             .Append("internal sealed class ")
-            .Append(NamingConventions.Client.Class(_contract.BaseClassName))
+            .Append(NamingContract.Client.Class(_contract.BaseClassName))
             .Append(" : ")
             .WriteType(typeof(ClientBase<>))
-            .AppendFormat("{0}>, ", NamingConventions.Client.Class(_contract.BaseClassName))
+            .AppendFormat("{0}>, ", NamingContract.Client.Class(_contract.BaseClassName))
             .WriteType(_contract.ContractInterface)
             .AppendLine();
         output.AppendLine("{");
@@ -94,7 +95,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
 
                 foreach (var entry in interfaceDescription.SyncOverAsync)
                 {
-                    ImplementMethod(output, interfaceDescription.InterfaceType, entry.Sync, NamingConventions.Contract.GrpcMethod(entry.Async.OperationName));
+                    ImplementMethod(output, interfaceDescription.InterfaceType, entry.Sync, NamingContract.Contract.GrpcMethod(entry.Async.OperationName));
                     output.AppendLine();
                 }
             }
@@ -109,14 +110,12 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
     {
         output
             .Append("public ")
-            .Append(NamingConventions.Client.Class(_contract.BaseClassName))
+            .Append(NamingContract.Client.Class(_contract.BaseClassName))
             .Append("(")
             .WriteType(typeof(CallInvoker)).Append(" callInvoker, ")
-            .Append(NamingConventions.Contract.Class(_contract.BaseClassName)).Append(" contract, Func<")
-            .WriteType(typeof(CallOptions))
-            .Append("> defaultCallOptionsFactory, ")
-            .WriteType(typeof(IClientCallFilterHandlerFactory))
-            .AppendLine(" filterHandlerFactory)");
+            .Append(NamingContract.Contract.Class(_contract.BaseClassName)).Append(" contract, ")
+            .WriteType(typeof(IClientCallInvoker))
+            .AppendLine(" clientCallInvoker)");
 
         using (output.Indent())
         {
@@ -129,8 +128,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
             output.WriteArgumentNullException("contract");
 
             output.AppendLine("Contract = contract;");
-            output.AppendLine("DefaultCallOptionsFactory = defaultCallOptionsFactory;");
-            output.AppendLine("FilterHandlerFactory = filterHandlerFactory;");
+            output.AppendLine("ClientCallInvoker = clientCallInvoker;");
         }
 
         output.AppendLine("}");
@@ -140,14 +138,12 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
     {
         output
             .Append("private ")
-            .Append(NamingConventions.Client.Class(_contract.BaseClassName))
+            .Append(NamingContract.Client.Class(_contract.BaseClassName))
             .Append("(")
             .Append("ClientBaseConfiguration configuration, ")
-            .Append(NamingConventions.Contract.Class(_contract.BaseClassName)).Append(" contract, Func<")
-            .WriteType(typeof(CallOptions))
-            .Append("> defaultCallOptionsFactory, ")
-            .WriteType(typeof(IClientCallFilterHandlerFactory))
-            .AppendLine(" filterHandlerFactory)");
+            .Append(NamingContract.Contract.Class(_contract.BaseClassName)).Append(" contract, ")
+            .WriteType(typeof(IClientCallInvoker))
+            .AppendLine(" clientCallInvoker)");
 
         using (output.Indent())
         {
@@ -158,8 +154,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         using (output.Indent())
         {
             output.AppendLine("Contract = contract;");
-            output.AppendLine("DefaultCallOptionsFactory = defaultCallOptionsFactory;");
-            output.AppendLine("FilterHandlerFactory = filterHandlerFactory;");
+            output.AppendLine("ClientCallInvoker = clientCallInvoker;");
         }
 
         output.AppendLine("}");
@@ -169,7 +164,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
     {
         output
             .Append("protected override ")
-            .Append(NamingConventions.Client.Class(_contract.BaseClassName))
+            .Append(NamingContract.Client.Class(_contract.BaseClassName))
             .AppendLine(" NewInstance(ClientBaseConfiguration configuration)");
 
         output.AppendLine("{");
@@ -177,8 +172,8 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         {
             output
                 .Append("return new ")
-                .Append(NamingConventions.Client.Class(_contract.BaseClassName))
-                .AppendLine("(configuration, Contract, DefaultCallOptionsFactory, FilterHandlerFactory);");
+                .Append(NamingContract.Client.Class(_contract.BaseClassName))
+                .AppendLine("(configuration, Contract, ClientCallInvoker);");
         }
 
         output.AppendLine("}");
@@ -188,24 +183,18 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
     {
         output
             .Append("public ")
-            .Append(NamingConventions.Contract.Class(_contract.BaseClassName))
+            .Append(NamingContract.Contract.Class(_contract.BaseClassName))
             .AppendLine(" Contract { get; }")
             .AppendLine();
 
         output
-            .Append("public Func<")
-            .WriteType(typeof(CallOptions))
-            .AppendLine("> DefaultCallOptionsFactory  { get; }")
-            .AppendLine();
-
-        output
             .Append("public ")
-            .WriteType(typeof(IClientCallFilterHandlerFactory))
-            .AppendLine(" FilterHandlerFactory  { get; }")
+            .WriteType(typeof(IClientCallInvoker))
+            .AppendLine(" ClientCallInvoker  { get; }")
             .AppendLine();
     }
 
-    private void ImplementMethod(ICodeStringBuilder output, INamedTypeSymbol interfaceType, IOperationDescription operation, string? grpcMethodName)
+    private void ImplementMethod(ICodeStringBuilder output, ITypeSymbol interfaceType, IOperationDescription operation, string? grpcMethodName)
     {
         CreateMethodWithSignature(output, interfaceType, operation.Method);
         output.AppendLine("{");
@@ -243,41 +232,33 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
 
         var hasReturn = operation.IsAsync || operation.ResponseType.Properties.Length > 0;
 
-        // var __response = new UnaryCall<TRequest, TResponse>(method, CallInvoker, __callOptionsBuilder, __filterHandlerFactory)
+        // var __response = ClientCallInvoker.UnaryInvoke<TRequest, TResponse>(CallInvoker, method, __callOptionsBuilder, )
         output
             .Append(hasReturn ? "var __response = " : string.Empty)
-            .Append("new ")
-            .WriteType(typeof(UnaryCall<,>))
+            .Append("ClientCallInvoker.")
+            .Append(operation.IsAsync ? nameof(IClientCallInvoker.UnaryInvokeAsync) : nameof(IClientCallInvoker.UnaryInvoke))
+            .Append("<")
             .WriteMessage(operation.RequestType)
             .Append(", ")
-            .WriteMessage(operation.ResponseType)
-            .Append(">(Contract.")
-            .Append(grpcMethodName ?? NamingConventions.Contract.GrpcMethod(operation.OperationName))
-            .Append(", CallInvoker, ")
-            .Append(VarCallOptionsBuilder)
-            .AppendLine(", FilterHandlerFactory)");
+            .WriteMessage(operation.ResponseType);
 
-        using (output.Indent())
+        if (operation.ResponseType.Properties.Length > 0)
         {
-            output.Append(".Invoke");
-
-            if (operation.IsAsync)
-            {
-                output.Append("Async");
-            }
-
-            if (operation.ResponseType.Properties.Length > 0)
-            {
-                output
-                    .Append("<")
-                    .WriteType(operation.ResponseType.Properties[0])
-                    .Append(">");
-            }
-
-            output.Append("(");
-            CreateRequestMessage(output, operation);
-            output.AppendLine(");");
+            output
+                .Append(", ")
+                .WriteType(operation.ResponseType.Properties[0]);
         }
+
+        output
+            .Append(">(CallInvoker, Contract.")
+            .Append(grpcMethodName ?? NamingContract.Contract.GrpcMethod(operation.OperationName))
+            .Append(", ")
+            .Append(VarCallOptionsBuilder)
+            .Append(", ");
+
+        CreateRequestMessage(output, operation);
+
+        output.AppendLine(");");
 
         if (hasReturn)
         {
@@ -301,45 +282,39 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
     {
         InitializeCallOptionsBuilderVariable(output, operation);
 
-        // var __response = new ClientStreamingCall<TRequestHeader, TRequest, TRequestValue, TResponse>(method, CallInvoker, __callOptionsBuilder, __filterHandlerFactory)
+        // var __response = ClientCallInvoker.ClientInvokeAsync<TRequestHeader, TRequest, TRequestValue, TResponse>(CallInvoker, method, __callOptionsBuilder, )
         output
-            .Append("var __response = new ")
-            .WriteType(typeof(ClientStreamingCall<,,,>))
+            .Append("var __response = ClientCallInvoker.")
+            .Append(nameof(IClientCallInvoker.ClientInvokeAsync))
+            .Append("<")
             .WriteMessageOrDefault(operation.HeaderRequestType)
             .Append(", ")
             .WriteMessage(operation.RequestType)
             .Append(", ")
             .WriteType(operation.RequestType.Properties[0])
             .Append(", ")
-            .WriteMessage(operation.ResponseType)
-            .Append(">(Contract.")
-            .Append(NamingConventions.Contract.GrpcMethod(operation.OperationName))
-            .Append(", CallInvoker, ")
+            .WriteMessage(operation.ResponseType);
+
+        if (operation.ResponseType.Properties.Length > 0)
+        {
+            output
+                .Append(", ")
+                .WriteType(operation.ResponseType.Properties[0]);
+        }
+
+        output
+            .Append(">(CallInvoker, Contract.")
+            .Append(NamingContract.Contract.GrpcMethod(operation.OperationName))
+            .Append(", ")
             .Append(VarCallOptionsBuilder)
-            .Append(", FilterHandlerFactory, ");
+            .Append(", ");
 
         WithRequestHeader(output, operation);
-        output.AppendLine(")");
 
-        using (output.Indent())
-        {
-            if (operation.ResponseType.Properties.Length > 0)
-            {
-                output
-                    .Append(".InvokeAsync<")
-                    .WriteType(operation.ResponseType.Properties[0])
-                    .Append(">(")
-                    .Append(operation.Method.Parameters[operation.RequestTypeInput[0]].Name)
-                    .AppendLine(");");
-            }
-            else
-            {
-                output
-                    .Append(".InvokeAsync(")
-                    .Append(operation.Method.Parameters[operation.RequestTypeInput[0]].Name)
-                    .AppendLine(");");
-            }
-        }
+        output
+            .Append(", ")
+            .Append(operation.Method.Parameters[operation.RequestTypeInput[0]].Name)
+            .AppendLine(");");
 
         output.Append("return ");
         if (operation.Method.ReturnType.IsValueTask())
@@ -361,43 +336,48 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
     {
         InitializeCallOptionsBuilderVariable(output, operation);
 
-        // var __response = new ServerStreamingCall<TRequest, TResponseHeader, TResponse, TResponseValue>(method, CallInvoker, __callOptionsBuilder, __filterHandlerFactory)
+        // var __response = ClientCallInvoker.ServerInvokeAsync<TRequest, TResponseHeader, TResponse, TResponseValue>(CallInvoker, method, __callOptionsBuilder, )
         output
-            .Append("var __response = new ")
-            .WriteType(typeof(ServerStreamingCall<,,,>))
+            .Append("var __response = ClientCallInvoker.")
+            .Append(operation.IsAsync ? nameof(IClientCallInvoker.ServerInvokeAsync) : nameof(IClientCallInvoker.ServerInvoke))
+            .Append("<")
             .WriteMessage(operation.RequestType)
             .Append(", ")
             .WriteMessageOrDefault(operation.HeaderResponseType)
             .Append(", ")
             .WriteMessage(operation.ResponseType)
             .Append(", ")
-            .WriteType(operation.ResponseType.Properties[0])
-            .Append(">(Contract.")
-            .Append(NamingConventions.Contract.GrpcMethod(operation.OperationName))
-            .Append(", CallInvoker, ")
-            .Append(VarCallOptionsBuilder)
-            .Append(", FilterHandlerFactory)");
+            .WriteType(operation.ResponseType.Properties[0]);
 
-        Action? adapterBuilder = null;
-        using (output.Indent())
+        if (operation.HeaderResponseType != null)
         {
-            output.Append(operation.IsAsync ? ".InvokeAsync(" : ".Invoke(");
-
-            CreateRequestMessage(output, operation);
-
-            if (operation.HeaderResponseType != null)
-            {
-                var adapterFunctionName = GetUniqueMemberName("Adapt" + operation.Method.Name + "Response");
-                adapterBuilder = () => BuildServerStreamingResultAdapter(output, operation, adapterFunctionName);
-                output
-                    .Append(", ")
-                    .Append(adapterFunctionName);
-            }
-
-            output.AppendLine(");");
+            output
+                .Append(", ")
+                .WriteType(operation.Method.ReturnType.GenericTypeArguments()[0]);
         }
 
-        output.Append("return ");
+        output
+            .Append(">(CallInvoker, Contract.")
+            .Append(NamingContract.Contract.GrpcMethod(operation.OperationName))
+            .Append(", ")
+            .Append(VarCallOptionsBuilder)
+            .Append(", ");
+
+        CreateRequestMessage(output, operation);
+
+        Action? adapterBuilder = null;
+        if (operation.HeaderResponseType != null)
+        {
+            var adapterFunctionName = GetUniqueMemberName("Adapt" + operation.Method.Name + "Response");
+            adapterBuilder = () => BuildServerStreamingResultAdapter(output, operation, adapterFunctionName);
+            output
+                .Append(", ")
+                .Append(adapterFunctionName);
+        }
+
+        output
+            .AppendLine(");")
+            .Append("return ");
 
         if (operation.IsAsync && operation.Method.ReturnType.IsValueTask())
         {
@@ -468,10 +448,11 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
     {
         InitializeCallOptionsBuilderVariable(output, operation);
 
-        // var __response = new DuplexStreamingCall<TRequestHeader, TRequest, TRequestValue, TResponseHeader, TResponse, TResponseValue>(method, CallInvoker, __callOptionsBuilder, __filterHandlerFactory)
+        // var __response = ClientCallInvoker.DuplexInvoke<TRequestHeader, TRequest, TRequestValue, TResponseHeader, TResponse, TResponseValue>(CallInvoker, method, __callOptionsBuilder, )
         output
-            .Append("var __response = new ")
-            .WriteType(typeof(DuplexStreamingCall<,,,,,>))
+            .Append("var __response = ClientCallInvoker.")
+            .Append(operation.IsAsync ? nameof(IClientCallInvoker.DuplexInvokeAsync) : nameof(IClientCallInvoker.DuplexInvoke))
+            .Append("<")
             .WriteMessageOrDefault(operation.HeaderRequestType)
             .Append(", ")
             .WriteMessage(operation.RequestType)
@@ -482,40 +463,41 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
             .Append(", ")
             .WriteMessage(operation.ResponseType)
             .Append(", ")
-            .WriteType(operation.ResponseType.Properties[0])
-            .Append(">(Contract.")
-            .Append(NamingConventions.Contract.GrpcMethod(operation.OperationName))
-            .Append(", CallInvoker, ")
-            .Append(VarCallOptionsBuilder)
-            .Append(", FilterHandlerFactory, ");
+            .WriteType(operation.ResponseType.Properties[0]);
 
-        WithRequestHeader(output, operation);
-        output.AppendLine(")");
-
-        Action? adapterBuilder = null;
-        using (output.Indent())
+        if (operation.HeaderResponseType != null)
         {
-            if (operation.HeaderResponseType == null)
-            {
-                output
-                    .Append(operation.IsAsync ? ".InvokeAsync(" : ".Invoke(")
-                    .Append(operation.Method.Parameters[operation.RequestTypeInput[0]].Name)
-                    .AppendLine(");");
-            }
-            else
-            {
-                var adapterFunctionName = GetUniqueMemberName("Adapt" + operation.Method.Name + "Response");
-                adapterBuilder = () => BuildServerStreamingResultAdapter(output, operation, adapterFunctionName);
-                output
-                    .Append(".InvokeAsync(")
-                    .Append(operation.Method.Parameters[operation.RequestTypeInput[0]].Name)
-                    .Append(", ")
-                    .Append(adapterFunctionName)
-                    .AppendLine(");");
-            }
+            output
+                .Append(", ")
+                .WriteType(operation.Method.ReturnType.GenericTypeArguments()[0]);
         }
 
-        output.Append("return ");
+        output
+            .Append(">(CallInvoker, Contract.")
+            .Append(NamingContract.Contract.GrpcMethod(operation.OperationName))
+            .Append(", ")
+            .Append(VarCallOptionsBuilder)
+            .Append(", ");
+
+        WithRequestHeader(output, operation);
+
+        output
+            .Append(", ")
+            .Append(operation.Method.Parameters[operation.RequestTypeInput[0]].Name);
+
+        Action? adapterBuilder = null;
+        if (operation.HeaderResponseType != null)
+        {
+            var adapterFunctionName = GetUniqueMemberName("Adapt" + operation.Method.Name + "Response");
+            adapterBuilder = () => BuildServerStreamingResultAdapter(output, operation, adapterFunctionName);
+            output
+                .Append(", ")
+                .Append(adapterFunctionName);
+        }
+
+        output
+            .AppendLine(");")
+            .Append("return ");
 
         if (operation.IsAsync && operation.Method.ReturnType.IsValueTask())
         {
@@ -533,7 +515,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         return adapterBuilder;
     }
 
-    private void ImplementNotSupportedMethod(ICodeStringBuilder output, INamedTypeSymbol interfaceType, INotSupportedMethodDescription method)
+    private void ImplementNotSupportedMethod(ICodeStringBuilder output, ITypeSymbol interfaceType, INotSupportedMethodDescription method)
     {
         CreateMethodWithSignature(output, interfaceType, method.Method);
 
@@ -546,7 +528,7 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         output.AppendLine("}");
     }
 
-    private void CreateMethodWithSignature(ICodeStringBuilder output, INamedTypeSymbol interfaceType, IMethodSymbol method)
+    private void CreateMethodWithSignature(ICodeStringBuilder output, ITypeSymbol interfaceType, IMethodSymbol method)
     {
         output
             .WriteType(method.ReturnType)
@@ -603,9 +585,9 @@ internal sealed class ClientCodeGenerator : ICodeGenerator
         output
             .Append("var ")
             .Append(VarCallOptionsBuilder)
-            .Append(" = new ")
-            .WriteType(typeof(CallOptionsBuilder))
-            .Append("(DefaultCallOptionsFactory)");
+            .Append(" = ClientCallInvoker.")
+            .Append(nameof(IClientCallInvoker.CreateOptionsBuilder))
+            .Append("()");
 
         using (output.Indent())
         {

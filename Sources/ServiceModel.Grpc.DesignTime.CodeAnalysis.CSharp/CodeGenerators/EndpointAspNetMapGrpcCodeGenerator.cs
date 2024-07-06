@@ -14,6 +14,7 @@
 // limitations under the License.
 // </copyright>
 
+using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
@@ -61,7 +62,7 @@ internal sealed class EndpointAspNetMapGrpcCodeGenerator : ICodeGenerator
                 .Append(".MapGrpcService<")
                 .WriteType(_contract.ContractInterface)
                 .Append(", ")
-                .Append(NamingConventions.EndpointBinder.Class(_contract.BaseClassName))
+                .Append(NamingContract.EndpointBinder.Class(_contract.BaseClassName))
                 .AppendLine(">(builder);");
         }
 

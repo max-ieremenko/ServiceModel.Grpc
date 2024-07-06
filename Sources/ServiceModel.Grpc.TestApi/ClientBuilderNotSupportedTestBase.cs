@@ -64,11 +64,11 @@ public abstract class ClientBuilderNotSupportedTestBase
     [Test]
     public void DisposableIsNotServiceContract()
     {
-        var ex = Assert.Throws<NotSupportedException>(() => _contract.Dispose());
+        var ex = Assert.Throws<NotSupportedException>(_contract.Dispose);
 
         ex.ShouldNotBeNull();
         TestOutput.WriteLine(ex.Message);
 
-        ex.Message.ShouldContain(typeof(IDisposable).FullName!);
+        ex.Message.ShouldContain(nameof(IDisposable));
     }
 }

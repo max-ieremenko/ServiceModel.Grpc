@@ -1,7 +1,7 @@
 CompareNETObjects [4.83.0](https://www.nuget.org/packages/CompareNETObjects/4.83.0)
 --------------------
 
-Used by: Core internal
+Used by: Emit internal
 
 Target frameworks: net462, net6.0, net7.0, net8.0
 

@@ -30,13 +30,15 @@ public static class SyntaxTools
     public static Dictionary<ITypeSymbol, T> CreateTypeSymbolDictionary<T>() => new(SymbolEqualityComparer.Default);
 
     public static HashSet<INamedTypeSymbol> CreateNamedTypeHashSet() => new(SymbolEqualityComparer.Default);
+
+    public static HashSet<ITypeSymbol> CreateTypeHashSet() => new(SymbolEqualityComparer.Default);
 #pragma warning restore RS1024 // Compare symbols correctly
 
-    public static bool IsInterface(INamedTypeSymbol type) => type.TypeKind == TypeKind.Interface;
+    public static bool IsInterface(ITypeSymbol type) => type.TypeKind == TypeKind.Interface;
 
-    public static ICollection<INamedTypeSymbol> ExpandInterface(INamedTypeSymbol type)
+    public static ICollection<ITypeSymbol> ExpandInterface(ITypeSymbol type)
     {
-        var result = CreateNamedTypeHashSet();
+        var result = CreateTypeHashSet();
 
         if (IsInterface(type))
         {
@@ -65,7 +67,7 @@ public static class SyntaxTools
         return null;
     }
 
-    public static IEnumerable<IMethodSymbol> GetInstanceMethods(INamedTypeSymbol type)
+    public static IEnumerable<IMethodSymbol> GetInstanceMethods(ITypeSymbol type)
     {
         foreach (var m in type.GetMembers())
         {

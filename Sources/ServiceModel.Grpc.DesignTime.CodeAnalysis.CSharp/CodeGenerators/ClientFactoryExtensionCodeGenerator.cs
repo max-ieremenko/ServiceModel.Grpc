@@ -15,6 +15,7 @@
 // </copyright>
 
 using ServiceModel.Grpc.Client;
+using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
@@ -40,7 +41,7 @@ internal sealed class ClientFactoryExtensionCodeGenerator : ICodeGenerator
             .Append("public static ")
             .WriteType(typeof(IClientFactory))
             .Append(" Add")
-            .Append(NamingConventions.Client.Class(_contract.BaseClassName))
+            .Append(NamingContract.Client.Class(_contract.BaseClassName))
             .Append("(");
 
         if (_isStaticClass)
@@ -63,7 +64,7 @@ internal sealed class ClientFactoryExtensionCodeGenerator : ICodeGenerator
                 .Append("clientFactory.")
                 .Append(nameof(IClientFactory.AddClient))
                 .Append("(new ")
-                .Append(NamingConventions.ClientBuilder.Class(_contract.BaseClassName))
+                .Append(NamingContract.ClientBuilder.Class(_contract.BaseClassName))
                 .AppendLine("(), configure);");
 
             output.AppendLine("return clientFactory;");

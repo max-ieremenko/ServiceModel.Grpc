@@ -19,7 +19,7 @@ using Grpc.Core;
 using Moq;
 using NUnit.Framework;
 using ServiceModel.Grpc.Configuration;
-using ServiceModel.Grpc.Hosting.Internal;
+using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly;
 

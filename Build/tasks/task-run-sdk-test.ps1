@@ -11,7 +11,7 @@ param(
 
 . (Join-Path $PSScriptRoot "../scripts/Start-Server.ps1")
 
-task Default Run
+task . Run
 
 Exit-Build {
     foreach ($app in $script:runningServers) {

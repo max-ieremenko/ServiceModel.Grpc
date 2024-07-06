@@ -11,7 +11,7 @@ param(
     $BuildOut
 )
 
-task Default {
+task . {
     exec {
         dotnet pack `
             -c Release `

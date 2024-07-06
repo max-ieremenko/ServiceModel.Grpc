@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2023 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,14 +18,15 @@ using System;
 using Grpc.Core;
 using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Client;
 
 public partial class ClientFactoryTest
 {
-    public interface ISomeContract
-    {
-    }
+    public interface ISomeContract;
+
+    internal interface IInternalContract;
 
     private sealed class ManualClientBuilder : IClientBuilder<ISomeContract>
     {
@@ -38,12 +39,9 @@ public partial class ClientFactoryTest
         public void Initialize(IClientMethodBinder methodBinder)
         {
             MarshallerFactory = methodBinder.MarshallerFactory;
-            DefaultCallOptionsFactory = methodBinder.DefaultCallOptionsFactory;
+            DefaultCallOptionsFactory = ((ClientMethodBinder)methodBinder).DefaultCallOptionsFactory;
         }
 
-        public ISomeContract Build(CallInvoker callInvoker)
-        {
-            return OnBuild(callInvoker);
-        }
+        public ISomeContract Build(CallInvoker callInvoker) => OnBuild(callInvoker);
     }
 }

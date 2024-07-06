@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,16 +15,15 @@
 // </copyright>
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger;
 
@@ -54,41 +53,19 @@ internal sealed class SwaggerUiMiddleware
         return _next(context);
     }
 
-    private static bool IsSwaggerUiRequest(HttpRequest request)
-    {
-        return ProtocolConstants.MediaTypeNameSwaggerRequest.Equals(request.ContentType, StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static IList<string> OrderedRequestParameterNames(ApiDescription description)
-    {
-        var result = new List<string>(description.ParameterDescriptions.Count);
-        for (var i = 0; i < description.ParameterDescriptions.Count; i++)
-        {
-            var parameter = description.ParameterDescriptions[i];
-            if (parameter.Source == BindingSource.Form)
-            {
-                result.Add(parameter.Name);
-            }
-        }
-
-        return result;
-    }
+    private static bool IsSwaggerUiRequest(HttpRequest request) =>
+        ProtocolConstants.MediaTypeNameSwaggerRequest.Equals(request.ContentType, StringComparison.OrdinalIgnoreCase);
 
     private Task InvokeSwaggerAsync(HttpContext context)
     {
-        _logger.LogInformation(
-            "Start {0} request {1}.",
-            context.Request.Protocol,
-            context.Request.Path);
+        _logger.LogInformation("Start {protocol} request {path}.", context.Request.Protocol, context.Request.Path);
 
         var adapter = _serviceProvider.GetRequiredService<IApiDescriptionAdapter>();
 
-        var description = adapter.FindApiDescription(context.Request.Path);
-        if (description == null)
+        var marker = adapter.GetMarker(context);
+        if (marker == null)
         {
-            _logger.LogWarning(
-                "ApiDescription for endpoint {0} not found. Ignore the request.",
-                context.Request.Path);
+            _logger.LogWarning("ApiDescription for endpoint {path} not found. Ignore the request.", context.Request.Path);
 
             return _next(context);
         }
@@ -96,33 +73,31 @@ internal sealed class SwaggerUiMiddleware
         var method = adapter.GetMethod(context);
         if (method == null)
         {
-            _logger.LogWarning(
-                "GrpcMethodMetadata for endpoint {0} not found. Ignore the request.",
-                context.Request.Path);
+            _logger.LogWarning("GrpcMethodMetadata for endpoint {0} not found. Ignore the request.", context.Request.Path);
 
             return _next(context);
         }
 
         if (method.Type != MethodType.Unary)
         {
-            _logger.LogError(
-                "gRPC method type {0} is not supported, endpoint {1}.",
-                method.Type.ToString(),
-                context.Request.Path);
+            _logger.LogError("gRPC method type {method} is not supported, endpoint {path}.", method.Type.ToString(), context.Request.Path);
 
             context.Response.StatusCode = (int)HttpStatusCode.NotImplemented;
             return Task.CompletedTask;
         }
 
-        return HandleRequestAsync(context, OrderedRequestParameterNames(description), method);
+        return HandleRequestAsync(context, marker.MarshallerFactory, marker.Descriptor);
     }
 
-    private async Task HandleRequestAsync(HttpContext context, IList<string> orderedRequestParameterNames, IMethod method)
+    private async Task HandleRequestAsync(
+        HttpContext context,
+        IMarshallerFactory marshallerFactory,
+        IOperationDescriptor descriptor)
     {
         var handler = _serviceProvider.GetRequiredService<ISwaggerUiRequestHandler>();
 
         var payload = await handler
-            .ReadRequestMessageAsync(context.Request.BodyReader, orderedRequestParameterNames, method, context.RequestAborted)
+            .ReadRequestMessageAsync(context.Request.BodyReader, marshallerFactory, descriptor, context.RequestAborted)
             .ConfigureAwait(false);
 
         Status status;
@@ -145,7 +120,7 @@ internal sealed class SwaggerUiMiddleware
             handler.AppendResponseTrailers(context.Response.Headers, trailers);
 
             await handler
-                .WriteResponseMessageAsync(response, context.Response.BodyWriter, method, context.RequestAborted)
+                .WriteResponseMessageAsync(response, context.Response.BodyWriter, marshallerFactory, descriptor, context.RequestAborted)
                 .ConfigureAwait(false);
         }
         else

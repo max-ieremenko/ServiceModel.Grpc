@@ -16,6 +16,7 @@
 
 using System.Threading;
 using Microsoft.CodeAnalysis;
+using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis;
 
@@ -28,6 +29,7 @@ internal sealed class ExtensionContext : IExtensionContext
         _context = context;
         Compilation = compilation;
         DebugLogger = debugLogger;
+        DescriptionExtensions = new DescriptionExtensions();
     }
 
     public CancellationToken CancellationToken => _context.CancellationToken;
@@ -35,6 +37,8 @@ internal sealed class ExtensionContext : IExtensionContext
     public Compilation Compilation { get; }
 
     public IDebugLogger? DebugLogger { get; }
+
+    public IDescriptionExtensions DescriptionExtensions { get; }
 
     public void ReportDiagnostic(Diagnostic diagnostic) => _context.ReportDiagnostic(diagnostic);
 }

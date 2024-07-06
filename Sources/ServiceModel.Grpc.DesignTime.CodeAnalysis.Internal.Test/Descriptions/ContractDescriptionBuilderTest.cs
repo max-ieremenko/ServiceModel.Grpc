@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2024 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -68,7 +68,6 @@ public partial class ContractDescriptionBuilderTest
         var sum = calculator.Operations[0];
         sum.OperationName.ShouldBe("Sum");
         sum.ServiceName.ShouldBe("ICalculator-Some-Value");
-        sum.ClrDefinitionMethodName.ShouldBe("GetSumDefinition");
 
         var service = actual.Services.First(i => i.InterfaceType.Name == "IGenericService");
         service.Methods.ShouldBeEmpty();
@@ -78,7 +77,6 @@ public partial class ContractDescriptionBuilderTest
         var ping = service.Operations[0];
         ping.OperationName.ShouldBe("Ping");
         ping.ServiceName.ShouldBe("IGenericService-Some-Value");
-        ping.ClrDefinitionMethodName.ShouldBe("GetPingDefinition");
     }
 
     [Test]
@@ -94,17 +92,15 @@ public partial class ContractDescriptionBuilderTest
 
         actual.Services[0].Operations.Length.ShouldBe(1);
         actual.Services[0].Operations[0].OperationName.ShouldBe(nameof(ISyncOveAsync.PingAsync));
-        actual.Services[0].Operations[0].ClrDefinitionMethodName.ShouldBe("GetPingAsyncDefinition");
 
         actual.Services[0].SyncOverAsync.Length.ShouldBe(1);
-        actual.Services[0].SyncOverAsync[0].Async.ShouldBe(actual.Services[0].Operations[0]);
+        actual.Services[0].SyncOverAsync[0].Async.Method.Name.ShouldBe(nameof(ISyncOveAsync.PingAsync));
         actual.Services[0].SyncOverAsync[0].Sync.Method.Name.ShouldBe(nameof(ISyncOveAsync.Ping));
-        actual.Services[0].SyncOverAsync[0].Sync.ClrDefinitionMethodName.ShouldBe("GetPingAsyncDefinitionSync");
     }
 
-    private ContractDescription Build(Type serviceType)
+    private IContractDescription Build(Type serviceType)
     {
         var symbol = _compilation.ResolveTypeSymbol(serviceType);
-        return new ContractDescriptionBuilder(symbol).Build().ShouldBeOfType<ContractDescription>();
+        return ContractDescriptionBuilder.Build(symbol);
     }
 }

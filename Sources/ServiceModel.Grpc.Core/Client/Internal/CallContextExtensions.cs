@@ -15,21 +15,12 @@
 // </copyright>
 
 using System;
-using System.ComponentModel;
 using System.Threading.Tasks;
 using Grpc.Core;
 
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-
 namespace ServiceModel.Grpc.Client.Internal;
 
-/// <summary>
-/// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
-/// This API may change or be removed in future releases.
-/// </summary>
-[Browsable(false)]
-[EditorBrowsable(EditorBrowsableState.Never)]
-public static class CallContextExtensions
+internal static class CallContextExtensions
 {
     public static bool ContainsResponse(CallContext context) => context.ServerResponse.HasValue;
 

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2024 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,20 +15,19 @@
 // </copyright>
 
 using Microsoft.CodeAnalysis;
+using ServiceModel.Grpc.Descriptions;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
 internal sealed class MessageDescription : IMessageDescription
 {
-    public MessageDescription(ITypeSymbol[] properties)
+    public MessageDescription(MessageDescription<ITypeSymbol> source)
     {
-        Properties = properties;
+        Properties = source.Properties;
+        IsBuiltIn = source.IsBuiltIn;
     }
-
-    public static MessageDescription Empty { get; } = new([]);
 
     public ITypeSymbol[] Properties { get; }
 
-    // see ServiceModel.Grpc.Channel.Message.tt
-    public bool IsBuiltIn => Properties.Length < 4;
+    public bool IsBuiltIn { get; }
 }

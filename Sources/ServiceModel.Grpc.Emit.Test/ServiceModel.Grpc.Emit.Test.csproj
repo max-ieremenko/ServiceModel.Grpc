@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\Test.csproj.props" />
+
+  <PropertyGroup>
+    <TargetFrameworks>net462;net6.0;net7.0;net8.0</TargetFrameworks>
+    <RootNamespace>ServiceModel.Grpc.Emit</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CompareNETObjects" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ServiceModel.Grpc.Emit\ServiceModel.Grpc.Emit.csproj" />
+    <ProjectReference Include="..\ServiceModel.Grpc.TestApi\ServiceModel.Grpc.TestApi.csproj" />
+    <ProjectReference Include="..\ServiceModel.Grpc.ProtoBufMarshaller\ServiceModel.Grpc.ProtoBufMarshaller.csproj" />
+  </ItemGroup>
+
+</Project>

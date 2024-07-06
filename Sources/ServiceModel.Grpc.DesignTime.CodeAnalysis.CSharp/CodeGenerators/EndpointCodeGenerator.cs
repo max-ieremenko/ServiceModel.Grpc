@@ -20,6 +20,7 @@ using System.Linq;
 using System.Threading;
 using Grpc.Core;
 using Microsoft.CodeAnalysis;
+using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
@@ -41,7 +42,7 @@ internal sealed class EndpointCodeGenerator : ICodeGenerator
         output
             .WriteMetadata()
             .Append("internal sealed class ")
-            .AppendLine(NamingConventions.Endpoint.Class(_contract.BaseClassName));
+            .AppendLine(NamingContract.Endpoint.Class(_contract.BaseClassName));
         output.AppendLine("{");
 
         using (output.Indent())
@@ -59,7 +60,7 @@ internal sealed class EndpointCodeGenerator : ICodeGenerator
         output.AppendLine("}");
     }
 
-    private void ImplementMethod(ICodeStringBuilder output, INamedTypeSymbol interfaceType, IOperationDescription operation)
+    private void ImplementMethod(ICodeStringBuilder output, ITypeSymbol interfaceType, IOperationDescription operation)
     {
         switch (operation.OperationType)
         {
@@ -84,7 +85,7 @@ internal sealed class EndpointCodeGenerator : ICodeGenerator
         }
     }
 
-    private void BuildUnary(ICodeStringBuilder output, INamedTypeSymbol interfaceType, IOperationDescription operation)
+    private void BuildUnary(ICodeStringBuilder output, ITypeSymbol interfaceType, IOperationDescription operation)
     {
         // Task<TResponse> Invoke(TService service, TRequest request, ServerCallContext context)
         output.Append("public ");
@@ -119,11 +120,12 @@ internal sealed class EndpointCodeGenerator : ICodeGenerator
                 .Append(operation.Method.Name)
                 .Append("(");
 
-            for (var i = 0; i < operation.Method.Parameters.Length; i++)
+            var source = operation.Method;
+            for (var i = 0; i < source.Parameters.Length; i++)
             {
                 output.WriteCommaIf(i > 0);
 
-                var parameter = operation.Method.Parameters[i];
+                var parameter = source.Parameters[i];
                 if (operation.ContextInput.Contains(i))
                 {
                     PushContext(output, parameter);
@@ -174,7 +176,7 @@ internal sealed class EndpointCodeGenerator : ICodeGenerator
         output.AppendLine("}");
     }
 
-    private void BuildClientStreaming(ICodeStringBuilder output, INamedTypeSymbol interfaceType, IOperationDescription operation)
+    private void BuildClientStreaming(ICodeStringBuilder output, ITypeSymbol interfaceType, IOperationDescription operation)
     {
         // Task<TResponse> Invoke(TService service, TRequestHeader requestHeader, IAsyncEnumerable<TRequest> request, ServerCallContext context)
         output
@@ -199,11 +201,12 @@ internal sealed class EndpointCodeGenerator : ICodeGenerator
                 .Append(operation.Method.Name)
                 .Append("(");
 
-            for (var i = 0; i < operation.Method.Parameters.Length; i++)
+            var source = operation.Method;
+            for (var i = 0; i < source.Parameters.Length; i++)
             {
                 output.WriteCommaIf(i > 0);
 
-                var parameter = operation.Method.Parameters[i];
+                var parameter = source.Parameters[i];
                 if (operation.ContextInput.Contains(i))
                 {
                     PushContext(output, parameter);
@@ -240,7 +243,7 @@ internal sealed class EndpointCodeGenerator : ICodeGenerator
         output.AppendLine("}");
     }
 
-    private void BuildServerStreaming(ICodeStringBuilder output, INamedTypeSymbol interfaceType, IOperationDescription operation)
+    private void BuildServerStreaming(ICodeStringBuilder output, ITypeSymbol interfaceType, IOperationDescription operation)
     {
         // ValueTask<(TResponseHeader, IAsyncEnumerable<TResponse>)> Invoke(TService service, TRequest request, ServerCallContext context)
         output
@@ -271,11 +274,12 @@ internal sealed class EndpointCodeGenerator : ICodeGenerator
                 .Append(operation.Method.Name)
                 .Append("(");
 
-            for (var i = 0; i < operation.Method.Parameters.Length; i++)
+            var source = operation.Method;
+            for (var i = 0; i < source.Parameters.Length; i++)
             {
                 output.WriteCommaIf(i > 0);
 
-                var parameter = operation.Method.Parameters[i];
+                var parameter = source.Parameters[i];
                 if (operation.ContextInput.Contains(i))
                 {
                     PushContext(output, parameter);
@@ -302,7 +306,7 @@ internal sealed class EndpointCodeGenerator : ICodeGenerator
         output.AppendLine("}");
     }
 
-    private void BuildDuplexStreaming(ICodeStringBuilder output, INamedTypeSymbol interfaceType, IOperationDescription operation)
+    private void BuildDuplexStreaming(ICodeStringBuilder output, ITypeSymbol interfaceType, IOperationDescription operation)
     {
         // ValueTask<(TResponseHeader, IAsyncEnumerable<TResponse>)> Invoke(TService service, TRequestHeader requestHeader, IAsyncEnumerable<TRequest> request, ServerCallContext context)
         output
@@ -334,11 +338,12 @@ internal sealed class EndpointCodeGenerator : ICodeGenerator
                 .Append(operation.Method.Name)
                 .Append("(");
 
-            for (var i = 0; i < operation.Method.Parameters.Length; i++)
+            var source = operation.Method;
+            for (var i = 0; i < source.Parameters.Length; i++)
             {
                 output.WriteCommaIf(i > 0);
 
-                var parameter = operation.Method.Parameters[i];
+                var parameter = source.Parameters[i];
                 if (operation.ContextInput.Contains(i))
                 {
                     PushContext(output, parameter);
