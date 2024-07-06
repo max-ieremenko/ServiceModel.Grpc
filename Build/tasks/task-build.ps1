@@ -6,14 +6,14 @@ param(
     $Path,
 
     [Parameter()]
-    [ValidateSet("Release", "Debug")]
+    [ValidateSet('Release', 'Debug')]
     [string]
-    $Configuration = "Release",
+    $Configuration = 'Release',
 
     [Parameter()]
-    [ValidateSet("Rebuild", "Publish")]
+    [ValidateSet('Rebuild', 'Publish')]
     [string]
-    $Mode = "Rebuild"
+    $Mode = 'Rebuild'
 )
 
 task . DotnetRestore, DotnetBuild, DotnetPublish
@@ -22,7 +22,7 @@ task DotnetRestore {
     exec { dotnet restore $Path }
 }
 
-task DotnetBuild -If ($Mode -eq "Rebuild") {
+task DotnetBuild -If ($Mode -eq 'Rebuild') {
     exec {
         dotnet build $Path `
             -t:Rebuild `
@@ -32,7 +32,7 @@ task DotnetBuild -If ($Mode -eq "Rebuild") {
     }
 }
 
-task DotnetPublish -If ($Mode -eq "Publish") {
+task DotnetPublish -If ($Mode -eq 'Publish') {
     exec {
         dotnet publish $Path `
             --configuration $Configuration

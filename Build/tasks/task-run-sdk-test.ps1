@@ -9,7 +9,7 @@ param(
     $Apps
 )
 
-. (Join-Path $PSScriptRoot "../scripts/Start-Server.ps1")
+. (Join-Path $PSScriptRoot '../scripts/Start-Server.ps1')
 
 task . Run
 
@@ -29,10 +29,10 @@ task Run {
             continue
         }
 
-        if ($path.EndsWith(".dll", "OrdinalIgnoreCase")) {
+        if ($path.EndsWith('.dll', 'OrdinalIgnoreCase')) {
             exec { dotnet $path }
         }
-        elseif ($path.EndsWith(".exe", "OrdinalIgnoreCase")) {
+        elseif ($path.EndsWith('.exe', 'OrdinalIgnoreCase')) {
             exec { & $path }
         }
         else {

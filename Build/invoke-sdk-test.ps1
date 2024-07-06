@@ -4,7 +4,7 @@
 [CmdletBinding()]
 param (
     [Parameter(Mandatory)]
-    [ValidateSet("win", "linux")] 
+    [ValidateSet('win', 'linux')] 
     [string]
     $Platform,
 
@@ -14,24 +14,24 @@ param (
     $Filter
 )
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
-. (Join-Path $PSScriptRoot "scripts" "Clear-NugetCache.ps1")
-. (Join-Path $PSScriptRoot "scripts" "Get-FullPath.ps1")
-. (Join-Path $PSScriptRoot "scripts" "Remove-DirectoryRecurse.ps1")
+. (Join-Path $PSScriptRoot 'scripts' 'Clear-NugetCache.ps1')
+. (Join-Path $PSScriptRoot 'scripts' 'Get-FullPath.ps1')
+. (Join-Path $PSScriptRoot 'scripts' 'Remove-DirectoryRecurse.ps1')
 
 $distinctPath = New-Object System.Collections.Generic.HashSet[string]
 $examples = @()
 
-$configurations = Get-ChildItem -Path (Get-FullPath (Join-Path $PSScriptRoot "../Examples")) -Filter "*test-configuration.ps1" -File -Recurse
+$configurations = Get-ChildItem -Path (Get-FullPath (Join-Path $PSScriptRoot '../Examples')) -Filter '*test-configuration.ps1' -File -Recurse
 foreach ($configuration in $configurations) {
     if (-not [string]::IsNullOrWhiteSpace($Filter) -and $configuration.FullName -notmatch $Filter) {
         continue
     }
 
     $example = & $configuration
-    if ($example.Platform -notin "win", "linux") {
+    if ($example.Platform -notin 'win', 'linux') {
         throw "Platform $($example.Platform) is not supported: $configuration"
     }
 
@@ -44,8 +44,8 @@ foreach ($configuration in $configurations) {
     $example.BuildParallelizable = $distinctPath.Add($path)
     $example.Solution = Join-Path $path $example.Solution
 
-    if (-not $example["BuildMode"]) {
-        $example.BuildMode = "Rebuild"
+    if (-not $example['BuildMode']) {
+        $example.BuildMode = 'Rebuild'
     }
 
     if ($example.Tests -isnot [object[]]) {
@@ -62,11 +62,11 @@ foreach ($configuration in $configurations) {
                 throw "Case in a test item must be hashtable: $configuration"
             }
 
-            if ($case.App.EndsWith(".dll", "OrdinalIgnoreCase") -or $case.App.EndsWith(".exe", "OrdinalIgnoreCase")) {
+            if ($case.App.EndsWith('.dll', 'OrdinalIgnoreCase') -or $case.App.EndsWith('.exe', 'OrdinalIgnoreCase')) {
                 $case.App = Join-Path $path $case.App
             }
             
-            if (-not $case.ContainsKey("Port")) {
+            if (-not $case.ContainsKey('Port')) {
                 $case.Port = 0
             }
         }
@@ -74,6 +74,6 @@ foreach ($configuration in $configurations) {
 }
 
 Invoke-Build `
-    -File (Join-Path $PSScriptRoot "tasks" "sdk-test-tasks.ps1") `
+    -File (Join-Path $PSScriptRoot 'tasks' 'sdk-test-tasks.ps1') `
     -Examples $examples `
-    -PathBuildArtifacts (Get-FullPath (Join-Path $PSScriptRoot "../build-out"))
+    -PathBuildArtifacts (Get-FullPath (Join-Path $PSScriptRoot '../build-out'))
