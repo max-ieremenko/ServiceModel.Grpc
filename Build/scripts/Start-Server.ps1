@@ -17,7 +17,7 @@ function Start-Server {
     }
 
     $workingDirectory = Split-Path -Path $Path -Parent
-    if ($name.EndsWith(".exe", "OrdinalIgnoreCase")) {
+    if ($name.EndsWith('.exe', 'OrdinalIgnoreCase')) {
         $process = Start-Process `
             -FilePath $Path `
             -PassThru `
@@ -36,7 +36,7 @@ function Start-Server {
     }
 
     $timer = [System.Diagnostics.Stopwatch]::StartNew()
-    $logs = ""
+    $logs = ''
     for ($i = 0; $i -lt 10; $i++) {
         Start-Sleep -Seconds 1
         $test = Test-Connection -TargetName localhost -TcpPort $WaitTcpPort

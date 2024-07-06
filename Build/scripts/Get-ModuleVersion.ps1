@@ -5,7 +5,7 @@ function Get-ModuleVersion {
         $Name
     )
     
-    $sources = Get-Content (Join-Path $PSScriptRoot "../invoke-ci-build.ps1") -Raw
+    $sources = Get-Content (Join-Path $PSScriptRoot '../invoke-ci-build.ps1') -Raw
     $tokens = $null
     $errors = $null
     $modules = [Management.Automation.Language.Parser]::ParseInput($sources, [ref]$tokens, [ref]$errors).ScriptRequirements.RequiredModules
