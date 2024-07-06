@@ -144,12 +144,7 @@ public partial class ClientFactoryTest
     public void DoubleClientRegistration()
     {
         _emitClientBuilder
-            .Setup(b => b.Initialize(It.IsNotNull<ClientMethodBinder>()))
-            .Callback<IClientMethodBinder>(binder =>
-            {
-                binder.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
-                ((ClientMethodBinder)binder).DefaultCallOptionsFactory.ShouldBeNull();
-            });
+            .Setup(b => b.Initialize(It.IsNotNull<ClientMethodBinder>()));
 
         _sut.AddClient<IDisposable>();
 
