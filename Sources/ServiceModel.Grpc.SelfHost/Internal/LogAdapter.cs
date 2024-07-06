@@ -25,14 +25,11 @@ internal sealed class LogAdapter : ILogger
         _logger = logger;
     }
 
-    public static ILogger? Wrap(global::Grpc.Core.Logging.ILogger? logger)
-    {
-        return logger == null ? null : new LogAdapter(logger);
-    }
+    public static ILogger? Wrap(global::Grpc.Core.Logging.ILogger? logger) => logger == null ? null : new LogAdapter(logger);
 
-    public void LogError(string message, params object[] args) => _logger.Error(message, args);
+    public void LogError(string message, params object?[] args) => _logger.Error(message, args);
 
-    public void LogWarning(string message, params object[] args) => _logger.Warning(message, args);
+    public void LogWarning(string message, params object?[] args) => _logger.Warning(message, args);
 
-    public void LogDebug(string message, params object[] args) => _logger.Debug(message, args);
+    public void LogDebug(string message, params object?[] args) => _logger.Debug(message, args);
 }
