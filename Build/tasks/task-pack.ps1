@@ -11,7 +11,11 @@ param(
     $BuildOut
 )
 
-task Default DotnetPack, JoinServiceModelGrpc, Test
+Enter-Build {
+    $releaseVersion = Get-ReleaseVersion -Sources $Sources
+}
+
+task . DotnetPack, JoinServiceModelGrpc, JoinServiceModelGrpcEmit, Test
 
 task DotnetPack {
     $projects = @()
@@ -31,18 +35,19 @@ task DotnetPack {
 }
 
 task JoinServiceModelGrpc {
-    $releaseVersion = (Select-Xml -Path (Join-Path $Sources 'Versions.props') -XPath 'Project/PropertyGroup/ServiceModelGrpcVersion').Node.InnerText
-
-    $sources = 'ServiceModel.Grpc.Core' `
-        , 'ServiceModel.Grpc.Descriptions' `
-        , 'ServiceModel.Grpc.Emit' `
-        , 'ServiceModel.Grpc.Filters' `
-        , 'ServiceModel.Grpc.Interceptors'
+    $sources = 'ServiceModel.Grpc.Filters', 'ServiceModel.Grpc.Interceptors'
     
     foreach ($source in $sources) {
         Merge-NugetPackages -Source (Join-Path $BuildOut "$source.$releaseVersion.nupkg") -Destination (Join-Path $BuildOut "ServiceModel.Grpc.$releaseVersion.nupkg")
         Merge-NugetPackages -Source (Join-Path $BuildOut "$source.$releaseVersion.snupkg") -Destination (Join-Path $BuildOut "ServiceModel.Grpc.$releaseVersion.snupkg")
     }
+}
+
+task JoinServiceModelGrpcEmit {
+    $source = 'ServiceModel.Grpc.Descriptions'
+    
+    Merge-NugetPackages -Source (Join-Path $BuildOut "$source.$releaseVersion.nupkg") -Destination (Join-Path $BuildOut "ServiceModel.Grpc.Emit.$releaseVersion.nupkg")
+    Merge-NugetPackages -Source (Join-Path $BuildOut "$source.$releaseVersion.snupkg") -Destination (Join-Path $BuildOut "ServiceModel.Grpc.Emit.$releaseVersion.snupkg")
 }
 
 task Test {

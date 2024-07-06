@@ -5,10 +5,6 @@
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' != 'netstandard2.1'">
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\ServiceModel.Grpc.Core\ServiceModel.Grpc.Core.csproj" />
   </ItemGroup>

@@ -30,4 +30,9 @@
     </Compile>
   </ItemGroup>
 
+  <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">
+    <Content Include="README.md" PackagePath="" />
+    <Content Include="..\..\LICENSE" PackagePath="" Visible="false" />
+    <Content Include="..\..\build-out\CoreThirdPartyNotices.txt" PackagePath="ThirdPartyNotices.txt" Visible="false" />
+  </ItemGroup>
 </Project>
