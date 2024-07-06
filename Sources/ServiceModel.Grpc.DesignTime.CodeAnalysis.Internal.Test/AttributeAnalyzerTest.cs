@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2024 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.TestApi;
-using Shouldly;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis;
 

@@ -14,14 +14,10 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using Grpc.AspNetCore.Server;
 using Grpc.Core;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using Moq;
 using NUnit.Framework;
-using Shouldly;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger;
 

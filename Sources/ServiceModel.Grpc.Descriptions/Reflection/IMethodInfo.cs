@@ -14,8 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace ServiceModel.Grpc.Descriptions.Reflection;
 
 internal interface IMethodInfo<TType>

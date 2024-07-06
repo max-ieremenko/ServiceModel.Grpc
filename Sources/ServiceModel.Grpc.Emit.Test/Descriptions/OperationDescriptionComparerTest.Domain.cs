@@ -14,10 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace ServiceModel.Grpc.Emit.Descriptions;
 
 public partial class OperationDescriptionComparerTest

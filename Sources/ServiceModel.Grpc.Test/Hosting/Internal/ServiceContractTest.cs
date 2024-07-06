@@ -14,10 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using NUnit.Framework;
-using ServiceModel.Grpc.Hosting.Internal;
-using Shouldly;
 
 namespace ServiceModel.Grpc.Hosting.Internal;
 

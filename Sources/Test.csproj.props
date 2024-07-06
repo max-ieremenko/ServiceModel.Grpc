@@ -18,4 +18,8 @@
     <PackageReference Include="System.ServiceModel.Primitives" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="Moq" />
+    <Using Include="Shouldly" />
+  </ItemGroup>
 </Project>

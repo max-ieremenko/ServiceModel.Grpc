@@ -14,9 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using ServiceModel.Grpc.Filters;
 
 #pragma warning disable SA1611 // Element parameters should be documented

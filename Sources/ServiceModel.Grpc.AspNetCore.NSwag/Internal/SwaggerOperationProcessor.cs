@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021-2022 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 // </copyright>
 
 using System.Globalization;
-using System.Text;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Namotion.Reflection;
 using NJsonSchema;

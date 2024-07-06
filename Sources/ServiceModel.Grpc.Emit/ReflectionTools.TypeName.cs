@@ -14,9 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Text;
-
 namespace ServiceModel.Grpc.Emit;
 
 internal static partial class ReflectionTools

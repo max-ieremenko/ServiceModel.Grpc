@@ -14,8 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Linq;
 using System.Net;
 using System.Reflection;
 using Grpc.AspNetCore.Server;

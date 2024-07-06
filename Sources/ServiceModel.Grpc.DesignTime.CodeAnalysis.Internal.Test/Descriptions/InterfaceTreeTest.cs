@@ -14,11 +14,9 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.TestApi;
-using Shouldly;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 

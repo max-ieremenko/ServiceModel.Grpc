@@ -14,15 +14,10 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Grpc.Core;
-using Moq;
 using NUnit.Framework;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Interceptors.Api;
-using Shouldly;
 
 namespace ServiceModel.Grpc.Interceptors.Internal;
 

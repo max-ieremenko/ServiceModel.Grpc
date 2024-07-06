@@ -14,16 +14,11 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Threading.Tasks;
-
 namespace ServiceModel.Grpc.Filters.Internal;
 
 public partial class CallFilterHandlerBaseTest
 {
-    public interface IContext
-    {
-    }
+    public interface IContext;
 
     public interface IFilter
     {

@@ -14,8 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Grpc.Core.Utils;

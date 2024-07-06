@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2022-2023 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,9 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-using System.Collections.Generic;
 using Grpc.Core;
-using Shouldly;
 
 namespace ServiceModel.Grpc.SelfHost;
 

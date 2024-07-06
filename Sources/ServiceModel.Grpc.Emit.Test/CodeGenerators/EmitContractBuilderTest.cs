@@ -14,18 +14,14 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Linq;
 using System.Reflection;
 using Grpc.Core;
 using NUnit.Framework;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Descriptions;
-using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Emit.Descriptions;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
-using Shouldly;
 using Shouldly.ShouldlyExtensionMethods;
 
 namespace ServiceModel.Grpc.Emit.CodeGenerators;

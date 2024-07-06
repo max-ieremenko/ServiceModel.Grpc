@@ -14,12 +14,8 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.IO;
 using Grpc.Core;
-using Moq;
 using NUnit.Framework;
-using Shouldly;
 
 namespace ServiceModel.Grpc.Configuration;
 

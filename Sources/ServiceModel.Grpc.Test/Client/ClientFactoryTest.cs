@@ -14,9 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using Grpc.Core;
-using Moq;
 using NUnit.Framework;
 using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
@@ -25,7 +23,6 @@ using ServiceModel.Grpc.Filters;
 using ServiceModel.Grpc.Interceptors;
 using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.TestApi;
-using Shouldly;
 
 namespace ServiceModel.Grpc.Client;
 

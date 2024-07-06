@@ -14,10 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Text;
 using Grpc.Core;
-using Moq;
 using ServiceModel.Grpc.Configuration;
 
 namespace ServiceModel.Grpc.Interceptors.Api;

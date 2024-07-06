@@ -14,8 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-
 namespace ServiceModel.Grpc.Descriptions;
 
 internal readonly struct OperationKey : IEquatable<OperationKey>

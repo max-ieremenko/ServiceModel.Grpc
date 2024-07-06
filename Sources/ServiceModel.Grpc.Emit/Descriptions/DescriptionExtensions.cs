@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using System.Reflection;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Descriptions;

@@ -14,16 +14,13 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using System.Net.Http;
 using Grpc.Core;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using NUnit.Framework;
 using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
-using Shouldly;
 
 namespace ServiceModel.Grpc.Client.DependencyInjection;
 

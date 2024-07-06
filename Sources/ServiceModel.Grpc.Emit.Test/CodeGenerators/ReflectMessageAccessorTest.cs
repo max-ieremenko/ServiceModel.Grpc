@@ -14,10 +14,8 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using NUnit.Framework;
 using ServiceModel.Grpc.Channel;
-using Shouldly;
 
 namespace ServiceModel.Grpc.Emit.CodeGenerators;
 
