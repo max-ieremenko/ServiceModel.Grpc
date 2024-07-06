@@ -18,7 +18,7 @@ param(
     $GithubToken
 )
 
-task Default Clean, Build, UnitTest, ThirdPartyNotices, Pack
+task . Clean, Build, UnitTest, ThirdPartyNotices, Pack
 
 task Clean {
     Remove-DirectoryRecurse -Path $PathBuildOut

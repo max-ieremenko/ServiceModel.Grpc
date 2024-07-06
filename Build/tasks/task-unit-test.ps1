@@ -11,7 +11,7 @@ param(
     $Framework
 )
 
-task Default {
+task . {
     $testList = Get-ChildItem -Path $Sources -Recurse -Filter *.Test.dll `
     | Where-Object FullName -Match \\$Framework\\ `
     | Where-Object FullName -Match \\bin\\Release\\ `

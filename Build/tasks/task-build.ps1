@@ -16,7 +16,7 @@ param(
     $Mode = "Rebuild"
 )
 
-task Default DotnetRestore, DotnetBuild, DotnetPublish
+task . DotnetRestore, DotnetBuild, DotnetPublish
 
 task DotnetRestore {
     exec { dotnet restore $Path }

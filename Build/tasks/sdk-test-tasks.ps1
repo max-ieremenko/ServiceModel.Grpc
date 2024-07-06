@@ -9,7 +9,7 @@ param(
     $Examples
 )
 
-task Default Clean, BuildParallel, BuildSequential, Run
+task . Clean, BuildParallel, BuildSequential, Run
 
 Enter-Build {
     Clear-NugetCache
