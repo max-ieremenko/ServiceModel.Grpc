@@ -33,8 +33,7 @@ public class EmitClientBuilderTest : ClientBuilderTestBase
 
         var moduleBuilder = ProxyAssembly.CreateModule(nameof(EmitClientBuilderTest));
 
-        var contractBuilder = new EmitContractBuilder(description);
-        var contractType = contractBuilder.Build(moduleBuilder);
+        var contractType = EmitContractBuilder.Build(moduleBuilder, description);
         var contractFactory = EmitContractBuilder.CreateFactory(contractType);
 
         var sut = new EmitClientBuilder(description, contractType);

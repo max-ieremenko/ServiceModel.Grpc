@@ -100,7 +100,7 @@ public static class EmitGenerator
         if (contractType == null)
         {
             description = CreateDescription(serviceType, logger);
-            contractType = new EmitContractBuilder(description).Build(ProxyAssembly.DefaultModule);
+            contractType = EmitContractBuilder.Build(ProxyAssembly.DefaultModule, description);
         }
         else
         {
