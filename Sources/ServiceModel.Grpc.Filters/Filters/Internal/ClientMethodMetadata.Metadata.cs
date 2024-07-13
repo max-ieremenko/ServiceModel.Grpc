@@ -22,11 +22,6 @@ internal sealed partial class ClientMethodMetadata
 {
     public sealed class Metadata
     {
-        private MessageProxy? _requestMessageProxy;
-        private MessageProxy? _responseMessageProxy;
-        private IStreamAccessor? _requestStreamProxy;
-        private IStreamAccessor? _responseStreamProxy;
-
         public Metadata(IOperationDescriptor operation)
         {
             Operation = operation;
@@ -37,29 +32,8 @@ internal sealed partial class ClientMethodMetadata
 
         public Func<IServiceProvider, IClientFilter>[] FilterFactories { get; set; }
 
-        public IRequestContextInternal CreateRequestContext()
-        {
-            InitProxies();
-            return new RequestContext(_requestMessageProxy!, _requestStreamProxy);
-        }
+        public IRequestContextInternal CreateRequestContext() => new RequestContext(Operation.GetRequestAccessor(), Operation.GetRequestStreamAccessor());
 
-        public IResponseContextInternal CreateResponseContext()
-        {
-            InitProxies();
-            return new ResponseContext(_responseMessageProxy!, _responseStreamProxy);
-        }
-
-        private void InitProxies()
-        {
-            if (_requestMessageProxy != null)
-            {
-                return;
-            }
-
-            _requestMessageProxy = new MessageProxy(Operation.GetRequestAccessor());
-            _requestStreamProxy = Operation.GetRequestStreamAccessor();
-            _responseMessageProxy = new MessageProxy(Operation.GetResponseAccessor());
-            _responseStreamProxy = Operation.GetResponseStreamAccessor();
-        }
+        public IResponseContextInternal CreateResponseContext() => new ResponseContext(Operation.GetResponseAccessor(), Operation.GetResponseStreamAccessor());
     }
 }
