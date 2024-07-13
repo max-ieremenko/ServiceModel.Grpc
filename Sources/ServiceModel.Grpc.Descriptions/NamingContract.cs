@@ -29,12 +29,13 @@ public static class NamingContract
 
         public static string GrpcMethod(string operationName) => $"Method{operationName}";
 
-        // ClrDefinitionMethodName = "Get" + OperationName + "Definition";
-        //   syncOperation.ClrDefinitionMethodName = asyncOperation.ClrDefinitionMethodName + "Sync";
-        //   ClrDefinitionMethodNameSyncVersion => ClrDefinitionMethodName + "Sync";
         public static string ClrDefinitionMethod(string operationName) => $"Get{operationName}Definition";
 
         public static string ClrDefinitionMethodSync(string asyncOperationName) => $"{ClrDefinitionMethod(asyncOperationName)}Sync";
+
+        public static string DescriptorMethod(string operationName) => $"Get{operationName}Descriptor";
+
+        public static string DescriptorMethodSync(string asyncOperationName) => $"{DescriptorMethod(asyncOperationName)}Sync";
     }
 
     public static class Client

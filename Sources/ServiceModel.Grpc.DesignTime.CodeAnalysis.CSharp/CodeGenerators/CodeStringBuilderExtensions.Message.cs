@@ -51,4 +51,25 @@ internal static partial class CodeStringBuilderExtensions
 
         return output;
     }
+
+    public static ICodeStringBuilder WriteGenericMessage(this ICodeStringBuilder output, int propertiesCount, string? ending = null)
+    {
+        output.Append(nameof(Message));
+        output.Append(ending ?? string.Empty);
+
+        if (propertiesCount > 0)
+        {
+            output.Append("<");
+            for (var i = 0; i < propertiesCount; i++)
+            {
+                output
+                    .WriteCommaIf(i > 0)
+                    .AppendFormat("T{0}", i + 1);
+            }
+
+            output.Append(">");
+        }
+
+        return output;
+    }
 }
