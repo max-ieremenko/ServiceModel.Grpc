@@ -35,8 +35,8 @@ internal static class ServiceContract
         }
 
         var typeName = GetNonGenericName(reflect, serviceType);
-        var attributeNamespace = attribute.GetPropertyValue("Namespace") as string;
-        var attributeName = attribute.GetPropertyValue("Name") as string;
+        attribute.TryGetPropertyValue("Namespace", out string? attributeNamespace);
+        attribute.TryGetPropertyValue("Name", out string? attributeName);
 
         var genericEnding = new List<string>();
         GetServiceGenericEnding(reflect, serviceType, genericEnding);
@@ -53,7 +53,7 @@ internal static class ServiceContract
             return false;
         }
 
-        name = attribute.GetPropertyValue("Name") as string;
+        attribute.TryGetPropertyValue("Name", out name);
         name = string.IsNullOrWhiteSpace(name) ? method.Name : name!;
         return true;
     }
@@ -133,9 +133,11 @@ internal static class ServiceContract
 
     private static string GetDataContainerName<TType>(IReflect<TType> reflect, TType type)
     {
-        var attributeName = reflect.TryGetCustomAttribute(type, DataContractAttribute, out var attribute)
-            ? attribute.GetPropertyValue("Name") as string
-            : null;
+        string? attributeName = null;
+        if (reflect.TryGetCustomAttribute(type, DataContractAttribute, out var attribute))
+        {
+            attribute.TryGetPropertyValue("Name", out attributeName);
+        }
 
         return string.IsNullOrWhiteSpace(attributeName) ? GetNonGenericName(reflect, type) : attributeName!;
     }

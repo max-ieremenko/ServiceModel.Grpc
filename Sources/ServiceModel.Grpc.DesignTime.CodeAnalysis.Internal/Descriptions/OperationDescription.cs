@@ -23,8 +23,11 @@ namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 
 internal sealed class OperationDescription : IOperationDescription
 {
+    private readonly OperationDescription<ITypeSymbol> _source;
+
     public OperationDescription(OperationDescription<ITypeSymbol> source)
     {
+        _source = source;
         Method = ((CodeAnalysisMethodInfo)source.Method).Source;
         ServiceName = source.ServiceName;
         OperationName = source.OperationName;
@@ -68,4 +71,18 @@ internal sealed class OperationDescription : IOperationDescription
     public int[] HeaderRequestTypeInput { get; }
 
     public int[] ContextInput { get; }
+
+    public string[] GetResponseHeaderNames() => _source.GetResponseHeaderNames();
+
+    public (IMessageDescription Message, string[] Names) GetRequest()
+    {
+        var request = _source.GetRequest();
+        return (new MessageDescription(request.Message), request.Names);
+    }
+
+    public (IMessageDescription Message, string[] Names) GetResponse()
+    {
+        var response = _source.GetResponse();
+        return (new MessageDescription(response.Message), response.Names);
+    }
 }

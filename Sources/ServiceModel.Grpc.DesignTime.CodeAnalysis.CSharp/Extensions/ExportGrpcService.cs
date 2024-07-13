@@ -32,8 +32,19 @@ public sealed class ExportGrpcService : IExtensionProvider
         extensions.TryAdd<ContractCodeGeneratorExtension>();
         extensions.Add(new EndpointCodeGeneratorExtension(
             serviceType,
-            declaration.Attribute.GetNamedArgumentValue(PropertyGenerateAspNetExtensions, false),
-            declaration.Attribute.GetNamedArgumentValue(PropertyGenerateSelfHostExtensions, false),
+            GetAttributeValue(declaration, PropertyGenerateAspNetExtensions),
+            GetAttributeValue(declaration, PropertyGenerateSelfHostExtensions),
             declaration.DeclaredType.IsStatic));
+    }
+
+    private static bool GetAttributeValue(ExtensionProviderDeclaration declaration, string name)
+    {
+        if (declaration.Attribute.TryGetNamedArgumentValue(name, out var constant)
+            && constant.TryGetPrimitiveValue<bool>(out var value))
+        {
+            return value;
+        }
+
+        return false;
     }
 }

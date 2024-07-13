@@ -32,7 +32,7 @@ internal sealed class ReflectTypeSymbol : IReflect<ITypeSymbol>
 
     public bool TryGetCustomAttribute(ITypeSymbol owner, string attributeTypeFullName, [NotNullWhen(true)] out IAttributeInfo? attribute)
     {
-        var source = SyntaxTools.GetCustomAttribute(owner, attributeTypeFullName);
+        var source = SyntaxTools.GetCustomAttribute(owner.GetAttributes(), attributeTypeFullName);
         if (source == null)
         {
             attribute = null;

@@ -37,65 +37,87 @@ public partial class OperationDescriptionBuilderTest
         }
     }
 
+    [AttributeUsage(AttributeTargets.Method)]
+    private sealed class ResponseHeaderNamesAttribute : Attribute
+    {
+        public ResponseHeaderNamesAttribute(string[] names)
+        {
+        }
+    }
+
     [ServiceContract]
     private sealed class ResponseTypeCases
     {
         [OperationContract]
         [ResponseType(null)]
+        [ResponseHeaderNames([])]
         public void Void() => throw new NotSupportedException();
 
         [OperationContract]
         [ResponseType(null)]
+        [ResponseHeaderNames([])]
         public Task Task() => throw new NotSupportedException();
 
         [OperationContract]
         [ResponseType(null)]
+        [ResponseHeaderNames([])]
         public ValueTask ValueTask() => throw new NotSupportedException();
 
         [OperationContract]
         [ResponseType(typeof(string))]
+        [ResponseHeaderNames([])]
         public string String() => throw new NotSupportedException();
 
         [OperationContract]
         [ResponseType(typeof(ValueTuple<string, int>))]
+        [ResponseHeaderNames([])]
         public (string Value1, int Value2) ValueTuple() => throw new NotSupportedException();
 
         [OperationContract]
         [ResponseType(typeof(int?))]
+        [ResponseHeaderNames([])]
         public int? NullableInt() => throw new NotSupportedException();
 
         [OperationContract]
         [ResponseType(typeof(string))]
+        [ResponseHeaderNames([])]
         public Task<string> TaskString() => throw new NotSupportedException();
 
         [OperationContract]
         [ResponseType(typeof(int?))]
+        [ResponseHeaderNames([])]
         public ValueTask<int?> ValueTaskInt() => throw new NotSupportedException();
 
         [OperationContract]
         [ResponseType(typeof(ValueTuple<string, int>))]
+        [ResponseHeaderNames([])]
         public Task<(string Value1, int Value2)> TaskValueTuple() => throw new NotSupportedException();
 
         [OperationContract]
         [ResponseType(typeof(int))]
+        [ResponseHeaderNames([])]
         public IAsyncEnumerable<int> AsyncEnumerableInt() => throw new NotSupportedException();
 
         [OperationContract]
         [ResponseType(typeof(string))]
+        [ResponseHeaderNames([])]
         public Task<IAsyncEnumerable<string>> TaskAsyncEnumerableString() => throw new NotSupportedException();
 
         [OperationContract]
         [ResponseType(typeof(string))]
+        [ResponseHeaderNames([])]
         public ValueTask<IAsyncEnumerable<string>> ValueTaskAsyncEnumerableString() => throw new NotSupportedException();
 
         [OperationContract]
         [ResponseType(typeof(string))]
         [HeaderResponseType([0, 2], [typeof(string), typeof(int)], 1)]
+        [ResponseHeaderNames(["Value1", "Value2"])]
         public Task<(string Value1, IAsyncEnumerable<string> Stream, int Value2)> TaskAsyncEnumerableWithHeader() => throw new NotSupportedException();
 
         [OperationContract]
         [ResponseType(typeof(string))]
         [HeaderResponseType([1], [typeof(int)], 0)]
+        [ResponseHeaderNames(["Value"])]
         public ValueTask<(IAsyncEnumerable<string> Stream, int Value)> ValueTaskAsyncEnumerableWithHeader() => throw new NotSupportedException();
     }
 

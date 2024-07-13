@@ -24,6 +24,8 @@ namespace ServiceModel.Grpc.Descriptions;
 [DebuggerDisplay("{OperationType} {OperationName}")]
 internal sealed class OperationDescription<TType>
 {
+    private static readonly string[] UnaryResultNames = { "result" };
+
     public OperationDescription(
         IMethodInfo<TType> method,
         string serviceName,
@@ -91,10 +93,10 @@ internal sealed class OperationDescription<TType>
             return [];
         }
 
-        IList<string>? transformNames = null;
+        IReadOnlyList<string>? transformNames = null;
         if (Method.TryGetReturnParameterCustomAttribute($"System.Runtime.CompilerServices.{nameof(TupleElementNamesAttribute)}", out var attribute))
         {
-            transformNames = (IList<string>?)attribute.GetPropertyValue(nameof(TupleElementNamesAttribute.TransformNames));
+            attribute.TryGetPropertyValues(nameof(TupleElementNamesAttribute.TransformNames), out transformNames);
         }
 
         var result = new string[HeaderResponseTypeInput.Length];
@@ -118,5 +120,53 @@ internal sealed class OperationDescription<TType>
         }
 
         return result;
+    }
+
+    public (MessageDescription<TType> Message, string[] Names) GetRequest()
+    {
+        MessageDescription<TType> message;
+        int[] requestTypeInput;
+        if (OperationType == MethodType.Unary || OperationType == MethodType.ServerStreaming)
+        {
+            message = RequestType;
+            requestTypeInput = RequestTypeInput;
+        }
+        else
+        {
+            message = HeaderRequestType ?? MessageDescription<TType>.Empty;
+            requestTypeInput = HeaderRequestTypeInput;
+        }
+
+        if (requestTypeInput.Length == 0)
+        {
+            return (message, []);
+        }
+
+        var requestNames = new string[requestTypeInput.Length];
+        for (var i = 0; i < requestNames.Length; i++)
+        {
+            var index = requestTypeInput[i];
+            requestNames[i] = Method.Parameters[index].Name;
+        }
+
+        return (message, requestNames);
+    }
+
+    public (MessageDescription<TType> Message, string[] Names) GetResponse()
+    {
+        MessageDescription<TType> message;
+        string[] names;
+        if (OperationType == MethodType.Unary || OperationType == MethodType.ClientStreaming)
+        {
+            message = ResponseType;
+            names = ResponseType.Properties.Length > 0 ? UnaryResultNames : [];
+        }
+        else
+        {
+            message = HeaderResponseType ?? MessageDescription<TType>.Empty;
+            names = GetResponseHeaderNames();
+        }
+
+        return (message, names);
     }
 }

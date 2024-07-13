@@ -18,5 +18,7 @@ namespace ServiceModel.Grpc.Descriptions.Reflection;
 
 internal interface IAttributeInfo
 {
-    object? GetPropertyValue(string propertyName);
+    bool TryGetPropertyValue<T>(string propertyName, [NotNullWhen(true)] out T? value);
+
+    bool TryGetPropertyValues<TItem>(string propertyName, [NotNullWhen(true)] out IReadOnlyList<TItem>? value);
 }

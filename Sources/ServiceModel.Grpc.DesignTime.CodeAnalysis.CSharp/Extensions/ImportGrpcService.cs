@@ -36,7 +36,18 @@ public sealed class ImportGrpcService : IExtensionProvider
         extensions.TryAdd<ContractCodeGeneratorExtension>();
         extensions.Add(new ClientCodeGeneratorExtension(
             serviceType,
-            declaration.Attribute.GetNamedArgumentValue(PropertyGenerateDiExtensions, false),
+            GetAttributeValue(declaration, PropertyGenerateDiExtensions),
             declaration.DeclaredType.IsStatic));
+    }
+
+    private static bool GetAttributeValue(ExtensionProviderDeclaration declaration, string name)
+    {
+        if (declaration.Attribute.TryGetNamedArgumentValue(name, out var constant)
+            && constant.TryGetPrimitiveValue<bool>(out var value))
+        {
+            return value;
+        }
+
+        return false;
     }
 }
