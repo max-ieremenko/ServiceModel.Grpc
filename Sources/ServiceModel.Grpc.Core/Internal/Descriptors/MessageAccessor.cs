@@ -68,7 +68,7 @@ internal sealed class MessageAccessor<T1> : IMessageAccessor
     {
         switch (property)
         {
-            case 1:
+            case 0:
                 return typeof(T1);
         }
         throw new ArgumentOutOfRangeException(nameof(property));
@@ -78,7 +78,7 @@ internal sealed class MessageAccessor<T1> : IMessageAccessor
     {
         switch (property)
         {
-            case 1:
+            case 0:
                 return GrpcPreconditions.CheckNotNull((Message<T1>)message, nameof(message)).Value1;
         }
         throw new ArgumentOutOfRangeException(nameof(property));
@@ -88,7 +88,7 @@ internal sealed class MessageAccessor<T1> : IMessageAccessor
     {
         switch (property)
         {
-            case 1:
+            case 0:
                 GrpcPreconditions.CheckNotNull((Message<T1>)message, nameof(message)).Value1 = (T1?)value;
                 return;
         }
@@ -118,9 +118,9 @@ internal sealed class MessageAccessor<T1, T2> : IMessageAccessor
     {
         switch (property)
         {
-            case 1:
+            case 0:
                 return typeof(T1);
-            case 2:
+            case 1:
                 return typeof(T2);
         }
         throw new ArgumentOutOfRangeException(nameof(property));
@@ -130,9 +130,9 @@ internal sealed class MessageAccessor<T1, T2> : IMessageAccessor
     {
         switch (property)
         {
-            case 1:
+            case 0:
                 return GrpcPreconditions.CheckNotNull((Message<T1, T2>)message, nameof(message)).Value1;
-            case 2:
+            case 1:
                 return GrpcPreconditions.CheckNotNull((Message<T1, T2>)message, nameof(message)).Value2;
         }
         throw new ArgumentOutOfRangeException(nameof(property));
@@ -142,10 +142,10 @@ internal sealed class MessageAccessor<T1, T2> : IMessageAccessor
     {
         switch (property)
         {
-            case 1:
+            case 0:
                 GrpcPreconditions.CheckNotNull((Message<T1, T2>)message, nameof(message)).Value1 = (T1?)value;
                 return;
-            case 2:
+            case 1:
                 GrpcPreconditions.CheckNotNull((Message<T1, T2>)message, nameof(message)).Value2 = (T2?)value;
                 return;
         }
@@ -175,11 +175,11 @@ internal sealed class MessageAccessor<T1, T2, T3> : IMessageAccessor
     {
         switch (property)
         {
-            case 1:
+            case 0:
                 return typeof(T1);
-            case 2:
+            case 1:
                 return typeof(T2);
-            case 3:
+            case 2:
                 return typeof(T3);
         }
         throw new ArgumentOutOfRangeException(nameof(property));
@@ -189,11 +189,11 @@ internal sealed class MessageAccessor<T1, T2, T3> : IMessageAccessor
     {
         switch (property)
         {
-            case 1:
+            case 0:
                 return GrpcPreconditions.CheckNotNull((Message<T1, T2, T3>)message, nameof(message)).Value1;
-            case 2:
+            case 1:
                 return GrpcPreconditions.CheckNotNull((Message<T1, T2, T3>)message, nameof(message)).Value2;
-            case 3:
+            case 2:
                 return GrpcPreconditions.CheckNotNull((Message<T1, T2, T3>)message, nameof(message)).Value3;
         }
         throw new ArgumentOutOfRangeException(nameof(property));
@@ -203,13 +203,13 @@ internal sealed class MessageAccessor<T1, T2, T3> : IMessageAccessor
     {
         switch (property)
         {
-            case 1:
+            case 0:
                 GrpcPreconditions.CheckNotNull((Message<T1, T2, T3>)message, nameof(message)).Value1 = (T1?)value;
                 return;
-            case 2:
+            case 1:
                 GrpcPreconditions.CheckNotNull((Message<T1, T2, T3>)message, nameof(message)).Value2 = (T2?)value;
                 return;
-            case 3:
+            case 2:
                 GrpcPreconditions.CheckNotNull((Message<T1, T2, T3>)message, nameof(message)).Value3 = (T3?)value;
                 return;
         }

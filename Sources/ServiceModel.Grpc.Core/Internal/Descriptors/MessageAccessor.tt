@@ -59,7 +59,7 @@ if (argsCount > 0)
             for (var a=1; a<=argsCount; a++)
             {
 #>
-            case <#= a #>:
+            case <#= a - 1 #>:
                 return typeof(T<#= a #>);
 <#
             }
@@ -83,7 +83,7 @@ if (argsCount > 0)
             for (var a=1; a<=argsCount; a++)
             {
 #>
-            case <#= a #>:
+            case <#= a - 1 #>:
                 return GrpcPreconditions.CheckNotNull((Message<#= genericArgs #>)message, nameof(message)).Value<#= a #>;
 <#
             }
@@ -107,7 +107,7 @@ if (argsCount > 0)
             for (var a=1; a<=argsCount; a++)
             {
 #>
-            case <#= a #>:
+            case <#= a - 1 #>:
                 GrpcPreconditions.CheckNotNull((Message<#= genericArgs #>)message, nameof(message)).Value<#= a #> = (T<#= a #>?)value;
                 return;
 <#
