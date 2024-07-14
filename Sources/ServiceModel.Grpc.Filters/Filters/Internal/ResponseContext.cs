@@ -22,12 +22,12 @@ namespace ServiceModel.Grpc.Filters.Internal;
 [DebuggerDisplay("Count = {Count}")]
 internal sealed class ResponseContext : IResponseContextInternal
 {
-    private readonly MessageProxy _messageProxy;
+    private readonly IMessageAccessor _messageProxy;
     private readonly IStreamAccessor? _streamProxy;
     private object? _response;
     private object? _stream;
 
-    public ResponseContext(MessageProxy messageProxy, IStreamAccessor? streamProxy)
+    public ResponseContext(IMessageAccessor messageProxy, IStreamAccessor? streamProxy)
     {
         _messageProxy = messageProxy;
         _streamProxy = streamProxy;
@@ -45,8 +45,8 @@ internal sealed class ResponseContext : IResponseContextInternal
 
     public object? this[string name]
     {
-        get => _messageProxy.GetValue(SafeGetResponse(), _messageProxy.GetPropertyIndex(name));
-        set => _messageProxy.SetValue(SafeGetResponse(), _messageProxy.GetPropertyIndex(name), value);
+        get => _messageProxy.GetValue(SafeGetResponse(), name);
+        set => _messageProxy.SetValue(SafeGetResponse(), name, value);
     }
 
     public object? this[int index]
@@ -80,7 +80,7 @@ internal sealed class ResponseContext : IResponseContextInternal
     {
         if (_response == null)
         {
-            _response = _messageProxy.CreateDefault();
+            _response = _messageProxy.CreateNew();
         }
 
         return _response;

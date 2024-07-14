@@ -31,19 +31,24 @@ internal static class MessageBuilder
             return typeof(Message);
         }
 
-        var messageTypeName = typeof(Message).FullName + "`" + typeArguments.Length.ToString(CultureInfo.InvariantCulture);
+        return GetMessageGenericType(typeArguments.Length).MakeGenericType(typeArguments);
+    }
 
-        Type messageType;
-        if (typeArguments.Length <= 3)
+    public static Type GetMessageGenericType(int propertiesCount)
+    {
+        if (propertiesCount == 0)
         {
-            messageType = typeof(Message).Assembly.GetType(messageTypeName, true, false);
-        }
-        else
-        {
-            messageType = ResolveMessageType(typeArguments.Length, messageTypeName);
+            throw new ArgumentOutOfRangeException(nameof(propertiesCount));
         }
 
-        return messageType.MakeGenericType(typeArguments);
+        var messageTypeName = typeof(Message).FullName + "`" + propertiesCount.ToString(CultureInfo.InvariantCulture);
+
+        if (propertiesCount <= 3)
+        {
+            return typeof(Message).Assembly.GetType(messageTypeName, true, false);
+        }
+
+        return ResolveMessageType(propertiesCount, messageTypeName);
     }
 
     private static Type ResolveMessageType(int propertiesCount, string typeName)

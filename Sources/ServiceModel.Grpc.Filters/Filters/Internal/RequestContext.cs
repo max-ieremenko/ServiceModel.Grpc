@@ -22,12 +22,12 @@ namespace ServiceModel.Grpc.Filters.Internal;
 [DebuggerDisplay("Count = {Count}")]
 internal sealed class RequestContext : IRequestContextInternal
 {
-    private readonly MessageProxy _messageProxy;
+    private readonly IMessageAccessor _messageProxy;
     private readonly IStreamAccessor? _streamProxy;
     private object? _request;
     private object? _stream;
 
-    public RequestContext(MessageProxy messageProxy, IStreamAccessor? streamProxy)
+    public RequestContext(IMessageAccessor messageProxy, IStreamAccessor? streamProxy)
     {
         _messageProxy = messageProxy;
         _streamProxy = streamProxy;
@@ -43,8 +43,8 @@ internal sealed class RequestContext : IRequestContextInternal
 
     public object? this[string name]
     {
-        get => _messageProxy.GetValue(_request!, _messageProxy.GetPropertyIndex(name));
-        set => _messageProxy.SetValue(_request!, _messageProxy.GetPropertyIndex(name), value);
+        get => _messageProxy.GetValue(_request!, name);
+        set => _messageProxy.SetValue(_request!, name, value);
     }
 
     public object? this[int index]

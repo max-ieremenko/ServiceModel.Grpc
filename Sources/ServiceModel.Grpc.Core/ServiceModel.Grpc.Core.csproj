@@ -28,6 +28,15 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
+    <None Update="Internal\Descriptors\MessageAccessor.tt">
+      <LastGenOutput>MessageAccessor.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <Compile Update="Internal\Descriptors\MessageAccessor.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MessageAccessor.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">

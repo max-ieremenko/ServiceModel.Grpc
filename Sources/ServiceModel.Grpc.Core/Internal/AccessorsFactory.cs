@@ -15,12 +15,9 @@
 // </copyright>
 
 using System.ComponentModel;
-using Grpc.Core;
-using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Internal.Descriptors;
 
-#pragma warning disable SA1611 // Element parameters should be documented
-#pragma warning disable SA1615 // Element return value should be documented
-#pragma warning disable SA1604 // Element documentation should have summary
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 namespace ServiceModel.Grpc.Internal;
 
@@ -30,17 +27,15 @@ namespace ServiceModel.Grpc.Internal;
 /// </summary>
 [Browsable(false)]
 [EditorBrowsable(EditorBrowsableState.Never)]
-public interface IClientMethodBinder
+public static class AccessorsFactory
 {
-    /// <exclude />
-    bool RequiresMetadata { get; }
+    public static IStreamAccessor CreateStreamAccessor<TItem>() => StreamAccessor<TItem>.Instance;
 
-    /// <exclude />
-    IMarshallerFactory MarshallerFactory { get; }
+    public static IMessageAccessor CreateMessageAccessor() => new MessageAccessor([]);
 
-    /// <exclude />
-    void Add(IMethod method, IOperationDescriptor descriptor);
+    public static IMessageAccessor CreateMessageAccessor<T1>(string[] names) => new MessageAccessor<T1>(names);
 
-    /// <exclude />
-    IClientCallInvoker CreateCallInvoker();
+    public static IMessageAccessor CreateMessageAccessor<T1, T2>(string[] names) => new MessageAccessor<T1, T2>(names);
+
+    public static IMessageAccessor CreateMessageAccessor<T1, T2, T3>(string[] names) => new MessageAccessor<T1, T2, T3>(names);
 }

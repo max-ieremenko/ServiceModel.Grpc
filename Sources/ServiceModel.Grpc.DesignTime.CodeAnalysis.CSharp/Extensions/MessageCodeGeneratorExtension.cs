@@ -34,6 +34,7 @@ internal sealed class MessageCodeGeneratorExtension : ICodeGeneratorExtension
         foreach (var count in result)
         {
             generators.Add(new MessageCodeGenerator(count));
+            generators.Add(new MessageAccessorCodeGenerator(count));
         }
     }
 

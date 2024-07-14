@@ -27,5 +27,19 @@ internal sealed class ReflectionAttributeInfo : IAttributeInfo
 
     public Attribute Source { get; }
 
-    public object? GetPropertyValue(string propertyName) => Source.GetType().TryInstanceProperty(propertyName)?.GetValue(Source);
+    public bool TryGetPropertyValue<T>(string propertyName, [NotNullWhen(true)] out T? value)
+    {
+        var candidate = Source.GetType().TryInstanceProperty(propertyName)?.GetValue(Source);
+        if (candidate is T result)
+        {
+            value = result;
+            return true;
+        }
+
+        value = default;
+        return false;
+    }
+
+    public bool TryGetPropertyValues<TItem>(string propertyName, [NotNullWhen(true)] out IReadOnlyList<TItem>? value)
+        => TryGetPropertyValue(propertyName, out value);
 }

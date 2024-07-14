@@ -74,4 +74,36 @@ internal static class OpCodesEx
             body.Emit(OpCodes.Ldarg, argumentIndex);
         }
     }
+
+    public static void EmitInt32Array(this ILGenerator body, int[] values)
+    {
+        var i4 = values.Length < 255 ? OpCodes.Ldc_I4_S : OpCodes.Ldc_I4;
+
+        // new int[5] {1,2,3,}
+        body.Emit(i4, values.Length);
+        body.Emit(OpCodes.Newarr, typeof(int));
+        for (var i = 0; i < values.Length; i++)
+        {
+            body.Emit(OpCodes.Dup);
+            body.Emit(i4, i);
+            body.Emit(i4, values[i]);
+            body.Emit(OpCodes.Stelem_I4);
+        }
+    }
+
+    public static void EmitStringArray(this ILGenerator body, string[] values)
+    {
+        var i4 = values.Length < 255 ? OpCodes.Ldc_I4_S : OpCodes.Ldc_I4;
+
+        // new string[5] {1,2,3,}
+        body.Emit(i4, values.Length);
+        body.Emit(OpCodes.Newarr, typeof(string));
+        for (var i = 0; i < values.Length; i++)
+        {
+            body.Emit(OpCodes.Dup);
+            body.Emit(i4, i);
+            body.Emit(OpCodes.Ldstr, values[i]);
+            body.Emit(OpCodes.Stelem_Ref);
+        }
+    }
 }

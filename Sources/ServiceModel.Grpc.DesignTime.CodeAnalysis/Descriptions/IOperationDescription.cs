@@ -48,4 +48,8 @@ public interface IOperationDescription
     int[] HeaderRequestTypeInput { get; }
 
     int[] ContextInput { get; }
+
+    (IMessageDescription Message, string[] Names) GetRequest();
+
+    (IMessageDescription Message, string[] Names) GetResponse();
 }

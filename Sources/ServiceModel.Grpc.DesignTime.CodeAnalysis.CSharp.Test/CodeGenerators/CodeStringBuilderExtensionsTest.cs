@@ -51,7 +51,7 @@ public partial class CodeStringBuilderExtensionsTest
 
         foreach (var method in SyntaxTools.GetInstanceMethods(type))
         {
-            var attribute = SyntaxTools.GetCustomAttribute(method, typeof(DisplayNameAttribute).FullName!);
+            var attribute = SyntaxTools.GetCustomAttribute(method.GetAttributes(), typeof(DisplayNameAttribute).FullName!);
             var expected = attribute!.ConstructorArguments[0].Value.ShouldBeOfType<string>();
 
             yield return new TestCaseData(method.ReturnType, expected) { TestName = "AppendType." + method.Name };

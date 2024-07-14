@@ -14,6 +14,7 @@
 // limitations under the License.
 // </copyright>
 
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 using Grpc.Core;
@@ -55,6 +56,58 @@ internal sealed class ContractCodeGenerator : ICodeGenerator
         }
 
         output.AppendLine("}");
+    }
+
+    private static void CreateMessageAccessor(ICodeStringBuilder output, (IMessageDescription Message, string[] Names) args)
+    {
+        if (args.Message.IsBuiltIn)
+        {
+            output
+                .WriteType(typeof(AccessorsFactory))
+                .Append(".CreateMessageAccessor");
+        }
+        else
+        {
+            output.Append("new MessageAccessor");
+        }
+
+        if (args.Message.Properties.Length > 0)
+        {
+            output.Append("<");
+            for (var i = 0; i < args.Message.Properties.Length; i++)
+            {
+                output
+                    .WriteCommaIf(i > 0)
+                    .WriteType(args.Message.Properties[i]);
+            }
+
+            output.Append(">");
+        }
+
+        output.Append("(");
+        if (args.Names.Length > 0)
+        {
+            output.Append("new string[] { ");
+            for (var i = 0; i < args.Names.Length; i++)
+            {
+                output
+                    .WriteCommaIf(i > 0)
+                    .WriteString(args.Names[i]);
+            }
+
+            output.Append(" }");
+        }
+
+        output.Append(")");
+    }
+
+    private static void CreateStreamAccessor(ICodeStringBuilder output, ITypeSymbol itemType)
+    {
+        output
+            .WriteType(typeof(AccessorsFactory))
+            .Append(".CreateStreamAccessor<")
+            .WriteType(itemType)
+            .Append(">()");
     }
 
     private void BuildCtor(ICodeStringBuilder output)
@@ -179,13 +232,24 @@ internal sealed class ContractCodeGenerator : ICodeGenerator
         {
             foreach (var operation in interfaceDescription.Operations)
             {
-                AddGetDefinition(output, interfaceDescription.InterfaceType, operation, NamingContract.Contract.ClrDefinitionMethod(operation.OperationName));
+                var definitionMethodName = NamingContract.Contract.ClrDefinitionMethod(operation.OperationName);
+                var descriptorMethodName = NamingContract.Contract.DescriptorMethod(operation.OperationName);
+
+                AddGetDefinition(output, interfaceDescription.InterfaceType, operation, definitionMethodName);
+                output.AppendLine();
+
+                AddGetDescriptor(output, operation, descriptorMethodName, definitionMethodName);
                 output.AppendLine();
             }
 
             foreach (var entry in interfaceDescription.SyncOverAsync)
             {
-                AddGetDefinition(output, interfaceDescription.InterfaceType, entry.Sync, NamingContract.Contract.ClrDefinitionMethodSync(entry.Async.OperationName));
+                var definitionMethodName = NamingContract.Contract.ClrDefinitionMethodSync(entry.Async.OperationName);
+                var descriptorMethodName = NamingContract.Contract.DescriptorMethodSync(entry.Async.OperationName);
+                AddGetDefinition(output, interfaceDescription.InterfaceType, entry.Sync, definitionMethodName);
+                output.AppendLine();
+
+                AddGetDescriptor(output, entry.Sync, descriptorMethodName, definitionMethodName);
                 output.AppendLine();
             }
         }
@@ -269,6 +333,85 @@ internal sealed class ContractCodeGenerator : ICodeGenerator
                 .Append("return ((")
                 .WriteType(typeof(MethodCallExpression))
                 .AppendLine(")__exp.Body).Method;");
+        }
+
+        output.AppendLine("}");
+    }
+
+    private void AddGetDescriptor(ICodeStringBuilder output, IOperationDescription operation, string methodName, string definitionMethodName)
+    {
+        output
+            .Append("public static ")
+            .WriteType(typeof(IOperationDescriptor))
+            .Append(" ")
+            .Append(methodName)
+            .AppendLine("()")
+            .AppendLine("{");
+
+        using (output.Indent())
+        {
+            // new OperationDescriptorBuilder(method, isAsync)
+            output
+                .Append("return new ")
+                .WriteType(typeof(OperationDescriptorBuilder))
+                .Append("(")
+                .Append(definitionMethodName)
+                .Append(", ")
+                .Append(operation.IsAsync.ToString().ToLower())
+                .AppendLine(")");
+
+            using (output.Indent())
+            {
+                if (operation.HeaderRequestTypeInput.Length > 0)
+                {
+                    output.Append(".WithRequestHeaderParameters(new int[] { ");
+                    for (var i = 0; i < operation.HeaderRequestTypeInput.Length; i++)
+                    {
+                        output
+                            .WriteCommaIf(i > 0)
+                            .Append(operation.HeaderRequestTypeInput[i].ToString(CultureInfo.InvariantCulture));
+                    }
+
+                    output.AppendLine(" })");
+                }
+
+                if (operation.RequestTypeInput.Length > 0)
+                {
+                    output.Append(".WithRequestParameters(new int[] { ");
+                    for (var i = 0; i < operation.RequestTypeInput.Length; i++)
+                    {
+                        output
+                            .WriteCommaIf(i > 0)
+                            .Append(operation.RequestTypeInput[i].ToString(CultureInfo.InvariantCulture));
+                    }
+
+                    output.AppendLine(" })");
+                }
+
+                output.Append(".WithRequest(");
+                CreateMessageAccessor(output, operation.GetRequest());
+                output.AppendLine(")");
+
+                if (operation.OperationType == MethodType.ClientStreaming || operation.OperationType == MethodType.DuplexStreaming)
+                {
+                    output.Append(".WithRequestStream(");
+                    CreateStreamAccessor(output, operation.RequestType.Properties[0]);
+                    output.AppendLine(")");
+                }
+
+                output.Append(".WithResponse(");
+                CreateMessageAccessor(output, operation.GetResponse());
+                output.AppendLine(")");
+
+                if (operation.OperationType == MethodType.ServerStreaming || operation.OperationType == MethodType.DuplexStreaming)
+                {
+                    output.Append(".WithResponseStream(");
+                    CreateStreamAccessor(output, operation.ResponseType.Properties[0]);
+                    output.AppendLine(")");
+                }
+
+                output.AppendLine(".Build();");
+            }
         }
 
         output.AppendLine("}");

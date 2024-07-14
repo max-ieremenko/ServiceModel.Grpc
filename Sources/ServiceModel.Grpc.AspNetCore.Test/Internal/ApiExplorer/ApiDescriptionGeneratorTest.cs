@@ -18,6 +18,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using NUnit.Framework;
 using ServiceModel.Grpc.Emit;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer;
 
@@ -26,10 +27,10 @@ public partial class ApiDescriptionGeneratorTest
 {
     [Test]
     [TestCaseSource(nameof(GetTestCases))]
-    public void GetRequestType(MethodInfo method)
+    public void GetRequestType(IOperationDescriptor descriptor)
     {
+        var method = descriptor.GetContractMethod();
         var metadata = method.GetCustomAttribute<RequestMetadataAttribute>().ShouldNotBeNull();
-        var descriptor = EmitGenerator.GenerateOperationDescriptor(() => method);
 
         var actual = ApiDescriptionGenerator.GetRequestParameters(descriptor);
 
@@ -52,10 +53,10 @@ public partial class ApiDescriptionGeneratorTest
 
     [Test]
     [TestCaseSource(nameof(GetTestCases))]
-    public void GetResponseType(MethodInfo method)
+    public void GetResponseType(IOperationDescriptor descriptor)
     {
+        var method = descriptor.GetContractMethod();
         var expected = method.GetCustomAttribute<ResponseMetadataAttribute>().ShouldNotBeNull();
-        var descriptor = EmitGenerator.GenerateOperationDescriptor(() => method);
 
         var responseType = ApiDescriptionGenerator.GetResponseType(descriptor);
         var responseHeaders = ApiDescriptionGenerator.GetResponseHeaderParameters(descriptor);
@@ -73,10 +74,10 @@ public partial class ApiDescriptionGeneratorTest
 
     [Test]
     [TestCaseSource(nameof(GetTestCases))]
-    public void MethodSignature(MethodInfo method)
+    public void MethodSignature(IOperationDescriptor descriptor)
     {
+        var method = descriptor.GetContractMethod();
         var expected = method.GetCustomAttribute<SignatureAttribute>().ShouldNotBeNull();
-        var descriptor = EmitGenerator.GenerateOperationDescriptor(() => method);
 
         var actual = MethodSignatureBuilder.Build(
             method.Name,
@@ -89,12 +90,17 @@ public partial class ApiDescriptionGeneratorTest
 
     private static IEnumerable<TestCaseData> GetTestCases()
     {
-        foreach (var method in ReflectionTools.GetMethods(typeof(TestCases)))
+        var contract = EmitGenerator.GenerateContract<ITestCases>();
+        foreach (var method in contract.GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly))
         {
-            yield return new TestCaseData(method)
+            if (method.ReturnType == typeof(IOperationDescriptor))
             {
-                TestName = method.Name
-            };
+                var descriptor = method.CreateDelegate<Func<IOperationDescriptor>>()();
+                yield return new TestCaseData(descriptor)
+                {
+                    TestName = descriptor.GetContractMethod().Name
+                };
+            }
         }
     }
 }

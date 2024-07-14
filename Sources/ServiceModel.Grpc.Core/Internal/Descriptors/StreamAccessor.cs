@@ -14,19 +14,17 @@
 // limitations under the License.
 // </copyright>
 
-using System.Reflection;
-using Grpc.Core;
-using ServiceModel.Grpc.Internal;
+using Grpc.Core.Utils;
 
-namespace ServiceModel.Grpc.Emit.CodeGenerators;
+namespace ServiceModel.Grpc.Internal.Descriptors;
 
-internal static class EmitAdapter
+internal sealed class StreamAccessor<TItem> : IStreamAccessor
 {
-    public static void AddMethod(IClientMethodBinder methodBinder, IMethod method, RuntimeMethodHandle clrMethodHandle)
-    {
-        if (methodBinder.RequiresMetadata)
-        {
-            methodBinder.Add(method, () => (MethodInfo)MethodBase.GetMethodFromHandle(clrMethodHandle)!);
-        }
-    }
+    public static readonly StreamAccessor<TItem> Instance = new();
+
+    public void Validate(object stream) => GrpcPreconditions.CheckNotNull((IAsyncEnumerable<TItem>)stream, nameof(stream));
+
+    public object CreateEmpty() => EmptyAsyncEnumerable<TItem>.Instance;
+
+    public Type GetInstanceType() => typeof(IAsyncEnumerable<TItem>);
 }

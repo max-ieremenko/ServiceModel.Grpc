@@ -48,12 +48,6 @@ internal static partial class ReflectionTools
         return @namespace;
     }
 
-    public static IList<MethodInfo> GetMethods(Type type)
-    {
-        return type
-            .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-    }
-
     public static bool IsTask(Type type)
     {
         return typeof(Task).IsAssignableFrom(type) || IsValueTask(type);
@@ -240,6 +234,23 @@ internal static partial class ReflectionTools
     public static MethodInfo StaticMethod(this Type type, string name)
     {
         var result = type.GetMethod(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly);
+
+        if (result == null)
+        {
+            throw new ArgumentOutOfRangeException($"{type.Name} does not implement static method {name}.");
+        }
+
+        return result;
+    }
+
+    public static MethodInfo StaticMethod(this Type type, string name, params Type[] parameters)
+    {
+        var result = type.GetMethod(
+            name,
+            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly,
+            null,
+            parameters,
+            null);
 
         if (result == null)
         {

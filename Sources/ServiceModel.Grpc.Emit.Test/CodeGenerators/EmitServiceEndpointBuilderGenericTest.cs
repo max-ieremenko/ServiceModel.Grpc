@@ -15,7 +15,6 @@
 // </copyright>
 
 using NUnit.Framework;
-using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Emit.Descriptions;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
@@ -29,12 +28,10 @@ public class EmitServiceEndpointBuilderGenericTest : ServiceEndpointBuilderGener
     public void BeforeAllTest()
     {
         var description = ContractDescriptionBuilder.Build(typeof(IGenericContract<int, string>));
-        var contractType = new EmitContractBuilder(description).Build(ProxyAssembly.DefaultModule, nameof(EmitServiceEndpointBuilderGenericTest) + "Contract");
 
         var sut = new EmitServiceEndpointBuilder(description);
         ChannelType = sut.Build(ProxyAssembly.DefaultModule, className: nameof(EmitServiceEndpointBuilderGenericTest) + "Channel");
 
-        var contract = EmitContractBuilder.CreateFactory(contractType)(DataContractMarshallerFactory.Default);
         Channel = EmitServiceEndpointBuilder.CreateFactory(ChannelType)();
     }
 }

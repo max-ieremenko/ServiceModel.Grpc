@@ -33,7 +33,7 @@ public class RequestContextTest
         _messageAccessor = new MessageAccessorMock();
         _streamAccessor = new Mock<IStreamAccessor>(MockBehavior.Strict);
 
-        _sut = new RequestContext(new MessageProxy(_messageAccessor.Accessor), _streamAccessor.Object);
+        _sut = new RequestContext(_messageAccessor.Accessor, _streamAccessor.Object);
     }
 
     [Test]

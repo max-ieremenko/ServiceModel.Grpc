@@ -48,7 +48,7 @@ public partial class SyntaxToolsTest
         var symbol = Compilation.ResolveTypeSymbol(type);
         symbol.ShouldNotBeNull();
 
-        var actual = SyntaxTools.GetCustomAttribute(symbol, attributeType.FullName!);
+        var actual = SyntaxTools.GetCustomAttribute(symbol.GetAttributes(), attributeType.FullName!);
         if (expected)
         {
             actual.ShouldNotBeNull();
@@ -234,7 +234,7 @@ public partial class SyntaxToolsTest
 
         foreach (var method in SyntaxTools.GetInstanceMethods(type))
         {
-            var attribute = SyntaxTools.GetCustomAttribute(method, typeof(DisplayNameAttribute).FullName!);
+            var attribute = SyntaxTools.GetCustomAttribute(method.GetAttributes(), typeof(DisplayNameAttribute).FullName!);
             var expected = (string)attribute!.ConstructorArguments[0].Value!;
             expected.ShouldNotBeNull();
 

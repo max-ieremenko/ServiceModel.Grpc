@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System.Reflection;
 using Grpc.Core;
 using NUnit.Framework;
 using ServiceModel.Grpc.Configuration;
@@ -77,9 +76,9 @@ public partial class EmitClientBuilderBuilderTest
     }
 
     [Test]
-    public void Initialize()
+    public void InitializeWithMetadata()
     {
-        var binderMethods = new List<(IMethod Method, Func<MethodInfo> ResolveContractMethodDefinition)>();
+        var binderMethods = new List<(IMethod Method, IOperationDescriptor Descriptor)>();
 
         _methodBinder
             .SetupGet(b => b.RequiresMetadata)
@@ -88,8 +87,8 @@ public partial class EmitClientBuilderBuilderTest
             .SetupGet(b => b.MarshallerFactory)
             .Returns(DataContractMarshallerFactory.Default);
         _methodBinder
-            .Setup(b => b.Add(It.IsNotNull<IMethod>(), It.IsNotNull<Func<MethodInfo>>()))
-            .Callback<IMethod, Func<MethodInfo>>((method, resolver) => binderMethods.Add((method, resolver)));
+            .Setup(b => b.Add(It.IsNotNull<IMethod>(), It.IsNotNull<IOperationDescriptor>()))
+            .Callback<IMethod, IOperationDescriptor>((method, descriptor) => binderMethods.Add((method, descriptor)));
 
         _builder.Initialize(_methodBinder.Object);
 
@@ -102,6 +101,26 @@ public partial class EmitClientBuilderBuilderTest
 
         binderMethods.Count.ShouldBe(1);
         binderMethods[0].Method.ShouldNotBeNull();
-        binderMethods[0].ResolveContractMethodDefinition().ShouldBe(typeof(ISomeContract).InstanceMethod(nameof(ISomeContract.SomeOperation)));
+        binderMethods[0].Descriptor.ShouldBe(ContractMock.GetSomeOperationDescriptor());
+    }
+
+    [Test]
+    public void InitializeWithoutMetadata()
+    {
+        _methodBinder
+            .SetupGet(b => b.RequiresMetadata)
+            .Returns(false);
+        _methodBinder
+            .SetupGet(b => b.MarshallerFactory)
+            .Returns(DataContractMarshallerFactory.Default);
+
+        _builder.Initialize(_methodBinder.Object);
+
+        var actual = _builder.Build(_callInvoker.Object);
+
+        var mock = actual.ShouldBeOfType<ClientMock>();
+        mock.CallInvoker.ShouldBe(_callInvoker.Object);
+        mock.Contract.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
+        mock.ClientCallInvoker.ShouldBe(_clientCallInvoker);
     }
 }

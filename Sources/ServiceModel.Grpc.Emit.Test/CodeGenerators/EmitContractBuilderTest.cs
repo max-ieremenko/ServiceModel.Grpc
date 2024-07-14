@@ -20,6 +20,7 @@ using NUnit.Framework;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.Emit.Descriptions;
+using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
 using Shouldly.ShouldlyExtensionMethods;
@@ -36,10 +37,9 @@ public class EmitContractBuilderTest
     [OneTimeSetUp]
     public void BeforeAllTests()
     {
-        _description = ContractDescriptionBuilder.Build(typeof(IContract));
+        _description = ContractDescriptionBuilder.Build(typeof(IMultipurposeService));
 
-        var builder = new EmitContractBuilder(_description);
-        _contractType = builder.Build(ProxyAssembly.CreateModule(nameof(EmitContractBuilderTest)));
+        _contractType = EmitContractBuilder.Build(ProxyAssembly.CreateModule(nameof(EmitContractBuilderTest)), _description);
         _factory = EmitContractBuilder.CreateFactory(_contractType);
     }
 
@@ -88,33 +88,93 @@ public class EmitContractBuilderTest
     }
 
     [Test]
-    public void ValidateDefinitionFields()
+    public void ValidateDefinitions()
     {
         foreach (var interfaceDescription in _description.Services)
         {
             foreach (var operation in interfaceDescription.Operations)
             {
-                var handle = _contractType
-                    .StaticFiled(NamingContract.Contract.ClrDefinitionMethod(operation.OperationName))
-                    .GetValue(null)
-                    .ShouldBeOfType<RuntimeMethodHandle>();
-
-                var actual = MethodBase.GetMethodFromHandle(handle).ShouldNotBeNull();
+                var actual = _contractType
+                    .StaticMethod(NamingContract.Contract.ClrDefinitionMethod(operation.OperationName))
+                    .Invoke(null, null)
+                    .ShouldNotBeNull();
 
                 actual.ShouldBe(operation.GetSource());
             }
 
             foreach (var entry in interfaceDescription.SyncOverAsync)
             {
-                var handle = _contractType
-                    .StaticFiled(NamingContract.Contract.ClrDefinitionMethodSync(entry.Async.OperationName))
-                    .GetValue(null)
-                    .ShouldBeOfType<RuntimeMethodHandle>();
-
-                var actual = MethodBase.GetMethodFromHandle(handle).ShouldNotBeNull();
+                var actual = _contractType
+                    .StaticMethod(NamingContract.Contract.ClrDefinitionMethodSync(entry.Async.OperationName))
+                    .Invoke(null, null)
+                    .ShouldNotBeNull();
 
                 actual.ShouldBe(entry.Sync.GetSource());
             }
+        }
+    }
+
+    [Test]
+    public void ValidateDescriptors()
+    {
+        foreach (var interfaceDescription in _description.Services)
+        {
+            foreach (var operation in interfaceDescription.Operations)
+            {
+                ValidateDescriptor(operation, NamingContract.Contract.DescriptorMethod(operation.OperationName));
+            }
+
+            foreach (var entry in interfaceDescription.SyncOverAsync)
+            {
+                ValidateDescriptor(entry.Sync, NamingContract.Contract.DescriptorMethodSync(entry.Async.OperationName));
+            }
+        }
+    }
+
+    private void ValidateDescriptor(OperationDescription<Type> operation, string methodName)
+    {
+        var actual = _contractType
+            .StaticMethod(methodName)
+            .Invoke(null, null)
+            .ShouldBeAssignableTo<IOperationDescriptor>()
+            .ShouldNotBeNull();
+
+        actual.IsAsync().ShouldBe(operation.IsAsync);
+        actual.GetContractMethod().ShouldBe(operation.GetSource());
+
+        actual.GetRequestAccessor().Names.ShouldBe(operation.GetRequest().Names);
+        actual.GetRequestAccessor().GetInstanceType().ShouldBe(operation.GetRequest().Message.GetClrType());
+
+        actual.GetResponseAccessor().Names.ShouldBe(operation.GetResponse().Names);
+        actual.GetResponseAccessor().GetInstanceType().ShouldBe(operation.GetResponse().Message.GetClrType());
+
+        actual.GetRequestHeaderParameters().ShouldBe(operation.HeaderRequestTypeInput);
+        actual.GetRequestParameters().ShouldBe(operation.RequestTypeInput);
+
+        if (operation.OperationType == MethodType.ClientStreaming || operation.OperationType == MethodType.DuplexStreaming)
+        {
+            actual
+                .GetRequestStreamAccessor()
+                .ShouldNotBeNull()
+                .GetInstanceType()
+                .ShouldBe(typeof(IAsyncEnumerable<>).MakeGenericType(operation.RequestType.Properties[0]));
+        }
+        else
+        {
+            actual.GetRequestStreamAccessor().ShouldBeNull();
+        }
+
+        if (operation.OperationType == MethodType.ServerStreaming || operation.OperationType == MethodType.DuplexStreaming)
+        {
+            actual
+                .GetResponseStreamAccessor()
+                .ShouldNotBeNull()
+                .GetInstanceType()
+                .ShouldBe(typeof(IAsyncEnumerable<>).MakeGenericType(operation.ResponseType.Properties[0]));
+        }
+        else
+        {
+            actual.GetResponseStreamAccessor().ShouldBeNull();
         }
     }
 }

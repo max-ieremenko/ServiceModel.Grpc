@@ -124,8 +124,8 @@ internal sealed class ClientBuilderCodeGenerator : ICodeGenerator
                             .Append(", ")
                             .Append(NamingContract.Contract.Class(_contract.BaseClassName))
                             .Append(".")
-                            .Append(NamingContract.Contract.ClrDefinitionMethod(method.OperationName))
-                            .AppendLine(");");
+                            .Append(NamingContract.Contract.DescriptorMethod(method.OperationName))
+                            .AppendLine("());");
                     }
 
                     foreach (var entry in interfaceDescription.SyncOverAsync)
@@ -138,8 +138,8 @@ internal sealed class ClientBuilderCodeGenerator : ICodeGenerator
                             .Append(", ")
                             .Append(NamingContract.Contract.Class(_contract.BaseClassName))
                             .Append(".")
-                            .Append(NamingContract.Contract.ClrDefinitionMethodSync(entry.Async.OperationName))
-                            .AppendLine(");");
+                            .Append(NamingContract.Contract.DescriptorMethodSync(entry.Async.OperationName))
+                            .AppendLine("());");
                     }
                 }
             }

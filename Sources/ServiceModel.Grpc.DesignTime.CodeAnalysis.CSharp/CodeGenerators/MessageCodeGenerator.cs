@@ -36,16 +36,8 @@ internal sealed class MessageCodeGenerator : ICodeGenerator
             .WriteMetadata()
             .WriteSerializableAttribute()
             .WriteDataContractAttribute()
-            .Append("public sealed partial class Message<");
-
-        for (var i = 0; i < _propertiesCount; i++)
-        {
-            output.WriteCommaIf(i != 0);
-            output.AppendFormat("T{0}", i + 1);
-        }
-
-        output
-            .AppendLine(">")
+            .Append("public sealed partial class ")
+            .WriteGenericMessage(_propertiesCount)
             .AppendLine("{");
 
         using (output.Indent())

@@ -28,5 +28,41 @@ internal sealed class CodeAnalysisAttributeInfo : IAttributeInfo
 
     public AttributeData Source { get; }
 
-    public object? GetPropertyValue(string propertyName) => Source.GetNamedArgumentValue(propertyName, (object?)null);
+    public bool TryGetPropertyValue<T>(string propertyName, [NotNullWhen(true)] out T? value)
+    {
+        if (Source.TryGetNamedArgumentValue(propertyName, out var constant) && constant.TryGetPrimitiveValue(out value))
+        {
+            return true;
+        }
+
+        value = default;
+        return false;
+    }
+
+    public bool TryGetPropertyValues<TItem>(string propertyName, [NotNullWhen(true)] out IReadOnlyList<TItem>? value)
+    {
+        if (Source.TryGetNamedArgumentValue(propertyName, out var constant))
+        {
+            if (constant.TryGetArrayValue<TItem>(out var result))
+            {
+                value = result;
+                return true;
+            }
+
+            value = default;
+            return false;
+        }
+
+        if (Source.ConstructorArguments.Length == 1)
+        {
+            if (Source.ConstructorArguments[0].TryGetArrayValue<TItem>(out var result))
+            {
+                value = result;
+                return true;
+            }
+        }
+
+        value = default;
+        return false;
+    }
 }

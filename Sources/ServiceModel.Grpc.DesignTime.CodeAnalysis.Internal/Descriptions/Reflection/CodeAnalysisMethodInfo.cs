@@ -46,7 +46,7 @@ internal sealed class CodeAnalysisMethodInfo : IMethodInfo<ITypeSymbol>
 
     public bool TryGetCustomAttribute(string attributeTypeFullName, [NotNullWhen(true)] out IAttributeInfo? attribute)
     {
-        var source = SyntaxTools.GetCustomAttribute(Source, attributeTypeFullName);
+        var source = SyntaxTools.GetCustomAttribute(Source.GetAttributes(), attributeTypeFullName);
         if (source == null)
         {
             attribute = null;
@@ -59,6 +59,14 @@ internal sealed class CodeAnalysisMethodInfo : IMethodInfo<ITypeSymbol>
 
     public bool TryGetReturnParameterCustomAttribute(string attributeTypeFullName, [NotNullWhen(true)] out IAttributeInfo? attribute)
     {
-        throw new NotSupportedException();
+        var source = SyntaxTools.GetCustomAttribute(Source.GetReturnTypeAttributes(), attributeTypeFullName);
+        if (source == null)
+        {
+            attribute = null;
+            return false;
+        }
+
+        attribute = new CodeAnalysisAttributeInfo(source);
+        return true;
     }
 }

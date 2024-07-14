@@ -25,15 +25,8 @@ using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Emit.CodeGenerators;
 
-internal sealed class EmitContractBuilder
+internal static class EmitContractBuilder
 {
-    private readonly ContractDescription<Type> _description;
-
-    public EmitContractBuilder(ContractDescription<Type> description)
-    {
-        _description = description;
-    }
-
     public static Func<IMarshallerFactory, object> CreateFactory(Type implementationType)
     {
         var marshaller = Expression.Parameter(typeof(IMarshallerFactory), "marshallerFactory");
@@ -46,10 +39,10 @@ internal sealed class EmitContractBuilder
     }
 
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Method<,>))]
-    public TypeInfo Build(ModuleBuilder moduleBuilder, string? className = default)
+    public static TypeInfo Build(ModuleBuilder moduleBuilder, ContractDescription<Type> description, string? className = default)
     {
         var typeBuilder = moduleBuilder.DefineType(
-            className ?? NamingContract.Contract.Class(_description.BaseClassName),
+            className ?? NamingContract.Contract.Class(description.BaseClassName),
             TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit);
 
         // public (IMarshallerFactory marshallerFactory)
@@ -63,21 +56,24 @@ internal sealed class EmitContractBuilder
         ctor.Emit(OpCodes.Ldarg_0);
         ctor.Emit(OpCodes.Call, typeof(object).Constructor());
 
-        foreach (var operation in GetAllOperations())
+        foreach (var operation in description.Services.SelectMany(i => i.Operations))
         {
             BuildMethod(operation, typeBuilder, ctor);
         }
 
-        foreach (var interfaceDescription in _description.Services)
+        var reflect = new ReflectDescriptor();
+        foreach (var interfaceDescription in description.Services)
         {
             foreach (var operation in interfaceDescription.Operations)
             {
-                BuildDefinition(typeBuilder, NamingContract.Contract.ClrDefinitionMethod(operation.OperationName));
+                var definitionMethod = BuildGetDefinition(typeBuilder, NamingContract.Contract.ClrDefinitionMethod(operation.OperationName));
+                BuildGetDescriptor(typeBuilder, operation, reflect, NamingContract.Contract.DescriptorMethod(operation.OperationName), definitionMethod);
             }
 
             foreach (var entry in interfaceDescription.SyncOverAsync)
             {
-                BuildDefinition(typeBuilder, NamingContract.Contract.ClrDefinitionMethodSync(entry.Async.OperationName));
+                var definitionMethod = BuildGetDefinition(typeBuilder, NamingContract.Contract.ClrDefinitionMethodSync(entry.Async.OperationName));
+                BuildGetDescriptor(typeBuilder, entry.Sync, reflect, NamingContract.Contract.DescriptorMethodSync(entry.Async.OperationName), definitionMethod);
             }
         }
 
@@ -85,19 +81,21 @@ internal sealed class EmitContractBuilder
 
         var result = typeBuilder.CreateTypeInfo()!;
 
-        foreach (var interfaceDescription in _description.Services)
+        foreach (var interfaceDescription in description.Services)
         {
             foreach (var operation in interfaceDescription.Operations)
             {
+                var methodName = NamingContract.Contract.ClrDefinitionMethod(operation.OperationName);
                 result
-                    .StaticFiled(NamingContract.Contract.ClrDefinitionMethod(operation.OperationName))
+                    .StaticFiled($"_{methodName}")
                     .SetValue(null, operation.GetSource().MethodHandle);
             }
 
             foreach (var entry in interfaceDescription.SyncOverAsync)
             {
+                var methodName = NamingContract.Contract.ClrDefinitionMethodSync(entry.Async.OperationName);
                 result
-                    .StaticFiled(NamingContract.Contract.ClrDefinitionMethodSync(entry.Async.OperationName))
+                    .StaticFiled($"_{methodName}")
                     .SetValue(null, entry.Sync.GetSource().MethodHandle);
             }
         }
@@ -105,7 +103,7 @@ internal sealed class EmitContractBuilder
         return result;
     }
 
-    private void BuildMethod(OperationDescription<Type> operation, TypeBuilder typeBuilder, ILGenerator ctor)
+    private static void BuildMethod(OperationDescription<Type> operation, TypeBuilder typeBuilder, ILGenerator ctor)
     {
         // public IMethod MethodX;
         var field = typeBuilder
@@ -157,12 +155,108 @@ internal sealed class EmitContractBuilder
         ctor.Emit(OpCodes.Stfld, field);
     }
 
-    private void BuildDefinition(TypeBuilder typeBuilder, string fieldName) =>
-        typeBuilder
-            .DefineField(
-                fieldName,
-                typeof(RuntimeMethodHandle),
-                FieldAttributes.Public | FieldAttributes.Static);
+    private static MethodInfo BuildGetDefinition(TypeBuilder typeBuilder, string methodName)
+    {
+        var field = typeBuilder.DefineField($"_{methodName}", typeof(RuntimeMethodHandle), FieldAttributes.Private | FieldAttributes.Static);
 
-    private IEnumerable<OperationDescription<Type>> GetAllOperations() => _description.Services.SelectMany(i => i.Operations);
+        var method = typeBuilder
+            .DefineMethod(methodName, MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.Static, typeof(MethodInfo), []);
+
+        var body = method.GetILGenerator();
+        body.Emit(OpCodes.Ldsfld, field);
+        body.Emit(OpCodes.Call, typeof(MethodBase).StaticMethod(nameof(MethodBase.GetMethodFromHandle), field.FieldType));
+        body.Emit(OpCodes.Castclass, typeof(MethodInfo));
+        body.Emit(OpCodes.Ret);
+
+        return method;
+    }
+
+    private static void BuildGetDescriptor(TypeBuilder typeBuilder, OperationDescription<Type> operation, ReflectDescriptor reflect, string methodName, MethodInfo definitionMethod)
+    {
+        var body = typeBuilder
+            .DefineMethod(methodName, MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.Static, typeof(IOperationDescriptor), [])
+            .GetILGenerator();
+
+        body.DeclareLocal(typeof(OperationDescriptorBuilder));
+
+        body.Emit(OpCodes.Ldnull);
+        body.Emit(OpCodes.Ldftn, definitionMethod);
+        body.Emit(OpCodes.Newobj, reflect.FuncMethodInfoCtor);
+
+        body.Emit(operation.IsAsync ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0);
+        body.Emit(OpCodes.Newobj, reflect.BuilderCtor);
+        body.Emit(OpCodes.Stloc_0);
+
+        // WithRequest
+        body.Emit(OpCodes.Ldloca_S, 0);
+        CreateMessageAccessor(body, operation.GetRequest(), reflect);
+        body.Emit(OpCodes.Call, reflect.BuilderWithRequest);
+        body.Emit(OpCodes.Stloc_0);
+
+        // WithResponse
+        body.Emit(OpCodes.Ldloca_S, 0);
+        CreateMessageAccessor(body, operation.GetResponse(), reflect);
+        body.Emit(OpCodes.Call, reflect.BuilderWithResponse);
+        body.Emit(OpCodes.Stloc_0);
+
+        if (operation.HeaderRequestTypeInput.Length > 0)
+        {
+            body.Emit(OpCodes.Ldloca_S, 0);
+            body.EmitInt32Array(operation.HeaderRequestTypeInput);
+            body.Emit(OpCodes.Call, reflect.BuilderWithRequestHeaderParameters);
+            body.Emit(OpCodes.Stloc_0);
+        }
+
+        if (operation.RequestTypeInput.Length > 0)
+        {
+            body.Emit(OpCodes.Ldloca_S, 0);
+            body.EmitInt32Array(operation.RequestTypeInput);
+            body.Emit(OpCodes.Call, reflect.BuilderWithRequestParameters);
+            body.Emit(OpCodes.Stloc_0);
+        }
+
+        if (operation.OperationType == MethodType.ClientStreaming || operation.OperationType == MethodType.DuplexStreaming)
+        {
+            body.Emit(OpCodes.Ldloca_S, 0);
+            body.Emit(OpCodes.Call, reflect.CreateStreamAccessor.MakeGenericMethod(operation.RequestType.Properties[0]));
+            body.Emit(OpCodes.Call, reflect.BuilderWithRequestStream);
+            body.Emit(OpCodes.Stloc_0);
+        }
+
+        if (operation.OperationType == MethodType.ServerStreaming || operation.OperationType == MethodType.DuplexStreaming)
+        {
+            body.Emit(OpCodes.Ldloca_S, 0);
+            body.Emit(OpCodes.Call, reflect.CreateStreamAccessor.MakeGenericMethod(operation.ResponseType.Properties[0]));
+            body.Emit(OpCodes.Call, reflect.BuilderWithResponseStream);
+            body.Emit(OpCodes.Stloc_0);
+        }
+
+        body.Emit(OpCodes.Ldloca_S, 0);
+        body.Emit(OpCodes.Call, reflect.BuilderBuild);
+        body.Emit(OpCodes.Ret);
+    }
+
+    private static void CreateMessageAccessor(ILGenerator body, (MessageDescription<Type> Message, string[] Names) args, ReflectDescriptor reflect)
+    {
+        var method = reflect.CreateMessageAccessor(args.Message.Properties.Length);
+        if (args.Message.Properties.Length == 0)
+        {
+            body.Emit(OpCodes.Call, (MethodInfo)method);
+            return;
+        }
+
+        // new string[5] {1,2,3,}
+        body.EmitStringArray(args.Names);
+
+        // CreateMessageAccessor
+        if (args.Message.IsBuiltIn)
+        {
+            body.Emit(OpCodes.Call, ((MethodInfo)method).MakeGenericMethod(args.Message.Properties));
+        }
+        else
+        {
+            var ctor = ((Type)method).MakeGenericType(args.Message.Properties).Constructor(1);
+            body.Emit(OpCodes.Newobj, ctor);
+        }
+    }
 }

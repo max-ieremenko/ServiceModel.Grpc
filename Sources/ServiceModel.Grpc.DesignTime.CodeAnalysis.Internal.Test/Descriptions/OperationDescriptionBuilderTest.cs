@@ -138,6 +138,14 @@ public partial class OperationDescriptionBuilderTest
         BuildFail(method);
     }
 
+    [Test]
+    [TestCaseSource(nameof(GetResponseHeaderNamesCases))]
+    public void GetResponseHeaderNames(IMethodSymbol method, string[] expected)
+    {
+        var operation = Build(method, "s1", "o1").ShouldBeOfType<OperationDescription>();
+        operation.GetResponseHeaderNames().ShouldBe(expected);
+    }
+
     private static IOperationDescription Build(IMethodSymbol method, string serviceName, string operationName) =>
         ContractDescriptionBuilder.BuildOperation(method, serviceName, operationName);
 
@@ -161,6 +169,22 @@ public partial class OperationDescriptionBuilderTest
                 responseHeader?.ConstructorArguments[2].Value)
             {
                 TestName = "ResponseType." + method.Name
+            };
+        }
+    }
+
+    private static IEnumerable<TestCaseData> GetResponseHeaderNamesCases()
+    {
+        var type = Compilation.ResolveTypeSymbol(typeof(ResponseTypeCases));
+
+        foreach (var method in SyntaxTools.GetInstanceMethods(type))
+        {
+            var attribute = method.GetAttributes().First(i => i.AttributeClass!.Name == nameof(ResponseHeaderNamesAttribute));
+            var names = attribute.ConstructorArguments[0].Values.Select(i => (string)i.Value!).ToArray();
+
+            yield return new TestCaseData(method, names)
+            {
+                TestName = "ResponseHeaderNames." + method.Name
             };
         }
     }

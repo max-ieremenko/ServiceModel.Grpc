@@ -20,10 +20,9 @@ using ServiceModel.Grpc.Internal;
 namespace ServiceModel.Grpc.Filters.Internal;
 
 [TestFixture]
-public class MessageProxyTest
+public class MessageAccessorExtensionsTest
 {
     private Mock<IMessageAccessor> _messageAccessor = null!;
-    private MessageProxy _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -32,69 +31,34 @@ public class MessageProxyTest
         _messageAccessor
             .SetupGet(a => a.Names)
             .Returns(["p1", "p2"]);
-
-        _sut = new MessageProxy(_messageAccessor.Object);
     }
 
     [Test]
-    [TestCase("p1", 0)]
-    [TestCase("P1", 0)]
-    [TestCase("p2", 1)]
-    [TestCase("P2", 1)]
-    [TestCase("unknown", -1)]
-    public void GetPropertyIndex(string name, int expected)
-    {
-        if (expected < 0)
-        {
-            Assert.Throws<ArgumentOutOfRangeException>(() => _sut.GetPropertyIndex(name));
-        }
-        else
-        {
-            _sut.GetPropertyIndex(name).ShouldBe(expected);
-        }
-
-        _messageAccessor.VerifyAll();
-    }
-
-    [Test]
-    [TestCase(0, "value 1")]
-    [TestCase(1, 10)]
-    public void SetValue(int index, object expected)
+    [TestCase(0, "p1", "value 1")]
+    [TestCase(1, "p2", 10)]
+    public void SetValue(int index, string name, object expected)
     {
         var message = new object();
         _messageAccessor
             .Setup(a => a.SetValue(message, index, expected));
 
-        _sut.SetValue(message, index, expected);
+        _messageAccessor.Object.SetValue(message, name, expected);
 
         _messageAccessor.VerifyAll();
     }
 
     [Test]
-    [TestCase(0, "value 1")]
-    [TestCase(1, 10)]
-    public void GetValue(int index, object expected)
+    [TestCase(0, "p1", "value 1")]
+    [TestCase(1, "p2", 10)]
+    public void GetValue(int index, string name, object expected)
     {
         var message = new object();
         _messageAccessor
             .Setup(a => a.GetValue(message, index))
             .Returns(expected);
 
-        _sut.GetValue(message, index).ShouldBe(expected);
+        _messageAccessor.Object.GetValue(message, name).ShouldBe(expected);
 
         _messageAccessor.VerifyAll();
-    }
-
-    [Test]
-    public void CreateDefault()
-    {
-        var expected = new object();
-        _messageAccessor
-            .Setup(a => a.CreateNew())
-            .Returns(expected);
-
-        var actual = _sut.CreateDefault();
-
-        actual.ShouldBe(expected);
     }
 }

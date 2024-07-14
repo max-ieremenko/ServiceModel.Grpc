@@ -48,10 +48,11 @@ public static class SyntaxTools
         return result;
     }
 
-    public static AttributeData? GetCustomAttribute(ISymbol owner, string attributeTypeFullName)
+    public static AttributeData? GetCustomAttribute(in ImmutableArray<AttributeData> attributes, string attributeTypeFullName)
     {
-        foreach (var attribute in owner.GetAttributes())
+        for (var i = 0; i < attributes.Length; i++)
         {
+            var attribute = attributes[i];
             var fullName = attribute.AttributeClass?.ToDisplayString(NullableFlowState.None);
             if (string.Equals(attributeTypeFullName, fullName, StringComparison.Ordinal))
             {
@@ -323,20 +324,57 @@ public static class SyntaxTools
         && type.GenericTypeArguments().Length == 1
         && "System".Equals(GetNamespace(type), StringComparison.Ordinal);
 
-    public static T GetNamedArgumentValue<T>(this AttributeData attributeData, string argumentName, T defaultValue)
+    public static bool TryGetPrimitiveValue<T>(this in TypedConstant constant, [NotNullWhen(true)] out T? value)
+    {
+        if (constant.Kind != TypedConstantKind.Error && constant.Kind != TypedConstantKind.Array && constant.Value is T result)
+        {
+            value = result;
+            return true;
+        }
+
+        value = default;
+        return false;
+    }
+
+    public static bool TryGetArrayValue<T>(this in TypedConstant constant, [NotNullWhen(true)] out T[]? value)
+    {
+        if (constant.Kind != TypedConstantKind.Array)
+        {
+            value = null;
+            return false;
+        }
+
+        var values = constant.Values;
+        var result = new T[values.Length];
+        for (var i = 0; i < values.Length; i++)
+        {
+            if (!values[i].TryGetPrimitiveValue<T>(out var item))
+            {
+                value = null;
+                return false;
+            }
+
+            result[i] = item;
+        }
+
+        value = result;
+        return true;
+    }
+
+    public static bool TryGetNamedArgumentValue(this AttributeData attributeData, string argumentName, out TypedConstant constant)
     {
         for (var i = 0; i < attributeData.NamedArguments.Length; i++)
         {
             var arg = attributeData.NamedArguments[i];
-            if (argumentName.Equals(arg.Key, StringComparison.Ordinal)
-                && arg.Value.Kind != TypedConstantKind.Array
-                && arg.Value.Kind != TypedConstantKind.Error)
+            if (argumentName.Equals(arg.Key, StringComparison.Ordinal))
             {
-                return arg.Value.Value is T result ? result : defaultValue;
+                constant = arg.Value;
+                return true;
             }
         }
 
-        return defaultValue;
+        constant = default;
+        return false;
     }
 
     public static bool TrySimplifyTypeName(string? @namespace, string name, [NotNullWhen(true)] out string? simplifiedName)

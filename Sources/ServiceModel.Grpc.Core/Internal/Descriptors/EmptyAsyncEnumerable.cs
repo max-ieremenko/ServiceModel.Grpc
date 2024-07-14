@@ -14,11 +14,17 @@
 // limitations under the License.
 // </copyright>
 
-namespace ServiceModel.Grpc.Descriptions.Reflection;
+namespace ServiceModel.Grpc.Internal.Descriptors;
 
-internal interface IAttributeInfo
+internal sealed class EmptyAsyncEnumerable<TItem> : IAsyncEnumerable<TItem>, IAsyncEnumerator<TItem>
 {
-    bool TryGetPropertyValue<T>(string propertyName, [NotNullWhen(true)] out T? value);
+    public static readonly IAsyncEnumerable<TItem> Instance = new EmptyAsyncEnumerable<TItem>();
 
-    bool TryGetPropertyValues<TItem>(string propertyName, [NotNullWhen(true)] out IReadOnlyList<TItem>? value);
+    public TItem Current => throw new InvalidOperationException();
+
+    public IAsyncEnumerator<TItem> GetAsyncEnumerator(CancellationToken cancellationToken) => this;
+
+    public ValueTask DisposeAsync() => new(Task.CompletedTask);
+
+    public ValueTask<bool> MoveNextAsync() => new(false);
 }

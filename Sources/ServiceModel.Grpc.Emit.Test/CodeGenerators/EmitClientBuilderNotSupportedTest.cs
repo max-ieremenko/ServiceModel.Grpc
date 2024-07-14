@@ -33,8 +33,7 @@ public class EmitClientBuilderNotSupportedTest : ClientBuilderNotSupportedTestBa
 
         var moduleBuilder = ProxyAssembly.CreateModule(nameof(EmitClientBuilderNotSupportedTest));
 
-        var contractBuilder = new EmitContractBuilder(description);
-        var contractType = contractBuilder.Build(moduleBuilder);
+        var contractType = EmitContractBuilder.Build(moduleBuilder, description);
         var contractFactory = EmitContractBuilder.CreateFactory(contractType);
 
         var sut = new EmitClientBuilder(description, contractType);

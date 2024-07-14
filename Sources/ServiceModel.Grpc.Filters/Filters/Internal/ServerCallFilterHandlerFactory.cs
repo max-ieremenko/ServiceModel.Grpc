@@ -21,11 +21,6 @@ namespace ServiceModel.Grpc.Filters.Internal;
 
 internal sealed class ServerCallFilterHandlerFactory
 {
-    private readonly MessageProxy _requestMessageProxy;
-    private readonly MessageProxy _responseMessageProxy;
-    private readonly IStreamAccessor? _requestStreamProxy;
-    private readonly IStreamAccessor? _responseStreamProxy;
-
     public ServerCallFilterHandlerFactory(
         IServiceProvider serviceProvider,
         IOperationDescriptor operation,
@@ -34,11 +29,6 @@ internal sealed class ServerCallFilterHandlerFactory
         ServiceProvider = serviceProvider;
         Operation = operation;
         FilterFactories = filterFactories;
-
-        _requestMessageProxy = new MessageProxy(operation.GetRequestAccessor());
-        _requestStreamProxy = operation.GetRequestStreamAccessor();
-        _responseMessageProxy = new MessageProxy(operation.GetResponseAccessor());
-        _responseStreamProxy = operation.GetResponseStreamAccessor();
     }
 
     public IServiceProvider ServiceProvider { get; }
@@ -60,8 +50,8 @@ internal sealed class ServerCallFilterHandlerFactory
             context,
             ServiceProvider,
             Operation,
-            new RequestContext(_requestMessageProxy, _requestStreamProxy),
-            new ResponseContext(_responseMessageProxy, _responseStreamProxy));
+            new RequestContext(Operation.GetRequestAccessor(), Operation.GetRequestStreamAccessor()),
+            new ResponseContext(Operation.GetResponseAccessor(), Operation.GetResponseStreamAccessor()));
 
         return new ServerCallFilterHandler(filterContext, filters);
     }
