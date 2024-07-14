@@ -15,7 +15,6 @@
 // </copyright>
 
 using System.ComponentModel;
-using System.Reflection;
 using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
 
@@ -40,7 +39,7 @@ public interface IClientMethodBinder
     IMarshallerFactory MarshallerFactory { get; }
 
     /// <exclude />
-    void Add(IMethod method, Func<MethodInfo> resolveContractMethodDefinition);
+    void Add(IMethod method, IOperationDescriptor descriptor);
 
     /// <exclude />
     IClientCallInvoker CreateCallInvoker();

@@ -84,19 +84,28 @@ internal sealed class EmitClientBuilderBuilder
         body.Emit(OpCodes.Newobj, _contractType.Constructor(typeof(IMarshallerFactory)));
         body.Emit(OpCodes.Stfld, _contractField);
 
-        // EmitAdapter.AddMethod(methodBinder, _contract.Method, Contract.Handle);
+        var afterMetadata = body.DefineLabel();
+
+        // if (methodBinder.RequiresMetadata)
+        body.Emit(OpCodes.Ldarg_1);
+        body.Emit(OpCodes.Callvirt, typeof(IClientMethodBinder).InstanceProperty(nameof(IClientMethodBinder.RequiresMetadata)).GetMethod);
+        body.Emit(OpCodes.Brfalse, afterMetadata);
+
+        // methodBinder.Add(_contract.Method, Contract.GetDescriptor());
         foreach (var interfaceDescription in _description.Services)
         {
             foreach (var operation in interfaceDescription.Operations)
             {
-                InvokeEmitAdapterAddMethod(body, NamingContract.Contract.GrpcMethod(operation.OperationName), NamingContract.Contract.ClrDefinitionMethod(operation.OperationName));
+                InvokeEmitAdapterAddMethod(body, NamingContract.Contract.GrpcMethod(operation.OperationName), NamingContract.Contract.DescriptorMethod(operation.OperationName));
             }
 
             foreach (var entry in interfaceDescription.SyncOverAsync)
             {
-                InvokeEmitAdapterAddMethod(body, NamingContract.Contract.GrpcMethod(entry.Async.OperationName), NamingContract.Contract.ClrDefinitionMethodSync(entry.Async.OperationName));
+                InvokeEmitAdapterAddMethod(body, NamingContract.Contract.GrpcMethod(entry.Async.OperationName), NamingContract.Contract.DescriptorMethodSync(entry.Async.OperationName));
             }
         }
+
+        body.MarkLabel(afterMetadata);
 
         // _clientCallInvokerField = methodBinder.CreateCallInvoker()
         body.Emit(OpCodes.Ldarg_0);
@@ -132,7 +141,7 @@ internal sealed class EmitClientBuilderBuilder
         body.Emit(OpCodes.Ret);
     }
 
-    private void InvokeEmitAdapterAddMethod(ILGenerator body, string grpcMethodName, string clrDefinitionMethodName)
+    private void InvokeEmitAdapterAddMethod(ILGenerator body, string grpcMethodName, string descriptorMethodName)
     {
         body.Emit(OpCodes.Ldarg_1); // methodBinder
 
@@ -140,8 +149,9 @@ internal sealed class EmitClientBuilderBuilder
         body.Emit(OpCodes.Ldfld, _contractField);
         body.Emit(OpCodes.Ldfld, _contractType.InstanceFiled(grpcMethodName));
 
-        body.Emit(OpCodes.Ldsfld, _contractType.StaticFiled(clrDefinitionMethodName)); // Contract.Handle
+        // Contract.GetDescriptor()
+        body.Emit(OpCodes.Call, _contractType.StaticMethod(descriptorMethodName));
 
-        body.Emit(OpCodes.Call, typeof(EmitAdapter).StaticMethod(nameof(EmitAdapter.AddMethod))); // EmitAdapter.AddMethod();
+        body.Emit(OpCodes.Callvirt, typeof(IClientMethodBinder).InstanceMethod(nameof(IClientMethodBinder.Add)));
     }
 }

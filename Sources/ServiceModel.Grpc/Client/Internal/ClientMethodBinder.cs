@@ -14,10 +14,8 @@
 // limitations under the License.
 // </copyright>
 
-using System.Reflection;
 using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
-using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Filters;
 using ServiceModel.Grpc.Filters.Internal;
 using ServiceModel.Grpc.Internal;
@@ -61,8 +59,7 @@ internal sealed class ClientMethodBinder : IClientMethodBinder
         _filterRegistrations.Registrations.AddRange(registrations);
     }
 
-    public void Add(IMethod method, Func<MethodInfo> resolveContractMethodDefinition) =>
-        _filterRegistrations?.AddMethod(method, EmitGenerator.GenerateOperationDescriptor(resolveContractMethodDefinition));
+    public void Add(IMethod method, IOperationDescriptor descriptor) => _filterRegistrations?.AddMethod(method, descriptor);
 
     public IClientCallInvoker CreateCallInvoker() =>
         new ClientCallInvoker(DefaultCallOptionsFactory, _filterRegistrations?.CreateFactory(ServiceProvider));

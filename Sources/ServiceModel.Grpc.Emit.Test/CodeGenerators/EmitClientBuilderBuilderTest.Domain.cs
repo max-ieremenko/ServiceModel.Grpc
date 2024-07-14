@@ -33,19 +33,20 @@ public partial class EmitClientBuilderBuilderTest
     public sealed class ContractMock
     {
 #pragma warning disable SA1401
-        public static RuntimeMethodHandle GetSomeOperationDefinition;
-
         public IMethod MethodSomeOperation;
 #pragma warning restore SA1401
+
+        private static readonly IOperationDescriptor SomeOperationDescriptorValue = new Mock<IOperationDescriptor>(MockBehavior.Strict).Object;
 
         public ContractMock(IMarshallerFactory marshallerFactory)
         {
             MarshallerFactory = marshallerFactory;
             MethodSomeOperation = new Mock<IMethod>(MockBehavior.Strict).Object;
-            GetSomeOperationDefinition = typeof(ISomeContract).InstanceMethod(nameof(ISomeContract.SomeOperation)).MethodHandle;
         }
 
         public IMarshallerFactory MarshallerFactory { get; }
+
+        public static IOperationDescriptor GetSomeOperationDescriptor() => SomeOperationDescriptorValue;
     }
 
     public sealed class ClientMock : ISomeContract
