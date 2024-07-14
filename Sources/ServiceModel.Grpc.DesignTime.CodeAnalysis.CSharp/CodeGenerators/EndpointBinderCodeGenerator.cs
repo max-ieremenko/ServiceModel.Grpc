@@ -216,7 +216,7 @@ internal sealed class EndpointBinderCodeGenerator : ICodeGenerator
                         .Append(", ")
                         .Append(NamingContract.Contract.Class(_contract.BaseClassName))
                         .Append(".")
-                        .Append(NamingContract.Contract.ClrDefinitionMethod(method.OperationName))
+                        .Append(NamingContract.Contract.DescriptorMethod(method.OperationName))
                         .Append(", ")
                         .Append(GetMethodMetadataName(method))
                         .Append("(), endpoint.")

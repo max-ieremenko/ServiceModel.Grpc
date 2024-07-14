@@ -15,7 +15,6 @@
 // </copyright>
 
 using System.ComponentModel;
-using System.Reflection;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
@@ -41,7 +40,7 @@ public interface IServiceMethodBinder<TService>
 
     void AddUnaryMethod<TRequest, TResponse>(
         IMethod method,
-        Func<MethodInfo> resolveContractMethodDefinition,
+        Func<IOperationDescriptor> getDescriptor,
         IList<object> metadata,
         Func<TService, TRequest, ServerCallContext, Task<TResponse>> handler)
         where TRequest : class
@@ -49,7 +48,7 @@ public interface IServiceMethodBinder<TService>
 
     void AddClientStreamingMethod<TRequestHeader, TRequest, TRequestValue, TResponse>(
         IMethod method,
-        Func<MethodInfo> resolveContractMethodDefinition,
+        Func<IOperationDescriptor> getDescriptor,
         IList<object> metadata,
         Func<TService, TRequestHeader?, IAsyncEnumerable<TRequestValue?>, ServerCallContext, Task<TResponse>> handler)
         where TRequestHeader : class
@@ -58,7 +57,7 @@ public interface IServiceMethodBinder<TService>
 
     void AddServerStreamingMethod<TRequest, TResponseHeader, TResponse, TResponseValue>(
         IMethod method,
-        Func<MethodInfo> resolveContractMethodDefinition,
+        Func<IOperationDescriptor> getDescriptor,
         IList<object> metadata,
         Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponseValue?> Response)>> handler)
         where TRequest : class
@@ -67,7 +66,7 @@ public interface IServiceMethodBinder<TService>
 
     void AddDuplexStreamingMethod<TRequestHeader, TRequest, TRequestValue, TResponseHeader, TResponse, TResponseValue>(
         IMethod method,
-        Func<MethodInfo> resolveContractMethodDefinition,
+        Func<IOperationDescriptor> getDescriptor,
         IList<object> metadata,
         Func<TService, TRequestHeader?, IAsyncEnumerable<TRequestValue?>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponseValue?> Response)>> handler)
         where TRequestHeader : class

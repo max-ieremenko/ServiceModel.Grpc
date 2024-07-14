@@ -69,14 +69,15 @@ internal sealed class EmitServiceEndpointBinder<TService> : IServiceEndpointBind
                 var channelMethod = _channelType.InstanceMethod(operation.OperationName);
                 var metadata = TryGetMethodMetadata(interfaceDescription.InterfaceType, operation.GetSource());
                 var grpcMethodMethod = (IMethod)_contractType.InstanceFiled(NamingContract.Contract.GrpcMethod(operation.OperationName)).GetValue(contract);
+                var getDescriptor = _contractType.StaticMethod(NamingContract.Contract.DescriptorMethod(operation.OperationName)).CreateDelegate<Func<IOperationDescriptor>>();
 
                 _logger?.LogDebug("Bind service method {0}.{1}.", serviceType.FullName, operation.Method.Name);
                 if (grpcMethodMethod.Type == MethodType.Unary)
                 {
                     var addMethod = _serviceBinderAddUnaryMethod
                         .MakeGenericMethod(operation.RequestType.GetClrType(), operation.ResponseType.GetClrType())
-                        .CreateDelegate<Action<IServiceMethodBinder<TService>, IMethod, MethodInfo, IList<object>, MethodInfo, object>>();
-                    addMethod(binder, grpcMethodMethod, operation.GetSource(), metadata, channelMethod, channelInstance);
+                        .CreateDelegate<Action<IServiceMethodBinder<TService>, IMethod, Func<IOperationDescriptor>, IList<object>, MethodInfo, object>>();
+                    addMethod(binder, grpcMethodMethod, getDescriptor, metadata, channelMethod, channelInstance);
                 }
                 else if (grpcMethodMethod.Type == MethodType.ClientStreaming)
                 {
@@ -86,8 +87,8 @@ internal sealed class EmitServiceEndpointBinder<TService> : IServiceEndpointBind
                             operation.RequestType.GetClrType(),
                             operation.RequestType.Properties[0],
                             operation.ResponseType.GetClrType())
-                        .CreateDelegate<Action<IServiceMethodBinder<TService>, IMethod, MethodInfo, IList<object>, MethodInfo, object>>();
-                    addMethod(binder, grpcMethodMethod, operation.GetSource(), metadata, channelMethod, channelInstance);
+                        .CreateDelegate<Action<IServiceMethodBinder<TService>, IMethod, Func<IOperationDescriptor>, IList<object>, MethodInfo, object>>();
+                    addMethod(binder, grpcMethodMethod, getDescriptor, metadata, channelMethod, channelInstance);
                 }
                 else if (grpcMethodMethod.Type == MethodType.ServerStreaming)
                 {
@@ -97,8 +98,8 @@ internal sealed class EmitServiceEndpointBinder<TService> : IServiceEndpointBind
                             operation.HeaderResponseType.GetClrType(),
                             operation.ResponseType.GetClrType(),
                             operation.ResponseType.Properties[0])
-                        .CreateDelegate<Action<IServiceMethodBinder<TService>, IMethod, MethodInfo, IList<object>, MethodInfo, object>>();
-                    addMethod(binder, grpcMethodMethod, operation.GetSource(), metadata, channelMethod, channelInstance);
+                        .CreateDelegate<Action<IServiceMethodBinder<TService>, IMethod, Func<IOperationDescriptor>, IList<object>, MethodInfo, object>>();
+                    addMethod(binder, grpcMethodMethod, getDescriptor, metadata, channelMethod, channelInstance);
                 }
                 else if (grpcMethodMethod.Type == MethodType.DuplexStreaming)
                 {
@@ -110,8 +111,8 @@ internal sealed class EmitServiceEndpointBinder<TService> : IServiceEndpointBind
                             operation.HeaderResponseType.GetClrType(),
                             operation.ResponseType.GetClrType(),
                             operation.ResponseType.Properties[0])
-                        .CreateDelegate<Action<IServiceMethodBinder<TService>, IMethod, MethodInfo, IList<object>, MethodInfo, object>>();
-                    addMethod(binder, grpcMethodMethod, operation.GetSource(), metadata, channelMethod, channelInstance);
+                        .CreateDelegate<Action<IServiceMethodBinder<TService>, IMethod, Func<IOperationDescriptor>, IList<object>, MethodInfo, object>>();
+                    addMethod(binder, grpcMethodMethod, getDescriptor, metadata, channelMethod, channelInstance);
                 }
                 else
                 {
@@ -124,7 +125,7 @@ internal sealed class EmitServiceEndpointBinder<TService> : IServiceEndpointBind
     private static void AddUnaryMethod<TRequest, TResponse>(
         IServiceMethodBinder<TService> binder,
         IMethod grpcMethod,
-        MethodInfo contractMethodDefinition,
+        Func<IOperationDescriptor> getDescriptor,
         IList<object> metadata,
         MethodInfo channelMethod,
         object channelInstance)
@@ -135,7 +136,7 @@ internal sealed class EmitServiceEndpointBinder<TService> : IServiceEndpointBind
         var handler = channelMethod.CreateDelegate<Func<TService, TRequest, ServerCallContext, Task<TResponse>>>(channelInstance);
         binder.AddUnaryMethod(
             method,
-            () => contractMethodDefinition,
+            getDescriptor,
             metadata,
             handler);
     }
@@ -143,7 +144,7 @@ internal sealed class EmitServiceEndpointBinder<TService> : IServiceEndpointBind
     private static void AddClientStreamingMethod<TRequestHeader, TRequest, TRequestValue, TResponse>(
         IServiceMethodBinder<TService> binder,
         IMethod grpcMethod,
-        MethodInfo contractMethodDefinition,
+        Func<IOperationDescriptor> getDescriptor,
         IList<object> metadata,
         MethodInfo channelMethod,
         object channelInstance)
@@ -154,7 +155,7 @@ internal sealed class EmitServiceEndpointBinder<TService> : IServiceEndpointBind
         var handler = channelMethod.CreateDelegate<Func<TService, TRequestHeader?, IAsyncEnumerable<TRequestValue?>, ServerCallContext, Task<TResponse>>>(channelInstance);
         binder.AddClientStreamingMethod<TRequestHeader, TRequest, TRequestValue, TResponse>(
             grpcMethod,
-            () => contractMethodDefinition,
+            getDescriptor,
             metadata,
             handler);
     }
@@ -162,7 +163,7 @@ internal sealed class EmitServiceEndpointBinder<TService> : IServiceEndpointBind
     private static void AddServerStreamingMethod<TRequest, TResponseHeader, TResponse, TResponseValue>(
         IServiceMethodBinder<TService> binder,
         IMethod grpcMethod,
-        MethodInfo contractMethodDefinition,
+        Func<IOperationDescriptor> getDescriptor,
         IList<object> metadata,
         MethodInfo channelMethod,
         object channelInstance)
@@ -173,7 +174,7 @@ internal sealed class EmitServiceEndpointBinder<TService> : IServiceEndpointBind
         var handler = channelMethod.CreateDelegate<Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponseValue?> Response)>>>(channelInstance);
         binder.AddServerStreamingMethod<TRequest, TResponseHeader, TResponse, TResponseValue>(
             grpcMethod,
-            () => contractMethodDefinition,
+            getDescriptor,
             metadata,
             handler);
     }
@@ -181,7 +182,7 @@ internal sealed class EmitServiceEndpointBinder<TService> : IServiceEndpointBind
     private static void AddDuplexStreamingMethod<TRequestHeader, TRequest, TRequestValue, TResponseHeader, TResponse, TResponseValue>(
         IServiceMethodBinder<TService> binder,
         IMethod grpcMethod,
-        MethodInfo contractMethodDefinition,
+        Func<IOperationDescriptor> getDescriptor,
         IList<object> metadata,
         MethodInfo channelMethod,
         object channelInstance)
@@ -193,7 +194,7 @@ internal sealed class EmitServiceEndpointBinder<TService> : IServiceEndpointBind
         var handler = channelMethod.CreateDelegate<Func<TService, TRequestHeader?, IAsyncEnumerable<TRequestValue?>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponseValue?> Response)>>>(channelInstance);
         binder.AddDuplexStreamingMethod<TRequestHeader, TRequest, TRequestValue, TResponseHeader, TResponse, TResponseValue>(
             grpcMethod,
-            () => contractMethodDefinition,
+            getDescriptor,
             metadata,
             handler);
     }

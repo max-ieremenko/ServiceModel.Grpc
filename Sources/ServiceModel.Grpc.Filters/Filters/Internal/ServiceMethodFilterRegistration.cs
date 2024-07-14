@@ -43,7 +43,7 @@ internal sealed class ServiceMethodFilterRegistration
         _registrations.AddRange(registrations);
     }
 
-    public ServerCallFilterHandlerFactory? CreateHandlerFactory(IList<object> metadata, Func<IOperationDescriptor> getOperation)
+    public ServerCallFilterHandlerFactory? CreateHandlerFactory(IList<object> metadata, Func<IOperationDescriptor> getDescriptor)
     {
         var registrations = CombineRegistrations(metadata);
         if (registrations == null)
@@ -59,7 +59,7 @@ internal sealed class ServiceMethodFilterRegistration
             filterFactories[i] = registrations[i].Factory;
         }
 
-        return new ServerCallFilterHandlerFactory(_serviceProvider, getOperation(), filterFactories);
+        return new ServerCallFilterHandlerFactory(_serviceProvider, getDescriptor(), filterFactories);
     }
 
     private List<FilterRegistration<IServerFilter>>? CombineRegistrations(IList<object> metadata)

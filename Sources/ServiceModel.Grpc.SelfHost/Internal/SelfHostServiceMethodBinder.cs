@@ -14,11 +14,9 @@
 // limitations under the License.
 // </copyright>
 
-using System.Reflection;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
-using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Filters.Internal;
 using ServiceModel.Grpc.Hosting.Internal;
 using ServiceModel.Grpc.Internal;
@@ -47,15 +45,13 @@ internal sealed class SelfHostServiceMethodBinder<TService> : IServiceMethodBind
 
     public void AddUnaryMethod<TRequest, TResponse>(
         IMethod method,
-        Func<MethodInfo> resolveContractMethodDefinition,
+        Func<IOperationDescriptor> getDescriptor,
         IList<object> metadata,
         Func<TService, TRequest, ServerCallContext, Task<TResponse>> handler)
         where TRequest : class
         where TResponse : class
     {
-        Func<IOperationDescriptor> getOperation = () => EmitGenerator.GenerateOperationDescriptor(resolveContractMethodDefinition);
-
-        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, getOperation);
+        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, getDescriptor);
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
         var invoker = new UnaryServerCallHandler<TService, TRequest, TResponse>(_serviceFactory, handler, filterHandlerFactory);
@@ -64,16 +60,14 @@ internal sealed class SelfHostServiceMethodBinder<TService> : IServiceMethodBind
 
     public void AddClientStreamingMethod<TRequestHeader, TRequest, TRequestValue, TResponse>(
         IMethod method,
-        Func<MethodInfo> resolveContractMethodDefinition,
+        Func<IOperationDescriptor> getDescriptor,
         IList<object> metadata,
         Func<TService, TRequestHeader?, IAsyncEnumerable<TRequestValue?>, ServerCallContext, Task<TResponse>> handler)
         where TRequestHeader : class
         where TRequest : class, IMessage<TRequestValue>
         where TResponse : class
     {
-        Func<IOperationDescriptor> getOperation = () => EmitGenerator.GenerateOperationDescriptor(resolveContractMethodDefinition);
-
-        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, getOperation);
+        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, getDescriptor);
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
         var invoker = new ClientStreamingServerCallHandler<TService, TRequestHeader, TRequest, TRequestValue, TResponse>(
@@ -86,16 +80,14 @@ internal sealed class SelfHostServiceMethodBinder<TService> : IServiceMethodBind
 
     public void AddServerStreamingMethod<TRequest, TResponseHeader, TResponse, TResponseValue>(
         IMethod method,
-        Func<MethodInfo> resolveContractMethodDefinition,
+        Func<IOperationDescriptor> getDescriptor,
         IList<object> metadata,
         Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponseValue?> Response)>> handler)
         where TRequest : class
         where TResponseHeader : class
         where TResponse : class, IMessage<TResponseValue>, new()
     {
-        Func<IOperationDescriptor> getOperation = () => EmitGenerator.GenerateOperationDescriptor(resolveContractMethodDefinition);
-
-        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, getOperation);
+        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, getDescriptor);
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
         var invoker = new ServerStreamingServerCallHandler<TService, TRequest, TResponseHeader, TResponse, TResponseValue>(
@@ -108,7 +100,7 @@ internal sealed class SelfHostServiceMethodBinder<TService> : IServiceMethodBind
 
     public void AddDuplexStreamingMethod<TRequestHeader, TRequest, TRequestValue, TResponseHeader, TResponse, TResponseValue>(
         IMethod method,
-        Func<MethodInfo> resolveContractMethodDefinition,
+        Func<IOperationDescriptor> getDescriptor,
         IList<object> metadata,
         Func<TService, TRequestHeader?, IAsyncEnumerable<TRequestValue?>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponseValue?> Response)>> handler)
         where TRequestHeader : class
@@ -116,9 +108,7 @@ internal sealed class SelfHostServiceMethodBinder<TService> : IServiceMethodBind
         where TResponseHeader : class
         where TResponse : class, IMessage<TResponseValue>, new()
     {
-        Func<IOperationDescriptor> getOperation = () => EmitGenerator.GenerateOperationDescriptor(resolveContractMethodDefinition);
-
-        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, getOperation);
+        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, getDescriptor);
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
         var invoker = new DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TRequestValue, TResponseHeader, TResponse, TResponseValue>(
