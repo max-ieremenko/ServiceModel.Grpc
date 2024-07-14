@@ -192,7 +192,7 @@ internal static class EmitMessageAccessorBuilder
 
         body.Emit(OpCodes.Ldarg_2);
         body.Emit(OpCodes.Switch, switchLabels);
-        body.Emit(OpCodes.Br_S, defaultLabel);
+        body.Emit(OpCodes.Br, defaultLabel);
 
         for (var i = 0; i < args.Length; i++)
         {
@@ -232,7 +232,7 @@ internal static class EmitMessageAccessorBuilder
 
         body.Emit(OpCodes.Ldarg_1);
         body.Emit(OpCodes.Switch, switchLabels);
-        body.Emit(OpCodes.Br_S, defaultLabel);
+        body.Emit(OpCodes.Br, defaultLabel);
 
         for (var i = 0; i < args.Length; i++)
         {
@@ -286,7 +286,7 @@ internal static class EmitMessageAccessorBuilder
 
         body.Emit(OpCodes.Ldarg_2);
         body.Emit(OpCodes.Switch, switchLabels);
-        body.Emit(OpCodes.Br_S, defaultLabel);
+        body.Emit(OpCodes.Br, defaultLabel);
 
         for (var i = 0; i < args.Length; i++)
         {

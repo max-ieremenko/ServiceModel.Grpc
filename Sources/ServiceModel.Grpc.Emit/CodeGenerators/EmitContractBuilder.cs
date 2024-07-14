@@ -202,7 +202,7 @@ internal static class EmitContractBuilder
         if (operation.HeaderRequestTypeInput.Length > 0)
         {
             body.Emit(OpCodes.Ldloca_S, 0);
-            CreateInt32Array(body, operation.HeaderRequestTypeInput);
+            body.EmitInt32Array(operation.HeaderRequestTypeInput);
             body.Emit(OpCodes.Call, reflect.BuilderWithRequestHeaderParameters);
             body.Emit(OpCodes.Stloc_0);
         }
@@ -210,7 +210,7 @@ internal static class EmitContractBuilder
         if (operation.RequestTypeInput.Length > 0)
         {
             body.Emit(OpCodes.Ldloca_S, 0);
-            CreateInt32Array(body, operation.RequestTypeInput);
+            body.EmitInt32Array(operation.RequestTypeInput);
             body.Emit(OpCodes.Call, reflect.BuilderWithRequestParameters);
             body.Emit(OpCodes.Stloc_0);
         }
@@ -246,15 +246,7 @@ internal static class EmitContractBuilder
         }
 
         // new string[5] {1,2,3,}
-        body.Emit(OpCodes.Ldc_I4_S, args.Names.Length);
-        body.Emit(OpCodes.Newarr, typeof(string));
-        for (var i = 0; i < args.Names.Length; i++)
-        {
-            body.Emit(OpCodes.Dup);
-            body.Emit(OpCodes.Ldc_I4_S, i);
-            body.Emit(OpCodes.Ldstr, args.Names[i]);
-            body.Emit(OpCodes.Stelem_Ref);
-        }
+        body.EmitStringArray(args.Names);
 
         // CreateMessageAccessor
         if (args.Message.IsBuiltIn)
@@ -265,20 +257,6 @@ internal static class EmitContractBuilder
         {
             var ctor = ((Type)method).MakeGenericType(args.Message.Properties).Constructor(1);
             body.Emit(OpCodes.Newobj, ctor);
-        }
-    }
-
-    private static void CreateInt32Array(ILGenerator body, int[] values)
-    {
-        // new int[5] {1,2,3,}
-        body.Emit(OpCodes.Ldc_I4_S, values.Length);
-        body.Emit(OpCodes.Newarr, typeof(int));
-        for (var i = 0; i < values.Length; i++)
-        {
-            body.Emit(OpCodes.Dup);
-            body.Emit(OpCodes.Ldc_I4_S, i);
-            body.Emit(OpCodes.Ldc_I4_S, values[i]);
-            body.Emit(OpCodes.Stelem_I4);
         }
     }
 }
