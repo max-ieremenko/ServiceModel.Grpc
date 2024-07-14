@@ -19,6 +19,8 @@ using System.Reflection;
 using Grpc.Core.Utils;
 using ServiceModel.Grpc.Internal.Descriptors;
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
 namespace ServiceModel.Grpc.Internal;
 
 /// <summary>
