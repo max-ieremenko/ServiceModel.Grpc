@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System.Reflection;
 using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.Emit.CodeGenerators;
 using ServiceModel.Grpc.Emit.Descriptions;
@@ -64,7 +63,13 @@ public static class EmitGenerator
         return new EmitServiceEndpointBinder<TService>(description, serviceInstanceType, contractType, channelType, logger);
     }
 
-    public static IOperationDescriptor GenerateOperationDescriptor(Func<MethodInfo> getContractMethod) => new ReflectOperationDescriptor(getContractMethod);
+    public static Type GenerateContract<TService>()
+    {
+        lock (ProxyAssembly.SyncRoot)
+        {
+            return GenerateContract(typeof(TService), null).ContractType;
+        }
+    }
 
     private static ContractDescription<Type> CreateDescription(Type serviceType, ILogger? logger)
     {

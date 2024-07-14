@@ -48,12 +48,6 @@ internal static partial class ReflectionTools
         return @namespace;
     }
 
-    public static IList<MethodInfo> GetMethods(Type type)
-    {
-        return type
-            .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-    }
-
     public static bool IsTask(Type type)
     {
         return typeof(Task).IsAssignableFrom(type) || IsValueTask(type);
