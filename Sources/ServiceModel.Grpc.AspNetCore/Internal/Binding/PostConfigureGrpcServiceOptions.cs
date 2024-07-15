@@ -44,6 +44,7 @@ internal sealed class PostConfigureGrpcServiceOptions : IPostConfigureOptions<Gr
             options.Interceptors,
             _serviceModelOptions.Value.DefaultErrorHandlerFactory,
             _serviceModelOptions.Value.DefaultMarshallerFactory,
+            _serviceModelOptions.Value.DefaultErrorDetailSerializer,
             _loggerFactory);
     }
 
@@ -51,6 +52,7 @@ internal sealed class PostConfigureGrpcServiceOptions : IPostConfigureOptions<Gr
         InterceptorCollection interceptors,
         Func<IServiceProvider, IServerErrorHandler>? errorHandlerFactory,
         IMarshallerFactory? marshallerFactory,
+        IServerFaultDetailSerializer? detailSerializer,
         ILoggerFactory loggerFactory)
     {
         if (errorHandlerFactory != null)
@@ -58,6 +60,7 @@ internal sealed class PostConfigureGrpcServiceOptions : IPostConfigureOptions<Gr
             var args = ErrorHandlerInterceptorFactory.CreateServerHandlerArgs(
                 errorHandlerFactory,
                 marshallerFactory.ThisOrDefault(),
+                detailSerializer,
                 CreateLogger(loggerFactory));
 
             interceptors.Add(ErrorHandlerInterceptorFactory.GetServerHandlerType(), args);
