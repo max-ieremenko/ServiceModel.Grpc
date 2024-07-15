@@ -23,15 +23,18 @@ internal sealed class ErrorHandlerServerCallInterceptorFactory : IServerCallInte
 {
     private readonly IMarshallerFactory _marshallerFactory;
     private readonly Func<IServiceProvider, IServerErrorHandler> _errorHandlerFactory;
+    private readonly IServerFaultDetailSerializer? _detailMarshaller;
     private readonly ILogger? _logger;
 
     public ErrorHandlerServerCallInterceptorFactory(
         IMarshallerFactory marshallerFactory,
+        IServerFaultDetailSerializer? detailMarshaller,
         Func<IServiceProvider, IServerErrorHandler> errorHandlerFactory,
         ILogger? logger)
     {
         _marshallerFactory = GrpcPreconditions.CheckNotNull(marshallerFactory, nameof(marshallerFactory));
         _errorHandlerFactory = GrpcPreconditions.CheckNotNull(errorHandlerFactory, nameof(errorHandlerFactory));
+        _detailMarshaller = detailMarshaller;
         _logger = logger;
     }
 
@@ -40,6 +43,6 @@ internal sealed class ErrorHandlerServerCallInterceptorFactory : IServerCallInte
         GrpcPreconditions.CheckNotNull(serviceProvider, nameof(serviceProvider));
 
         var errorHandler = _errorHandlerFactory(serviceProvider);
-        return new ServerCallErrorInterceptor(errorHandler, _marshallerFactory, _logger);
+        return new ServerCallErrorInterceptor(errorHandler, _marshallerFactory, _detailMarshaller, _logger);
     }
 }

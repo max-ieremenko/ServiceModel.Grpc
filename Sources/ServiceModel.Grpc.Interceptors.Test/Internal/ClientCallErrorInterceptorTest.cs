@@ -36,17 +36,12 @@ public class ClientCallErrorInterceptorTest
     {
         _loggerErrors = new List<string>();
 
-        var logger = new Mock<ILogger>(MockBehavior.Strict);
-        logger
-            .Setup(l => l.LogError(It.IsNotNull<string>(), It.IsNotNull<object[]>()))
-            .Callback<string, object[]>((message, args) => _loggerErrors.Add(string.Format(message, args)));
-
         _marshallerFactory = new MarshallerFactoryMock();
         _errorHandler = new Mock<IClientErrorHandler>(MockBehavior.Strict);
         _context = new ClientCallInterceptorContext(default, "host", new Mock<IMethod>(MockBehavior.Strict).Object);
         _error = new RpcException(Status.DefaultSuccess, new Metadata());
 
-        _sut = new ClientCallErrorInterceptor(_errorHandler.Object, _marshallerFactory.Factory, logger.Object);
+        _sut = CreateSut(null);
     }
 
     [Test]
@@ -117,5 +112,48 @@ public class ClientCallErrorInterceptorTest
         _errorHandler.VerifyAll();
         _loggerErrors.Count.ShouldBe(1);
         _loggerErrors[0].ShouldContain("invalid type");
+    }
+
+    [Test]
+    public void UserDetailMarshaller()
+    {
+        var typePayload = "custom name";
+        byte[] detailPayload = [1, 2, 3, 4, 5];
+
+        _error.Trailers.Add(Headers.HeaderNameErrorDetailType, typePayload);
+        _error.Trailers.Add(Headers.HeaderNameErrorDetail, detailPayload);
+
+        var detailDeserializer = new Mock<IClientFaultDetailDeserializer>();
+        detailDeserializer
+            .Setup(m => m.DeserializeDetailType(typePayload))
+            .Returns(typeof(IDisposable));
+        detailDeserializer
+            .Setup(m => m.DeserializeDetail(_marshallerFactory.Factory, typeof(IDisposable), detailPayload))
+            .Returns("abc");
+
+        _errorHandler
+            .Setup(h => h.ThrowOrIgnore(_context, It.IsAny<ClientFaultDetail>()))
+            .Callback<ClientCallInterceptorContext, ClientFaultDetail>((_, detail) =>
+            {
+                detail.OriginalError.ShouldBe(_error);
+                detail.Detail.ShouldBe("abc");
+            });
+
+        var sut = CreateSut(detailDeserializer.Object);
+        sut.OnError(_context, _error);
+
+        _errorHandler.VerifyAll();
+        detailDeserializer.VerifyAll();
+        _loggerErrors.ShouldBeEmpty();
+    }
+
+    private ClientCallErrorInterceptor CreateSut(IClientFaultDetailDeserializer? detailMarshaller)
+    {
+        var logger = new Mock<ILogger>(MockBehavior.Strict);
+        logger
+            .Setup(l => l.LogError(It.IsNotNull<string>(), It.IsNotNull<object[]>()))
+            .Callback<string, object[]>((message, args) => _loggerErrors.Add(string.Format(message, args)));
+
+        return new ClientCallErrorInterceptor(_errorHandler.Object, _marshallerFactory.Factory, detailMarshaller, logger.Object);
     }
 }

@@ -26,15 +26,18 @@ internal sealed class ServerCallErrorInterceptor : IServerCallInterceptor
 
     private readonly IServerErrorHandler _errorHandler;
     private readonly IMarshallerFactory _marshallerFactory;
+    private readonly IServerFaultDetailSerializer? _detailSerializer;
     private readonly ILogger? _logger;
 
     public ServerCallErrorInterceptor(
         IServerErrorHandler errorHandler,
         IMarshallerFactory marshallerFactory,
+        IServerFaultDetailSerializer? detailSerializer,
         ILogger? logger)
     {
         _errorHandler = GrpcPreconditions.CheckNotNull(errorHandler, nameof(errorHandler));
         _marshallerFactory = GrpcPreconditions.CheckNotNull(marshallerFactory, nameof(marshallerFactory));
+        _detailSerializer = detailSerializer;
         _logger = logger;
     }
 
@@ -90,9 +93,10 @@ internal sealed class ServerCallErrorInterceptor : IServerCallInterceptor
 
     private void AddDetail(Metadata metadata, object detail)
     {
+        byte[] detailPayload;
         try
         {
-            metadata.Add(Headers.HeaderNameErrorDetail, MarshallerExtensions.SerializeObject(_marshallerFactory, detail));
+            detailPayload = _detailSerializer?.SerializeDetail(_marshallerFactory, detail) ?? DefaultServerFaultDetailSerializer.Serialize(_marshallerFactory, detail);
         }
         catch (Exception ex)
         {
@@ -105,6 +109,9 @@ internal sealed class ServerCallErrorInterceptor : IServerCallInterceptor
             throw;
         }
 
-        metadata.Add(Headers.HeaderNameErrorDetailType, detail.GetType().GetShortAssemblyQualifiedName());
+        var typePayload = _detailSerializer?.SerializeDetailType(detail.GetType()) ?? DefaultServerFaultDetailSerializer.SerializeType(detail.GetType());
+
+        metadata.Add(Headers.HeaderNameErrorDetail, detailPayload);
+        metadata.Add(Headers.HeaderNameErrorDetailType, typePayload);
     }
 }
