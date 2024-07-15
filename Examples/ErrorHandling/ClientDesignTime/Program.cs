@@ -17,7 +17,10 @@ public static class Program
         Logger = new SimpleConsoleLogger(),
 
         // combine application and unexpected handlers into one handler
-        ErrorHandler = new ClientErrorHandlerCollection(new ApplicationExceptionClientHandler(), new UnexpectedExceptionClientHandler())
+        ErrorHandler = new ClientErrorHandlerCollection(new ApplicationExceptionClientHandler(), new UnexpectedExceptionClientHandler()),
+
+        // uncomment to fully control ClientFaultDetail.Detail deserialization, must be uncommented in Server as well
+        //ErrorDetailDeserializer = new CustomClientFaultDetailDeserializer()
     });
 
     public static async Task Main()

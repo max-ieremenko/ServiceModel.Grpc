@@ -39,6 +39,7 @@ The ServerFaultDetail.Detail can be an instance of any user-defined class. When 
 
 - serializes it by the `IMarshallerFactory` associated with the current service to a `byte[]` and passes to a client call via binary header
 - passes the type (`Detail.GetType()`) of instance to the client call via string header
+- the serialization is customizable
 
 ### Example
 
@@ -87,6 +88,7 @@ When ServerFaultDetail.Detail is provided by server, the ServiceModel.Grpc:
 
 - restores the detail type from string header
 - de-serializes detail by the `IMarshallerFactory` associated with the current service from binary header
+- the de-serialization is customizable
 
 ### Example
 
@@ -144,4 +146,50 @@ catch (OperationCanceledException)
 {
     ....
 }
+```
+
+## How to customize serialization/de-serialization of error details
+
+The client configuration allows to setup a custom implementation of `IClientFaultDetailDeserializer`.
+
+``` c#
+class MyErrorDetailDeserializer : /*DefaultClientFaultDetailDeserializer,*/ IClientFaultDetailDeserializer;
+
+// client
+IClientFactory factory = new ClientFactory(new ServiceModelGrpcClientOptions
+{
+    ErrorHandler = ... // client error handler
+    ErrorDetailDeserializer = new MyErrorDetailDeserializer()
+});
+```
+
+The server configuration allows to setup a custom implementation of `IServerFaultDetailSerializer`.
+
+``` c#
+class MyErrorDetailSerializer : /*DefaultServerFaultDetailSerializer,*/ IServerFaultDetailSerializer;
+
+// asp.net core server
+var builder = WebApplication.CreateBuilder();
+builder.Services
+    .AddServiceModelGrpc(options =>
+    {
+        options.DefaultErrorHandlerFactory = ... // server error handler
+        options.DefaultErrorDetailSerializer = new MyErrorDetailSerializer()
+    });
+builder.Services
+    .AddServiceModelGrpcServiceOptions<DebugService>(options =>
+    {
+        options.ErrorHandlerFactory = ... // server error handler
+        options.ErrorDetailSerializer = new MyErrorDetailSerializer()
+    });
+
+// Grpc.Core.Server
+Grpc.Core.Server server = ...;
+server.Services.AddServiceModelSingleton(
+    new DebugService(),
+    options =>
+    {
+        options.ErrorHandler = ... // server error handler
+        options.ErrorDetailSerializer = new MyErrorDetailSerializer()
+    });
 ```
