@@ -21,20 +21,32 @@ namespace ServiceModel.Grpc.Interceptors.Internal;
 
 internal static class ErrorHandlerInterceptorFactory
 {
-    public static Interceptor CreateClientHandler(IClientErrorHandler errorHandler, IMarshallerFactory marshallerFactory, ILogger? logger)
+    public static Interceptor CreateClientHandler(
+        IClientErrorHandler errorHandler,
+        IMarshallerFactory marshallerFactory,
+        IClientFaultDetailDeserializer? detailDeserializer,
+        ILogger? logger)
     {
-        var interceptor = new ClientCallErrorInterceptor(errorHandler, marshallerFactory, logger);
+        var interceptor = new ClientCallErrorInterceptor(errorHandler, marshallerFactory, detailDeserializer, logger);
         return new ClientNativeInterceptor(interceptor);
     }
 
-    public static Interceptor CreateServerHandler(IServerErrorHandler errorHandler, IMarshallerFactory marshallerFactory, ILogger? logger)
+    public static Interceptor CreateServerHandler(
+        IServerErrorHandler errorHandler,
+        IMarshallerFactory marshallerFactory,
+        IServerFaultDetailSerializer? detailSerializer,
+        ILogger? logger)
     {
-        var interceptor = new ServerCallErrorInterceptor(errorHandler, marshallerFactory, logger);
+        var interceptor = new ServerCallErrorInterceptor(errorHandler, marshallerFactory, detailSerializer, logger);
         return new ServerNativeInterceptor(interceptor);
     }
 
     public static Type GetServerHandlerType() => typeof(ServerNativeInterceptor);
 
-    public static object CreateServerHandlerArgs(Func<IServiceProvider, IServerErrorHandler> errorHandlerFactory, IMarshallerFactory marshallerFactory, ILogger? logger)
-        => new ErrorHandlerServerCallInterceptorFactory(marshallerFactory, errorHandlerFactory, logger);
+    public static object CreateServerHandlerArgs(
+        Func<IServiceProvider, IServerErrorHandler> errorHandlerFactory,
+        IMarshallerFactory marshallerFactory,
+        IServerFaultDetailSerializer? detailSerializer,
+        ILogger? logger)
+        => new ErrorHandlerServerCallInterceptorFactory(marshallerFactory, detailSerializer, errorHandlerFactory, logger);
 }

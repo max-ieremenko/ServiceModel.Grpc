@@ -47,7 +47,7 @@ public class ServerCallErrorInterceptorTest
             .Setup(l => l.LogError(It.IsNotNull<string>(), It.IsNotNull<object[]>()))
             .Callback<string, object[]>((message, args) => _loggerErrors.Add(string.Format(message, args)));
 
-        _sut = new ServerCallErrorInterceptor(_errorHandler.Object, _marshallerFactory.Factory, logger.Object);
+        _sut = CreateSut(null);
     }
 
     [Test]
@@ -147,5 +147,50 @@ public class ServerCallErrorInterceptorTest
 
         _loggerErrors.Count.ShouldBe(1);
         _loggerErrors[0].ShouldContain(nameof(ApplicationException));
+    }
+
+    [Test]
+    public void UserDetailMarshaller()
+    {
+        var detail = "some detail";
+        var detailTypePayload = "custom name";
+        byte[] detailPayload = [1, 2, 3, 4, 5];
+
+        var detailSerializer = new Mock<IServerFaultDetailSerializer>(MockBehavior.Strict);
+        detailSerializer
+            .Setup(m => m.SerializeDetailType(typeof(string)))
+            .Returns(detailTypePayload);
+        detailSerializer
+            .Setup(m => m.SerializeDetail(_marshallerFactory.Factory, detail))
+            .Returns(detailPayload);
+
+        var error = new NotSupportedException();
+        _errorHandler
+            .Setup(h => h.ProvideFaultOrIgnore(_context, error))
+            .Returns(new ServerFaultDetail
+            {
+                Detail = detail
+            });
+
+        var ex = Should.Throw<RpcException>(() => CreateSut(detailSerializer.Object).OnError(_context, error)).ShouldNotBeNull();
+
+        _errorHandler.VerifyAll();
+        detailSerializer.VerifyAll();
+
+        var headerType = ex.Trailers.First(i => Headers.HeaderNameErrorDetailType.Equals(i.Key, StringComparison.OrdinalIgnoreCase));
+        headerType.Value.ShouldBe(detailTypePayload);
+
+        var headerDetail = ex.Trailers.First(i => Headers.HeaderNameErrorDetail.Equals(i.Key, StringComparison.OrdinalIgnoreCase));
+        headerDetail.ValueBytes.ShouldBe(detailPayload);
+    }
+
+    private ServerCallErrorInterceptor CreateSut(IServerFaultDetailSerializer? detailMarshaller)
+    {
+        var logger = new Mock<ILogger>(MockBehavior.Strict);
+        logger
+            .Setup(l => l.LogError(It.IsNotNull<string>(), It.IsNotNull<object[]>()))
+            .Callback<string, object[]>((message, args) => _loggerErrors.Add(string.Format(message, args)));
+
+        return new ServerCallErrorInterceptor(_errorHandler.Object, _marshallerFactory.Factory, detailMarshaller, logger.Object);
     }
 }

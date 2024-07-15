@@ -42,6 +42,12 @@ public sealed class ServiceModelGrpcServiceOptions<TService>
     public Func<IServiceProvider, IServerErrorHandler>? ErrorHandlerFactory { get; set; }
 
     /// <summary>
+    /// Gets or sets an error details serializer, that overrides default serialization.
+    /// It is only applicable with <see cref="ErrorHandlerFactory"/>.
+    /// </summary>
+    public IServerFaultDetailSerializer? ErrorDetailSerializer { get; set; }
+
+    /// <summary>
     /// Gets the collection of registered server filters for this service.
     /// </summary>
     public FilterCollection<IServerFilter> Filters

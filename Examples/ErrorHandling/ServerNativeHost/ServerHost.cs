@@ -34,6 +34,9 @@ internal sealed class ServerHost : IHostedService
                 options.ErrorHandler = new ServerErrorHandlerCollection(
                     new ApplicationExceptionServerHandler(),
                     new UnexpectedExceptionServerHandler());
+
+                // uncomment to fully control ServerFaultDetail.Detail serialization, must be uncommented in Client as well
+                //options.ErrorDetailSerializer = new CustomServerFaultDetailSerializer();
             });
     }
 

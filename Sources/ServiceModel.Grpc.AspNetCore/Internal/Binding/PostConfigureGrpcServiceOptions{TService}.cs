@@ -42,11 +42,13 @@ internal sealed class PostConfigureGrpcServiceOptions<TService> : IPostConfigure
     public void PostConfigure(string? name, GrpcServiceOptions<TService> options)
     {
         var marshallerFactory = _serviceConfiguration.Value.MarshallerFactory ?? _rootConfiguration.Value.DefaultMarshallerFactory;
+        var detailMarshaller = _serviceConfiguration.Value.ErrorDetailSerializer ?? _rootConfiguration.Value.DefaultErrorDetailSerializer;
 
         PostConfigureGrpcServiceOptions.AddErrorHandler(
             options.Interceptors,
             _serviceConfiguration.Value.ErrorHandlerFactory,
             marshallerFactory,
+            detailMarshaller,
             _loggerFactory);
     }
 }

@@ -41,6 +41,12 @@ public sealed class ServiceModelGrpcServiceOptions
     public IServerErrorHandler? ErrorHandler { get; set; }
 
     /// <summary>
+    /// Gets or sets an error details serializer, that overrides default serialization.
+    /// It is only applicable with <see cref="ErrorHandler"/>.
+    /// </summary>
+    public IServerFaultDetailSerializer? ErrorDetailSerializer { get; set; }
+
+    /// <summary>
     /// Gets or sets logger to handle possible output from service binding process.
     /// </summary>
     public ILogger? Logger { get; set; }

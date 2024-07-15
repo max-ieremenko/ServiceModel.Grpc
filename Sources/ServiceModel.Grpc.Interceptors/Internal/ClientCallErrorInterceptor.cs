@@ -28,8 +28,10 @@ internal sealed class ClientCallErrorInterceptor : IClientCallInterceptor
     public ClientCallErrorInterceptor(
         IClientErrorHandler errorHandler,
         IMarshallerFactory marshallerFactory,
+        IClientFaultDetailDeserializer? detailDeserializer,
         ILogger? logger)
     {
+        DetailDeserializer = detailDeserializer;
         ErrorHandler = GrpcPreconditions.CheckNotNull(errorHandler, nameof(errorHandler));
         MarshallerFactory = GrpcPreconditions.CheckNotNull(marshallerFactory, nameof(marshallerFactory));
         _logger = logger;
@@ -38,6 +40,8 @@ internal sealed class ClientCallErrorInterceptor : IClientCallInterceptor
     public IClientErrorHandler ErrorHandler { get; }
 
     public IMarshallerFactory MarshallerFactory { get; }
+
+    public IClientFaultDetailDeserializer? DetailDeserializer { get; }
 
     public void OnError(ClientCallInterceptorContext context, RpcException error)
     {
@@ -82,7 +86,7 @@ internal sealed class ClientCallErrorInterceptor : IClientCallInterceptor
     {
         try
         {
-            return Type.GetType(typeName, true, false);
+            return DetailDeserializer?.DeserializeDetailType(typeName) ?? DefaultClientFaultDetailDeserializer.DeserializeType(typeName);
         }
         catch (Exception ex)
         {
@@ -101,14 +105,15 @@ internal sealed class ClientCallErrorInterceptor : IClientCallInterceptor
 
         try
         {
-            return MarshallerExtensions.DeserializeObject(MarshallerFactory, detailType, detailContent);
+            return DetailDeserializer?.DeserializeDetail(MarshallerFactory, detailType, detailContent)
+                ?? DefaultClientFaultDetailDeserializer.Deserialize(MarshallerFactory, detailType, detailContent);
         }
         catch (Exception ex)
         {
             _logger?.LogError(
                 "Error occurred while trying to deserialize the {0} with {1}:{2}{3}",
                 detailType,
-                MarshallerFactory.GetType(),
+                DetailDeserializer == null ? MarshallerFactory.GetType() : DetailDeserializer.GetType(),
                 Environment.NewLine,
                 ex);
             throw;

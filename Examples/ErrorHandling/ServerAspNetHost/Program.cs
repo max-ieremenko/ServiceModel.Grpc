@@ -29,6 +29,9 @@ public static class Program
             .AddServiceModelGrpc(options =>
             {
                 options.DefaultErrorHandlerFactory = serviceProvider => serviceProvider.GetRequiredService<IServerErrorHandler>();
+
+                // uncomment to fully control ServerFaultDetail.Detail serialization, must be uncommented in Client as well
+                //options.DefaultErrorDetailSerializer = new CustomServerFaultDetailSerializer();
             });
 
         builder.WebHost.ConfigureKestrel(options => options.ListenLocalhost(ServiceConfiguration.ServiceModelGrpcPort, l => l.Protocols = HttpProtocols.Http2));

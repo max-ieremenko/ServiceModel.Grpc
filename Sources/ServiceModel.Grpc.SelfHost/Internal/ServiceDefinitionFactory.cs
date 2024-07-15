@@ -67,6 +67,7 @@ internal static class ServiceDefinitionFactory
             var errorInterceptor = ErrorHandlerInterceptorFactory.CreateServerHandler(
                 options.ErrorHandler,
                 options.MarshallerFactory.ThisOrDefault(),
+                options.ErrorDetailSerializer,
                 loggerAdapter);
             definition = definition.Intercept(errorInterceptor);
         }
