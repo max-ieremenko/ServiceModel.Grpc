@@ -44,6 +44,12 @@ public sealed class ServiceModelGrpcClientOptions
     public IClientErrorHandler? ErrorHandler { get; set; }
 
     /// <summary>
+    /// Gets or sets an error details deserializer, that overrides default deserialization.
+    /// It is only applicable with <see cref="ErrorHandler"/>.
+    /// </summary>
+    public IClientFaultDetailDeserializer? ErrorDetailDeserializer { get; set; }
+
+    /// <summary>
     /// Gets or sets logger to handle possible output from <see cref="IClientFactory"/>.
     /// </summary>
     public ILogger? Logger { get; set; }

@@ -47,6 +47,7 @@ internal sealed class ClientRegistration
             DefaultCallOptionsFactory = defaultOptions?.DefaultCallOptionsFactory,
             Logger = defaultOptions?.Logger,
             ErrorHandler = defaultOptions?.ErrorHandler,
+            ErrorDetailDeserializer = defaultOptions?.ErrorDetailDeserializer,
             ServiceProvider = defaultOptions?.ServiceProvider
         };
 
@@ -66,7 +67,11 @@ internal sealed class ClientRegistration
         Interceptor? interceptor = null;
         if (options.ErrorHandler != null)
         {
-            interceptor = ErrorHandlerInterceptorFactory.CreateClientHandler(options.ErrorHandler, methodBinder.MarshallerFactory, options.Logger);
+            interceptor = ErrorHandlerInterceptorFactory.CreateClientHandler(
+                options.ErrorHandler,
+                methodBinder.MarshallerFactory,
+                options.ErrorDetailDeserializer,
+                options.Logger);
         }
 
         return new ClientRegistration(builder, interceptor);
