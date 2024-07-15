@@ -24,7 +24,7 @@ namespace ServiceModel.Grpc.Interceptors;
 public interface IClientErrorHandler
 {
     /// <summary>
-    /// Handle the exception that was raised by by <see cref="CallInvoker"/>.
+    /// Handle the exception that was raised by <see cref="CallInvoker"/>.
     /// </summary>
     /// <param name="context">The current call context.</param>
     /// <param name="detail">The exception details.</param>

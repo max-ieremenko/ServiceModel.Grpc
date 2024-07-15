@@ -40,7 +40,7 @@ public readonly struct ClientFaultDetail
     public RpcException OriginalError { get; }
 
     /// <summary>
-    /// Gets the error detail provided by <see cref="IServerErrorHandler"/>.
+    /// Gets the error detail provided by <see cref="IServerErrorHandler"/>, see also <see cref="IClientFaultDetailDeserializer"/>.
     /// </summary>
     public object? Detail { get; }
 }

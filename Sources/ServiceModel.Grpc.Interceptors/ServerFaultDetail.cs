@@ -24,17 +24,17 @@ namespace ServiceModel.Grpc.Interceptors;
 public struct ServerFaultDetail
 {
     /// <summary>
-    /// Gets or sets the the gRPC status code, <see cref="Status"/>.
+    /// Gets or sets the gRPC status code, <see cref="Status"/>.
     /// </summary>
     public StatusCode? StatusCode { get; set; }
 
     /// <summary>
-    /// Gets or sets the the optional gRPC error message, <see cref="Status"/>.
+    /// Gets or sets the optional gRPC error message, <see cref="Status"/>.
     /// </summary>
     public string? Message { get; set; }
 
     /// <summary>
-    /// Gets or sets the the optional detail of error to pass for a client call.
+    /// Gets or sets the optional detail of error to pass for a client call.
     /// </summary>
     public object? Detail { get; set; }
 
