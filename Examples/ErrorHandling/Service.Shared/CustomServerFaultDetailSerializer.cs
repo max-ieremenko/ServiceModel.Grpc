@@ -2,7 +2,7 @@
 using Contract;
 using ServiceModel.Grpc.Interceptors;
 
-namespace Service;
+namespace Service.Shared;
 
 public sealed class CustomServerFaultDetailSerializer : DefaultServerFaultDetailSerializer
 {

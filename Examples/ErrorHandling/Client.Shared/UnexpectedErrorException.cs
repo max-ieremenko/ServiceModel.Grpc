@@ -1,7 +1,7 @@
 ﻿using System;
 using Contract;
 
-namespace ClientDesignTime;
+namespace Client.Shared;
 
 public class UnexpectedErrorException : SystemException
 {

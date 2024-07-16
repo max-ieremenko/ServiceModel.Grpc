@@ -1,11 +1,11 @@
 ﻿using Grpc.Core;
 using Microsoft.Extensions.Hosting;
-using Service;
 using ServiceModel.Grpc.Interceptors;
 using System.Threading;
 using System.Threading.Tasks;
 using Contract;
 using Grpc.Core.Logging;
+using Service.Shared;
 
 namespace ServerNativeHost;
 

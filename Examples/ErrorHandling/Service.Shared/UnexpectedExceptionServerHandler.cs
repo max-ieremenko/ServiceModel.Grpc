@@ -2,7 +2,7 @@
 using Contract;
 using ServiceModel.Grpc.Interceptors;
 
-namespace Service;
+namespace Service.Shared;
 
 // this handler is responsible for processing InvalidOperationException and NotSupportedException on server-side
 public sealed class UnexpectedExceptionServerHandler : IServerErrorHandler

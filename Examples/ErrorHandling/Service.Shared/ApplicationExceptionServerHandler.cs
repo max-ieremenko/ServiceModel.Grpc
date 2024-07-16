@@ -1,7 +1,7 @@
 ﻿using System;
 using ServiceModel.Grpc.Interceptors;
 
-namespace Service;
+namespace Service.Shared;
 
 // this handler is responsible for processing ApplicationException on server-side
 public sealed class ApplicationExceptionServerHandler : IServerErrorHandler

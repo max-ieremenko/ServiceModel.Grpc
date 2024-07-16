@@ -1,9 +1,9 @@
 ﻿using System;
 using ServiceModel.Grpc.Interceptors;
 
-namespace ClientDesignTime;
+namespace Client.Shared;
 
-internal sealed class ApplicationExceptionClientHandler : IClientErrorHandler
+public sealed class ApplicationExceptionClientHandler : IClientErrorHandler
 {
     public void ThrowOrIgnore(ClientCallInterceptorContext context, ClientFaultDetail detail)
     {
