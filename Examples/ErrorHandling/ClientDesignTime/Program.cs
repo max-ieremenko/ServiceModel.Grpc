@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using Client.Shared;
 using Contract;
 using Grpc.Core;
 using ServiceModel.Grpc.Client;

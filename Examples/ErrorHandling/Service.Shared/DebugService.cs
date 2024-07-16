@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Contract;
 
-namespace Service;
+namespace Service.Shared;
 
 public sealed class DebugService : IDebugService
 {

@@ -1,9 +1,9 @@
 ﻿using Contract;
 using ServiceModel.Grpc.Interceptors;
 
-namespace ClientDesignTime;
+namespace Client.Shared;
 
-internal sealed class UnexpectedExceptionClientHandler : IClientErrorHandler
+public sealed class UnexpectedExceptionClientHandler : IClientErrorHandler
 {
     public void ThrowOrIgnore(ClientCallInterceptorContext context, ClientFaultDetail detail)
     {

@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Service\Service.csproj" />
+    <ProjectReference Include="..\Service.Shared\Service.Shared.csproj" />
   </ItemGroup>
 
 </Project>
