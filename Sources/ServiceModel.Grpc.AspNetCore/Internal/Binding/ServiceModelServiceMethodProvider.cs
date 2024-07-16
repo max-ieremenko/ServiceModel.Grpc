@@ -20,7 +20,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ServiceModel.Grpc.Configuration;
-using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Filters.Internal;
 using ServiceModel.Grpc.Hosting.Internal;
 using ServiceModel.Grpc.Internal;
@@ -71,7 +70,7 @@ internal sealed class ServiceModelServiceMethodProvider<TService> : IServiceMeth
             filterContext,
             _rootConfiguration.IsApiDescriptionRequested);
 
-        CreateEndpointBinder().Bind(serviceBinder);
+        Bind(serviceBinder);
     }
 
     internal Type GetServiceInstanceType()
@@ -94,13 +93,16 @@ internal sealed class ServiceModelServiceMethodProvider<TService> : IServiceMeth
         }
     }
 
-    private IServiceEndpointBinder<TService> CreateEndpointBinder()
+    private void Bind(IServiceMethodBinder<TService> methodBinder)
     {
         if (_serviceConfiguration.EndpointBinderType == null)
         {
-            return EmitGenerator.GenerateServiceEndpointBinder<TService>(GetServiceInstanceType(), new LogAdapter(_logger));
+            HostRegistration.BindWithEmit(methodBinder, GetServiceInstanceType(), new LogAdapter(_logger));
         }
-
-        return (IServiceEndpointBinder<TService>)Activator.CreateInstance(_serviceConfiguration.EndpointBinderType)!;
+        else
+        {
+            var endpointBinder = (IServiceEndpointBinder<TService>)Activator.CreateInstance(_serviceConfiguration.EndpointBinderType)!;
+            endpointBinder.Bind(methodBinder);
+        }
     }
 }
