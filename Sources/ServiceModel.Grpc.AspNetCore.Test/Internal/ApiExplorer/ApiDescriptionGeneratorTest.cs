@@ -91,16 +91,21 @@ public partial class ApiDescriptionGeneratorTest
     private static IEnumerable<TestCaseData> GetTestCases()
     {
         var contract = EmitGenerator.GenerateContract<ITestCases>();
-        foreach (var method in contract.GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly))
+
+        var descriptors = contract
+            .GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
+            .Where(i => i.ReturnType == typeof(IOperationDescriptor))
+            .Select(i => i.CreateDelegate<Func<IOperationDescriptor>>())
+            .Select(i => i())
+            .ToArray();
+        descriptors.Length.ShouldBe(4);
+
+        foreach (var descriptor in descriptors)
         {
-            if (method.ReturnType == typeof(IOperationDescriptor))
+            yield return new TestCaseData(descriptor)
             {
-                var descriptor = method.CreateDelegate<Func<IOperationDescriptor>>()();
-                yield return new TestCaseData(descriptor)
-                {
-                    TestName = descriptor.GetContractMethod().Name
-                };
-            }
+                TestName = descriptor.GetContractMethod().Name
+            };
         }
     }
 }

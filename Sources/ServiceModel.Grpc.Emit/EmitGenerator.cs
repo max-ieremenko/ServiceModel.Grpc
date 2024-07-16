@@ -21,7 +21,7 @@ using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Emit;
 
-public static class EmitGenerator
+internal static class EmitGenerator
 {
     public static IClientBuilder<TContract> GenerateClientBuilder<TContract>(ILogger? logger)
     {
@@ -63,6 +63,7 @@ public static class EmitGenerator
         return new EmitServiceEndpointBinder<TService>(description, serviceInstanceType, contractType, channelType, logger);
     }
 
+    // only for tests
     public static Type GenerateContract<TService>()
     {
         lock (ProxyAssembly.SyncRoot)
@@ -74,22 +75,26 @@ public static class EmitGenerator
     private static ContractDescription<Type> CreateDescription(Type serviceType, ILogger? logger)
     {
         var contractDescription = ContractDescriptionBuilder.Build(serviceType);
+        if (logger == null)
+        {
+            return contractDescription;
+        }
 
         foreach (var interfaceDescription in contractDescription.Interfaces)
         {
-            logger?.LogDebug("{0}: {1} is not service contract.", serviceType.FullName, interfaceDescription.InterfaceType.FullName);
+            logger.LogDebug("{0}: {1} is not service contract.", serviceType.FullName, interfaceDescription.InterfaceType.FullName);
         }
 
         foreach (var interfaceDescription in contractDescription.Services)
         {
             foreach (var method in interfaceDescription.Methods)
             {
-                logger?.LogDebug("{0}: {1}", serviceType.FullName, method.Error);
+                logger.LogDebug("{0}: {1}", serviceType.FullName, method.Error);
             }
 
             foreach (var method in interfaceDescription.NotSupportedOperations)
             {
-                logger?.LogError("{0}: {1}", serviceType.FullName, method.Error);
+                logger.LogError("{0}: {1}", serviceType.FullName, method.Error);
             }
         }
 

@@ -17,7 +17,6 @@
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 using ServiceModel.Grpc.Configuration;
-using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Filters.Internal;
 using ServiceModel.Grpc.Hosting.Internal;
 using ServiceModel.Grpc.Interceptors.Internal;
@@ -50,10 +49,13 @@ internal static class ServiceDefinitionFactory
 
         if (endpointBinder == null)
         {
-            endpointBinder = CreateDefaultEndpointBinder<TService>(loggerAdapter);
+            var serviceInstanceType = typeof(TService);
+            HostRegistration.BindWithEmit(binder, ServiceContract.IsServiceInstanceType(serviceInstanceType) ? serviceInstanceType : null, loggerAdapter);
         }
-
-        endpointBinder.Bind(binder);
+        else
+        {
+            endpointBinder.Bind(binder);
+        }
 
         var definition = definitionBuilder.Build();
 
@@ -81,16 +83,5 @@ internal static class ServiceDefinitionFactory
         {
             throw new NotSupportedException($"{serviceType.FullName} is native grpc service.");
         }
-    }
-
-    private static IServiceEndpointBinder<TService> CreateDefaultEndpointBinder<TService>(ILogger? logger)
-    {
-        var serviceInstanceType = typeof(TService);
-        if (!ServiceContract.IsServiceInstanceType(serviceInstanceType))
-        {
-            serviceInstanceType = null;
-        }
-
-        return EmitGenerator.GenerateServiceEndpointBinder<TService>(serviceInstanceType, logger);
     }
 }
