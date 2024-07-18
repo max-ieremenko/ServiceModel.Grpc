@@ -14,24 +14,17 @@
 // limitations under the License.
 // </copyright>
 
-using System.ComponentModel;
+namespace System.Diagnostics.CodeAnalysis;
 
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-
-namespace ServiceModel.Grpc.Internal;
-
-/// <summary>
-/// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
-/// This API may change or be removed in future releases.
-/// </summary>
-[Browsable(false)]
-[EditorBrowsable(EditorBrowsableState.Never)]
-[Experimental("ServiceModelGrpcInternalAPI")]
-public interface IStreamAccessor
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, Inherited = false)]
+internal sealed class ExperimentalAttribute : Attribute
 {
-    void Validate(object stream);
+    public ExperimentalAttribute(string diagnosticId)
+    {
+        DiagnosticId = diagnosticId;
+    }
 
-    object CreateEmpty();
+    public string DiagnosticId { get; }
 
-    Type GetInstanceType();
+    public string? UrlFormat { get; set; }
 }

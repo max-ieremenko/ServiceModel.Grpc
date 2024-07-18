@@ -27,6 +27,7 @@ namespace ServiceModel.Grpc.Internal;
 /// </summary>
 [Browsable(false)]
 [EditorBrowsable(EditorBrowsableState.Never)]
+[Experimental("ServiceModelGrpcInternalAPI")]
 public static class AccessorsFactory
 {
     public static IStreamAccessor CreateStreamAccessor<TItem>() => StreamAccessor<TItem>.Instance;

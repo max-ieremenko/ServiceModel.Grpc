@@ -28,6 +28,7 @@ namespace ServiceModel.Grpc.Internal;
 /// </summary>
 [Browsable(false)]
 [EditorBrowsable(EditorBrowsableState.Never)]
+[Experimental("ServiceModelGrpcInternalAPI")]
 public interface IClientCallInvoker
 {
     CallOptionsBuilder CreateOptionsBuilder();

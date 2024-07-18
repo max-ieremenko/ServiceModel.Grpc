@@ -34,6 +34,7 @@ namespace ServiceModel.Grpc.Internal;
 /// </summary>
 [Browsable(false)]
 [EditorBrowsable(EditorBrowsableState.Never)]
+[Experimental("ServiceModelGrpcInternalAPI")]
 public ref struct CallOptionsBuilder
 {
     private CallOptions _options;

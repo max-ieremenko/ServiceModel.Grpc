@@ -29,6 +29,7 @@ namespace ServiceModel.Grpc.Internal;
 /// </summary>
 [Browsable(false)]
 [EditorBrowsable(EditorBrowsableState.Never)]
+[Experimental("ServiceModelGrpcInternalAPI")]
 public readonly ref struct OperationDescriptorBuilder
 {
     private readonly bool _isAsync;

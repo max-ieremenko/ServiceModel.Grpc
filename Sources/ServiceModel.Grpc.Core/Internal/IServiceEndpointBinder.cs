@@ -31,6 +31,7 @@ namespace ServiceModel.Grpc.Internal;
 /// </summary>
 [Browsable(false)]
 [EditorBrowsable(EditorBrowsableState.Never)]
+[Experimental("ServiceModelGrpcInternalAPI")]
 public interface IServiceEndpointBinder<TService>
 {
     void Bind(IServiceMethodBinder<TService> binder);

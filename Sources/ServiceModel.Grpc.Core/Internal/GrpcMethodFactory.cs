@@ -29,6 +29,7 @@ namespace ServiceModel.Grpc.Internal;
 /// </summary>
 [Browsable(false)]
 [EditorBrowsable(EditorBrowsableState.Never)]
+[Experimental("ServiceModelGrpcInternalAPI")]
 public static class GrpcMethodFactory
 {
     public static IMethod Unary<TRequest, TResponse>(IMarshallerFactory marshallerFactory, string serviceName, string name) =>
