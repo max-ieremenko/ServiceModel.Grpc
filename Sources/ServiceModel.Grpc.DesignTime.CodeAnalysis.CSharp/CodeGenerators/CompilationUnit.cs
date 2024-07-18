@@ -29,6 +29,7 @@ public sealed class CompilationUnit : ICompilationUnit
     {
         AddComment(output);
         AddUsing(output);
+        AddPragma(output);
     }
 
     public void BeginDeclaration(ICodeStringBuilder output, INamedTypeSymbol holder)
@@ -102,5 +103,12 @@ public sealed class CompilationUnit : ICompilationUnit
         output.AppendLine("using System.Threading;");
         output.AppendLine("using System.Threading.Tasks;");
         output.AppendLine();
+    }
+
+    private static void AddPragma(ICodeStringBuilder output)
+    {
+        output
+            .AppendLine("#pragma warning disable ServiceModelGrpcInternalAPI")
+            .AppendLine();
     }
 }

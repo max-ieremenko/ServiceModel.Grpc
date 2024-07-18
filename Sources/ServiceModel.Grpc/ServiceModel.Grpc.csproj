@@ -5,6 +5,7 @@
     <AssemblyTitle>ServiceModel.Grpc</AssemblyTitle>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <IsPackable>true</IsPackable>
+    <NoWarn>$(NoWarn);ServiceModelGrpcInternalAPI</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
