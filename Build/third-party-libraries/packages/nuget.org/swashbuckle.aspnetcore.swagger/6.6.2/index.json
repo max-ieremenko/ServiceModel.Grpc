@@ -6,22 +6,17 @@
   },
   "UsedBy": [
     {
-      "Name": "Core",
-      "InternalOnly": true,
+      "Name": "AspNetCoreSwashbuckle",
+      "InternalOnly": false,
       "TargetFrameworks": [
-        "net462",
         "net6.0",
         "net7.0",
         "net8.0"
       ],
       "Dependencies": [
         {
-          "Name": "System.Buffers",
-          "Version": "4.5.1"
-        },
-        {
-          "Name": "System.Memory",
-          "Version": "4.5.5"
+          "Name": "Microsoft.OpenApi",
+          "Version": "1.6.14"
         }
       ]
     }
@@ -35,12 +30,12 @@
     {
       "Subject": "repository",
       "Code": "MIT",
-      "HRef": "https://github.com/dotnet/runtime"
+      "HRef": "https://github.com/domaindrivendev/Swashbuckle.AspNetCore.git"
     },
     {
       "Subject": "project",
-      "Code": null,
-      "HRef": "https://dot.net/"
+      "Code": "MIT",
+      "HRef": "https://github.com/domaindrivendev/Swashbuckle.AspNetCore"
     }
   ]
 }

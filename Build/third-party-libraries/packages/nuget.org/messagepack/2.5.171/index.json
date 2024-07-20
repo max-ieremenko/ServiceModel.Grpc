@@ -6,22 +6,22 @@
   },
   "UsedBy": [
     {
-      "Name": "Core",
-      "InternalOnly": true,
+      "Name": "MessagePack",
+      "InternalOnly": false,
       "TargetFrameworks": [
-        "net462",
         "net6.0",
         "net7.0",
-        "net8.0"
+        "net8.0",
+        "netstandard2.0"
       ],
       "Dependencies": [
         {
-          "Name": "System.Buffers",
-          "Version": "4.5.1"
+          "Name": "MessagePack.Annotations",
+          "Version": "2.5.171"
         },
         {
-          "Name": "System.Memory",
-          "Version": "4.5.5"
+          "Name": "Microsoft.NET.StringTools",
+          "Version": "17.6.3"
         }
       ]
     }
@@ -34,13 +34,15 @@
     },
     {
       "Subject": "repository",
-      "Code": "MIT",
-      "HRef": "https://github.com/dotnet/runtime"
+      "Code": null,
+      "HRef": "https://github.com/MessagePack-CSharp/MessagePack-CSharp",
+      "Description": "License code NOASSERTION"
     },
     {
       "Subject": "project",
       "Code": null,
-      "HRef": "https://dot.net/"
+      "HRef": "https://github.com/neuecc/MessagePack-CSharp",
+      "Description": "License code NOASSERTION"
     }
   ]
 }

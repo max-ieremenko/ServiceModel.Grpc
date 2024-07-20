@@ -6,22 +6,21 @@
   },
   "UsedBy": [
     {
-      "Name": "Core",
-      "InternalOnly": true,
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": false,
       "TargetFrameworks": [
-        "net462",
         "net6.0",
         "net7.0",
         "net8.0"
       ],
       "Dependencies": [
         {
-          "Name": "System.Buffers",
-          "Version": "4.5.1"
+          "Name": "NJsonSchema.NewtonsoftJson",
+          "Version": "11.0.2"
         },
         {
-          "Name": "System.Memory",
-          "Version": "4.5.5"
+          "Name": "NSwag.Core",
+          "Version": "14.1.0"
         }
       ]
     }
@@ -35,12 +34,12 @@
     {
       "Subject": "repository",
       "Code": "MIT",
-      "HRef": "https://github.com/dotnet/runtime"
+      "HRef": "https://github.com/RicoSuter/NSwag.git"
     },
     {
       "Subject": "project",
       "Code": null,
-      "HRef": "https://dot.net/"
+      "HRef": "http://nswag.org/"
     }
   ]
 }
