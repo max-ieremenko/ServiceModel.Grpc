@@ -1,5 +1,5 @@
 #Requires -Version "7.0"
-#Requires -Modules @{ ModuleName="InvokeBuild"; ModuleVersion="5.11.1" }
+#Requires -Modules @{ ModuleName="InvokeBuild"; ModuleVersion="5.11.3" }
 #Requires -Modules @{ ModuleName="ThirdPartyLibraries"; ModuleVersion="3.5.1" }
 #Requires -Modules @{ ModuleName="ZipAsFolder"; ModuleVersion="1.0.0" }
 

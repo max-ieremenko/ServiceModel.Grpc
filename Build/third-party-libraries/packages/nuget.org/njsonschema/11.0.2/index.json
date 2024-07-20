@@ -6,22 +6,25 @@
   },
   "UsedBy": [
     {
-      "Name": "Core",
-      "InternalOnly": true,
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": false,
       "TargetFrameworks": [
-        "net462",
         "net6.0",
         "net7.0",
         "net8.0"
       ],
       "Dependencies": [
         {
-          "Name": "System.Buffers",
-          "Version": "4.5.1"
+          "Name": "NJsonSchema.Annotations",
+          "Version": "11.0.2"
         },
         {
-          "Name": "System.Memory",
-          "Version": "4.5.5"
+          "Name": "Namotion.Reflection",
+          "Version": "3.1.1"
+        },
+        {
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     }
@@ -35,12 +38,12 @@
     {
       "Subject": "repository",
       "Code": "MIT",
-      "HRef": "https://github.com/dotnet/runtime"
+      "HRef": "https://github.com/RicoSuter/NJsonSchema"
     },
     {
       "Subject": "project",
       "Code": null,
-      "HRef": "https://dot.net/"
+      "HRef": "http://njsonschema.org/"
     }
   ]
 }

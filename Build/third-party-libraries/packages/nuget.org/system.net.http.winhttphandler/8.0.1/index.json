@@ -6,23 +6,13 @@
   },
   "UsedBy": [
     {
-      "Name": "Core",
+      "Name": "ClientDI",
       "InternalOnly": true,
       "TargetFrameworks": [
         "net462",
         "net6.0",
         "net7.0",
         "net8.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Buffers",
-          "Version": "4.5.1"
-        },
-        {
-          "Name": "System.Memory",
-          "Version": "4.5.5"
-        }
       ]
     }
   ],
