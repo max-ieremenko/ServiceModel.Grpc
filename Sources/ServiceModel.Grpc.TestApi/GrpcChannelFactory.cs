@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2022 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,6 @@ public static class GrpcChannelFactory
             return new GrpcCoreChannel(host, port, ChannelCredentials.Insecure);
         }
 
-        return GrpcChannel.ForAddress("http://{0}:{1}".FormatWith(host, port));
+        return GrpcChannel.ForAddress($"http://{host}:{port}");
     }
 }

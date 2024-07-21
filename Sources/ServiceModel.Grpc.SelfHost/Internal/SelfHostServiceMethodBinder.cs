@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,12 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Filters.Internal;
 using ServiceModel.Grpc.Hosting.Internal;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.SelfHost.Internal;
 
@@ -47,89 +44,88 @@ internal sealed class SelfHostServiceMethodBinder<TService> : IServiceMethodBind
     public IMarshallerFactory MarshallerFactory { get; }
 
     public void AddUnaryMethod<TRequest, TResponse>(
-        Method<TRequest, TResponse> method,
-        Func<MethodInfo> resolveContractMethodDefinition,
+        IMethod method,
+        Func<IOperationDescriptor> getDescriptor,
         IList<object> metadata,
         Func<TService, TRequest, ServerCallContext, Task<TResponse>> handler)
         where TRequest : class
         where TResponse : class
     {
-        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
+        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, getDescriptor);
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
         var invoker = new UnaryServerCallHandler<TService, TRequest, TResponse>(_serviceFactory, handler, filterHandlerFactory);
-        _builder.AddMethod(method, invoker.Handle);
+        _builder.AddMethod((Method<TRequest, TResponse>)method, invoker.Handle);
     }
 
-    public void AddClientStreamingMethod<TRequestHeader, TRequest, TResponse>(
-        Method<Message<TRequest>, TResponse> method,
-        Func<MethodInfo> resolveContractMethodDefinition,
-        Marshaller<TRequestHeader>? requestHeaderMarshaller,
+    public void AddClientStreamingMethod<TRequestHeader, TRequest, TRequestValue, TResponse>(
+        IMethod method,
+        Func<IOperationDescriptor> getDescriptor,
         IList<object> metadata,
-        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, Task<TResponse>> handler)
+        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequestValue?>, ServerCallContext, Task<TResponse>> handler)
         where TRequestHeader : class
+        where TRequest : class, IMessage<TRequestValue>
         where TResponse : class
     {
-        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
+        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, getDescriptor);
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
-        var invoker = new ClientStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponse>(
+        var invoker = new ClientStreamingServerCallHandler<TService, TRequestHeader, TRequest, TRequestValue, TResponse>(
             _serviceFactory,
             handler,
-            requestHeaderMarshaller,
+            method,
             filterHandlerFactory);
-        _builder.AddMethod(method, invoker.Handle);
+        _builder.AddMethod((Method<TRequest, TResponse>)method, invoker.Handle);
     }
 
-    public void AddServerStreamingMethod<TRequest, TResponseHeader, TResponse>(
-        Method<TRequest, Message<TResponse>> method,
-        Func<MethodInfo> resolveContractMethodDefinition,
-        Marshaller<TResponseHeader>? responseHeaderMarshaller,
+    public void AddServerStreamingMethod<TRequest, TResponseHeader, TResponse, TResponseValue>(
+        IMethod method,
+        Func<IOperationDescriptor> getDescriptor,
         IList<object> metadata,
-        Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> handler)
+        Func<TService, TRequest, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponseValue?> Response)>> handler)
         where TRequest : class
         where TResponseHeader : class
+        where TResponse : class, IMessage<TResponseValue>, new()
     {
-        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
+        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, getDescriptor);
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
-        var invoker = new ServerStreamingServerCallHandler<TService, TRequest, TResponseHeader, TResponse>(
+        var invoker = new ServerStreamingServerCallHandler<TService, TRequest, TResponseHeader, TResponse, TResponseValue>(
             _serviceFactory,
             handler,
-            responseHeaderMarshaller,
+            method,
             filterHandlerFactory);
-        _builder.AddMethod(method, invoker.Handle);
+        _builder.AddMethod((Method<TRequest, TResponse>)method, invoker.Handle);
     }
 
-    public void AddDuplexStreamingMethod<TRequestHeader, TRequest, TResponseHeader, TResponse>(
-        Method<Message<TRequest>, Message<TResponse>> method,
-        Func<MethodInfo> resolveContractMethodDefinition,
-        Marshaller<TRequestHeader>? requestHeaderMarshaller,
-        Marshaller<TResponseHeader>? responseHeaderMarshaller,
+    public void AddDuplexStreamingMethod<TRequestHeader, TRequest, TRequestValue, TResponseHeader, TResponse, TResponseValue>(
+        IMethod method,
+        Func<IOperationDescriptor> getDescriptor,
         IList<object> metadata,
-        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequest>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponse> Response)>> handler)
+        Func<TService, TRequestHeader?, IAsyncEnumerable<TRequestValue?>, ServerCallContext, ValueTask<(TResponseHeader? Header, IAsyncEnumerable<TResponseValue?> Response)>> handler)
         where TRequestHeader : class
+        where TRequest : class, IMessage<TRequestValue>
         where TResponseHeader : class
+        where TResponse : class, IMessage<TResponseValue>, new()
     {
-        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, resolveContractMethodDefinition);
+        var filterHandlerFactory = _filterRegistration.CreateHandlerFactory(metadata, getDescriptor);
         ValidateFilterFactoryConfiguration(filterHandlerFactory);
 
-        var invoker = new DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TResponseHeader, TResponse>(
+        var invoker = new DuplexStreamingServerCallHandler<TService, TRequestHeader, TRequest, TRequestValue, TResponseHeader, TResponse, TResponseValue>(
             _serviceFactory,
             handler,
-            requestHeaderMarshaller,
-            responseHeaderMarshaller,
+            method,
             filterHandlerFactory);
-        _builder.AddMethod(method, invoker.Handle);
+        _builder.AddMethod((Method<TRequest, TResponse>)method, invoker.Handle);
     }
 
     private void ValidateFilterFactoryConfiguration(ServerCallFilterHandlerFactory? filterHandlerFactory)
     {
         if (filterHandlerFactory != null && filterHandlerFactory.ServiceProvider == null)
         {
-            var message = @"Server filters require ServiceProvider instance. Share your IServiceProvider via service configuration:
-Server.Services.AddServiceModel...<{0}>(options => options.ServiceProvider = [your provider here]);";
-            throw new NotSupportedException(message.FormatWith(typeof(TService).Name));
+            var message = $@"Server filters require ServiceProvider instance. Share your IServiceProvider via service configuration:
+Server.Services.AddServiceModel...<{typeof(TService).Name}>(options => options.ServiceProvider = [your provider here]);";
+            throw new NotSupportedException(message);
         }
     }
 }

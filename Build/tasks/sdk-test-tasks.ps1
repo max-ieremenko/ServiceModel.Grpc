@@ -9,7 +9,7 @@ param(
     $Examples
 )
 
-task Default Clean, BuildParallel, BuildSequential, Run
+task . Clean, BuildParallel, BuildSequential, Run
 
 Enter-Build {
     Clear-NugetCache
@@ -17,20 +17,20 @@ Enter-Build {
     $ownSource = $true
     $sources = exec { dotnet nuget list source --format short }
     foreach ($source in $sources) {
-        if ($source.Contains($PathBuildArtifacts, "OrdinalIgnoreCase")) {
+        if ($source.Contains($PathBuildArtifacts, 'OrdinalIgnoreCase')) {
             $ownSource = $false
             break
         }
     }
 
     if ($ownSource) {
-        exec { dotnet nuget add source -n "ServiceModel.Grpc" $PathBuildArtifacts }
+        exec { dotnet nuget add source -n 'ServiceModel.Grpc' $PathBuildArtifacts }
     }
 }
 
 Exit-Build {
     if ($ownSource) {
-        exec { dotnet nuget remove source "ServiceModel.Grpc" }
+        exec { dotnet nuget remove source 'ServiceModel.Grpc' }
     }
 
     Clear-NugetCache
@@ -39,7 +39,7 @@ Exit-Build {
 task Clean {
     foreach ($example in $Examples) {
         $path = Split-Path $example.Solution -Parent
-        Remove-DirectoryRecurse -Path $path -Filters "bin", "obj"
+        Remove-DirectoryRecurse -Path $path -Filters 'bin', 'obj'
     }
 }
 
@@ -48,7 +48,7 @@ task BuildParallel {
     foreach ($example in $Examples) {
         if ($example.BuildParallelizable) {
             $builds += @{ 
-                File          = "task-build.ps1"
+                File          = 'task-build.ps1'
                 Path          = $example.Solution
                 Configuration = $example.Configuration
                 Mode          = $example.BuildMode
@@ -64,7 +64,7 @@ task BuildSequential {
     foreach ($example in $Examples) {
         if (-not $example.BuildParallelizable) {
             $builds += @{ 
-                File          = "task-build.ps1"
+                File          = 'task-build.ps1'
                 Path          = $example.Solution
                 Configuration = $example.Configuration
             }
@@ -80,7 +80,7 @@ task Run {
 
         foreach ($test in $example.Tests) {
             $builds += @{ 
-                File = "task-run-sdk-test.ps1"
+                File = 'task-run-sdk-test.ps1'
                 Name = $test[0].App
                 Apps = $test
             }   

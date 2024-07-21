@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
-using Service;
+using Service.Shared;
 using ServiceModel.Grpc.Interceptors;
 
 namespace ServerAspNetHost;
@@ -29,6 +29,9 @@ public static class Program
             .AddServiceModelGrpc(options =>
             {
                 options.DefaultErrorHandlerFactory = serviceProvider => serviceProvider.GetRequiredService<IServerErrorHandler>();
+
+                // uncomment to fully control ServerFaultDetail.Detail serialization, must be uncommented in Client as well
+                //options.DefaultErrorDetailSerializer = new CustomServerFaultDetailSerializer();
             });
 
         builder.WebHost.ConfigureKestrel(options => options.ListenLocalhost(ServiceConfiguration.ServiceModelGrpcPort, l => l.Protocols = HttpProtocols.Http2));

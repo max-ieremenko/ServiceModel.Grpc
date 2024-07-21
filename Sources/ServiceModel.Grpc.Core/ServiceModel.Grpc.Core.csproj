@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net462</TargetFrameworks>
+    <RootNamespace>ServiceModel.Grpc</RootNamespace>
+    <IsPackable>true</IsPackable>
+    <NoWarn>$(NoWarn);ServiceModelGrpcInternalAPI</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'netstandard2.1'">
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.Core.Api" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Channel\Message.tt">
+      <LastGenOutput>Message.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <Compile Update="Channel\Message.cs">
+      <DependentUpon>Message.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <None Update="Internal\Descriptors\MessageAccessor.tt">
+      <LastGenOutput>MessageAccessor.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <Compile Update="Internal\Descriptors\MessageAccessor.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MessageAccessor.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">
+    <Content Include="README.md" PackagePath="" />
+    <Content Include="..\..\LICENSE" PackagePath="" Visible="false" />
+    <Content Include="..\..\build-out\CoreThirdPartyNotices.txt" PackagePath="ThirdPartyNotices.txt" Visible="false" />
+  </ItemGroup>
+</Project>

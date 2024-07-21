@@ -56,6 +56,17 @@
       "Name": "DesignTime",
       "InternalOnly": true,
       "TargetFrameworks": [
+        "net462",
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ]
+    },
+    {
+      "Name": "Emit",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
         "net6.0",
         "net7.0",
         "net8.0"

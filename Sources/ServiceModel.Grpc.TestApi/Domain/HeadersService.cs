@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,12 +14,8 @@
 // limitations under the License.
 // </copyright>
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
-using Shouldly;
 
 namespace ServiceModel.Grpc.TestApi.Domain;
 
@@ -110,11 +106,11 @@ public sealed class HeadersService : IHeadersService
     {
         ServerCallContext serverContext = context!;
 
-        var defaultHeader = serverContext.RequestHeaders.FindHeader(DefaultHeaderName, false);
+        MetadataExtensions.TryFindHeader(serverContext.RequestHeaders, DefaultHeaderName, false, out var defaultHeader).ShouldBeTrue();
         defaultHeader.ShouldNotBeNull();
         defaultHeader.Value.ShouldBe(DefaultHeaderValue);
 
-        var callHeader = serverContext.RequestHeaders.FindHeader(CallHeaderName, false);
+        MetadataExtensions.TryFindHeader(serverContext.RequestHeaders, CallHeaderName, false, out var callHeader).ShouldBeTrue();
         callHeader.ShouldNotBeNull();
         callHeader.Value.ShouldBe(CallHeaderValue);
 

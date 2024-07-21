@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net462</TargetFrameworks>
+    <IsPackable>true</IsPackable>
+    <NoWarn>$(NoWarn);ServiceModelGrpcInternalAPI</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net462'">
+    <PackageReference Include="System.Reflection.Emit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ServiceModel.Grpc.Descriptions\ServiceModel.Grpc.Descriptions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">
+    <Content Include="README.md" PackagePath="" />
+    <Content Include="..\..\LICENSE" PackagePath="" Visible="false" />
+    <Content Include="..\..\build-out\EmitThirdPartyNotices.txt" PackagePath="ThirdPartyNotices.txt" Visible="false" />
+  </ItemGroup>
+</Project>

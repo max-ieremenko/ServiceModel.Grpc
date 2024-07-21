@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Filters.Internal;
 
@@ -56,10 +54,7 @@ internal sealed class UnaryServerCallHandler<TService, TRequest, TResponse>
     {
     }
 
-    public Task<TResponse> Handle(TRequest request, ServerCallContext context)
-    {
-        return Handle(_serviceFactory(), request, context);
-    }
+    public Task<TResponse> Handle(TRequest request, ServerCallContext context) => Handle(_serviceFactory(), request, context);
 
     public Task<TResponse> Handle(TService service, TRequest request, ServerCallContext context)
     {

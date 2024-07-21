@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2022 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 using ServiceModel.Grpc.Configuration;
@@ -22,7 +21,6 @@ using ServiceModel.Grpc.Filters.Internal;
 using ServiceModel.Grpc.Hosting.Internal;
 using ServiceModel.Grpc.Interceptors.Internal;
 using ServiceModel.Grpc.Internal;
-using ServiceModel.Grpc.Internal.Emit;
 
 namespace ServiceModel.Grpc.SelfHost.Internal;
 
@@ -51,10 +49,13 @@ internal static class ServiceDefinitionFactory
 
         if (endpointBinder == null)
         {
-            endpointBinder = CreateDefaultEndpointBinder<TService>(loggerAdapter);
+            var serviceInstanceType = typeof(TService);
+            HostRegistration.BindWithEmit(binder, ServiceContract.IsServiceInstanceType(serviceInstanceType) ? serviceInstanceType : null, loggerAdapter);
         }
-
-        endpointBinder.Bind(binder);
+        else
+        {
+            endpointBinder.Bind(binder);
+        }
 
         var definition = definitionBuilder.Build();
 
@@ -65,11 +66,12 @@ internal static class ServiceDefinitionFactory
 
         if (options?.ErrorHandler != null)
         {
-            var errorInterceptor = new ServerCallErrorInterceptor(
+            var errorInterceptor = ErrorHandlerInterceptorFactory.CreateServerHandler(
                 options.ErrorHandler,
                 options.MarshallerFactory.ThisOrDefault(),
+                options.ErrorDetailSerializer,
                 loggerAdapter);
-            definition = definition.Intercept(new ServerNativeInterceptor(errorInterceptor));
+            definition = definition.Intercept(errorInterceptor);
         }
 
         return definition;
@@ -79,18 +81,7 @@ internal static class ServiceDefinitionFactory
     {
         if (ServiceContract.IsNativeGrpcService(serviceType))
         {
-            throw new NotSupportedException("{0} is native grpc service.".FormatWith(serviceType.FullName));
+            throw new NotSupportedException($"{serviceType.FullName} is native grpc service.");
         }
-    }
-
-    private static IServiceEndpointBinder<TService> CreateDefaultEndpointBinder<TService>(ILogger? logger)
-    {
-        var serviceInstanceType = typeof(TService);
-        if (!ServiceContract.IsServiceInstanceType(serviceInstanceType))
-        {
-            serviceInstanceType = null;
-        }
-
-        return new EmitGenerator { Logger = logger }.GenerateServiceEndpointBinder<TService>(serviceInstanceType);
     }
 }

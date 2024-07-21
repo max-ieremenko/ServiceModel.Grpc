@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,10 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
 using System.ServiceModel;
-using System.Threading.Tasks;
 
 #pragma warning disable SA1414 // Tuple types in signatures should have element names
 
@@ -26,27 +23,31 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer;
 public partial class ApiDescriptionGeneratorTest
 {
     [ServiceContract]
-    private sealed class TestCases
+    public interface ITestCases
     {
         [OperationContract]
-        [RequestMetadata(new int[0], new int[0])]
-        [ResponseMetadata(null, new Type[0], new string[0])]
-        public void Void() => throw new NotSupportedException();
+        [RequestMetadata([], [])]
+        [ResponseMetadata(null, [], [])]
+        [Signature("void Void()")]
+        void Void();
 
         [OperationContract]
-        [RequestMetadata(new int[0], new int[0])]
-        [ResponseMetadata(typeof(IAsyncEnumerable<string>), new[] { typeof(string), typeof(int) }, new[] { "Value1", "Value2" })]
-        public Task<(string Value1, IAsyncEnumerable<string> Stream, int Value2)> ServerStreamingWithHeaders() => throw new NotSupportedException();
+        [RequestMetadata([], [])]
+        [ResponseMetadata(typeof(IAsyncEnumerable<string>), [typeof(string), typeof(int)], ["Value1", "Value2"])]
+        [Signature("(IAsyncEnumerable<String>, String Value1, Int32 Value2) ServerStreamingWithHeaders()")]
+        Task<(string Value1, IAsyncEnumerable<string> Stream, int Value2)> ServerStreamingWithHeaders();
 
         [OperationContract]
-        [RequestMetadata(new[] { 0 }, new int[0])]
-        [ResponseMetadata(typeof(IAsyncEnumerable<string>), new[] { typeof(string), typeof(int) }, new[] { "Value1", "Item2" })]
-        public Task<(string Value1, IAsyncEnumerable<string>, int)> ServerStreamingWithMixedHeaderNames(string data) => throw new NotSupportedException();
+        [RequestMetadata([0], [])]
+        [ResponseMetadata(typeof(IAsyncEnumerable<string>), [typeof(string), typeof(int)], ["Value1", "Item2"])]
+        [Signature("(IAsyncEnumerable<String>, String Value1, Int32 Item2) ServerStreamingWithMixedHeaderNames(String data)")]
+        Task<(string Value1, IAsyncEnumerable<string>, int)> ServerStreamingWithMixedHeaderNames(string data);
 
         [OperationContract]
-        [RequestMetadata(new[] { 0 }, new[] { 1 })]
-        [ResponseMetadata(typeof(IAsyncEnumerable<string>), new[] { typeof(string), typeof(int) }, new[] { "Item1", "Item2" })]
-        public Task<(string, IAsyncEnumerable<string>, int)> DuplexStreamingWithHeaders(IAsyncEnumerable<int> data1, string data2) => throw new NotSupportedException();
+        [RequestMetadata([0], [1])]
+        [ResponseMetadata(typeof(IAsyncEnumerable<string>), [typeof(string), typeof(int)], ["Item1", "Item2"])]
+        [Signature("(IAsyncEnumerable<String>, String Item1, Int32 Item2) DuplexStreamingWithHeaders(String data2, IAsyncEnumerable<Int32> data1)")]
+        Task<(string, IAsyncEnumerable<string>, int)> DuplexStreamingWithHeaders(IAsyncEnumerable<int> data1, string data2);
     }
 
     [AttributeUsage(AttributeTargets.Method)]
@@ -78,5 +79,16 @@ public partial class ApiDescriptionGeneratorTest
         public int[] Parameters { get; }
 
         public int[] HeaderParameters { get; }
+    }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    private sealed class SignatureAttribute : Attribute
+    {
+        public SignatureAttribute(string signature)
+        {
+            Signature = signature;
+        }
+
+        public string Signature { get; }
     }
 }

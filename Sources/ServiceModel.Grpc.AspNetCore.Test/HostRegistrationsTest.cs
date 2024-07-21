@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,19 +14,11 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Grpc.Core;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using NUnit.Framework;
 using ServiceModel.Grpc.AspNetCore.TestApi;
 using ServiceModel.Grpc.Interceptors;
 using ServiceModel.Grpc.TestApi.Domain;
-using Shouldly;
 
 namespace ServiceModel.Grpc.AspNetCore;
 

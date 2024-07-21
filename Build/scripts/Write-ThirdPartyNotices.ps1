@@ -29,7 +29,7 @@ function Write-ThirdPartyNotices {
     )
     
     $appName = $AppNames[0]
-    $outTemp = Join-Path $Out "temp"
+    $outTemp = Join-Path $Out 'temp'
 
     Update-ThirdPartyLibrariesRepository -AppName $appName -Source $Sources -Repository $Repository -GithubPersonalAccessToken $GithubToken
 
@@ -37,7 +37,7 @@ function Write-ThirdPartyNotices {
 
     Publish-ThirdPartyNotices -AppName $AppNames -Repository $Repository -Title $Title -To $outTemp
 
-    $licenseFile = $appName + "ThirdPartyNotices.txt"
-    Move-Item (Join-Path $outTemp "ThirdPartyNotices.txt") (Join-Path $Out $licenseFile) -Force
+    $licenseFile = $appName + 'ThirdPartyNotices.txt'
+    Move-Item (Join-Path $outTemp 'ThirdPartyNotices.txt') (Join-Path $Out $licenseFile) -Force
     Remove-DirectoryRecurse -Path $outTemp
 }

@@ -9,6 +9,7 @@
       "Name": "DesignTime",
       "InternalOnly": false,
       "TargetFrameworks": [
+        "net462",
         "net6.0",
         "net7.0",
         "net8.0",
@@ -18,6 +19,10 @@
         {
           "Name": "System.Memory",
           "Version": "4.5.4"
+        },
+        {
+          "Name": "System.Memory",
+          "Version": "4.5.5"
         }
       ]
     }

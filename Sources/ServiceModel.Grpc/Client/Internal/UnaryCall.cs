@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2022 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,28 +14,15 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Filters;
 using ServiceModel.Grpc.Filters.Internal;
-
-#pragma warning disable SA1642 // Constructor summary documentation should begin with standard text
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable SA1611 // Element parameters should be documented
-#pragma warning disable SA1604 // Element documentation should have summary
-#pragma warning disable SA1615 // Element return value should be documented
-#pragma warning disable SA1618 // Generic type parameters should be documented
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Client.Internal;
 
-/// <summary>
-/// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
-/// This API may change or be removed in future releases.
-/// </summary>
-public readonly ref struct UnaryCall<TRequest, TResponse>
+internal readonly ref struct UnaryCall<TRequest, TResponse>
     where TRequest : class
     where TResponse : class
 {
@@ -52,12 +39,12 @@ public readonly ref struct UnaryCall<TRequest, TResponse>
     private readonly CallContext? _callContext;
 
     public UnaryCall(
-        Method<TRequest, TResponse> method,
+        IMethod method,
         CallInvoker callInvoker,
         in CallOptionsBuilder callOptionsBuilder,
         IClientCallFilterHandlerFactory? filterHandlerFactory)
     {
-        _method = method;
+        _method = (Method<TRequest, TResponse>)method;
         _callInvoker = callInvoker;
         _filterHandlerFactory = filterHandlerFactory;
 
@@ -67,15 +54,15 @@ public readonly ref struct UnaryCall<TRequest, TResponse>
 
     public void Invoke(TRequest request) => InvokeCore(request);
 
-    public TResult Invoke<TResult>(TRequest request)
+    public TResult? Invoke<TResult>(TRequest request)
     {
         var result = InvokeCore(request);
-        return ((Message<TResult>)result).Value1;
+        return ((IMessage<TResult>)result).GetValue1();
     }
 
     public Task InvokeAsync(TRequest request) => InvokeCoreAsync(request);
 
-    public Task<TResult> InvokeAsync<TResult>(TRequest request)
+    public Task<TResult?> InvokeAsync<TResult>(TRequest request)
     {
         var responseTask = InvokeCoreAsync(request);
         return AdaptResultAsync<TResult>(responseTask);
@@ -89,20 +76,14 @@ public readonly ref struct UnaryCall<TRequest, TResponse>
             if (callContext != null && !token.IsCancellationRequested)
             {
                 var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
-                callContext.ServerResponse = new ServerResponse(
-                    headers,
-                    call.GetStatus,
-                    call.GetTrailers);
+                CallContextExtensions.SetResponse(callContext, headers, call.GetStatus, call.GetTrailers);
             }
 
             response = await call.ResponseAsync.ConfigureAwait(false);
 
             if (callContext != null && !token.IsCancellationRequested)
             {
-                callContext.ServerResponse = new ServerResponse(
-                    callContext.ResponseHeaders!,
-                    call.GetStatus(),
-                    call.GetTrailers());
+                CallContextExtensions.SetResponse(callContext, callContext.ResponseHeaders!, call.GetStatus(), call.GetTrailers());
             }
         }
 
@@ -118,11 +99,11 @@ public readonly ref struct UnaryCall<TRequest, TResponse>
         return (TResponse)response;
     }
 
-    private static async Task<TResult> AdaptResultAsync<TResult>(Task<TResponse> responseTask)
+    private static async Task<TResult?> AdaptResultAsync<TResult>(Task<TResponse> responseTask)
     {
-        object response = await responseTask.ConfigureAwait(false);
-        var result = (Message<TResult>)response;
-        return result.Value1;
+        var response = await responseTask.ConfigureAwait(false);
+        var result = (IMessage<TResult>)response;
+        return result.GetValue1();
     }
 
     private static void FilterLast(IClientFilterContext context)

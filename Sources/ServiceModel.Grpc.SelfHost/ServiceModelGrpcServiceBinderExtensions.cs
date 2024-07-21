@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2022 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,9 +14,8 @@
 // limitations under the License.
 // </copyright>
 
-using System;
+using System.Reflection;
 using Grpc.Core.Utils;
-using ServiceModel.Grpc.Hosting.Internal;
 using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.SelfHost.Internal;
 
@@ -147,13 +146,27 @@ public static class ServiceModelGrpcServiceBinderExtensions
         }
 
         var definition = ServiceDefinitionFactory.CreateDefinition(serviceFactory, endpointBinder, options);
+        definition.BindService(serviceBinder);
+    }
 
-        // internal void BindService(ServiceBinderBase serviceBinder)
-        var bindService = definition
-            .GetType()
-            .InstanceMethod("BindService", typeof(ServiceBinderBase))
-            .CreateDelegate<Action<ServerServiceDefinition, ServiceBinderBase>>();
+    // ServerServiceDefinition: internal void BindService(ServiceBinderBase serviceBinder)
+    private static void BindService(this ServerServiceDefinition definition, ServiceBinderBase serviceBinder)
+    {
+        var type = definition.GetType();
 
+        var method = type.GetMethod(
+            "BindService",
+            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly,
+            null,
+            [typeof(ServiceBinderBase)],
+            null);
+
+        if (method == null)
+        {
+            throw new NotSupportedException($"The method [internal void BindService(ServiceBinderBase serviceBinder)] not found in {type.FullName}.");
+        }
+
+        var bindService = (Action<ServerServiceDefinition, ServiceBinderBase>)method.CreateDelegate(typeof(Action<ServerServiceDefinition, ServiceBinderBase>));
         bindService(definition, serviceBinder);
     }
 }

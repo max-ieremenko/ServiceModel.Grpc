@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2023 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,16 +14,10 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using Grpc.Core;
-using Grpc.Core.Interceptors;
 using Grpc.Core.Utils;
-using ServiceModel.Grpc.Client.Internal;
-using ServiceModel.Grpc.Configuration;
-using ServiceModel.Grpc.Interceptors.Internal;
 using ServiceModel.Grpc.Internal;
-using ServiceModel.Grpc.Internal.Emit;
 
 namespace ServiceModel.Grpc.Client;
 
@@ -32,28 +26,17 @@ namespace ServiceModel.Grpc.Client;
 /// </summary>
 public sealed class ClientFactory : IClientFactory
 {
-    private readonly object _syncRoot;
-    private readonly IEmitGenerator? _generator;
     private readonly ServiceModelGrpcClientOptions? _defaultOptions;
-    private readonly IDictionary<Type, object> _builderByContract;
-    private readonly IDictionary<Type, Interceptor> _interceptorByContract;
+    private readonly ConcurrentDictionary<Type, ClientRegistration> _registrationByContract;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ClientFactory"/> class.
     /// </summary>
     /// <param name="defaultOptions">Default configuration for all clients, created by this instance.</param>
     public ClientFactory(ServiceModelGrpcClientOptions? defaultOptions = null)
-        : this(null, defaultOptions)
     {
-    }
-
-    internal ClientFactory(IEmitGenerator? generator, ServiceModelGrpcClientOptions? defaultOptions)
-    {
-        _generator = generator;
         _defaultOptions = defaultOptions;
-        _builderByContract = new Dictionary<Type, object>();
-        _interceptorByContract = new Dictionary<Type, Interceptor>();
-        _syncRoot = new object();
+        _registrationByContract = new ConcurrentDictionary<Type, ClientRegistration>();
     }
 
     /// <summary>
@@ -63,9 +46,9 @@ public sealed class ClientFactory : IClientFactory
     public static void VerifyClient<TContract>()
     {
         var contractType = typeof(TContract);
-        if (!ReflectionTools.IsPublicInterface(contractType) || contractType.IsGenericTypeDefinition)
+        if (!contractType.IsInterface || !(contractType.IsPublic || contractType.IsNestedPublic) || contractType.IsGenericTypeDefinition)
         {
-            throw new NotSupportedException("{0} is not supported. Client contract must be public interface.".FormatWith(contractType));
+            throw new NotSupportedException($"{contractType} is not supported. Client contract must be public interface.");
         }
     }
 
@@ -77,7 +60,7 @@ public sealed class ClientFactory : IClientFactory
     public void AddClient<TContract>(Action<ServiceModelGrpcClientOptions>? configure = null)
         where TContract : class
     {
-        RegisterClient<TContract>(null, configure);
+        RegisterClient<TContract>(null, configure, false);
     }
 
     /// <summary>
@@ -92,7 +75,7 @@ public sealed class ClientFactory : IClientFactory
     {
         GrpcPreconditions.CheckNotNull(builder, nameof(builder));
 
-        RegisterClient(builder, configure);
+        RegisterClient(builder, configure, false);
     }
 
     /// <summary>
@@ -120,37 +103,15 @@ public sealed class ClientFactory : IClientFactory
     {
         GrpcPreconditions.CheckNotNull(callInvoker, nameof(callInvoker));
 
-        object factory;
-        Interceptor interceptor;
-        lock (_syncRoot)
+        if (!_registrationByContract.TryGetValue(typeof(TContract), out var registration))
         {
-            var contractType = typeof(TContract);
-            if (!_builderByContract.TryGetValue(contractType, out factory))
-            {
-                factory = RegisterClient<TContract>(null, null);
-            }
-
-            _interceptorByContract.TryGetValue(contractType, out interceptor);
+            registration = RegisterClient<TContract>(null, null, true);
         }
 
-        var builder = (IClientBuilder<TContract>)factory;
-        if (interceptor != null)
-        {
-            callInvoker = callInvoker.Intercept(interceptor);
-        }
-
-        return builder.Build(callInvoker);
+        return registration.Create<TContract>(callInvoker);
     }
 
-    private IEmitGenerator CreateGenerator(ServiceModelGrpcClientOptions clientOptions)
-    {
-        var generator = _generator ?? new EmitGenerator();
-        generator.Logger = clientOptions.Logger;
-
-        return generator;
-    }
-
-    private object RegisterClient<TContract>(IClientBuilder<TContract>? userBuilder, Action<ServiceModelGrpcClientOptions>? configure)
+    private ClientRegistration RegisterClient<TContract>(IClientBuilder<TContract>? userBuilder, Action<ServiceModelGrpcClientOptions>? configure, bool ignoreDuplication)
         where TContract : class
     {
         if (userBuilder == null)
@@ -158,56 +119,19 @@ public sealed class ClientFactory : IClientFactory
             VerifyClient<TContract>();
         }
 
-        var options = ConfigureClient(configure);
-        var generator = userBuilder == null ? CreateGenerator(options) : null;
-
-        var methodBinder = new ClientMethodBinder(
-            options.ServiceProvider,
-            options.MarshallerFactory.ThisOrDefault(),
-            options.DefaultCallOptionsFactory);
-
-        methodBinder.AddFilters(_defaultOptions?.GetFilters());
-        methodBinder.AddFilters(options.GetFilters());
-
-        IClientBuilder<TContract> builder;
-        lock (_syncRoot)
+        var contractType = typeof(TContract);
+        var duplication = true;
+        if (!_registrationByContract.TryGetValue(contractType, out var registration))
         {
-            var contractType = typeof(TContract);
-            if (_builderByContract.ContainsKey(contractType))
-            {
-                throw new InvalidOperationException("Client for contract {0} is already initialized and cannot be changed.".FormatWith(contractType.FullName));
-            }
-
-            builder = userBuilder ?? generator!.GenerateClientBuilder<TContract>();
-            builder.Initialize(methodBinder);
-
-            _builderByContract.Add(contractType, builder);
-
-            if (options.ErrorHandler != null)
-            {
-                _interceptorByContract.Add(contractType, new ClientNativeInterceptor(new ClientCallErrorInterceptor(
-                    options.ErrorHandler,
-                    methodBinder.MarshallerFactory,
-                    options.Logger)));
-            }
+            registration = ClientRegistration.Build(userBuilder, _defaultOptions, configure);
+            duplication = !_registrationByContract.TryAdd(contractType, registration);
         }
 
-        return builder;
-    }
-
-    private ServiceModelGrpcClientOptions ConfigureClient(Action<ServiceModelGrpcClientOptions>? configure)
-    {
-        var options = new ServiceModelGrpcClientOptions
+        if (duplication && !ignoreDuplication)
         {
-            MarshallerFactory = _defaultOptions?.MarshallerFactory,
-            DefaultCallOptionsFactory = _defaultOptions?.DefaultCallOptionsFactory,
-            Logger = _defaultOptions?.Logger,
-            ErrorHandler = _defaultOptions?.ErrorHandler,
-            ServiceProvider = _defaultOptions?.ServiceProvider
-        };
+            throw new InvalidOperationException($"Client for contract {contractType.FullName} is already initialized and cannot be changed.");
+        }
 
-        configure?.Invoke(options);
-
-        return options;
+        return registration;
     }
 }

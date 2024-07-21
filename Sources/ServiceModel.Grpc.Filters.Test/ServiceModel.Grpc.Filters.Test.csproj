@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\Test.csproj.props" />
+
+  <PropertyGroup>
+    <TargetFrameworks>net462;net6.0;net7.0;net8.0</TargetFrameworks>
+    <RootNamespace>ServiceModel.Grpc</RootNamespace>
+    <NoWarn>$(NoWarn);ServiceModelGrpcInternalAPI</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ServiceModel.Grpc.Filters\ServiceModel.Grpc.Filters.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2022 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,107 +14,77 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Filters;
 using ServiceModel.Grpc.Filters.Internal;
-
-#pragma warning disable SA1642 // Constructor summary documentation should begin with standard text
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable SA1611 // Element parameters should be documented
-#pragma warning disable SA1604 // Element documentation should have summary
-#pragma warning disable SA1615 // Element return value should be documented
-#pragma warning disable SA1618 // Generic type parameters should be documented
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Client.Internal;
 
-/// <summary>
-/// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
-/// This API may change or be removed in future releases.
-/// </summary>
-public ref struct ClientStreamingCall<TRequestHeader, TRequest, TResponse>
+internal readonly ref struct ClientStreamingCall<TRequestHeader, TRequest, TRequestValue, TResponse>
     where TRequestHeader : class
+    where TRequest : class, IMessage<TRequestValue>, new()
     where TResponse : class
 {
     //// ReSharper disable StaticMemberInGenericType
     private static readonly Func<IClientFilterContext, ValueTask> AsyncFilterLast = FilterLastAsync;
     //// ReSharper restore StaticMemberInGenericType
 
-    private readonly Method<Message<TRequest>, TResponse> _method;
+    private readonly GrpcMethod<TRequestHeader, TRequest, Message, TResponse> _method;
+    private readonly TRequestHeader? _requestHeader;
     private readonly CallInvoker _callInvoker;
     private readonly CallOptions _callOptions;
     private readonly IClientCallFilterHandlerFactory? _filterHandlerFactory;
-
     private readonly CallContext? _callContext;
-    private Marshaller<TRequestHeader>? _headerMarshaller;
-    private TRequestHeader? _header;
 
     public ClientStreamingCall(
-        Method<Message<TRequest>, TResponse> method,
+        IMethod method,
         CallInvoker callInvoker,
         in CallOptionsBuilder callOptionsBuilder,
-        IClientCallFilterHandlerFactory? filterHandlerFactory)
+        IClientCallFilterHandlerFactory? filterHandlerFactory,
+        TRequestHeader? requestHeader)
     {
-        _method = method;
+        _method = (GrpcMethod<TRequestHeader, TRequest, Message, TResponse>)method;
+        _requestHeader = requestHeader;
         _callInvoker = callInvoker;
         _filterHandlerFactory = filterHandlerFactory;
-        _headerMarshaller = null;
-        _header = null;
 
         _callContext = callOptionsBuilder.CallContext;
         _callOptions = callOptionsBuilder.Build();
     }
 
-    public ClientStreamingCall<TRequestHeader, TRequest, TResponse> WithRequestHeader(
-        Marshaller<TRequestHeader> marshaller,
-        TRequestHeader header)
-    {
-        _headerMarshaller = marshaller;
-        _header = header;
-        return this;
-    }
+    public Task InvokeAsync(IAsyncEnumerable<TRequestValue> request) => InvokeCoreAsync(request);
 
-    public Task InvokeAsync(IAsyncEnumerable<TRequest> request) => InvokeCoreAsync(request);
-
-    public Task<TResult> InvokeAsync<TResult>(IAsyncEnumerable<TRequest> request)
+    public Task<TResult?> InvokeAsync<TResult>(IAsyncEnumerable<TRequestValue> request)
     {
         var responseTask = InvokeCoreAsync(request);
         return AdaptResultAsync<TResult>(responseTask);
     }
 
     private static async Task<TResponse> CallAsync(
-        AsyncClientStreamingCall<Message<TRequest>, TResponse> call,
-        IAsyncEnumerable<TRequest> request,
+        AsyncClientStreamingCall<TRequest, TResponse> call,
+        IAsyncEnumerable<TRequestValue?> request,
         CallContext? context,
         CancellationToken token)
     {
         TResponse response;
         using (call)
-        using (var writer = new ClientStreamWriter<TRequest>(request, call.RequestStream, token))
+        using (var writer = new ClientStreamWriter<TRequest, TRequestValue>(request, call.RequestStream, token))
         {
             if (context != null && !token.IsCancellationRequested)
             {
-                context.TraceClientStreaming?.Invoke(writer.Task);
+                CallContextExtensions.TraceClientStreaming(context, writer.Task);
 
                 var headers = await call.ResponseHeadersAsync.ConfigureAwait(false);
-                context.ServerResponse = new ServerResponse(
-                    headers,
-                    call.GetStatus,
-                    call.GetTrailers);
+                CallContextExtensions.SetResponse(context, headers, call.GetStatus, call.GetTrailers);
             }
 
             response = await call.ResponseAsync.ConfigureAwait(false);
 
             if (!token.IsCancellationRequested && context != null)
             {
-                context.ServerResponse = new ServerResponse(
-                    context.ResponseHeaders!,
-                    call.GetStatus(),
-                    call.GetTrailers());
+                CallContextExtensions.SetResponse(context, context.ResponseHeaders!, call.GetStatus(), call.GetTrailers());
             }
 
             await writer.WaitAsync(token).ConfigureAwait(false);
@@ -123,11 +93,11 @@ public ref struct ClientStreamingCall<TRequestHeader, TRequest, TResponse>
         return response;
     }
 
-    private static async Task<TResult> AdaptResultAsync<TResult>(Task<TResponse> responseTask)
+    private static async Task<TResult?> AdaptResultAsync<TResult>(Task<TResponse> responseTask)
     {
         object response = await responseTask.ConfigureAwait(false);
-        var result = (Message<TResult>)response;
-        return result.Value1;
+        var result = (IMessage<TResult>)response;
+        return result.GetValue1();
     }
 
     private static async Task<TResponse> CallWithFilterAsync(IClientCallFilterHandler filter)
@@ -142,18 +112,18 @@ public ref struct ClientStreamingCall<TRequestHeader, TRequest, TResponse>
     private static async ValueTask FilterLastAsync(IClientFilterContext context)
     {
         var contextInternal = (IClientFilterContextInternal)context;
-        var method = (Method<Message<TRequest>, TResponse>)context.Method;
+        var method = (GrpcMethod<TRequestHeader, TRequest, Message, TResponse>)context.Method;
         var request = contextInternal.RequestInternal.GetRaw();
 
         var callOptions = ClientChannelAdapter.AddRequestHeader(
             contextInternal.CallOptions,
-            (Marshaller<TRequestHeader>?)contextInternal.RequestHeaderMarshaller,
+            method.RequestHeaderMarshaller,
             (TRequestHeader?)request.Request);
 
         var call = contextInternal.CallInvoker.AsyncClientStreamingCall(method, null, callOptions);
         var response = await CallAsync(
                 call,
-                (IAsyncEnumerable<TRequest>)request.Stream!,
+                (IAsyncEnumerable<TRequestValue?>)request.Stream!,
                 contextInternal.CallContext,
                 callOptions.CancellationToken)
             .ConfigureAwait(false);
@@ -161,21 +131,21 @@ public ref struct ClientStreamingCall<TRequestHeader, TRequest, TResponse>
         contextInternal.ResponseInternal.SetRaw(response, null);
     }
 
-    private Task<TResponse> InvokeCoreAsync(IAsyncEnumerable<TRequest> request)
+    private Task<TResponse> InvokeCoreAsync(IAsyncEnumerable<TRequestValue> request)
     {
         var filter = _filterHandlerFactory?.CreateBlockingHandler(_method, _callInvoker, _callOptions);
 
         if (filter == null)
         {
-            var callOptions = ClientChannelAdapter.AddRequestHeader(_callOptions, _headerMarshaller, _header);
+            var callOptions = ClientChannelAdapter.AddRequestHeader(_callOptions, _method.RequestHeaderMarshaller, _requestHeader);
             var call = _callInvoker.AsyncClientStreamingCall(_method, null, callOptions);
             return CallAsync(call, request, _callContext, callOptions.CancellationToken);
         }
 
         var contextInternal = (IClientFilterContextInternal)filter.Context;
-        contextInternal.RequestInternal.SetRaw(_header, request);
+        contextInternal.RequestInternal.SetRaw(_requestHeader, request);
         contextInternal.CallContext = _callContext;
-        contextInternal.RequestHeaderMarshaller = _headerMarshaller;
+        ////contextInternal.RequestHeaderMarshaller = _headerMarshaller;
         return CallWithFilterAsync(filter);
     }
 }

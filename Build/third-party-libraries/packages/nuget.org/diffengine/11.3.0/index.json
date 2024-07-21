@@ -6,7 +6,144 @@
   },
   "UsedBy": [
     {
+      "Name": "AspNetCore",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "EmptyFiles",
+          "Version": "4.4.0"
+        },
+        {
+          "Name": "System.Management",
+          "Version": "6.0.1"
+        }
+      ]
+    },
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "EmptyFiles",
+          "Version": "4.4.0"
+        },
+        {
+          "Name": "System.Management",
+          "Version": "6.0.1"
+        }
+      ]
+    },
+    {
+      "Name": "AspNetCoreSwashbuckle",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "EmptyFiles",
+          "Version": "4.4.0"
+        },
+        {
+          "Name": "System.Management",
+          "Version": "6.0.1"
+        }
+      ]
+    },
+    {
+      "Name": "ClientDI",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "EmptyFiles",
+          "Version": "4.4.0"
+        },
+        {
+          "Name": "System.Management",
+          "Version": "6.0.1"
+        }
+      ]
+    },
+    {
       "Name": "Core",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "EmptyFiles",
+          "Version": "4.4.0"
+        },
+        {
+          "Name": "System.Management",
+          "Version": "6.0.1"
+        }
+      ]
+    },
+    {
+      "Name": "DesignTime",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "EmptyFiles",
+          "Version": "4.4.0"
+        },
+        {
+          "Name": "System.Management",
+          "Version": "6.0.1"
+        }
+      ]
+    },
+    {
+      "Name": "Emit",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "EmptyFiles",
+          "Version": "4.4.0"
+        },
+        {
+          "Name": "System.Management",
+          "Version": "6.0.1"
+        }
+      ]
+    },
+    {
+      "Name": "SelfHost",
       "InternalOnly": true,
       "TargetFrameworks": [
         "net462",

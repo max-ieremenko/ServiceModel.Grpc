@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2024 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 // </copyright>
 
 using NUnit.Framework;
-using Shouldly;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Test;
 
@@ -43,6 +42,6 @@ public partial class CSharpContractBuilderTest
 
     public partial class Message<T1, T2, T3, T4, T5>
     {
-        public object[] GetAllValues() => [_value1, Value2, _value3, Value4, Value5];
+        public object[] GetAllValues() => [Value1, Value2, Value3, Value4, Value5];
     }
 }

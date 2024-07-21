@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using Grpc.AspNetCore.Server.Model;
 using Grpc.Core.Utils;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +23,6 @@ using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Filters.Internal;
 using ServiceModel.Grpc.Hosting.Internal;
 using ServiceModel.Grpc.Internal;
-using ServiceModel.Grpc.Internal.Emit;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.Binding;
 
@@ -72,7 +70,7 @@ internal sealed class ServiceModelServiceMethodProvider<TService> : IServiceMeth
             filterContext,
             _rootConfiguration.IsApiDescriptionRequested);
 
-        CreateEndpointBinder().Bind(serviceBinder);
+        Bind(serviceBinder);
     }
 
     internal Type GetServiceInstanceType()
@@ -90,18 +88,21 @@ internal sealed class ServiceModelServiceMethodProvider<TService> : IServiceMeth
         catch (Exception ex)
         {
             throw new InvalidOperationException(
-                "A gRPC service binding is registered via {0}. Failed to resolve the implementation: {1}.".FormatWith(serviceInstanceType.GetShortAssemblyQualifiedName(), ex.Message),
+                $"A gRPC service binding is registered via {serviceInstanceType.FullName}. Failed to resolve the implementation: {ex.Message}.",
                 ex);
         }
     }
 
-    private IServiceEndpointBinder<TService> CreateEndpointBinder()
+    private void Bind(IServiceMethodBinder<TService> methodBinder)
     {
         if (_serviceConfiguration.EndpointBinderType == null)
         {
-            return new EmitGenerator { Logger = new LogAdapter(_logger) }.GenerateServiceEndpointBinder<TService>(GetServiceInstanceType());
+            HostRegistration.BindWithEmit(methodBinder, GetServiceInstanceType(), new LogAdapter(_logger));
         }
-
-        return (IServiceEndpointBinder<TService>)Activator.CreateInstance(_serviceConfiguration.EndpointBinderType)!;
+        else
+        {
+            var endpointBinder = (IServiceEndpointBinder<TService>)Activator.CreateInstance(_serviceConfiguration.EndpointBinderType)!;
+            endpointBinder.Bind(methodBinder);
+        }
     }
 }

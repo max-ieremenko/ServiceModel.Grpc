@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,12 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Grpc.Core;
-using Moq;
 using ServiceModel.Grpc.Channel;
 
 namespace ServiceModel.Grpc.TestApi;
@@ -40,9 +35,9 @@ public static class StreamsMock
         SetupMoveNext(reader, token, source, 0, converter);
     }
 
-    public static IList<T> Setup<T>(this Mock<IServerStreamWriter<Message<T>>> writer)
+    public static IList<T?> Setup<T>(this Mock<IServerStreamWriter<Message<T>>> writer)
     {
-        var values = new List<T>();
+        var values = new List<T?>();
 
         writer
             .Setup(s => s.WriteAsync(It.IsNotNull<Message<T>>()))
@@ -55,7 +50,7 @@ public static class StreamsMock
         return values;
     }
 
-    public static void Setup<T>(this Mock<IClientStreamWriter<Message<T>>> writer, IList<T> output)
+    public static void Setup<T>(this Mock<IClientStreamWriter<Message<T>>> writer, IList<T?> output)
     {
         writer
             .Setup(s => s.WriteAsync(It.IsNotNull<Message<T>>()))

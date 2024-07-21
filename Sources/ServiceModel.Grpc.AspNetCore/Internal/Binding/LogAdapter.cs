@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,9 +27,9 @@ internal sealed class LogAdapter : ILogger
         _logger = logger;
     }
 
-    public void LogError(string message, params object[] args) => _logger.LogError(message, args);
+    public void LogError(string message, params object?[] args) => _logger.LogError(message, args);
 
-    public void LogWarning(string message, params object[] args) => _logger.LogWarning(message, args);
+    public void LogWarning(string message, params object?[] args) => _logger.LogWarning(message, args);
 
-    public void LogDebug(string message, params object[] args) => _logger.LogDebug(message, args);
+    public void LogDebug(string message, params object?[] args) => _logger.LogDebug(message, args);
 }

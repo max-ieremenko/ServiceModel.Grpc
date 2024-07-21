@@ -27,30 +27,30 @@ param (
     $SkipBenchmarks,
 
     [Parameter()]
-    [ValidateSet("Release", "Debug")]
+    [ValidateSet('Release', 'Debug')]
     [string]
-    $BenchmarksConfiguration = "Release"
+    $BenchmarksConfiguration = 'Release'
 )
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
-. (Join-Path $PSScriptRoot "scripts" "Get-ModuleVersion.ps1")
-. (Join-Path $PSScriptRoot "scripts" "Resolve-ModulePath.ps1")
+. (Join-Path $PSScriptRoot 'scripts' 'Get-ModuleVersion.ps1')
+. (Join-Path $PSScriptRoot 'scripts' 'Resolve-ModulePath.ps1')
 
 if (-not $SkipBuild) {
-    & (Join-Path $PSScriptRoot "invoke-ci-build.ps1")
+    & (Join-Path $PSScriptRoot 'invoke-ci-build.ps1')
 }
 
 if (-not $SkipLinuxSdk) {
-    $repository = Join-Path $PSScriptRoot "../"
+    $repository = Join-Path $PSScriptRoot '../'
     $invokeBuild = Resolve-ModulePath -Name InvokeBuild -Version (Get-ModuleVersion -Name InvokeBuild)
     $nugetCache = Join-Path $HOME .nuget\packages
     if (-not $LinuxSdkFilter) {
-        $LinuxSdkFilter = " "
+        $LinuxSdkFilter = ' '
     }
 
-    $image = "mcr.microsoft.com/dotnet/sdk:8.0-jammy"
+    $image = 'mcr.microsoft.com/dotnet/sdk:8.0-jammy'
     docker pull $image
 
     docker run `
@@ -61,8 +61,8 @@ if (-not $SkipLinuxSdk) {
         -v "$($nugetCache):/root/.nuget/packages" `
         -v "$($repository):/repository" `
         $image `
-        "/repository/Build/invoke-sdk-test.ps1" `
-        -Platform "linux" `
+        '/repository/Build/invoke-sdk-test.ps1' `
+        -Platform 'linux' `
         -Filter $LinuxSdkFilter
 
     if ($LASTEXITCODE) {
@@ -71,10 +71,10 @@ if (-not $SkipLinuxSdk) {
 }
 
 if (-not $SkipWinSdk) {
-    & (Join-Path $PSScriptRoot "invoke-sdk-test.ps1") -Platform "win" -Filter $WinSdkFilter
+    & (Join-Path $PSScriptRoot 'invoke-sdk-test.ps1') -Platform 'win' -Filter $WinSdkFilter
 }
 
 # benchmarks
 if (-not $SkipBenchmarks) {
-    & (Join-Path $PSScriptRoot "invoke-benchmarks.ps1") -Configuration $BenchmarksConfiguration
+    & (Join-Path $PSScriptRoot 'invoke-benchmarks.ps1') -Configuration $BenchmarksConfiguration
 }

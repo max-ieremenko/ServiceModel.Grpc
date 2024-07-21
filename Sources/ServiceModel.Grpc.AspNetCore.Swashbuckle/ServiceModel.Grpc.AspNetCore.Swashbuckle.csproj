@@ -5,6 +5,7 @@
     <OutputType>Library</OutputType>
     <AssemblyTitle>ServiceModel.Grpc.AspNetCore.Swashbuckle</AssemblyTitle>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' != 'Debug'">

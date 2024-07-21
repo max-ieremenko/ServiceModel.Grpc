@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,16 +14,20 @@
 // limitations under the License.
 // </copyright>
 
-using System.Reflection;
+using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal;
 
 internal sealed class ServiceModelGrpcMarker
 {
-    public ServiceModelGrpcMarker(MethodInfo contractMethodDefinition)
+    public ServiceModelGrpcMarker(IOperationDescriptor descriptor, IMarshallerFactory marshallerFactory)
     {
-        ContractMethodDefinition = contractMethodDefinition;
+        Descriptor = descriptor;
+        MarshallerFactory = marshallerFactory;
     }
 
-    public MethodInfo ContractMethodDefinition { get; }
+    public IOperationDescriptor Descriptor { get; }
+
+    public IMarshallerFactory MarshallerFactory { get; }
 }

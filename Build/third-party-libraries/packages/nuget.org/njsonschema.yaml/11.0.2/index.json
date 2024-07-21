@@ -1,0 +1,45 @@
+{
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "NJsonSchema",
+          "Version": "11.0.2"
+        },
+        {
+          "Name": "YamlDotNet",
+          "Version": "15.1.4"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT"
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/RicoSuter/NJsonSchema"
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "http://njsonschema.org/"
+    }
+  ]
+}

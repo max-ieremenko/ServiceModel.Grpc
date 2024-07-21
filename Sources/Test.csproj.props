@@ -3,6 +3,23 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NUnit3TestAdapter" PrivateAssets="All" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="Shouldly" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="System.Threading.Channels" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
+    <Reference Include="System.ServiceModel" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net462'">
+    <PackageReference Include="System.ServiceModel.Primitives" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Moq" />
+    <Using Include="Shouldly" />
+  </ItemGroup>
 </Project>

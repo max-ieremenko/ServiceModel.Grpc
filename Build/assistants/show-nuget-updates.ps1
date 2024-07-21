@@ -12,7 +12,7 @@ param (
 )
 
 if (-not $SkipDotnetRestore) {
-    foreach ($sln in (Get-ChildItem -Path $Path -Recurse -Filter "*.sln" -File)) {
+    foreach ($sln in (Get-ChildItem -Path $Path -Recurse -Filter '*.sln' -File)) {
         dotnet restore $sln.FullName --verbosity q
     }
 }
@@ -21,7 +21,7 @@ $packages = @()
 $distinct = New-Object System.Collections.Generic.HashSet[string]
 
 # dot not pass .sln - .shproj is not supported
-foreach ($project in (Get-ChildItem -Path $Path -Recurse -Filter "*.csproj" -File)) {
+foreach ($project in (Get-ChildItem -Path $Path -Recurse -Filter '*.csproj' -File)) {
     $outdated = dotnet list $project.FullName package --outdated --format json | ConvertFrom-Json
 
     foreach ($package in $outdated.projects.frameworks.topLevelPackages) {

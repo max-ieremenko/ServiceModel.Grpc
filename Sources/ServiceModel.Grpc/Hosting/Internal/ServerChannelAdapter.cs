@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,27 +14,20 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
-using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Hosting.Internal;
 
 internal static class ServerChannelAdapter
 {
-    internal static async Task WriteServerStreamingResult<THeader, TResult>(
-        ValueTask<(THeader? Header, IAsyncEnumerable<TResult> Response)> result,
+    internal static async Task WriteServerStreamingResult<THeader, TMessage, TValue>(
+        ValueTask<(THeader? Header, IAsyncEnumerable<TValue?> Response)> result,
         Marshaller<THeader>? headerMarshaller,
-        IServerStreamWriter<Message<TResult>> stream,
+        IServerStreamWriter<TMessage> stream,
         ServerCallContext context)
         where THeader : class
+        where TMessage : class, IMessage<TValue>, new()
     {
         var (header, response) = await result.ConfigureAwait(false);
         if (headerMarshaller != null)
@@ -52,7 +45,9 @@ internal static class ServerChannelAdapter
 
             try
             {
-                await stream.WriteAsync(new Message<TResult>(i)).ConfigureAwait(false);
+                var message = new TMessage();
+                message.SetValue1(i);
+                await stream.WriteAsync(message).ConfigureAwait(false);
             }
             catch (InvalidOperationException) when (token.IsCancellationRequested)
             {
@@ -70,7 +65,8 @@ internal static class ServerChannelAdapter
         }
     }
 
-    internal static async IAsyncEnumerable<T> ReadClientStream<T>(IAsyncStreamReader<Message<T>> stream, ServerCallContext context)
+    internal static async IAsyncEnumerable<TValue?> ReadClientStream<TMessage, TValue>(IAsyncStreamReader<TMessage> stream, ServerCallContext context)
+        where TMessage : class, IMessage<TValue>
     {
         // in case of client does not read the whole response
         // TaskCanceledException A task was canceled, test MultipurposeServiceTestBase.see DuplexStreamingClientStopReading.
@@ -78,106 +74,7 @@ internal static class ServerChannelAdapter
         // If the exception was ignored by server method implementation, then it will be re-throw in WriteServerStreamingResult on foreach.
         while (await stream.MoveNext(context.CancellationToken).ConfigureAwait(false))
         {
-            yield return stream.Current.Value1;
+            yield return stream.Current.GetValue1();
         }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ServerCallContext GetContext(ServerCallContext context) => context;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static CancellationToken GetContextToken(ServerCallContext context) => context.CancellationToken;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static CancellationToken? GetContextNullableToken(ServerCallContext context) => GetContextToken(context);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static CallContext GetContextDefault(ServerCallContext context) => context;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static CallOptions GetContextOptions(ServerCallContext context)
-    {
-        return new CallOptions(context.RequestHeaders, context.Deadline, context.CancellationToken, context.WriteOptions);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static CallOptions? GetContextNullableOptions(ServerCallContext context) => GetContextOptions(context);
-
-    internal static async Task<Message> UnaryCallWaitTask(Task call)
-    {
-        await call.ConfigureAwait(false);
-        return new Message();
-    }
-
-    internal static async Task<Message> UnaryCallWaitValueTask(ValueTask call)
-    {
-        await call.ConfigureAwait(false);
-        return new Message();
-    }
-
-    internal static async Task<Message<T>> GetUnaryCallResultTask<T>(Task<T> call)
-    {
-        var result = await call.ConfigureAwait(false);
-        return new Message<T>(result);
-    }
-
-    internal static async Task<Message<T>> GetUnaryCallResultValueTask<T>(ValueTask<T> call)
-    {
-        var result = await call.ConfigureAwait(false);
-        return new Message<T>(result);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ValueTask<(Message? Header, IAsyncEnumerable<TResponse> Stream)> ServerStreaming<TResponse>(IAsyncEnumerable<TResponse> response)
-    {
-        return new ValueTask<(Message?, IAsyncEnumerable<TResponse>)>((null, response));
-    }
-
-    internal static async ValueTask<(Message? Header, IAsyncEnumerable<TResponse> Stream)> ServerStreamingTask<TResponse>(Task<IAsyncEnumerable<TResponse>> responseTask)
-    {
-        var response = await responseTask.ConfigureAwait(false);
-        return (null, response);
-    }
-
-    internal static async ValueTask<(Message? Header, IAsyncEnumerable<TResponse> Stream)> ServerStreamingValueTask<TResponse>(ValueTask<IAsyncEnumerable<TResponse>> responseTask)
-    {
-        var response = await responseTask.ConfigureAwait(false);
-        return (null, response);
-    }
-
-    internal static async ValueTask<(TResponseHeader Header, IAsyncEnumerable<TResponse> Stream)> ServerStreamingHeaderTask<TResult, TResponseHeader, TResponse>(
-        Task<TResult> resultTask,
-        Func<TResult, (TResponseHeader Header, IAsyncEnumerable<TResponse> Stream)> adapter)
-    {
-        var result = await resultTask.ConfigureAwait(false);
-        return adapter(result);
-    }
-
-    internal static async ValueTask<(TResponseHeader Header, IAsyncEnumerable<TResponse> Stream)> ServerStreamingHeaderValueTask<TResult, TResponseHeader, TResponse>(
-        ValueTask<TResult> resultTask,
-        Func<TResult, (TResponseHeader Header, IAsyncEnumerable<TResponse> Stream)> adapter)
-    {
-        var result = await resultTask.ConfigureAwait(false);
-        return adapter(result);
-    }
-
-    internal static MethodInfo GetServiceContextOptionMethod(Type optionType)
-    {
-        return typeof(ServerChannelAdapter).StaticMethodByReturnType(nameof(GetContext), optionType);
-    }
-
-    internal static bool TryGetServiceContextOptionMethod(Type optionType)
-    {
-        try
-        {
-            GetServiceContextOptionMethod(optionType);
-            return true;
-        }
-        catch (ArgumentOutOfRangeException)
-        {
-            // method not found
-        }
-
-        return false;
     }
 }

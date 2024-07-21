@@ -1,0 +1,41 @@
+{
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "AspNetCoreSwashbuckle",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Swashbuckle.AspNetCore.Swagger",
+          "Version": "6.6.2"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT"
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/domaindrivendev/Swashbuckle.AspNetCore.git"
+    },
+    {
+      "Subject": "project",
+      "Code": "MIT",
+      "HRef": "https://github.com/domaindrivendev/Swashbuckle.AspNetCore"
+    }
+  ]
+}

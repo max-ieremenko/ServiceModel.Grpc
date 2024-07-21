@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021-2023 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,20 +14,17 @@
 // limitations under the License.
 // </copyright>
 
-using System;
+using System.Buffers;
 using System.Buffers.Binary;
-using System.Collections.Generic;
-using System.IO;
 using System.IO.Pipelines;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using Grpc.Core;
 using Microsoft.AspNetCore.Http;
+using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger;
 
-internal sealed partial class SwaggerUiRequestHandler : ISwaggerUiRequestHandler
+internal sealed class SwaggerUiRequestHandler : ISwaggerUiRequestHandler
 {
     private readonly IDataSerializer _serializer;
 
@@ -38,17 +35,15 @@ internal sealed partial class SwaggerUiRequestHandler : ISwaggerUiRequestHandler
 
     public async Task<byte[]> ReadRequestMessageAsync(
         PipeReader bodyReader,
-        IList<string> orderedParameterNames,
-        IMethod method,
+        IMarshallerFactory marshallerFactory,
+        IOperationDescriptor descriptor,
         CancellationToken token)
     {
-        var values = new object?[orderedParameterNames.Count];
-        var methodAccessor = CreateMethodAccessor(method);
+        var accessor = descriptor.GetRequestAccessor();
+        var request = accessor.CreateNew();
 
-        if (orderedParameterNames.Count > 0)
+        if (accessor.Names.Length > 0)
         {
-            var requestParameterTypes = methodAccessor.GetParameterTypes();
-
             JsonElement body;
             using (var stream = bodyReader.AsStream())
             {
@@ -58,27 +53,28 @@ internal sealed partial class SwaggerUiRequestHandler : ISwaggerUiRequestHandler
 
             foreach (var entry in body.EnumerateObject())
             {
-                var index = FindIndex(orderedParameterNames, entry.Name);
+                var index = FindIndex(accessor.Names, entry.Name);
                 if (index < 0)
                 {
                     continue;
                 }
 
-                var parameterType = requestParameterTypes[index];
+                var parameterType = accessor.GetValueType(index);
                 try
                 {
-                    values[index] = _serializer.Deserialize(entry.Value.GetRawText(), parameterType);
+                    var value = _serializer.Deserialize(entry.Value.GetRawText(), parameterType);
+                    accessor.SetValue(request, index, value);
                 }
                 catch (Exception ex)
                 {
                     throw new InvalidOperationException(
-                        "Fail to deserialize parameter [{0}] with type [{1}] from request.".FormatWith(entry.Name, parameterType),
+                        $"Fail to deserialize parameter [{entry.Name}] with type [{parameterType}] from request.",
                         ex);
                 }
             }
         }
 
-        var payload = methodAccessor.SerializeRequest(values);
+        var payload = MarshallerExtensions.SerializeObject(marshallerFactory, request);
 
         var result = new byte[payload.Length + 5];
 
@@ -92,6 +88,31 @@ internal sealed partial class SwaggerUiRequestHandler : ISwaggerUiRequestHandler
         Buffer.BlockCopy(payload, 0, result, 5, payload.Length);
 
         return result;
+    }
+
+    public Task WriteResponseMessageAsync(
+        MemoryStream original,
+        PipeWriter bodyWriter,
+        IMarshallerFactory marshallerFactory,
+        IOperationDescriptor descriptor,
+        CancellationToken token)
+    {
+        var accessor = descriptor.GetResponseAccessor();
+        if (accessor.Names.Length == 0)
+        {
+            return Task.CompletedTask;
+        }
+
+        var payload = new ReadOnlySequence<byte>(original.GetBuffer(), 5, (int)(original.Length - 5));
+        var response = MarshallerExtensions.DeserializeObject(marshallerFactory, accessor.GetInstanceType(), payload);
+
+        var responseValue = accessor.GetValue(response, 0);
+        if (responseValue == null)
+        {
+            return Task.CompletedTask;
+        }
+
+        return _serializer.SerializeAsync(bodyWriter.AsStream(true), responseValue, accessor.GetValueType(0), token);
     }
 
     public void AppendResponseTrailers(
@@ -109,31 +130,6 @@ internal sealed partial class SwaggerUiRequestHandler : ISwaggerUiRequestHandler
         }
     }
 
-    public Task WriteResponseMessageAsync(
-        MemoryStream original,
-        PipeWriter bodyWriter,
-        IMethod method,
-        CancellationToken token)
-    {
-        var methodAccessor = CreateMethodAccessor(method);
-        var responseType = methodAccessor.GetResponseType();
-        if (responseType == null)
-        {
-            return Task.CompletedTask;
-        }
-
-        var payload = new byte[original.Length - 5];
-        Buffer.BlockCopy(original.GetBuffer(), 5, payload, 0, payload.Length);
-
-        var response = methodAccessor.DeserializeResponse(payload);
-        if (response == null)
-        {
-            return Task.CompletedTask;
-        }
-
-        return _serializer.SerializeAsync(bodyWriter.AsStream(true), response, responseType, token);
-    }
-
     public Task WriteResponseErrorAsync(
         RpcException error,
         PipeWriter bodyWriter,
@@ -142,9 +138,9 @@ internal sealed partial class SwaggerUiRequestHandler : ISwaggerUiRequestHandler
         return _serializer.SerializeAsync(bodyWriter.AsStream(true), error, typeof(RpcException), token);
     }
 
-    private static int FindIndex(IList<string> names, string name)
+    private static int FindIndex(string[] names, string name)
     {
-        for (var i = 0; i < names.Count; i++)
+        for (var i = 0; i < names.Length; i++)
         {
             if (names[i].Equals(name, StringComparison.OrdinalIgnoreCase))
             {
@@ -153,12 +149,5 @@ internal sealed partial class SwaggerUiRequestHandler : ISwaggerUiRequestHandler
         }
 
         return -1;
-    }
-
-    private static IMethodAccessor CreateMethodAccessor(IMethod method)
-    {
-        var type = typeof(MethodAccessor<,>).MakeGenericType(method.GetType().GetGenericArguments());
-        var instance = Activator.CreateInstance(type, method)!;
-        return (IMethodAccessor)instance;
     }
 }

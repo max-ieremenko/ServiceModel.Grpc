@@ -4,6 +4,8 @@
     <TargetFrameworks>netstandard2.0;netstandard2.1;net462</TargetFrameworks>
     <AssemblyTitle>ServiceModel.Grpc.SelfHost</AssemblyTitle>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
+    <NoWarn>$(NoWarn);ServiceModelGrpcInternalAPI</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' != 'Debug'">

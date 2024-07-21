@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2022 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,10 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Grpc.Core;
 using NUnit.Framework;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.TestApi.Domain;
-using Shouldly;
 
 namespace ServiceModel.Grpc.TestApi;
 
@@ -182,11 +177,11 @@ public abstract class HeadersHandlingTestBase
     {
         context.ResponseHeaders.ShouldNotBeNull();
 
-        var defaultHeader = context.ResponseHeaders.FindHeader(HeadersService.DefaultHeaderName, false);
+        MetadataExtensions.TryFindHeader(context.ResponseHeaders, HeadersService.DefaultHeaderName, false, out var defaultHeader).ShouldBeTrue();
         defaultHeader.ShouldNotBeNull();
         defaultHeader.Value.ShouldBe(HeadersService.DefaultHeaderValue);
 
-        var callHeader = context.ResponseHeaders.FindHeader(HeadersService.CallHeaderName, false);
+        MetadataExtensions.TryFindHeader(context.ResponseHeaders, HeadersService.CallHeaderName, false, out var callHeader).ShouldBeTrue();
         callHeader.ShouldNotBeNull();
         callHeader.Value.ShouldBe(HeadersService.CallHeaderValue);
 
@@ -199,7 +194,7 @@ public abstract class HeadersHandlingTestBase
         {
             context.ResponseTrailers.ShouldNotBeNull();
 
-            var callTrailer = context.ResponseTrailers.FindHeader(HeadersService.CallTrailerName, false);
+            MetadataExtensions.TryFindHeader(context.ResponseTrailers, HeadersService.CallTrailerName, false, out var callTrailer).ShouldBeTrue();
             callTrailer.ShouldNotBeNull();
             callTrailer.Value.ShouldBe(HeadersService.CallTrailerValue);
         }

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
 using Grpc.Core.Logging;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Filters;
@@ -41,6 +39,12 @@ public sealed class ServiceModelGrpcServiceOptions
     /// Gets or sets a server call error handler.
     /// </summary>
     public IServerErrorHandler? ErrorHandler { get; set; }
+
+    /// <summary>
+    /// Gets or sets an error details serializer, that overrides default serialization.
+    /// It is only applicable with <see cref="ErrorHandler"/>.
+    /// </summary>
+    public IServerFaultDetailSerializer? ErrorDetailSerializer { get; set; }
 
     /// <summary>
     /// Gets or sets logger to handle possible output from service binding process.

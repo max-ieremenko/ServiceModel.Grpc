@@ -6,7 +6,228 @@
   },
   "UsedBy": [
     {
+      "Name": "AspNetCore",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.Bcl.AsyncInterfaces",
+          "Version": "5.0.0"
+        },
+        {
+          "Name": "Microsoft.Extensions.ObjectPool",
+          "Version": "5.0.10"
+        },
+        {
+          "Name": "System.Reflection.DispatchProxy",
+          "Version": "4.7.1"
+        },
+        {
+          "Name": "System.Security.Cryptography.Xml",
+          "Version": "6.0.1"
+        },
+        {
+          "Name": "System.Security.Principal.Windows",
+          "Version": "5.0.0"
+        }
+      ]
+    },
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.Bcl.AsyncInterfaces",
+          "Version": "5.0.0"
+        },
+        {
+          "Name": "Microsoft.Extensions.ObjectPool",
+          "Version": "5.0.10"
+        },
+        {
+          "Name": "System.Reflection.DispatchProxy",
+          "Version": "4.7.1"
+        },
+        {
+          "Name": "System.Security.Cryptography.Xml",
+          "Version": "6.0.1"
+        },
+        {
+          "Name": "System.Security.Principal.Windows",
+          "Version": "5.0.0"
+        }
+      ]
+    },
+    {
+      "Name": "AspNetCoreSwashbuckle",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.Bcl.AsyncInterfaces",
+          "Version": "5.0.0"
+        },
+        {
+          "Name": "Microsoft.Extensions.ObjectPool",
+          "Version": "5.0.10"
+        },
+        {
+          "Name": "System.Reflection.DispatchProxy",
+          "Version": "4.7.1"
+        },
+        {
+          "Name": "System.Security.Cryptography.Xml",
+          "Version": "6.0.1"
+        },
+        {
+          "Name": "System.Security.Principal.Windows",
+          "Version": "5.0.0"
+        }
+      ]
+    },
+    {
+      "Name": "ClientDI",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.Bcl.AsyncInterfaces",
+          "Version": "5.0.0"
+        },
+        {
+          "Name": "Microsoft.Extensions.ObjectPool",
+          "Version": "5.0.10"
+        },
+        {
+          "Name": "System.Reflection.DispatchProxy",
+          "Version": "4.7.1"
+        },
+        {
+          "Name": "System.Security.Cryptography.Xml",
+          "Version": "6.0.1"
+        },
+        {
+          "Name": "System.Security.Principal.Windows",
+          "Version": "5.0.0"
+        }
+      ]
+    },
+    {
       "Name": "Core",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.Bcl.AsyncInterfaces",
+          "Version": "5.0.0"
+        },
+        {
+          "Name": "Microsoft.Extensions.ObjectPool",
+          "Version": "5.0.10"
+        },
+        {
+          "Name": "System.Reflection.DispatchProxy",
+          "Version": "4.7.1"
+        },
+        {
+          "Name": "System.Security.Cryptography.Xml",
+          "Version": "6.0.1"
+        },
+        {
+          "Name": "System.Security.Principal.Windows",
+          "Version": "5.0.0"
+        }
+      ]
+    },
+    {
+      "Name": "DesignTime",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.Bcl.AsyncInterfaces",
+          "Version": "5.0.0"
+        },
+        {
+          "Name": "Microsoft.Extensions.ObjectPool",
+          "Version": "5.0.10"
+        },
+        {
+          "Name": "System.Reflection.DispatchProxy",
+          "Version": "4.7.1"
+        },
+        {
+          "Name": "System.Security.Cryptography.Xml",
+          "Version": "6.0.1"
+        },
+        {
+          "Name": "System.Security.Principal.Windows",
+          "Version": "5.0.0"
+        }
+      ]
+    },
+    {
+      "Name": "Emit",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.Bcl.AsyncInterfaces",
+          "Version": "5.0.0"
+        },
+        {
+          "Name": "Microsoft.Extensions.ObjectPool",
+          "Version": "5.0.10"
+        },
+        {
+          "Name": "System.Reflection.DispatchProxy",
+          "Version": "4.7.1"
+        },
+        {
+          "Name": "System.Security.Cryptography.Xml",
+          "Version": "6.0.1"
+        },
+        {
+          "Name": "System.Security.Principal.Windows",
+          "Version": "5.0.0"
+        }
+      ]
+    },
+    {
+      "Name": "SelfHost",
       "InternalOnly": true,
       "TargetFrameworks": [
         "net462",

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2023 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using Grpc.AspNetCore.Server;
 using Grpc.Core.Utils;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +27,8 @@ namespace ServiceModel.Grpc.AspNetCore.Internal.Binding;
 
 internal sealed class PostConfigureGrpcServiceOptions : IPostConfigureOptions<GrpcServiceOptions>
 {
+    private const string ErrorInterceptorLoggerName = "ServiceModel.Grpc.Interceptors.ServerCallErrorInterceptor";
+
     private readonly IOptions<ServiceModelGrpcServiceOptions> _serviceModelOptions;
     private readonly ILoggerFactory _loggerFactory;
 
@@ -43,6 +44,7 @@ internal sealed class PostConfigureGrpcServiceOptions : IPostConfigureOptions<Gr
             options.Interceptors,
             _serviceModelOptions.Value.DefaultErrorHandlerFactory,
             _serviceModelOptions.Value.DefaultMarshallerFactory,
+            _serviceModelOptions.Value.DefaultErrorDetailSerializer,
             _loggerFactory);
     }
 
@@ -50,22 +52,24 @@ internal sealed class PostConfigureGrpcServiceOptions : IPostConfigureOptions<Gr
         InterceptorCollection interceptors,
         Func<IServiceProvider, IServerErrorHandler>? errorHandlerFactory,
         IMarshallerFactory? marshallerFactory,
+        IServerFaultDetailSerializer? detailSerializer,
         ILoggerFactory loggerFactory)
     {
         if (errorHandlerFactory != null)
         {
-            var factory = new ErrorHandlerServerCallInterceptorFactory(
-                marshallerFactory.ThisOrDefault(),
+            var args = ErrorHandlerInterceptorFactory.CreateServerHandlerArgs(
                 errorHandlerFactory,
+                marshallerFactory.ThisOrDefault(),
+                detailSerializer,
                 CreateLogger(loggerFactory));
 
-            interceptors.Add<ServerNativeInterceptor>(factory);
+            interceptors.Add(ErrorHandlerInterceptorFactory.GetServerHandlerType(), args);
         }
     }
 
     private static ILogger CreateLogger(ILoggerFactory loggerFactory)
     {
-        var logger = loggerFactory.CreateLogger(ErrorHandlerServerCallInterceptorFactory.LoggerName);
+        var logger = loggerFactory.CreateLogger(ErrorInterceptorLoggerName);
         return new LogAdapter(logger);
     }
 }

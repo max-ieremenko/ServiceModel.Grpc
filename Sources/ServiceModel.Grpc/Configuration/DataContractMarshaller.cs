@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2021 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Grpc.Core;
 
@@ -51,7 +49,7 @@ internal static class DataContractMarshaller<T>
         var root = typeof(T);
         if (!root.IsGenericType)
         {
-            return Array.Empty<Type>();
+            return [];
         }
 
         var types = new HashSet<Type>(root.GenericTypeArguments);

@@ -6,33 +6,34 @@
 
   <ItemGroup>
     <PackageVersion Include="CompareNETObjects" Version="4.83.0" />
-    <PackageVersion Include="Google.Protobuf" Version="3.25.3" />
-    <PackageVersion Include="Grpc.AspNetCore.Server" Version="2.61.0" />
+    <PackageVersion Include="Google.Protobuf" Version="3.27.2" />
+    <PackageVersion Include="Grpc.AspNetCore.Server" Version="2.64.0" />
     <PackageVersion Include="Grpc.Core" Version="2.46.6" />
-    <PackageVersion Include="Grpc.Core.Api" Version="2.61.0" />
-    <PackageVersion Include="Grpc.Net.Client" Version="2.61.0" />
-    <PackageVersion Include="Grpc.Net.ClientFactory" Version="2.61.0" />
-    <PackageVersion Include="Grpc.Tools" Version="2.62.0" />
-    <PackageVersion Include="MessagePack" Version="2.5.140" />
+    <PackageVersion Include="Grpc.Core.Api" Version="2.64.0" />
+    <PackageVersion Include="Grpc.Net.Client" Version="2.64.0" />
+    <PackageVersion Include="Grpc.Net.ClientFactory" Version="2.64.0" />
+    <PackageVersion Include="Grpc.Tools" Version="2.65.0" />
+    <PackageVersion Include="MessagePack" Version="2.5.171" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.21" />
     <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Common" Version="4.0.1" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <PackageVersion Include="Mono.Reflection" Version="2.0.0" />
     <PackageVersion Include="Moq" Version="4.20.70" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageVersion Include="NSwag.AspNetCore" Version="14.0.0" />
+    <PackageVersion Include="NSwag.AspNetCore" Version="14.1.0" />
     <PackageVersion Include="NUnit" Version="4.1.0" />
     <PackageVersion Include="NUnit3TestAdapter" Version="4.5.0" />
     <PackageVersion Include="protobuf-net" Version="3.2.30" />
     <PackageVersion Include="Shouldly" Version="4.2.1" />
     <PackageVersion Include="StyleCop.Analyzers.Unstable" Version="1.2.0.556" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.5.0" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.5.0" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.Annotations" Version="6.6.2" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.6.2" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.6.2" />
     <PackageVersion Include="System.Collections.Immutable" Version="8.0.0" />
-    <PackageVersion Include="System.Net.Http.WinHttpHandler" Version="8.0.0" />
+    <PackageVersion Include="System.Net.Http.WinHttpHandler" Version="8.0.1" />
     <PackageVersion Include="System.Reflection.Emit" Version="4.7.0" />
     <PackageVersion Include="System.ServiceModel.Primitives" Version="4.10.3" />
     <PackageVersion Include="System.Threading.Channels" Version="8.0.0" />

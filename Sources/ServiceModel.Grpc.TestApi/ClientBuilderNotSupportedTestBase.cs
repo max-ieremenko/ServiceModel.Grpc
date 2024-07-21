@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2022 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,12 +14,9 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using Grpc.Core;
-using Moq;
 using NUnit.Framework;
 using ServiceModel.Grpc.TestApi.Domain;
-using Shouldly;
 
 namespace ServiceModel.Grpc.TestApi;
 
@@ -64,11 +61,11 @@ public abstract class ClientBuilderNotSupportedTestBase
     [Test]
     public void DisposableIsNotServiceContract()
     {
-        var ex = Assert.Throws<NotSupportedException>(() => _contract.Dispose());
+        var ex = Assert.Throws<NotSupportedException>(_contract.Dispose);
 
         ex.ShouldNotBeNull();
         TestOutput.WriteLine(ex.Message);
 
-        ex.Message.ShouldContain(typeof(IDisposable).FullName!);
+        ex.Message.ShouldContain(nameof(IDisposable));
     }
 }

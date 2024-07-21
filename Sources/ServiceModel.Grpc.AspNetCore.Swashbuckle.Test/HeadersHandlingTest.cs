@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2022 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +21,6 @@ using Microsoft.OpenApi.Models;
 using NUnit.Framework;
 using ServiceModel.Grpc.AspNetCore.TestApi;
 using ServiceModel.Grpc.TestApi.Domain;
-using Shouldly;
 using OpenApiDocument = ServiceModel.Grpc.AspNetCore.TestApi.OpenApiDocument;
 
 namespace ServiceModel.Grpc.AspNetCore.Swashbuckle;

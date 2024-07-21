@@ -1,11 +1,11 @@
 ﻿using Grpc.Core;
 using Microsoft.Extensions.Hosting;
-using Service;
 using ServiceModel.Grpc.Interceptors;
 using System.Threading;
 using System.Threading.Tasks;
 using Contract;
 using Grpc.Core.Logging;
+using Service.Shared;
 
 namespace ServerNativeHost;
 
@@ -34,6 +34,9 @@ internal sealed class ServerHost : IHostedService
                 options.ErrorHandler = new ServerErrorHandlerCollection(
                     new ApplicationExceptionServerHandler(),
                     new UnexpectedExceptionServerHandler());
+
+                // uncomment to fully control ServerFaultDetail.Detail serialization, must be uncommented in Client as well
+                //options.ErrorDetailSerializer = new CustomServerFaultDetailSerializer();
             });
     }
 

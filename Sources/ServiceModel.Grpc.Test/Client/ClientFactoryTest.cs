@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2023 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,19 +14,15 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using Grpc.Core;
-using Moq;
 using NUnit.Framework;
 using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.Configuration;
+using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Filters;
 using ServiceModel.Grpc.Interceptors;
-using ServiceModel.Grpc.Interceptors.Internal;
 using ServiceModel.Grpc.Internal;
-using ServiceModel.Grpc.Internal.Emit;
 using ServiceModel.Grpc.TestApi;
-using Shouldly;
 
 namespace ServiceModel.Grpc.Client;
 
@@ -38,7 +34,6 @@ public partial class ClientFactoryTest
     private Mock<CallInvoker> _callInvoker = null!;
     private IClientErrorHandler _globalErrorHandler = null!;
     private IClientErrorHandler _localErrorHandler = null!;
-    private Mock<IEmitGenerator> _generator = null!;
     private ClientFactory _sut = null!;
 
     [SetUp]
@@ -53,13 +48,7 @@ public partial class ClientFactoryTest
         _globalErrorHandler = new Mock<IClientErrorHandler>(MockBehavior.Strict).Object;
         _localErrorHandler = new Mock<IClientErrorHandler>(MockBehavior.Strict).Object;
 
-        _generator = new Mock<IEmitGenerator>(MockBehavior.Strict);
-        _generator.SetupProperty(g => g.Logger, null);
-        _generator
-            .Setup(g => g.GenerateClientBuilder<IDisposable>())
-            .Returns(_emitClientBuilder.Object);
-
-        _sut = new ClientFactory(_generator.Object, _defaultOptions);
+        _sut = new ClientFactory(_defaultOptions);
     }
 
     [Test]
@@ -70,11 +59,11 @@ public partial class ClientFactoryTest
             .Callback<IClientMethodBinder>(binder =>
             {
                 binder.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
-                binder.DefaultCallOptionsFactory.ShouldBeNull();
+                ((ClientMethodBinder)binder).DefaultCallOptionsFactory.ShouldBeNull();
                 ((ClientMethodBinder)binder).ServiceProvider.ShouldBeNull();
             });
 
-        _sut.AddClient<IDisposable>();
+        _sut.AddClient(_emitClientBuilder.Object);
 
         _emitClientBuilder.VerifyAll();
     }
@@ -91,16 +80,18 @@ public partial class ClientFactoryTest
             .Callback<IClientMethodBinder>(binder =>
             {
                 binder.MarshallerFactory.ShouldBe(marshaller.Object);
-                binder.DefaultCallOptionsFactory.ShouldBe(callOptions);
+                ((ClientMethodBinder)binder).DefaultCallOptionsFactory.ShouldBe(callOptions);
                 ((ClientMethodBinder)binder).ServiceProvider.ShouldBe(serviceProvider);
             });
 
-        _sut.AddClient<IDisposable>(o =>
-        {
-            o.DefaultCallOptionsFactory = callOptions;
-            o.MarshallerFactory = marshaller.Object;
-            o.ServiceProvider = serviceProvider;
-        });
+        _sut.AddClient(
+            _emitClientBuilder.Object,
+            options =>
+            {
+                options.DefaultCallOptionsFactory = callOptions;
+                options.MarshallerFactory = marshaller.Object;
+                options.ServiceProvider = serviceProvider;
+            });
 
         _emitClientBuilder.VerifyAll();
     }
@@ -135,50 +126,25 @@ public partial class ClientFactoryTest
             .Callback<IClientMethodBinder>(binder =>
             {
                 binder.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
-                binder.DefaultCallOptionsFactory.ShouldBeNull();
+                ((ClientMethodBinder)binder).DefaultCallOptionsFactory.ShouldBeNull();
             });
 
-        _generator
-            .Setup(g => g.GenerateClientBuilder<IComparable<int>>())
-            .Returns(clientBuilder.Object)
-            .Verifiable();
+        _sut.AddClient(clientBuilder.Object);
 
-        _sut.AddClient<IComparable<int>>();
-
-        _generator.Verify();
         clientBuilder.VerifyAll();
     }
 
     [Test]
     public void CreateClientWithoutRegistration()
     {
-        var instance = new Mock<IDisposable>(MockBehavior.Strict);
-
-        _emitClientBuilder
-            .Setup(b => b.Initialize(It.IsNotNull<ClientMethodBinder>()))
-            .Callback<IClientMethodBinder>(binder =>
-            {
-                binder.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
-                binder.DefaultCallOptionsFactory.ShouldBeNull();
-            });
-
-        _emitClientBuilder
-            .Setup(b => b.Build(_callInvoker.Object))
-            .Returns(instance.Object);
-
-        _sut.CreateClient<IDisposable>(_callInvoker.Object).ShouldBe(instance.Object);
+        _sut.CreateClient<IDisposable>(_callInvoker.Object).ShouldNotBeNull();
     }
 
     [Test]
     public void DoubleClientRegistration()
     {
         _emitClientBuilder
-            .Setup(b => b.Initialize(It.IsNotNull<ClientMethodBinder>()))
-            .Callback<IClientMethodBinder>(binder =>
-            {
-                binder.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
-                binder.DefaultCallOptionsFactory.ShouldBeNull();
-            });
+            .Setup(b => b.Initialize(It.IsNotNull<ClientMethodBinder>()));
 
         _sut.AddClient<IDisposable>();
 
@@ -186,17 +152,17 @@ public partial class ClientFactoryTest
     }
 
     [Test]
-    [TestCase(typeof(object))] // class
-    [TestCase(typeof(IEmitGenerator))] // not public
-    public void InvalidContracts(Type contractType)
+    public void AddClientNonInterface()
     {
-        var addClient = (Action<Action<ServiceModelGrpcClientOptions>?>)_sut
-            .GetType()
-            .InstanceMethod(nameof(_sut.AddClient), typeof(Action<ServiceModelGrpcClientOptions>))
-            .MakeGenericMethod(contractType)
-            .CreateDelegate(typeof(Action<Action<ServiceModelGrpcClientOptions>?>), _sut);
+        var ex = Assert.Throws<NotSupportedException>(() => _sut.AddClient<object>());
 
-        var ex = Assert.Throws<NotSupportedException>(() => addClient(null));
+        TestOutput.WriteLine(ex);
+    }
+
+    [Test]
+    public void AddClientInternalInterface()
+    {
+        var ex = Assert.Throws<NotSupportedException>(() => _sut.AddClient<IInternalContract>());
 
         TestOutput.WriteLine(ex);
     }
@@ -211,7 +177,7 @@ public partial class ClientFactoryTest
             .Callback<IClientMethodBinder>(binder =>
             {
                 binder.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
-                binder.DefaultCallOptionsFactory.ShouldBeNull();
+                ((ClientMethodBinder)binder).DefaultCallOptionsFactory.ShouldBeNull();
             });
 
         _emitClientBuilder
@@ -220,17 +186,22 @@ public partial class ClientFactoryTest
             {
                 var (interceptor, callInvoker) = i.ShouldBeIntercepted();
 
-                interceptor
-                    .ShouldBeOfType<ClientNativeInterceptor>()
-                    .CallInterceptor
-                    .ShouldBeOfType<ClientCallErrorInterceptor>()
-                    .ErrorHandler
+                var callInterceptor = interceptor
+                    .GetType()
+                    .InstanceProperty("CallInterceptor")
+                    .GetValue(interceptor)
+                    .ShouldNotBeNull();
+                callInterceptor
+                    .GetType()
+                    .InstanceProperty("ErrorHandler")
+                    .GetValue(callInterceptor)
                     .ShouldBe(_globalErrorHandler);
 
                 callInvoker.ShouldBe(_callInvoker.Object);
             })
             .Returns(new Mock<IDisposable>(MockBehavior.Strict).Object);
 
+        _sut.AddClient(_emitClientBuilder.Object);
         _sut.CreateClient<IDisposable>(_callInvoker.Object);
 
         _emitClientBuilder.VerifyAll();
@@ -244,7 +215,7 @@ public partial class ClientFactoryTest
             .Callback<IClientMethodBinder>(binder =>
             {
                 binder.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
-                binder.DefaultCallOptionsFactory.ShouldBeNull();
+                ((ClientMethodBinder)binder).DefaultCallOptionsFactory.ShouldBeNull();
             });
 
         _emitClientBuilder
@@ -253,18 +224,22 @@ public partial class ClientFactoryTest
             {
                 var (interceptor, callInvoker) = i.ShouldBeIntercepted();
 
-                interceptor
-                    .ShouldBeOfType<ClientNativeInterceptor>()
-                    .CallInterceptor
-                    .ShouldBeOfType<ClientCallErrorInterceptor>()
-                    .ErrorHandler
+                var callInterceptor = interceptor
+                    .GetType()
+                    .InstanceProperty("CallInterceptor")
+                    .GetValue(interceptor)
+                    .ShouldNotBeNull();
+                callInterceptor
+                    .GetType()
+                    .InstanceProperty("ErrorHandler")
+                    .GetValue(callInterceptor)
                     .ShouldBe(_localErrorHandler);
 
                 callInvoker.ShouldBe(_callInvoker.Object);
             })
             .Returns(new Mock<IDisposable>(MockBehavior.Strict).Object);
 
-        _sut.AddClient<IDisposable>(options => options.ErrorHandler = _localErrorHandler);
+        _sut.AddClient(_emitClientBuilder.Object, options => options.ErrorHandler = _localErrorHandler);
         _sut.CreateClient<IDisposable>(_callInvoker.Object);
 
         _emitClientBuilder.VerifyAll();
@@ -280,7 +255,7 @@ public partial class ClientFactoryTest
             .Callback<IClientMethodBinder>(binder =>
             {
                 binder.MarshallerFactory.ShouldBe(DataContractMarshallerFactory.Default);
-                binder.DefaultCallOptionsFactory.ShouldBeNull();
+                ((ClientMethodBinder)binder).DefaultCallOptionsFactory.ShouldBeNull();
             });
 
         _emitClientBuilder
@@ -289,18 +264,22 @@ public partial class ClientFactoryTest
             {
                 var (interceptor, callInvoker) = i.ShouldBeIntercepted();
 
-                interceptor
-                    .ShouldBeOfType<ClientNativeInterceptor>()
-                    .CallInterceptor
-                    .ShouldBeOfType<ClientCallErrorInterceptor>()
-                    .ErrorHandler
+                var callInterceptor = interceptor
+                    .GetType()
+                    .InstanceProperty("CallInterceptor")
+                    .GetValue(interceptor)
+                    .ShouldNotBeNull();
+                callInterceptor
+                    .GetType()
+                    .InstanceProperty("ErrorHandler")
+                    .GetValue(callInterceptor)
                     .ShouldBe(_localErrorHandler);
 
                 callInvoker.ShouldBe(_callInvoker.Object);
             })
             .Returns(new Mock<IDisposable>(MockBehavior.Strict).Object);
 
-        _sut.AddClient<IDisposable>(options => options.ErrorHandler = _localErrorHandler);
+        _sut.AddClient(_emitClientBuilder.Object, options => options.ErrorHandler = _localErrorHandler);
         _sut.CreateClient<IDisposable>(_callInvoker.Object);
 
         _emitClientBuilder.VerifyAll();
@@ -326,7 +305,7 @@ public partial class ClientFactoryTest
                 filters[0].Factory(null!).ShouldBe(filter.Object);
             });
 
-        _sut.AddClient<IDisposable>();
+        _sut.AddClient(_emitClientBuilder.Object);
 
         _emitClientBuilder.VerifyAll();
     }
@@ -349,10 +328,12 @@ public partial class ClientFactoryTest
                 filters[0].Factory(null!).ShouldBe(filter.Object);
             });
 
-        _sut.AddClient<IDisposable>(o =>
-        {
-            o.Filters.Add(1, filter.Object);
-        });
+        _sut.AddClient<IDisposable>(
+            _emitClientBuilder.Object,
+            options =>
+            {
+                options.Filters.Add(1, filter.Object);
+            });
 
         _emitClientBuilder.VerifyAll();
     }

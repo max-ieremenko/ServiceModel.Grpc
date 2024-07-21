@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,12 +14,11 @@
 // limitations under the License.
 // </copyright>
 
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using NUnit.Framework;
+using ServiceModel.Grpc.Emit;
 using ServiceModel.Grpc.Internal;
-using Shouldly;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer;
 
@@ -28,39 +27,41 @@ public partial class ApiDescriptionGeneratorTest
 {
     [Test]
     [TestCaseSource(nameof(GetTestCases))]
-    public void GetRequestType(MethodInfo method)
+    public void GetRequestType(IOperationDescriptor descriptor)
     {
-        var expected = method.GetCustomAttribute<RequestMetadataAttribute>();
-        var message = new MessageAssembler(method);
+        var method = descriptor.GetContractMethod();
+        var metadata = method.GetCustomAttribute<RequestMetadataAttribute>().ShouldNotBeNull();
 
-        var parameters = ApiDescriptionGenerator.GetRequestParameters(message).ToArray();
-        var headerParameters = ApiDescriptionGenerator.GetRequestHeaderParameters(message).ToArray();
+        var actual = ApiDescriptionGenerator.GetRequestParameters(descriptor);
 
-        parameters.Length.ShouldBe(expected!.Parameters.Length);
-        headerParameters.Length.ShouldBe(expected.HeaderParameters.Length);
+        actual.Length.ShouldBe(metadata.Parameters.Length + metadata.HeaderParameters.Length);
 
-        for (var i = 0; i < expected.Parameters.Length; i++)
+        for (var i = 0; i < metadata.HeaderParameters.Length; i++)
         {
-            parameters[i].ShouldBe(message.Parameters[expected.Parameters[i]]);
+            var expected = method.GetParameters()[metadata.HeaderParameters[i]];
+            actual[i].Parameter.ShouldBe(expected);
+            actual[i].Source.ShouldBe(BindingSource.Header);
         }
 
-        for (var i = 0; i < expected.HeaderParameters.Length; i++)
+        for (var i = 0; i < metadata.Parameters.Length; i++)
         {
-            headerParameters[i].ShouldBe(message.Parameters[expected.HeaderParameters[i]]);
+            var expected = method.GetParameters()[metadata.Parameters[i]];
+            actual[i + metadata.HeaderParameters.Length].Parameter.ShouldBe(expected);
+            actual[i + metadata.HeaderParameters.Length].Source.ShouldBe(BindingSource.Form);
         }
     }
 
     [Test]
     [TestCaseSource(nameof(GetTestCases))]
-    public void GetResponseType(MethodInfo method)
+    public void GetResponseType(IOperationDescriptor descriptor)
     {
-        var expected = method.GetCustomAttribute<ResponseMetadataAttribute>();
-        var message = new MessageAssembler(method);
+        var method = descriptor.GetContractMethod();
+        var expected = method.GetCustomAttribute<ResponseMetadataAttribute>().ShouldNotBeNull();
 
-        var responseType = ApiDescriptionGenerator.GetResponseType(message);
-        var responseHeaders = ApiDescriptionGenerator.GetResponseHeaderParameters(message);
+        var responseType = ApiDescriptionGenerator.GetResponseType(descriptor);
+        var responseHeaders = ApiDescriptionGenerator.GetResponseHeaderParameters(descriptor);
 
-        responseType.Type.ShouldBe(expected!.Type);
+        responseType.Type.ShouldBe(expected.Type);
         responseType.Parameter.ShouldBe(method.ReturnParameter);
 
         responseHeaders.Length.ShouldBe(expected.HeaderTypes.Length);
@@ -71,13 +72,39 @@ public partial class ApiDescriptionGeneratorTest
         }
     }
 
+    [Test]
+    [TestCaseSource(nameof(GetTestCases))]
+    public void MethodSignature(IOperationDescriptor descriptor)
+    {
+        var method = descriptor.GetContractMethod();
+        var expected = method.GetCustomAttribute<SignatureAttribute>().ShouldNotBeNull();
+
+        var actual = MethodSignatureBuilder.Build(
+            method.Name,
+            ApiDescriptionGenerator.GetRequestParameters(descriptor),
+            ApiDescriptionGenerator.GetResponseType(descriptor).Type,
+            ApiDescriptionGenerator.GetResponseHeaderParameters(descriptor));
+
+        actual.ShouldBe(expected.Signature);
+    }
+
     private static IEnumerable<TestCaseData> GetTestCases()
     {
-        foreach (var method in ReflectionTools.GetMethods(typeof(TestCases)))
+        var contract = EmitGenerator.GenerateContract<ITestCases>();
+
+        var descriptors = contract
+            .GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
+            .Where(i => i.ReturnType == typeof(IOperationDescriptor))
+            .Select(i => i.CreateDelegate<Func<IOperationDescriptor>>())
+            .Select(i => i())
+            .ToArray();
+        descriptors.Length.ShouldBe(4);
+
+        foreach (var descriptor in descriptors)
         {
-            yield return new TestCaseData(method)
+            yield return new TestCaseData(descriptor)
             {
-                TestName = method.Name
+                TestName = descriptor.GetContractMethod().Name
             };
         }
     }

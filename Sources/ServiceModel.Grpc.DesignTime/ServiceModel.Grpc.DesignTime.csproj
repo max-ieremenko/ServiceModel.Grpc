@@ -4,6 +4,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyTitle>ServiceModel.Grpc.DesignTime</AssemblyTitle>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
@@ -15,15 +17,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ServiceModel.Grpc.DesignTime.Roslyn3\ServiceModel.Grpc.DesignTime.Roslyn3.csproj" PrivateAssets="all" />
-    <ProjectReference Include="..\ServiceModel.Grpc.DesignTime.Roslyn4\ServiceModel.Grpc.DesignTime.Roslyn4.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\ServiceModel.Grpc\ServiceModel.Grpc.csproj" />
+    <ProjectReference Include="..\ServiceModel.Grpc.DesignTime.Generators\ServiceModel.Grpc.DesignTime.Generators.csproj" PrivateAssets="all" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <!-- https://github.com/dotnet/roslyn/discussions/47517#discussioncomment-64145 -->
     <Copy SourceFiles="$(PKGGrpc_Core_Api)\lib\netstandard2.0\Grpc.Core.Api.dll" DestinationFolder="$(OutDir)dependencies" />
+    <Copy SourceFiles="$(OutDir)ServiceModel.Grpc.Core.dll" DestinationFolder="$(OutDir)dependencies" />
+    <Copy SourceFiles="$(OutDir)ServiceModel.Grpc.Descriptions.dll" DestinationFolder="$(OutDir)dependencies" />
     <Copy SourceFiles="$(OutDir)ServiceModel.Grpc.dll" DestinationFolder="$(OutDir)dependencies" />
+    <Copy SourceFiles="$(OutDir)ServiceModel.Grpc.Filters.dll" DestinationFolder="$(OutDir)dependencies" />
+    <Copy SourceFiles="$(OutDir)ServiceModel.Grpc.DesignTime.CodeAnalysis.dll" DestinationFolder="$(OutDir)dependencies" />
+    <Copy SourceFiles="$(OutDir)ServiceModel.Grpc.DesignTime.CodeAnalysis.Internal.dll" DestinationFolder="$(OutDir)dependencies" />
+    <Copy SourceFiles="$(OutDir)ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.dll" DestinationFolder="$(OutDir)dependencies" />
   </Target>
 
   <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">
@@ -35,14 +42,7 @@
     <None Include="buildTransitive\*" Pack="true" PackagePath="buildTransitive/" />
     <None Include="build\ServiceModel.Grpc.DesignTime.targets" Pack="true" PackagePath="buildTransitive/ServiceModel.Grpc.DesignTime.targets" />
 
-    <None Include="..\ServiceModel.Grpc.DesignTime.Roslyn3\bin\$(Configuration)\ServiceModel.Grpc.DesignTime.Roslyn3.dll"
-          PackagePath="analyzers\dotnet\roslyn3.8\cs"
-          Pack="true"
-          Visible="false" />
-    <None Include="..\ServiceModel.Grpc.DesignTime.Roslyn4\bin\$(Configuration)\ServiceModel.Grpc.DesignTime.Roslyn4.dll"
-          PackagePath="analyzers\dotnet\roslyn4.0\cs"
-          Pack="true"
-          Visible="false" />
+    <None Include="..\ServiceModel.Grpc.DesignTime.Generators\bin\$(Configuration)\ServiceModel.Grpc.DesignTime.Generators.dll" PackagePath="analyzers\dotnet\roslyn4.0\cs" Pack="true" Visible="false" />
 
     <Content Include="$(OutDir)dependencies\*" PackagePath="build/dependencies" Visible="false" />
   </ItemGroup>

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2022 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,25 +14,22 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 
 namespace ServiceModel.Grpc.Client.Internal;
 
-internal sealed class ClientStreamWriter<TRequest> : IDisposable
+internal sealed class ClientStreamWriter<TRequest, TRequestValue> : IDisposable
+    where TRequest : class, IMessage<TRequestValue>, new()
 {
-    private readonly IAsyncEnumerable<TRequest> _request;
-    private readonly IClientStreamWriter<Message<TRequest>> _stream;
+    private readonly IAsyncEnumerable<TRequestValue?> _request;
+    private readonly IClientStreamWriter<TRequest> _stream;
     private readonly CancellationTokenSource _writeCancellation;
     private readonly Task _writer;
 
     public ClientStreamWriter(
-        IAsyncEnumerable<TRequest> request,
-        IClientStreamWriter<Message<TRequest>> stream,
+        IAsyncEnumerable<TRequestValue?> request,
+        IClientStreamWriter<TRequest> stream,
         CancellationToken token)
     {
         _request = request;
@@ -70,7 +67,9 @@ internal sealed class ClientStreamWriter<TRequest> : IDisposable
     {
         await foreach (var i in _request.WithCancellation(token).ConfigureAwait(false))
         {
-            await _stream.WriteAsync(new Message<TRequest>(i)).ConfigureAwait(false);
+            var request = new TRequest();
+            request.SetValue1(i);
+            await _stream.WriteAsync(request).ConfigureAwait(false);
         }
 
         if (!token.IsCancellationRequested)

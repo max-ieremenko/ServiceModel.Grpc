@@ -4,6 +4,8 @@
     <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
     <AssemblyTitle>ServiceModel.Grpc.AspNetCore</AssemblyTitle>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
+    <NoWarn>$(NoWarn);ServiceModelGrpcInternalAPI</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' != 'Debug'">

@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2023 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,11 +42,13 @@ internal sealed class PostConfigureGrpcServiceOptions<TService> : IPostConfigure
     public void PostConfigure(string? name, GrpcServiceOptions<TService> options)
     {
         var marshallerFactory = _serviceConfiguration.Value.MarshallerFactory ?? _rootConfiguration.Value.DefaultMarshallerFactory;
+        var detailMarshaller = _serviceConfiguration.Value.ErrorDetailSerializer ?? _rootConfiguration.Value.DefaultErrorDetailSerializer;
 
         PostConfigureGrpcServiceOptions.AddErrorHandler(
             options.Interceptors,
             _serviceConfiguration.Value.ErrorHandlerFactory,
             marshallerFactory,
+            detailMarshaller,
             _loggerFactory);
     }
 }

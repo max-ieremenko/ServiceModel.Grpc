@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ using Grpc.Core.Utils;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using ServiceModel.Grpc.Hosting.Internal;
+using ServiceModel.Grpc.Internal;
 
 //// ReSharper disable CheckNamespace
 namespace Microsoft.AspNetCore.Builder;

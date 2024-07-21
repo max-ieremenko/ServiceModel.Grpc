@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2021 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,109 +14,54 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
 using Grpc.AspNetCore.Server;
 using Grpc.Core;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Moq;
 using NUnit.Framework;
-using ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer;
-using Shouldly;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.Swagger;
 
 [TestFixture]
 public class ApiDescriptionAdapterTest
 {
-    private Mock<IApiDescriptionGroupCollectionProvider> _apiDescriptionProvider = null!;
+    private HttpContext _httpContext = null!;
+    private EndpointMetadataCollection _metadata = null!;
     private ApiDescriptionAdapter _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()
     {
-        _apiDescriptionProvider = new Mock<IApiDescriptionGroupCollectionProvider>(MockBehavior.Strict);
-        _sut = new ApiDescriptionAdapter(_apiDescriptionProvider.Object);
-    }
+        _metadata = new EndpointMetadataCollection();
 
-    [Test]
-    [TestCase("/path1", false)]
-    [TestCase("/path2", false)]
-    [TestCase("/path3", true)]
-    public void FindApiDescription(string path, bool expected)
-    {
-        var items = new List<ApiDescription>
-        {
-            new ApiDescription
-            {
-                RelativePath = "path1"
-            },
-            new ApiDescription
-            {
-                RelativePath = "path2",
-                ActionDescriptor = new ActionDescriptor()
-            },
-            new ApiDescription
-            {
-                RelativePath = "path3",
-                ActionDescriptor = new GrpcActionDescriptor()
-            },
-        };
+        var feature = new Mock<IEndpointFeature>(MockBehavior.Strict);
+        feature
+            .SetupGet(f => f.Endpoint)
+            .Returns(() => new Endpoint(null!, _metadata, "dummy"));
 
-        _apiDescriptionProvider
-            .SetupGet(p => p.ApiDescriptionGroups)
-            .Returns(new ApiDescriptionGroupCollection(new[] { new ApiDescriptionGroup("n", items) }, 1));
-
-        var actual = _sut.FindApiDescription(path);
-
-        expected.ShouldBe(actual != null);
-    }
-
-    [Test]
-    public void GetMethod()
-    {
         var features = new Mock<IFeatureCollection>(MockBehavior.Strict);
         features
             .Setup(f => f.Get<IEndpointFeature>())
-            .Returns((IEndpointFeature)null!);
+            .Returns(feature.Object);
 
         var context = new Mock<HttpContext>(MockBehavior.Strict);
         context
             .SetupGet(c => c.Features)
             .Returns(features.Object);
 
-        _sut.GetMethod(context.Object).ShouldBeNull();
+        _httpContext = context.Object;
 
-        var feature = new Mock<IEndpointFeature>(MockBehavior.Strict);
-        feature
-            .SetupGet(f => f.Endpoint)
-            .Returns((Endpoint)null!);
+        _sut = new ApiDescriptionAdapter();
+    }
 
-        features
-            .Setup(f => f.Get<IEndpointFeature>())
-            .Returns(feature.Object);
-
-        _sut.GetMethod(context.Object).ShouldBeNull();
-
-        var endpoint = new Endpoint(null!, new EndpointMetadataCollection(), "s");
-
-        feature
-            .SetupGet(f => f.Endpoint)
-            .Returns(endpoint);
-
-        _sut.GetMethod(context.Object).ShouldBeNull();
+    [Test]
+    public void GetMethod()
+    {
+        _sut.GetMethod(_httpContext).ShouldBeNull();
 
         var method = new Mock<IMethod>(MockBehavior.Strict);
-        var metadata = new GrpcMethodMetadata(typeof(IDisposable), method.Object);
-        endpoint = new Endpoint(null!, new EndpointMetadataCollection(metadata), "s");
 
-        feature
-            .SetupGet(f => f.Endpoint)
-            .Returns(endpoint);
+        _metadata = new EndpointMetadataCollection(new GrpcMethodMetadata(typeof(IDisposable), method.Object));
 
-        _sut.GetMethod(context.Object).ShouldBe(method.Object);
+        _sut.GetMethod(_httpContext).ShouldBe(method.Object);
     }
 }

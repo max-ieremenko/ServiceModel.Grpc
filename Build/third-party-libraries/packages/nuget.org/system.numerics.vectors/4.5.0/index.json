@@ -26,6 +26,26 @@
       ]
     },
     {
+      "Name": "DesignTime",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ]
+    },
+    {
+      "Name": "Emit",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ]
+    },
+    {
       "Name": "ProtoBuf",
       "InternalOnly": false,
       "TargetFrameworks": [
@@ -35,6 +55,16 @@
         "net8.0",
         "netstandard2.0",
         "netstandard2.1"
+      ]
+    },
+    {
+      "Name": "SelfHost",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net6.0",
+        "net7.0",
+        "net8.0"
       ]
     }
   ],

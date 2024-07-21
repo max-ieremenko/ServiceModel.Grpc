@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020-2023 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
 using Grpc.Core;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Filters;
@@ -44,6 +42,12 @@ public sealed class ServiceModelGrpcClientOptions
     /// Gets or sets a client call error handler.
     /// </summary>
     public IClientErrorHandler? ErrorHandler { get; set; }
+
+    /// <summary>
+    /// Gets or sets an error details deserializer, that overrides default deserialization.
+    /// It is only applicable with <see cref="ErrorHandler"/>.
+    /// </summary>
+    public IClientFaultDetailDeserializer? ErrorDetailDeserializer { get; set; }
 
     /// <summary>
     /// Gets or sets logger to handle possible output from <see cref="IClientFactory"/>.

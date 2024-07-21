@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2022 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,14 +14,11 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using Grpc.Core;
-using Moq;
 using NUnit.Framework;
 using ServiceModel.Grpc.Configuration;
-using ServiceModel.Grpc.Hosting.Internal;
+using ServiceModel.Grpc.Internal;
 using ServiceModel.Grpc.TestApi.Domain;
-using Shouldly;
 
 namespace ServiceModel.Grpc.SelfHost;
 

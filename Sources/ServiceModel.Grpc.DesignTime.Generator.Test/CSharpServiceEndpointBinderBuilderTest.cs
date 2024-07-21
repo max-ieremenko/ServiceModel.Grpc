@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2024 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,10 +14,8 @@
 // limitations under the License.
 // </copyright>
 
-using System.Collections.Generic;
 using NUnit.Framework;
 using ServiceModel.Grpc.TestApi.Domain;
-using Shouldly;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Test;
 

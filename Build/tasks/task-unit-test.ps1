@@ -6,12 +6,12 @@ param(
     $Sources,
 
     [Parameter(Mandatory)]
-    [ValidateSet("net462", "net6.0", "net7.0", "net8.0")] 
+    [ValidateSet('net462', 'net6.0', 'net7.0', 'net8.0')] 
     [string]
     $Framework
 )
 
-task Default {
+task . {
     $testList = Get-ChildItem -Path $Sources -Recurse -Filter *.Test.dll `
     | Where-Object FullName -Match \\$Framework\\ `
     | Where-Object FullName -Match \\bin\\Release\\ `

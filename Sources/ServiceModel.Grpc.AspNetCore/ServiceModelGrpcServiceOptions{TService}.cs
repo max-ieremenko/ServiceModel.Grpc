@@ -1,5 +1,5 @@
 ﻿// <copyright>
-// Copyright 2020 Max Ieremenko
+// Copyright Max Ieremenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Filters;
 using ServiceModel.Grpc.Interceptors;
@@ -42,6 +40,12 @@ public sealed class ServiceModelGrpcServiceOptions<TService>
     /// Gets or sets a factory for server call error handler.
     /// </summary>
     public Func<IServiceProvider, IServerErrorHandler>? ErrorHandlerFactory { get; set; }
+
+    /// <summary>
+    /// Gets or sets an error details serializer, that overrides default serialization.
+    /// It is only applicable with <see cref="ErrorHandlerFactory"/>.
+    /// </summary>
+    public IServerFaultDetailSerializer? ErrorDetailSerializer { get; set; }
 
     /// <summary>
     /// Gets the collection of registered server filters for this service.

@@ -1,7 +1,7 @@
 StyleCop.Analyzers.Unstable [1.2.0.556](https://www.nuget.org/packages/StyleCop.Analyzers.Unstable/1.2.0.556)
 --------------------
 
-Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, MessagePack internal, ProtoBuf internal, SelfHost internal
+Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MessagePack internal, ProtoBuf internal, SelfHost internal
 
 Target frameworks: net462, net6.0, net7.0, net8.0, netstandard2.0, netstandard2.1
 
