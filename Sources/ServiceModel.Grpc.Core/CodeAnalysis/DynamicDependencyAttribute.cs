@@ -14,30 +14,13 @@
 // limitations under the License.
 // </copyright>
 
+/*
+ * copy from:
+ * https://github.com/dotnet/runtime/blob/7e429c2393a002065b641c3817fff62145c926db/src/libraries/System.Private.CoreLib/src/System/Diagnostics/CodeAnalysis/DynamicDependencyAttribute.cs
+ */
+#if !NET8_0_OR_GREATER
 namespace System.Diagnostics.CodeAnalysis;
 
-[Flags]
-internal enum DynamicallyAccessedMemberTypes
-{
-    None = 0,
-    PublicParameterlessConstructor = 1,
-    PublicConstructors = 3,
-    NonPublicConstructors = 4,
-    PublicMethods = 8,
-    NonPublicMethods = 16, // 0x00000010
-    PublicFields = 32, // 0x00000020
-    NonPublicFields = 64, // 0x00000040
-    PublicNestedTypes = 128, // 0x00000080
-    NonPublicNestedTypes = 256, // 0x00000100
-    PublicProperties = 512, // 0x00000200
-    NonPublicProperties = 1024, // 0x00000400
-    PublicEvents = 2048, // 0x00000800
-    NonPublicEvents = 4096, // 0x00001000
-    Interfaces = 8192, // 0x00002000
-    All = -1, // 0xFFFFFFFF
-}
-
-// https://github.com/dotnet/runtime/issues/36656
 [AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Field | AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
 internal sealed class DynamicDependencyAttribute : Attribute
 {
@@ -84,3 +67,4 @@ internal sealed class DynamicDependencyAttribute : Attribute
 
     public string? Condition { get; set; }
 }
+#endif

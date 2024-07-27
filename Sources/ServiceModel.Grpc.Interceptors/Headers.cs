@@ -86,7 +86,7 @@ internal static class Headers
         {
             if (type.IsNested)
             {
-                WriteTypeFullName(type.DeclaringType);
+                WriteTypeFullName(type.DeclaringType!);
                 _result
                     .Append("+")
                     .Append(type.Name);

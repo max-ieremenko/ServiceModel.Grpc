@@ -14,7 +14,12 @@
 // limitations under the License.
 // </copyright>
 
-#if !NETSTANDARD2_1
+/*
+ * copy from:
+ * https://github.com/dotnet/runtime/blob/7e429c2393a002065b641c3817fff62145c926db/src/libraries/System.Private.CoreLib/src/System/Diagnostics/CodeAnalysis/NullableAttributes.cs
+ */
+
+#if !NETSTANDARD2_1 && !NET8_0_OR_GREATER
 namespace System.Diagnostics.CodeAnalysis;
 
 internal sealed class NotNullWhenAttribute : Attribute
