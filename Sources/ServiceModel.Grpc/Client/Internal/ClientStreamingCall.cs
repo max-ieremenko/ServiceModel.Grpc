@@ -145,7 +145,6 @@ internal readonly ref struct ClientStreamingCall<TRequestHeader, TRequest, TRequ
         var contextInternal = (IClientFilterContextInternal)filter.Context;
         contextInternal.RequestInternal.SetRaw(_requestHeader, request);
         contextInternal.CallContext = _callContext;
-        ////contextInternal.RequestHeaderMarshaller = _headerMarshaller;
         return CallWithFilterAsync(filter);
     }
 }
