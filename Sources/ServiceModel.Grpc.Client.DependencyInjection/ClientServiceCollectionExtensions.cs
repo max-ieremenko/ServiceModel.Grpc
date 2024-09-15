@@ -56,7 +56,8 @@ public static class ClientServiceCollectionExtensions
     /// <param name="configure">A delegate that is used to configure a client.</param>
     /// <param name="channel">An instance that can provide <see cref="CallInvoker"/> instance for gRPC client calls, see also <see cref="ChannelProviderFactory"/>.</param>
     /// <returns>The <paramref name="services"/>.</returns>
-    public static IServiceCollection AddServiceModelGrpcClient<TContract>(
+    [RequiresDynamicCode("Generating a proxy for 'TContract' at runtime requires dynamic code.")]
+    public static IServiceCollection AddServiceModelGrpcClient<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TContract>(
         this IServiceCollection services,
         Action<ServiceModelGrpcClientOptions, IServiceProvider>? configure = null,
         IChannelProvider? channel = null)

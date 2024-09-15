@@ -89,5 +89,19 @@ internal sealed class ClientRegistration
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static IClientBuilder<TContract> EmitBuilder<TContract>(ILogger? logger) => EmitGenerator.GenerateClientBuilder<TContract>(logger);
+    private static IClientBuilder<TContract> EmitBuilder<TContract>(ILogger? logger)
+    {
+#if NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
+        if (!RuntimeFeature.IsDynamicCodeSupported)
+        {
+            throw new PlatformNotSupportedException("Dynamic code generation is not supported on this platform.");
+        }
+#endif
+        if (Features.IsReflectionEmitDisabled)
+        {
+            throw new NotSupportedException("ServiceModel.Grpc.Emit is disabled within this application.");
+        }
+
+        return EmitGenerator.GenerateClientBuilder<TContract>(logger);
+    }
 }

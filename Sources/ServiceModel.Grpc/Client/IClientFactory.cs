@@ -29,7 +29,8 @@ public interface IClientFactory
     /// </summary>
     /// <typeparam name="TContract">The service contract type.</typeparam>
     /// <param name="configure">The action to configure options.</param>
-    void AddClient<TContract>(Action<ServiceModelGrpcClientOptions>? configure = null)
+    [RequiresDynamicCode("Generating a proxy for 'TContract' at runtime requires dynamic code.")]
+    void AddClient<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TContract>(Action<ServiceModelGrpcClientOptions>? configure = null)
         where TContract : class;
 
     /// <summary>

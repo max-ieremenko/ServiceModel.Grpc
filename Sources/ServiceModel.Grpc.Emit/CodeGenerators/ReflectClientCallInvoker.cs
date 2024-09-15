@@ -53,7 +53,7 @@ internal sealed class ReflectClientCallInvoker
                 ? FindMethod(ref _unaryInvokeAsyncResult, nameof(IClientCallInvoker.UnaryInvokeAsync), 3)
                 : FindMethod(ref _unaryInvokeResult, nameof(IClientCallInvoker.UnaryInvoke), 3);
 
-            return result.MakeGenericMethod(requestType.GetClrType(), responseType.GetClrType(), responseType.Properties[0]);
+            return result.MakeConstructedGeneric(requestType.GetClrType(), responseType.GetClrType(), responseType.Properties[0]);
         }
         else
         {
@@ -61,7 +61,7 @@ internal sealed class ReflectClientCallInvoker
                 ? FindMethod(ref _unaryInvokeAsyncVoid, nameof(IClientCallInvoker.UnaryInvokeAsync), 2)
                 : FindMethod(ref _unaryInvokeVoid, nameof(IClientCallInvoker.UnaryInvoke), 2);
 
-            return result.MakeGenericMethod(requestType.GetClrType(), responseType.GetClrType());
+            return result.MakeConstructedGeneric(requestType.GetClrType(), responseType.GetClrType());
         }
     }
 
@@ -75,18 +75,18 @@ internal sealed class ReflectClientCallInvoker
         if (headerResponseType == null && isAsync)
         {
             var result = FindMethod(ref _serverInvokeAsync, nameof(IClientCallInvoker.ServerInvokeAsync), 4);
-            return result.MakeGenericMethod(requestType.GetClrType(), headerResponseType.GetClrType(), responseType.GetClrType(), responseType.Properties[0]);
+            return result.MakeConstructedGeneric(requestType.GetClrType(), headerResponseType.GetClrType(), responseType.GetClrType(), responseType.Properties[0]);
         }
 
         if (headerResponseType == null)
         {
             var result = FindMethod(ref _serverInvoke, nameof(IClientCallInvoker.ServerInvoke), 4);
-            return result.MakeGenericMethod(requestType.GetClrType(), headerResponseType.GetClrType(), responseType.GetClrType(), responseType.Properties[0]);
+            return result.MakeConstructedGeneric(requestType.GetClrType(), headerResponseType.GetClrType(), responseType.GetClrType(), responseType.Properties[0]);
         }
         else
         {
             var result = FindMethod(ref _serverInvokeAsyncHeader, nameof(IClientCallInvoker.ServerInvokeAsync), 5);
-            return result.MakeGenericMethod(requestType.GetClrType(), headerResponseType.GetClrType(), responseType.GetClrType(), responseType.Properties[0], returnType.GenericTypeArguments[0]);
+            return result.MakeConstructedGeneric(requestType.GetClrType(), headerResponseType.GetClrType(), responseType.GetClrType(), responseType.Properties[0], returnType.GenericTypeArguments[0]);
         }
     }
 
@@ -95,12 +95,12 @@ internal sealed class ReflectClientCallInvoker
         if (responseType.IsGenericType())
         {
             var result = FindMethod(ref _clientInvokeAsyncResult, nameof(IClientCallInvoker.ClientInvokeAsync), 5);
-            return result.MakeGenericMethod(headerRequestType.GetClrType(), requestType.GetClrType(), requestType.Properties[0], responseType.GetClrType(), responseType.Properties[0]);
+            return result.MakeConstructedGeneric(headerRequestType.GetClrType(), requestType.GetClrType(), requestType.Properties[0], responseType.GetClrType(), responseType.Properties[0]);
         }
         else
         {
             var result = FindMethod(ref _clientInvokeAsyncVoid, nameof(IClientCallInvoker.ClientInvokeAsync), 4);
-            return result.MakeGenericMethod(headerRequestType.GetClrType(), requestType.GetClrType(), requestType.Properties[0], responseType.GetClrType());
+            return result.MakeConstructedGeneric(headerRequestType.GetClrType(), requestType.GetClrType(), requestType.Properties[0], responseType.GetClrType());
         }
     }
 
@@ -115,7 +115,7 @@ internal sealed class ReflectClientCallInvoker
         if (headerResponseType == null && isAsync)
         {
             var result = FindMethod(ref _duplexInvokeAsync, nameof(IClientCallInvoker.DuplexInvokeAsync), 6);
-            return result.MakeGenericMethod(
+            return result.MakeConstructedGeneric(
                 headerRequestType.GetClrType(),
                 requestType.GetClrType(),
                 requestType.Properties[0],
@@ -127,7 +127,7 @@ internal sealed class ReflectClientCallInvoker
         if (headerResponseType == null)
         {
             var result = FindMethod(ref _duplexInvoke, nameof(IClientCallInvoker.DuplexInvoke), 6);
-            return result.MakeGenericMethod(
+            return result.MakeConstructedGeneric(
                 headerRequestType.GetClrType(),
                 requestType.GetClrType(),
                 requestType.Properties[0],
@@ -138,7 +138,7 @@ internal sealed class ReflectClientCallInvoker
         else
         {
             var result = FindMethod(ref _duplexInvokeAsyncHeader, nameof(IClientCallInvoker.DuplexInvokeAsync), 7);
-            return result.MakeGenericMethod(
+            return result.MakeConstructedGeneric(
                 headerRequestType.GetClrType(),
                 requestType.GetClrType(),
                 requestType.Properties[0],

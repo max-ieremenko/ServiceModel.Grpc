@@ -52,10 +52,7 @@ internal sealed class ReflectType : IReflect<Type>
 
     public bool Equals(Type x, Type y) => x == y;
 
-    public bool IsTaskOrValueTask(Type type) =>
-        typeof(Task).IsAssignableFrom(type)
-        || typeof(ValueTask) == type
-        || (type.FullName ?? string.Empty).StartsWith(typeof(ValueTask<>).FullName, StringComparison.Ordinal);
+    public bool IsTaskOrValueTask(Type type) => ReflectionTools.IsTask(type);
 
     public Type[] GenericTypeArguments(Type type) => type.GenericTypeArguments;
 
@@ -95,7 +92,7 @@ internal sealed class ReflectType : IReflect<Type>
             return false;
         }
 
-        elementType = type.GetElementType();
+        elementType = type.SafeGetArrayElementType();
         rank = type.GetArrayRank();
         return true;
     }

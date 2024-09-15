@@ -45,6 +45,7 @@ internal sealed class EmitClientBuilder
         _reflectClientCallInvoker = new ReflectClientCallInvoker();
     }
 
+    [UnconditionalSuppressMessage("Trimming", "IL2072:TypeBuilder.AddInterfaceImplementation")]
     public TypeInfo Build(ModuleBuilder moduleBuilder)
     {
         _typeBuilder = moduleBuilder
@@ -203,10 +204,11 @@ internal sealed class EmitClientBuilder
         body.Emit(OpCodes.Ret);
     }
 
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(IAsyncEnumerable<>))]
     private (MethodInfo Method, Type DelegateType) BuildServerStreamingResultAdapter(OperationDescription<Type> operation)
     {
         var parameterHeaderType = operation.HeaderResponseType!.GetClrType();
-        var parameterStreamType = typeof(IAsyncEnumerable<>).MakeGenericType(operation.ResponseType.Properties[0]);
+        var parameterStreamType = typeof(IAsyncEnumerable<>).MakeConstructedGeneric(operation.ResponseType.Properties[0]);
 
         var returnType = operation.Method.ReturnType.GetGenericArguments()[0];
 
@@ -232,14 +234,14 @@ internal sealed class EmitClientBuilder
                 var propertyName = "Value" + index.ToString(CultureInfo.InvariantCulture);
 
                 body.Emit(OpCodes.Ldarg_0);
-                body.Emit(OpCodes.Callvirt, parameterHeaderType.InstanceProperty(propertyName).GetMethod);
+                body.Emit(OpCodes.Callvirt, parameterHeaderType.InstanceProperty(propertyName).SafeGetGetMethod());
             }
         }
 
         body.Emit(OpCodes.Newobj, returnType.Constructor(propertiesCount));
         body.Emit(OpCodes.Ret);
 
-        var delegateType = typeof(Func<,,>).MakeGenericType(parameterHeaderType, parameterStreamType, returnType);
+        var delegateType = typeof(Func<,,>).MakeConstructedGeneric(parameterHeaderType, parameterStreamType, returnType);
         return (method, delegateType);
     }
 
@@ -331,7 +333,7 @@ internal sealed class EmitClientBuilder
                 if (nullable == null)
                 {
                     // CancellationToken => CancellationToken?
-                    body.Emit(OpCodes.Newobj, typeof(Nullable<>).MakeGenericType(parameterType).Constructor(parameterType));
+                    body.Emit(OpCodes.Newobj, typeof(Nullable<>).MakeConstructedGeneric(parameterType).Constructor(parameterType));
                 }
             }
 

@@ -20,6 +20,8 @@ namespace ServiceModel.Grpc.Configuration;
 
 internal static class MarshallerSerializers
 {
+    [RequiresDynamicCode("The native code for the serialization might not be available at runtime.")]
+    [RequiresUnreferencedCode("The trimming may not validate that the requirements of 'valueType' are met.")]
     public static IMarshallerSerializer Get(Type valueType) =>
         (IMarshallerSerializer)Activator.CreateInstance(typeof(MarshallerSerializer<>).MakeGenericType(valueType))!;
 

@@ -19,6 +19,8 @@
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+
+    <NoWarn>$(NoWarn);NETSDK1210;NETSDK1212</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>

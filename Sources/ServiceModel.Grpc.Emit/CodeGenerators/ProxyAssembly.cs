@@ -24,6 +24,7 @@ internal static class ProxyAssembly
     public static readonly object SyncRoot = new object();
     public static readonly ModuleBuilder DefaultModule = CreateModule("ServiceModel.Grpc.Proxy");
 
+    [UnconditionalSuppressMessage("AOT", "IL3050:AssemblyBuilder.DefineDynamicAssembly")]
     internal static ModuleBuilder CreateModule(string name)
     {
         var assemblyName = new AssemblyName(name);

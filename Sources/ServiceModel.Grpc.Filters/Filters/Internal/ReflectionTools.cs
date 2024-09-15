@@ -20,6 +20,7 @@ namespace ServiceModel.Grpc.Filters.Internal;
 
 internal static class ReflectionTools
 {
+    [UnconditionalSuppressMessage("Trimming", "IL2072:GetInterfaceMap")]
     public static MethodInfo ImplementationOfMethod(Type instance, MethodInfo method)
     {
         var methodDeclaringType = method.DeclaringType;

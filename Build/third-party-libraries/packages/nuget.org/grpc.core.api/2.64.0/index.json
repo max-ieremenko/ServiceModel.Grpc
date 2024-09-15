@@ -39,10 +39,6 @@
       "Dependencies": [
         {
           "Name": "System.Memory",
-          "Version": "4.5.3"
-        },
-        {
-          "Name": "System.Memory",
           "Version": "4.5.5"
         }
       ]

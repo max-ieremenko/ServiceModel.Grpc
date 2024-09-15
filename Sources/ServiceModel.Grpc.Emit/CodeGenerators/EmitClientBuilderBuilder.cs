@@ -38,9 +38,11 @@ internal sealed class EmitClientBuilderBuilder
         _description = description;
         _contractType = contractType;
         _clientType = clientType;
-        _clientBuilderType = typeof(IClientBuilder<>).MakeGenericType(_description.ContractInterface);
+        _clientBuilderType = typeof(IClientBuilder<>).MakeConstructedGeneric(_description.ContractInterface);
     }
 
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(IClientBuilder<>))]
+    [UnconditionalSuppressMessage("Trimming", "IL2077:TypeBuilder.AddInterfaceImplementation")]
     public TypeInfo Build(ModuleBuilder moduleBuilder, string? className = default)
     {
         var typeBuilder = moduleBuilder.DefineType(
@@ -80,7 +82,7 @@ internal sealed class EmitClientBuilderBuilder
         // _contract = new (methodBinder.MarshallerFactory);
         body.Emit(OpCodes.Ldarg_0);
         body.Emit(OpCodes.Ldarg_1);
-        body.Emit(OpCodes.Callvirt, typeof(IClientMethodBinder).InstanceProperty(nameof(IClientMethodBinder.MarshallerFactory)).GetMethod);
+        body.Emit(OpCodes.Callvirt, typeof(IClientMethodBinder).InstanceProperty(nameof(IClientMethodBinder.MarshallerFactory)).SafeGetGetMethod());
         body.Emit(OpCodes.Newobj, _contractType.Constructor(typeof(IMarshallerFactory)));
         body.Emit(OpCodes.Stfld, _contractField);
 
@@ -88,7 +90,7 @@ internal sealed class EmitClientBuilderBuilder
 
         // if (methodBinder.RequiresMetadata)
         body.Emit(OpCodes.Ldarg_1);
-        body.Emit(OpCodes.Callvirt, typeof(IClientMethodBinder).InstanceProperty(nameof(IClientMethodBinder.RequiresMetadata)).GetMethod);
+        body.Emit(OpCodes.Callvirt, typeof(IClientMethodBinder).InstanceProperty(nameof(IClientMethodBinder.RequiresMetadata)).SafeGetGetMethod());
         body.Emit(OpCodes.Brfalse, afterMetadata);
 
         // methodBinder.Add(_contract.Method, Contract.GetDescriptor());

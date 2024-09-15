@@ -18,7 +18,7 @@
  * copy from:
  * https://github.com/dotnet/runtime/blob/7e429c2393a002065b641c3817fff62145c926db/src/libraries/System.Private.CoreLib/src/System/Diagnostics/CodeAnalysis/DynamicDependencyAttribute.cs
  */
-#if !NET8_0_OR_GREATER
+#if !NET6_0_OR_GREATER
 namespace System.Diagnostics.CodeAnalysis;
 
 [AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Field | AttributeTargets.Method, AllowMultiple = true, Inherited = false)]

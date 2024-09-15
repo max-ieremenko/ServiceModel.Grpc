@@ -23,6 +23,7 @@ using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.Emit.CodeGenerators;
 
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.NonPublicMethods)]
 internal sealed class EmitServiceEndpointBinder<TService> : IServiceEndpointBinder<TService>
 {
     private readonly ContractDescription<Type> _description;
@@ -68,21 +69,21 @@ internal sealed class EmitServiceEndpointBinder<TService> : IServiceEndpointBind
             {
                 var channelMethod = _channelType.InstanceMethod(operation.OperationName);
                 var metadata = TryGetMethodMetadata(interfaceDescription.InterfaceType, operation.GetSource());
-                var grpcMethodMethod = (IMethod)_contractType.InstanceFiled(NamingContract.Contract.GrpcMethod(operation.OperationName)).GetValue(contract);
+                var grpcMethodMethod = (IMethod)_contractType.InstanceFiled(NamingContract.Contract.GrpcMethod(operation.OperationName)).GetValue(contract)!;
                 var getDescriptor = _contractType.StaticMethod(NamingContract.Contract.DescriptorMethod(operation.OperationName)).CreateDelegate<Func<IOperationDescriptor>>();
 
                 _logger?.LogDebug("Bind service method {0}.{1}.", serviceType.FullName, operation.Method.Name);
                 if (grpcMethodMethod.Type == MethodType.Unary)
                 {
                     var addMethod = _serviceBinderAddUnaryMethod
-                        .MakeGenericMethod(operation.RequestType.GetClrType(), operation.ResponseType.GetClrType())
+                        .MakeConstructedGeneric(operation.RequestType.GetClrType(), operation.ResponseType.GetClrType())
                         .CreateDelegate<Action<IServiceMethodBinder<TService>, IMethod, Func<IOperationDescriptor>, IList<object>, MethodInfo, object>>();
                     addMethod(binder, grpcMethodMethod, getDescriptor, metadata, channelMethod, channelInstance);
                 }
                 else if (grpcMethodMethod.Type == MethodType.ClientStreaming)
                 {
                     var addMethod = _serviceBinderAddClientStreamingMethod
-                        .MakeGenericMethod(
+                        .MakeConstructedGeneric(
                             operation.HeaderRequestType.GetClrType(),
                             operation.RequestType.GetClrType(),
                             operation.RequestType.Properties[0],
@@ -93,7 +94,7 @@ internal sealed class EmitServiceEndpointBinder<TService> : IServiceEndpointBind
                 else if (grpcMethodMethod.Type == MethodType.ServerStreaming)
                 {
                     var addMethod = _serviceBinderAddServerStreamingMethod
-                        .MakeGenericMethod(
+                        .MakeConstructedGeneric(
                             operation.RequestType.GetClrType(),
                             operation.HeaderResponseType.GetClrType(),
                             operation.ResponseType.GetClrType(),
@@ -104,7 +105,7 @@ internal sealed class EmitServiceEndpointBinder<TService> : IServiceEndpointBind
                 else if (grpcMethodMethod.Type == MethodType.DuplexStreaming)
                 {
                     var addMethod = _serviceBinderAddDuplexStreamingMethod
-                        .MakeGenericMethod(
+                        .MakeConstructedGeneric(
                             operation.HeaderRequestType.GetClrType(),
                             operation.RequestType.GetClrType(),
                             operation.RequestType.Properties[0],

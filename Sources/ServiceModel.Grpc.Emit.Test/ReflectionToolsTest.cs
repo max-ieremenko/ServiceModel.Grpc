@@ -27,8 +27,10 @@ public partial class ReflectionToolsTest
     [Test]
     [TestCase(typeof(Task), true)]
     [TestCase(typeof(Task<int>), true)]
+    [TestCase(typeof(Task<>), true)]
     [TestCase(typeof(ValueTask), true)]
     [TestCase(typeof(ValueTask<bool>), true)]
+    [TestCase(typeof(ValueTask<>), true)]
     [TestCase(typeof(IAsyncEnumerable<int>), false)]
     public void IsTask(Type type, bool expected)
     {
