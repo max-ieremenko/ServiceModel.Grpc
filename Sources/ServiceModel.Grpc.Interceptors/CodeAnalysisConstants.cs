@@ -14,23 +14,11 @@
 // limitations under the License.
 // </copyright>
 
-using System.Reflection;
-using ServiceModel.Grpc.Descriptions.Reflection;
+namespace ServiceModel.Grpc.Interceptors;
 
-namespace ServiceModel.Grpc.Emit.Descriptions.Reflection;
-
-internal sealed class ReflectionParameterInfo : IParameterInfo<Type>
+internal static class CodeAnalysisConstants
 {
-    public ReflectionParameterInfo(ParameterInfo source)
-    {
-        Source = source;
-    }
-
-    public ParameterInfo Source { get; }
-
-    public string Name => Source.Name ?? throw new InvalidOperationException("The parameter name is null.");
-
-    public Type Type => Source.ParameterType;
-
-    public bool IsRefOrOut() => Source.IsOut() || Source.IsRef();
+    public const DynamicallyAccessedMemberTypes InterceptorAccessibility =
+        DynamicallyAccessedMemberTypes.PublicConstructors
+        | DynamicallyAccessedMemberTypes.PublicMethods;
 }

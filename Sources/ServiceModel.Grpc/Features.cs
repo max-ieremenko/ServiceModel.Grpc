@@ -14,23 +14,13 @@
 // limitations under the License.
 // </copyright>
 
-using System.Reflection;
-using ServiceModel.Grpc.Descriptions.Reflection;
+namespace ServiceModel.Grpc;
 
-namespace ServiceModel.Grpc.Emit.Descriptions.Reflection;
-
-internal sealed class ReflectionParameterInfo : IParameterInfo<Type>
+internal static class Features
 {
-    public ReflectionParameterInfo(ParameterInfo source)
-    {
-        Source = source;
-    }
+    public static bool IsDataContractMarshallerDisabled =>
+        AppContext.TryGetSwitch("ServiceModel.Grpc.DisableDataContractMarshallerFactory", out var value) && value;
 
-    public ParameterInfo Source { get; }
-
-    public string Name => Source.Name ?? throw new InvalidOperationException("The parameter name is null.");
-
-    public Type Type => Source.ParameterType;
-
-    public bool IsRefOrOut() => Source.IsOut() || Source.IsRef();
+    public static bool IsReflectionEmitDisabled =>
+        AppContext.TryGetSwitch("ServiceModel.Grpc.DisableReflectionEmit", out var value) && value;
 }

@@ -14,23 +14,23 @@
 // limitations under the License.
 // </copyright>
 
-using System.Reflection;
-using ServiceModel.Grpc.Descriptions.Reflection;
+/*
+ * copy from:
+ * https://github.com/dotnet/runtime/blob/205adaee20a873243076dee3ef66ad70e0ee563f/src/libraries/System.Private.CoreLib/src/System/Diagnostics/CodeAnalysis/RequiresDynamicCodeAttribute.cs
+ */
+#if !NET7_0_OR_GREATER
+namespace System.Diagnostics.CodeAnalysis;
 
-namespace ServiceModel.Grpc.Emit.Descriptions.Reflection;
-
-internal sealed class ReflectionParameterInfo : IParameterInfo<Type>
+[AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor | AttributeTargets.Class, Inherited = false)]
+internal sealed class RequiresDynamicCodeAttribute : Attribute
 {
-    public ReflectionParameterInfo(ParameterInfo source)
+    public RequiresDynamicCodeAttribute(string message)
     {
-        Source = source;
+        Message = message;
     }
 
-    public ParameterInfo Source { get; }
+    public string Message { get; }
 
-    public string Name => Source.Name ?? throw new InvalidOperationException("The parameter name is null.");
-
-    public Type Type => Source.ParameterType;
-
-    public bool IsRefOrOut() => Source.IsOut() || Source.IsRef();
+    public string? Url { get; set; }
 }
+#endif

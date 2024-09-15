@@ -20,6 +20,7 @@ using Grpc.Core.Utils;
 
 namespace ServiceModel.Grpc.Interceptors.Internal;
 
+[DynamicallyAccessedMembers(CodeAnalysisConstants.InterceptorAccessibility)]
 internal sealed class ServerNativeInterceptor : Interceptor
 {
     private readonly IServerCallInterceptor _interceptor;

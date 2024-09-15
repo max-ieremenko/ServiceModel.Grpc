@@ -38,7 +38,7 @@ internal static class EmitContractBuilder
         return Expression.Lambda<Func<IMarshallerFactory, object>>(factory, marshaller).Compile();
     }
 
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Method<,>))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(GrpcMethodFactory))]
     public static TypeInfo Build(ModuleBuilder moduleBuilder, ContractDescription<Type> description, string? className = default)
     {
         var typeBuilder = moduleBuilder.DefineType(
@@ -122,18 +122,18 @@ internal static class EmitContractBuilder
         switch (operation.OperationType)
         {
             case MethodType.Unary:
-                factoryMethod = factoryMethod.MakeGenericMethod(operation.RequestType.GetClrType(), operation.ResponseType.GetClrType());
+                factoryMethod = factoryMethod.MakeConstructedGeneric(operation.RequestType.GetClrType(), operation.ResponseType.GetClrType());
                 break;
             case MethodType.ClientStreaming:
                 ctor.EmitLdcI4(operation.HeaderRequestType == null ? 0 : 1);
-                factoryMethod = factoryMethod.MakeGenericMethod(
+                factoryMethod = factoryMethod.MakeConstructedGeneric(
                     operation.HeaderRequestType.GetClrType(),
                     operation.RequestType.GetClrType(),
                     operation.ResponseType.GetClrType());
                 break;
             case MethodType.ServerStreaming:
                 ctor.EmitLdcI4(operation.HeaderResponseType == null ? 0 : 1);
-                factoryMethod = factoryMethod.MakeGenericMethod(
+                factoryMethod = factoryMethod.MakeConstructedGeneric(
                     operation.RequestType.GetClrType(),
                     operation.HeaderResponseType.GetClrType(),
                     operation.ResponseType.GetClrType());
@@ -141,7 +141,7 @@ internal static class EmitContractBuilder
             case MethodType.DuplexStreaming:
                 ctor.EmitLdcI4(operation.HeaderRequestType == null ? 0 : 1);
                 ctor.EmitLdcI4(operation.HeaderResponseType == null ? 0 : 1);
-                factoryMethod = factoryMethod.MakeGenericMethod(
+                factoryMethod = factoryMethod.MakeConstructedGeneric(
                     operation.HeaderRequestType.GetClrType(),
                     operation.RequestType.GetClrType(),
                     operation.HeaderResponseType.GetClrType(),
@@ -218,7 +218,7 @@ internal static class EmitContractBuilder
         if (operation.OperationType == MethodType.ClientStreaming || operation.OperationType == MethodType.DuplexStreaming)
         {
             body.Emit(OpCodes.Ldloca_S, 0);
-            body.Emit(OpCodes.Call, reflect.CreateStreamAccessor.MakeGenericMethod(operation.RequestType.Properties[0]));
+            body.Emit(OpCodes.Call, reflect.CreateStreamAccessor.MakeConstructedGeneric(operation.RequestType.Properties[0]));
             body.Emit(OpCodes.Call, reflect.BuilderWithRequestStream);
             body.Emit(OpCodes.Stloc_0);
         }
@@ -226,7 +226,7 @@ internal static class EmitContractBuilder
         if (operation.OperationType == MethodType.ServerStreaming || operation.OperationType == MethodType.DuplexStreaming)
         {
             body.Emit(OpCodes.Ldloca_S, 0);
-            body.Emit(OpCodes.Call, reflect.CreateStreamAccessor.MakeGenericMethod(operation.ResponseType.Properties[0]));
+            body.Emit(OpCodes.Call, reflect.CreateStreamAccessor.MakeConstructedGeneric(operation.ResponseType.Properties[0]));
             body.Emit(OpCodes.Call, reflect.BuilderWithResponseStream);
             body.Emit(OpCodes.Stloc_0);
         }
@@ -251,11 +251,11 @@ internal static class EmitContractBuilder
         // CreateMessageAccessor
         if (args.Message.IsBuiltIn)
         {
-            body.Emit(OpCodes.Call, ((MethodInfo)method).MakeGenericMethod(args.Message.Properties));
+            body.Emit(OpCodes.Call, ((MethodInfo)method).MakeConstructedGeneric(args.Message.Properties));
         }
         else
         {
-            var ctor = ((Type)method).MakeGenericType(args.Message.Properties).Constructor(1);
+            var ctor = ((Type)method).MakeConstructedGeneric(args.Message.Properties).Constructor(1);
             body.Emit(OpCodes.Newobj, ctor);
         }
     }

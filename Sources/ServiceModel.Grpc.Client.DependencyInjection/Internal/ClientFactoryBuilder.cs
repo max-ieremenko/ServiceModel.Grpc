@@ -41,7 +41,8 @@ internal sealed class ClientFactoryBuilder : IClientFactoryBuilder
         return this;
     }
 
-    public IClientFactoryBuilder AddClient<TContract>(
+    [RequiresDynamicCode("Generating a proxy for 'TContract' at runtime requires dynamic code.")]
+    public IClientFactoryBuilder AddClient<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TContract>(
         Action<ServiceModelGrpcClientOptions, IServiceProvider>? configure = null,
         IChannelProvider? channel = null)
         where TContract : class

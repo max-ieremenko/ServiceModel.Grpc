@@ -6,6 +6,8 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <IsPackable>true</IsPackable>
     <NoWarn>$(NoWarn);ServiceModelGrpcInternalAPI</NoWarn>
+    <IsTrimmable>true</IsTrimmable>
+    <EnableAOTAnalyzer>true</EnableAOTAnalyzer>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' != 'Debug'">

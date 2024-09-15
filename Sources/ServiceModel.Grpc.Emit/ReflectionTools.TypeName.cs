@@ -40,7 +40,7 @@ internal static partial class ReflectionTools
             var isArray = type.IsArray;
             if (isArray)
             {
-                type = type.GetElementType()!;
+                type = type.SafeGetArrayElementType();
             }
 
             var nullable = Nullable.GetUnderlyingType(type);
@@ -54,7 +54,7 @@ internal static partial class ReflectionTools
             if (type.IsGenericType)
             {
                 // System.Tuple`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib
-                _result.Append("<");
+                _result.Append('<');
 
                 var args = type.GetGenericArguments();
                 for (var i = 0; i < args.Length; i++)
@@ -67,7 +67,7 @@ internal static partial class ReflectionTools
                     WriteShortAssemblyQualifiedName(args[i]);
                 }
 
-                _result.Append(">");
+                _result.Append('>');
             }
 
             // System.Private.CoreLib, mscorlib
@@ -78,7 +78,7 @@ internal static partial class ReflectionTools
 
             if (nullable != null)
             {
-                _result.Append("?");
+                _result.Append('?');
             }
         }
 
@@ -99,9 +99,9 @@ internal static partial class ReflectionTools
 
             if (type.IsNested)
             {
-                WriteTypeFullName(type.DeclaringType);
+                WriteTypeFullName(type.DeclaringType!);
                 _result
-                    .Append(".")
+                    .Append('.')
                     .Append(type.Name, 0, count);
             }
             else

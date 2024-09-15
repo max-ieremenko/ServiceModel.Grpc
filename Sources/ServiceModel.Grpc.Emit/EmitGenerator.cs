@@ -23,6 +23,8 @@ namespace ServiceModel.Grpc.Emit;
 
 internal static class EmitGenerator
 {
+    [UnconditionalSuppressMessage("Trimming", "IL2072:Activator.CreateInstance")]
+    [UnconditionalSuppressMessage("Trimming", "IL2067:Activator.CreateInstance")]
     public static IClientBuilder<TContract> GenerateClientBuilder<TContract>(ILogger? logger)
     {
         var serviceType = typeof(TContract);
@@ -30,8 +32,7 @@ internal static class EmitGenerator
         Type? clientBuilderType;
         lock (ProxyAssembly.SyncRoot)
         {
-            clientBuilderType = ProxyAssembly.DefaultModule.GetType(ContractDescriptionBuilder.GetClientBuilderClassName(serviceType), false, false);
-            if (clientBuilderType == null)
+            if (!ProxyAssembly.DefaultModule.TryGetType(ContractDescriptionBuilder.GetClientBuilderClassName(serviceType), out clientBuilderType))
             {
                 var (description, contractType) = GenerateContract(serviceType, logger);
                 var clientType = new EmitClientBuilder(description, contractType).Build(ProxyAssembly.DefaultModule);
@@ -39,7 +40,7 @@ internal static class EmitGenerator
             }
         }
 
-        return (IClientBuilder<TContract>)Activator.CreateInstance(clientBuilderType);
+        return (IClientBuilder<TContract>)Activator.CreateInstance(clientBuilderType)!;
     }
 
     public static IServiceEndpointBinder<TService> GenerateServiceEndpointBinder<TService>(Type? serviceInstanceType, ILogger? logger)
@@ -52,8 +53,7 @@ internal static class EmitGenerator
         lock (ProxyAssembly.SyncRoot)
         {
             (description, contractType) = GenerateContract(serviceType, logger);
-            channelType = ProxyAssembly.DefaultModule.GetType(ContractDescriptionBuilder.GetEndpointClassName(serviceType), false, false);
-            if (channelType == null)
+            if (!ProxyAssembly.DefaultModule.TryGetType(ContractDescriptionBuilder.GetEndpointClassName(serviceType), out channelType))
             {
                 var serviceBuilder = new EmitServiceEndpointBuilder(description);
                 channelType = serviceBuilder.Build(ProxyAssembly.DefaultModule, logger);
@@ -104,17 +104,16 @@ internal static class EmitGenerator
     private static (ContractDescription<Type> Description, Type ContractType) GenerateContract(Type serviceType, ILogger? logger)
     {
         var className = ContractDescriptionBuilder.GetContractClassName(serviceType);
-        var contractType = ProxyAssembly.DefaultModule.GetType(className, false, false);
 
         ContractDescription<Type> description;
-        if (contractType == null)
+        if (ProxyAssembly.DefaultModule.TryGetType(className, out var contractType))
         {
-            description = CreateDescription(serviceType, logger);
-            contractType = EmitContractBuilder.Build(ProxyAssembly.DefaultModule, description);
+            description = CreateDescription(serviceType, null);
         }
         else
         {
-            description = CreateDescription(serviceType, null);
+            description = CreateDescription(serviceType, logger);
+            contractType = EmitContractBuilder.Build(ProxyAssembly.DefaultModule, description);
         }
 
         return (description, contractType);

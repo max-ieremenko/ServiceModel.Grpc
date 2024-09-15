@@ -50,6 +50,8 @@ internal sealed class ClientResolver<TContract> : IClientResolver
         return factory.CreateClient<TContract>(invoker);
     }
 
+    [UnconditionalSuppressMessage("AOT", "IL3050:AddClient<T>")]
+    [UnconditionalSuppressMessage("Trimming", "IL2091:AddClient<T>")]
     public void Setup(IServiceProvider provider, IClientFactory clientFactory)
     {
         if (Configure == null && Builder == null)

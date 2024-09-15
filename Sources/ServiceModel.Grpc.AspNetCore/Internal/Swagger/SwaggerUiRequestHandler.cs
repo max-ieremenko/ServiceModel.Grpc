@@ -39,42 +39,9 @@ internal sealed class SwaggerUiRequestHandler : ISwaggerUiRequestHandler
         IOperationDescriptor descriptor,
         CancellationToken token)
     {
-        var accessor = descriptor.GetRequestAccessor();
-        var request = accessor.CreateNew();
+        var request = await DeserializeRequestAsync(bodyReader, descriptor, token).ConfigureAwait(false);
 
-        if (accessor.Names.Length > 0)
-        {
-            JsonElement body;
-            using (var stream = bodyReader.AsStream())
-            {
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                body = await JsonSerializer.DeserializeAsync<JsonElement>(stream, options, token).ConfigureAwait(false);
-            }
-
-            foreach (var entry in body.EnumerateObject())
-            {
-                var index = FindIndex(accessor.Names, entry.Name);
-                if (index < 0)
-                {
-                    continue;
-                }
-
-                var parameterType = accessor.GetValueType(index);
-                try
-                {
-                    var value = _serializer.Deserialize(entry.Value.GetRawText(), parameterType);
-                    accessor.SetValue(request, index, value);
-                }
-                catch (Exception ex)
-                {
-                    throw new InvalidOperationException(
-                        $"Fail to deserialize parameter [{entry.Name}] with type [{parameterType}] from request.",
-                        ex);
-                }
-            }
-        }
-
-        var payload = MarshallerExtensions.SerializeObject(marshallerFactory, request);
+        var payload = SerializeObject(marshallerFactory, request);
 
         var result = new byte[payload.Length + 5];
 
@@ -104,7 +71,7 @@ internal sealed class SwaggerUiRequestHandler : ISwaggerUiRequestHandler
         }
 
         var payload = new ReadOnlySequence<byte>(original.GetBuffer(), 5, (int)(original.Length - 5));
-        var response = MarshallerExtensions.DeserializeObject(marshallerFactory, accessor.GetInstanceType(), payload);
+        var response = DeserializeObject(marshallerFactory, accessor.GetInstanceType(), payload);
 
         var responseValue = accessor.GetValue(response, 0);
         if (responseValue == null)
@@ -115,9 +82,7 @@ internal sealed class SwaggerUiRequestHandler : ISwaggerUiRequestHandler
         return _serializer.SerializeAsync(bodyWriter.AsStream(true), responseValue, accessor.GetValueType(0), token);
     }
 
-    public void AppendResponseTrailers(
-        IHeaderDictionary responseHeaders,
-        IHeaderDictionary? trailers)
+    public void AppendResponseTrailers(IHeaderDictionary responseHeaders, IHeaderDictionary? trailers)
     {
         if (trailers == null || trailers.Count == 0)
         {
@@ -130,13 +95,8 @@ internal sealed class SwaggerUiRequestHandler : ISwaggerUiRequestHandler
         }
     }
 
-    public Task WriteResponseErrorAsync(
-        RpcException error,
-        PipeWriter bodyWriter,
-        CancellationToken token)
-    {
-        return _serializer.SerializeAsync(bodyWriter.AsStream(true), error, typeof(RpcException), token);
-    }
+    public Task WriteResponseErrorAsync(RpcException error, PipeWriter bodyWriter, CancellationToken token) =>
+        _serializer.SerializeAsync(bodyWriter.AsStream(true), error, typeof(RpcException), token);
 
     private static int FindIndex(string[] names, string name)
     {
@@ -149,5 +109,54 @@ internal sealed class SwaggerUiRequestHandler : ISwaggerUiRequestHandler
         }
 
         return -1;
+    }
+
+    [UnconditionalSuppressMessage("Trimming", "IL2026:SerializeObject")]
+    [UnconditionalSuppressMessage("AOT", "IL3050:SerializeObject")]
+    private static byte[] SerializeObject(IMarshallerFactory factory, object value) =>
+        MarshallerExtensions.SerializeObject(factory, value);
+
+    [UnconditionalSuppressMessage("Trimming", "IL2026:DeserializeObject")]
+    [UnconditionalSuppressMessage("AOT", "IL3050:DeserializeObject")]
+    private static object DeserializeObject(IMarshallerFactory factory, Type valueType, in ReadOnlySequence<byte> payload) =>
+        MarshallerExtensions.DeserializeObject(factory, valueType, payload);
+
+    private async Task<object> DeserializeRequestAsync(PipeReader bodyReader, IOperationDescriptor descriptor, CancellationToken token)
+    {
+        var accessor = descriptor.GetRequestAccessor();
+        var request = accessor.CreateNew();
+
+        if (accessor.Names.Length == 0)
+        {
+            return request;
+        }
+
+        using (var stream = bodyReader.AsStream())
+        using (var document = await JsonDocument.ParseAsync(stream, cancellationToken: token).ConfigureAwait(false))
+        {
+            foreach (var entry in document.RootElement.EnumerateObject())
+            {
+                var index = FindIndex(accessor.Names, entry.Name);
+                if (index < 0)
+                {
+                    continue;
+                }
+
+                var parameterType = accessor.GetValueType(index);
+                try
+                {
+                    var value = _serializer.Deserialize(entry.Value.GetRawText(), parameterType);
+                    accessor.SetValue(request, index, value);
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException(
+                        $"Fail to deserialize parameter [{entry.Name}] with type [{parameterType}] from request.",
+                        ex);
+                }
+            }
+        }
+
+        return request;
     }
 }

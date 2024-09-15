@@ -82,6 +82,8 @@ public static class MarshallerExtensions
     /// <param name="factory">The <see cref="IMarshallerFactory"/> instance to serialize with.</param>
     /// <param name="value">The value to serialize.</param>
     /// <returns>Payload created by the <see cref="IMarshallerFactory"/> instance.</returns>
+    [RequiresDynamicCode("The native code for the serialization might not be available at runtime.")]
+    [RequiresUnreferencedCode("The trimming may not validate that the requirements of 'value' are met.")]
     public static byte[] SerializeObject(IMarshallerFactory factory, object value)
     {
         GrpcPreconditions.CheckNotNull(factory, nameof(factory));
@@ -102,6 +104,8 @@ public static class MarshallerExtensions
     /// <param name="valueType">The value type.</param>
     /// <param name="payload">The payload.</param>
     /// <returns>A value deserialized by the <see cref="IMarshallerFactory"/> instance.</returns>
+    [RequiresDynamicCode("The native code for the deserialization might not be available at runtime.")]
+    [RequiresUnreferencedCode("The trimming may not validate that the requirements of 'valueType' are met.")]
     public static object DeserializeObject(IMarshallerFactory factory, Type valueType, byte[] payload)
     {
         GrpcPreconditions.CheckNotNull(factory, nameof(factory));
@@ -123,6 +127,8 @@ public static class MarshallerExtensions
     /// <param name="valueType">The value type.</param>
     /// <param name="payload">The payload.</param>
     /// <returns>A value deserialized by the <see cref="IMarshallerFactory"/> instance.</returns>
+    [RequiresDynamicCode("The native code for the deserialization might not be available at runtime.")]
+    [RequiresUnreferencedCode("The trimming may not validate that the requirements of 'valueType' are met.")]
     public static object DeserializeObject(IMarshallerFactory factory, Type valueType, in ReadOnlySequence<byte> payload)
     {
         GrpcPreconditions.CheckNotNull(factory, nameof(factory));

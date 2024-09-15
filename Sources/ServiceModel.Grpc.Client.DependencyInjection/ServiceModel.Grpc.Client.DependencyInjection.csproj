@@ -3,6 +3,8 @@
     <TargetFrameworks>netstandard2.0;netstandard2.1;net6.0;net7.0;net8.0</TargetFrameworks>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <IsPackable>true</IsPackable>
+    <IsTrimmable>true</IsTrimmable>
+    <EnableAOTAnalyzer>true</EnableAOTAnalyzer>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,5 +23,12 @@
     <Content Include="README.md" PackagePath="" />
     <Content Include="..\..\LICENSE" PackagePath="" Visible="false" />
     <Content Include="..\..\build-out\ClientDIThirdPartyNotices.txt" PackagePath="ThirdPartyNotices.txt" Visible="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\ServiceModel.Grpc.Core\CodeAnalysis\DynamicallyAccessedMembersAttribute.cs" Link="CodeAnalysis\DynamicallyAccessedMembersAttribute.cs" />
+    <Compile Include="..\ServiceModel.Grpc.Core\CodeAnalysis\DynamicallyAccessedMemberTypes.cs" Link="CodeAnalysis\DynamicallyAccessedMemberTypes.cs" />
+    <Compile Include="..\ServiceModel.Grpc.Core\CodeAnalysis\RequiresDynamicCodeAttribute.cs" Link="CodeAnalysis\RequiresDynamicCodeAttribute.cs" />
+    <Compile Include="..\ServiceModel.Grpc.Core\CodeAnalysis\UnconditionalSuppressMessageAttribute.cs" Link="CodeAnalysis\UnconditionalSuppressMessageAttribute.cs" />
   </ItemGroup>
 </Project>

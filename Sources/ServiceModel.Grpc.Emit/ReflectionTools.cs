@@ -15,11 +15,13 @@
 // </copyright>
 
 using System.Reflection;
+using System.Reflection.Emit;
 
 namespace ServiceModel.Grpc.Emit;
 
 internal static partial class ReflectionTools
 {
+    [UnconditionalSuppressMessage("Trimming", "IL2070:Type.GetInterfaces")]
     public static ICollection<Type> ExpandInterface(Type type)
     {
         var result = new HashSet<Type>();
@@ -37,27 +39,29 @@ internal static partial class ReflectionTools
         return result;
     }
 
-    public static string GetNamespace(Type type)
+    public static string? GetNamespace(Type type)
     {
         var @namespace = type.Namespace;
         if (type.IsNested && type.DeclaringType != null)
         {
-            @namespace += "." + type.DeclaringType.Name;
+            if (string.IsNullOrEmpty(@namespace))
+            {
+                @namespace = type.DeclaringType.Name;
+            }
+            else
+            {
+                @namespace += "." + type.DeclaringType.Name;
+            }
         }
 
         return @namespace;
     }
 
-    public static bool IsTask(Type type)
-    {
-        return typeof(Task).IsAssignableFrom(type) || IsValueTask(type);
-    }
+    public static bool IsTask(Type type) => typeof(Task).IsAssignableFrom(type) || IsValueTask(type);
 
-    public static bool IsValueTask(this Type type)
-    {
-        return typeof(ValueTask) == type
-               || (type.FullName ?? string.Empty).StartsWith(typeof(ValueTask<>).FullName, StringComparison.Ordinal);
-    }
+    public static bool IsValueTask(this Type type) =>
+        typeof(ValueTask) == type
+        || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ValueTask<>));
 
     public static bool IsAsyncEnumerable(Type type)
     {
@@ -112,6 +116,7 @@ internal static partial class ReflectionTools
         return false;
     }
 
+    [UnconditionalSuppressMessage("Trimming", "IL2070:Type.GetConstructor")]
     public static ConstructorInfo Constructor(this Type type, params Type[] parameters)
     {
         var result = type.GetConstructor(
@@ -129,6 +134,7 @@ internal static partial class ReflectionTools
         return result;
     }
 
+    [UnconditionalSuppressMessage("Trimming", "IL2070:Type.GetConstructors")]
     public static ConstructorInfo Constructor(this Type type, int parametersCount)
     {
         var constructors = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
@@ -156,6 +162,7 @@ internal static partial class ReflectionTools
         return result;
     }
 
+    [UnconditionalSuppressMessage("Trimming", "IL2070:Type.GetProperty")]
     public static PropertyInfo? TryInstanceProperty(this Type type, string name)
     {
         return type.GetProperty(
@@ -163,18 +170,16 @@ internal static partial class ReflectionTools
             BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
     }
 
-    public static PropertyInfo InstanceProperty(this Type type, string name)
-    {
-        var result = TryInstanceProperty(type, name);
+    public static PropertyInfo InstanceProperty(this Type type, string name) =>
+        TryInstanceProperty(type, name) ?? throw new ArgumentOutOfRangeException($"{type.Name} does not implement instance property {name}.");
 
-        if (result == null)
-        {
-            throw new ArgumentOutOfRangeException($"{type.Name} does not implement instance property {name}.");
-        }
+    public static MethodInfo SafeGetGetMethod(this PropertyInfo property) =>
+        property.GetMethod ?? throw new ArgumentOutOfRangeException($"{property.Name} does not implement get method.");
 
-        return result;
-    }
+    public static MethodInfo SafeGetSetMethod(this PropertyInfo property) =>
+        property.SetMethod ?? throw new ArgumentOutOfRangeException($"{property.Name} does not implement set method.");
 
+    [UnconditionalSuppressMessage("Trimming", "IL2070:Type.GetMethod")]
     public static MethodInfo InstanceMethod(this Type type, string name)
     {
         var result = type.GetMethod(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
@@ -187,6 +192,7 @@ internal static partial class ReflectionTools
         return result;
     }
 
+    [UnconditionalSuppressMessage("Trimming", "IL2070:Type.GetMethod")]
     public static MethodInfo InstanceMethod(this Type type, string name, params Type[] parameters)
     {
         var result = type.GetMethod(
@@ -204,9 +210,11 @@ internal static partial class ReflectionTools
         return result;
     }
 
+    [UnconditionalSuppressMessage("Trimming", "IL2070:Type.GetMethods")]
     public static MethodInfo[] GetInstanceMethods(Type type) =>
         type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
+    [UnconditionalSuppressMessage("Trimming", "IL2070:Type.GetField")]
     public static FieldInfo InstanceFiled(this Type type, string name)
     {
         var result = type.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
@@ -219,6 +227,7 @@ internal static partial class ReflectionTools
         return result;
     }
 
+    [UnconditionalSuppressMessage("Trimming", "IL2070:Type.GetField")]
     public static FieldInfo StaticFiled(this Type type, string name)
     {
         var result = type.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly);
@@ -231,6 +240,7 @@ internal static partial class ReflectionTools
         return result;
     }
 
+    [UnconditionalSuppressMessage("Trimming", "IL2070:Type.GetMethod")]
     public static MethodInfo StaticMethod(this Type type, string name)
     {
         var result = type.GetMethod(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly);
@@ -243,6 +253,7 @@ internal static partial class ReflectionTools
         return result;
     }
 
+    [UnconditionalSuppressMessage("Trimming", "IL2070:Type.GetMethod")]
     public static MethodInfo StaticMethod(this Type type, string name, params Type[] parameters)
     {
         var result = type.GetMethod(
@@ -260,6 +271,7 @@ internal static partial class ReflectionTools
         return result;
     }
 
+    [UnconditionalSuppressMessage("Trimming", "IL2070:Type.GetMethods")]
     public static MethodInfo StaticMethodByReturnType(this Type type, string nameStartWith, Type returnType)
     {
         var result = type
@@ -275,6 +287,7 @@ internal static partial class ReflectionTools
         return result;
     }
 
+    [UnconditionalSuppressMessage("Trimming", "IL2067:Type.GetInterfaceMap")]
     public static MethodInfo ImplementationOfMethod(Type instance, Type methodDeclaringType, MethodInfo method)
     {
         var map = instance.GetInterfaceMap(methodDeclaringType);
@@ -293,11 +306,15 @@ internal static partial class ReflectionTools
     {
         var result = new StringBuilder()
             .Append(method.ReturnType.GetUserFriendlyName())
-            .Append(" ")
-            .Append(GetNamespace(method.DeclaringType))
-            .Append(".")
-            .Append(method.Name)
-            .Append("(");
+            .Append(' ');
+
+        var ns = method.DeclaringType == null ? null : GetNamespace(method.DeclaringType);
+        if (!string.IsNullOrEmpty(ns))
+        {
+            result.Append(ns).Append('.');
+        }
+
+        result.Append(method.Name).Append('(');
 
         var parameters = method.GetParameters();
         for (var i = 0; i < parameters.Length; i++)
@@ -321,7 +338,7 @@ internal static partial class ReflectionTools
             result.Append(p.ParameterType.GetUserFriendlyName());
         }
 
-        result.Append(")");
+        result.Append(')');
         return result.ToString();
     }
 
@@ -345,4 +362,33 @@ internal static partial class ReflectionTools
     {
         return new TypeUserFriendlyBuilder(type).Build();
     }
+
+    [UnconditionalSuppressMessage("Trimming", "IL2026:System.Reflection.Assembly.GetType")]
+    public static Type SafeGetType(this Assembly assembly, string name) =>
+        assembly.GetType(name, true, false) ?? throw new ArgumentOutOfRangeException($"Type {name} not found in {assembly.FullName}.");
+
+    [UnconditionalSuppressMessage("Trimming", "IL2026:System.Reflection.Module.GetType")]
+    public static bool TryGetType(this ModuleBuilder moduleBuilder, string name, [NotNullWhen(true)] out Type? type)
+    {
+        type = moduleBuilder.GetType(name, false, false);
+        return type != null;
+    }
+
+    public static Type SafeGetArrayElementType(this Type arrayType)
+    {
+        if (!arrayType.IsArray)
+        {
+            throw new ArgumentOutOfRangeException(nameof(arrayType));
+        }
+
+        return arrayType.GetElementType() ?? throw new InvalidOperationException($"Array {arrayType.FullName ?? arrayType.Name}.GetElementType() is null.");
+    }
+
+    [UnconditionalSuppressMessage("Trimming", "IL2060:MethodInfo.MakeGenericMethod")]
+    [UnconditionalSuppressMessage("AOT", "IL3050:MethodInfo.MakeGenericMethod")]
+    public static MethodInfo MakeConstructedGeneric(this MethodInfo method, params Type[] typeArguments) => method.MakeGenericMethod(typeArguments);
+
+    [UnconditionalSuppressMessage("Trimming", "IL2055:Type.MakeGenericType")]
+    [UnconditionalSuppressMessage("AOT", "IL3050:Type.MakeGenericType")]
+    public static Type MakeConstructedGeneric(this Type type, params Type[] typeArguments) => type.MakeGenericType(typeArguments);
 }

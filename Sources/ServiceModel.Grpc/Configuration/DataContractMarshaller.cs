@@ -19,6 +19,8 @@ using Grpc.Core;
 
 namespace ServiceModel.Grpc.Configuration;
 
+[RequiresDynamicCode("Data Contract Serialization and Deserialization might require types that cannot be statically analyzed.")]
+[RequiresUnreferencedCode("Data Contract Serialization and Deserialization might require types that cannot be statically analyzed.")]
 internal static class DataContractMarshaller<T>
 {
     public static readonly Marshaller<T> Default = new Marshaller<T>(Serialize, Deserialize);
@@ -40,7 +42,7 @@ internal static class DataContractMarshaller<T>
     {
         using (var buffer = context.AsStream())
         {
-            return (T)Serializer.ReadObject(buffer);
+            return (T)Serializer.ReadObject(buffer)!;
         }
     }
 

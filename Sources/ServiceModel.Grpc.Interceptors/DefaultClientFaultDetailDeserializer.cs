@@ -40,8 +40,11 @@ public class DefaultClientFaultDetailDeserializer : IClientFaultDetailDeserializ
     public virtual object DeserializeDetail(IMarshallerFactory marshallerFactory, Type detailType, byte[] detailPayload) =>
         Deserialize(marshallerFactory, detailType, detailPayload);
 
+    [UnconditionalSuppressMessage("Trimming", "IL2057:Type.GetType")]
     internal static Type DeserializeType(string typePayload) => Type.GetType(typePayload, true, false)!;
 
+    [UnconditionalSuppressMessage("Trimming", "IL2026:MarshallerExtensions.DeserializeObject")]
+    [UnconditionalSuppressMessage("AOT", "IL3050:MarshallerExtensions.DeserializeObject")]
     internal static object Deserialize(IMarshallerFactory marshallerFactory, Type detailType, byte[] detailPayload) =>
         MarshallerExtensions.DeserializeObject(marshallerFactory, detailType, detailPayload);
 }

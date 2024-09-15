@@ -146,7 +146,7 @@ internal sealed class EmitServiceEndpointBuilder
 
                 // request.Value1
                 body.Emit(OpCodes.Ldarg_2);
-                body.Emit(OpCodes.Callvirt, operation.RequestType.GetClrType().InstanceProperty(propertyName).GetMethod);
+                body.Emit(OpCodes.Callvirt, operation.RequestType.GetClrType().InstanceProperty(propertyName).SafeGetGetMethod());
             }
         }
 
@@ -171,7 +171,7 @@ internal sealed class EmitServiceEndpointBuilder
             }
 
             // Task.FromResult
-            body.Emit(OpCodes.Call, typeof(Task).StaticMethod(nameof(Task.FromResult)).MakeGenericMethod(operation.ResponseType.GetClrType()));
+            body.Emit(OpCodes.Call, typeof(Task).StaticMethod(nameof(Task.FromResult)).MakeConstructedGeneric(operation.ResponseType.GetClrType()));
         }
 
         body.Emit(OpCodes.Ret);
@@ -225,7 +225,7 @@ internal sealed class EmitServiceEndpointBuilder
 
                 // request.Value1
                 body.Emit(OpCodes.Ldarg_2);
-                body.Emit(OpCodes.Callvirt, operation.RequestType.GetClrType().InstanceProperty(propertyName).GetMethod);
+                body.Emit(OpCodes.Callvirt, operation.RequestType.GetClrType().InstanceProperty(propertyName).SafeGetGetMethod());
             }
         }
 
@@ -241,9 +241,9 @@ internal sealed class EmitServiceEndpointBuilder
     {
         // private static (Message<string, int>, IAsyncEnumerable<int>) AdaptHeaderTask((string, IAsyncEnumerable<int>, int) result)
         var parameterType = operation.Method.ReturnType.GetGenericArguments()[0];
-        var returnType = typeof(ValueTuple<,>).MakeGenericType(
+        var returnType = typeof(ValueTuple<,>).MakeConstructedGeneric(
             operation.HeaderResponseType.GetClrType(),
-            typeof(IAsyncEnumerable<>).MakeGenericType(operation.ResponseType.Properties[0]));
+            typeof(IAsyncEnumerable<>).MakeConstructedGeneric(operation.ResponseType.Properties[0]));
 
         var method = _typeBuilder
             .DefineMethod(
@@ -277,7 +277,7 @@ internal sealed class EmitServiceEndpointBuilder
         body.Emit(OpCodes.Newobj, returnType!.Constructor(2));
         body.Emit(OpCodes.Ret);
 
-        var delegateType = typeof(Func<,>).MakeGenericType(parameterType, returnType);
+        var delegateType = typeof(Func<,>).MakeConstructedGeneric(parameterType, returnType);
 
         // private readonly Func<(string, IAsyncEnumerable<int>, int), (Message<string, int>, IAsyncEnumerable<int>)> _adaptHeaderTask = AdaptHeaderTask;
         var field = _typeBuilder
@@ -335,7 +335,7 @@ internal sealed class EmitServiceEndpointBuilder
                     .DefineMethod(
                         methodName,
                         MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
-                        typeof(Task<>).MakeGenericType(operation.ResponseType.GetClrType()),
+                        typeof(Task<>).MakeConstructedGeneric(operation.ResponseType.GetClrType()),
                         [serviceType, operation.RequestType.GetClrType(), typeof(ServerCallContext)])
                     .GetILGenerator();
 
@@ -345,48 +345,48 @@ internal sealed class EmitServiceEndpointBuilder
                     .DefineMethod(
                         methodName,
                         MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
-                        typeof(Task<>).MakeGenericType(operation.ResponseType.GetClrType()),
+                        typeof(Task<>).MakeConstructedGeneric(operation.ResponseType.GetClrType()),
                         new[]
                         {
                             serviceType,
                             operation.HeaderRequestType.GetClrType(),
-                            typeof(IAsyncEnumerable<>).MakeGenericType(operation.RequestType.Properties[0]),
+                            typeof(IAsyncEnumerable<>).MakeConstructedGeneric(operation.RequestType.Properties[0]),
                             typeof(ServerCallContext)
                         })
                     .GetILGenerator();
 
             case MethodType.ServerStreaming:
             {
-                var response = typeof(ValueTuple<,>).MakeGenericType(
+                var response = typeof(ValueTuple<,>).MakeConstructedGeneric(
                     operation.HeaderResponseType.GetClrType(),
-                    typeof(IAsyncEnumerable<>).MakeGenericType(operation.ResponseType.Properties[0]));
+                    typeof(IAsyncEnumerable<>).MakeConstructedGeneric(operation.ResponseType.Properties[0]));
 
                 // ValueTask<(TResponseHeader, IAsyncEnumerable<TResponse>)> Invoke(TService service, TRequest request, ServerCallContext context)
                 return _typeBuilder
                     .DefineMethod(
                         methodName,
                         MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
-                        typeof(ValueTask<>).MakeGenericType(response),
+                        typeof(ValueTask<>).MakeConstructedGeneric(response),
                         [serviceType, operation.RequestType.GetClrType(), typeof(ServerCallContext)])
                     .GetILGenerator();
             }
 
             case MethodType.DuplexStreaming:
             {
-                var response = typeof(ValueTuple<,>).MakeGenericType(
+                var response = typeof(ValueTuple<,>).MakeConstructedGeneric(
                     operation.HeaderResponseType.GetClrType(),
-                    typeof(IAsyncEnumerable<>).MakeGenericType(operation.ResponseType.Properties[0]));
+                    typeof(IAsyncEnumerable<>).MakeConstructedGeneric(operation.ResponseType.Properties[0]));
 
                 // ValueTask<(TResponseHeader, IAsyncEnumerable<TResponse>)> Invoke(TService service, TRequestHeader requestHeader, IAsyncEnumerable<TRequest> request, ServerCallContext context)
                 return _typeBuilder
                     .DefineMethod(
                         methodName,
                         MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
-                        typeof(ValueTask<>).MakeGenericType(response),
+                        typeof(ValueTask<>).MakeConstructedGeneric(response),
                         [
                             serviceType,
                             operation.HeaderRequestType.GetClrType(),
-                            typeof(IAsyncEnumerable<>).MakeGenericType(operation.RequestType.Properties[0]),
+                            typeof(IAsyncEnumerable<>).MakeConstructedGeneric(operation.RequestType.Properties[0]),
                             typeof(ServerCallContext)
                         ])
                     .GetILGenerator();
@@ -402,7 +402,7 @@ internal sealed class EmitServiceEndpointBuilder
         {
             var adapter = typeof(EmitServerChannelAdapter)
                 .StaticMethod(message.Method.ReturnType.IsValueTask() ? nameof(EmitServerChannelAdapter.GetUnaryCallResultValueTask) : nameof(EmitServerChannelAdapter.GetUnaryCallResultTask))
-                .MakeGenericMethod(message.ResponseType.Properties[0]);
+                .MakeConstructedGeneric(message.ResponseType.Properties[0]);
 
             // ServerChannelAdapter.GetUnaryCallResult
             body.Emit(OpCodes.Call, adapter);
@@ -428,7 +428,7 @@ internal sealed class EmitServiceEndpointBuilder
     {
         var propertyName = "Value" + (Array.IndexOf(operation.HeaderRequestTypeInput, parameterIndex) + 1);
         body.Emit(OpCodes.Ldarg_2); // requestHeader
-        body.Emit(OpCodes.Callvirt, operation.HeaderRequestType.GetClrType().InstanceProperty(propertyName).GetMethod); // requestHeader
+        body.Emit(OpCodes.Callvirt, operation.HeaderRequestType.GetClrType().InstanceProperty(propertyName).SafeGetGetMethod()); // requestHeader
     }
 
     private void CallContractMethod(ILGenerator body, OperationDescription<Type> operation, Type serviceType)
@@ -450,7 +450,7 @@ internal sealed class EmitServiceEndpointBuilder
             // return ServerChannelAdapter.ServerStreaming(service.Simple());
             var channelAdapter = typeof(EmitServerChannelAdapter)
                 .StaticMethod(nameof(EmitServerChannelAdapter.ServerStreaming))
-                .MakeGenericMethod(operation.ResponseType.Properties[0]);
+                .MakeConstructedGeneric(operation.ResponseType.Properties[0]);
             body.Emit(OpCodes.Call, channelAdapter);
         }
         else if (operation.HeaderResponseType == null && operation.IsAsync)
@@ -458,7 +458,7 @@ internal sealed class EmitServiceEndpointBuilder
             // return ServerChannelAdapter.ServerStreamingTask(service.SimpleTask());
             var channelAdapter = typeof(EmitServerChannelAdapter)
                 .StaticMethod(operation.Method.ReturnType.IsValueTask() ? nameof(EmitServerChannelAdapter.ServerStreamingValueTask) : nameof(EmitServerChannelAdapter.ServerStreamingTask))
-                .MakeGenericMethod(operation.ResponseType.Properties[0]);
+                .MakeConstructedGeneric(operation.ResponseType.Properties[0]);
             body.Emit(OpCodes.Call, channelAdapter);
         }
         else
@@ -470,7 +470,7 @@ internal sealed class EmitServiceEndpointBuilder
 
             var channelAdapter = typeof(EmitServerChannelAdapter)
                 .StaticMethod(operation.Method.ReturnType.IsValueTask() ? nameof(EmitServerChannelAdapter.ServerStreamingHeaderValueTask) : nameof(EmitServerChannelAdapter.ServerStreamingHeaderTask))
-                .MakeGenericMethod(operation.Method.ReturnType.GetGenericArguments()[0], operation.HeaderResponseType.GetClrType(), operation.ResponseType.Properties[0]);
+                .MakeConstructedGeneric(operation.Method.ReturnType.GetGenericArguments()[0], operation.HeaderResponseType.GetClrType(), operation.ResponseType.Properties[0]);
             body.Emit(OpCodes.Call, channelAdapter);
         }
     }

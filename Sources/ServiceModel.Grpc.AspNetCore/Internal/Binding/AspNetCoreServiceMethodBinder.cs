@@ -24,7 +24,7 @@ using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.Binding;
 
-internal sealed class AspNetCoreServiceMethodBinder<TService> : IServiceMethodBinder<TService>
+internal sealed class AspNetCoreServiceMethodBinder<[DynamicallyAccessedMembers(CodeAnalysisConstants.ServiceAccessibility)] TService> : IServiceMethodBinder<TService>
     where TService : class
 {
     private readonly ServiceMethodProviderContext<TService> _context;

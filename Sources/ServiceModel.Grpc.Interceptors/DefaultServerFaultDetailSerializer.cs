@@ -40,5 +40,7 @@ public class DefaultServerFaultDetailSerializer : IServerFaultDetailSerializer
 
     internal static string SerializeType(Type detailType) => detailType.GetShortAssemblyQualifiedName();
 
+    [UnconditionalSuppressMessage("Trimming", "IL2026:MarshallerExtensions.SerializeObject")]
+    [UnconditionalSuppressMessage("AOT", "IL3050:MarshallerExtensions.SerializeObject")]
     internal static byte[] Serialize(IMarshallerFactory marshallerFactory, object detail) => MarshallerExtensions.SerializeObject(marshallerFactory, detail);
 }
