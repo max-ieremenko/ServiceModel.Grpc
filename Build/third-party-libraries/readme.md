@@ -7,13 +7,13 @@ Licenses
 |[BSD-2-Clause](licenses/bsd-2-clause)|no|no|1|
 |[BSD-3-Clause](licenses/bsd-3-clause)|no|no|2|
 |[Google.Protobuf](licenses/google.protobuf)|yes|no|0|
-|[MIT](licenses/mit)|no|no|118|
+|[MIT](licenses/mit)|no|no|121|
 |[ms-net-library](licenses/ms-net-library)|no|no|10|
 |[MS-PL](licenses/ms-pl)|no|no|1|
 
 
 
-Packages 143
+Packages 146
 --------
 
 |Name|Version|Source|License|Used by|
@@ -60,6 +60,9 @@ Packages 143
 |[Microsoft.IdentityModel.Protocols](packages/nuget.org/microsoft.identitymodel.protocols/6.10.0)|6.10.0|[nuget.org](https://www.nuget.org/packages/Microsoft.IdentityModel.Protocols/6.10.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
 |[Microsoft.IdentityModel.Protocols.OpenIdConnect](packages/nuget.org/microsoft.identitymodel.protocols.openidconnect/6.10.0)|6.10.0|[nuget.org](https://www.nuget.org/packages/Microsoft.IdentityModel.Protocols.OpenIdConnect/6.10.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
 |[Microsoft.IdentityModel.Tokens](packages/nuget.org/microsoft.identitymodel.tokens/6.10.0)|6.10.0|[nuget.org](https://www.nuget.org/packages/Microsoft.IdentityModel.Tokens/6.10.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
+|[Microsoft.NET.ILLink.Analyzers](packages/nuget.org/microsoft.net.illink.analyzers/7.0.100-1.23401.1)|7.0.100-1.23401.1|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.ILLink.Analyzers/7.0.100-1.23401.1)|[MIT](licenses/mit)|AspNetCore, ClientDI, MessagePack|
+|[Microsoft.NET.ILLink.Tasks](packages/nuget.org/microsoft.net.illink.tasks/7.0.100-1.23401.1)|7.0.100-1.23401.1|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/7.0.100-1.23401.1)|[MIT](licenses/mit)|AspNetCore, ClientDI, MessagePack|
+|[Microsoft.NET.ILLink.Tasks](packages/nuget.org/microsoft.net.illink.tasks/8.0.8)|8.0.8|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/8.0.8)|[MIT](licenses/mit)|AspNetCore, ClientDI, Core, Emit, MessagePack|
 |[Microsoft.NET.StringTools](packages/nuget.org/microsoft.net.stringtools/17.6.3)|17.6.3|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.StringTools/17.6.3)|[MIT](licenses/mit)|MessagePack|
 |[Microsoft.NET.Test.Sdk](packages/nuget.org/microsoft.net.test.sdk/17.10.0)|17.10.0|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.Test.Sdk/17.10.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, SelfHost internal|
 |[Microsoft.OpenApi](packages/nuget.org/microsoft.openapi/1.6.14)|1.6.14|[nuget.org](https://www.nuget.org/packages/Microsoft.OpenApi/1.6.14)|[MIT](licenses/mit)|AspNetCoreSwashbuckle|

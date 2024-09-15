@@ -6,10 +6,20 @@
   },
   "UsedBy": [
     {
-      "Name": "Emit",
+      "Name": "AspNetCore",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "net462",
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ]
+    },
+    {
+      "Name": "ClientDI",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net6.0",
+        "net7.0",
         "net8.0",
         "netstandard2.0",
         "netstandard2.1"
@@ -24,18 +34,6 @@
         "net8.0",
         "netstandard2.0"
       ]
-    },
-    {
-      "Name": "ProtoBuf",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "net462",
-        "net6.0",
-        "net7.0",
-        "net8.0",
-        "netstandard2.0",
-        "netstandard2.1"
-      ]
     }
   ],
   "Licenses": [
@@ -45,10 +43,14 @@
       "HRef": "https://licenses.nuget.org/MIT"
     },
     {
+      "Subject": "repository",
+      "Code": null,
+      "HRef": "https://github.com/dotnet/linker"
+    },
+    {
       "Subject": "project",
       "Code": null,
-      "HRef": "https://github.com/dotnet/corefx",
-      "Description": "License should be verified on https://github.com/dotnet/corefx"
+      "HRef": "https://github.com/dotnet/linker"
     }
   ]
 }

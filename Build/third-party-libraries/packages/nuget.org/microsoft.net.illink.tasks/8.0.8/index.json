@@ -6,6 +6,15 @@
   },
   "UsedBy": [
     {
+      "Name": "AspNetCore",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ]
+    },
+    {
       "Name": "ClientDI",
       "InternalOnly": false,
       "TargetFrameworks": [
@@ -27,10 +36,13 @@
       ]
     },
     {
-      "Name": "DesignTime",
+      "Name": "Emit",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "netstandard2.0"
+        "net462",
+        "net8.0",
+        "netstandard2.0",
+        "netstandard2.1"
       ]
     },
     {
@@ -42,40 +54,23 @@
         "net8.0",
         "netstandard2.0"
       ]
-    },
-    {
-      "Name": "ProtoBuf",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "net462",
-        "net6.0",
-        "net7.0",
-        "net8.0",
-        "netstandard2.0",
-        "netstandard2.1"
-      ]
-    },
-    {
-      "Name": "SelfHost",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "net462",
-        "netstandard2.0",
-        "netstandard2.1"
-      ]
     }
   ],
   "Licenses": [
     {
       "Subject": "package",
       "Code": "MIT",
-      "HRef": "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT"
+      "HRef": "https://licenses.nuget.org/MIT"
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/dotnet/runtime"
     },
     {
       "Subject": "project",
       "Code": null,
-      "HRef": "https://dot.net/",
-      "Description": "License should be verified on https://dot.net/"
+      "HRef": "https://dot.net/"
     }
   ]
 }
