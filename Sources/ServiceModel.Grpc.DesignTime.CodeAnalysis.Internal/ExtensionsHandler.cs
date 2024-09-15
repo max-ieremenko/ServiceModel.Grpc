@@ -86,7 +86,7 @@ public sealed class ExtensionsHandler
         for (var i = 0; i < attributes.Length; i++)
         {
             var attribute = attributes[i];
-            if (!AttributeAnalyzer.TryGetProviderType(_extensionActivator.TypeHandler, attribute, out var typeSymbol, out var type))
+            if (!_extensionActivator.TypeHandler.TryGetProviderType(attribute, out var typeSymbol, out var type))
             {
                 continue;
             }
@@ -123,11 +123,16 @@ public sealed class ExtensionsHandler
     private void ExecuteGroup(INamedTypeSymbol holder, List<IExtension> extensions)
     {
         var descriptions = new ContractDescriptionCollection();
+        var generators = new CodeGeneratorCollection();
         for (var i = 0; i < extensions.Count; i++)
         {
-            if (extensions[i] is IContractDescriptionExtension extension)
+            if (extensions[i] is IContractDescriptionExtension description)
             {
-                extension.ProvideContractDescriptions(descriptions, _extensionContext);
+                description.ProvideContractDescriptions(descriptions, _extensionContext);
+            }
+            else if (extensions[i] is IMetadataExtension metadata)
+            {
+                generators.AddMetadata(metadata);
             }
         }
 
@@ -136,7 +141,6 @@ public sealed class ExtensionsHandler
             return;
         }
 
-        var generators = new CodeGeneratorCollection();
         for (var i = 0; i < extensions.Count; i++)
         {
             if (extensions[i] is ICodeGeneratorExtension extension)

@@ -18,7 +18,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.Extensions;
 
-public sealed class ImportGrpcService : IExtensionProvider
+internal sealed class ImportGrpcService : IExtensionProvider
 {
     private const string PropertyGenerateDiExtensions = "GenerateDependencyInjectionExtensions";
 
