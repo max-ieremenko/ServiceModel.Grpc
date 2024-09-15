@@ -16,25 +16,4 @@
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis;
 
-public partial class AttributeAnalyzerTest
-{
-    [DesignTimeExtension<SomeExtension>("foo", 1)]
-    public sealed class ExtensionHolder;
-
-    [ExportGrpcService(typeof(object))]
-    public sealed class ExportHolder;
-
-    [ImportGrpcService(typeof(object))]
-    public sealed class ImportHolder;
-
-    internal sealed class ImportGrpcServiceExtension;
-
-    internal sealed class ExportGrpcServiceExtension;
-
-    internal sealed class SomeExtension : IExtensionProvider
-    {
-        public void ProvideExtensions(ExtensionProviderDeclaration declaration, IExtensionCollection extensions, IExtensionContext context)
-        {
-        }
-    }
-}
+public interface IMetadataExtension : IExtension;

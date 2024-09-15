@@ -36,18 +36,19 @@ internal sealed class ExtensionCollection : List<IExtension>, IExtensionCollecti
         return true;
     }
 
-    public bool TryAdd<TExtension>()
+    public TExtension TryAdd<TExtension>()
         where TExtension : IExtension, new()
     {
         for (var i = 0; i < Count; i++)
         {
-            if (this[i] is TExtension)
+            if (this[i] is TExtension existing)
             {
-                return false;
+                return existing;
             }
         }
 
-        Add(new TExtension());
-        return true;
+        var result = new TExtension();
+        Add(result);
+        return result;
     }
 }

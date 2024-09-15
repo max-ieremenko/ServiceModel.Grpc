@@ -32,7 +32,7 @@ internal sealed class ContractCodeGeneratorExtension : ICodeGeneratorExtension
             var description = descriptions[i];
             if (distinct.Add(description.BaseClassName))
             {
-                generators.Add(new ContractCodeGenerator(description));
+                generators.Add(new ContractCodeGenerator(description, generators.TryGetMetadata<ContractCodeGeneratorMetadata>()));
             }
         }
     }

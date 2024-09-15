@@ -92,6 +92,17 @@ public static class SyntaxTools
         return result.ToString();
     }
 
+    public static void WriteFullName(ITypeSymbol type, StringBuilder output)
+    {
+        if (type.Kind == SymbolKind.TypeParameter)
+        {
+            output.Append(type.Name);
+            return;
+        }
+
+        WriteTypeFullName(type, output);
+    }
+
     public static string? GetNamespace(ITypeSymbol type)
     {
         if (type.ContainingType != null)

@@ -14,10 +14,13 @@
 // limitations under the License.
 // </copyright>
 
-namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
+namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.Extensions;
 
-public interface ICodeGeneratorCollection : IList<ICodeGenerator>
+internal sealed class MessageCodeGeneratorMetadata : IMetadataExtension
 {
-    TExtension? TryGetMetadata<TExtension>()
-        where TExtension : IMetadataExtension;
+    private readonly SortedSet<string> _cctors = new(StringComparer.Ordinal);
+
+    public void RequestPartialCctor(string methodName) => _cctors.Add(methodName);
+
+    public IReadOnlyCollection<string>? GetPartialCctors() => _cctors;
 }

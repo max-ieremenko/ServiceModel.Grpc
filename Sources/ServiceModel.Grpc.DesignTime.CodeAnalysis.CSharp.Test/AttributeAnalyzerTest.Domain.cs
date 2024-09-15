@@ -14,25 +14,23 @@
 // limitations under the License.
 // </copyright>
 
-namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
+namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp;
 
-internal sealed class CodeGeneratorCollection : List<ICodeGenerator>, ICodeGeneratorCollection
+public partial class AttributeAnalyzerTest
 {
-    private readonly List<IMetadataExtension> _metadataExtensions = new();
+    [DesignTimeExtension<SomeExtension>("foo", 1)]
+    public sealed class ExtensionHolder;
 
-    public void AddMetadata(IMetadataExtension metadata) => _metadataExtensions.Add(metadata);
+    [ExportGrpcService(typeof(object))]
+    public sealed class ExportHolder;
 
-    public TExtension? TryGetMetadata<TExtension>()
-        where TExtension : IMetadataExtension
+    [ImportGrpcService(typeof(object))]
+    public sealed class ImportHolder;
+
+    internal sealed class SomeExtension : IExtensionProvider
     {
-        for (var i = 0; i < _metadataExtensions.Count; i++)
+        public void ProvideExtensions(ExtensionProviderDeclaration declaration, IExtensionCollection extensions, IExtensionContext context)
         {
-            if (_metadataExtensions[i] is TExtension result)
-            {
-                return result;
-            }
         }
-
-        return default;
     }
 }

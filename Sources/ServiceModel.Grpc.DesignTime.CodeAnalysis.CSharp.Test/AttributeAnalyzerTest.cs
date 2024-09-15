@@ -16,16 +16,26 @@
 
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
-using ServiceModel.Grpc.DesignTime.CodeAnalysis.TestApi;
+using ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.Extensions;
+using ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.TestApi;
 
-namespace ServiceModel.Grpc.DesignTime.CodeAnalysis;
+namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp;
 
 [TestFixture]
 public partial class AttributeAnalyzerTest
 {
     private readonly CSharpCompilation _compilation = CSharpCompilationExtensions.CreateDefault();
 
-    private readonly TypeHandler _typeHandler = new(typeof(ImportGrpcServiceExtension), typeof(ExportGrpcServiceExtension), null!);
+    private TypeHandler _typeHandler = null!;
+
+    [OneTimeSetUp]
+    public void BeforeAllTests()
+    {
+        _typeHandler = new TypeHandler(null!);
+        _typeHandler.AddKnownAttribute(AttributeAnalyzer.TryImportGrpcService);
+        _typeHandler.AddKnownAttribute(AttributeAnalyzer.TryExportGrpcService);
+        _typeHandler.AddKnownAttribute(AttributeAnalyzer.TryExtension);
+    }
 
     [Test]
     public void ResolveCustomExtension()
@@ -37,7 +47,7 @@ public partial class AttributeAnalyzerTest
 
         var attribute = attributes[0];
 
-        AttributeAnalyzer.TryGetProviderType(_typeHandler, attribute, out var actual, out _).ShouldBeTrue();
+        _typeHandler.TryGetProviderType(attribute, out var actual, out _).ShouldBeTrue();
 
         actual.ShouldBe(_compilation.ResolveTypeSymbol(typeof(SomeExtension)));
     }
@@ -50,9 +60,9 @@ public partial class AttributeAnalyzerTest
         var attributes = placeHolder.GetAttributes();
         attributes.Length.ShouldBe(1);
 
-        AttributeAnalyzer.TryGetProviderType(_typeHandler, attributes[0], out _, out var actual).ShouldBeTrue();
+        _typeHandler.TryGetProviderType(attributes[0], out _, out var actual).ShouldBeTrue();
 
-        actual.ShouldBe(typeof(ExportGrpcServiceExtension));
+        actual.ShouldBe(typeof(ExportGrpcService));
     }
 
     [Test]
@@ -63,8 +73,8 @@ public partial class AttributeAnalyzerTest
         var attributes = placeHolder.GetAttributes();
         attributes.Length.ShouldBe(1);
 
-        AttributeAnalyzer.TryGetProviderType(_typeHandler, attributes[0], out _, out var actual).ShouldBeTrue();
+        _typeHandler.TryGetProviderType(attributes[0], out _, out var actual).ShouldBeTrue();
 
-        actual.ShouldBe(typeof(ImportGrpcServiceExtension));
+        actual.ShouldBe(typeof(ImportGrpcService));
     }
 }

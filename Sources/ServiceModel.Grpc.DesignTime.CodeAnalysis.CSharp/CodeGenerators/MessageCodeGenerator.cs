@@ -16,16 +16,19 @@
 
 using System.Globalization;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
+using ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.Extensions;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
 
 internal sealed class MessageCodeGenerator : ICodeGenerator
 {
     private readonly int _propertiesCount;
+    private readonly MessageCodeGeneratorMetadata? _metadata;
 
-    public MessageCodeGenerator(int propertiesCount)
+    public MessageCodeGenerator(int propertiesCount, MessageCodeGeneratorMetadata? metadata)
     {
         _propertiesCount = propertiesCount;
+        _metadata = metadata;
     }
 
     public string GetHintName() => Hints.Messages;
@@ -38,10 +41,12 @@ internal sealed class MessageCodeGenerator : ICodeGenerator
             .WriteDataContractAttribute()
             .Append("public sealed partial class ")
             .WriteGenericMessage(_propertiesCount)
+            .AppendLine()
             .AppendLine("{");
 
         using (output.Indent())
         {
+            BuildCctor(output);
             BuildCtorDefault(output);
             output.AppendLine();
 
@@ -50,6 +55,43 @@ internal sealed class MessageCodeGenerator : ICodeGenerator
         }
 
         output.AppendLine("}");
+    }
+
+    private void BuildCctor(ICodeStringBuilder output)
+    {
+        var methods = _metadata?.GetPartialCctors();
+        if (methods == null || methods.Count == 0)
+        {
+            return;
+        }
+
+        output
+            .AppendLine("static Message()")
+            .AppendLine("{");
+
+        using (output.Indent())
+        {
+            foreach (var method in methods)
+            {
+                output
+                    .Append(method)
+                    .AppendLine("();");
+            }
+        }
+
+        output
+            .AppendLine("}")
+            .AppendLine();
+
+        foreach (var method in methods)
+        {
+            output
+                .Append("static partial void ")
+                .Append(method)
+                .AppendLine("();");
+        }
+
+        output.AppendLine();
     }
 
     private void BuildCtorDefault(ICodeStringBuilder output)

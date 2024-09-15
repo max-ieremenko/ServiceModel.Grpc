@@ -19,8 +19,8 @@ using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis;
+using ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
-using ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.Extensions;
 
 namespace ServiceModel.Grpc.DesignTime.Generators.CSharp;
 
@@ -34,11 +34,17 @@ internal static class CSharpProvider
         in (ImmutableArray<SyntaxNode> Candidates, AnalyzerConfigOptions GlobalOptions, Compilation Compilation) source)
     {
         var delegatingLogger = logger == null ? null : new DelegatingDebugLogger(logger.Log, logger.LogSource);
+
+        var typeHandler = new TypeHandler(assemblyResolver.Resolve);
+        typeHandler.AddKnownAttribute(AttributeAnalyzer.TryImportGrpcService);
+        typeHandler.AddKnownAttribute(AttributeAnalyzer.TryExportGrpcService);
+        typeHandler.AddKnownAttribute(AttributeAnalyzer.TryExtension);
+
         var handler = new ExtensionsHandler(
             context,
             delegatingLogger,
             source.Compilation,
-            new TypeHandler(typeof(ImportGrpcService), typeof(ExportGrpcService), assemblyResolver.Resolve),
+            typeHandler,
             new CompilationUnit());
         handler.Execute(source.Candidates);
     }
