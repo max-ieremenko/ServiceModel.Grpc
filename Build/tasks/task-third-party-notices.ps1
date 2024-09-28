@@ -180,7 +180,8 @@ task ProtoBufMarshaller {
 
 task MessagePackMarshaller {
     $projects = @(
-        (Join-Path $Sources 'ServiceModel.Grpc.MessagePackMarshaller')
+        (Join-Path $Sources 'ServiceModel.Grpc.MessagePackMarshaller'),
+        (Join-Path $Sources 'ServiceModel.Grpc.MessagePackMarshaller.Test')
     )
     
     Write-ThirdPartyNotices `

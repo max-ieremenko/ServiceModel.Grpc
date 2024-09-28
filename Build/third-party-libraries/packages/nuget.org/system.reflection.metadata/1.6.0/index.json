@@ -70,6 +70,15 @@
       ]
     },
     {
+      "Name": "MessagePack",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ]
+    },
+    {
       "Name": "SelfHost",
       "InternalOnly": true,
       "TargetFrameworks": [

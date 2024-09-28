@@ -143,6 +143,25 @@
       ]
     },
     {
+      "Name": "MessagePack",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net6.0",
+        "net7.0",
+        "net8.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.CodeCoverage",
+          "Version": "17.10.0"
+        },
+        {
+          "Name": "Microsoft.TestPlatform.TestHost",
+          "Version": "17.10.0"
+        }
+      ]
+    },
+    {
       "Name": "SelfHost",
       "InternalOnly": true,
       "TargetFrameworks": [

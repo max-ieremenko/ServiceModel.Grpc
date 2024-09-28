@@ -22,10 +22,10 @@ namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
 
 internal static partial class CodeStringBuilderExtensions
 {
-    public static ICodeStringBuilder WriteMessage(this ICodeStringBuilder output, IMessageDescription message) =>
-        WriteMessageOrDefault(output, message);
+    public static ICodeStringBuilder WriteMessage(this ICodeStringBuilder output, IMessageDescription message, string? ending = null) =>
+        WriteMessageOrDefault(output, message, ending);
 
-    public static ICodeStringBuilder WriteMessageOrDefault(this ICodeStringBuilder output, IMessageDescription? message)
+    public static ICodeStringBuilder WriteMessageOrDefault(this ICodeStringBuilder output, IMessageDescription? message, string? ending = null)
     {
         if (message == null || message.IsBuiltIn)
         {
@@ -36,6 +36,7 @@ internal static partial class CodeStringBuilderExtensions
             output.Append(nameof(Message));
         }
 
+        output.Append(ending ?? string.Empty);
         if (message?.Properties.Length > 0)
         {
             output.Append("<");

@@ -38,6 +38,7 @@ internal static class CSharpProvider
         var typeHandler = new TypeHandler(assemblyResolver.Resolve);
         typeHandler.AddKnownAttribute(AttributeAnalyzer.TryImportGrpcService);
         typeHandler.AddKnownAttribute(AttributeAnalyzer.TryExportGrpcService);
+        typeHandler.AddKnownAttribute(AttributeAnalyzer.TryMessagePack);
         typeHandler.AddKnownAttribute(AttributeAnalyzer.TryExtension);
 
         var handler = new ExtensionsHandler(
