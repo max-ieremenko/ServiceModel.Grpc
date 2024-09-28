@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
+    <IsPublishable>False</IsPublishable>
+    <IsAotCompatible>True</IsAotCompatible>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MessagePack" />
+    <PackageReference Include="System.ServiceModel.Primitives" />
+    <PackageReference Include="MessagePack.MSBuild.Tasks" PrivateAssets="All" />
+  </ItemGroup>
+
+  <!--
+  Enable MessagePack code generation
+  https://github.com/MessagePack-CSharp/MessagePack-CSharp/blob/9b1ba2d644da92d4fd1731bc00f95d9a09ddf582/doc/msbuildtask.md
+  -->
+  <PropertyGroup>
+    <MessagePackGeneratedResolverNamespace>Contract</MessagePackGeneratedResolverNamespace>
+    <MessagePackGeneratedResolverName>SharedMessagePackResolver</MessagePackGeneratedResolverName>
+  </PropertyGroup>
+
+</Project>
