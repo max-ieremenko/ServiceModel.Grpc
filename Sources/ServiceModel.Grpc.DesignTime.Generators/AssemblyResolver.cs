@@ -14,6 +14,7 @@
 // limitations under the License.
 // </copyright>
 
+using System.Collections.Concurrent;
 using System.Reflection;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -22,8 +23,10 @@ namespace ServiceModel.Grpc.DesignTime.Generators;
 // workaround: custom dependencies of DesignTime.nupkg
 internal sealed class AssemblyResolver : IDisposable
 {
+    private static readonly object SyncRoot = new();
+    private static readonly ConcurrentDictionary<string, Assembly> LoadedByName = new(StringComparer.OrdinalIgnoreCase);
+
     private readonly DebugLogger? _logger;
-    private readonly Dictionary<string, Assembly> _loadedByName;
     private readonly string _dependenciesLocation;
     private readonly bool _canLockFile;
 
@@ -33,8 +36,6 @@ internal sealed class AssemblyResolver : IDisposable
         _dependenciesLocation = GetDependenciesLocation(globalOptions);
         _canLockFile = !IsLocalBuild(globalOptions);
 
-        _loadedByName = new Dictionary<string, Assembly>(StringComparer.OrdinalIgnoreCase);
-
         AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
     }
 
@@ -42,23 +43,32 @@ internal sealed class AssemblyResolver : IDisposable
 
     public Assembly Resolve(string assemblyName, string location)
     {
-        if (_loadedByName.TryGetValue(assemblyName, out var result))
+        if (LoadedByName.TryGetValue(assemblyName, out var result))
         {
             return result;
         }
 
-        try
+        lock (SyncRoot)
         {
-            result = Load(location);
-        }
-        catch (Exception ex)
-        {
-            _logger?.Log($"AssemblyResolver: fail to load assembly {assemblyName} from {location}: {ex}");
-            throw;
+            if (LoadedByName.TryGetValue(assemblyName, out result))
+            {
+                return result;
+            }
+
+            try
+            {
+                result = Load(location);
+            }
+            catch (Exception ex)
+            {
+                _logger?.Log($"AssemblyResolver: fail to load assembly {assemblyName} from {location}: {ex}");
+                throw;
+            }
+
+            _logger?.Log($"AssemblyResolver: assembly {assemblyName} loaded from {location}");
+            LoadedByName.TryAdd(assemblyName, result);
         }
 
-        _logger?.Log($"AssemblyResolver: assembly {assemblyName} loaded from {location}");
-        _loadedByName.Add(assemblyName, result);
         return result;
     }
 

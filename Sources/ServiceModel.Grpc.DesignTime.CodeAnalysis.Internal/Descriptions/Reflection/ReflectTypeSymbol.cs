@@ -67,7 +67,12 @@ internal sealed class ReflectTypeSymbol : IReflect<ITypeSymbol>
 
     public ITypeSymbol[] GenericTypeArguments(ITypeSymbol type)
     {
-        var args = ((INamedTypeSymbol)type).TypeArguments;
+        if (type is not INamedTypeSymbol typeSymbol || typeSymbol.TypeArguments.Length == 0)
+        {
+            return [];
+        }
+
+        var args = typeSymbol.TypeArguments;
         var result = new ITypeSymbol[args.Length];
         args.CopyTo(result);
         return result;
