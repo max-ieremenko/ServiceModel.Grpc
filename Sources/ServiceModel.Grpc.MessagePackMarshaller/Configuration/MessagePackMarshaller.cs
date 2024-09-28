@@ -14,16 +14,80 @@
 // limitations under the License.
 // </copyright>
 
-using Grpc.Core;
-using MessagePack;
+using System.ComponentModel;
+using MessagePack.Formatters;
+using ServiceModel.Grpc.Channel;
+using ServiceModel.Grpc.Configuration.Formatters;
 
 namespace ServiceModel.Grpc.Configuration;
 
-internal sealed class MessagePackMarshaller<T>
+/// <summary>
+/// This API supports ServiceModel.Grpc infrastructure and is not intended to be used directly from your code.
+/// This API may change or be removed in future releases.
+/// </summary>
+[Browsable(false)]
+[EditorBrowsable(EditorBrowsableState.Never)]
+[Experimental("ServiceModelGrpcInternalAPI")]
+public static class MessagePackMarshaller
 {
-    public static readonly Marshaller<T> Default = new Marshaller<T>(Serialize, Deserialize);
+    /// <summary>
+    /// Register the formatter for <see cref="Message{T1}"/>.
+    /// </summary>
+    /// <typeparam name="T1">T1 type.</typeparam>
+    public static void RegisterMessageFormatter<T1>()
+    {
+        if (!MessagePackFormatterCache<Message<T1>>.IsRegistered)
+        {
+            MessagePackFormatterCache<Message<T1>>.Formatter = new MessageMessagePackFormatter<T1>();
+        }
+    }
 
-    private static void Serialize(T value, SerializationContext context) => MessagePackMarshallerFactory.Serialize(value, context, MessagePackSerializer.DefaultOptions);
+    /// <summary>
+    /// Register the formatter for <see cref="Message{T1, T2}"/>.
+    /// </summary>
+    /// <typeparam name="T1">T1 type.</typeparam>
+    /// <typeparam name="T2">T2 type.</typeparam>
+    public static void RegisterMessageFormatter<T1, T2>()
+    {
+        if (!MessagePackFormatterCache<Message<T1, T2>>.IsRegistered)
+        {
+            MessagePackFormatterCache<Message<T1, T2>>.Formatter = new MessageMessagePackFormatter<T1, T2>();
+        }
+    }
 
-    private static T Deserialize(DeserializationContext context) => MessagePackMarshallerFactory.Deserialize<T>(context, MessagePackSerializer.DefaultOptions);
+    /// <summary>
+    /// Register the formatter for <see cref="Message{T1, T2, T3}"/>.
+    /// </summary>
+    /// <typeparam name="T1">T1 type.</typeparam>
+    /// <typeparam name="T2">T2 type.</typeparam>
+    /// <typeparam name="T3">T3 type.</typeparam>
+    public static void RegisterMessageFormatter<T1, T2, T3>()
+    {
+        if (!MessagePackFormatterCache<Message<T1, T2, T3>>.IsRegistered)
+        {
+            MessagePackFormatterCache<Message<T1, T2, T3>>.Formatter = new MessageMessagePackFormatter<T1, T2, T3>();
+        }
+    }
+
+    /// <summary>
+    /// Register the formatter for generated <see cref="Message"/>.
+    /// </summary>
+    /// <typeparam name="TMessage">Message type.</typeparam>
+    /// <typeparam name="TFormatter">Formatter type.</typeparam>
+    public static void RegisterFormatter<TMessage, TFormatter>()
+        where TFormatter : IMessagePackFormatter<TMessage>, new()
+    {
+        if (!MessagePackFormatterCache<TMessage>.IsRegistered)
+        {
+            MessagePackFormatterCache<TMessage>.Formatter = new TFormatter();
+        }
+    }
+
+    internal static void RegisterDefaults()
+    {
+        if (!MessagePackFormatterCache<Message>.IsRegistered)
+        {
+            MessagePackFormatterCache<Message>.Formatter = new MessageMessagePackFormatter();
+        }
+    }
 }

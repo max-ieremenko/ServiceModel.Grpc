@@ -17,6 +17,9 @@
 using Grpc.Core;
 using Grpc.Core.Utils;
 using MessagePack;
+using ServiceModel.Grpc.Configuration.Formatters;
+
+#pragma warning disable ServiceModelGrpcInternalAPI
 
 namespace ServiceModel.Grpc.Configuration;
 
@@ -25,11 +28,6 @@ namespace ServiceModel.Grpc.Configuration;
 /// </summary>
 public sealed class MessagePackMarshallerFactory : IMarshallerFactory
 {
-    /// <summary>
-    /// Default instance of <see cref="MessagePackMarshallerFactory"/> with <see cref="MessagePackSerializer"/>.DefaultOptions.
-    /// </summary>
-    public static readonly IMarshallerFactory Default = new MessagePackMarshallerFactory();
-
     /// <summary>
     /// Initializes a new instance of the <see cref="MessagePackMarshallerFactory"/> class with MessagePackSerializer default options.
     /// </summary>
@@ -44,8 +42,19 @@ public sealed class MessagePackMarshallerFactory : IMarshallerFactory
     /// <param name="options">The <see cref="MessagePackSerializerOptions"/>.</param>
     public MessagePackMarshallerFactory(MessagePackSerializerOptions options)
     {
-        Options = GrpcPreconditions.CheckNotNull(options, nameof(options));
+        GrpcPreconditions.CheckNotNull(options, nameof(options));
+
+        MessagePackMarshaller.RegisterDefaults();
+
+        // the MessageFormatterResolver must be first
+        var resolver = MessagePack.Resolvers.CompositeResolver.Create(MessageFormatterResolver.Instance, options.Resolver);
+        Options = options.WithResolver(resolver);
     }
+
+    /// <summary>
+    /// Gets the default instance of <see cref="MessagePackMarshallerFactory"/> with <see cref="MessagePackSerializer"/>.DefaultOptions.
+    /// </summary>
+    public static MessagePackMarshallerFactory Default => DefaultInstance.Value;
 
     /// <summary>
     /// Gets the <see cref="MessagePackSerializerOptions"/>.
@@ -57,28 +66,19 @@ public sealed class MessagePackMarshallerFactory : IMarshallerFactory
     /// </summary>
     /// <typeparam name="T">The message type.</typeparam>
     /// <returns>The instance of <see cref="Marshaller{T}"/> for serializing and deserializing messages.</returns>
-    public Marshaller<T> CreateMarshaller<T>()
-    {
-        if (ReferenceEquals(Options, MessagePackSerializer.DefaultOptions))
-        {
-            return MessagePackMarshaller<T>.Default;
-        }
+    public Marshaller<T> CreateMarshaller<T>() => new(Serialize, Deserialize<T>);
 
-        return new Marshaller<T>(Serialize, Deserialize<T>);
-    }
-
-    internal static void Serialize<T>(T value, SerializationContext context, MessagePackSerializerOptions options)
+    private void Serialize<T>(T value, SerializationContext context)
     {
-        MessagePackSerializer.Serialize(context.GetBufferWriter(), value, options);
+        MessagePackSerializer.Serialize(context.GetBufferWriter(), value, Options);
         context.Complete();
     }
 
-    internal static T Deserialize<T>(DeserializationContext context, MessagePackSerializerOptions options)
+    private T Deserialize<T>(DeserializationContext context) =>
+        MessagePackSerializer.Deserialize<T>(context.PayloadAsReadOnlySequence(), Options);
+
+    private static class DefaultInstance
     {
-        return MessagePackSerializer.Deserialize<T>(context.PayloadAsReadOnlySequence(), options);
+        public static readonly MessagePackMarshallerFactory Value = new();
     }
-
-    private void Serialize<T>(T value, SerializationContext context) => Serialize(value, context, Options);
-
-    private T Deserialize<T>(DeserializationContext context) => Deserialize<T>(context, Options);
 }

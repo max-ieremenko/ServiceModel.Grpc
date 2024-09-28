@@ -27,4 +27,8 @@
     <Content Include="..\..\LICENSE" PackagePath="" Visible="false" />
     <Content Include="..\..\build-out\MessagePackThirdPartyNotices.txt" PackagePath="ThirdPartyNotices.txt" Visible="false" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\ServiceModel.Grpc.Core\CodeAnalysis\ExperimentalAttribute.cs" Link="CodeAnalysis\ExperimentalAttribute.cs" />
+  </ItemGroup>
 </Project>
