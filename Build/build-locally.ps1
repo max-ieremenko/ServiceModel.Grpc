@@ -37,6 +37,7 @@ Set-StrictMode -Version Latest
 
 . (Join-Path $PSScriptRoot 'scripts' 'Get-ModuleVersion.ps1')
 . (Join-Path $PSScriptRoot 'scripts' 'Resolve-ModulePath.ps1')
+. (Join-Path $PSScriptRoot 'scripts' 'Build-LinuxSdkImage.ps1')
 
 if (-not $SkipBuild) {
     & (Join-Path $PSScriptRoot 'invoke-ci-build.ps1')
@@ -50,9 +51,9 @@ if (-not $SkipLinuxSdk) {
         $LinuxSdkFilter = ' '
     }
 
-    $image = 'mcr.microsoft.com/dotnet/sdk:8.0-jammy'
-    docker pull $image
+    $image = Build-LinuxSdkImage
 
+    #docker run -it --rm --entrypoint pwsh -v "C:\Users\Max\.nuget\packages:/root/.nuget/packages" -v "D:\work\ServiceModel.Grpc2:/repository" service-model-grpc/sdk:8.0-jammy
     docker run `
         -it `
         --rm `
