@@ -94,6 +94,11 @@ public partial class OperationDescriptionBuilderTest
         public Task<(string Value1, int Value2)> TaskValueTuple() => throw new NotSupportedException();
 
         [OperationContract]
+        [ResponseType(typeof(string[]))]
+        [ResponseHeaderNames([])]
+        public Task<string[]> TaskArrayString() => throw new NotSupportedException();
+
+        [OperationContract]
         [ResponseType(typeof(int))]
         [ResponseHeaderNames([])]
         public IAsyncEnumerable<int> AsyncEnumerableInt() => throw new NotSupportedException();
@@ -119,6 +124,12 @@ public partial class OperationDescriptionBuilderTest
         [HeaderResponseType([1], [typeof(int)], 0)]
         [ResponseHeaderNames(["Value"])]
         public ValueTask<(IAsyncEnumerable<string> Stream, int Value)> ValueTaskAsyncEnumerableWithHeader() => throw new NotSupportedException();
+
+        [OperationContract]
+        [ResponseType(typeof(string[]))]
+        [HeaderResponseType([1], [typeof(int[])], 0)]
+        [ResponseHeaderNames(["Values"])]
+        public ValueTask<(IAsyncEnumerable<string[]> Stream, int[] Values)> ValueTaskAsyncEnumerableWithArraysHeader() => throw new NotSupportedException();
     }
 
     [ServiceContract]
@@ -196,6 +207,10 @@ public partial class OperationDescriptionBuilderTest
         public void StringInt(string? value1, int? value2) => throw new NotSupportedException();
 
         [OperationContract]
+        [RequestType([0], [typeof(string[])])]
+        public void StringArray(string[] value) => throw new NotSupportedException();
+
+        [OperationContract]
         [RequestType([0], [typeof(int)])]
         public void AsyncEnumerableInt(IAsyncEnumerable<int> value) => throw new NotSupportedException();
 
@@ -203,6 +218,11 @@ public partial class OperationDescriptionBuilderTest
         [RequestType([2], [typeof(int)])]
         [HeaderRequestType([0, 1], [typeof(int), typeof(string)])]
         public void AsyncEnumerableInt(int value2, string value3, IAsyncEnumerable<int> value1) => throw new NotSupportedException();
+
+        [OperationContract]
+        [RequestType([1], [typeof(int[])])]
+        [HeaderRequestType([0], [typeof(int[])])]
+        public void AsyncEnumerableIntArray(int[] value2, IAsyncEnumerable<int[]> value1) => throw new NotSupportedException();
     }
 
     [AttributeUsage(AttributeTargets.Method)]
