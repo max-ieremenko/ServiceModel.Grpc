@@ -1,7 +1,7 @@
 Microsoft.CodeCoverage [17.10.0](https://www.nuget.org/packages/Microsoft.CodeCoverage/17.10.0)
 --------------------
 
-Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, SelfHost internal
+Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MessagePack internal, SelfHost internal
 
 Target frameworks: net462, net6.0, net7.0, net8.0
 
