@@ -1,63 +1,47 @@
 function Start-Server {
     param (
         [Parameter(Mandatory)]
+        [string]
+        $JobNamePrefix,
+
+        [Parameter(Mandatory)]
         [ValidateScript({ Test-Path $_ })]
         [string]
         $Path,
         
         [Parameter(Mandatory)]
         [int]
-        $WaitTcpPort
+        $WaitTcpPort,
+
+        [Parameter(Mandatory)]
+        [ValidateSet('exe', 'dll')]
+        [string]
+        $Type
     )
     
     $name = Split-Path $Path -Leaf
-    $output = Join-Path ([System.IO.Path]::GetTempPath()) "smgrpc-sdk-$name.txt"
-    if (Test-Path $output) {
-        Remove-Item $output -Force
-    }
+    $jobName = "$JobNamePrefix$([Guid]::NewGuid())"
 
-    $workingDirectory = Split-Path -Path $Path -Parent
-    if ($name.EndsWith('.exe', 'OrdinalIgnoreCase')) {
-        $process = Start-Process `
-            -FilePath $Path `
-            -PassThru `
-            -NoNewWindow `
-            -WorkingDirectory $workingDirectory `
-            -RedirectStandardOutput $output
+    if ($Type -eq 'exe') {
+        $job = Start-Job -Name $jobName -ScriptBlock { & $args } -ArgumentList $Path
     }
     else {
-        $process = Start-Process `
-            -FilePath dotnet `
-            -PassThru `
-            -NoNewWindow `
-            -WorkingDirectory $workingDirectory `
-            -ArgumentList $Path `
-            -RedirectStandardOutput $output
+        $job = Start-Job -Name $jobName -ScriptBlock { dotnet $args } -ArgumentList $Path
     }
 
     $timer = [System.Diagnostics.Stopwatch]::StartNew()
-    $logs = ''
     for ($i = 0; $i -lt 10; $i++) {
         Start-Sleep -Seconds 1
         $test = Test-Connection -TargetName localhost -TcpPort $WaitTcpPort
         if ($test) {
-            return $process
+            return
         }
 
-        $process.Refresh()
-        if ($process.HasExited) {
-            if (Test-Path $output) {
-                $logs = Get-Content -Path $output -Raw
-            }
-
-            throw "$Name exited unexpectedly with exit code $($process.ExitCode), $($timer.Elapsed). $logs"        
+        $job = Get-Job -Name $jobName
+        if ($job.State -ne 'Running') {
+            throw "$name exited unexpectedly, state is $($process.State)."
         }
     }
 
-    $process.Kill()
-    if (Test-Path $output) {
-        $logs = Get-Content -Path $output -Raw
-    }
-
-    throw "$Name port $WaitTcpPort is not available during $($timer.Elapsed). $logs"
+    throw "$name port $WaitTcpPort is not available during $($timer.Elapsed)."
 }
