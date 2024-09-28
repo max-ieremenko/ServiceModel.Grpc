@@ -61,13 +61,27 @@ foreach ($configuration in $configurations) {
             if ($case -isnot [hashtable]) {
                 throw "Case in a test item must be hashtable: $configuration"
             }
-
-            if ($case.App.EndsWith('.dll', 'OrdinalIgnoreCase') -or $case.App.EndsWith('.exe', 'OrdinalIgnoreCase')) {
-                $case.App = Join-Path $path $case.App
-            }
             
             if (-not $case.ContainsKey('Port')) {
                 $case.Port = 0
+            }
+
+            if (-not $case.ContainsKey('Type')) {
+                $case.Type = 'pwsh'
+                if ($case.App.EndsWith('.dll', 'OrdinalIgnoreCase')) {
+                    $case.Type = 'dll'
+                }
+                elseif ($case.App.EndsWith('.exe', 'OrdinalIgnoreCase')) {
+                    $case.Type = 'exe'
+                }
+            }
+
+            if ($case.Type -notin 'exe', 'dll', 'pwsh') {
+                throw "Type $($case.Mode) is not supported: $configuration"
+            }
+        
+            if ($case.Type -in 'exe', 'dll') {
+                $case.App = Join-Path $path $case.App
             }
         }
     }
