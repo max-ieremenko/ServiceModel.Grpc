@@ -24,16 +24,23 @@ public static class AttributeAnalyzer
     public const string ImportAttributeName = "ImportGrpcService";
     public const string ExportAttributeName = "ExportGrpcService";
     public const string ExtensionAttributeName = "DesignTimeExtension";
+    private const string MessagePackAttributeName = $"MessagePack{ExtensionAttributeName}";
 
     private const string ImportAttributeFullName = $"ServiceModel.Grpc.DesignTime.{ImportAttributeName}Attribute";
     private const string ExportAttributeFullName = $"ServiceModel.Grpc.DesignTime.{ExportAttributeName}Attribute";
     private const string ExtensionAttributeFullName = $"ServiceModel.Grpc.DesignTime.{ExtensionAttributeName}Attribute<";
+    private const string MessagePackAttributeFullName = $"ServiceModel.Grpc.DesignTime.{MessagePackAttributeName}Attribute";
 
     public static Type? TryImportGrpcService(AttributeData attribute) =>
         IsImportExportAttribute(attribute, ImportAttributeName, ImportAttributeFullName) ? typeof(ImportGrpcService) : null;
 
     public static Type? TryExportGrpcService(AttributeData attribute) =>
         IsImportExportAttribute(attribute, ExportAttributeName, ExportAttributeFullName) ? typeof(ExportGrpcService) : null;
+
+    public static Type? TryMessagePack(AttributeData attribute) =>
+        IsKnownAttribute(attribute, MessagePackAttributeName, MessagePackAttributeFullName) && attribute.ConstructorArguments.Length == 0
+            ? typeof(MessagePackMarshaller)
+            : null;
 
     public static ITypeSymbol? TryExtension(AttributeData attribute)
     {
