@@ -29,10 +29,14 @@ public static class Program
 
     private static async Task DemoHttp11(string address)
     {
-        var httpHandler = new GrpcWebHandler(GrpcWebMode.GrpcWebText, new HttpClientHandler());
-        httpHandler.HttpVersion = System.Net.HttpVersion.Version11;
+        var channelOptions = new GrpcChannelOptions
+        {
+            DisposeHttpClient = true,
+            HttpVersion = System.Net.HttpVersion.Version11,
+            HttpHandler = new GrpcWebHandler(GrpcWebMode.GrpcWebText, new HttpClientHandler())
+        };
 
-        using var channel = GrpcChannel.ForAddress(address, new GrpcChannelOptions { HttpHandler = httpHandler });
+        using var channel = GrpcChannel.ForAddress(address, channelOptions);
 
         var client = new ClientFactory().CreateClient<IWeatherForecastService>(channel);
 

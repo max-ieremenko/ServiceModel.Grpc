@@ -7,10 +7,10 @@ namespace Benchmarks;
 public static class Program
 {
 #if RELEASE
-        public static void Main(string[] args)
-        {
-            BenchmarkDotNet.Running.BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
-        }
+    public static void Main(string[] args)
+    {
+        BenchmarkDotNet.Running.BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
+    }
 #else
     public static async Task Main()
     {

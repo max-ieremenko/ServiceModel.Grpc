@@ -6,6 +6,27 @@
   },
   "UsedBy": [
     {
+      "Name": "ClientDI",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net6.0",
+        "net7.0",
+        "net8.0",
+        "netstandard2.0",
+        "netstandard2.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Grpc.Net.Common",
+          "Version": "2.66.0"
+        },
+        {
+          "Name": "Microsoft.Extensions.Logging.Abstractions",
+          "Version": "6.0.0"
+        }
+      ]
+    },
+    {
       "Name": "Core",
       "InternalOnly": true,
       "TargetFrameworks": [
@@ -16,27 +37,12 @@
       ],
       "Dependencies": [
         {
-          "Name": "Grpc.Core.Api",
-          "Version": "2.66.0"
-        }
-      ]
-    },
-    {
-      "Name": "SelfHost",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "net462",
-        "netstandard2.0",
-        "netstandard2.1"
-      ],
-      "Dependencies": [
-        {
-          "Name": "Grpc.Core.Api",
+          "Name": "Grpc.Net.Common",
           "Version": "2.66.0"
         },
         {
-          "Name": "System.Memory",
-          "Version": "4.5.3"
+          "Name": "Microsoft.Extensions.Logging.Abstractions",
+          "Version": "6.0.0"
         }
       ]
     }
@@ -50,12 +56,12 @@
     {
       "Subject": "repository",
       "Code": "Apache-2.0",
-      "HRef": "https://github.com/grpc/grpc.git"
+      "HRef": "https://github.com/grpc/grpc-dotnet.git"
     },
     {
       "Subject": "project",
       "Code": "Apache-2.0",
-      "HRef": "https://github.com/grpc/grpc"
+      "HRef": "https://github.com/grpc/grpc-dotnet"
     }
   ]
 }
