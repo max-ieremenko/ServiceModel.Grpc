@@ -37,10 +37,8 @@ public readonly struct ClientCallsFactory
             var options = new GrpcChannelOptions
             {
                 DisposeHttpClient = true,
+                HttpVersion = System.Net.HttpVersion.Version11,
                 HttpHandler = new GrpcWebHandler(mode, new HttpClientHandler())
-                {
-                    HttpVersion = System.Net.HttpVersion.Version11
-                }
             };
 
             return GrpcChannel.ForAddress(Hosts.ServerAspNetHostHttp1, options);
