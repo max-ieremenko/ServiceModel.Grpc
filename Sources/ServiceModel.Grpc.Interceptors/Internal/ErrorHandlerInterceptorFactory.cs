@@ -41,6 +41,7 @@ internal static class ErrorHandlerInterceptorFactory
         return new ServerNativeInterceptor(interceptor);
     }
 
+    [return: DynamicallyAccessedMembers(CodeAnalysisConstants.InterceptorAccessibility)]
     public static Type GetServerHandlerType() => typeof(ServerNativeInterceptor);
 
     public static object CreateServerHandlerArgs(

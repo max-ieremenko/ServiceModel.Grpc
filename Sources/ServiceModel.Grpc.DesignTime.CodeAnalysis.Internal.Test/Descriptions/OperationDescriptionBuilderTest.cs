@@ -31,9 +31,9 @@ public partial class OperationDescriptionBuilderTest
     [TestCaseSource(nameof(GetResponseTypeCases))]
     public void ResponseType(
         IMethodSymbol method,
-        INamedTypeSymbol? valueType,
+        ITypeSymbol? valueType,
         int[]? headerIndexes,
-        INamedTypeSymbol[]? headerValueType,
+        ITypeSymbol[]? headerValueType,
         int? streamIndex)
     {
         var actual = Build(method, "s1", "o1");
@@ -45,11 +45,11 @@ public partial class OperationDescriptionBuilderTest
         else
         {
             actual.ResponseType.Properties.Length.ShouldBe(1);
-            var actualValueType = actual.ResponseType.Properties[0].ShouldBeAssignableTo<INamedTypeSymbol>().ShouldNotBeNull();
+            var actualValueType = actual.ResponseType.Properties[0].ShouldBeAssignableTo<ITypeSymbol>().ShouldNotBeNull();
             if (valueType.IsTupleType)
             {
                 actualValueType.IsTupleType.ShouldBeTrue();
-                actualValueType.TupleUnderlyingType.ShouldBe(valueType, SymbolEqualityComparer.Default);
+                ((INamedTypeSymbol)actualValueType).TupleUnderlyingType.ShouldBe(valueType, SymbolEqualityComparer.Default);
             }
             else
             {
@@ -93,9 +93,9 @@ public partial class OperationDescriptionBuilderTest
     public void RequestType(
         IMethodSymbol method,
         int[] requestIndexes,
-        INamedTypeSymbol[] requestValueType,
+        ITypeSymbol[] requestValueType,
         int[] headerIndexes,
-        INamedTypeSymbol[]? headerValueType)
+        ITypeSymbol[]? headerValueType)
     {
         var actual = Build(method, "s1", "o1");
 
@@ -165,7 +165,7 @@ public partial class OperationDescriptionBuilderTest
                 method,
                 response.ConstructorArguments[0].Value,
                 responseHeader?.ConstructorArguments[0].Values.Select(i => (int)i.Value!).ToArray(),
-                responseHeader?.ConstructorArguments[1].Values.Select(i => (INamedTypeSymbol)i.Value!).ToArray(),
+                responseHeader?.ConstructorArguments[1].Values.Select(i => (ITypeSymbol)i.Value!).ToArray(),
                 responseHeader?.ConstructorArguments[2].Value)
             {
                 TestName = "ResponseType." + method.Name
@@ -201,9 +201,9 @@ public partial class OperationDescriptionBuilderTest
             yield return new TestCaseData(
                 method,
                 request.ConstructorArguments[0].Values.Select(i => (int)i.Value!).ToArray(),
-                request.ConstructorArguments[1].Values.Select(i => (INamedTypeSymbol)i.Value!).ToArray(),
+                request.ConstructorArguments[1].Values.Select(i => (ITypeSymbol)i.Value!).ToArray(),
                 headerRequest?.ConstructorArguments[0].Values.Select(i => (int)i.Value!).ToArray(),
-                headerRequest?.ConstructorArguments[1].Values.Select(i => (INamedTypeSymbol)i.Value!).ToArray())
+                headerRequest?.ConstructorArguments[1].Values.Select(i => (ITypeSymbol)i.Value!).ToArray())
             {
                 TestName = "RequestType." + method.Name
             };

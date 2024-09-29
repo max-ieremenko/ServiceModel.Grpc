@@ -16,4 +16,23 @@
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
 
-internal sealed class CodeGeneratorCollection : List<ICodeGenerator>, ICodeGeneratorCollection;
+internal sealed class CodeGeneratorCollection : List<ICodeGenerator>, ICodeGeneratorCollection
+{
+    private readonly List<IMetadataExtension> _metadataExtensions = new();
+
+    public void AddMetadata(IMetadataExtension metadata) => _metadataExtensions.Add(metadata);
+
+    public TExtension? TryGetMetadata<TExtension>()
+        where TExtension : IMetadataExtension
+    {
+        for (var i = 0; i < _metadataExtensions.Count; i++)
+        {
+            if (_metadataExtensions[i] is TExtension result)
+            {
+                return result;
+            }
+        }
+
+        return default;
+    }
+}

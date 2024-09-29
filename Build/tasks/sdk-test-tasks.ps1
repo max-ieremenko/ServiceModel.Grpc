@@ -75,18 +75,9 @@ task BuildSequential {
 }
 
 task Run {
-    $builds = @()
     foreach ($example in $Examples) {
-
         foreach ($test in $example.Tests) {
-            $builds += @{ 
-                File = 'task-run-sdk-test.ps1'
-                Name = $test[0].App
-                Apps = $test
-            }   
+            Invoke-Build -File 'task-run-sdk-test.ps1' -Name $test[0].App -Apps $test
         }
     }
-
-    # only one app at a time: ports conflict
-    Build-Parallel $builds -ShowParameter Name -MaximumBuilds 1
 }

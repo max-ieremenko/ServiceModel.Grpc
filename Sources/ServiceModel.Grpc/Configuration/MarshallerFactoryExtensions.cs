@@ -21,6 +21,8 @@ namespace ServiceModel.Grpc.Configuration;
 internal static class MarshallerFactoryExtensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [UnconditionalSuppressMessage("Trimming", "IL2026:DataContractMarshallerFactory")]
+    [UnconditionalSuppressMessage("AOT", "IL3050:DataContractMarshallerFactory")]
     public static IMarshallerFactory ThisOrDefault(this IMarshallerFactory? factory)
     {
         return factory ?? DataContractMarshallerFactory.Default;

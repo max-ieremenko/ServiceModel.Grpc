@@ -18,6 +18,7 @@ using Grpc.Core.Utils;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using ServiceModel.Grpc.AspNetCore;
 using ServiceModel.Grpc.Internal;
 
 //// ReSharper disable CheckNamespace
@@ -36,7 +37,9 @@ public static class ServiceModelGrpcEndpointRouteBuilderExtensions
     /// <typeparam name="TEndpointBinder">The <see cref="IServiceEndpointBinder{TService}"/> to build endpoint.</typeparam>
     /// <param name="builder">The <see cref="IEndpointRouteBuilder"/> to add the route to.</param>
     /// <returns>A <see cref="GrpcServiceEndpointConventionBuilder"/> for endpoints associated with the service.</returns>
-    public static GrpcServiceEndpointConventionBuilder MapGrpcService<TService, TEndpointBinder>(this IEndpointRouteBuilder builder)
+    public static GrpcServiceEndpointConventionBuilder MapGrpcService<
+        [DynamicallyAccessedMembers(CodeAnalysisConstants.ServiceAccessibility)] TService,
+        [DynamicallyAccessedMembers(CodeAnalysisConstants.ServiceAccessibility)] TEndpointBinder>(this IEndpointRouteBuilder builder)
         where TService : class
         where TEndpointBinder : IServiceEndpointBinder<TService>, new()
     {

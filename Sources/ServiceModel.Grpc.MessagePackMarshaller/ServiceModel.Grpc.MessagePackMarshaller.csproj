@@ -6,6 +6,8 @@
     <AssemblyTitle>ServiceModel.Grpc.MessagePackMarshaller</AssemblyTitle>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <IsPackable>true</IsPackable>
+    <IsTrimmable>true</IsTrimmable>
+    <EnableAOTAnalyzer>true</EnableAOTAnalyzer>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
@@ -26,4 +28,7 @@
     <Content Include="..\..\build-out\MessagePackThirdPartyNotices.txt" PackagePath="ThirdPartyNotices.txt" Visible="false" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\ServiceModel.Grpc.Core\CodeAnalysis\ExperimentalAttribute.cs" Link="CodeAnalysis\ExperimentalAttribute.cs" />
+  </ItemGroup>
 </Project>

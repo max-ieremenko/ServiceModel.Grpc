@@ -22,6 +22,8 @@ namespace ServiceModel.Grpc.Configuration;
 /// <summary>
 /// Provides the method to create the <see cref="Marshaller{T}"/> for serializing and deserializing messages by <see cref="DataContractSerializer"/>.
 /// </summary>
+[RequiresDynamicCode("The System.Runtime.Serialization.DataContractSerializer might require types that cannot be statically analyzed.")]
+[RequiresUnreferencedCode("The System.Runtime.Serialization.DataContractSerializer might require types that cannot be statically analyzed.")]
 public sealed class DataContractMarshallerFactory : IMarshallerFactory
 {
     /// <summary>
@@ -34,5 +36,13 @@ public sealed class DataContractMarshallerFactory : IMarshallerFactory
     /// </summary>
     /// <typeparam name="T">The message type.</typeparam>
     /// <returns>The instance of <see cref="Marshaller{T}"/> for serializing and deserializing messages.</returns>
-    public Marshaller<T> CreateMarshaller<T>() => DataContractMarshaller<T>.Default;
+    public Marshaller<T> CreateMarshaller<T>()
+    {
+        if (Features.IsDataContractMarshallerDisabled)
+        {
+            throw new NotSupportedException("DataContractMarshallerFactory serialization and deserialization are disabled within this application.");
+        }
+
+        return DataContractMarshaller<T>.Default;
+    }
 }

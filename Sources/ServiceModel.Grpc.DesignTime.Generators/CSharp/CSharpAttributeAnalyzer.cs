@@ -17,15 +17,12 @@
 using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp;
 
 namespace ServiceModel.Grpc.DesignTime.Generators.CSharp;
 
 internal static class CSharpAttributeAnalyzer
 {
-    private const string ImportAttributeName = "ImportGrpcService";
-    private const string ExportAttributeName = "ExportGrpcService";
-    private const string ExtensionAttributeName = "DesignTimeExtension";
-
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static bool DoesLookLikeExpandable(SyntaxNode syntaxNode)
     {
@@ -41,9 +38,9 @@ internal static class CSharpAttributeAnalyzer
             for (var j = 0; j < attributes.Count; j++)
             {
                 var name = attributes[j].Name.ToString();
-                if (name.IndexOf(ImportAttributeName, StringComparison.Ordinal) >= 0
-                    || name.IndexOf(ExportAttributeName, StringComparison.Ordinal) >= 0
-                    || name.IndexOf(ExtensionAttributeName, StringComparison.Ordinal) >= 0)
+                if (name.IndexOf(AttributeAnalyzer.ImportAttributeName, StringComparison.Ordinal) >= 0
+                    || name.IndexOf(AttributeAnalyzer.ExportAttributeName, StringComparison.Ordinal) >= 0
+                    || name.IndexOf(AttributeAnalyzer.ExtensionAttributeName, StringComparison.Ordinal) >= 0)
                 {
                     return true;
                 }

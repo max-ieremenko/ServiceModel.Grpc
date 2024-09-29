@@ -18,7 +18,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.Extensions;
 
-public sealed class ExportGrpcService : IExtensionProvider
+internal sealed class ExportGrpcService : IExtensionProvider
 {
     private const string PropertyGenerateAspNetExtensions = "GenerateAspNetExtensions";
     private const string PropertyGenerateSelfHostExtensions = "GenerateSelfHostExtensions";

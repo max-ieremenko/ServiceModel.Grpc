@@ -25,6 +25,17 @@ internal static class HostRegistration
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void BindWithEmit<TService>(IServiceMethodBinder<TService> methodBinder, Type? serviceInstanceType, ILogger? logger)
     {
+#if NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
+        if (!RuntimeFeature.IsDynamicCodeSupported)
+        {
+            throw new PlatformNotSupportedException("Dynamic code generation is not supported on this platform.");
+        }
+#endif
+        if (Features.IsReflectionEmitDisabled)
+        {
+            throw new NotSupportedException("ServiceModel.Grpc.Emit is disabled within this application.");
+        }
+
         var endpointBinder = EmitGenerator.GenerateServiceEndpointBinder<TService>(serviceInstanceType, logger);
         endpointBinder.Bind(methodBinder);
     }

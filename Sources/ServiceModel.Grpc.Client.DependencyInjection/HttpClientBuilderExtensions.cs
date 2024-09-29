@@ -33,7 +33,8 @@ public static class HttpClientBuilderExtensions
     /// <param name="builder">The <see cref="IHttpClientBuilder"/>, provided by Grpc.Net.ClientFactory.AddGrpcClient.</param>
     /// <param name="configure">A delegate that is used to configure the gRPC client options.</param>
     /// <returns>The <see cref="IHttpClientBuilder"/>.</returns>
-    public static IHttpClientBuilder ConfigureServiceModelGrpcClientCreator<TContract>(
+    [RequiresDynamicCode("Generating a proxy for 'TContract' at runtime requires dynamic code.")]
+    public static IHttpClientBuilder ConfigureServiceModelGrpcClientCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TContract>(
         this IHttpClientBuilder builder,
         Action<ServiceModelGrpcClientOptions, IServiceProvider>? configure = null)
         where TContract : class

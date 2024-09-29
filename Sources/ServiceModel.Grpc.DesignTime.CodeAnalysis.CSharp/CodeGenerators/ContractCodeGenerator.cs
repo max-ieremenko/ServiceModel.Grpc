@@ -22,6 +22,7 @@ using Microsoft.CodeAnalysis;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Descriptions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
+using ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.Extensions;
 using ServiceModel.Grpc.DesignTime.CodeAnalysis.Descriptions;
 using ServiceModel.Grpc.Internal;
 
@@ -30,10 +31,12 @@ namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.CodeGenerators;
 internal sealed class ContractCodeGenerator : ICodeGenerator
 {
     private readonly IContractDescription _contract;
+    private readonly ContractCodeGeneratorMetadata? _metadata;
 
-    public ContractCodeGenerator(IContractDescription contract)
+    public ContractCodeGenerator(IContractDescription contract, ContractCodeGeneratorMetadata? metadata)
     {
         _contract = contract;
+        _metadata = metadata;
     }
 
     public string GetHintName() => Hints.Contracts(_contract.BaseClassName);
@@ -42,12 +45,13 @@ internal sealed class ContractCodeGenerator : ICodeGenerator
     {
         output
             .WriteMetadata()
-            .Append("internal sealed class ")
+            .Append("internal sealed partial class ")
             .AppendLine(NamingContract.Contract.Class(_contract.BaseClassName))
             .AppendLine("{");
 
         using (output.Indent())
         {
+            BuildCctor(output);
             BuildCtor(output);
             output.AppendLine();
 
@@ -108,6 +112,45 @@ internal sealed class ContractCodeGenerator : ICodeGenerator
             .Append(".CreateStreamAccessor<")
             .WriteType(itemType)
             .Append(">()");
+    }
+
+    private void BuildCctor(ICodeStringBuilder output)
+    {
+        var methods = _metadata?.GetPartialCctors(_contract);
+        if (methods == null || methods.Count == 0)
+        {
+            return;
+        }
+
+        output
+            .Append("static ")
+            .Append(NamingContract.Contract.Class(_contract.BaseClassName))
+            .AppendLine("()")
+            .AppendLine("{");
+
+        using (output.Indent())
+        {
+            foreach (var method in methods)
+            {
+                output
+                    .Append(method)
+                    .AppendLine("();");
+            }
+        }
+
+        output
+            .AppendLine("}")
+            .AppendLine();
+
+        foreach (var method in methods)
+        {
+            output
+                .Append("static partial void ")
+                .Append(method)
+                .AppendLine("();");
+        }
+
+        output.AppendLine();
     }
 
     private void BuildCtor(ICodeStringBuilder output)

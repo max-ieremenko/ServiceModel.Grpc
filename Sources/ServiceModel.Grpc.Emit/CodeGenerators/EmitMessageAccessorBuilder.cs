@@ -41,8 +41,7 @@ internal static class EmitMessageAccessorBuilder
         Type? result;
         lock (ProxyAssembly.SyncRoot)
         {
-            result = ProxyAssembly.DefaultModule.GetType(typeName, false, false);
-            if (result == null)
+            if (!ProxyAssembly.DefaultModule.TryGetType(typeName, out result))
             {
                 result = Build(ProxyAssembly.DefaultModule, messageGenericType, typeName);
             }
@@ -62,7 +61,7 @@ internal static class EmitMessageAccessorBuilder
         var genericArgs = typeBuilder
             .DefineGenericParameters(messageGenericType.GetTypeInfo().GenericTypeParameters.Select(i => i.Name).ToArray());
 
-        var messageType = messageGenericType.MakeGenericType(genericArgs);
+        var messageType = messageGenericType.MakeConstructedGeneric(genericArgs);
 
         // private string[] _names;
         var fieldNames = typeBuilder.DefineField("_names", typeof(string[]), FieldAttributes.Private | FieldAttributes.InitOnly);
@@ -198,7 +197,7 @@ internal static class EmitMessageAccessorBuilder
         {
             body.MarkLabel(switchLabels[i]);
             var property = messageGenericType.InstanceProperty("Value" + (i + 1).ToString(CultureInfo.InvariantCulture));
-            body.Emit(OpCodes.Callvirt, TypeBuilder.GetMethod(messageType, property.GetMethod));
+            body.Emit(OpCodes.Callvirt, TypeBuilder.GetMethod(messageType, property.SafeGetGetMethod()));
             body.Emit(OpCodes.Box, args[i]);
             body.Emit(OpCodes.Ret);
         }
@@ -297,7 +296,7 @@ internal static class EmitMessageAccessorBuilder
             body.Emit(OpCodes.Unbox_Any, args[i]);
 
             var property = messageGenericType.InstanceProperty("Value" + (i + 1).ToString(CultureInfo.InvariantCulture));
-            body.Emit(OpCodes.Callvirt, TypeBuilder.GetMethod(messageType, property.SetMethod));
+            body.Emit(OpCodes.Callvirt, TypeBuilder.GetMethod(messageType, property.SafeGetSetMethod()));
             body.Emit(OpCodes.Ret);
         }
 
@@ -319,7 +318,7 @@ internal static class EmitMessageAccessorBuilder
             fieldNames.FieldType,
             Type.EmptyTypes);
 
-        typeBuilder.DefineMethodOverride(getter, typeof(IMessageAccessor).InstanceProperty(property.Name).GetMethod);
+        typeBuilder.DefineMethodOverride(getter, typeof(IMessageAccessor).InstanceProperty(property.Name).SafeGetGetMethod());
 
         property.SetGetMethod(getter);
 

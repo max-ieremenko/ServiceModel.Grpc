@@ -26,7 +26,7 @@ using ServiceModel.Grpc.Internal;
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.Binding;
 
-internal sealed class ServiceModelServiceMethodProvider<TService> : IServiceMethodProvider<TService>
+internal sealed class ServiceModelServiceMethodProvider<[DynamicallyAccessedMembers(CodeAnalysisConstants.ServiceAccessibility)] TService> : IServiceMethodProvider<TService>
     where TService : class
 {
     private readonly ServiceModelGrpcServiceOptions _rootConfiguration;
@@ -93,6 +93,7 @@ internal sealed class ServiceModelServiceMethodProvider<TService> : IServiceMeth
         }
     }
 
+    [UnconditionalSuppressMessage("Trimming", "IL2072:PublicParameterlessConstructor", Justification = "see MapGrpcService<>")]
     private void Bind(IServiceMethodBinder<TService> methodBinder)
     {
         if (_serviceConfiguration.EndpointBinderType == null)

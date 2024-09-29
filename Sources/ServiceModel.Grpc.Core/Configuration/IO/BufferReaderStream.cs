@@ -58,7 +58,7 @@ internal sealed class BufferReaderStream : Stream
 
     public override void WriteByte(byte value) => throw new NotSupportedException();
 
-    public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state) => throw new NotSupportedException();
+    public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state) => throw new NotSupportedException();
 
     public override void EndWrite(IAsyncResult asyncResult) => throw new NotSupportedException();
 

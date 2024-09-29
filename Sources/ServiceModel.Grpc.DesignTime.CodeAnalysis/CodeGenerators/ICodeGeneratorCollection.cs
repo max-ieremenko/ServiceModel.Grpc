@@ -16,4 +16,8 @@
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CodeGenerators;
 
-public interface ICodeGeneratorCollection : IList<ICodeGenerator>;
+public interface ICodeGeneratorCollection : IList<ICodeGenerator>
+{
+    TExtension? TryGetMetadata<TExtension>()
+        where TExtension : IMetadataExtension;
+}

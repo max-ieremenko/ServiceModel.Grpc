@@ -15,23 +15,52 @@
 // </copyright>
 
 using System.Reflection;
+using Microsoft.CodeAnalysis;
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis;
 
 public sealed class TypeHandler
 {
     private readonly Func<string, string, Assembly> _assemblyResolver;
+    private readonly List<Func<AttributeData, Type?>> _knownTypes;
+    private readonly List<Func<AttributeData, ITypeSymbol?>> _knownSymbols;
 
-    public TypeHandler(Type importGrpcService, Type exportGrpcService, Func<string, string, Assembly> assemblyResolver)
+    public TypeHandler(Func<string, string, Assembly> assemblyResolver)
     {
         _assemblyResolver = assemblyResolver;
-        ImportGrpcService = importGrpcService;
-        ExportGrpcService = exportGrpcService;
+        _knownTypes = new List<Func<AttributeData, Type?>>(4);
+        _knownSymbols = new List<Func<AttributeData, ITypeSymbol?>>(1);
     }
 
-    public Type ImportGrpcService { get; }
+    public void AddKnownAttribute(Func<AttributeData, Type?> analyzer) => _knownTypes.Add(analyzer);
 
-    public Type ExportGrpcService { get; }
+    public void AddKnownAttribute(Func<AttributeData, ITypeSymbol?> analyzer) => _knownSymbols.Add(analyzer);
+
+    public bool TryGetProviderType(AttributeData attribute, out ITypeSymbol? typeSymbol, out Type? type)
+    {
+        typeSymbol = null;
+        type = null;
+
+        for (var i = 0; i < _knownTypes.Count; i++)
+        {
+            type = _knownTypes[i](attribute);
+            if (type != null)
+            {
+                return true;
+            }
+        }
+
+        for (var i = 0; i < _knownSymbols.Count; i++)
+        {
+            typeSymbol = _knownSymbols[i](attribute);
+            if (typeSymbol != null)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     public Assembly GetAssembly(string assemblyName, string location) => _assemblyResolver(assemblyName, location);
 }

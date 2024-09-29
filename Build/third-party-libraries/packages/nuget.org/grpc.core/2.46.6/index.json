@@ -17,7 +17,7 @@
       "Dependencies": [
         {
           "Name": "Grpc.Core.Api",
-          "Version": "2.64.0"
+          "Version": "2.66.0"
         }
       ]
     },
@@ -32,7 +32,7 @@
       "Dependencies": [
         {
           "Name": "Grpc.Core.Api",
-          "Version": "2.64.0"
+          "Version": "2.66.0"
         },
         {
           "Name": "System.Memory",

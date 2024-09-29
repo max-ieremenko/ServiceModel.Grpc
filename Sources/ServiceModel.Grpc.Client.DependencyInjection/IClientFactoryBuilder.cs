@@ -45,7 +45,8 @@ public interface IClientFactoryBuilder
     /// <param name="configure">A delegate that is used to configure a client.</param>
     /// <param name="channel">An instance that can provide <see cref="CallInvoker"/> instance for gRPC client calls, see also <see cref="ChannelProviderFactory"/>.</param>
     /// <returns>Self.</returns>
-    IClientFactoryBuilder AddClient<TContract>(
+    [RequiresDynamicCode("Generating a proxy for 'TContract' at runtime requires dynamic code.")]
+    IClientFactoryBuilder AddClient<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TContract>(
         Action<ServiceModelGrpcClientOptions, IServiceProvider>? configure = null,
         IChannelProvider? channel = null)
         where TContract : class;

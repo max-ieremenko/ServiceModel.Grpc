@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <PublishAot>true</PublishAot>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ServiceModel.Grpc.Client.DependencyInjection" />
+    <PackageReference Include="ServiceModel.Grpc.DesignTime" />
+    <PackageReference Include="ServiceModel.Grpc.MessagePackMarshaller" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Contract\Contract.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Trimming hint: DataContractMarshallerFactory can be removed -->
+    <RuntimeHostConfigurationOption Include="ServiceModel.Grpc.DisableDataContractMarshallerFactory" Value="true" Trim="true" />
+  </ItemGroup>
+
+</Project>

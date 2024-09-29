@@ -93,23 +93,41 @@ internal sealed class ServerCallErrorInterceptor : IServerCallInterceptor
 
     private void AddDetail(Metadata metadata, object detail)
     {
+        var detailType = detail.GetType();
         byte[] detailPayload;
         try
         {
-            detailPayload = _detailSerializer?.SerializeDetail(_marshallerFactory, detail) ?? DefaultServerFaultDetailSerializer.Serialize(_marshallerFactory, detail);
+            detailPayload = _detailSerializer == null
+                ? DefaultServerFaultDetailSerializer.Serialize(_marshallerFactory, detail)
+                : _detailSerializer.SerializeDetail(_marshallerFactory, detail);
         }
         catch (Exception ex)
         {
             _logger?.LogError(
                 "Error occurred while trying to serialize the instance of {0} with {1}:{2}{3}",
-                detail.GetType(),
+                detailType,
                 _marshallerFactory.GetType(),
                 Environment.NewLine,
                 ex);
             throw;
         }
 
-        var typePayload = _detailSerializer?.SerializeDetailType(detail.GetType()) ?? DefaultServerFaultDetailSerializer.SerializeType(detail.GetType());
+        string typePayload;
+        try
+        {
+            typePayload = _detailSerializer == null
+                ? DefaultServerFaultDetailSerializer.SerializeType(detailType)
+                : _detailSerializer.SerializeDetailType(detailType);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(
+                "Error occurred while trying to serialize the type name of {0}:{1}{2}",
+                detailType,
+                Environment.NewLine,
+                ex);
+            throw;
+        }
 
         metadata.Add(Headers.HeaderNameErrorDetail, detailPayload);
         metadata.Add(Headers.HeaderNameErrorDetailType, typePayload);

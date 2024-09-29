@@ -55,19 +55,20 @@ public static class ServiceCollectionExtensions
         var tokenProvider = serviceProvider.GetRequiredService<IJwtTokenProvider>();
 
         HttpMessageHandler httpHandler = new HttpMessageHandlerWithAuthorization(tokenProvider);
+        var httpVersion = HttpVersion.Version20;
         if (useGrpcWeb)
         {
-            httpHandler = new GrpcWebHandler(GrpcWebMode.GrpcWebText, httpHandler)
-            {
-                HttpVersion = HttpVersion.Version11
-            };
+            httpVersion = HttpVersion.Version11;
+            httpHandler = new GrpcWebHandler(GrpcWebMode.GrpcWebText, httpHandler);
         }
 
-        var options = new GrpcChannelOptions
+        var channelOptions = new GrpcChannelOptions
         {
-            HttpHandler = httpHandler
+            DisposeHttpClient = true,
+            HttpHandler = httpHandler,
+            HttpVersion = httpVersion
         };
 
-        return GrpcChannel.ForAddress(serverAddress, options);
+        return GrpcChannel.ForAddress(serverAddress, channelOptions);
     }
 }

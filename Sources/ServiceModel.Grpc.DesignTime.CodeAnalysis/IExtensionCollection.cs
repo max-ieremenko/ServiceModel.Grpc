@@ -22,6 +22,6 @@ public interface IExtensionCollection : IList<IExtension>
 {
     bool TryAddContractDescription(INamedTypeSymbol serviceType, AttributeData attribute);
 
-    bool TryAdd<TExtension>()
+    TExtension TryAdd<TExtension>()
         where TExtension : IExtension, new();
 }

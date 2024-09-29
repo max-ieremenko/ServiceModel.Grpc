@@ -48,8 +48,6 @@ task Core {
         -GithubToken $GithubToken
 }
 
-task Default Core, Emit, AspNetCore, Swashbuckle, NSwag, DesignTime, SelfHost, ClientDI, ProtoBufMarshaller, MessagePackMarshaller
-
 task Emit {
     $projects = @(
         (Join-Path $Sources 'ServiceModel.Grpc.Descriptions'),
@@ -182,7 +180,8 @@ task ProtoBufMarshaller {
 
 task MessagePackMarshaller {
     $projects = @(
-        (Join-Path $Sources 'ServiceModel.Grpc.MessagePackMarshaller')
+        (Join-Path $Sources 'ServiceModel.Grpc.MessagePackMarshaller'),
+        (Join-Path $Sources 'ServiceModel.Grpc.MessagePackMarshaller.Test')
     )
     
     Write-ThirdPartyNotices `

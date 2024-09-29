@@ -14,9 +14,27 @@
 // limitations under the License.
 // </copyright>
 
+/*
+ * copy from:
+ * https://github.com/dotnet/runtime/blob/7e429c2393a002065b641c3817fff62145c926db/src/libraries/System.Private.CoreLib/src/System/Diagnostics/CodeAnalysis/ExperimentalAttribute.cs
+ */
+#if !NET8_0_OR_GREATER
 namespace System.Diagnostics.CodeAnalysis;
 
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, Inherited = false)]
+[AttributeUsage(
+    AttributeTargets.Assembly |
+    AttributeTargets.Module |
+    AttributeTargets.Class |
+    AttributeTargets.Struct |
+    AttributeTargets.Enum |
+    AttributeTargets.Constructor |
+    AttributeTargets.Method |
+    AttributeTargets.Property |
+    AttributeTargets.Field |
+    AttributeTargets.Event |
+    AttributeTargets.Interface |
+    AttributeTargets.Delegate,
+    Inherited = false)]
 internal sealed class ExperimentalAttribute : Attribute
 {
     public ExperimentalAttribute(string diagnosticId)
@@ -28,3 +46,4 @@ internal sealed class ExperimentalAttribute : Attribute
 
     public string? UrlFormat { get; set; }
 }
+#endif

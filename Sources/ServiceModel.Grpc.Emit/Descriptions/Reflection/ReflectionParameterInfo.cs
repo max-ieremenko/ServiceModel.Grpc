@@ -28,7 +28,7 @@ internal sealed class ReflectionParameterInfo : IParameterInfo<Type>
 
     public ParameterInfo Source { get; }
 
-    public string Name => Source.Name;
+    public string Name => Source.Name ?? throw new InvalidOperationException("The parameter name is null.");
 
     public Type Type => Source.ParameterType;
 

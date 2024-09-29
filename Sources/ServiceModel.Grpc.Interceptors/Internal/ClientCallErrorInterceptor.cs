@@ -86,7 +86,9 @@ internal sealed class ClientCallErrorInterceptor : IClientCallInterceptor
     {
         try
         {
-            return DetailDeserializer?.DeserializeDetailType(typeName) ?? DefaultClientFaultDetailDeserializer.DeserializeType(typeName);
+            return DetailDeserializer == null
+                ? DefaultClientFaultDetailDeserializer.DeserializeType(typeName)
+                : DetailDeserializer.DeserializeDetailType(typeName);
         }
         catch (Exception ex)
         {
@@ -105,8 +107,9 @@ internal sealed class ClientCallErrorInterceptor : IClientCallInterceptor
 
         try
         {
-            return DetailDeserializer?.DeserializeDetail(MarshallerFactory, detailType, detailContent)
-                ?? DefaultClientFaultDetailDeserializer.Deserialize(MarshallerFactory, detailType, detailContent);
+            return DetailDeserializer == null
+                ? DefaultClientFaultDetailDeserializer.Deserialize(MarshallerFactory, detailType, detailContent)
+                : DetailDeserializer.DeserializeDetail(MarshallerFactory, detailType, detailContent);
         }
         catch (Exception ex)
         {

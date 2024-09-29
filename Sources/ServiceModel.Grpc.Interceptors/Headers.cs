@@ -55,7 +55,7 @@ internal static class Headers
             // System.Tuple`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib
             if (type.IsGenericType)
             {
-                _result.Append("[");
+                _result.Append('[');
 
                 var args = type.GetGenericArguments();
                 for (var i = 0; i < args.Length; i++)
@@ -65,12 +65,12 @@ internal static class Headers
                         _result.Append(", ");
                     }
 
-                    _result.Append("[");
+                    _result.Append('[');
                     WriteShortAssemblyQualifiedName(args[i]);
-                    _result.Append("]");
+                    _result.Append(']');
                 }
 
-                _result.Append("]");
+                _result.Append(']');
             }
 
             // System.Private.CoreLib, mscorlib
@@ -86,16 +86,16 @@ internal static class Headers
         {
             if (type.IsNested)
             {
-                WriteTypeFullName(type.DeclaringType);
+                WriteTypeFullName(type.DeclaringType!);
                 _result
-                    .Append("+")
+                    .Append('+')
                     .Append(type.Name);
             }
             else
             {
                 _result
                     .Append(type.Namespace)
-                    .Append(".")
+                    .Append('.')
                     .Append(type.Name);
             }
         }

@@ -31,9 +31,13 @@ internal static class MessageBuilder
             return typeof(Message);
         }
 
-        return GetMessageGenericType(typeArguments.Length).MakeGenericType(typeArguments);
+        return GetMessageGenericType(typeArguments.Length).MakeConstructedGeneric(typeArguments);
     }
 
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicProperties, typeof(Message))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicProperties, typeof(Message<>))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicProperties, typeof(Message<,>))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicProperties, typeof(Message<,,>))]
     public static Type GetMessageGenericType(int propertiesCount)
     {
         if (propertiesCount == 0)
@@ -45,7 +49,7 @@ internal static class MessageBuilder
 
         if (propertiesCount <= 3)
         {
-            return typeof(Message).Assembly.GetType(messageTypeName, true, false);
+            return typeof(Message).Assembly.SafeGetType(messageTypeName);
         }
 
         return ResolveMessageType(propertiesCount, messageTypeName);
@@ -56,8 +60,7 @@ internal static class MessageBuilder
         Type? result;
         lock (ProxyAssembly.SyncRoot)
         {
-            result = ProxyAssembly.DefaultModule.GetType(typeName, false, false);
-            if (result == null)
+            if (!ProxyAssembly.DefaultModule.TryGetType(typeName, out result))
             {
                 result = BuildNewMessageType(propertiesCount, typeName);
             }
