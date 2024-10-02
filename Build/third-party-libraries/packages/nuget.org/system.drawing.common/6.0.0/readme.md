@@ -3,7 +3,7 @@ System.Drawing.Common [6.0.0](https://www.nuget.org/packages/System.Drawing.Comm
 
 Used by: Emit internal
 
-Target frameworks: net462, net6.0, net7.0, net8.0
+Target frameworks: net462, net6.0, net8.0
 
 License: [MIT](../../../../licenses/mit) 
 

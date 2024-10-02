@@ -3,7 +3,7 @@ Microsoft.IdentityModel.Protocols [6.10.0](https://www.nuget.org/packages/Micros
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal
 
-Target frameworks: net6.0, net7.0, net8.0
+Target frameworks: net6.0, net8.0
 
 License: [MIT](../../../../licenses/mit) 
 
