@@ -3,7 +3,7 @@ Microsoft.NET.ILLink.Tasks [8.0.8](https://www.nuget.org/packages/Microsoft.NET.
 
 Used by: AspNetCore, ClientDI, Core, Emit, MessagePack
 
-Target frameworks: net462, net6.0, net7.0, net8.0, netstandard2.0, netstandard2.1
+Target frameworks: net462, net6.0, net8.0, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 

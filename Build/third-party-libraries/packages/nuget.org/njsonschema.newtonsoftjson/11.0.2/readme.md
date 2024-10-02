@@ -3,7 +3,7 @@ NJsonSchema.NewtonsoftJson [11.0.2](https://www.nuget.org/packages/NJsonSchema.N
 
 Used by: AspNetCoreNSwag
 
-Target frameworks: net6.0, net7.0, net8.0
+Target frameworks: net6.0, net8.0
 
 License: [MIT](../../../../licenses/mit) 
 

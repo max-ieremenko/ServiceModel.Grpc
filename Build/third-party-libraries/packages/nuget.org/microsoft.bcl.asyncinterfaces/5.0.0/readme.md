@@ -3,7 +3,7 @@ Microsoft.Bcl.AsyncInterfaces [5.0.0](https://www.nuget.org/packages/Microsoft.B
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MessagePack internal, SelfHost internal
 
-Target frameworks: net462, net6.0, net7.0, net8.0
+Target frameworks: net462, net6.0, net8.0
 
 License: [MIT](../../../../licenses/mit) 
 
