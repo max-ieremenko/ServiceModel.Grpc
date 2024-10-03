@@ -8,5 +8,6 @@
     <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="8.0.8" />
     <PackageVersion Include="protobuf-net.Grpc" Version="1.1.1" />
     <PackageVersion Include="protobuf-net.Grpc.AspNetCore" Version="1.1.1" />
+    <PackageVersion Include="System.ServiceModel.Primitives" Version="8.0.0" />
   </ItemGroup>
 </Project>
