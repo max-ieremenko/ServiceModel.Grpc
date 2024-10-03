@@ -10,14 +10,6 @@
     <PackageReference Include="System.Threading.Channels" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
-    <Reference Include="System.ServiceModel" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' != 'net462'">
-    <PackageReference Include="System.ServiceModel.Primitives" />
-  </ItemGroup>
-
   <ItemGroup>
     <Using Include="Moq" />
     <Using Include="Shouldly" />

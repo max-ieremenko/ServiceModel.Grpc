@@ -35,7 +35,6 @@
     <PackageVersion Include="System.Collections.Immutable" Version="8.0.0" />
     <PackageVersion Include="System.Net.Http.WinHttpHandler" Version="8.0.2" />
     <PackageVersion Include="System.Reflection.Emit" Version="4.7.0" />
-    <PackageVersion Include="System.ServiceModel.Primitives" Version="4.10.3" />
     <PackageVersion Include="System.Threading.Channels" Version="8.0.0" />
     <PackageVersion Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
