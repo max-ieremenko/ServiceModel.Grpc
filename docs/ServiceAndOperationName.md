@@ -132,3 +132,42 @@ internal sealed class CalculatorValue : ICalculator<Value>
     public Task<Value> Sum(Value x, Value y) => x + y;
 }
 ```
+
+## ServiceContractAttribute and OperationContractAttribute
+
+To use `ServiceContract` and `OperationContract` attributes, a project has to reference
+
+- `System.ServiceModel.dll` assembly in .NET Framework
+- [System.ServiceModel.Primitives](https://www.nuget.org/packages/System.ServiceModel.Primitives) NuGet package in .NET 6+
+
+``` xml
+<ItemGroup Condition="'$(TargetFramework)' == 'net462'">
+    <Reference Include="System.ServiceModel" />
+</ItemGroup>
+
+<ItemGroup Condition="'$(TargetFramework)' != 'net462'">
+    <PackageReference Include="System.ServiceModel.Primitives" />
+</ItemGroup>
+```
+
+If for some reason, having extra references is not an option, the attributes can be defined in your code:
+
+``` cs
+namespace System.ServiceModel;
+
+[AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
+public sealed class ServiceContractAttribute : Attribute
+{
+    public string? Name { get; set; }
+
+    public string? Namespace { get; set; }
+}
+
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+public sealed class OperationContractAttribute : Attribute
+{
+    public string? Name { get; set; }
+}
+```
+
+ServiceModel.Grpc recognizes them by the namespace `System.ServiceModel` and the names `ServiceContractAttribute` and `OperationContractAttribute`.

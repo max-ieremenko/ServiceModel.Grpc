@@ -1,7 +1,7 @@
 System.Security.AccessControl [6.0.0](https://www.nuget.org/packages/System.Security.AccessControl/6.0.0)
 --------------------
 
-Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MessagePack internal, SelfHost internal
+Used by: Emit internal
 
 Target frameworks: net462, net6.0, net8.0
 
