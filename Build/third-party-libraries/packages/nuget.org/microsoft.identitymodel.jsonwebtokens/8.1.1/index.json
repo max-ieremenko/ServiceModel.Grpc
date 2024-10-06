@@ -14,7 +14,11 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.IdentityModel.Protocols.OpenIdConnect",
+          "Name": "Microsoft.Bcl.TimeProvider",
+          "Version": "8.0.1"
+        },
+        {
+          "Name": "Microsoft.IdentityModel.Tokens",
           "Version": "8.1.1"
         }
       ]
@@ -28,7 +32,11 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.IdentityModel.Protocols.OpenIdConnect",
+          "Name": "Microsoft.Bcl.TimeProvider",
+          "Version": "8.0.1"
+        },
+        {
+          "Name": "Microsoft.IdentityModel.Tokens",
           "Version": "8.1.1"
         }
       ]
@@ -42,7 +50,11 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.IdentityModel.Protocols.OpenIdConnect",
+          "Name": "Microsoft.Bcl.TimeProvider",
+          "Version": "8.0.1"
+        },
+        {
+          "Name": "Microsoft.IdentityModel.Tokens",
           "Version": "8.1.1"
         }
       ]
@@ -57,12 +69,12 @@
     {
       "Subject": "repository",
       "Code": "MIT",
-      "HRef": "https://github.com/dotnet/aspnetcore"
+      "HRef": "https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet"
     },
     {
       "Subject": "project",
-      "Code": null,
-      "HRef": "https://asp.net/"
+      "Code": "MIT",
+      "HRef": "https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet"
     }
   ]
 }
