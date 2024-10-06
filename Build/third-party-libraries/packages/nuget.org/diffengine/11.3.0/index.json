@@ -10,7 +10,8 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net6.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {
@@ -28,7 +29,8 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net6.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {
@@ -46,7 +48,8 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net6.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {
@@ -65,7 +68,8 @@
       "TargetFrameworks": [
         "net462",
         "net6.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {
@@ -84,7 +88,8 @@
       "TargetFrameworks": [
         "net462",
         "net6.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {
@@ -103,7 +108,8 @@
       "TargetFrameworks": [
         "net462",
         "net6.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {
@@ -122,7 +128,8 @@
       "TargetFrameworks": [
         "net462",
         "net6.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {
@@ -140,7 +147,8 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net6.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {
@@ -159,7 +167,8 @@
       "TargetFrameworks": [
         "net462",
         "net6.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {

@@ -3,7 +3,7 @@ Swashbuckle.AspNetCore.SwaggerGen [6.8.0](https://www.nuget.org/packages/Swashbu
 
 Used by: AspNetCoreSwashbuckle
 
-Target frameworks: net6.0, net8.0
+Target frameworks: net6.0, net8.0, net9.0
 
 License: [MIT](../../../../licenses/mit) 
 

@@ -3,7 +3,7 @@ System.Collections.Immutable [7.0.0](https://www.nuget.org/packages/System.Colle
 
 Used by: ProtoBuf
 
-Target frameworks: net462, net6.0, net8.0, netstandard2.0, netstandard2.1
+Target frameworks: net462, net6.0, net8.0, net9.0, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 

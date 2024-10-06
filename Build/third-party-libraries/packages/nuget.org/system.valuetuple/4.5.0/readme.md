@@ -3,7 +3,7 @@ System.ValueTuple [4.5.0](https://www.nuget.org/packages/System.ValueTuple/4.5.0
 
 Used by: ClientDI internal, Core internal, DesignTime internal, Emit internal, SelfHost internal
 
-Target frameworks: net462, net6.0, net8.0
+Target frameworks: net462, net6.0, net8.0, net9.0
 
 License: [MIT](../../../../licenses/mit) 
 

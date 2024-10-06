@@ -7,9 +7,9 @@
     <WarningsAsErrors />
 
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\ServiceModel.Grpc.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)ServiceModel.Grpc.snk</AssemblyOriginatorKeyFile>
 
-    <CodeAnalysisRuleSet>..\StyleCope.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)StyleCope.ruleset</CodeAnalysisRuleSet>
 
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
@@ -45,6 +45,8 @@
 
   <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers.Unstable" PrivateAssets="all" />
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Visible="false" />
+
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
   </ItemGroup>
 
