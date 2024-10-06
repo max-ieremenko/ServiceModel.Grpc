@@ -24,7 +24,7 @@ namespace ServiceModel.Grpc.Emit.Configuration;
 public partial class MessageMarshallingTest
 {
     [DataContract]
-    public class Person
+    public record Person
     {
         [DataMember(Order = 1)]
         public string? Name { get; set; }
@@ -34,7 +34,7 @@ public partial class MessageMarshallingTest
     }
 
     [DataContract]
-    public class PersonAddress
+    public record PersonAddress
     {
         [DataMember(Order = 1)]
         public string? Street { get; set; }
@@ -45,34 +45,36 @@ public partial class MessageMarshallingTest
     [KnownType(typeof(Knife))]
     [ProtoInclude(3, typeof(Sword))]
     [ProtoInclude(4, typeof(Knife))]
-    public abstract class Weapon
+    public abstract record Weapon
     {
         [DataMember(Order = 1)]
         public int HitDamage { get; set; }
     }
 
     [DataContract]
-    public class Sword : Weapon
+    public record Sword : Weapon
     {
         [DataMember(Order = 1)]
         public int Length { get; set; }
     }
 
     [DataContract]
-    public class Knife : Weapon
-    {
-    }
+    public record Knife : Weapon;
 
     [DataContract]
     ////[KnownType(typeof(DynamicObject))]
     public class DynamicObject
     {
         [DataMember(Order = 1)]
-        public List<object> Values { get; private set; } = new List<object>();
+        public List<object> Values { get; private set; } = new();
+
+        public override bool Equals(object? other) => other is DynamicObject obj && Values.SequenceEqual(obj.Values);
+
+        public override int GetHashCode() => 0;
     }
 
     [Serializable]
-    public class TheContainer<T> : ISerializable
+    public record TheContainer<T> : ISerializable
     {
         public TheContainer()
         {
@@ -94,23 +96,11 @@ public partial class MessageMarshallingTest
         {
             info.AddValue(nameof(Value), Value);
         }
-
-        public override bool Equals(object? obj)
-        {
-            if (obj is TheContainer<T> other)
-            {
-                return EqualityComparer<T>.Default.Equals(Value, other.Value);
-            }
-
-            return false;
-        }
-
-        public override int GetHashCode() => Value == null ? 0 : Value.GetHashCode();
     }
 
     public sealed class JsonMarshaller<T>
     {
-        public static readonly Marshaller<T> Default = new Marshaller<T>(Serialize, Deserialize);
+        public static readonly Marshaller<T> Default = new(Serialize, Deserialize);
 
         private static byte[] Serialize(T value)
         {
