@@ -11,12 +11,6 @@
       "TargetFrameworks": [
         "net6.0",
         "net8.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "Microsoft.IdentityModel.Protocols.OpenIdConnect",
-          "Version": "8.1.1"
-        }
       ]
     },
     {
@@ -25,12 +19,6 @@
       "TargetFrameworks": [
         "net6.0",
         "net8.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "Microsoft.IdentityModel.Protocols.OpenIdConnect",
-          "Version": "8.1.1"
-        }
       ]
     },
     {
@@ -39,12 +27,6 @@
       "TargetFrameworks": [
         "net6.0",
         "net8.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "Microsoft.IdentityModel.Protocols.OpenIdConnect",
-          "Version": "8.1.1"
-        }
       ]
     }
   ],
@@ -57,12 +39,12 @@
     {
       "Subject": "repository",
       "Code": "MIT",
-      "HRef": "https://github.com/dotnet/aspnetcore"
+      "HRef": "https://github.com/dotnet/runtime"
     },
     {
       "Subject": "project",
       "Code": null,
-      "HRef": "https://asp.net/"
+      "HRef": "https://dot.net/"
     }
   ]
 }
