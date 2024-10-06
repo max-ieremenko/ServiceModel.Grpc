@@ -14,9 +14,9 @@
 // limitations under the License.
 // </copyright>
 
+using System.Reflection;
 using System.Runtime.Serialization;
 using Grpc.Core;
-using KellermanSoftware.CompareNetObjects;
 using NUnit.Framework;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
@@ -36,23 +36,33 @@ public partial class MessageMarshallingTest
     [TestCaseSource(nameof(GetDefaultMessages))]
     public void ProtobufTest(object value) => RunTest(value, nameof(ProtobufClone));
 
-#if !NETCOREAPP2_1
     [Test]
     [TestCaseSource(nameof(GetAllMessages))]
     public void JsonTest(object value) => RunTest(value, nameof(JsonClone));
-#endif
 
-    private static void RunTest(object value, string cloneMethodName)
+    private static void RunTest(object expected, string cloneMethodName)
     {
         var clone = typeof(MessageMarshallingTest)
             .StaticMethod(cloneMethodName)
-            .MakeGenericMethod(value.GetType())
-            .CreateDelegate(typeof(Func<,>).MakeGenericType(value.GetType(), value.GetType()));
+            .MakeGenericMethod(expected.GetType())
+            .CreateDelegate(typeof(Func<,>).MakeGenericType(expected.GetType(), expected.GetType()));
 
-        var actual = clone.DynamicInvoke(value);
+        var actual = clone.DynamicInvoke(expected);
 
-        var result = new CompareLogic().Compare(value, actual);
-        result.AreEqual.ShouldBeTrue(result.DifferencesString);
+        actual.ShouldNotBeNull();
+        Compare(expected, actual);
+    }
+
+    private static void Compare(object expected, object actual)
+    {
+        expected.GetType().ShouldBe(actual.GetType());
+
+        foreach (var property in expected.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
+        {
+            var expectedValue = property.GetValue(expected);
+            var actualValue = property.GetValue(actual);
+            actualValue.ShouldBe(expectedValue, property.Name);
+        }
     }
 
     private static T DataContractClone<T>(T value)
