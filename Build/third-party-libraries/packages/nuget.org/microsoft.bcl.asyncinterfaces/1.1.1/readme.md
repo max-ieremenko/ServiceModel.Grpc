@@ -3,7 +3,7 @@ Microsoft.Bcl.AsyncInterfaces [1.1.1](https://www.nuget.org/packages/Microsoft.B
 
 Used by: Core
 
-Target frameworks: net462, net8.0, netstandard2.0, netstandard2.1
+Target frameworks: net462, net8.0, net9.0, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 

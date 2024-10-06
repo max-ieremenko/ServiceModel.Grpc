@@ -3,7 +3,7 @@ Microsoft.Bcl.TimeProvider [8.0.1](https://www.nuget.org/packages/Microsoft.Bcl.
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal
 
-Target frameworks: net6.0, net8.0
+Target frameworks: net6.0, net8.0, net9.0
 
 License: [MIT](../../../../licenses/mit) 
 

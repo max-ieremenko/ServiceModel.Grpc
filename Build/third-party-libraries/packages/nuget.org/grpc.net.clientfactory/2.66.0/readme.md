@@ -3,7 +3,7 @@ Grpc.Net.ClientFactory [2.66.0](https://www.nuget.org/packages/Grpc.Net.ClientFa
 
 Used by: ClientDI
 
-Target frameworks: net6.0, net8.0, netstandard2.0, netstandard2.1
+Target frameworks: net6.0, net8.0, net9.0, netstandard2.0, netstandard2.1
 
 License: [Apache-2.0](../../../../licenses/apache-2.0) 
 

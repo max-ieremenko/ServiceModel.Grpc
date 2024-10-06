@@ -3,7 +3,7 @@ Microsoft.IdentityModel.JsonWebTokens [8.1.1](https://www.nuget.org/packages/Mic
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal
 
-Target frameworks: net6.0, net8.0
+Target frameworks: net6.0, net8.0, net9.0
 
 License: [MIT](../../../../licenses/mit) 
 

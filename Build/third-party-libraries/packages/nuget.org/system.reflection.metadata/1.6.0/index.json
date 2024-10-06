@@ -10,7 +10,8 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net6.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ]
     },
     {
@@ -18,7 +19,8 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net6.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ]
     },
     {
@@ -26,7 +28,8 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net6.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ]
     },
     {
@@ -35,7 +38,8 @@
       "TargetFrameworks": [
         "net462",
         "net6.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ]
     },
     {
@@ -44,7 +48,8 @@
       "TargetFrameworks": [
         "net462",
         "net6.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ]
     },
     {
@@ -60,7 +65,8 @@
       "TargetFrameworks": [
         "net462",
         "net6.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ]
     },
     {
@@ -68,7 +74,8 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net6.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ]
     },
     {
@@ -77,7 +84,8 @@
       "TargetFrameworks": [
         "net462",
         "net6.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ]
     }
   ],

@@ -3,7 +3,7 @@ Microsoft.OpenApi [1.6.14](https://www.nuget.org/packages/Microsoft.OpenApi/1.6.
 
 Used by: AspNetCoreSwashbuckle
 
-Target frameworks: net6.0, net8.0
+Target frameworks: net6.0, net8.0, net9.0
 
 License: [MIT](../../../../licenses/mit) 
 
