@@ -14,6 +14,7 @@
     <PackageVersion Include="Grpc.Tools" Version="2.66.0" />
     <PackageVersion Include="MessagePack" Version="2.5.172" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.21" />
+    <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.1.1" />
     <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Common" Version="4.0.1" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" />
