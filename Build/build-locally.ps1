@@ -53,7 +53,7 @@ if (-not $SkipLinuxSdk) {
 
     $image = Build-LinuxSdkImage
 
-    #docker run -it --rm --entrypoint pwsh -v "C:\Users\Max\.nuget\packages:/root/.nuget/packages" -v "D:\work\ServiceModel.Grpc2:/repository" service-model-grpc/sdk:8.0-jammy
+    #docker run -it --rm --entrypoint pwsh -v "$(Join-Path $env:USERPROFILE .nuget\packages):/root/.nuget/packages" -v "$(Join-Path (Get-Location) ..\):/repository" service-model-grpc/sdk:8.0-jammy
     docker run `
         -it `
         --rm `
