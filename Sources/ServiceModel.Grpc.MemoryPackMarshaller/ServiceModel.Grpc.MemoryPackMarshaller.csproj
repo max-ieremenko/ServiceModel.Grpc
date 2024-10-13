@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.1;net8.0;net9.0</TargetFrameworks>
+    <RootNamespace>ServiceModel.Grpc</RootNamespace>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
+    <IsTrimmable>true</IsTrimmable>
+    <EnableAOTAnalyzer>true</EnableAOTAnalyzer>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MemoryPack" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ServiceModel.Grpc.DesignTime\ServiceModel.Grpc.DesignTime.csproj" />
+    <ProjectReference Include="..\ServiceModel.Grpc\ServiceModel.Grpc.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">
+    <Content Include="README.md" PackagePath="" />
+    <Content Include="..\..\LICENSE" PackagePath="" Visible="false" />
+    <Content Include="..\..\build-out\MemoryPackThirdPartyNotices.txt" PackagePath="ThirdPartyNotices.txt" Visible="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\ServiceModel.Grpc.Core\CodeAnalysis\ExperimentalAttribute.cs" Link="CodeAnalysis\ExperimentalAttribute.cs" />
+    <Compile Include="..\ServiceModel.Grpc.Core\CodeAnalysis\UnconditionalSuppressMessageAttribute.cs" Link="CodeAnalysis\UnconditionalSuppressMessageAttribute.cs" />
+  </ItemGroup>
+</Project>

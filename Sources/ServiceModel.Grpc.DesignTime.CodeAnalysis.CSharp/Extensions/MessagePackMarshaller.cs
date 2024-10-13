@@ -20,7 +20,7 @@ internal sealed class MessagePackMarshaller : IExtensionProvider
 {
     public void ProvideExtensions(ExtensionProviderDeclaration declaration, IExtensionCollection extensions, IExtensionContext context)
     {
-        extensions.TryAdd<MPackCodeGeneratorExtension>();
+        extensions.TryAdd<MPackCodeGeneratorExtension>().MessagePack = true;
         extensions.TryAdd<ContractCodeGeneratorMetadata>();
     }
 }

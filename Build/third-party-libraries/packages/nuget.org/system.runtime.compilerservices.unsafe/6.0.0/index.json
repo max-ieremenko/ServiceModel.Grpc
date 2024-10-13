@@ -57,6 +57,15 @@
       ]
     },
     {
+      "Name": "MemoryPack",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "netstandard2.1"
+      ]
+    },
+    {
       "Name": "MessagePack",
       "InternalOnly": false,
       "TargetFrameworks": [

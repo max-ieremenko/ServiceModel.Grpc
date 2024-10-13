@@ -115,6 +115,21 @@
       ]
     },
     {
+      "Name": "MemoryPack",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net6.0",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Diagnostics.EventLog",
+          "Version": "6.0.0"
+        }
+      ]
+    },
+    {
       "Name": "MessagePack",
       "InternalOnly": true,
       "TargetFrameworks": [

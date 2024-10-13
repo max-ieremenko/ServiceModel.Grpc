@@ -242,8 +242,9 @@ ServiceModel.Grpc.AspNetCore.Swashbuckle | [![Version](https://img.shields.io/nu
 ServiceModel.Grpc.AspNetCore.NSwag | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.AspNetCore.NSwag.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.AspNetCore.NSwag) | Swagger integration, based on [NSwag](https://github.com/RicoSuter/NSwag)
 ServiceModel.Grpc.SelfHost | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.SelfHost.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.SelfHost) | Grpc.Core extensions for self-hosted Grpc.Core.Server
 ServiceModel.Grpc.DesignTime | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.DesignTime.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.DesignTime) | C# code generator
-ServiceModel.Grpc.MessagePackMarshaller | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.MessagePackMarshaller.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.MessagePackMarshaller) | netstandard2.0, net8.0, net7.0, net6.0 | marshaller factory, based on [MessagePack serializer](https://www.nuget.org/packages/MessagePack)
+ServiceModel.Grpc.MessagePackMarshaller | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.MessagePackMarshaller.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.MessagePackMarshaller) | marshaller factory, based on [MessagePack serializer](https://www.nuget.org/packages/MessagePack)
 ServiceModel.Grpc.ProtoBufMarshaller | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.ProtoBufMarshaller.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.ProtoBufMarshaller) | marshaller factory, based on [protobuf-net serializer](https://www.nuget.org/packages/protobuf-net/)
+ServiceModel.Grpc.MemoryPackMarshaller | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.MemoryPackMarshaller.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.MemoryPackMarshaller) | marshaller factory, based on [MemoryPack serializer](https://www.nuget.org/packages/MemoryPack)
 
 ## Benchmarks
 
