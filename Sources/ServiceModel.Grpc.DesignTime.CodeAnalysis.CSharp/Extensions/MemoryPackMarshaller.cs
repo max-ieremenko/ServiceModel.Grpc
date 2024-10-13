@@ -16,11 +16,11 @@
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.Extensions;
 
-internal sealed class MessagePackMarshaller : IExtensionProvider
+internal sealed class MemoryPackMarshaller : IExtensionProvider
 {
     public void ProvideExtensions(ExtensionProviderDeclaration declaration, IExtensionCollection extensions, IExtensionContext context)
     {
-        extensions.TryAdd<MPackCodeGeneratorExtension>().MessagePack = true;
+        extensions.TryAdd<MPackCodeGeneratorExtension>().MemoryPack = true;
         extensions.TryAdd<ContractCodeGeneratorMetadata>();
     }
 }

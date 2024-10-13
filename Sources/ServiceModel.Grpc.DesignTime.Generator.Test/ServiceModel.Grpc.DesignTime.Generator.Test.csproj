@@ -16,6 +16,7 @@
     <ProjectReference Include="..\ServiceModel.Grpc.DesignTime\ServiceModel.Grpc.DesignTime.csproj" />
     <ProjectReference Include="..\ServiceModel.Grpc.SelfHost\ServiceModel.Grpc.SelfHost.csproj" />
     <!--<ProjectReference Include="..\ServiceModel.Grpc.MessagePackMarshaller\ServiceModel.Grpc.MessagePackMarshaller.csproj" />-->
+    <!--<ProjectReference Include="..\ServiceModel.Grpc.MemoryPackMarshaller\ServiceModel.Grpc.MemoryPackMarshaller.csproj" />-->
   </ItemGroup>
 
   <Import Project="..\ServiceModel.Grpc.DesignTime\build\ServiceModel.Grpc.DesignTime.props" />

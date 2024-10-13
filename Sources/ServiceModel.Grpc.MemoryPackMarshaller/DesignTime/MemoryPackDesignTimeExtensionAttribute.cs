@@ -14,13 +14,11 @@
 // limitations under the License.
 // </copyright>
 
-namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.Extensions;
+namespace ServiceModel.Grpc.DesignTime;
 
-internal sealed class MessagePackMarshaller : IExtensionProvider
-{
-    public void ProvideExtensions(ExtensionProviderDeclaration declaration, IExtensionCollection extensions, IExtensionContext context)
-    {
-        extensions.TryAdd<MPackCodeGeneratorExtension>().MessagePack = true;
-        extensions.TryAdd<ContractCodeGeneratorMetadata>();
-    }
-}
+/// <summary>
+/// A marker to generate the source code for MemoryPack serializer.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+[Conditional("CodeGeneration")]
+public sealed class MemoryPackDesignTimeExtensionAttribute : Attribute;

@@ -14,13 +14,18 @@
 // limitations under the License.
 // </copyright>
 
-namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.Extensions;
+using Grpc.Core;
+using MemoryPack;
 
-internal sealed class MessagePackMarshaller : IExtensionProvider
+namespace ServiceModel.Grpc.Configuration;
+
+internal sealed class MemoryPackMarshaller<T>
 {
-    public void ProvideExtensions(ExtensionProviderDeclaration declaration, IExtensionCollection extensions, IExtensionContext context)
-    {
-        extensions.TryAdd<MPackCodeGeneratorExtension>().MessagePack = true;
-        extensions.TryAdd<ContractCodeGeneratorMetadata>();
-    }
+    public static readonly Marshaller<T> Default = new(Serialize, Deserialize);
+
+    private static void Serialize(T value, SerializationContext context) =>
+        MemoryPackMarshallerFactory.Serialize(value, context, MemoryPackSerializerOptions.Default);
+
+    private static T Deserialize(DeserializationContext context) =>
+        MemoryPackMarshallerFactory.Deserialize<T>(context, MemoryPackSerializerOptions.Default);
 }
