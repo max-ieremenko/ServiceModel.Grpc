@@ -6,6 +6,25 @@
   },
   "UsedBy": [
     {
+      "Name": "MemoryPack",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "netstandard2.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Memory",
+          "Version": "4.5.4"
+        },
+        {
+          "Name": "System.Runtime.CompilerServices.Unsafe",
+          "Version": "6.0.0"
+        }
+      ]
+    },
+    {
       "Name": "MessagePack",
       "InternalOnly": false,
       "TargetFrameworks": [

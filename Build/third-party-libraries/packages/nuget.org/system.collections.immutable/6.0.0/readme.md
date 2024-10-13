@@ -1,9 +1,9 @@
 System.Collections.Immutable [6.0.0](https://www.nuget.org/packages/System.Collections.Immutable/6.0.0)
 --------------------
 
-Used by: MessagePack
+Used by: MemoryPack, MessagePack
 
-Target frameworks: net6.0, net8.0, net9.0, netstandard2.0
+Target frameworks: net6.0, net8.0, net9.0, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 
@@ -38,11 +38,12 @@ Remarks
 no remarks
 
 
-Dependencies 2
+Dependencies 3
 -----------
 
 |Name|Version|
 |----------|:----|
+|[System.Memory](../../../../packages/nuget.org/system.memory/4.5.4)|4.5.4|
 |[System.Memory](../../../../packages/nuget.org/system.memory/4.5.5)|4.5.5|
 |[System.Runtime.CompilerServices.Unsafe](../../../../packages/nuget.org/system.runtime.compilerservices.unsafe/6.0.0)|6.0.0|
 

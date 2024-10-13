@@ -143,6 +143,25 @@
       ]
     },
     {
+      "Name": "MemoryPack",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net6.0",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.CodeCoverage",
+          "Version": "17.11.0"
+        },
+        {
+          "Name": "Microsoft.TestPlatform.TestHost",
+          "Version": "17.11.0"
+        }
+      ]
+    },
+    {
       "Name": "MessagePack",
       "InternalOnly": true,
       "TargetFrameworks": [
