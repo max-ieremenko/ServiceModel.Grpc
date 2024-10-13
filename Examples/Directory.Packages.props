@@ -11,6 +11,7 @@
     <PackageVersion Include="ServiceModel.Grpc.SelfHost" Version="$(ServiceModelGrpcVersion)" />
     <PackageVersion Include="ServiceModel.Grpc.ProtoBufMarshaller" Version="$(ServiceModelGrpcVersion)" />
     <PackageVersion Include="ServiceModel.Grpc.MessagePackMarshaller" Version="$(ServiceModelGrpcVersion)" />
+    <PackageVersion Include="ServiceModel.Grpc.MemoryPackMarshaller" Version="$(ServiceModelGrpcVersion)" />
     <PackageVersion Include="ServiceModel.Grpc.AspNetCore.Swashbuckle" Version="$(ServiceModelGrpcVersion)" />
     <PackageVersion Include="ServiceModel.Grpc.AspNetCore.NSwag" Version="$(ServiceModelGrpcVersion)" />
 
@@ -46,6 +47,8 @@
 
     <PackageVersion Include="MessagePack" Version="2.5.172" />
     <PackageVersion Include="MessagePack.MSBuild.Tasks" Version="2.5.172" />
+
+    <PackageVersion Include="MemoryPack" Version="1.21.3" />
 
     <PackageVersion Include="BenchmarkDotNet" Version="0.14.0" />
   </ItemGroup>
