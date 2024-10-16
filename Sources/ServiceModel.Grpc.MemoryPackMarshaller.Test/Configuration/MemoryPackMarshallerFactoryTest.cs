@@ -41,21 +41,27 @@ public partial class MemoryPackMarshallerFactoryTest
     [Test]
     public void MessageNullTest()
     {
-        RunNullTest<Message>();
+        RunNullTest<Message, PackableMessage>();
     }
 
     [Test]
     public void MessageTest()
     {
-        RunTest(new Message(), _ =>
-        {
-        });
+        RunTest(
+            new Message(),
+            new PackableMessage(),
+            _ =>
+            {
+            },
+            _ =>
+            {
+            });
     }
 
     [Test]
     public void Message1NullTest()
     {
-        RunNullTest<Message<int?>>();
+        RunNullTest<Message<int?>, PackableMessage<int?>>();
     }
 
     [Test]
@@ -63,16 +69,23 @@ public partial class MemoryPackMarshallerFactoryTest
     [TestCase(100)]
     public void Message1Test(int? value1)
     {
-        RunTest(new Message<int?>(value1), actual =>
-        {
-            actual.Value1.ShouldBe(value1);
-        });
+        RunTest(
+            new Message<int?>(value1),
+            new PackableMessage<int?>(value1),
+            actual =>
+            {
+                actual.Value1.ShouldBe(value1);
+            },
+            actual =>
+            {
+                actual.Value1.ShouldBe(value1);
+            });
     }
 
     [Test]
     public void Message2NullTest()
     {
-        RunNullTest<Message<int?, string>>();
+        RunNullTest<Message<int?, string>, PackableMessage<int?, string>>();
     }
 
     [Test]
@@ -82,17 +95,25 @@ public partial class MemoryPackMarshallerFactoryTest
     [TestCase(100, "dummy")]
     public void Message2Test(int? value1, string? value2)
     {
-        RunTest(new Message<int?, string>(value1, value2), actual =>
-        {
-            actual.Value1.ShouldBe(value1);
-            actual.Value2.ShouldBe(value2);
-        });
+        RunTest(
+            new Message<int?, string>(value1, value2),
+            new PackableMessage<int?, string>(value1, value2),
+            actual =>
+            {
+                actual.Value1.ShouldBe(value1);
+                actual.Value2.ShouldBe(value2);
+            },
+            actual =>
+            {
+                actual.Value1.ShouldBe(value1);
+                actual.Value2.ShouldBe(value2);
+            });
     }
 
     [Test]
     public void Message3NullTest()
     {
-        RunNullTest<Message<int?, string, decimal?>>();
+        RunNullTest<Message<int?, string, decimal?>, PackableMessage<int?, string, decimal?>>();
     }
 
     [Test]
@@ -103,18 +124,27 @@ public partial class MemoryPackMarshallerFactoryTest
     [TestCase(100, "dummy", 10)]
     public void Message3Test(int? value1, string? value2, decimal? value3)
     {
-        RunTest(new Message<int?, string, decimal?>(value1, value2, value3), actual =>
-        {
-            actual.Value1.ShouldBe(value1);
-            actual.Value2.ShouldBe(value2);
-            actual.Value3.ShouldBe(value3);
-        });
+        RunTest(
+            new Message<int?, string, decimal?>(value1, value2, value3),
+            new PackableMessage<int?, string, decimal?>(value1, value2, value3),
+            actual =>
+            {
+                actual.Value1.ShouldBe(value1);
+                actual.Value2.ShouldBe(value2);
+                actual.Value3.ShouldBe(value3);
+            },
+            actual =>
+            {
+                actual.Value1.ShouldBe(value1);
+                actual.Value2.ShouldBe(value2);
+                actual.Value3.ShouldBe(value3);
+            });
     }
 
     [Test]
     public void Message4NullTest()
     {
-        RunNullTest<Message<int?, string, decimal?, byte?>>();
+        RunNullTest<Message<int?, string, decimal?, byte?>, PackableMessage<int?, string, decimal?, byte?>>();
     }
 
     [Test]
@@ -126,57 +156,62 @@ public partial class MemoryPackMarshallerFactoryTest
     [TestCase(100, "dummy", 10, 200)]
     public void Message4Test(int? value1, string? value2, decimal? value3, byte? value4)
     {
-        RunTest(new Message<int?, string, decimal?, byte?>(value1, value2, value3, value4), actual =>
-        {
-            actual.Value1.ShouldBe(value1);
-            actual.Value2.ShouldBe(value2);
-            actual.Value3.ShouldBe(value3);
-            actual.Value4.ShouldBe(value4);
-        });
+        RunTest(
+            new Message<int?, string, decimal?, byte?>(value1, value2, value3, value4),
+            new PackableMessage<int?, string, decimal?, byte?>(value1, value2, value3, value4),
+            actual =>
+            {
+                actual.Value1.ShouldBe(value1);
+                actual.Value2.ShouldBe(value2);
+                actual.Value3.ShouldBe(value3);
+                actual.Value4.ShouldBe(value4);
+            },
+            actual =>
+            {
+                actual.Value1.ShouldBe(value1);
+                actual.Value2.ShouldBe(value2);
+                actual.Value3.ShouldBe(value3);
+                actual.Value4.ShouldBe(value4);
+            });
     }
 
-    private void RunNullTest<T>()
-        where T : class
+    private void RunNullTest<TDomain, TPackable>()
+        where TDomain : class
+        where TPackable : class
     {
-        var defaultPayload = DefaultSerialize((T?)null);
-        var actual = DefaultDeserialize<T>(defaultPayload);
-        actual.ShouldBeNull();
+        var domainPayload = MarshallerSerialize((TDomain?)null);
+        var actualDomain = MarshallerDeserialize<TDomain>(domainPayload);
+        actualDomain.ShouldBeNull();
 
-        var marshallerPayload = MarshallerSerialize((T?)null);
-        actual = MarshallerDeserialize<T>(marshallerPayload);
-        actual.ShouldBeNull();
+        var packablePayload = DefaultSerialize((TPackable?)null);
+        actualDomain = MarshallerDeserialize<TDomain>(packablePayload);
+        actualDomain.ShouldBeNull();
 
-        defaultPayload.ShouldBe(marshallerPayload);
+        domainPayload.ShouldBe(packablePayload);
 
-        actual = MarshallerDeserialize<T>(defaultPayload);
-        actual.ShouldBeNull();
-
-        actual = DefaultDeserialize<T>(defaultPayload);
-        actual.ShouldBeNull();
+        var actualPackable = DefaultDeserialize<TPackable>(domainPayload);
+        actualPackable.ShouldBeNull();
     }
 
-    private void RunTest<T>(T value, Action<T> validate)
-        where T : class
+    private void RunTest<TDomain, TPackable>(TDomain domainValue, TPackable packableValue, Action<TDomain> validateDomain, Action<TPackable> validatePackable)
+        where TDomain : class
+        where TPackable : class
     {
-        var defaultPayload = DefaultSerialize(value);
-        var actual = DefaultDeserialize<T>(defaultPayload);
-        actual.ShouldNotBeNull();
-        validate(actual);
+        var domainPayload = MarshallerSerialize(domainValue);
+        var actualDomain = MarshallerDeserialize<TDomain>(domainPayload);
+        actualDomain.ShouldNotBeNull();
+        validateDomain(actualDomain);
 
-        var marshallerPayload = MarshallerSerialize(value);
-        actual = MarshallerDeserialize<T>(marshallerPayload);
-        actual.ShouldNotBeNull();
-        validate(actual);
+        var packablePayload = DefaultSerialize(packableValue);
+        actualDomain = MarshallerDeserialize<TDomain>(packablePayload);
+        actualDomain.ShouldNotBeNull();
+        validateDomain(actualDomain);
 
-        defaultPayload.ShouldBe(marshallerPayload);
+        domainPayload.ShouldBe(packablePayload);
 
-        actual = MarshallerDeserialize<T>(defaultPayload);
-        actual.ShouldNotBeNull();
-        validate(actual);
-
-        actual = DefaultDeserialize<T>(defaultPayload);
-        actual.ShouldNotBeNull();
-        validate(actual);
+        var actualPackable = DefaultDeserialize<TPackable>(domainPayload);
+        actualPackable.ShouldNotBeNull();
+        validatePackable(actualPackable);
     }
 
     private byte[] MarshallerSerialize<T>(T value) => MarshallerExtensions.Serialize(_sut.CreateMarshaller<T>(), value);
