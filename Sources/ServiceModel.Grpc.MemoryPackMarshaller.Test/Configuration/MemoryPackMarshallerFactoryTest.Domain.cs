@@ -21,6 +21,72 @@ namespace ServiceModel.Grpc.Configuration;
 
 public partial class MemoryPackMarshallerFactoryTest
 {
+    [MemoryPackable]
+    internal sealed partial class PackableMessage;
+
+    [MemoryPackable]
+    internal sealed partial class PackableMessage<T1>
+    {
+        [MemoryPackConstructor]
+        public PackableMessage()
+        {
+        }
+
+        public PackableMessage(T1? value1)
+        {
+            Value1 = value1;
+        }
+
+        [MemoryPackOrder(1)]
+        public T1? Value1 { get; set; }
+    }
+
+    [MemoryPackable]
+    internal sealed partial class PackableMessage<T1, T2>
+    {
+        [MemoryPackConstructor]
+        public PackableMessage()
+        {
+        }
+
+        public PackableMessage(T1? value1, T2? value2)
+        {
+            Value1 = value1;
+            Value2 = value2;
+        }
+
+        [MemoryPackOrder(1)]
+        public T1? Value1 { get; set; }
+
+        [MemoryPackOrder(2)]
+        public T2? Value2 { get; set; }
+    }
+
+    [MemoryPackable]
+    internal sealed partial class PackableMessage<T1, T2, T3>
+    {
+        [MemoryPackConstructor]
+        public PackableMessage()
+        {
+        }
+
+        public PackableMessage(T1? value1, T2? value2, T3? value3)
+        {
+            Value1 = value1;
+            Value2 = value2;
+            Value3 = value3;
+        }
+
+        [MemoryPackOrder(1)]
+        public T1? Value1 { get; set; }
+
+        [MemoryPackOrder(2)]
+        public T2? Value2 { get; set; }
+
+        [MemoryPackOrder(3)]
+        public T3? Value3 { get; set; }
+    }
+
     [DataContract(Name = "m", Namespace = "s")]
     internal sealed class Message<T1, T2, T3, T4>
     {
@@ -46,6 +112,35 @@ public partial class MemoryPackMarshallerFactoryTest
         public T3? Value3 { get; set; }
 
         [DataMember(Name = "v4", Order = 4)]
+        public T4? Value4 { get; set; }
+    }
+
+    [MemoryPackable]
+    internal sealed partial class PackableMessage<T1, T2, T3, T4>
+    {
+        [MemoryPackConstructor]
+        public PackableMessage()
+        {
+        }
+
+        public PackableMessage(T1? value1, T2? value2, T3? value3, T4? value4)
+        {
+            Value1 = value1;
+            Value2 = value2;
+            Value3 = value3;
+            Value4 = value4;
+        }
+
+        [MemoryPackOrder(1)]
+        public T1? Value1 { get; set; }
+
+        [MemoryPackOrder(2)]
+        public T2? Value2 { get; set; }
+
+        [MemoryPackOrder(3)]
+        public T3? Value3 { get; set; }
+
+        [MemoryPackOrder(4)]
         public T4? Value4 { get; set; }
     }
 
