@@ -25,12 +25,12 @@ internal sealed class ServerNativeInterceptor : Interceptor
 {
     private readonly IServerCallInterceptor _interceptor;
 
-    public ServerNativeInterceptor(IServiceProvider serviceProvider, IServerCallInterceptorFactory callInterceptorFactory)
+    public ServerNativeInterceptor(IServiceProvider serviceProvider, ServerNativeInterceptorOptions options)
     {
         GrpcPreconditions.CheckNotNull(serviceProvider, nameof(serviceProvider));
-        GrpcPreconditions.CheckNotNull(callInterceptorFactory, nameof(callInterceptorFactory));
+        GrpcPreconditions.CheckNotNull(options, nameof(options));
 
-        _interceptor = callInterceptorFactory.CreateInterceptor(serviceProvider);
+        _interceptor = options.CreateInterceptor(serviceProvider);
     }
 
     internal ServerNativeInterceptor(IServerCallInterceptor interceptor)

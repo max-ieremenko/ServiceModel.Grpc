@@ -19,14 +19,14 @@ using ServiceModel.Grpc.Configuration;
 
 namespace ServiceModel.Grpc.Interceptors.Internal;
 
-internal sealed class ErrorHandlerServerCallInterceptorFactory : IServerCallInterceptorFactory
+internal sealed class ServerNativeInterceptorOptions
 {
     private readonly IMarshallerFactory _marshallerFactory;
     private readonly Func<IServiceProvider, IServerErrorHandler> _errorHandlerFactory;
     private readonly IServerFaultDetailSerializer? _detailMarshaller;
     private readonly ILogger? _logger;
 
-    public ErrorHandlerServerCallInterceptorFactory(
+    public ServerNativeInterceptorOptions(
         IMarshallerFactory marshallerFactory,
         IServerFaultDetailSerializer? detailMarshaller,
         Func<IServiceProvider, IServerErrorHandler> errorHandlerFactory,

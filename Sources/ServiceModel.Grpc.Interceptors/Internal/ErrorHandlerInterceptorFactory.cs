@@ -40,14 +40,4 @@ internal static class ErrorHandlerInterceptorFactory
         var interceptor = new ServerCallErrorInterceptor(errorHandler, marshallerFactory, detailSerializer, logger);
         return new ServerNativeInterceptor(interceptor);
     }
-
-    [return: DynamicallyAccessedMembers(CodeAnalysisConstants.InterceptorAccessibility)]
-    public static Type GetServerHandlerType() => typeof(ServerNativeInterceptor);
-
-    public static object CreateServerHandlerArgs(
-        Func<IServiceProvider, IServerErrorHandler> errorHandlerFactory,
-        IMarshallerFactory marshallerFactory,
-        IServerFaultDetailSerializer? detailSerializer,
-        ILogger? logger)
-        => new ErrorHandlerServerCallInterceptorFactory(marshallerFactory, detailSerializer, errorHandlerFactory, logger);
 }
