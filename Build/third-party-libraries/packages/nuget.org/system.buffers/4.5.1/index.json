@@ -11,8 +11,8 @@
       "TargetFrameworks": [
         "net462",
         "net6.0",
-        "net7.0",
         "net8.0",
+        "net9.0",
         "netstandard2.0",
         "netstandard2.1"
       ]
@@ -23,8 +23,8 @@
       "TargetFrameworks": [
         "net462",
         "net6.0",
-        "net7.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ]
     },
     {
@@ -33,8 +33,8 @@
       "TargetFrameworks": [
         "net462",
         "net6.0",
-        "net7.0",
         "net8.0",
+        "net9.0",
         "netstandard2.0"
       ]
     },
@@ -44,8 +44,17 @@
       "TargetFrameworks": [
         "net462",
         "net6.0",
-        "net7.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
+      ]
+    },
+    {
+      "Name": "MemoryPack",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "netstandard2.1"
       ]
     },
     {
@@ -53,8 +62,8 @@
       "InternalOnly": false,
       "TargetFrameworks": [
         "net6.0",
-        "net7.0",
         "net8.0",
+        "net9.0",
         "netstandard2.0"
       ]
     },
@@ -64,8 +73,8 @@
       "TargetFrameworks": [
         "net462",
         "net6.0",
-        "net7.0",
         "net8.0",
+        "net9.0",
         "netstandard2.0",
         "netstandard2.1"
       ]
@@ -76,8 +85,8 @@
       "TargetFrameworks": [
         "net462",
         "net6.0",
-        "net7.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ]
     }
   ],

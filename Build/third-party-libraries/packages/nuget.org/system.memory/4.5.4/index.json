@@ -10,8 +10,8 @@
       "InternalOnly": false,
       "TargetFrameworks": [
         "net6.0",
-        "net7.0",
         "net8.0",
+        "net9.0",
         "netstandard2.0",
         "netstandard2.1"
       ],
@@ -48,6 +48,29 @@
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
           "Version": "5.0.0"
+        }
+      ]
+    },
+    {
+      "Name": "MemoryPack",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "netstandard2.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Buffers",
+          "Version": "4.5.1"
+        },
+        {
+          "Name": "System.Numerics.Vectors",
+          "Version": "4.4.0"
+        },
+        {
+          "Name": "System.Runtime.CompilerServices.Unsafe",
+          "Version": "6.0.0"
         }
       ]
     }

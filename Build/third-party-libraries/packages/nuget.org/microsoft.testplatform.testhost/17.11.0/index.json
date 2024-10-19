@@ -10,8 +10,8 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net6.0",
-        "net7.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {
@@ -29,8 +29,8 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net6.0",
-        "net7.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {
@@ -48,8 +48,8 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net6.0",
-        "net7.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {
@@ -68,8 +68,8 @@
       "TargetFrameworks": [
         "net462",
         "net6.0",
-        "net7.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {
@@ -88,8 +88,8 @@
       "TargetFrameworks": [
         "net462",
         "net6.0",
-        "net7.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {
@@ -108,8 +108,8 @@
       "TargetFrameworks": [
         "net462",
         "net6.0",
-        "net7.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {
@@ -128,8 +128,27 @@
       "TargetFrameworks": [
         "net462",
         "net6.0",
-        "net7.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "17.11.0"
+        },
+        {
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
+        }
+      ]
+    },
+    {
+      "Name": "MemoryPack",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net6.0",
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {
@@ -147,8 +166,8 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net6.0",
-        "net7.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {
@@ -167,8 +186,8 @@
       "TargetFrameworks": [
         "net462",
         "net6.0",
-        "net7.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {

@@ -2,14 +2,10 @@
   <Import Project="..\Test.csproj.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>net462;net6.0;net7.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net462;net6.0;net8.0;net9.0</TargetFrameworks>
     <RootNamespace>ServiceModel.Grpc.Emit</RootNamespace>
     <NoWarn>$(NoWarn);ServiceModelGrpcInternalAPI</NoWarn>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="CompareNETObjects" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ServiceModel.Grpc.Emit\ServiceModel.Grpc.Emit.csproj" />

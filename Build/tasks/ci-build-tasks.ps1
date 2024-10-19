@@ -38,8 +38,8 @@ task UnitTest {
     $builds = @(
         @{ File = 'task-unit-test.ps1'; Sources = $PathSources; Framework = 'net462' }
         @{ File = 'task-unit-test.ps1'; Sources = $PathSources; Framework = 'net6.0' }
-        @{ File = 'task-unit-test.ps1'; Sources = $PathSources; Framework = 'net7.0' }
         @{ File = 'task-unit-test.ps1'; Sources = $PathSources; Framework = 'net8.0' }
+        @{ File = 'task-unit-test.ps1'; Sources = $PathSources; Framework = 'net9.0' }
     )
     
     Build-Parallel $builds -ShowParameter Framework -MaximumBuilds 4

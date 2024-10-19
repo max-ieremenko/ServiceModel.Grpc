@@ -10,13 +10,13 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net6.0",
-        "net7.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {
           "Name": "Microsoft.IdentityModel.Protocols.OpenIdConnect",
-          "Version": "6.10.0"
+          "Version": "8.1.1"
         }
       ]
     },
@@ -25,13 +25,13 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net6.0",
-        "net7.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {
           "Name": "Microsoft.IdentityModel.Protocols.OpenIdConnect",
-          "Version": "6.10.0"
+          "Version": "8.1.1"
         }
       ]
     },
@@ -40,13 +40,13 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net6.0",
-        "net7.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {
           "Name": "Microsoft.IdentityModel.Protocols.OpenIdConnect",
-          "Version": "6.10.0"
+          "Version": "8.1.1"
         }
       ]
     }

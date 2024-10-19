@@ -22,6 +22,10 @@ namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.Extensions;
 
 internal sealed class MPackCodeGeneratorExtension : ICodeGeneratorExtension
 {
+    public bool MessagePack { get; set; }
+
+    public bool MemoryPack { get; set; }
+
     public void ProvideGenerators(ICodeGeneratorCollection generators, IContractDescriptionCollection descriptions, IExtensionContext context)
     {
         var distinct = new HashSet<IMessageDescription>(MessageDescriptionComparer.Default);
@@ -82,12 +86,29 @@ internal sealed class MPackCodeGeneratorExtension : ICodeGeneratorExtension
             return;
         }
 
-        generators.TryGetMetadata<ContractCodeGeneratorMetadata>()?.RequestPartialCctor(MessagePackContractCodeGenerator.PartialCctorMethodName, contract);
-        generators.Add(new MessagePackContractCodeGenerator(contract, knownFormatters));
+        if (MessagePack)
+        {
+            generators.TryGetMetadata<ContractCodeGeneratorMetadata>()?.RequestPartialCctor(MessagePackContractCodeGenerator.PartialCctorMethodName, contract);
+            generators.Add(new MessagePackContractCodeGenerator(contract, knownFormatters));
+        }
+
+        if (MemoryPack)
+        {
+            generators.TryGetMetadata<ContractCodeGeneratorMetadata>()?.RequestPartialCctor(MemoryPackContractCodeGenerator.PartialCctorMethodName, contract);
+            generators.Add(new MemoryPackContractCodeGenerator(contract, knownFormatters));
+        }
     }
 
     private void AddFormatterGenerator(ICodeGeneratorCollection generators, int propertiesCount)
     {
-        generators.Add(new MessagePackMessageFormatterCodeGenerator(propertiesCount));
+        if (MessagePack)
+        {
+            generators.Add(new MessagePackMessageFormatterCodeGenerator(propertiesCount));
+        }
+
+        if (MemoryPack)
+        {
+            generators.Add(new MemoryPackMessageFormatterCodeGenerator(propertiesCount));
+        }
     }
 }

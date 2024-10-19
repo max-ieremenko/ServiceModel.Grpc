@@ -17,7 +17,7 @@ param(
 task . Clean, Build, Run, CopyResults
 
 Enter-Build {
-    $pathApp = Join-Path $PathSources 'ServiceModel.Grpc.Benchmarks/bin' $Configuration 'net8.0'
+    $pathApp = Join-Path $PathSources 'ServiceModel.Grpc.Benchmarks/bin' $Configuration
     $pathBuildOutArtifacts = Join-Path $PathBuildOut 'BenchmarkDotNet.Artifacts'
 }
 

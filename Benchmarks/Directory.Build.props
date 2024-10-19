@@ -1,11 +1,11 @@
 <Project>
-  <Import Project="..\Sources\Versions.props" />
+  <Import Project="$(MSBuildThisFileDirectory)..\Sources\Versions.props" />
 
   <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
     
-    <CodeAnalysisRuleSet>..\..\Sources\StyleCope.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)..\Sources\StyleCope.ruleset</CodeAnalysisRuleSet>
 
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
@@ -13,9 +13,12 @@
 
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+
+    <NoWarn>$(NoWarn);NU1902;NU1903</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers.Unstable" PrivateAssets="All" />
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)..\Sources\stylecop.json" Visible="false" />
   </ItemGroup>
 </Project>

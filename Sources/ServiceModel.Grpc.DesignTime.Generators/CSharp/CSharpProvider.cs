@@ -39,6 +39,7 @@ internal static class CSharpProvider
         typeHandler.AddKnownAttribute(AttributeAnalyzer.TryImportGrpcService);
         typeHandler.AddKnownAttribute(AttributeAnalyzer.TryExportGrpcService);
         typeHandler.AddKnownAttribute(AttributeAnalyzer.TryMessagePack);
+        typeHandler.AddKnownAttribute(AttributeAnalyzer.TryMemoryPack);
         typeHandler.AddKnownAttribute(AttributeAnalyzer.TryExtension);
 
         var handler = new ExtensionsHandler(

@@ -54,7 +54,7 @@ public abstract class AspNetCoreAuthenticationTestBase
                             ValidateTokenReplay = false,
                             RequireAudience = false,
                             RequireExpirationTime = false,
-                            IssuerSigningKey = new SymmetricSecurityKey(Guid.Empty.ToByteArray())
+                            IssuerSigningKey = new SymmetricSecurityKey(new byte[256 / 8])
                         };
                     });
             })
@@ -120,11 +120,8 @@ public abstract class AspNetCoreAuthenticationTestBase
     {
         var descriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.Name, userName)
-            }),
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Guid.Empty.ToByteArray()), SecurityAlgorithms.HmacSha256Signature)
+            Subject = new ClaimsIdentity([new Claim(ClaimTypes.Name, userName)]),
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(new byte[256 / 8]), SecurityAlgorithms.HmacSha256Signature)
         };
 
         var handler = new JwtSecurityTokenHandler();
