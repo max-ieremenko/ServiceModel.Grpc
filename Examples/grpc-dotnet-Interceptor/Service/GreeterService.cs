@@ -21,6 +21,13 @@ public sealed class GreeterService : IGreeterService
         _logger = loggerFactory.CreateLogger(nameof(GreeterService));
     }
 
+    public string SayHello(string name)
+    {
+        _logger.LogInformation($"Sending hello to {name}");
+
+        return "Hello " + name;
+    }
+
     public Task<string> SayHelloAsync(string name)
     {
         _logger.LogInformation($"Sending hello to {name}");
@@ -41,6 +48,28 @@ public sealed class GreeterService : IGreeterService
 
             // Gotta look busy
             await Task.Delay(1000, token);
+        }
+    }
+
+    public async Task<string> SayHelloToLotsOfBuddiesAsync(IAsyncEnumerable<string> names, CancellationToken token)
+    {
+        var buffer = new List<string>();
+        await foreach (var name in names.WithCancellation(token))
+        {
+            buffer.Add(name);
+        }
+
+        var message = $"Hello {string.Join(", ", names)}";
+
+        _logger.LogInformation($"Sending greeting {message}.");
+        return message;
+    }
+
+    public async IAsyncEnumerable<string> SayHellosToLotsOfBuddiesAsync(IAsyncEnumerable<string> names, [EnumeratorCancellation] CancellationToken token)
+    {
+        await foreach (var name in names.WithCancellation(token))
+        {
+            yield return "Hello " + name;
         }
     }
 }

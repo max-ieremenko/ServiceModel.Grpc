@@ -7,11 +7,40 @@ using System;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
+using Microsoft.Extensions.Logging;
 
 namespace Client;
 
 public class ClientLoggerInterceptor : Interceptor
 {
+    private readonly ILogger<ClientLoggerInterceptor> _logger;
+
+    public ClientLoggerInterceptor(ILoggerFactory loggerFactory)
+    {
+        _logger = loggerFactory.CreateLogger<ClientLoggerInterceptor>();
+    }
+
+    public override TResponse BlockingUnaryCall<TRequest, TResponse>(
+        TRequest request,
+        ClientInterceptorContext<TRequest, TResponse> context,
+        BlockingUnaryCallContinuation<TRequest, TResponse> continuation)
+    {
+        LogCall(context.Method);
+        AddCallerMetadata(ref context);
+
+        try
+        {
+            return continuation(request, context);
+        }
+        catch (Exception ex)
+        {
+            // This is an example from grpc-dotnet repository as it is.
+            // ServiceModel.Grpc: for exception handling please check (error handling ServiceModel.Grpc)[https://max-ieremenko.github.io/ServiceModel.Grpc/global-error-handling.html]
+            LogError(ex);
+            throw;
+        }
+    }
+
     public override AsyncUnaryCall<TResponse> AsyncUnaryCall<TRequest, TResponse>(
         TRequest request,
         ClientInterceptorContext<TRequest, TResponse> context,
@@ -20,9 +49,19 @@ public class ClientLoggerInterceptor : Interceptor
         LogCall(context.Method);
         AddCallerMetadata(ref context);
 
-        var call = continuation(request, context);
+        try
+        {
+            var call = continuation(request, context);
 
-        return new AsyncUnaryCall<TResponse>(HandleResponse(call.ResponseAsync), call.ResponseHeadersAsync, call.GetStatus, call.GetTrailers, call.Dispose);
+            return new AsyncUnaryCall<TResponse>(HandleResponse(call.ResponseAsync), call.ResponseHeadersAsync, call.GetStatus, call.GetTrailers, call.Dispose);
+        }
+        catch (Exception ex)
+        {
+            // This is an example from grpc-dotnet repository as it is.
+            // ServiceModel.Grpc: for exception handling please check (error handling ServiceModel.Grpc)[https://max-ieremenko.github.io/ServiceModel.Grpc/global-error-handling.html]
+            LogError(ex);
+            throw;
+        }
     }
 
     private async Task<TResponse> HandleResponse<TResponse>(Task<TResponse> t)
@@ -37,11 +76,7 @@ public class ClientLoggerInterceptor : Interceptor
         {
             // This is an example from grpc-dotnet repository as it is.
             // ServiceModel.Grpc: for exception handling please check (error handling ServiceModel.Grpc)[https://max-ieremenko.github.io/ServiceModel.Grpc/global-error-handling.html]
-            var initialColor = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Call error: {ex.Message}");
-            Console.ForegroundColor = initialColor;
-
+            LogError(ex);
             throw;
         }
     }
@@ -53,7 +88,17 @@ public class ClientLoggerInterceptor : Interceptor
         LogCall(context.Method);
         AddCallerMetadata(ref context);
 
-        return continuation(context);
+        try
+        {
+            return continuation(context);
+        }
+        catch (Exception ex)
+        {
+            // This is an example from grpc-dotnet repository as it is.
+            // ServiceModel.Grpc: for exception handling please check (error handling ServiceModel.Grpc)[https://max-ieremenko.github.io/ServiceModel.Grpc/global-error-handling.html]
+            LogError(ex);
+            throw;
+        }
     }
 
     public override AsyncServerStreamingCall<TResponse> AsyncServerStreamingCall<TRequest, TResponse>(
@@ -64,7 +109,17 @@ public class ClientLoggerInterceptor : Interceptor
         LogCall(context.Method);
         AddCallerMetadata(ref context);
 
-        return continuation(request, context);
+        try
+        {
+            return continuation(request, context);
+        }
+        catch (Exception ex)
+        {
+            // This is an example from grpc-dotnet repository as it is.
+            // ServiceModel.Grpc: for exception handling please check (error handling ServiceModel.Grpc)[https://max-ieremenko.github.io/ServiceModel.Grpc/global-error-handling.html]
+            LogError(ex);
+            throw;
+        }
     }
 
     public override AsyncDuplexStreamingCall<TRequest, TResponse> AsyncDuplexStreamingCall<TRequest, TResponse>(
@@ -74,17 +129,24 @@ public class ClientLoggerInterceptor : Interceptor
         LogCall(context.Method);
         AddCallerMetadata(ref context);
 
-        return continuation(context);
+        try
+        {
+            return continuation(context);
+        }
+        catch (Exception ex)
+        {
+            // This is an example from grpc-dotnet repository as it is.
+            // ServiceModel.Grpc: for exception handling please check (error handling ServiceModel.Grpc)[https://max-ieremenko.github.io/ServiceModel.Grpc/global-error-handling.html]
+            LogError(ex);
+            throw;
+        }
     }
 
     private void LogCall<TRequest, TResponse>(Method<TRequest, TResponse> method)
         where TRequest : class
         where TResponse : class
     {
-        var initialColor = Console.ForegroundColor;
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine($"Starting call. Type: {method.Type}. Request: {typeof(TRequest)}. Response: {typeof(TResponse)}");
-        Console.ForegroundColor = initialColor;
+        _logger.LogInformation($"Starting call. Name: {method.Name}. Type: {method.Type}. Request: {typeof(TRequest)}. Response: {typeof(TResponse)}");
     }
 
     private void AddCallerMetadata<TRequest, TResponse>(ref ClientInterceptorContext<TRequest, TResponse> context)
@@ -106,5 +168,10 @@ public class ClientLoggerInterceptor : Interceptor
         headers.Add("caller-user", Environment.UserName);
         headers.Add("caller-machine", Environment.MachineName);
         headers.Add("caller-os", Environment.OSVersion.ToString());
+    }
+
+    private void LogError(Exception ex)
+    {
+        _logger.LogError(ex, $"Call error: {ex.Message}");
     }
 }
