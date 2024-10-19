@@ -15,6 +15,7 @@
 // </copyright>
 
 using Grpc.AspNetCore.Server;
+using Grpc.Core.Interceptors;
 using Grpc.Core.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -57,13 +58,11 @@ internal sealed class PostConfigureGrpcServiceOptions : IPostConfigureOptions<Gr
     {
         if (errorHandlerFactory != null)
         {
-            var args = ErrorHandlerInterceptorFactory.CreateServerHandlerArgs(
-                errorHandlerFactory,
+            interceptors.Add<ServerNativeInterceptor>(new ServerNativeInterceptorOptions(
                 marshallerFactory.ThisOrDefault(),
                 detailSerializer,
-                CreateLogger(loggerFactory));
-
-            interceptors.Add(ErrorHandlerInterceptorFactory.GetServerHandlerType(), args);
+                errorHandlerFactory,
+                CreateLogger(loggerFactory)));
         }
     }
 
