@@ -3,17 +3,18 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="ServiceModel.Grpc.SelfHost" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Console" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ServiceModel.Grpc.SelfHost" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\Contract\Contract.csproj" />
-		<ProjectReference Include="..\Service\Service.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Contract\Contract.csproj" />
+    <ProjectReference Include="..\Service\Service.csproj" />
+  </ItemGroup>
 </Project>
