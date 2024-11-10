@@ -1,27 +1,27 @@
 @{ 
-    Solution      = "MigrateWCFTogRpc.sln"
-    Configuration = "Release"
-    Platform      = "Win"
+    Solution      = 'MigrateWCFTogRpc.sln'
+    Configuration = 'Release'
+    Platform      = 'Win'
 
     Tests         = @(
         @( 
             @{
-                App  = "WCFServiceHost/bin/Release/net462/WCFServiceHost.exe"
+                App  = 'WCFServiceHost/bin/Release/WCFServiceHost.exe'
                 Port = 8000
             }
-            @{ App = "WCFClient/bin/Release/net462/WCFClient.exe" }
+            @{ App = 'WCFClient/bin/Release/WCFClient.exe' }
         ),
         @( 
             @{
-                App  = "AspNetServiceHost/bin/Release/net8.0/AspNetServiceHost.exe"
+                App  = 'AspNetServiceHost/bin/Release/AspNetServiceHost.exe'
                 Port = 8080
             }
             @{
-                App  = "NativeServiceHost/bin/Release/net462/NativeServiceHost.exe"
+                App  = 'NativeServiceHost/bin/Release/NativeServiceHost.exe'
                 Port = 8090
             }
-            @{ App = "gRPCClient/bin/Release/net462/gRPCClient.exe" }
-            @{ App = "gRPCClientDesignTime/bin/Release/net462/gRPCClientDesignTime.exe" }
+            @{ App = 'gRPCClient/bin/Release/gRPCClient.exe' }
+            @{ App = 'gRPCClientDesignTime/bin/Release/gRPCClientDesignTime.exe' }
         )
     )
 }
