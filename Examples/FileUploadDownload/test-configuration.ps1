@@ -1,22 +1,22 @@
 @{ 
-    Solution      = "FileUploadDownload.sln"
-    Configuration = "Debug"
-    Platform      = "Linux"
+    Solution      = 'FileUploadDownload.sln'
+    Configuration = 'Debug'
+    Platform      = 'Linux'
 
     Tests         = @(
         @( 
             @{
-                App  = "ServerAspNetHost/bin/Debug/net8.0/ServerAspNetHost.dll"
+                App  = 'ServerAspNetHost/bin/Debug/ServerAspNetHost.dll'
                 Port = 5000
             }
             @{
-                App  = "ServerSelfHost/bin/Debug/net8.0/ServerSelfHost.dll"
+                App  = 'ServerSelfHost/bin/Debug/ServerSelfHost.dll'
                 Port = 5003
             }
-            @{ App = "ConsoleClient/bin/Debug/net8.0/ConsoleClient.dll" }
+            @{ App = 'ConsoleClient/bin/Debug/ConsoleClient.dll' }
         ),     
         @( 
-            @{ App = "Benchmarks/bin/Debug/net8.0/Benchmarks.dll" }
+            @{ App = 'Benchmarks/bin/Debug/Benchmarks.dll' }
         )     
     )
 }
