@@ -1,12 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <OutputType>Exe</OutputType>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 
     <InvariantGlobalization>true</InvariantGlobalization>
     <PublishAot>true</PublishAot>
+
+    <!--
+    IL3053: Assembly 'MessagePack' produced AOT analysis warnings.
+    IL2104: Assembly 'MessagePack' produced trim warnings.
+    -->
+    <NoWarn>$(NoWarn);IL3053;IL2104</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
