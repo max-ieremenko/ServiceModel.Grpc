@@ -3,6 +3,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
+	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
