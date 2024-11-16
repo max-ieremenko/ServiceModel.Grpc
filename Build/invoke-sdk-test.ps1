@@ -1,5 +1,5 @@
 #Requires -Version "7.0"
-#Requires -Modules @{ ModuleName="InvokeBuild"; ModuleVersion="5.10.5" }
+#Requires -Modules @{ ModuleName="InvokeBuild"; ModuleVersion="5.11.3" }
 
 [CmdletBinding()]
 param (
@@ -15,6 +15,7 @@ param (
 )
 
 $ErrorActionPreference = 'Stop'
+$ProgressPreference = 'SilentlyContinue'
 Set-StrictMode -Version Latest
 
 . (Join-Path $PSScriptRoot 'scripts' 'Clear-NugetCache.ps1')

@@ -3,7 +3,7 @@ function Build-LinuxSdkImage {
     param (
         [Parameter()]
         [string]
-        $Tag = 'service-model-grpc/sdk:8.0-jammy',
+        $Tag = 'service-model-grpc/sdk:9.0-noble',
 
         [Parameter()]
         [switch]
