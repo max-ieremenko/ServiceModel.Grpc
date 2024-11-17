@@ -102,7 +102,7 @@ public abstract class ClientBuilderTestBase
     }
 
     [Test]
-    public void ReturnStringContext()
+    public void ReturnString()
     {
         TestOutput.WriteLine(GetClientInstanceMethod(nameof(IContract.ReturnString)).Disassemble());
 
@@ -111,6 +111,21 @@ public abstract class ClientBuilderTestBase
         var actual = Factory().ReturnString();
 
         actual.ShouldBe("a");
+        CallInvoker.VerifyAll();
+    }
+
+    [Test]
+    public void ReturnObject()
+    {
+        TestOutput.WriteLine(GetClientInstanceMethod(nameof(IContract.ReturnObject)).Disassemble());
+
+        var request = new object();
+        var response = new object();
+        CallInvoker.SetupBlockingUnaryCallInOut(request, response);
+
+        var actual = Factory().ReturnObject(request);
+
+        actual.ShouldBe(response);
         CallInvoker.VerifyAll();
     }
 
