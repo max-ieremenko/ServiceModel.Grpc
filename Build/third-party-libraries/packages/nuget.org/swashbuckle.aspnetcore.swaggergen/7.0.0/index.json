@@ -7,7 +7,7 @@
   "UsedBy": [
     {
       "Name": "AspNetCoreSwashbuckle",
-      "InternalOnly": true,
+      "InternalOnly": false,
       "TargetFrameworks": [
         "net6.0",
         "net8.0",
@@ -15,8 +15,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "Swashbuckle.AspNetCore.SwaggerGen",
-          "Version": "6.9.0"
+          "Name": "Swashbuckle.AspNetCore.Swagger",
+          "Version": "7.0.0"
         }
       ]
     }
