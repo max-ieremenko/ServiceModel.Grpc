@@ -18,8 +18,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "System.Collections.Immutable",
-          "Version": "7.0.0"
+          "Name": "protobuf-net.Core",
+          "Version": "3.2.45"
         }
       ]
     }
@@ -32,13 +32,11 @@
     },
     {
       "Subject": "repository",
-      "Code": null,
       "HRef": "https://github.com/protobuf-net/protobuf-net",
       "Description": "License code NOASSERTION"
     },
     {
       "Subject": "project",
-      "Code": null,
       "HRef": "https://github.com/protobuf-net/protobuf-net",
       "Description": "License code NOASSERTION"
     }

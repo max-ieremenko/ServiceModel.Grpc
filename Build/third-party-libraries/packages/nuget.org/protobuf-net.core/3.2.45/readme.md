@@ -1,4 +1,4 @@
-protobuf-net.Core [3.2.30](https://www.nuget.org/packages/protobuf-net.Core/3.2.30)
+protobuf-net.Core [3.2.45](https://www.nuget.org/packages/protobuf-net.Core/3.2.45)
 --------------------
 
 Used by: ProtoBuf
