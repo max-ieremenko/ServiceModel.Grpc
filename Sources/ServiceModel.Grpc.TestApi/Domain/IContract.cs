@@ -41,6 +41,9 @@ public interface IContract : IDisposable
     string ReturnString();
 
     [OperationContract]
+    object ReturnObject(object value);
+
+    [OperationContract]
     Task<string> ReturnStringAsync(ServerCallContext? context = default);
 
     [OperationContract]

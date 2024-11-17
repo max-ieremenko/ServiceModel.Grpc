@@ -32,6 +32,8 @@ internal interface IReflect<TType>
 
     bool Equals(TType x, TType y);
 
+    bool Equals(TType x, Type y);
+
     bool IsTaskOrValueTask(TType type);
 
     TType[] GenericTypeArguments(TType type);

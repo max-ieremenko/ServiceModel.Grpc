@@ -69,6 +69,11 @@ public partial class OperationDescriptionBuilderTest
         public string String() => throw new NotSupportedException();
 
         [OperationContract]
+        [ResponseType(typeof(object))]
+        [ResponseHeaderNames([])]
+        public object Object() => throw new NotSupportedException();
+
+        [OperationContract]
         [ResponseType(typeof(ValueTuple<string, int>))]
         [ResponseHeaderNames([])]
         public (string Value1, int Value2) ValueTuple() => throw new NotSupportedException();
@@ -203,6 +208,10 @@ public partial class OperationDescriptionBuilderTest
         public void Int(int value) => throw new NotSupportedException();
 
         [OperationContract]
+        [RequestType([0], [typeof(object)])]
+        public void Object(object value) => throw new NotSupportedException();
+
+        [OperationContract]
         [RequestType([0, 1], [typeof(string), typeof(int?)])]
         public void StringInt(string? value1, int? value2) => throw new NotSupportedException();
 
@@ -251,6 +260,10 @@ public partial class OperationDescriptionBuilderTest
         [OperationContract]
         [ContextInput([1])]
         public void CallContext(int value1, CallContext value2) => throw new NotSupportedException();
+
+        [OperationContract]
+        [ContextInput([1])]
+        public void CallContextWithObject(object value1, CallContext? value2) => throw new NotSupportedException();
 
         [OperationContract]
         [ContextInput([0])]
