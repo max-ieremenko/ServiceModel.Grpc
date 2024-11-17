@@ -23,28 +23,18 @@ namespace ServiceModel.Grpc.Benchmarks;
 
 public class ClientUnaryCallBenchmark : UnaryCallBenchmarkBase
 {
-    internal override IUnaryCallTest CreateServiceModelGrpc(IMarshallerFactory marshallerFactory, SomeObject payload)
-    {
-        return new ServiceModelGrpcClientCallTest(marshallerFactory, payload);
-    }
+    internal override IUnaryCallTest CreateServiceModelGrpc(IMarshallerFactory marshallerFactory, SomeObject payload) =>
+        new ServiceModelGrpcClientCallTest(marshallerFactory, payload);
 
-    internal override IUnaryCallTest CreateServiceModelGrpcProto(SomeObjectProto payload)
-    {
-        return new ServiceModelGrpcProtoClientCallTest(payload);
-    }
+    internal override IUnaryCallTest CreateServiceModelGrpcProto(SomeObjectProto payload) =>
+        new ServiceModelGrpcProtoClientCallTest(payload);
 
-    internal override IUnaryCallTest CreateNativeGrpc(SomeObjectProto payload)
-    {
-        return new NativeGrpcClientCallTest(payload);
-    }
+    internal override IUnaryCallTest CreateNativeGrpc(SomeObjectProto payload) =>
+        new NativeGrpcClientCallTest(payload);
 
-    internal override IUnaryCallTest CreateProtobufGrpc(SomeObject payload)
-    {
-        return new ProtobufGrpcClientCallTest(payload);
-    }
+    internal override IUnaryCallTest CreateProtobufGrpc(SomeObject payload) =>
+        new ProtobufGrpcClientCallTest(payload);
 
-    internal override IUnaryCallTest CreateMagicOnion(SomeObject payload)
-    {
-        return new MagicOnionClientCallTest(payload);
-    }
+    internal override IUnaryCallTest CreateMagicOnion(SomeObject payload) =>
+        new MagicOnionClientCallTest(payload);
 }
