@@ -15,16 +15,11 @@
 // </copyright>
 
 using Grpc.Core;
-using MessagePack;
-using ServiceModel.Grpc.Benchmarks.MarshallerTest;
+using ServiceModel.Grpc.Configuration;
 
 namespace ServiceModel.Grpc.Benchmarks;
 
 public class MessagePackMarshallerBenchmark : MarshallerBenchmarkBase
 {
-    internal override Marshaller<T> CreateDefaultMarshaller<T>() => MessagePackTest.CreateDefaultMarshaller<T>();
-
-    internal override Marshaller<T> CreateStreamMarshaller<T>() => MessagePackTest.CreateStreamMarshaller<T>();
-
-    internal override byte[] Serialize<T>(T value) => MessagePackSerializer.Serialize(value);
+    internal override Marshaller<T> CreateMarshaller<T>() => MessagePackMarshallerFactory.Default.CreateMarshaller<T>();
 }

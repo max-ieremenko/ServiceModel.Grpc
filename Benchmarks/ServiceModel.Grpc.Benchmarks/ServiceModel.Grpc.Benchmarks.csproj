@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Sources\ServiceModel.Grpc.AspNetCore\ServiceModel.Grpc.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\Sources\ServiceModel.Grpc.MemoryPackMarshaller\ServiceModel.Grpc.MemoryPackMarshaller.csproj" />
     <ProjectReference Include="..\..\Sources\ServiceModel.Grpc.MessagePackMarshaller\ServiceModel.Grpc.MessagePackMarshaller.csproj" />
     <ProjectReference Include="..\..\Sources\ServiceModel.Grpc.ProtoBufMarshaller\ServiceModel.Grpc.ProtoBufMarshaller.csproj" />
     <ProjectReference Include="..\..\Sources\ServiceModel.Grpc\ServiceModel.Grpc.csproj" />

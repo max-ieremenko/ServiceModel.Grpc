@@ -19,7 +19,7 @@ using ServiceModel.Grpc.Configuration;
 
 namespace ServiceModel.Grpc.Benchmarks;
 
-public class ProtobufMarshallerBenchmark : MarshallerBenchmarkBase
+public class MemoryPackMarshallerBenchmark : MarshallerBenchmarkBase
 {
-    internal override Marshaller<T> CreateMarshaller<T>() => ProtobufMarshallerFactory.Default.CreateMarshaller<T>();
+    internal override Marshaller<T> CreateMarshaller<T>() => MemoryPackMarshallerFactory.Default.CreateMarshaller<T>();
 }
