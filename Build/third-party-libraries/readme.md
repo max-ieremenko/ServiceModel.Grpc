@@ -31,8 +31,8 @@ Packages 120
 |[Grpc.Tools](packages/nuget.org/grpc.tools/2.67.0)|2.67.0|[nuget.org](https://www.nuget.org/packages/Grpc.Tools/2.67.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
 |[MemoryPack](packages/nuget.org/memorypack/1.21.3)|1.21.3|[nuget.org](https://www.nuget.org/packages/MemoryPack/1.21.3)|[MIT](licenses/mit)|MemoryPack|
 |[MemoryPack.Core](packages/nuget.org/memorypack.core/1.21.3)|1.21.3|[nuget.org](https://www.nuget.org/packages/MemoryPack.Core/1.21.3)|[MIT](licenses/mit)|MemoryPack|
-|[MessagePack](packages/nuget.org/messagepack/2.5.187)|2.5.187|[nuget.org](https://www.nuget.org/packages/MessagePack/2.5.187)|[MIT](licenses/mit)|MessagePack|
-|[MessagePack.Annotations](packages/nuget.org/messagepack.annotations/2.5.187)|2.5.187|[nuget.org](https://www.nuget.org/packages/MessagePack.Annotations/2.5.187)|[MIT](licenses/mit)|MessagePack|
+|[MessagePack](packages/nuget.org/messagepack/2.5.192)|2.5.192|[nuget.org](https://www.nuget.org/packages/MessagePack/2.5.192)|[MIT](licenses/mit)|MessagePack|
+|[MessagePack.Annotations](packages/nuget.org/messagepack.annotations/2.5.192)|2.5.192|[nuget.org](https://www.nuget.org/packages/MessagePack.Annotations/2.5.192)|[MIT](licenses/mit)|MessagePack|
 |[Microsoft.AspNetCore.Authentication.JwtBearer](packages/nuget.org/microsoft.aspnetcore.authentication.jwtbearer/6.0.36)|6.0.36|[nuget.org](https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.JwtBearer/6.0.36)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
 |[Microsoft.Bcl.AsyncInterfaces](packages/nuget.org/microsoft.bcl.asyncinterfaces/1.1.1)|1.1.1|[nuget.org](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/1.1.1)|[MIT](licenses/mit)|Core|
 |[Microsoft.Bcl.AsyncInterfaces](packages/nuget.org/microsoft.bcl.asyncinterfaces/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/6.0.0)|[MIT](licenses/mit)|ClientDI, Core internal, MessagePack|

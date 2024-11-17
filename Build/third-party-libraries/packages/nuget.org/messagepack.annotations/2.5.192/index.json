@@ -24,13 +24,11 @@
     },
     {
       "Subject": "repository",
-      "Code": null,
       "HRef": "https://github.com/MessagePack-CSharp/MessagePack-CSharp",
       "Description": "License code NOASSERTION"
     },
     {
       "Subject": "project",
-      "Code": null,
       "HRef": "https://github.com/neuecc/MessagePack-CSharp",
       "Description": "License code NOASSERTION"
     }
