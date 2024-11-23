@@ -63,6 +63,8 @@ internal sealed class ReflectTypeSymbol : IReflect<ITypeSymbol>
 
     public bool Equals(ITypeSymbol x, ITypeSymbol y) => SymbolEqualityComparer.Default.Equals(x, y);
 
+    public bool Equals(ITypeSymbol x, Type y) => x.Is(y);
+
     public bool IsTaskOrValueTask(ITypeSymbol type) => SyntaxTools.IsTask(type) || type.IsValueTask();
 
     public ITypeSymbol[] GenericTypeArguments(ITypeSymbol type)

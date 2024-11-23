@@ -36,6 +36,7 @@ public static class Program
         await RunUnaryCallBenchmark<ServerUnaryCallBenchmark>().ConfigureAwait(false);
 
         RunMarshallerBenchmark<MessagePackMarshallerBenchmark>();
+        RunMarshallerBenchmark<MemoryPackMarshallerBenchmark>();
         RunMarshallerBenchmark<ProtobufMarshallerBenchmark>();
     }
 
@@ -54,6 +55,9 @@ public static class Program
 
         await benchmark.ServiceModelGrpcMessagePack().ConfigureAwait(false);
         Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcMessagePack), await new T().GetServiceModelGrpcMessagePackSize().ConfigureAwait(false));
+
+        await benchmark.ServiceModelGrpcMemoryPack().ConfigureAwait(false);
+        Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcMemoryPack), await new T().GetServiceModelGrpcMemoryPackSize().ConfigureAwait(false));
 
         await benchmark.ServiceModelGrpcProto().ConfigureAwait(false);
         Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcProto), await new T().GetServiceModelGrpcProtoSize().ConfigureAwait(false));
@@ -77,11 +81,8 @@ public static class Program
         Console.WriteLine("---- {0} -----", benchmark.GetType().Name);
         benchmark.GlobalSetup();
 
-        benchmark.DefaultSerializer();
-        benchmark.DefaultDeserializer();
-
-        benchmark.StreamSerializer();
-        benchmark.StreamDeserializer();
+        benchmark.Serialize();
+        benchmark.Deserialize();
     }
 
     private static bool IsRelease()

@@ -19,6 +19,7 @@ using Grpc.Core;
 using ServiceModel.Grpc.Benchmarks.Domain;
 using ServiceModel.Grpc.Benchmarks.MarshallerTest;
 using ServiceModel.Grpc.Channel;
+using ServiceModel.Grpc.Configuration;
 
 namespace ServiceModel.Grpc.Benchmarks;
 
@@ -28,48 +29,24 @@ public abstract class MarshallerBenchmarkBase
     private StubSerializationContext _serializationContext = null!;
     private StubDeserializationContext _deserializationContext = null!;
 
-    private Marshaller<Message<SomeObject>> _asStreamMarshaller = null!;
-    private Marshaller<Message<SomeObject>> _defaultMarshaller = null!;
+    private Marshaller<Message<SomeObject>> _marshaller = null!;
     private Message<SomeObject> _payload = null!;
 
     [GlobalSetup]
     public void GlobalSetup()
     {
-        _asStreamMarshaller = CreateStreamMarshaller<Message<SomeObject>>();
-        _defaultMarshaller = CreateDefaultMarshaller<Message<SomeObject>>();
+        _marshaller = CreateMarshaller<Message<SomeObject>>();
         _payload = new Message<SomeObject>(DomainExtensions.CreateSomeObject());
 
         _serializationContext = new StubSerializationContext();
-        _deserializationContext = new StubDeserializationContext(Serialize(_payload));
+        _deserializationContext = new StubDeserializationContext(MarshallerExtensions.Serialize(_marshaller, _payload));
     }
 
     [Benchmark]
-    public void DefaultSerializer()
-    {
-        _defaultMarshaller.ContextualSerializer(_payload, _serializationContext);
-    }
+    public void Serialize() => _marshaller.ContextualSerializer(_payload, _serializationContext);
 
     [Benchmark]
-    public void DefaultDeserializer()
-    {
-        _defaultMarshaller.ContextualDeserializer(_deserializationContext);
-    }
+    public void Deserialize() => _marshaller.ContextualDeserializer(_deserializationContext);
 
-    [Benchmark]
-    public void StreamSerializer()
-    {
-        _asStreamMarshaller.ContextualSerializer(_payload, _serializationContext);
-    }
-
-    [Benchmark]
-    public void StreamDeserializer()
-    {
-        _asStreamMarshaller.ContextualDeserializer(_deserializationContext);
-    }
-
-    internal abstract Marshaller<T> CreateDefaultMarshaller<T>();
-
-    internal abstract Marshaller<T> CreateStreamMarshaller<T>();
-
-    internal abstract byte[] Serialize<T>(T value);
+    internal abstract Marshaller<T> CreateMarshaller<T>();
 }

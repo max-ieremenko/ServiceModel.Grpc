@@ -562,6 +562,11 @@ public static class SyntaxTools
             return "void";
         }
 
+        if (nameof(Object).Equals(name, StringComparison.Ordinal))
+        {
+            return "object";
+        }
+
         return name;
     }
 }

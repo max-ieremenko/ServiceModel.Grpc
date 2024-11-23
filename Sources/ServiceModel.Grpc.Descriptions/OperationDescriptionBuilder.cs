@@ -89,18 +89,32 @@ internal readonly ref struct OperationDescriptionBuilder<TType>
 
     private static MessageDescription<TType> CreateMessage(params TType[] properties) => new(properties);
 
-    private bool IsContextParameter(TType type) =>
-        _reflect.IsAssignableFrom(type, typeof(ServerCallContext))
-        || _reflect.IsAssignableFrom(type, typeof(CancellationToken))
-        || _reflect.IsAssignableFrom(type, typeof(CancellationToken?))
-        || _reflect.IsAssignableFrom(type, typeof(CallContext))
-        || _reflect.IsAssignableFrom(type, typeof(CallOptions))
-        || _reflect.IsAssignableFrom(type, typeof(CallOptions?));
+    private bool IsContextParameter(TType type)
+    {
+        if (_reflect.Equals(type, typeof(object)))
+        {
+            return false;
+        }
 
-    private bool IsDataParameter(TType type) =>
-        !_reflect.IsTaskOrValueTask(type)
-        && !IsContextParameter(type)
-        && !_reflect.IsAssignableFrom(type, typeof(Stream));
+        return _reflect.IsAssignableFrom(type, typeof(ServerCallContext))
+               || _reflect.IsAssignableFrom(type, typeof(CancellationToken))
+               || _reflect.IsAssignableFrom(type, typeof(CancellationToken?))
+               || _reflect.IsAssignableFrom(type, typeof(CallContext))
+               || _reflect.IsAssignableFrom(type, typeof(CallOptions))
+               || _reflect.IsAssignableFrom(type, typeof(CallOptions?));
+    }
+
+    private bool IsDataParameter(TType type)
+    {
+        if (_reflect.Equals(type, typeof(object)))
+        {
+            return true;
+        }
+
+        return !_reflect.IsTaskOrValueTask(type)
+               && !IsContextParameter(type)
+               && !_reflect.IsAssignableFrom(type, typeof(Stream));
+    }
 
     private bool TryCreateResponseType(
         out MessageDescription<TType> responseType,
@@ -115,7 +129,7 @@ internal readonly ref struct OperationDescriptionBuilder<TType>
         headerIndexes = [];
         errorDetails = null;
 
-        if (_reflect.IsAssignableFrom(_method.ReturnType, typeof(void)))
+        if (_reflect.Equals(_method.ReturnType, typeof(void)))
         {
             return true;
         }

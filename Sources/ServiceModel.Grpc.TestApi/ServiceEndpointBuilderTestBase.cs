@@ -173,6 +173,26 @@ public abstract class ServiceEndpointBuilderTestBase
     }
 
     [Test]
+    public async Task ReturnObject()
+    {
+        var call = ChannelType
+            .InstanceMethod(nameof(IContract.ReturnObject))
+            .CreateDelegate<Func<IContract, Message<object>, ServerCallContext, Task<Message<object>>>>(Channel);
+        TestOutput.WriteLine(call.Method.Disassemble());
+
+        var request = new object();
+        var response = new object();
+        _service
+            .Setup(s => s.ReturnObject(request))
+            .Returns(response);
+
+        var actual = await call(_service.Object, new Message<object>(request), null!).ConfigureAwait(false);
+
+        actual.Value1.ShouldBe(response);
+        _service.VerifyAll();
+    }
+
+    [Test]
     public async Task ReturnStringAsync()
     {
         var call = ChannelType
