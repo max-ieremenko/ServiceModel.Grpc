@@ -110,6 +110,18 @@ internal sealed class SwaggerUiMiddleware
             response = await proxy.GetResponseBody().ConfigureAwait(false);
         }
 
+        // non GRPC response => pass as is
+        if (context.Response.StatusCode != (int)HttpStatusCode.OK
+            || !ProtocolConstants.MediaTypeNameGrpc.Equals(context.Response.Headers.ContentType, StringComparison.OrdinalIgnoreCase))
+        {
+            if (response.Length > 0)
+            {
+                await response.CopyToAsync(context.Response.BodyWriter.AsStream(true), context.RequestAborted).ConfigureAwait(false);
+            }
+
+            return;
+        }
+
         context.Response.ContentType = ProtocolConstants.MediaTypeNameSwaggerResponse;
         if (status.StatusCode == StatusCode.OK)
         {
