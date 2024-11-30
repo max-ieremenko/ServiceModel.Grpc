@@ -15,11 +15,13 @@
 // </copyright>
 
 using System.IO.Compression;
+using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using ServiceModel.Grpc.AspNetCore.TestApi;
+using ServiceModel.Grpc.AspNetCore.TestApi.Domain;
 using ServiceModel.Grpc.TestApi.Domain;
 
 namespace ServiceModel.Grpc.AspNetCore.NSwag;
@@ -44,6 +46,7 @@ public class MultipurposeServiceTest
                 services.AddServiceModelGrpcSwagger();
                 services.AddOpenApiDocument();
                 services.AddMvc();
+                services.AddTransient<CustomResponseMiddleware>();
             })
             .ConfigureApp(app =>
             {
@@ -52,6 +55,8 @@ public class MultipurposeServiceTest
                 app.UseReDoc(); // serve ReDoc UI
 
                 app.UseServiceModelGrpcSwaggerGateway();
+
+                app.UseMiddleware<CustomResponseMiddleware>();
             })
             .ConfigureEndpoints(endpoints =>
             {
@@ -122,5 +127,44 @@ public class MultipurposeServiceTest
         var actual = await _client.InvokeAsync<int>(nameof(IMultipurposeService.Sum5ValuesAsync), parameters).ConfigureAwait(false);
 
         actual.ShouldBe(15);
+    }
+
+    [Test]
+    public async Task BlockingCallAsync()
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "x", 1 },
+            { "y", "a" }
+        };
+
+        var actual = await _client.InvokeAsync<string>(nameof(IMultipurposeService.BlockingCallAsync), parameters);
+
+        actual.ShouldBe("a1");
+    }
+
+    [Test]
+    [TestCase(HttpStatusCode.Unauthorized, "application/grpc")]
+    [TestCase(HttpStatusCode.OK, "text/plain")]
+    public async Task NonGrpcResponseAsync(HttpStatusCode statusCode, string contentType)
+    {
+        var headers = new Dictionary<string, string>
+        {
+            { CustomResponseMiddleware.HeaderResponseStatusCode, statusCode.ToString() },
+            { CustomResponseMiddleware.HeaderContentType, contentType },
+            { CustomResponseMiddleware.HeaderResponseBody, "some message" }
+        };
+
+        var parameters = new Dictionary<string, object>
+        {
+            { "x", 1 },
+            { "y", "a" }
+        };
+
+        var response = await _client.PostAsync(nameof(IMultipurposeService.BlockingCallAsync), parameters, headers);
+
+        response.StatusCode.ShouldBe(statusCode);
+        response.Content.Headers.ContentType!.MediaType.ShouldBe(contentType);
+        (await response.Content.ReadAsStringAsync()).ShouldBe("some message");
     }
 }
