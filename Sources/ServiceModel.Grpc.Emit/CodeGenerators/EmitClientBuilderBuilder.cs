@@ -42,6 +42,7 @@ internal sealed class EmitClientBuilderBuilder
     }
 
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(IClientBuilder<>))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(IClientMethodBinder))]
     [UnconditionalSuppressMessage("Trimming", "IL2077:TypeBuilder.AddInterfaceImplementation")]
     public TypeInfo Build(ModuleBuilder moduleBuilder, string? className = default)
     {

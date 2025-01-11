@@ -309,6 +309,7 @@ internal sealed class EmitClientBuilder
         body.Emit(OpCodes.Ret);
     }
 
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicMethods, typeof(CallOptionsBuilder))]
     private void InitializeCallOptionsBuilder(ILGenerator body, OperationDescription<Type> operation)
     {
         // var optionsBuilder = _clientCallInvoker.CreateOptionsBuilder();
