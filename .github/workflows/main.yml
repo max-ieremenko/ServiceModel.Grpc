@@ -47,7 +47,7 @@ jobs:
 
   sdk-test-linux:
     name: linux-sdk-test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: build
 
     steps:
@@ -105,7 +105,7 @@ jobs:
 
   benchmarks:
     name: linux-benchmarks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - uses: actions/checkout@v4
