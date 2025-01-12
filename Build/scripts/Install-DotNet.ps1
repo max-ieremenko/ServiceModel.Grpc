@@ -27,6 +27,21 @@ function Test-Version {
     }
 }
 
+function Get-InstallationPath {
+    if (Get-Command -Name dotnet -ErrorAction SilentlyContinue) {
+        $versions = dotnet --list-sdks
+        foreach ($installedVersion in $versions) {
+            $path = ($installedVersion -split ' ')[1]
+            $path = $path.Trim('[', ']')
+            if (Test-Path $path) {
+                return  (Split-Path -Path $path -Parent)
+            }
+        }
+    }
+
+    $IsLinux ? '/usr/share/dotnet' : 'C:\Program Files\dotnet'
+}
+
 if (Get-Command -Name dotnet -ErrorAction SilentlyContinue) {
     $versions = dotnet --list-sdks
     foreach ($installedVersion in $versions) {
@@ -34,17 +49,16 @@ if (Get-Command -Name dotnet -ErrorAction SilentlyContinue) {
         $test = ($installedVersion -split ' ')[0]
     
         if (Test-Version -Target $Version -Test $test) {
-            Write-Output ".net sdk $test is alredy installed"
+            Write-Output ".net sdk $test is already installed"
             return
         }
     }
 }
 
-$installDir = 'C:\Program Files\dotnet'
+$installDir = Get-InstallationPath
 $installScript = 'dotnet-install.ps1'
 
 if ($IsLinux) {
-    $installDir = '/usr/share/dotnet'
     $installScript = 'dotnet-install.sh'
 }
 
@@ -63,4 +77,9 @@ if ($IsLinux) {
 }
 
 "$dotnetInstall -Version $Version -InstallDir $installDir"
-& $dotnetInstall -Version $Version -InstallDir $installDir
+if ($IsLinux -and (Get-Command -Name sudo -ErrorAction SilentlyContinue)) {
+    sudo /bin/bash $dotnetInstall -Version $Version -InstallDir $installDir
+}
+else {
+    & $dotnetInstall -Version $Version -InstallDir $installDir
+}

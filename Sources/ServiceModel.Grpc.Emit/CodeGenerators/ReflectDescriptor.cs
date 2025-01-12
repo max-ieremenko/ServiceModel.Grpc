@@ -23,6 +23,7 @@ internal sealed class ReflectDescriptor
 {
     private readonly Dictionary<int, object> _createMessageAccessor;
 
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicMethods, typeof(OperationDescriptorBuilder))]
     public ReflectDescriptor()
     {
         FuncMethodInfoCtor = typeof(Func<MethodInfo>).Constructor(2);
