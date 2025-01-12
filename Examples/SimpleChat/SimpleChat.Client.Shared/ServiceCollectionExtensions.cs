@@ -44,8 +44,9 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IJwtTokenProvider, JwtTokenProvider>();
 
         services
-            .AddServiceModelGrpcClient<IChatService>()
-            .AddServiceModelGrpcClient<IAccountService>();
+            .AddServiceModelGrpcClientFactory()
+            .AddChatServiceClient() // register generated IChatService client to avoid Reflection.Emit at runtime in the browser
+            .AddAccountServiceClient(); // register generated IAccountService client to avoid Reflection.Emit at runtime in the browser
 
         services.AddTransient<IChatClientRoom, ChatClientRoom>();
     }
