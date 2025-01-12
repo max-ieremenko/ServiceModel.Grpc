@@ -32,7 +32,14 @@ public static class Program
         });
 
         // register ClientFactory
-        services.AddSingleton<IClientFactory>(_ => new ClientFactory());
+        services.AddSingleton<IClientFactory>(_ =>
+        {
+            var factory = new ClientFactory();
+
+            GrpcClients.AddAllClients(factory);
+
+            return factory;
+        });
 
         // resolve IWeatherForecastService from ClientFactory
         services.AddScoped(provider =>
