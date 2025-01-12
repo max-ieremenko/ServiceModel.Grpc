@@ -77,4 +77,9 @@ if ($IsLinux) {
 }
 
 "$dotnetInstall -Version $Version -InstallDir $installDir"
-& $dotnetInstall -Version $Version -InstallDir $installDir
+if ($IsLinux -and (Get-Command -Name sudo -ErrorAction SilentlyContinue)) {
+    sudo /bin/bash $dotnetInstall -Version $Version -InstallDir $installDir
+}
+else {
+    & $dotnetInstall -Version $Version -InstallDir $installDir
+}
