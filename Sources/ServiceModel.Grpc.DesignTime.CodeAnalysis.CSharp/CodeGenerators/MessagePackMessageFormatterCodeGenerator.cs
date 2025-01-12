@@ -33,7 +33,7 @@ internal sealed class MessagePackMessageFormatterCodeGenerator : ICodeGenerator
     {
         output
             .AppendLine("// MessagePack extensions")
-            .Append("private sealed class ")
+            .Append("internal sealed class ")
             .WriteGenericMessage(_propertiesCount, "MessagePackFormatter")
             .Append(" : ")
             .WriteTypeName("MessagePack.Formatters", "IMessagePackFormatter")
