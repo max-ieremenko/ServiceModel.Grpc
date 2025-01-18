@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Collections.Immutable" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\ServiceModel.Grpc.DesignTime.Generators\ServiceModel.Grpc.DesignTime.Generators.csproj" OutputItemType="Analyzer" />
     <ProjectReference Include="..\ServiceModel.Grpc.AspNetCore.TestApi\ServiceModel.Grpc.AspNetCore.TestApi.csproj" />
     <ProjectReference Include="..\ServiceModel.Grpc.DesignTime\ServiceModel.Grpc.DesignTime.csproj" />
