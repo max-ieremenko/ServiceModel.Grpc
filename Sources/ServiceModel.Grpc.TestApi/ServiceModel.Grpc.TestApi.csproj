@@ -10,6 +10,7 @@
     <PackageReference Include="Grpc.Core" />
     <PackageReference Include="Grpc.Net.Client" />
     <PackageReference Include="Mono.Reflection" />
+    <PackageReference Include="System.Threading.Channels" />
   </ItemGroup>
 
   <ItemGroup>

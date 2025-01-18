@@ -31,10 +31,10 @@ Dependencies 8
 |----------|:----|
 |[System.Collections.Immutable](../../../../packages/nuget.org/system.collections.immutable/5.0.0)|5.0.0|
 |[System.Memory](../../../../packages/nuget.org/system.memory/4.5.4)|4.5.4|
-|[System.Memory](../../../../packages/nuget.org/system.memory/4.5.5)|4.5.5|
+|[System.Memory](../../../../packages/nuget.org/system.memory/4.6.0)|4.6.0|
 |[System.Reflection.Metadata](../../../../packages/nuget.org/system.reflection.metadata/5.0.0)|5.0.0|
 |[System.Runtime.CompilerServices.Unsafe](../../../../packages/nuget.org/system.runtime.compilerservices.unsafe/5.0.0)|5.0.0|
-|[System.Runtime.CompilerServices.Unsafe](../../../../packages/nuget.org/system.runtime.compilerservices.unsafe/6.0.0)|6.0.0|
+|[System.Runtime.CompilerServices.Unsafe](../../../../packages/nuget.org/system.runtime.compilerservices.unsafe/6.1.0)|6.1.0|
 |[System.Text.Encoding.CodePages](../../../../packages/nuget.org/system.text.encoding.codepages/4.5.1)|4.5.1|
 |[System.Threading.Tasks.Extensions](../../../../packages/nuget.org/system.threading.tasks.extensions/4.5.4)|4.5.4|
 
