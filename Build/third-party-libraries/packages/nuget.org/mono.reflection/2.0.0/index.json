@@ -10,7 +10,6 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net462",
-        "net6.0",
         "net8.0",
         "net9.0"
       ]
@@ -19,13 +18,11 @@
   "Licenses": [
     {
       "Subject": "package",
-      "Code": null,
       "HRef": "http://opensource.org/licenses/mit-license.php",
       "Description": "License should be verified on http://opensource.org/licenses/mit-license.php"
     },
     {
       "Subject": "project",
-      "Code": null,
       "HRef": "http://github.com/jbevain/mono.reflection/",
       "Description": "License should be verified on http://github.com/jbevain/mono.reflection/"
     }

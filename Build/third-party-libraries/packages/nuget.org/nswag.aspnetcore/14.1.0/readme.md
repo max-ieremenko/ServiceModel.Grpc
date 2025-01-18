@@ -3,7 +3,7 @@ NSwag.AspNetCore [14.1.0](https://www.nuget.org/packages/NSwag.AspNetCore/14.1.0
 
 Used by: AspNetCoreNSwag
 
-Target frameworks: net6.0, net8.0, net9.0
+Target frameworks: net8.0, net9.0
 
 License: [MIT](../../../../licenses/mit) 
 
@@ -25,7 +25,7 @@ Dependencies 6
 
 |Name|Version|
 |----------|:----|
-|[Microsoft.Extensions.FileProviders.Embedded](../../../../packages/nuget.org/microsoft.extensions.fileproviders.embedded/6.0.0)|6.0.0|
+|[Microsoft.Extensions.FileProviders.Embedded](../../../../packages/nuget.org/microsoft.extensions.fileproviders.embedded/8.0.0)|8.0.0|
 |[NSwag.Annotations](../../../../packages/nuget.org/nswag.annotations/14.1.0)|14.1.0|
 |[NSwag.Core](../../../../packages/nuget.org/nswag.core/14.1.0)|14.1.0|
 |[NSwag.Core.Yaml](../../../../packages/nuget.org/nswag.core.yaml/14.1.0)|14.1.0|

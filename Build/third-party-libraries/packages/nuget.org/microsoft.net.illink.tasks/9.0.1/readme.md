@@ -1,9 +1,9 @@
-Microsoft.NET.ILLink.Tasks [9.0.0](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/9.0.0)
+Microsoft.NET.ILLink.Tasks [9.0.1](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/9.0.1)
 --------------------
 
 Used by: AspNetCore, ClientDI, Core, Emit, MemoryPack, MessagePack
 
-Target frameworks: net462, net6.0, net8.0, net9.0, netstandard2.0, netstandard2.1
+Target frameworks: net462, net8.0, net9.0, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 

@@ -3,7 +3,7 @@ System.Threading [4.3.0](https://www.nuget.org/packages/System.Threading/4.3.0)
 
 Used by: AspNetCoreNSwag
 
-Target frameworks: net6.0, net8.0, net9.0
+Target frameworks: net8.0, net9.0
 
 License: [ms-net-library](../../../../licenses/ms-net-library) 
 

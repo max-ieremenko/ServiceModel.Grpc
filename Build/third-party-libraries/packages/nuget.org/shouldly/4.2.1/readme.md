@@ -3,7 +3,7 @@ Shouldly [4.2.1](https://www.nuget.org/packages/Shouldly/4.2.1)
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, SelfHost internal
 
-Target frameworks: net462, net6.0, net8.0, net9.0
+Target frameworks: net462, net8.0, net9.0
 
 License: [BSD-2-Clause](../../../../licenses/bsd-2-clause) 
 

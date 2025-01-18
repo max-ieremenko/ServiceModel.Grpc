@@ -10,7 +10,6 @@
       "InternalOnly": false,
       "TargetFrameworks": [
         "net462",
-        "net6.0",
         "net8.0",
         "net9.0",
         "netstandard2.0",
@@ -28,7 +27,6 @@
       "InternalOnly": false,
       "TargetFrameworks": [
         "net462",
-        "net6.0",
         "net8.0",
         "net9.0",
         "netstandard2.0",
@@ -50,7 +48,6 @@
       "InternalOnly": false,
       "TargetFrameworks": [
         "net462",
-        "net6.0",
         "net8.0",
         "net9.0",
         "netstandard2.0"
@@ -71,7 +68,6 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net462",
-        "net6.0",
         "net8.0",
         "net9.0"
       ],
@@ -86,7 +82,6 @@
       "Name": "MessagePack",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "net6.0",
         "net8.0",
         "net9.0",
         "netstandard2.0"
@@ -103,7 +98,6 @@
       "InternalOnly": true,
       "TargetFrameworks": [
         "net462",
-        "net6.0",
         "net8.0",
         "net9.0"
       ],
@@ -123,7 +117,6 @@
     },
     {
       "Subject": "project",
-      "Code": null,
       "HRef": "https://dot.net/",
       "Description": "License should be verified on https://dot.net/"
     }

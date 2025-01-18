@@ -3,7 +3,7 @@ System.Text.Encoding.CodePages [4.5.1](https://www.nuget.org/packages/System.Tex
 
 Used by: DesignTime
 
-Target frameworks: net462, net6.0, net8.0, net9.0, netstandard2.0
+Target frameworks: net462, net8.0, net9.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 

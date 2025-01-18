@@ -9,15 +9,10 @@
       "Name": "AspNetCore",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "net6.0",
         "net8.0",
         "net9.0"
       ],
       "Dependencies": [
-        {
-          "Name": "Microsoft.Bcl.TimeProvider",
-          "Version": "8.0.1"
-        },
         {
           "Name": "Microsoft.IdentityModel.Tokens",
           "Version": "8.2.1"
@@ -28,15 +23,10 @@
       "Name": "AspNetCoreNSwag",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "net6.0",
         "net8.0",
         "net9.0"
       ],
       "Dependencies": [
-        {
-          "Name": "Microsoft.Bcl.TimeProvider",
-          "Version": "8.0.1"
-        },
         {
           "Name": "Microsoft.IdentityModel.Tokens",
           "Version": "8.2.1"
@@ -47,15 +37,10 @@
       "Name": "AspNetCoreSwashbuckle",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "net6.0",
         "net8.0",
         "net9.0"
       ],
       "Dependencies": [
-        {
-          "Name": "Microsoft.Bcl.TimeProvider",
-          "Version": "8.0.1"
-        },
         {
           "Name": "Microsoft.IdentityModel.Tokens",
           "Version": "8.2.1"

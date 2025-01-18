@@ -3,7 +3,7 @@ Microsoft.Extensions.DependencyInjection [6.0.0](https://www.nuget.org/packages/
 
 Used by: ClientDI
 
-Target frameworks: net6.0, net8.0, net9.0, netstandard2.0, netstandard2.1
+Target frameworks: net8.0, net9.0, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 

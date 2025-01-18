@@ -9,16 +9,9 @@
       "Name": "MessagePack",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "net6.0",
         "net8.0",
         "net9.0",
         "netstandard2.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.0.0"
-        }
       ]
     }
   ],
@@ -35,7 +28,6 @@
     },
     {
       "Subject": "project",
-      "Code": null,
       "HRef": "http://go.microsoft.com/fwlink/?LinkId=624683"
     }
   ]

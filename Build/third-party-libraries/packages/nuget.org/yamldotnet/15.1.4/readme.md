@@ -3,7 +3,7 @@ YamlDotNet [15.1.4](https://www.nuget.org/packages/YamlDotNet/15.1.4)
 
 Used by: AspNetCoreNSwag
 
-Target frameworks: net6.0, net8.0, net9.0
+Target frameworks: net8.0, net9.0
 
 License: [MIT](../../../../licenses/mit) 
 
