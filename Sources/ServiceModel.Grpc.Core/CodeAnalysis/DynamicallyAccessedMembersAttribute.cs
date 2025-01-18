@@ -18,7 +18,7 @@
  * copy from:
  * https://github.com/dotnet/runtime/blob/7e429c2393a002065b641c3817fff62145c926db/src/libraries/System.Private.CoreLib/src/System/Diagnostics/CodeAnalysis/DynamicallyAccessedMembersAttribute.cs
  */
-#if !NET6_0_OR_GREATER
+#if !NET8_0_OR_GREATER
 namespace System.Diagnostics.CodeAnalysis;
 
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.ReturnValue | AttributeTargets.GenericParameter | AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Struct, Inherited = false)]

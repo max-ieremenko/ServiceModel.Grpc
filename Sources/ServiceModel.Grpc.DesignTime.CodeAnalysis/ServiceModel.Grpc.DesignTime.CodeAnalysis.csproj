@@ -6,7 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" VersionOverride="4.0.1" PrivateAssets="all" />
+    <!-- https://learn.microsoft.com/en-us/visualstudio/extensibility/roslyn-version-support -->
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

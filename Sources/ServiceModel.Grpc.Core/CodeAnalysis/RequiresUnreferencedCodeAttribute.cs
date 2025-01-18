@@ -18,7 +18,7 @@
  * copy from:
  * https://github.com/dotnet/runtime/blob/205adaee20a873243076dee3ef66ad70e0ee563f/src/libraries/System.Private.CoreLib/src/System/Diagnostics/CodeAnalysis/RequiresUnreferencedCodeAttribute.cs
  */
-#if !NET6_0_OR_GREATER
+#if !NET8_0_OR_GREATER
 namespace System.Diagnostics.CodeAnalysis;
 
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor | AttributeTargets.Class, Inherited = false)]
