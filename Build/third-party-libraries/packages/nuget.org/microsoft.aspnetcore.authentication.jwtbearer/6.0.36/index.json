@@ -9,7 +9,6 @@
       "Name": "AspNetCore",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "net6.0",
         "net8.0",
         "net9.0"
       ],
@@ -24,7 +23,6 @@
       "Name": "AspNetCoreNSwag",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "net6.0",
         "net8.0",
         "net9.0"
       ],
@@ -39,7 +37,6 @@
       "Name": "AspNetCoreSwashbuckle",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "net6.0",
         "net8.0",
         "net9.0"
       ],

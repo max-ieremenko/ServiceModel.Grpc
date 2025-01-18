@@ -3,7 +3,7 @@ Microsoft.CodeAnalysis.Common [4.0.1](https://www.nuget.org/packages/Microsoft.C
 
 Used by: DesignTime
 
-Target frameworks: net462, net6.0, net8.0, net9.0, netstandard2.0
+Target frameworks: net462, net8.0, net9.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 

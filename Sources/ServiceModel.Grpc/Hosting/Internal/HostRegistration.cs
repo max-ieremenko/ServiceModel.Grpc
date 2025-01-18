@@ -25,7 +25,7 @@ internal static class HostRegistration
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void BindWithEmit<TService>(IServiceMethodBinder<TService> methodBinder, Type? serviceInstanceType, ILogger? logger)
     {
-#if NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
+#if NETSTANDARD2_1_OR_GREATER || NET8_0_OR_GREATER
         if (!RuntimeFeature.IsDynamicCodeSupported)
         {
             throw new PlatformNotSupportedException("Dynamic code generation is not supported on this platform.");

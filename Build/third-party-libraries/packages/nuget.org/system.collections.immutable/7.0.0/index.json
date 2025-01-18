@@ -10,17 +10,10 @@
       "InternalOnly": false,
       "TargetFrameworks": [
         "net462",
-        "net6.0",
         "net8.0",
         "net9.0",
         "netstandard2.0",
         "netstandard2.1"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.0.0"
-        }
       ]
     }
   ],
@@ -37,7 +30,6 @@
     },
     {
       "Subject": "project",
-      "Code": null,
       "HRef": "https://dot.net/"
     }
   ]

@@ -2,7 +2,7 @@
   <Import Project="..\Test.csproj.props" />
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <WarningsNotAsErrors>GrpcDesignTime04</WarningsNotAsErrors>
   </PropertyGroup>
 

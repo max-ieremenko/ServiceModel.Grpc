@@ -17,11 +17,6 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
-#if NET6_0_OR_GREATER
-using PropertySetterType = System.Action<object, object?>;
-#else
-using PropertySetterType = System.Action<object, object>;
-#endif
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer;
 
@@ -90,7 +85,7 @@ internal sealed class ApiModelMetadata : ModelMetadata
 
     public override Func<object, object> PropertyGetter { get; } = null!;
 
-    public override PropertySetterType PropertySetter { get; } = null!;
+    public override Action<object, object?> PropertySetter { get; } = null!;
 
     public override bool ShowForDisplay { get; }
 

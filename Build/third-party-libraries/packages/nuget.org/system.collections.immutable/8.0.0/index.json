@@ -9,13 +9,7 @@
       "Name": "DesignTime",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "net6.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.0.0"
-        }
+        "net8.0"
       ]
     }
   ],
@@ -32,7 +26,6 @@
     },
     {
       "Subject": "project",
-      "Code": null,
       "HRef": "https://dot.net/"
     }
   ]

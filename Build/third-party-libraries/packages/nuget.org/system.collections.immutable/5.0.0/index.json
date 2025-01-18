@@ -10,7 +10,6 @@
       "InternalOnly": false,
       "TargetFrameworks": [
         "net462",
-        "net6.0",
         "net8.0",
         "net9.0",
         "netstandard2.0"
@@ -35,13 +34,11 @@
     },
     {
       "Subject": "repository",
-      "Code": null,
       "HRef": "git://github.com/dotnet/runtime",
       "Description": "License should be verified on git://github.com/dotnet/runtime"
     },
     {
       "Subject": "project",
-      "Code": null,
       "HRef": "https://github.com/dotnet/runtime",
       "Description": "License should be verified on https://github.com/dotnet/runtime"
     }

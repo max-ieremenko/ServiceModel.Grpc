@@ -18,7 +18,7 @@
  * copy from:
  * https://github.com/dotnet/runtime/blob/205adaee20a873243076dee3ef66ad70e0ee563f/src/libraries/System.Private.CoreLib/src/System/Diagnostics/CodeAnalysis/UnconditionalSuppressMessageAttribute.cs
  */
-#if !NET6_0_OR_GREATER
+#if !NET8_0_OR_GREATER
 namespace System.Diagnostics.CodeAnalysis;
 
 [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = true)]

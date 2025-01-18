@@ -20,12 +20,8 @@ internal sealed class MockLogger : Microsoft.Extensions.Logging.ILogger
 {
     public IList<string> Output { get; } = new List<string>();
 
-#if NET7_0_OR_GREATER
-    public IDisposable? BeginScope<TState>(TState state)
-        where TState : notnull
-#else
     public IDisposable BeginScope<TState>(TState state)
-#endif
+        where TState : notnull
     {
         throw new NotSupportedException();
     }
