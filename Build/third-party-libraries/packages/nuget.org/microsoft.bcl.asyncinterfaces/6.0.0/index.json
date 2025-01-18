@@ -22,21 +22,6 @@
       ]
     },
     {
-      "Name": "Core",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "net462",
-        "net8.0",
-        "net9.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Threading.Tasks.Extensions",
-          "Version": "4.5.4"
-        }
-      ]
-    },
-    {
       "Name": "MessagePack",
       "InternalOnly": false,
       "TargetFrameworks": [

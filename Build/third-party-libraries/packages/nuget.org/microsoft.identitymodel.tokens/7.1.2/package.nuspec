@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.IdentityModel.Tokens</id>
+    <version>7.1.2</version>
+    <authors>Microsoft</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <projectUrl>https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet</projectUrl>
+    <description>Includes types that provide support for SecurityTokens, Cryptographic operations: Signing, Verifying Signatures, Encryption.</description>
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <tags>.NET Windows Authentication Identity SecurityTokens Cryptographic operations Signing Verifying Signatures Encryption</tags>
+    <serviceable>true</serviceable>
+    <repository type="git" url="https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet" commit="a607fa5e0005a6178cf1d2fed4fa0f8179cdb186" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.6.1">
+        <dependency id="Microsoft.IdentityModel.Logging" version="7.1.2" exclude="Build,Analyzers" />
+        <dependency id="System.Memory" version="4.5.5" exclude="Build,Analyzers" />
+        <dependency id="System.Text.Encodings.Web" version="4.7.2" exclude="Build,Analyzers" />
+        <dependency id="System.Text.Json" version="4.7.2" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETFramework4.6.2">
+        <dependency id="Microsoft.IdentityModel.Logging" version="7.1.2" exclude="Build,Analyzers" />
+        <dependency id="System.Memory" version="4.5.5" exclude="Build,Analyzers" />
+        <dependency id="System.Text.Encodings.Web" version="4.7.2" exclude="Build,Analyzers" />
+        <dependency id="System.Text.Json" version="4.7.2" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETFramework4.7.2">
+        <dependency id="Microsoft.IdentityModel.Logging" version="7.1.2" exclude="Build,Analyzers" />
+        <dependency id="System.Memory" version="4.5.5" exclude="Build,Analyzers" />
+        <dependency id="System.Text.Encodings.Web" version="4.7.2" exclude="Build,Analyzers" />
+        <dependency id="System.Text.Json" version="4.7.2" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net6.0">
+        <dependency id="Microsoft.IdentityModel.Logging" version="7.1.2" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net8.0">
+        <dependency id="Microsoft.IdentityModel.Logging" version="7.1.2" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Microsoft.IdentityModel.Logging" version="7.1.2" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.CSharp" version="4.5.0" exclude="Build,Analyzers" />
+        <dependency id="System.Security.Cryptography.Cng" version="4.5.0" exclude="Build,Analyzers" />
+        <dependency id="System.Text.Encodings.Web" version="4.7.2" exclude="Build,Analyzers" />
+        <dependency id="System.Text.Json" version="4.7.2" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="Microsoft.CSharp" targetFramework=".NETFramework4.6.1, .NETFramework4.6.2, .NETFramework4.7.2" />
+      <frameworkAssembly assemblyName="System.Core" targetFramework=".NETFramework4.6.1, .NETFramework4.6.2, .NETFramework4.7.2" />
+      <frameworkAssembly assemblyName="System" targetFramework=".NETFramework4.6.1, .NETFramework4.6.2, .NETFramework4.7.2" />
+    </frameworkAssemblies>
+  </metadata>
+</package>
