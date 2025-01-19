@@ -1,15 +1,15 @@
-Microsoft.Bcl.AsyncInterfaces [6.0.0](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/6.0.0)
+Microsoft.Bcl.AsyncInterfaces [8.0.0](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/8.0.0)
 --------------------
 
-Used by: ClientDI
+Used by: MessagePack
 
-Target frameworks: net8.0, net9.0, netstandard2.0, netstandard2.1
+Target frameworks: net8.0, net9.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
 - package license: [MIT](https://licenses.nuget.org/MIT) 
 - repository license: [MIT](https://github.com/dotnet/runtime) 
-- project license: [Unknown](https://dot.net/) , License should be verified on https://dot.net/
+- project license: [Unknown](https://dot.net/) 
 
 Description
 -----------

@@ -6,19 +6,12 @@
   },
   "UsedBy": [
     {
-      "Name": "ClientDI",
+      "Name": "MessagePack",
       "InternalOnly": false,
       "TargetFrameworks": [
         "net8.0",
         "net9.0",
-        "netstandard2.0",
-        "netstandard2.1"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Threading.Tasks.Extensions",
-          "Version": "4.5.4"
-        }
+        "netstandard2.0"
       ]
     }
   ],
@@ -30,13 +23,13 @@
     },
     {
       "Subject": "repository",
-      "Code": "MIT",
-      "HRef": "https://github.com/dotnet/runtime"
+      "HRef": "https://github.com/MessagePack-CSharp/MessagePack-CSharp",
+      "Description": "License code NOASSERTION"
     },
     {
       "Subject": "project",
-      "HRef": "https://dot.net/",
-      "Description": "License should be verified on https://dot.net/"
+      "HRef": "https://github.com/MessagePack-CSharp/MessagePack-CSharp",
+      "Description": "License code NOASSERTION"
     }
   ]
 }

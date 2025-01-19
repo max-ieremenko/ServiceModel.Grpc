@@ -19,9 +19,8 @@ using MessagePack.Formatters;
 
 namespace ServiceModel.Grpc.Configuration.Formatters;
 
-internal sealed class MessageFormatterResolver : IFormatterResolver
+[GeneratedMessagePackResolver]
+internal sealed partial class MessageFormatterResolver
 {
-    public static readonly MessageFormatterResolver Instance = new();
-
-    public IMessagePackFormatter<T>? GetFormatter<T>() => MessagePackFormatterCache<T>.Formatter;
+    IMessagePackFormatter<T>? IFormatterResolver.GetFormatter<T>() => MessagePackFormatterCache<T>.Formatter;
 }

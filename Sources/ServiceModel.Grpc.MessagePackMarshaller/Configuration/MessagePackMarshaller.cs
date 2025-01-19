@@ -38,7 +38,7 @@ public static class MessagePackMarshaller
     {
         if (!MessagePackFormatterCache<Message<T1>>.IsRegistered)
         {
-            MessagePackFormatterCache<Message<T1>>.Formatter = new MessageMessagePackFormatter<T1>();
+            MessagePackFormatterCache<Message<T1>?>.Formatter = new MessageMessagePackFormatter<T1>();
         }
     }
 
@@ -51,7 +51,7 @@ public static class MessagePackMarshaller
     {
         if (!MessagePackFormatterCache<Message<T1, T2>>.IsRegistered)
         {
-            MessagePackFormatterCache<Message<T1, T2>>.Formatter = new MessageMessagePackFormatter<T1, T2>();
+            MessagePackFormatterCache<Message<T1, T2>?>.Formatter = new MessageMessagePackFormatter<T1, T2>();
         }
     }
 
@@ -65,7 +65,7 @@ public static class MessagePackMarshaller
     {
         if (!MessagePackFormatterCache<Message<T1, T2, T3>>.IsRegistered)
         {
-            MessagePackFormatterCache<Message<T1, T2, T3>>.Formatter = new MessageMessagePackFormatter<T1, T2, T3>();
+            MessagePackFormatterCache<Message<T1, T2, T3>?>.Formatter = new MessageMessagePackFormatter<T1, T2, T3>();
         }
     }
 
@@ -75,7 +75,7 @@ public static class MessagePackMarshaller
     /// <typeparam name="TMessage">Message type.</typeparam>
     /// <typeparam name="TFormatter">Formatter type.</typeparam>
     public static void RegisterFormatter<TMessage, TFormatter>()
-        where TFormatter : IMessagePackFormatter<TMessage>, new()
+        where TFormatter : IMessagePackFormatter<TMessage?>, new()
     {
         if (!MessagePackFormatterCache<TMessage>.IsRegistered)
         {
@@ -87,7 +87,7 @@ public static class MessagePackMarshaller
     {
         if (!MessagePackFormatterCache<Message>.IsRegistered)
         {
-            MessagePackFormatterCache<Message>.Formatter = new MessageMessagePackFormatter();
+            MessagePackFormatterCache<Message?>.Formatter = new MessageMessagePackFormatter();
         }
     }
 }

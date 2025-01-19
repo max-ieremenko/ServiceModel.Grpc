@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>Microsoft.NET.StringTools</id>
-    <version>17.6.3</version>
+    <version>17.11.4</version>
     <authors>Microsoft</authors>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <license type="expression">MIT</license>
@@ -15,14 +15,14 @@
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <tags>MSBuild</tags>
     <serviceable>true</serviceable>
-    <repository type="git" url="https://github.com/dotnet/msbuild" commit="07e2947214f1a9f28a3517762c939d5bebb5f525" />
+    <repository type="git" url="https://github.com/dotnet/msbuild" commit="37eb419ad2c986ac5530292e6ee08e962390249e" />
     <dependencies>
       <group targetFramework=".NETFramework3.5" />
       <group targetFramework=".NETFramework4.7.2">
         <dependency id="System.Memory" version="4.5.5" exclude="Build,Analyzers" />
         <dependency id="System.Runtime.CompilerServices.Unsafe" version="6.0.0" exclude="Build,Analyzers" />
       </group>
-      <group targetFramework="net7.0" />
+      <group targetFramework="net8.0" />
       <group targetFramework=".NETStandard2.0">
         <dependency id="System.Memory" version="4.5.5" exclude="Build,Analyzers" />
         <dependency id="System.Runtime.CompilerServices.Unsafe" version="6.0.0" exclude="Build,Analyzers" />

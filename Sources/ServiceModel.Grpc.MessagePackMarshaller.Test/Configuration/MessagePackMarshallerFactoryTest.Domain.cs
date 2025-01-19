@@ -50,7 +50,7 @@ public partial class MessagePackMarshallerFactoryTest
         public T4? Value4 { get; set; }
     }
 
-    private sealed class MessageMessagePackFormatter<T1, T2, T3, T4> : IMessagePackFormatter<Message<T1, T2, T3, T4>>
+    internal sealed class MessageMessagePackFormatter<T1, T2, T3, T4> : IMessagePackFormatter<Message<T1, T2, T3, T4>?>
     {
         public int SerializeCallsCounter { get; set; }
 

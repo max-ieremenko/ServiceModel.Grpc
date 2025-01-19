@@ -1,4 +1,4 @@
-MessagePack.Annotations [2.5.192](https://www.nuget.org/packages/MessagePack.Annotations/2.5.192)
+MessagePack.Annotations [3.1.1](https://www.nuget.org/packages/MessagePack.Annotations/3.1.1)
 --------------------
 
 Used by: MessagePack
@@ -9,7 +9,7 @@ License: [MIT](../../../../licenses/mit)
 
 - package license: [MIT](https://licenses.nuget.org/MIT) 
 - repository license: [Unknown](https://github.com/MessagePack-CSharp/MessagePack-CSharp) , License code NOASSERTION
-- project license: [Unknown](https://github.com/neuecc/MessagePack-CSharp) , License code NOASSERTION
+- project license: [Unknown](https://github.com/MessagePack-CSharp/MessagePack-CSharp) , License code NOASSERTION
 
 Description
 -----------
