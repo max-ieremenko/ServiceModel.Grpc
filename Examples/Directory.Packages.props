@@ -46,7 +46,6 @@
     <PackageVersion Include="Swashbuckle.AspNetCore.Annotations" Version="7.0.0" />
 
     <PackageVersion Include="MessagePack" Version="3.1.1" />
-    <PackageVersion Include="MessagePack.MSBuild.Tasks" Version="2.5.192" />
 
     <PackageVersion Include="MemoryPack" Version="1.21.3" />
 

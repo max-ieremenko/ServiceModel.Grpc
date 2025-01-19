@@ -10,21 +10,17 @@ see [Client.csproj](Client/Client.csproj) and [Server/Server.csproj](Server/Serv
 </ItemGroup>
 ```
 
-#### Enable MessagePack source code generation
+#### Configure MessagePack source code generation
 
 see [Contract.csproj](Contract/Contract.csproj)
 
 ```xml
 <ItemGroup>
     <PackageReference Include="MessagePack" />
-    <PackageReference Include="MessagePack.MSBuild.Tasks" PrivateAssets="All" />
 </ItemGroup>
-
-<PropertyGroup>
-    <MessagePackGeneratedResolverNamespace>Contract</MessagePackGeneratedResolverNamespace>
-    <MessagePackGeneratedResolverName>SharedMessagePackResolver</MessagePackGeneratedResolverName>
-</PropertyGroup>
 ```
+
+see [GeneratedMessagePackResolver.cs](Contract/GeneratedMessagePackResolver.cs)
 
 #### Attach MessagePack generated formatters to  `MessagePackSerializerOptions`
 
