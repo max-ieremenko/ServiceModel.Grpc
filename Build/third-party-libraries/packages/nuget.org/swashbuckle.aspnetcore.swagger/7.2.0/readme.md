@@ -1,4 +1,4 @@
-Swashbuckle.AspNetCore.Swagger [7.0.0](https://www.nuget.org/packages/Swashbuckle.AspNetCore.Swagger/7.0.0)
+Swashbuckle.AspNetCore.Swagger [7.2.0](https://www.nuget.org/packages/Swashbuckle.AspNetCore.Swagger/7.2.0)
 --------------------
 
 Used by: AspNetCoreSwashbuckle
