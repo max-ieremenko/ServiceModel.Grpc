@@ -1,4 +1,4 @@
-Microsoft.NET.StringTools [17.6.3](https://www.nuget.org/packages/Microsoft.NET.StringTools/17.6.3)
+Microsoft.NET.StringTools [17.11.4](https://www.nuget.org/packages/Microsoft.NET.StringTools/17.11.4)
 --------------------
 
 Used by: MessagePack

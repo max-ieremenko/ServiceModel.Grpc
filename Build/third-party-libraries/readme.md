@@ -7,13 +7,13 @@ Licenses
 |[BSD-2-Clause](licenses/bsd-2-clause)|no|no|1|
 |[BSD-3-Clause](licenses/bsd-3-clause)|no|no|2|
 |[Google.Protobuf](licenses/google.protobuf)|yes|no|0|
-|[MIT](licenses/mit)|no|no|97|
+|[MIT](licenses/mit)|no|no|99|
 |[ms-net-library](licenses/ms-net-library)|no|no|10|
 |[MS-PL](licenses/ms-pl)|no|no|0|
 
 
 
-Packages 120
+Packages 122
 --------
 
 |Name|Version|Source|License|Used by|
@@ -31,11 +31,12 @@ Packages 120
 |[Grpc.Tools](packages/nuget.org/grpc.tools/2.69.0)|2.69.0|[nuget.org](https://www.nuget.org/packages/Grpc.Tools/2.69.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
 |[MemoryPack](packages/nuget.org/memorypack/1.21.3)|1.21.3|[nuget.org](https://www.nuget.org/packages/MemoryPack/1.21.3)|[MIT](licenses/mit)|MemoryPack|
 |[MemoryPack.Core](packages/nuget.org/memorypack.core/1.21.3)|1.21.3|[nuget.org](https://www.nuget.org/packages/MemoryPack.Core/1.21.3)|[MIT](licenses/mit)|MemoryPack|
-|[MessagePack](packages/nuget.org/messagepack/2.5.192)|2.5.192|[nuget.org](https://www.nuget.org/packages/MessagePack/2.5.192)|[MIT](licenses/mit)|MessagePack|
-|[MessagePack.Annotations](packages/nuget.org/messagepack.annotations/2.5.192)|2.5.192|[nuget.org](https://www.nuget.org/packages/MessagePack.Annotations/2.5.192)|[MIT](licenses/mit)|MessagePack|
+|[MessagePack](packages/nuget.org/messagepack/3.1.1)|3.1.1|[nuget.org](https://www.nuget.org/packages/MessagePack/3.1.1)|[MIT](licenses/mit)|MessagePack|
+|[MessagePack.Annotations](packages/nuget.org/messagepack.annotations/3.1.1)|3.1.1|[nuget.org](https://www.nuget.org/packages/MessagePack.Annotations/3.1.1)|[MIT](licenses/mit)|MessagePack|
 |[Microsoft.AspNetCore.Authentication.JwtBearer](packages/nuget.org/microsoft.aspnetcore.authentication.jwtbearer/8.0.12)|8.0.12|[nuget.org](https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.JwtBearer/8.0.12)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
 |[Microsoft.Bcl.AsyncInterfaces](packages/nuget.org/microsoft.bcl.asyncinterfaces/1.1.1)|1.1.1|[nuget.org](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/1.1.1)|[MIT](licenses/mit)|Core|
-|[Microsoft.Bcl.AsyncInterfaces](packages/nuget.org/microsoft.bcl.asyncinterfaces/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/6.0.0)|[MIT](licenses/mit)|ClientDI, MessagePack|
+|[Microsoft.Bcl.AsyncInterfaces](packages/nuget.org/microsoft.bcl.asyncinterfaces/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/6.0.0)|[MIT](licenses/mit)|ClientDI|
+|[Microsoft.Bcl.AsyncInterfaces](packages/nuget.org/microsoft.bcl.asyncinterfaces/8.0.0)|8.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/8.0.0)|[MIT](licenses/mit)|MessagePack|
 |[Microsoft.Bcl.AsyncInterfaces](packages/nuget.org/microsoft.bcl.asyncinterfaces/9.0.1)|9.0.1|[nuget.org](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/9.0.1)|[MIT](licenses/mit)|Core internal|
 |[Microsoft.CodeAnalysis.Common](packages/nuget.org/microsoft.codeanalysis.common/4.0.1)|4.0.1|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeAnalysis.Common/4.0.1)|[MIT](licenses/mit)|DesignTime|
 |[Microsoft.CodeAnalysis.CSharp](packages/nuget.org/microsoft.codeanalysis.csharp/4.0.1)|4.0.1|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeAnalysis.CSharp/4.0.1)|[MIT](licenses/mit)|DesignTime|
@@ -61,7 +62,7 @@ Packages 120
 |[Microsoft.IdentityModel.Tokens](packages/nuget.org/microsoft.identitymodel.tokens/7.1.2)|7.1.2|[nuget.org](https://www.nuget.org/packages/Microsoft.IdentityModel.Tokens/7.1.2)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
 |[Microsoft.NET.ILLink.Tasks](packages/nuget.org/microsoft.net.illink.tasks/8.0.12)|8.0.12|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/8.0.12)|[MIT](licenses/mit)|AspNetCore, ClientDI, Core, Emit, MemoryPack, MessagePack|
 |[Microsoft.NET.ILLink.Tasks](packages/nuget.org/microsoft.net.illink.tasks/9.0.1)|9.0.1|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/9.0.1)|[MIT](licenses/mit)|AspNetCore, ClientDI, Core, Emit, MemoryPack, MessagePack|
-|[Microsoft.NET.StringTools](packages/nuget.org/microsoft.net.stringtools/17.6.3)|17.6.3|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.StringTools/17.6.3)|[MIT](licenses/mit)|MessagePack|
+|[Microsoft.NET.StringTools](packages/nuget.org/microsoft.net.stringtools/17.11.4)|17.11.4|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.StringTools/17.11.4)|[MIT](licenses/mit)|MessagePack|
 |[Microsoft.NET.Test.Sdk](packages/nuget.org/microsoft.net.test.sdk/17.12.0)|17.12.0|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.Test.Sdk/17.12.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, SelfHost internal|
 |[Microsoft.OpenApi](packages/nuget.org/microsoft.openapi/1.6.22)|1.6.22|[nuget.org](https://www.nuget.org/packages/Microsoft.OpenApi/1.6.22)|[MIT](licenses/mit)|AspNetCoreSwashbuckle|
 |[Microsoft.SourceLink.GitHub](packages/nuget.org/microsoft.sourcelink.github/8.0.0)|8.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub/8.0.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, ProtoBuf internal, SelfHost internal|
@@ -97,8 +98,9 @@ Packages 120
 |[System.Buffers](packages/nuget.org/system.buffers/4.6.0)|4.6.0|[nuget.org](https://www.nuget.org/packages/System.Buffers/4.6.0)|[MIT](licenses/mit)|ClientDI internal, Core internal, DesignTime internal, Emit internal, SelfHost internal|
 |[System.CodeDom](packages/nuget.org/system.codedom/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/System.CodeDom/6.0.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, SelfHost internal|
 |[System.Collections.Immutable](packages/nuget.org/system.collections.immutable/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/System.Collections.Immutable/5.0.0)|[MIT](licenses/mit)|DesignTime|
-|[System.Collections.Immutable](packages/nuget.org/system.collections.immutable/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/System.Collections.Immutable/6.0.0)|[MIT](licenses/mit)|MemoryPack, MessagePack|
+|[System.Collections.Immutable](packages/nuget.org/system.collections.immutable/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/System.Collections.Immutable/6.0.0)|[MIT](licenses/mit)|MemoryPack|
 |[System.Collections.Immutable](packages/nuget.org/system.collections.immutable/7.0.0)|7.0.0|[nuget.org](https://www.nuget.org/packages/System.Collections.Immutable/7.0.0)|[MIT](licenses/mit)|ProtoBuf|
+|[System.Collections.Immutable](packages/nuget.org/system.collections.immutable/8.0.0)|8.0.0|[nuget.org](https://www.nuget.org/packages/System.Collections.Immutable/8.0.0)|[MIT](licenses/mit)|MessagePack|
 |[System.ComponentModel.Annotations](packages/nuget.org/system.componentmodel.annotations/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/System.ComponentModel.Annotations/5.0.0)|[MIT](licenses/mit)|ClientDI|
 |[System.Diagnostics.DiagnosticSource](packages/nuget.org/system.diagnostics.diagnosticsource/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/6.0.0)|[MIT](licenses/mit)|ClientDI|
 |[System.Diagnostics.DiagnosticSource](packages/nuget.org/system.diagnostics.diagnosticsource/6.0.1)|6.0.1|[nuget.org](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/6.0.1)|[MIT](licenses/mit)|ClientDI, Core internal|
