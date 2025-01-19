@@ -9,12 +9,26 @@ public static class SwaggerTools
 {
     public static IEnumerable<Type> GetDataContractKnownTypes(Type type)
     {
-        foreach (var attribute in type.GetCustomAttributes<KnownTypeAttribute>())
+        var result = new HashSet<Type>(1);
+        AddType(result, type);
+
+        foreach (var attribute in type.GetCustomAttributes<KnownTypeAttribute>(inherit: false))
         {
-            foreach (var knownType in ResolveKnownTypes(type, attribute))
+            var knownTypes = ResolveKnownTypes(type, attribute);
+            foreach (var knownType in knownTypes)
             {
-                yield return knownType;
+                AddType(result, knownType);
             }
+        }
+
+        return result;
+    }
+
+    private static void AddType(HashSet<Type> types, Type type)
+    {
+        if (!type.IsAbstract)
+        {
+            types.Add(type);
         }
     }
 
@@ -22,7 +36,7 @@ public static class SwaggerTools
     {
         if (attribute.Type != null)
         {
-            return new[] { attribute.Type };
+            return [attribute.Type];
         }
 
         if (attribute.MethodName == null)
