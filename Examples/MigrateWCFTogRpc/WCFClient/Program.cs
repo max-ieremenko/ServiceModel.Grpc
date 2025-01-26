@@ -4,13 +4,13 @@ using System.ServiceModel;
 using System.Threading.Tasks;
 using Contract;
 
-namespace WCFClient;
+namespace WcfClient;
 
 public static class Program
 {
     public static async Task Main()
     {
-        using (var factory = new ChannelFactory<IPersonService>(new BasicHttpBinding(), SharedConfiguration.WCFPersonServiceLocation))
+        using (var factory = new ChannelFactory<IPersonService>(new BasicHttpBinding(), SharedConfiguration.WcfPersonServiceLocation))
         {
             var proxy = factory.CreateChannel();
             await CallGet(proxy);

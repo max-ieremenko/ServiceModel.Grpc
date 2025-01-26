@@ -41,8 +41,8 @@ Projects
 
 * [Contract](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/Contract) - netstandard2.0, contains the service contract and data contract
 * [Service](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/Service) - netstandard2.0, contains the person service implementation (business logic)
-* [WCFServiceHost](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/WCFServiceHost) - net462, hosts WCF endpoint "http://localhost:8000/PersonService.svc"
-* [WCFClient](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/WCFClient) - net462, makes WCF calls to endpoint "http://localhost:8000/PersonService.svc"
+* [WcfServer](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/WcfServer) - net462, hosts WCF endpoint "http://localhost:8000/PersonService.svc"
+* [WcfClient](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/WcfClient) - net462, makes WCF calls to endpoint "http://localhost:8000/PersonService.svc"
 
 ## Migrate to gRPC
 
@@ -55,7 +55,7 @@ With ServiceModel.Grpc migration is simple:
 
 ## Host PersonService in ASP.NET Core server
 
-The project [AspNetServiceHost](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/AspNetServiceHost) is already configured and has reference to the nuget package [ServiceModel.Grpc.AspNetCore](https://www.nuget.org/packages/ServiceModel.Grpc.AspNetCore/).
+The project [GrpcServer](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/GrpcServer) is already configured and has reference to the nuget package [ServiceModel.Grpc.AspNetCore](https://www.nuget.org/packages/ServiceModel.Grpc.AspNetCore/).
 
 All required configuration to host PersonService is done in the Program.cs:
 
@@ -70,26 +70,9 @@ builder.Services.AddServiceModelGrpc();
 app.MapGrpcService<PersonService>();
 ```
 
-## Host PersonService in Grpc.Core server
-
-The project [NativeServiceHost](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/NativeServiceHost) is already configured and has reference to the nuget package [ServiceModel.Grpc.SelfHost](https://www.nuget.org/packages/ServiceModel.Grpc.SelfHost/).
-
-All required configuration to host PersonService is done in Program.cs and ServerHost.cs:
-
-``` c#
-// create service provider
-PersonModule.ConfigureServices(services);
-
-// create and configure Grpc.Core.Server
-_server = new Server { /*  */ };
-
-// host PersonService
-_server.Services.AddServiceModel<PersonService>(serviceProvider);
-```
-
 ## Migrate client
 
-The project [gRPCClient](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/gRPCClient) has reference to nuget package [ServiceModel.Grpc](https://www.nuget.org/packages/ServiceModel.Grpc/).
+The project [GrpcClient](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/MigrateWCFTogRpc/GrpcClient) has reference to nuget package [ServiceModel.Grpc](https://www.nuget.org/packages/ServiceModel.Grpc/).
 
 ``` c#
 // create ClientFactory

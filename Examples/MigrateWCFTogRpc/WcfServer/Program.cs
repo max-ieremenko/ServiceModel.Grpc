@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Service;
 
-namespace WCFServiceHost;
+namespace WcfServer;
 
 public static class Program
 {

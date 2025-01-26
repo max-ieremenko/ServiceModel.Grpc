@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Service;
 
-namespace WCFServiceHost;
+namespace WcfServer;
 
 internal sealed class WcfHost : ServiceHost, IHostedService
 {
@@ -17,7 +17,7 @@ internal sealed class WcfHost : ServiceHost, IHostedService
         _host = new DependencyInjectionServiceHost(
              serviceProvider,
              typeof(PersonService),
-             new Uri(SharedConfiguration.WCFPersonServiceLocation));
+             new Uri(SharedConfiguration.WcfPersonServiceLocation));
     }
 
     public Task StartAsync(CancellationToken cancellationToken)

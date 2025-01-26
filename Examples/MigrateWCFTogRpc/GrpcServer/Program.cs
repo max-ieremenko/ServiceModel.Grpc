@@ -1,25 +1,25 @@
-﻿using System.Threading.Tasks;
-using Contract;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Service;
 
-namespace AspNetServiceHost;
+namespace GrpcServer;
 
 public static class Program
 {
     public static Task Main()
     {
         var builder = WebApplication.CreateBuilder();
+        builder.Configuration.Sources.Clear();
+        builder.Configuration.SetBasePath(AppContext.BaseDirectory);
+        builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
 
         PersonModule.ConfigureServices(builder.Services);
 
         // enable ServiceModel.Grpc
         builder.Services.AddServiceModelGrpc();
-
-        builder.WebHost.ConfigureKestrel(options => options.ListenLocalhost(SharedConfiguration.AspNetgRPCPersonServicePort, l => l.Protocols = HttpProtocols.Http2));
 
         var app = builder.Build();
 

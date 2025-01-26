@@ -2,10 +2,10 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Contract;
-using Grpc.Core;
+using Grpc.Net.Client;
 using ServiceModel.Grpc.Client;
 
-namespace gRPCClient;
+namespace GrpcClient;
 
 public static class Program
 {
@@ -13,18 +13,9 @@ public static class Program
 
     public static async Task Main()
     {
-        var aspNetCoreChannel = new Channel("localhost", SharedConfiguration.AspNetgRPCPersonServicePort, ChannelCredentials.Insecure);
-        var proxy = DefaultClientFactory.CreateClient<IPersonService>(aspNetCoreChannel);
+        var channel = GrpcChannel.ForAddress($"http://localhost:{SharedConfiguration.GrpcServicePort}");
+        var proxy = DefaultClientFactory.CreateClient<IPersonService>(channel);
 
-        Console.WriteLine("-- call AspNetServiceHost --");
-        await CallGet(proxy);
-        await CallGetAll(proxy);
-
-        var nativeChannel = new Channel("localhost", SharedConfiguration.NativegRPCPersonServicePort, ChannelCredentials.Insecure);
-        proxy = DefaultClientFactory.CreateClient<IPersonService>(nativeChannel);
-
-        Console.WriteLine();
-        Console.WriteLine("-- call NativeServiceHost --");
         await CallGet(proxy);
         await CallGetAll(proxy);
 
@@ -37,12 +28,12 @@ public static class Program
 
     private static async Task CallGet(IPersonService proxy)
     {
-        Console.WriteLine("gRPC Get person by id = 1");
+        Console.WriteLine("Grpc Get person by id = 1");
 
         var person = await proxy.Get(1);
         Console.WriteLine("  {0}", person);
 
-        Console.WriteLine("WCF Get person by id = 0");
+        Console.WriteLine("Grpc Get person by id = 0");
 
         person = await proxy.Get(0);
         Trace.Assert(person == null);
@@ -51,7 +42,7 @@ public static class Program
 
     private static async Task CallGetAll(IPersonService proxy)
     {
-        Console.WriteLine("gRPC Get all persons");
+        Console.WriteLine("Grpc Get all persons");
 
         var persons = await proxy.GetAll();
         foreach (var person in persons)

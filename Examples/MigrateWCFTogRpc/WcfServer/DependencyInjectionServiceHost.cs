@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace WCFServiceHost;
+namespace WcfServer;
 
 internal sealed class DependencyInjectionServiceHost : ServiceHost
 {
