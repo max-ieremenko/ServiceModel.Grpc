@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Contract;
 
-namespace ServerSelfHost;
+namespace Server;
 
 internal sealed class PersonService : IPersonService
 {
@@ -12,7 +12,7 @@ internal sealed class PersonService : IPersonService
         {
             Name = name,
             BirthDay = birthDay,
-            CreatedBy = "ServerSelfHost"
+            CreatedBy = "ServerAspNetCore"
         });
     }
 }

@@ -1,18 +1,20 @@
-﻿using System.Threading.Tasks;
-using Contract;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceModel.Grpc.Configuration;
 
-namespace ServerAspNetCore;
+namespace Server;
 
 public static class Program
 {
     public static Task Main()
     {
         var builder = WebApplication.CreateBuilder();
+        builder.Configuration.Sources.Clear();
+        builder.Configuration.SetBasePath(AppContext.BaseDirectory);
+        builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
 
         builder.Services
             .AddServiceModelGrpc(options =>
@@ -20,8 +22,6 @@ public static class Program
                 // set ProtobufMarshaller as default Marshaller
                 options.DefaultMarshallerFactory = ProtobufMarshallerFactory.Default;
             });
-
-        builder.WebHost.ConfigureKestrel(options => options.ListenLocalhost(ServiceConfiguration.AspNetCorePort, l => l.Protocols = HttpProtocols.Http2));
 
         var app = builder.Build();
 
