@@ -4,11 +4,12 @@
     Platform      = 'Linux'
 
     Tests         = @(
-        @( 
-            @{ App = 'Demo.ServerAspNetCore/bin/Release/Demo.ServerAspNetCore.dll' }
-        ),
-        @( 
-            @{ App = 'Demo.ServerSelfHost/bin/Release/Demo.ServerSelfHost.dll' }
-        )
+        , @( 
+            @{
+                App  = 'Server/bin/Release/Server.dll'
+                Port = 5000
+            }
+            @{ App = 'Client/bin/Release/Client.dll' }
+        )     
     )
 }

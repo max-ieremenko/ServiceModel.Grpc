@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Contract;
 using Grpc.Core;
+using Grpc.Net.Client;
 using ServiceModel.Grpc.Client;
 
 namespace Client;
@@ -12,8 +13,7 @@ public static class Program
 {
     public static async Task Main()
     {
-        ServiceModel.Grpc.GrpcChannelExtensions.Http2UnencryptedSupport = true;
-        var channel = new Channel("localhost", 5001, ChannelCredentials.Insecure);
+        var channel = GrpcChannel.ForAddress("http://localhost:5001");
 
         var clientFactory = new ClientFactory();
         var figureServiceProxy = clientFactory.CreateClient<IFigureService>(channel);

@@ -2,9 +2,7 @@
 
 public static class SharedConfiguration
 {
-    public const string WCFPersonServiceLocation = "http://localhost:8000/PersonService.svc";
+    public const string WcfPersonServiceLocation = "http://localhost:8000/PersonService.svc";
 
-    public const int AspNetgRPCPersonServicePort = 8080;
-        
-    public const int NativegRPCPersonServicePort = 8090;
+    public const int GrpcServicePort = 5000;
 }

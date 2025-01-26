@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grpc.Core" />
+    <PackageReference Include="Grpc.Net.Client" />
     <PackageReference Include="ServiceModel.Grpc" />
     <PackageReference Include="Shouldly" />
   </ItemGroup>
