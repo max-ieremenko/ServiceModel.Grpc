@@ -3,9 +3,9 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Contract;
 
-namespace Service;
+namespace Server.Services;
 
-public sealed class GenericCalculator<TValue> : IGenericCalculator<TValue>
+internal sealed class GenericCalculator<TValue> : IGenericCalculator<TValue>
 {
     private static readonly Func<int, TValue> Cast;
     private static readonly Func<TValue, TValue, TValue> DoSum;

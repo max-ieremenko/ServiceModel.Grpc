@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Contract;
 
-namespace Service;
+namespace Server.Services;
 
-public sealed class DoubleCalculator : IDoubleCalculator
+internal sealed class DoubleCalculator : IDoubleCalculator
 {
     // POST /IDoubleCalculator/Touch
     public string Touch()

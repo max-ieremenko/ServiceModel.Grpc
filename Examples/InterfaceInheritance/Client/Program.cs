@@ -1,31 +1,40 @@
-﻿using System;
-using System.Threading.Tasks;
-using Contract;
-using Grpc.Core;
+﻿using Contract;
+using Grpc.Net.Client;
 using ServiceModel.Grpc.Client;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Client;
 
-public sealed class ClientCalls
+public static class Program
 {
-    private readonly IClientFactory _clientFactory;
-    private readonly Channel _channel;
-
-    public ClientCalls(int serverPort)
+    public static async Task Main()
     {
-        _clientFactory = new ClientFactory();
+        var clientFactory = new ClientFactory();
 
         // register generated IGenericCalculator<int> proxy, see MyGrpcProxies
-        _clientFactory.AddGenericCalculatorInt32Client();
+        clientFactory.AddGenericCalculatorInt32Client();
 
-        _channel = new Channel("localhost", serverPort, ChannelCredentials.Insecure);
+        var channel = GrpcChannel.ForAddress("http://localhost:5000", new GrpcChannelOptions());
+
+        // create instance of GenericCalculatorInt32Client, see MyGrpcProxies
+        var genericCalculator = clientFactory.CreateClient<IGenericCalculator<int>>(channel);
+        await InvokeGenericCalculator(genericCalculator);
+
+        // proxy will be generated on-fly
+        var doubleCalculator = clientFactory.CreateClient<IDoubleCalculator>(channel);
+        await InvokeDoubleCalculator(doubleCalculator);
+
+        if (Debugger.IsAttached)
+        {
+            Console.WriteLine("...");
+            Console.ReadLine();
+        }
     }
 
-    public async Task InvokeGenericCalculator()
+    private static async Task InvokeGenericCalculator(IGenericCalculator<int> proxy)
     {
-        // create instance of GenericCalculatorInt32Client, see MyGrpcProxies
-        var proxy = _clientFactory.CreateClient<IGenericCalculator<int>>(_channel);
-
         // POST /IGenericCalculator-Int32/Touch
         Console.WriteLine("Invoke Touch");
         var touchResponse = proxy.Touch();
@@ -49,11 +58,8 @@ public sealed class ClientCalls
         Console.WriteLine("  {0} * {1} = {2}", x, y, multiplyResponse);
     }
 
-    public async Task InvokeDoubleCalculator()
+    private static async Task InvokeDoubleCalculator(IDoubleCalculator proxy)
     {
-        // proxy will be generated on-fly
-        var proxy = _clientFactory.CreateClient<IDoubleCalculator>(_channel);
-
         // POST /IDoubleCalculator/Touch
         Console.WriteLine("Invoke Touch");
         var touchResponse = proxy.Touch();
