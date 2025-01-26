@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Contract;
 using Grpc.Core;
+using Grpc.Net.Client;
 using ServiceModel.Grpc.Client;
 using Shouldly;
 
@@ -15,7 +16,7 @@ public sealed class ClientCalls
 
     public async Task CallPersonService(int port)
     {
-        var channel = new Channel("localhost", port, ChannelCredentials.Insecure);
+        var channel = GrpcChannel.ForAddress($"http://localhost:{port}");
         var proxy = ClientFactory.CreateClient<IPersonService>(channel);
 
         Console.WriteLine("Invoke CreatePerson");
