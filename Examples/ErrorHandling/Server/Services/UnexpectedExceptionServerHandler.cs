@@ -2,10 +2,10 @@
 using Contract;
 using ServiceModel.Grpc.Interceptors;
 
-namespace Service.Shared;
+namespace Server.Services;
 
 // this handler is responsible for processing InvalidOperationException and NotSupportedException on server-side
-public sealed class UnexpectedExceptionServerHandler : IServerErrorHandler
+internal sealed class UnexpectedExceptionServerHandler : IServerErrorHandler
 {
     public ServerFaultDetail? ProvideFaultOrIgnore(ServerCallInterceptorContext context, Exception error)
     {

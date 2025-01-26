@@ -2,9 +2,9 @@
 using Contract;
 using ServiceModel.Grpc.Interceptors;
 
-namespace Client.Shared;
+namespace Client.Services;
 
-public sealed class CustomClientFaultDetailDeserializer : DefaultClientFaultDetailDeserializer
+internal sealed class CustomClientFaultDetailDeserializer : DefaultClientFaultDetailDeserializer
 {
     public override Type DeserializeDetailType(string typePayload)
     {

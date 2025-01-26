@@ -1,9 +1,9 @@
 ﻿using System;
 using Contract;
 
-namespace Client.Shared;
+namespace Client.Services;
 
-public class UnexpectedErrorException : SystemException
+internal class UnexpectedErrorException : SystemException
 {
     public UnexpectedErrorException(UnexpectedErrorDetail detail)
         : base(detail.Message)

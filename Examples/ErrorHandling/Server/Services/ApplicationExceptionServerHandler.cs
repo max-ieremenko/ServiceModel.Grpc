@@ -1,10 +1,10 @@
 ﻿using System;
 using ServiceModel.Grpc.Interceptors;
 
-namespace Service.Shared;
+namespace Server.Services;
 
 // this handler is responsible for processing ApplicationException on server-side
-public sealed class ApplicationExceptionServerHandler : IServerErrorHandler
+internal sealed class ApplicationExceptionServerHandler : IServerErrorHandler
 {
     public ServerFaultDetail? ProvideFaultOrIgnore(ServerCallInterceptorContext context, Exception error)
     {

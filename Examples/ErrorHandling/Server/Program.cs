@@ -1,19 +1,21 @@
-﻿using System.Threading.Tasks;
-using Contract;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Service.Shared;
+using Server.Services;
 using ServiceModel.Grpc.Interceptors;
 
-namespace ServerAspNetHost;
+namespace Server;
 
 public static class Program
 {
     public static Task Main()
     {
         var builder = WebApplication.CreateBuilder();
+        builder.Configuration.Sources.Clear();
+        builder.Configuration.SetBasePath(AppContext.BaseDirectory);
+        builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
 
         builder.Services.AddSingleton<IServerErrorHandler>(_ =>
         {
@@ -33,8 +35,6 @@ public static class Program
                 // uncomment to fully control ServerFaultDetail.Detail serialization, must be uncommented in Client as well
                 //options.DefaultErrorDetailSerializer = new CustomServerFaultDetailSerializer();
             });
-
-        builder.WebHost.ConfigureKestrel(options => options.ListenLocalhost(ServiceConfiguration.ServiceModelGrpcPort, l => l.Protocols = HttpProtocols.Http2));
 
         var app = builder.Build();
         

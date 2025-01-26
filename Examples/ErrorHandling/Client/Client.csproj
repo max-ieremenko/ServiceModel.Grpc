@@ -6,11 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grpc.Core" />
+    <PackageReference Include="Grpc.Net.Client" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Client.Shared\Client.Shared.csproj" />
     <ProjectReference Include="..\Contract\Contract.csproj" />
   </ItemGroup>
 

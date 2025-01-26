@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Contract;
 
-namespace Service.Shared;
+namespace Server.Services;
 
-public sealed class DebugService : IDebugService
+internal sealed class DebugService : IDebugService
 {
     public Task ThrowApplicationException(string message)
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using ServiceModel.Grpc;
 
-namespace Client.Shared;
+namespace Client.Services;
 
-public sealed class SimpleConsoleLogger : ILogger
+internal sealed class SimpleConsoleLogger : ILogger
 {
     public void LogError(string message, params object?[] args) => Log("error", message, args);
 
