@@ -1,26 +1,33 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Contract;
-using Grpc.Core;
+using Grpc.Net.Client;
 using ServiceModel.Grpc.Client;
 
 namespace Client;
 
-public sealed class ClientCalls
+public static class Program
 {
-    private readonly IClientFactory _clientFactory;
-    private readonly Channel _channel;
-
-    public ClientCalls(int serverPort)
+    public static async Task Main()
     {
-        _clientFactory = new ClientFactory();
-        _channel = new Channel("localhost", serverPort, ChannelCredentials.Insecure);
+        var clientFactory = new ClientFactory();
+        var channel = GrpcChannel.ForAddress("http://localhost:5000");
+
+        var personService = clientFactory.CreateClient<IPersonService>(channel);
+
+        RunSync(personService);
+        await RunAsync(personService);
+
+        if (Debugger.IsAttached)
+        {
+            Console.WriteLine("...");
+            Console.ReadLine();
+        }
     }
 
-    public void RunSync()
+    private static void RunSync(IPersonService personService)
     {
-        var personService = _clientFactory.CreateClient<IPersonService>(_channel);
-
         Console.WriteLine("Invoke Create");
 
         var person = personService.Create("John X", DateTime.Today.AddYears(-20));
@@ -36,10 +43,8 @@ public sealed class ClientCalls
         Console.WriteLine("  BirthDay: {0}", person.BirthDay);
     }
 
-    public async Task RunAsync()
+    private static async Task RunAsync(IPersonService personService)
     {
-        var personService = _clientFactory.CreateClient<IPersonService>(_channel);
-
         Console.WriteLine("Invoke CreateAsync");
 
         var person = await personService.CreateAsync("John X", DateTime.Today.AddYears(-20));

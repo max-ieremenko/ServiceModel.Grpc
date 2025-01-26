@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Contract;
 
-namespace Service;
+namespace Server;
 
-public sealed class PersonService : IPersonService
+internal sealed class PersonService : IPersonService
 {
     // method Create is not an operation contract
     Person IPersonService.Create(string name, DateTime birthDay) => throw new NotSupportedException();
