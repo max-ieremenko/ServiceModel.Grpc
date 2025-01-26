@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Contract;
 using Grpc.Core;
 
-namespace ServerNativeHost;
+namespace Server.Proto;
 
 internal sealed class CalculatorService : CalculatorNative.CalculatorNativeBase
 {

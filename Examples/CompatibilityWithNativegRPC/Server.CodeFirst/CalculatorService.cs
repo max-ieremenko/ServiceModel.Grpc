@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Contract;
 
-namespace ServerAspNetHost;
+namespace Server.CodeFirst;
 
 internal sealed class CalculatorService : ICalculator
 {
