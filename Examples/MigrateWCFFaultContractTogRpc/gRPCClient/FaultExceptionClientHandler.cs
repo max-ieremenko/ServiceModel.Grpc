@@ -2,7 +2,7 @@
 using Contract;
 using ServiceModel.Grpc.Interceptors;
 
-namespace gRPCClient;
+namespace GrpcClient;
 
 internal sealed class FaultExceptionClientHandler : ClientErrorHandlerBase
 {

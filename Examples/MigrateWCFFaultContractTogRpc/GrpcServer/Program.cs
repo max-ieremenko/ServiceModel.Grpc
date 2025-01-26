@@ -1,19 +1,21 @@
-﻿using System.Threading.Tasks;
-using Contract;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Service;
 using ServiceModel.Grpc.Interceptors;
 
-namespace AspNetServiceHost;
+namespace GrpcServer;
 
 public static class Program
 {
     public static Task Main()
     {
         var builder = WebApplication.CreateBuilder();
+        builder.Configuration.Sources.Clear();
+        builder.Configuration.SetBasePath(AppContext.BaseDirectory);
+        builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
 
         // configure container
         DebugModule.ConfigureServices(builder.Services);
@@ -24,8 +26,6 @@ public static class Program
             // register server error handler
             options.DefaultErrorHandlerFactory = serviceProvider => serviceProvider.GetRequiredService<IServerErrorHandler>();
         });
-
-        builder.WebHost.ConfigureKestrel(options => options.ListenLocalhost(SharedConfiguration.AspNetgRPCDebugServicePort, l => l.Protocols = HttpProtocols.Http2));
 
         var app = builder.Build();
 

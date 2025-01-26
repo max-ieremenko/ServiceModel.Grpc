@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "AspNetServiceHost": {
+    "GrpcServer": {
       "commandName": "Project",
       "launchBrowser": false,
       "environmentVariables": {

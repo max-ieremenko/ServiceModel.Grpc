@@ -6,22 +6,17 @@
     Tests         = @(
         @( 
             @{
-                App  = 'WCFServiceHost/bin/Release/WCFServiceHost.exe'
+                App  = 'WcfServer/bin/Release/WcfServer.exe'
                 Port = 8000
             }
-            @{ App = 'WCFClient/bin/Release/WCFClient.exe' }
+            @{ App = 'WcfClient/bin/Release/WcfClient.exe' }
         ),
         @( 
             @{
-                App  = 'AspNetServiceHost/bin/Release/AspNetServiceHost.exe'
-                Port = 8080
+                App  = 'GrpcServer/bin/Release/GrpcServer.exe'
+                Port = 5000
             }
-            @{
-                App  = 'NativeServiceHost/bin/Release/NativeServiceHost.exe'
-                Port = 8090
-            }
-            @{ App = 'gRPCClient/bin/Release/gRPCClient.exe' }
-            @{ App = 'gRPCClientDesignTime/bin/Release/gRPCClientDesignTime.exe' }
+            @{ App = 'GrpcClient/bin/Release/GrpcClient.exe' }
         )
     )
 }

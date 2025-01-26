@@ -6,7 +6,7 @@ using System.ServiceModel;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace WCFServiceHost;
+namespace WcfServer;
 
 internal sealed class WcfHost : IHostedService
 {
@@ -14,7 +14,7 @@ internal sealed class WcfHost : IHostedService
 
     public WcfHost()
     {
-        _host = new ServiceHost(typeof(DebugService), new Uri(SharedConfiguration.WCFDebugServiceLocation));
+        _host = new ServiceHost(typeof(DebugService), new Uri(SharedConfiguration.WcfDebugServiceLocation));
     }
 
     public Task StartAsync(CancellationToken cancellationToken)

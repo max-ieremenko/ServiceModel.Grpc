@@ -4,13 +4,13 @@ using System.ServiceModel;
 using System.Threading.Tasks;
 using Contract;
 
-namespace WCFClient;
+namespace WcfClient;
 
 public static class Program
 {
     public static async Task Main()
     {
-        using (var factory = new ChannelFactory<IDebugService>(new BasicHttpBinding(), SharedConfiguration.WCFDebugServiceLocation))
+        using (var factory = new ChannelFactory<IDebugService>(new BasicHttpBinding(), SharedConfiguration.WcfDebugServiceLocation))
         {
             var proxy = factory.CreateChannel();
             await CallThrowApplicationException(proxy);

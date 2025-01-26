@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Net.Http;
 using System.ServiceModel;
+using System.Threading;
 using System.Threading.Tasks;
 using Contract;
-using Grpc.Core;
+using Grpc.Net.Client;
 using ServiceModel.Grpc.Client;
 
-namespace gRPCClient;
+namespace GrpcClient;
 
 public static class Program
 {
@@ -18,18 +20,9 @@ public static class Program
 
     public static async Task Main()
     {
-        var aspNetCoreChannel = new Channel("localhost", SharedConfiguration.AspNetgRPCDebugServicePort, ChannelCredentials.Insecure);
-        var proxy = DefaultClientFactory.CreateClient<IDebugService>(aspNetCoreChannel);
+        var channel = GrpcChannel.ForAddress($"http://localhost:{SharedConfiguration.GrpcServicePort}");
+        var proxy = DefaultClientFactory.CreateClient<IDebugService>(channel);
 
-        Console.WriteLine("-- call AspNetServiceHost --");
-        await CallThrowApplicationException(proxy);
-        await CallThrowInvalidOperationException(proxy);
-
-        var nativeChannel = new Channel("localhost", SharedConfiguration.NativegRPCDebugServicePort, ChannelCredentials.Insecure);
-        proxy = DefaultClientFactory.CreateClient<IDebugService>(nativeChannel);
-
-        Console.WriteLine();
-        Console.WriteLine("-- call NativeServiceHost --");
         await CallThrowApplicationException(proxy);
         await CallThrowInvalidOperationException(proxy);
 
@@ -42,7 +35,7 @@ public static class Program
 
     private static async Task CallThrowApplicationException(IDebugService proxy)
     {
-        Console.WriteLine("gRPC call ThrowApplicationException");
+        Console.WriteLine("Grpc call ThrowApplicationException");
 
         try
         {
@@ -56,7 +49,7 @@ public static class Program
 
     private static async Task CallThrowInvalidOperationException(IDebugService proxy)
     {
-        Console.WriteLine("gRPC call ThrowApplicationException");
+        Console.WriteLine("Grpc call ThrowApplicationException");
 
         try
         {
