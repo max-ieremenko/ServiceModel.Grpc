@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Contract;
 
-namespace Service;
+namespace Server.Services;
 
-public sealed class PersonService : IPersonService
+internal sealed class PersonService : IPersonService
 {
     public Task<Person> CreatePerson(string name, DateTime birthDay)
     {

@@ -1,15 +1,16 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Contract;
 using CustomMarshaller;
-using Grpc.Core;
+using Grpc.Net.Client;
 using ServiceModel.Grpc.Client;
 
 namespace Client;
 
-public sealed class ClientCalls
+public static class Program
 {
-    public static async Task Run(int serverPort)
+    public static async Task Main()
     {
         var clientFactory = new ClientFactory(new ServiceModelGrpcClientOptions
         {
@@ -17,7 +18,7 @@ public sealed class ClientCalls
             MarshallerFactory = JsonMarshallerFactory.Default
         });
 
-        var channel = new Channel("localhost", serverPort, ChannelCredentials.Insecure);
+        var channel = GrpcChannel.ForAddress("http://localhost:5000");
         var personService = clientFactory.CreateClient<IPersonService>(channel);
 
         Console.WriteLine("Invoke CreatePerson");
@@ -26,5 +27,11 @@ public sealed class ClientCalls
 
         Console.WriteLine("  Name: {0}", person.Name);
         Console.WriteLine("  BirthDay: {0}", person.BirthDay);
+
+        if (Debugger.IsAttached)
+        {
+            Console.WriteLine("...");
+            Console.ReadLine();
+        }
     }
 }
