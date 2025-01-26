@@ -5,7 +5,11 @@
 
     Tests         = @(
         , @( 
-            @{ App = 'Server/bin/Release/Server.dll' }
-        )
+            @{
+                App  = 'Server/bin/Release/Server.dll'
+                Port = 8080
+            }
+            @{ App = 'Client/bin/Release/Client.dll' }
+        )     
     )
 }

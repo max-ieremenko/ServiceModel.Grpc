@@ -1,19 +1,20 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Client.Filters;
+﻿using Client.Filters;
 using Contract;
 using Grpc.Net.Client;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using ServiceModel.Grpc.Client;
+using System;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Shouldly;
 
 namespace Client;
 
-public static class ClientCalls
+public static class Program
 {
-    public static async Task CallCalculator(Uri calculatorLocation, CancellationToken token)
+    public static async Task Main()
     {
         var serviceProvider = new ServiceCollection()
             .AddLogging(options =>
@@ -40,17 +41,23 @@ public static class ClientCalls
             options.Filters.Add(100, new HackMultiplyClientFilter());
         });
 
-        using (var channel = GrpcChannel.ForAddress(calculatorLocation))
+        using (var channel = GrpcChannel.ForAddress("http://localhost:8080"))
         {
             var calculator = clientFactory.CreateClient<ICalculator>(channel);
 
-            await CallSumAsync(calculator, token).ConfigureAwait(false);
+            await CallSumAsync(calculator).ConfigureAwait(false);
             CallDivideBy(calculator);
-            await CallMultiplyByAsync(calculator, token).ConfigureAwait(false);
+            await CallMultiplyByAsync(calculator).ConfigureAwait(false);
+        }
+
+        if (Debugger.IsAttached)
+        {
+            Console.WriteLine("...");
+            Console.ReadLine();
         }
     }
 
-    private static async Task CallSumAsync(ICalculator calculator, CancellationToken token)
+    private static async Task CallSumAsync(ICalculator calculator, CancellationToken token = default)
     {
         var sum = await calculator.SumAsync(1, 2, token).ConfigureAwait(false);
         Console.WriteLine("client: SumAsync(1, 2) = {0}", sum);
@@ -66,7 +73,7 @@ public static class ClientCalls
         result.ShouldBe(2);
     }
 
-    private static async Task CallMultiplyByAsync(ICalculator calculator, CancellationToken token)
+    private static async Task CallMultiplyByAsync(ICalculator calculator, CancellationToken token = default)
     {
         var inputMultiplier = 3;
         var inputValues = new[] { 1, 2 };
