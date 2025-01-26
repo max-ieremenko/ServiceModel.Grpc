@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Routing;
-using Service;
 using ServiceModel.Grpc.DesignTime;
 
-namespace Demo.ServerAspNetCore;
+namespace Server.Services;
 
 [ExportGrpcService(typeof(Calculator), GenerateAspNetExtensions = true)] // instruct ServiceModel.Grpc.DesignTime to generate required code during the build process
 [MemoryPackDesignTimeExtension] // instruct ServiceModel.Grpc.MemoryPackMarshaller to generate required code during the build process

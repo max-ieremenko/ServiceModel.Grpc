@@ -6,7 +6,7 @@ namespace Client;
 
 [ImportGrpcService(typeof(ICalculator))]// instruct ServiceModel.Grpc.DesignTime to generate required code during the build process
 [MemoryPackDesignTimeExtension] // instruct ServiceModel.Grpc.MemoryPackMarshaller to generate required code during the build process
-internal static partial class GrpcServices
+internal static partial class GrpcClients
 {
     public static void AddAllClients(IClientFactory clientFactory)
     {

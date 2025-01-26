@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Contract;
 
-namespace Service;
+namespace Server.Services;
 
-public sealed class Calculator : ICalculator
+internal sealed class Calculator : ICalculator
 {
     public Task<Rectangle> CreateRectangleAsync(Point leftTop, Point rightTop, Point rightBottom, Point leftBottom, CancellationToken cancellationToken) =>
         Task.FromResult(new Rectangle(leftTop, Length(leftTop, rightTop), Length(leftTop, leftBottom)));
