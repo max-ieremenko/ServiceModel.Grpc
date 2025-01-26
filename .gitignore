@@ -8,5 +8,6 @@ PublishProfiles/
 
 *.sln.DotSettings.user
 *.csproj.user
+*.slnLaunch.user
 
 todo.txt
