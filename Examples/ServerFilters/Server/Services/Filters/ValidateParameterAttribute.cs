@@ -1,7 +1,7 @@
 ﻿using System;
 using Contract;
 
-namespace Service.Filters;
+namespace Server.Services.Filters;
 
 [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = true)]
 public abstract class ValidateParameterAttribute : Attribute

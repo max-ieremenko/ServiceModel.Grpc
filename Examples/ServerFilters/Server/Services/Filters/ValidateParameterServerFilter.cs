@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Contract;
 using ServiceModel.Grpc.Filters;
 
-namespace Service.Filters;
+namespace Server.Services.Filters;
 
 internal sealed class ValidateParameterFilterAttribute : ServerFilterRegistrationAttribute
 {

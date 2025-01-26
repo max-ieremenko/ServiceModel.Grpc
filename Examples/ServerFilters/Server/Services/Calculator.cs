@@ -4,11 +4,11 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Contract;
-using Service.Filters;
+using Server.Services.Filters;
 
-namespace Service;
+namespace Server.Services;
 
-public sealed class Calculator : ICalculator
+internal sealed class Calculator : ICalculator
 {
     [SumAsyncFilter(100)]
     public ValueTask<int> SumAsync(int x, int y, CancellationToken token)

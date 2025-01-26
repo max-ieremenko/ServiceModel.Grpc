@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using ServiceModel.Grpc.Filters;
 
-namespace Service.Filters;
+namespace Server.Services.Filters;
 
 internal sealed class SumAsyncFilterAttribute : ServerFilterAttribute
 {

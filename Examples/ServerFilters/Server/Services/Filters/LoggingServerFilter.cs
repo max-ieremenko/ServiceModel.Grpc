@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using ServiceModel.Grpc.Filters;
 
-namespace Service.Filters;
+namespace Server.Services.Filters;
 
 public sealed class LoggingServerFilter : IServerFilter
 {
