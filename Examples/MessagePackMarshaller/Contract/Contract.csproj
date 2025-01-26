@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <PackageReference Include="System.ServiceModel.Primitives" />
-    <PackageReference Include="ServiceModel.Grpc" />
     <PackageReference Include="ServiceModel.Grpc.MessagePackMarshaller" />
   </ItemGroup>
 

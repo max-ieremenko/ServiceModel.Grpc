@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Contract;
-using Grpc.Core;
+using Grpc.Net.Client;
 using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.Configuration;
 
 namespace Client;
 
-public static class ClientCalls
+public static class Program
 {
     private static readonly IClientFactory DefaultClientFactory = new ClientFactory(new ServiceModelGrpcClientOptions
     {
@@ -15,9 +15,9 @@ public static class ClientCalls
         MarshallerFactory = MessagePackMarshallerFactory.Default
     });
 
-    public static async Task CallPersonService(int port)
+    public static async Task Main()
     {
-        var channel = new Channel("localhost", port, ChannelCredentials.Insecure);
+        var channel = GrpcChannel.ForAddress("http://localhost:8080");
         var personService = DefaultClientFactory.CreateClient<IPersonService>(channel);
 
         var person = await personService.CreatePerson("John X", DateTime.Today.AddYears(-20));
