@@ -45,8 +45,8 @@ public static class StreamExtensions
     public static async IAsyncEnumerable<byte[]> ToAsyncEnumerable(
         this Stream stream,
         [EnumeratorCancellation] CancellationToken token,
-        Action<long>? onProgress = default,
-        int? maxBufferSize = default)
+        Action<long>? onProgress = null,
+        int? maxBufferSize = null)
     {
         var chunkSize = CalculateChunkSize(maxBufferSize, stream);
 
@@ -85,7 +85,7 @@ public static class StreamExtensions
         this IAsyncEnumerable<byte[]> stream,
         Stream destination,
         CancellationToken token,
-        Action<long>? onProgress = default)
+        Action<long>? onProgress = null)
     {
         var progressValue = 0L;
 
@@ -98,70 +98,12 @@ public static class StreamExtensions
         }
     }
 
-    public static async IAsyncEnumerable<RentedArray> ToAsyncEnumerableRented(
-        this Stream stream,
-        [EnumeratorCancellation] CancellationToken token,
-        Action<long>? onProgress = default,
-        int? maxBufferSize = default)
-    {
-        var chunkSize = CalculateChunkSize(maxBufferSize, stream);
-
-        await using (stream)
-        using (var chunk = RentedArray.Rent(chunkSize))
-        {
-            var progress = 0L;
-            var chunkOffset = 0;
-            int readLength;
-            while ((readLength = await stream.ReadAsync(chunk.Array, chunkOffset, chunkSize - chunkOffset, token)) > 0)
-            {
-                chunkOffset += readLength;
-                if (chunkOffset == chunkSize)
-                {
-                    chunkOffset = 0;
-                    yield return chunk;
-
-                    progress += chunkSize;
-                    onProgress?.Invoke(progress);
-                }
-            }
-
-            if (chunkOffset > 0)
-            {
-                chunk.Resize(chunkOffset);
-                yield return chunk;
-
-                progress += chunkOffset;
-                onProgress?.Invoke(progress);
-            }
-        }
-    }
-
-    public static async Task CopyToAsync(
-        this IAsyncEnumerable<RentedArray> stream,
-        Stream destination,
-        CancellationToken token,
-        Action<long>? onProgress = default)
-    {
-        var progressValue = 0L;
-
-        await foreach (var chunk in stream.WithCancellation(token))
-        {
-            using (chunk)
-            {
-                await destination.WriteAsync(chunk.Array, 0, chunk.Length, token);
-            }
-
-            progressValue += chunk.Length;
-            onProgress?.Invoke(progressValue);
-        }
-    }
-
     public static async Task CopyToAsync(
         this Stream stream,
         Stream destination,
         int bufferSize,
         CancellationToken token,
-        Action<long>? onProgress = default)
+        Action<long>? onProgress = null)
     {
         var buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
         try

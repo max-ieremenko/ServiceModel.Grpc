@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Contract;
-using Grpc.Net.Client.Web;
 
 namespace Benchmarks;
 
@@ -14,22 +13,14 @@ public static class Program
 #else
     public static async Task Main()
     {
-        await RunAspNetDownloadBenchmark();
-        await RunAspNetUploadBenchmark();
-
-        await RunGrpcWebDownloadBenchmark();
-
-        await RunSelfHostDownloadBenchmark();
-        await RunSelfHostUploadBenchmark();
-
-        await RunCoreVsNetChannelDownloadBenchmark();
-        await RunCoreVsNetChannelUploadBenchmark();
+        await RunDownloadBenchmarks();
+        await RunUploadBenchmarks();
     }
 #endif
 
-    private static async Task RunAspNetDownloadBenchmark()
+    private static async Task RunDownloadBenchmarks()
     {
-        var benchmark = new AspNetDownloadBenchmark
+        var benchmark = new DownloadBenchmarks
         {
             BufferSize = StreamExtensions.StreamDefaultCopyBufferSize
         };
@@ -39,17 +30,16 @@ public static class Program
             benchmark.UseCompression = useCompression;
             await benchmark.GlobalSetup();
 
-            await benchmark.Default();
-            await benchmark.RentedArray();
-            await benchmark.HttpClient();
+            await benchmark.Grpc();
+            await benchmark.Http();
 
             await benchmark.GlobalCleanup();
         }
     }
 
-    private static async Task RunAspNetUploadBenchmark()
+    private static async Task RunUploadBenchmarks()
     {
-        var benchmark = new AspNetUploadBenchmark
+        var benchmark = new UploadBenchmarks
         {
             BufferSize = StreamExtensions.StreamDefaultCopyBufferSize
         };
@@ -59,112 +49,10 @@ public static class Program
             benchmark.UseCompression = useCompression;
             await benchmark.GlobalSetup();
 
-            await benchmark.Default();
-            await benchmark.RentedArray();
-            await benchmark.HttpClient();
+            await benchmark.Grpc();
+            await benchmark.Http();
 
             await benchmark.GlobalCleanup();
         }
     }
-
-    private static async Task RunGrpcWebDownloadBenchmark()
-    {
-        var benchmark = new GrpcWebDownloadBenchmark
-        {
-            BufferSize = StreamExtensions.StreamDefaultCopyBufferSize
-        };
-
-        foreach (var useCompression in new[] { true, false })
-        foreach (var mode in new[] { GrpcWebMode.GrpcWeb, GrpcWebMode.GrpcWebText })
-        {
-            benchmark.UseCompression = useCompression;
-            benchmark.Mode = mode;
-            await benchmark.GlobalSetup();
-
-            await benchmark.Default();
-            await benchmark.RentedArray();
-            await benchmark.HttpClient();
-
-            await benchmark.GlobalCleanup();
-        }
-    }
-
-    private static async Task RunSelfHostDownloadBenchmark()
-    {
-        var benchmark = new SelfHostDownloadBenchmark
-        {
-            BufferSize = StreamExtensions.StreamDefaultCopyBufferSize
-        };
-
-        foreach (var useCompression in new[] { true, false })
-        {
-            benchmark.UseCompression = useCompression;
-            benchmark.GlobalSetup();
-
-            await benchmark.Default();
-            await benchmark.RentedArray();
-
-            await benchmark.GlobalCleanup();
-        }
-    }
-
-    private static async Task RunSelfHostUploadBenchmark()
-    {
-        var benchmark = new SelfHostUploadBenchmark
-        {
-            BufferSize = StreamExtensions.StreamDefaultCopyBufferSize
-        };
-
-        foreach (var useCompression in new[] { true, false })
-        {
-            benchmark.UseCompression = useCompression;
-            benchmark.GlobalSetup();
-
-            await benchmark.Default();
-            await benchmark.RentedArray();
-
-            await benchmark.GlobalCleanup();
-        }
-    }
-
-    private static async Task RunCoreVsNetChannelDownloadBenchmark()
-    {
-        var benchmark = new CoreVsNetChannelDownloadBenchmark
-        {
-            BufferSize = StreamExtensions.StreamDefaultCopyBufferSize
-        };
-
-        foreach (var useCompression in new[] { true, false })
-        {
-            benchmark.UseCompression = useCompression;
-            await benchmark.GlobalSetup();
-
-            await benchmark.CoreChannel();
-            await benchmark.NetChannel();
-            await benchmark.HttpClient();
-
-            await benchmark.GlobalCleanup();
-        }
-    }
-
-    private static async Task RunCoreVsNetChannelUploadBenchmark()
-    {
-        var benchmark = new CoreVsNetChannelUploadBenchmark
-        {
-            BufferSize = StreamExtensions.StreamDefaultCopyBufferSize
-        };
-
-        foreach (var useCompression in new[] { true, false })
-        {
-            benchmark.UseCompression = useCompression;
-            await benchmark.GlobalSetup();
-
-            await benchmark.CoreChannel();
-            await benchmark.NetChannel();
-            await benchmark.HttpClient();
-
-            await benchmark.GlobalCleanup();
-        }
-    }
-
 }

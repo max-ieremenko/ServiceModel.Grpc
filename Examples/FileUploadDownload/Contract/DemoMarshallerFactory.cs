@@ -1,23 +1,16 @@
-﻿using System;
-using System.Buffers;
-using Grpc.Core;
+﻿using Grpc.Core;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration;
 
 namespace Contract;
 
+// the only purpose is to skip serialization and write/read directly
 public sealed class DemoMarshallerFactory : IMarshallerFactory
 {
     public static readonly IMarshallerFactory Default = new DemoMarshallerFactory();
 
     public Marshaller<T> CreateMarshaller<T>()
     {
-        // skip serializer, write/read RentedArray directly
-        if (typeof(T) == typeof(Message<RentedArray>))
-        {
-            return (Marshaller<T>)RentedArrayMarshaller.Default;
-        }
-
         // skip serializer, write/read byte[] directly
         if (typeof(T) == typeof(Message<byte[]>))
         {
@@ -42,36 +35,5 @@ internal sealed class ByteArrayMarshaller
     {
         var array = context.PayloadAsNewBuffer();
         return new Message<byte[]>(array);
-    }
-}
-
-internal sealed class RentedArrayMarshaller
-{
-    public static readonly object Default = new Marshaller<Message<RentedArray>>(Serialize, Deserialize);
-
-    private static void Serialize(Message<RentedArray> message, SerializationContext context)
-    {
-        var rentedArray = message.Value1;
-
-        context.SetPayloadLength(rentedArray!.Length);
-            
-        var writer = context.GetBufferWriter();
-        var span = writer.GetSpan(rentedArray.Length);
-        rentedArray.Array.AsSpan(0, rentedArray.Length).CopyTo(span);
-        writer.Advance(rentedArray.Length);
-
-        context.Complete();
-    }
-
-    private static Message<RentedArray> Deserialize(DeserializationContext context)
-    {
-        var sequence = context.PayloadAsReadOnlySequence();
-        var length = context.PayloadLength;
-        var source = sequence.Slice(0, length);
-            
-        var rentedArray = RentedArray.Rent(length);
-        source.CopyTo(rentedArray.Array.AsSpan(0, length));
-            
-        return new Message<RentedArray>(rentedArray);
     }
 }
