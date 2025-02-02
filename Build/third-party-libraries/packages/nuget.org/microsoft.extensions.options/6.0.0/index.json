@@ -6,29 +6,9 @@
   },
   "UsedBy": [
     {
-      "Name": "AspNetCoreNSwag",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "net6.0",
-        "net8.0",
-        "net9.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "Microsoft.Extensions.DependencyInjection.Abstractions",
-          "Version": "6.0.0"
-        },
-        {
-          "Name": "Microsoft.Extensions.Primitives",
-          "Version": "6.0.0"
-        }
-      ]
-    },
-    {
       "Name": "ClientDI",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "net6.0",
         "net8.0",
         "net9.0",
         "netstandard2.0",
@@ -54,13 +34,11 @@
     },
     {
       "Subject": "repository",
-      "Code": null,
       "HRef": "https://github.com/dotnet/runtime",
       "Description": "License should be verified on https://github.com/dotnet/runtime"
     },
     {
       "Subject": "project",
-      "Code": null,
       "HRef": "https://dot.net/",
       "Description": "License should be verified on https://dot.net/"
     }

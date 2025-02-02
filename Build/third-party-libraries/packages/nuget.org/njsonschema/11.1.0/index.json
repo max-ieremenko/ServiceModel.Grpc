@@ -1,0 +1,47 @@
+{
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "NJsonSchema.Annotations",
+          "Version": "11.1.0"
+        },
+        {
+          "Name": "Namotion.Reflection",
+          "Version": "3.2.0"
+        },
+        {
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT"
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/RicoSuter/NJsonSchema"
+    },
+    {
+      "Subject": "project",
+      "HRef": "http://njsonschema.org/"
+    }
+  ]
+}

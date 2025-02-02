@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Contract;
 using Grpc.Core;
+using Grpc.Net.Client;
 using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.Configuration;
 
@@ -19,23 +20,23 @@ public static class Program
 
     public static async Task Main(string[] args)
     {
-        var nativeChannel = new Channel("localhost", ServiceConfiguration.ServiceNativeGrpcPort, ChannelCredentials.Insecure);
-        var serviceModelChannel = new Channel("localhost", ServiceConfiguration.ServiceModelGrpcPort, ChannelCredentials.Insecure);
+        var channelCodeFirst = GrpcChannel.ForAddress("http://localhost:5000");
+        var channelProto = GrpcChannel.ForAddress("http://localhost:5001");
 
-        Console.WriteLine("Native->Native");
-        await NativeCall(nativeChannel);
-
-        Console.WriteLine();
-        Console.WriteLine("ServiceModel->ServiceModel");
-        await ServiceModelCall(serviceModelChannel);
+        Console.WriteLine("Proto->Proto");
+        await ProtoCall(channelProto);
 
         Console.WriteLine();
-        Console.WriteLine("Native->ServiceModel");
-        await NativeCall(serviceModelChannel);
+        Console.WriteLine("CodeFirst->CodeFirst");
+        await CodeFirstCall(channelCodeFirst);
 
         Console.WriteLine();
-        Console.WriteLine("ServiceModel->Native");
-        await ServiceModelCall(nativeChannel);
+        Console.WriteLine("Proto->CodeFirst");
+        await ProtoCall(channelCodeFirst);
+
+        Console.WriteLine();
+        Console.WriteLine("CodeFirst->Proto");
+        await CodeFirstCall(channelProto);
 
         if (Debugger.IsAttached)
         {
@@ -44,7 +45,7 @@ public static class Program
         }
     }
 
-    private static async Task NativeCall(ChannelBase channel)
+    private static async Task ProtoCall(ChannelBase channel)
     {
         var client = new CalculatorNative.CalculatorNativeClient(channel);
 
@@ -98,7 +99,7 @@ public static class Program
         }
     }
 
-    private static async Task ServiceModelCall(ChannelBase channel)
+    private static async Task CodeFirstCall(ChannelBase channel)
     {
         var client = DefaultClientFactory.CreateClient<ICalculator>(channel);
 

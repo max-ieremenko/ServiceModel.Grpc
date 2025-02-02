@@ -22,11 +22,6 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
 using ServiceModel.Grpc.Internal;
-#if NET6_0_OR_GREATER
-using RouteValuesType = System.Collections.Generic.Dictionary<string, string?>;
-#else
-using RouteValuesType = System.Collections.Generic.Dictionary<string, string>;
-#endif
 
 namespace ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer;
 
@@ -56,7 +51,7 @@ internal static class ApiDescriptionGenerator
             ControllerTypeInfo = metadata.ServiceType.GetTypeInfo(),
             ActionName = metadata.Method.Name,
             ControllerName = metadata.Method.ServiceName,
-            RouteValues = new RouteValuesType
+            RouteValues = new Dictionary<string, string?>(1)
             {
                 ["controller"] = metadata.Method.ServiceName
             },

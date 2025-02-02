@@ -6,14 +6,10 @@
     Tests         = @(
         @( 
             @{
-                App  = 'ServerAspNetHost/bin/Debug/ServerAspNetHost.dll'
+                App  = 'Server/bin/Debug/Server.dll'
                 Port = 5000
             }
-            @{
-                App  = 'ServerSelfHost/bin/Debug/ServerSelfHost.dll'
-                Port = 5003
-            }
-            @{ App = 'ConsoleClient/bin/Debug/ConsoleClient.dll' }
+            @{ App = 'Client/bin/Debug/Client.dll' }
         ),     
         @( 
             @{ App = 'Benchmarks/bin/Debug/Benchmarks.dll' }

@@ -1,0 +1,41 @@
+using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Server.Services;
+
+namespace Server;
+
+public static class Program
+{
+    public static void Main()
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.Configuration.Sources.Clear();
+        builder.Configuration.SetBasePath(AppContext.BaseDirectory);
+        builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+
+        // enable ServiceModel.Grpc
+        // see https://max-ieremenko.github.io/ServiceModel.Grpc/ASPNETCoreServerConfiguration.html
+        builder.Services.AddServiceModelGrpc(options =>
+        {
+            // the DataContractMarshallerFactory is default one
+            //options.MarshallerFactory = DataContractMarshallerFactory.Default;
+
+            // add server filters, see https://max-ieremenko.github.io/ServiceModel.Grpc/server-filters.html
+            //options.Filters.Add(...);
+
+            // configure error handling, see https://max-ieremenko.github.io/ServiceModel.Grpc/error-handling-general.html
+            //options.DefaultErrorHandlerFactory = ...
+        });
+
+        var app = builder.Build();
+
+        app.UseRouting();
+
+        // host Calculator service, gRPC endpoint will be generated at runtime by ServiceModel.Grpc
+        app.MapGrpcService<Calculator>();
+
+        app.Run();
+    }
+}

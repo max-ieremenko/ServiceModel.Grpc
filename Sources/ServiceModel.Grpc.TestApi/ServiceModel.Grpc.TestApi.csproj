@@ -2,7 +2,7 @@
   <Import Project="..\Test.csproj.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>net462;net6.0;net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net462;net8.0;net9.0</TargetFrameworks>
     <AssemblyTitle>ServiceModel.Grpc.TestApi</AssemblyTitle>
   </PropertyGroup>
 
@@ -10,6 +10,7 @@
     <PackageReference Include="Grpc.Core" />
     <PackageReference Include="Grpc.Net.Client" />
     <PackageReference Include="Mono.Reflection" />
+    <PackageReference Include="System.Threading.Channels" />
   </ItemGroup>
 
   <ItemGroup>

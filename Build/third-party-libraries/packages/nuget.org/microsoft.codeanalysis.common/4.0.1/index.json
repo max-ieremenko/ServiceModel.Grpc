@@ -10,7 +10,6 @@
       "InternalOnly": false,
       "TargetFrameworks": [
         "net462",
-        "net6.0",
         "net8.0",
         "net9.0",
         "netstandard2.0"
@@ -26,7 +25,7 @@
         },
         {
           "Name": "System.Memory",
-          "Version": "4.5.5"
+          "Version": "4.6.0"
         },
         {
           "Name": "System.Reflection.Metadata",
@@ -38,7 +37,7 @@
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.0.0"
+          "Version": "6.1.0"
         },
         {
           "Name": "System.Text.Encoding.CodePages",

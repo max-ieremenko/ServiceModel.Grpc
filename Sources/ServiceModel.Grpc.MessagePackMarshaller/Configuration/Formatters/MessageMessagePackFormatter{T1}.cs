@@ -20,7 +20,7 @@ using ServiceModel.Grpc.Channel;
 
 namespace ServiceModel.Grpc.Configuration.Formatters;
 
-internal sealed class MessageMessagePackFormatter<T1> : IMessagePackFormatter<Message<T1>>
+internal sealed class MessageMessagePackFormatter<T1> : IMessagePackFormatter<Message<T1>?>
 {
 #if DEBUG
     public int SerializeCallsCounter { get; set; }

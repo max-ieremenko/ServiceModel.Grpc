@@ -2,9 +2,10 @@
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using Client.Shared;
+using Client.Services;
 using Contract;
 using Grpc.Core;
+using Grpc.Net.Client;
 using ServiceModel.Grpc.Client;
 using ServiceModel.Grpc.Interceptors;
 
@@ -26,24 +27,15 @@ public static class Program
 
     public static async Task Main()
     {
-        var nativeChannel = new Channel("localhost", ServiceConfiguration.ServiceNativeGrpcPort, ChannelCredentials.Insecure);
-        var serviceModelChannel = new Channel("localhost", ServiceConfiguration.ServiceModelGrpcPort, ChannelCredentials.Insecure);
+        var channel = GrpcChannel.ForAddress("http://localhost:5000");
 
         Console.WriteLine();
-        Console.WriteLine("Invoke ThrowApplicationException on ServerAspNetHost");
-        await InvokeThrowApplicationException(serviceModelChannel);
+        Console.WriteLine($"Invoke {nameof(ThrowApplicationException)}");
+        await ThrowApplicationException(channel);
 
         Console.WriteLine();
-        Console.WriteLine("Invoke ThrowApplicationException on ServerNativeHost");
-        await InvokeThrowApplicationException(nativeChannel);
-
-        Console.WriteLine();
-        Console.WriteLine("Invoke ThrowRandomException on ServerAspNetHost");
-        await InvokeThrowRandomException(serviceModelChannel);
-
-        Console.WriteLine();
-        Console.WriteLine("Invoke ThrowRandomException on ServerNativeHost");
-        await InvokeThrowRandomException(nativeChannel);
+        Console.WriteLine($"Invoke {nameof(ThrowRandomException)}");
+        await ThrowRandomException(channel);
 
         if (Debugger.IsAttached)
         {
@@ -52,7 +44,7 @@ public static class Program
         }
     }
 
-    private static async Task InvokeThrowApplicationException(ChannelBase channel)
+    private static async Task ThrowApplicationException(ChannelBase channel)
     {
         var client = DefaultClientFactory.CreateClient<IDebugService>(channel);
 
@@ -66,7 +58,7 @@ public static class Program
         }
     }
 
-    private static async Task InvokeThrowRandomException(ChannelBase channel)
+    private static async Task ThrowRandomException(ChannelBase channel)
     {
         var client = DefaultClientFactory.CreateClient<IDebugService>(channel);
 

@@ -9,43 +9,10 @@
       "Name": "ClientDI",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "net6.0",
         "net8.0",
         "net9.0",
         "netstandard2.0",
         "netstandard2.1"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Threading.Tasks.Extensions",
-          "Version": "4.5.4"
-        }
-      ]
-    },
-    {
-      "Name": "Core",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "net462",
-        "net6.0",
-        "net8.0",
-        "net9.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Threading.Tasks.Extensions",
-          "Version": "4.5.4"
-        }
-      ]
-    },
-    {
-      "Name": "MessagePack",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "net6.0",
-        "net8.0",
-        "net9.0",
-        "netstandard2.0"
       ],
       "Dependencies": [
         {
@@ -68,7 +35,6 @@
     },
     {
       "Subject": "project",
-      "Code": null,
       "HRef": "https://dot.net/",
       "Description": "License should be verified on https://dot.net/"
     }

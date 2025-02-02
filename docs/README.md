@@ -25,7 +25,6 @@ The solution is built on top of [gRPC C#](https://github.com/grpc/grpc/tree/mast
 - [global exception handling](global-error-handling.md)
 - [client filters](client-filters.md)
 - [server filters](server-filters.md)
-- [getting started](CreateClientAndServerASPNETCore.md) create a gRPC client and server
 - [compatibility with native gRPC](CompatibilityWithNativegRPC.md)
 - [migrate from WCF to a gRPC](MigrateWCFServiceTogRPC.md)
 - [migrate from WCF FaultContract to a gRPC global error handling](migrate-wcf-faultcontract-to-global-error-handling.md)

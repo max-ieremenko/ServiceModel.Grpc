@@ -30,12 +30,15 @@ internal sealed class FigureBaseJsonConverter : JsonConverter<FigureBase>
 
     private static Type GetFigureConcreteType(JsonElement element)
     {
-        // looks like Rectangle
-        if (element.TryGetProperty(nameof(Rectangle.VertexLeftTop), out _)
-            || element.TryGetProperty(nameof(Rectangle.Width), out _)
-            || element.TryGetProperty(nameof(Rectangle.Height), out _))
+        // it looks like Rectangle
+        foreach (var item in element.EnumerateObject())
         {
-            return typeof(Rectangle);
+            if (nameof(Rectangle.VertexLeftTop).Equals(item.Name, StringComparison.OrdinalIgnoreCase)
+                || nameof(Rectangle.Width).Equals(item.Name, StringComparison.OrdinalIgnoreCase)
+                || nameof(Rectangle.Height).Equals(item.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                return typeof(Rectangle);
+            }
         }
 
         // there are no other figures implemented, except Triangle

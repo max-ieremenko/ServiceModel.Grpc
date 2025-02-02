@@ -1,5 +1,4 @@
-﻿using Contract.Resolvers;
-using MessagePack;
+﻿using MessagePack;
 using MessagePack.Resolvers;
 
 namespace Contract;
@@ -7,11 +6,11 @@ namespace Contract;
 public static class MessagePackSerializerHelper
 {
     /// <summary>
-    /// Create options with MessagePack generated formatters (see generated <see cref="SharedMessagePackResolver"/>)
+    /// Create options with MessagePack generated formatters (see generated <see cref="GeneratedMessagePackResolver"/>)
     /// </summary>
     public static MessagePackSerializerOptions CreateApplicationOptions()
     {
-        var resolver = CompositeResolver.Create(SharedMessagePackResolver.Instance, StandardResolver.Instance);
+        var resolver = CompositeResolver.Create(GeneratedMessagePackResolver.Instance, StandardResolver.Instance);
         return MessagePackSerializerOptions.Standard.WithResolver(resolver);
     }
 }

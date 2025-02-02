@@ -6,15 +6,10 @@
     Tests         = @(
         , @( 
             @{
-                App  = 'ServerAspNetHost/bin/Release/ServerAspNetHost.dll'
+                App  = 'Server/bin/Release/Server.dll'
                 Port = 5000
             }
-            @{
-                App  = 'ServerNativeHost/bin/Release/ServerNativeHost.dll'
-                Port = 5050
-            }
             @{ App = 'Client/bin/Release/Client.dll' }
-            @{ App = 'ClientDesignTime/bin/Release/ClientDesignTime.dll' }
         )     
     )
 }
