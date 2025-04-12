@@ -1,4 +1,4 @@
-MessagePack.Annotations [3.1.1](https://www.nuget.org/packages/MessagePack.Annotations/3.1.1)
+MessagePack.Annotations [3.1.3](https://www.nuget.org/packages/MessagePack.Annotations/3.1.3)
 --------------------
 
 Used by: MessagePack
