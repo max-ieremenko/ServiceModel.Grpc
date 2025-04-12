@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>NJsonSchema.Yaml</id>
+    <version>11.2.0</version>
+    <authors>Rico Suter</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>NuGetIcon.png</icon>
+    <projectUrl>http://njsonschema.org/</projectUrl>
+    <description>JSON Schema reader, generator and validator for .NET</description>
+    <copyright>Copyright © Rico Suter, 2022</copyright>
+    <tags>json schema validation generator .net</tags>
+    <repository type="git" url="https://github.com/RicoSuter/NJsonSchema" commit="1ba3faa5ad32f33838989dc86db7fad133e4ac56" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.6.2">
+        <dependency id="NJsonSchema" version="11.2.0" exclude="Build,Analyzers" />
+        <dependency id="YamlDotNet" version="16.3.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="NJsonSchema" version="11.2.0" exclude="Build,Analyzers" />
+        <dependency id="YamlDotNet" version="16.3.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
