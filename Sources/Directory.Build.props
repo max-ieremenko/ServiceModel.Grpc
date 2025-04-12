@@ -34,7 +34,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageProjectUrl>https://max-ieremenko.github.io/ServiceModel.Grpc/</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <Copyright>(C) 2020-2024 Max Ieremenko.</Copyright>
+    <Copyright>(C) 2020-2025 Max Ieremenko.</Copyright>
     <RepositoryType>git</RepositoryType>
     <PackageTags>gRPC grpc-dotnet c-sharp swagger servicemodel wcf code-first code-generator</PackageTags>
 
