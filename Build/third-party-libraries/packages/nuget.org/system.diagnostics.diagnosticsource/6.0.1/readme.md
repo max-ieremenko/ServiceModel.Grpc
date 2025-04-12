@@ -1,7 +1,7 @@
 System.Diagnostics.DiagnosticSource [6.0.1](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/6.0.1)
 --------------------
 
-Used by: ClientDI, Core internal
+Used by: ClientDI, Core internal, DesignTime internal, Emit internal, SelfHost internal
 
 Target frameworks: net462, net8.0, net9.0, netstandard2.0, netstandard2.1
 
