@@ -16,11 +16,30 @@
       ],
       "Dependencies": [
         {
-          "Name": "Grpc.Net.Client",
-          "Version": "2.67.0"
+          "Name": "Grpc.Net.Common",
+          "Version": "2.70.0"
         },
         {
-          "Name": "Microsoft.Extensions.Http",
+          "Name": "Microsoft.Extensions.Logging.Abstractions",
+          "Version": "6.0.0"
+        }
+      ]
+    },
+    {
+      "Name": "Core",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Grpc.Net.Common",
+          "Version": "2.70.0"
+        },
+        {
+          "Name": "Microsoft.Extensions.Logging.Abstractions",
           "Version": "6.0.0"
         }
       ]
