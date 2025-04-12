@@ -1,4 +1,4 @@
-Microsoft.OpenApi [1.6.22](https://www.nuget.org/packages/Microsoft.OpenApi/1.6.22)
+Microsoft.OpenApi [1.6.23](https://www.nuget.org/packages/Microsoft.OpenApi/1.6.23)
 --------------------
 
 Used by: AspNetCoreSwashbuckle

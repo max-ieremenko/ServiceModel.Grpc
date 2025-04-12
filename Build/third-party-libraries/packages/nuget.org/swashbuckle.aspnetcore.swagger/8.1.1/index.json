@@ -15,7 +15,7 @@
       "Dependencies": [
         {
           "Name": "Microsoft.OpenApi",
-          "Version": "1.6.22"
+          "Version": "1.6.23"
         }
       ]
     }

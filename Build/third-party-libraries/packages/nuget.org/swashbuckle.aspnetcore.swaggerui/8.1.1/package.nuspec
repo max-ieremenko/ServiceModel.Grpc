@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>Swashbuckle.AspNetCore.SwaggerUI</id>
-    <version>7.2.0</version>
+    <version>8.1.1</version>
     <authors>domaindrivendev</authors>
     <license type="expression">MIT</license>
     <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
@@ -10,24 +10,20 @@
     <projectUrl>https://github.com/domaindrivendev/Swashbuckle.AspNetCore</projectUrl>
     <description>Middleware to expose an embedded version of the swagger-ui from an ASP.NET Core application</description>
     <releaseNotes>See https://github.com/domaindrivendev/Swashbuckle.AspNetCore/releases for details.</releaseNotes>
-    <copyright>Copyright (c) 2016-2024 Richard Morris</copyright>
+    <copyright>Copyright (c) 2016-2025 Richard Morris</copyright>
     <tags>swagger documentation discovery help webapi aspnet aspnetcore</tags>
-    <repository type="git" url="https://github.com/domaindrivendev/Swashbuckle.AspNetCore.git" commit="fc77e5ab963cbd10d5f1fae295ae98f61698acc0" />
+    <repository type="git" url="https://github.com/domaindrivendev/Swashbuckle.AspNetCore.git" commit="a676de6fe7680c79bacd863125195dae89207308" />
     <dependencies>
-      <group targetFramework="net6.0" />
       <group targetFramework="net8.0" />
       <group targetFramework="net9.0" />
       <group targetFramework=".NETStandard2.0">
-        <dependency id="Microsoft.AspNetCore.Routing" version="2.1.0" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.AspNetCore.StaticFiles" version="2.1.0" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.Extensions.FileProviders.Embedded" version="2.1.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Routing" version="2.3.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.StaticFiles" version="2.3.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.FileProviders.Embedded" version="2.1.1" exclude="Build,Analyzers" />
         <dependency id="System.Text.Json" version="4.6.0" exclude="Build,Analyzers" />
       </group>
     </dependencies>
     <frameworkReferences>
-      <group targetFramework="net6.0">
-        <frameworkReference name="Microsoft.AspNetCore.App" />
-      </group>
       <group targetFramework="net8.0">
         <frameworkReference name="Microsoft.AspNetCore.App" />
       </group>
