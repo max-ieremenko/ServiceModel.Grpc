@@ -29,8 +29,8 @@ Packages 127
 |[Grpc.Net.ClientFactory](packages/nuget.org/grpc.net.clientfactory/2.70.0)|2.70.0|[nuget.org](https://www.nuget.org/packages/Grpc.Net.ClientFactory/2.70.0)|[Apache-2.0](licenses/apache-2.0)|ClientDI|
 |[Grpc.Net.Common](packages/nuget.org/grpc.net.common/2.70.0)|2.70.0|[nuget.org](https://www.nuget.org/packages/Grpc.Net.Common/2.70.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore, ClientDI, Core internal|
 |[Grpc.Tools](packages/nuget.org/grpc.tools/2.71.0)|2.71.0|[nuget.org](https://www.nuget.org/packages/Grpc.Tools/2.71.0)|[Apache-2.0](licenses/apache-2.0)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
-|[MemoryPack](packages/nuget.org/memorypack/1.21.3)|1.21.3|[nuget.org](https://www.nuget.org/packages/MemoryPack/1.21.3)|[MIT](licenses/mit)|MemoryPack|
-|[MemoryPack.Core](packages/nuget.org/memorypack.core/1.21.3)|1.21.3|[nuget.org](https://www.nuget.org/packages/MemoryPack.Core/1.21.3)|[MIT](licenses/mit)|MemoryPack|
+|[MemoryPack](packages/nuget.org/memorypack/1.21.4)|1.21.4|[nuget.org](https://www.nuget.org/packages/MemoryPack/1.21.4)|[MIT](licenses/mit)|MemoryPack|
+|[MemoryPack.Core](packages/nuget.org/memorypack.core/1.21.4)|1.21.4|[nuget.org](https://www.nuget.org/packages/MemoryPack.Core/1.21.4)|[MIT](licenses/mit)|MemoryPack|
 |[MessagePack](packages/nuget.org/messagepack/3.1.3)|3.1.3|[nuget.org](https://www.nuget.org/packages/MessagePack/3.1.3)|[MIT](licenses/mit)|MessagePack|
 |[MessagePack.Annotations](packages/nuget.org/messagepack.annotations/3.1.3)|3.1.3|[nuget.org](https://www.nuget.org/packages/MessagePack.Annotations/3.1.3)|[MIT](licenses/mit)|MessagePack|
 |[Microsoft.ApplicationInsights](packages/nuget.org/microsoft.applicationinsights/2.22.0)|2.22.0|[nuget.org](https://www.nuget.org/packages/Microsoft.ApplicationInsights/2.22.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, SelfHost internal|
