@@ -16,7 +16,7 @@
       "Dependencies": [
         {
           "Name": "MemoryPack.Core",
-          "Version": "1.21.3"
+          "Version": "1.21.4"
         }
       ]
     }
