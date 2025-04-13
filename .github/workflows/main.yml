@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - 'release/**'
+      - 'macos/**'
     paths-ignore:
       - 'docs/**'
       - '**.md'
@@ -102,6 +103,35 @@ jobs:
     - name: Test
       shell: pwsh
       run: ./Build/invoke-sdk-test.ps1 -Platform "win"
+
+  sdk-test-macos:
+    name: macos-sdk-test
+    runs-on: macos-latest
+    needs: build
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/download-artifact@v4
+      with:
+        name: nuget-packages
+        path: build-out
+
+    - name: List artifacts
+      run: ls -R
+      working-directory: build-out
+
+    - name: Install dependencies
+      shell: pwsh
+      run: ./Build/install-dependencies.ps1 ".net", "InvokeBuild"
+
+    - name: Dotnet info
+      shell: pwsh
+      run: dotnet --info
+
+    - name: Test
+      shell: pwsh
+      run: ./Build/invoke-sdk-test.ps1 -Platform "macos"
 
   benchmarks:
     name: linux-benchmarks

@@ -11,7 +11,7 @@ param (
 
 $test = Get-InstalledModule -Name $Name -MinimumVersion $Version -ErrorAction 'SilentlyContinue'
 if ($test) {
-    Write-Output "$Name $($test.Version) is alredy installed"
+    Write-Output "$Name $($test.Version) is already installed"
     return
 }
 
