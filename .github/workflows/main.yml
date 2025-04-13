@@ -5,7 +5,7 @@ on:
     branches:
       - master
       - 'release/**'
-      - 'macos/**'
+      - 'build/**'
     paths-ignore:
       - 'docs/**'
       - '**.md'
