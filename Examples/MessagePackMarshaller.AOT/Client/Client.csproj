@@ -6,6 +6,7 @@
 
     <InvariantGlobalization>true</InvariantGlobalization>
     <PublishAot>true</PublishAot>
+    <PublishDir>bin/Release/publish/</PublishDir>
 
     <!--
     IL3053: Assembly 'MessagePack' produced AOT analysis warnings.

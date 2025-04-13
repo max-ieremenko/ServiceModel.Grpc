@@ -1,18 +1,18 @@
 @{ 
     Solution      = 'MessagePackMarshaller.AOT.sln'
     Configuration = 'Release'
-    Platform      = 'Linux'
+    Platform      = 'Linux', 'MacOS'
     BuildMode     = 'Publish'
 
     Tests         = @(
         , @( 
             @{
-                App  = 'Server/bin/Release/linux-x64/publish/Server'
+                App  = 'Server/bin/Release/publish/Server'
                 Type = 'exe'
                 Port = 5000
             }
             @{ 
-                App  = 'Client/bin/Release/linux-x64/publish/Client'
+                App  = 'Client/bin/Release/publish/Client'
                 Type = 'exe'
             }
         )     
