@@ -4,7 +4,7 @@
 [CmdletBinding()]
 param (
     [Parameter(Mandatory)]
-    [ValidateSet('win', 'linux')] 
+    [ValidateSet('win', 'linux', 'macos')] 
     [string]
     $Platform,
 
@@ -32,11 +32,18 @@ foreach ($configuration in $configurations) {
     }
 
     $example = & $configuration
-    if ($example.Platform -notin 'win', 'linux') {
-        throw "Platform $($example.Platform) is not supported: $configuration"
+
+    if ($example.Platform -isnot [object[]]) {
+        $example.Platform = @($example.Platform)
     }
 
-    if ($example.Platform -ne $Platform) {
+    foreach ($testPlatform in $example.Platform) {
+        if ($testPlatform -notin 'win', 'linux', 'macos') {
+            throw "Platform $testPlatform is not supported: $configuration"
+        }
+    }
+
+    if ($Platform -notin $example.Platform) {
         continue
     }
 
