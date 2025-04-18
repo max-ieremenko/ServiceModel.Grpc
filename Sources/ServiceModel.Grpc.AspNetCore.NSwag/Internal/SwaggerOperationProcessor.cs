@@ -15,7 +15,10 @@
 // </copyright>
 
 using System.Globalization;
+using System.Net;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Namotion.Reflection;
 using NJsonSchema;
 using NJsonSchema.Generation;
@@ -32,6 +35,13 @@ internal sealed class SwaggerOperationProcessor : IOperationProcessor
 {
     private const string Multipart = "multipart/form-data";
 
+    private readonly ServiceModelGrpcSwaggerOptions _configuration;
+
+    public SwaggerOperationProcessor(IOptions<ServiceModelGrpcSwaggerOptions> configuration)
+    {
+        _configuration = configuration.Value;
+    }
+
     public bool Process(OperationProcessorContext context)
     {
         var description = (context as AspNetCoreOperationProcessorContext)?.ApiDescription;
@@ -43,8 +53,12 @@ internal sealed class SwaggerOperationProcessor : IOperationProcessor
 
         var operation = context.OperationDescription.Operation;
         FixRequestType(operation);
-        UpdateSummary(operation, descriptor);
-        UpdateDescription(operation, descriptor);
+
+        if (_configuration.AutogenerateOperationSummaryAndDescription)
+        {
+            UpdateSummary(operation, descriptor);
+            UpdateDescription(operation, descriptor);
+        }
 
         for (var i = 0; i < description!.SupportedResponseTypes.Count; i++)
         {
@@ -70,14 +84,14 @@ internal sealed class SwaggerOperationProcessor : IOperationProcessor
     {
         if (string.IsNullOrWhiteSpace(operation.Description))
         {
-            operation.Description = descriptor.MethodSignature;
+            operation.Description = WebUtility.HtmlEncode(descriptor.MethodSignature);
         }
         else
         {
-            operation.Description = new StringBuilder(operation.Description.Length + 4 + descriptor.MethodSignature)
+            operation.Description = new StringBuilder()
                 .AppendLine(operation.Description)
                 .AppendLine()
-                .Append(descriptor.MethodSignature)
+                .Append(WebUtility.HtmlEncode(descriptor.MethodSignature))
                 .ToString();
         }
     }

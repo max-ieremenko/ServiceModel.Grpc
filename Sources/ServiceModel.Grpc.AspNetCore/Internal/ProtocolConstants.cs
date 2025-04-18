@@ -29,7 +29,7 @@ internal static class ProtocolConstants
 
     public const string Http2 = "HTTP/2";
 
-    public static string NormalizeRelativePath(string path)
+    public static string? NormalizeRelativePath(string? path)
     {
         if (!string.IsNullOrEmpty(path) && path[0] == '/')
         {
