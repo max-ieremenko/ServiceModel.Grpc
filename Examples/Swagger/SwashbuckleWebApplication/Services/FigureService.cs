@@ -4,13 +4,14 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Contract;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace SwashbuckleWebApplication.Services;
 
+/// <summary>
+/// Provides methods for geometric functions.
+/// </summary>
 internal sealed class FigureService : IFigureService
 {
-    [SwaggerOperation("Create a triangle")]
     public Task<Triangle> CreateTriangle(Point vertex1, Point vertex2, Point vertex3, CancellationToken token)
     {
         return Task.FromResult(new Triangle

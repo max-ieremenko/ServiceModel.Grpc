@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+
+    <!--
+    CS1591: Missing XML comment for ...
+    -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

@@ -7,6 +7,9 @@ using Contract;
 
 namespace SwashbuckleWebApplication.Services;
 
+/// <summary>
+/// Provides methods for mathematical functions.
+/// </summary>
 internal sealed class Calculator : ICalculator
 {
     public Task<int> GetRandomNumber()
