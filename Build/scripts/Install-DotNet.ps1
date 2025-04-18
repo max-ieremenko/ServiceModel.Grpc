@@ -56,10 +56,10 @@ if (Get-Command -Name dotnet -ErrorAction SilentlyContinue) {
 }
 
 $installDir = Get-InstallationPath
-$installScript = 'dotnet-install.ps1'
+$installScript = 'dotnet-install.sh'
 
-if ($IsLinux) {
-    $installScript = 'dotnet-install.sh'
+if ($IsWindows) {
+    $installScript = 'dotnet-install.ps1'
 }
 
 $downloadDir = Join-Path ([System.IO.Path]::GetTempPath()) 'install-dotnet'
@@ -72,7 +72,7 @@ New-Item -Path $downloadDir -ItemType Directory | Out-Null
 $dotnetInstall = Join-Path $downloadDir $installScript
 Invoke-WebRequest -Uri "https://dot.net/v1/$installScript" -OutFile $dotnetInstall
 
-if ($IsLinux) {
+if (-not $IsWindows) {
     chmod +x $dotnetInstall
 }
 

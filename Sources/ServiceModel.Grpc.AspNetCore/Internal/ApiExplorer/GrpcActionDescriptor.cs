@@ -24,5 +24,5 @@ internal sealed class GrpcActionDescriptor : ControllerActionDescriptor
 {
     public MethodType MethodType { get; set; }
 
-    public string MethodSignature { get; set; } = null!;
+    public string? MethodSignature { get; set; }
 }

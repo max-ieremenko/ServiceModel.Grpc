@@ -1,4 +1,5 @@
 using System;
+using Contract;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,19 +23,26 @@ public static class Program
 
         // Swashbuckle.AspNetCore
         builder.Services.AddMvc();
-        builder.Services.AddSwaggerGen(c =>
+        builder.Services.AddSwaggerGen(options =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "1.0" });
-            c.EnableAnnotations(true, true);
-            c.UseAllOfForInheritance();
-            c.SchemaGeneratorOptions.SubTypesSelector = SwaggerTools.GetDataContractKnownTypes;
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "1.0" });
+            options.EnableAnnotations(true, true);
+            options.UseAllOfForInheritance();
+            options.SchemaGeneratorOptions.SubTypesSelector = SwaggerTools.GetDataContractKnownTypes;
+
+            options.IncludeXmlComments(typeof(ICalculator).Assembly);
+            options.IncludeXmlComments(typeof(Calculator).Assembly, includeControllerXmlComments: true);
         });
 
         // enable ServiceModel.Grpc
         builder.Services.AddServiceModelGrpc();
 
         // enable ServiceModel.Grpc integration for Swashbuckle.AspNetCore
-        builder.Services.AddServiceModelGrpcSwagger();
+        builder.Services.AddServiceModelGrpcSwagger(options =>
+        {
+            // add method type into operation summary and method signature into description
+            options.AutogenerateOperationSummaryAndDescription = true;
+        });
 
         var app = builder.Build();
         app.UseRouting();

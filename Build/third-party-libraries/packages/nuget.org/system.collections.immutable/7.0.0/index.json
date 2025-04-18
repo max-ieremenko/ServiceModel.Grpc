@@ -6,6 +6,25 @@
   },
   "UsedBy": [
     {
+      "Name": "Emit",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Memory",
+          "Version": "4.6.0"
+        },
+        {
+          "Name": "System.Runtime.CompilerServices.Unsafe",
+          "Version": "6.1.0"
+        }
+      ]
+    },
+    {
       "Name": "ProtoBuf",
       "InternalOnly": false,
       "TargetFrameworks": [
@@ -14,6 +33,16 @@
         "net9.0",
         "netstandard2.0",
         "netstandard2.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Memory",
+          "Version": "4.5.5"
+        },
+        {
+          "Name": "System.Runtime.CompilerServices.Unsafe",
+          "Version": "6.0.0"
+        }
       ]
     }
   ],

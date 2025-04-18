@@ -1,0 +1,37 @@
+{
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "Apache-2.0",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "ProtoBuf",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net462",
+        "net8.0",
+        "net9.0",
+        "netstandard2.0",
+        "netstandard2.1"
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "Apache-2.0",
+      "HRef": "https://licenses.nuget.org/Apache-2.0"
+    },
+    {
+      "Subject": "repository",
+      "HRef": "https://github.com/protobuf-net/protobuf-net",
+      "Description": "License code NOASSERTION"
+    },
+    {
+      "Subject": "project",
+      "HRef": "https://github.com/protobuf-net/protobuf-net",
+      "Description": "License code NOASSERTION"
+    }
+  ]
+}

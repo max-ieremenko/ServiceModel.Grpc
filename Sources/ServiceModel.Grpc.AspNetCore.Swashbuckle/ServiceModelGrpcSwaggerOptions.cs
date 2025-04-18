@@ -31,10 +31,16 @@ public sealed class ServiceModelGrpcSwaggerOptions
     public ServiceModelGrpcSwaggerOptions()
     {
         JsonSerializer = new SystemTextJsonSerializer();
+        AutogenerateOperationSummaryAndDescription = true;
     }
 
     /// <summary>
     /// Gets or sets the <see cref="IJsonSerializer"/> which handles data serialization and deserialization for HTTP/1.1 JSON Swagger UI gateway.
     /// </summary>
     public IJsonSerializer JsonSerializer { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to add method type into operation summary and method signature into description (default: true).
+    /// </summary>
+    public bool AutogenerateOperationSummaryAndDescription { get; set; }
 }

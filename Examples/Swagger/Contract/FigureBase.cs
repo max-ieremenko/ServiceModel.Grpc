@@ -4,6 +4,9 @@ using Contract.Internal;
 
 namespace Contract;
 
+/// <summary>
+/// A shape abstraction.
+/// </summary>
 [DataContract]
 [KnownType(typeof(Triangle))]
 [KnownType(typeof(Rectangle))]

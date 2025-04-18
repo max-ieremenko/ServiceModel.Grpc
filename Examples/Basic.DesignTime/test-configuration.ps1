@@ -1,7 +1,7 @@
 @{ 
     Solution      = 'Basic.DesignTime.sln'
     Configuration = 'Release'
-    Platform      = 'Linux'
+    Platform      = 'Linux', 'MacOS'
 
     Tests         = @(
         , @( 

@@ -1,0 +1,47 @@
+{
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "ClientDI",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net8.0",
+        "net9.0"
+      ]
+    },
+    {
+      "Name": "Core",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net8.0",
+        "net9.0"
+      ]
+    },
+    {
+      "Name": "SelfHost",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net8.0",
+        "net9.0"
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT"
+    },
+    {
+      "Subject": "project",
+      "HRef": "https://dot.net/"
+    }
+  ]
+}

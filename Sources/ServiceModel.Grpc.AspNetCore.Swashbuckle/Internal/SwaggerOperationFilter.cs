@@ -15,7 +15,10 @@
 // </copyright>
 
 using System.Globalization;
+using System.Net;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using ServiceModel.Grpc.AspNetCore.Internal;
 using ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer;
@@ -25,16 +28,27 @@ namespace ServiceModel.Grpc.AspNetCore.Swashbuckle.Internal;
 
 internal sealed class SwaggerOperationFilter : IOperationFilter
 {
+    private readonly ServiceModelGrpcSwaggerOptions _configuration;
+
+    public SwaggerOperationFilter(IOptions<ServiceModelGrpcSwaggerOptions> configuration)
+    {
+        _configuration = configuration.Value;
+    }
+
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
-        if (!(context.ApiDescription.ActionDescriptor is GrpcActionDescriptor descriptor))
+        if (context.ApiDescription.ActionDescriptor is not GrpcActionDescriptor descriptor)
         {
             return;
         }
 
         FixRequestType(operation);
-        UpdateSummary(operation, descriptor);
-        UpdateDescription(operation, descriptor);
+
+        if (_configuration.AutogenerateOperationSummaryAndDescription)
+        {
+            UpdateSummary(operation, descriptor);
+            UpdateDescription(operation, descriptor);
+        }
 
         for (var i = 0; i < context.ApiDescription.SupportedResponseTypes.Count; i++)
         {
@@ -58,14 +72,14 @@ internal sealed class SwaggerOperationFilter : IOperationFilter
     {
         if (string.IsNullOrWhiteSpace(operation.Description))
         {
-            operation.Description = descriptor.MethodSignature;
+            operation.Description = WebUtility.HtmlEncode(descriptor.MethodSignature);
         }
         else
         {
-            operation.Description = new StringBuilder(operation.Description.Length + 4 + descriptor.MethodSignature)
+            operation.Description = new StringBuilder()
                 .AppendLine(operation.Description)
                 .AppendLine()
-                .Append(descriptor.MethodSignature)
+                .Append(WebUtility.HtmlEncode(descriptor.MethodSignature))
                 .ToString();
         }
     }

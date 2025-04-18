@@ -1,7 +1,7 @@
 Microsoft.TestPlatform.ObjectModel [17.12.0](https://www.nuget.org/packages/Microsoft.TestPlatform.ObjectModel/17.12.0)
 --------------------
 
-Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, SelfHost internal
+Used by: ClientDI internal, Core internal, DesignTime internal, Emit internal, SelfHost internal
 
 Target frameworks: net462, net8.0, net9.0
 

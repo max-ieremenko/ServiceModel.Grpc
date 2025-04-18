@@ -1,13 +1,8 @@
 #Requires -Version "7.0"
-#Requires -Modules @{ ModuleName="InvokeBuild"; ModuleVersion="5.11.3" }
+#Requires -Modules @{ ModuleName="InvokeBuild"; ModuleVersion="5.12.2" }
 
 [CmdletBinding()]
 param (
-    [Parameter(Mandatory)]
-    [ValidateSet('win', 'linux')] 
-    [string]
-    $Platform,
-
     [Parameter()]
     [AllowNull()]
     [string]
@@ -25,6 +20,19 @@ Set-StrictMode -Version Latest
 $distinctPath = New-Object System.Collections.Generic.HashSet[string]
 $examples = @()
 
+if ($IsWindows) {
+    $platform = 'win'
+}
+elseif ($IsLinux) {
+    $platform = 'linux'
+}
+elseif ($IsMacOS) {
+    $platform = 'macos'
+}
+else {
+    throw "$([Environment]::OSVersion.VersionString) is not supported."
+}
+
 $configurations = Get-ChildItem -Path (Get-FullPath (Join-Path $PSScriptRoot '../Examples')) -Filter '*test-configuration.ps1' -File -Recurse
 foreach ($configuration in $configurations) {
     if (-not [string]::IsNullOrWhiteSpace($Filter) -and $configuration.FullName -notmatch $Filter) {
@@ -32,11 +40,18 @@ foreach ($configuration in $configurations) {
     }
 
     $example = & $configuration
-    if ($example.Platform -notin 'win', 'linux') {
-        throw "Platform $($example.Platform) is not supported: $configuration"
+
+    if ($example.Platform -isnot [object[]]) {
+        $example.Platform = @($example.Platform)
     }
 
-    if ($example.Platform -ne $Platform) {
+    foreach ($testPlatform in $example.Platform) {
+        if ($testPlatform -notin 'win', 'linux', 'macos') {
+            throw "Platform $testPlatform is not supported: $configuration"
+        }
+    }
+
+    if ($platform -notin $example.Platform) {
         continue
     }
 

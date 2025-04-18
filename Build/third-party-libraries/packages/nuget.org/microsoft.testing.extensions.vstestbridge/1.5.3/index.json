@@ -1,0 +1,331 @@
+{
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "AspNetCore",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.22.0"
+        },
+        {
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "17.13.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.Telemetry",
+          "Version": "1.5.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
+          "Version": "1.5.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "1.5.3"
+        }
+      ]
+    },
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.22.0"
+        },
+        {
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "17.13.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.Telemetry",
+          "Version": "1.5.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
+          "Version": "1.5.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "1.5.3"
+        }
+      ]
+    },
+    {
+      "Name": "AspNetCoreSwashbuckle",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.22.0"
+        },
+        {
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "17.13.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.Telemetry",
+          "Version": "1.5.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
+          "Version": "1.5.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "1.5.3"
+        }
+      ]
+    },
+    {
+      "Name": "ClientDI",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.22.0"
+        },
+        {
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "17.13.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.Telemetry",
+          "Version": "1.5.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
+          "Version": "1.5.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "1.5.3"
+        }
+      ]
+    },
+    {
+      "Name": "Core",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.22.0"
+        },
+        {
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "17.13.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.Telemetry",
+          "Version": "1.5.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
+          "Version": "1.5.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "1.5.3"
+        }
+      ]
+    },
+    {
+      "Name": "DesignTime",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.22.0"
+        },
+        {
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "17.13.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.Telemetry",
+          "Version": "1.5.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
+          "Version": "1.5.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "1.5.3"
+        }
+      ]
+    },
+    {
+      "Name": "Emit",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.22.0"
+        },
+        {
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "17.13.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.Telemetry",
+          "Version": "1.5.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
+          "Version": "1.5.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "1.5.3"
+        }
+      ]
+    },
+    {
+      "Name": "MemoryPack",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.22.0"
+        },
+        {
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "17.13.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.Telemetry",
+          "Version": "1.5.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
+          "Version": "1.5.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "1.5.3"
+        }
+      ]
+    },
+    {
+      "Name": "MessagePack",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.22.0"
+        },
+        {
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "17.13.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.Telemetry",
+          "Version": "1.5.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
+          "Version": "1.5.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "1.5.3"
+        }
+      ]
+    },
+    {
+      "Name": "SelfHost",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.22.0"
+        },
+        {
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "17.13.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.Telemetry",
+          "Version": "1.5.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
+          "Version": "1.5.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "1.5.3"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT"
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/microsoft/testfx"
+    },
+    {
+      "Subject": "project",
+      "Code": "MIT",
+      "HRef": "https://github.com/microsoft/testfx"
+    }
+  ]
+}
