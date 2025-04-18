@@ -3,11 +3,6 @@
 
 [CmdletBinding()]
 param (
-    [Parameter(Mandatory)]
-    [ValidateSet('win', 'linux', 'macos')] 
-    [string]
-    $Platform,
-
     [Parameter()]
     [AllowNull()]
     [string]
@@ -24,6 +19,19 @@ Set-StrictMode -Version Latest
 
 $distinctPath = New-Object System.Collections.Generic.HashSet[string]
 $examples = @()
+
+if ($IsWindows) {
+    $platform = 'win'
+}
+elseif ($IsLinux) {
+    $platform = 'linux'
+}
+elseif ($IsMacOS) {
+    $platform = 'macos'
+}
+else {
+    throw "$([Environment]::OSVersion.VersionString) is not supported."
+}
 
 $configurations = Get-ChildItem -Path (Get-FullPath (Join-Path $PSScriptRoot '../Examples')) -Filter '*test-configuration.ps1' -File -Recurse
 foreach ($configuration in $configurations) {
@@ -43,7 +51,7 @@ foreach ($configuration in $configurations) {
         }
     }
 
-    if ($Platform -notin $example.Platform) {
+    if ($platform -notin $example.Platform) {
         continue
     }
 

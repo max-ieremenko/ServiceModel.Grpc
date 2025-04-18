@@ -73,7 +73,7 @@ jobs:
 
     - name: Test
       shell: pwsh
-      run: ./Build/invoke-sdk-test.ps1 -Platform "linux"
+      run: ./Build/invoke-sdk-test.ps1
 
   sdk-test-win:
     name: win-sdk-test
@@ -102,7 +102,7 @@ jobs:
 
     - name: Test
       shell: pwsh
-      run: ./Build/invoke-sdk-test.ps1 -Platform "win"
+      run: ./Build/invoke-sdk-test.ps1
 
   sdk-test-macos:
     name: macos-sdk-test
@@ -131,7 +131,7 @@ jobs:
 
     - name: Test
       shell: pwsh
-      run: ./Build/invoke-sdk-test.ps1 -Platform "macos"
+      run: ./Build/invoke-sdk-test.ps1
 
   benchmarks:
     name: linux-benchmarks

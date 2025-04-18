@@ -35,6 +35,10 @@ param (
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
+if (-not $IsWindows) {
+    throw "$([Environment]::OSVersion.VersionString) is not supported."
+}
+
 . (Join-Path $PSScriptRoot 'scripts' 'Get-ModuleVersion.ps1')
 . (Join-Path $PSScriptRoot 'scripts' 'Resolve-ModulePath.ps1')
 . (Join-Path $PSScriptRoot 'scripts' 'Build-LinuxSdkImage.ps1')
@@ -63,7 +67,6 @@ if (-not $SkipLinuxSdk) {
         -v "$($repository):/repository" `
         $image `
         '/repository/Build/invoke-sdk-test.ps1' `
-        -Platform 'linux' `
         -Filter $LinuxSdkFilter
 
     if ($LASTEXITCODE) {
@@ -72,7 +75,7 @@ if (-not $SkipLinuxSdk) {
 }
 
 if (-not $SkipWinSdk) {
-    & (Join-Path $PSScriptRoot 'invoke-sdk-test.ps1') -Platform 'win' -Filter $WinSdkFilter
+    & (Join-Path $PSScriptRoot 'invoke-sdk-test.ps1') -Filter $WinSdkFilter
 }
 
 # benchmarks
