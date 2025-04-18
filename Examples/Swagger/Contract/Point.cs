@@ -3,6 +3,9 @@ using System.Runtime.Serialization;
 
 namespace Contract;
 
+/// <summary>
+/// Represents a point.
+/// </summary>
 [DataContract]
 public class Point : IEquatable<Point>
 {
@@ -16,9 +19,15 @@ public class Point : IEquatable<Point>
         Y = y;
     }
 
+    /// <summary>
+    /// Coordinate X.
+    /// </summary>
     [DataMember]
     public double X { get; set; }
 
+    /// <summary>
+    /// Coordinate Y.
+    /// </summary>
     [DataMember]
     public double Y { get; set; }
 

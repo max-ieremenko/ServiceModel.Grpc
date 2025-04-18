@@ -4,15 +4,27 @@ using Contract.Internal;
 
 namespace Contract;
 
+/// <summary>
+/// Represents the shape of a triangle.
+/// </summary>
 [DataContract]
 public class Triangle : FigureBase
 {
+    /// <summary>
+    /// First vertex.
+    /// </summary>
     [DataMember]
     public Point Vertex1 { get; set; } = new Point(0, 0);
 
+    /// <summary>
+    /// Second vertex.
+    /// </summary>
     [DataMember]
     public Point Vertex2 { get; set; } = new Point(0, 0);
 
+    /// <summary>
+    /// Third vertex.
+    /// </summary>
     [DataMember]
     public Point Vertex3 { get; set; } = new Point(0, 0);
 

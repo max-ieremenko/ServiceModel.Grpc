@@ -25,13 +25,18 @@ public static class Program
             settings.DocumentName = "v1";
             settings.Title = "My API";
             settings.Version = "1.0";
+            settings.UseControllerSummaryAsTagDescription = true;
         });
 
         // enable ServiceModel.Grpc
         builder.Services.AddServiceModelGrpc();
 
         // enable ServiceModel.Grpc integration for NSwag.AspNetCore
-        builder.Services.AddServiceModelGrpcSwagger();
+        builder.Services.AddServiceModelGrpcSwagger(options =>
+        {
+            // add method type into operation summary and method signature into description
+            options.AutogenerateOperationSummaryAndDescription = true;
+        });
 
         var app = builder.Build();
         app.UseRouting();
