@@ -30,7 +30,7 @@ task Clean {
 }
 
 task Build {
-    $solutionFile = Join-Path $PathSources 'ServiceModel.Grpc.sln'
+    $solutionFile = Join-Path $PathSources 'ServiceModel.Grpc.slnx'
     Invoke-Build -File 'task-build.ps1' -Path $solutionFile
 }
 

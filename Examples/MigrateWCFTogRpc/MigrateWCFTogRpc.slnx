@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Grpc/">
+    <Project Path="GrpcClient/GrpcClient.csproj" />
+    <Project Path="GrpcServer/GrpcServer.csproj" />
+  </Folder>
+  <Folder Name="/Wcf/">
+    <Project Path="WcfClient/WcfClient.csproj" />
+    <Project Path="WcfServer/WcfServer.csproj" />
+  </Folder>
+  <Project Path="Contract/Contract.csproj" />
+  <Project Path="Service/Service.csproj" />
+</Solution>

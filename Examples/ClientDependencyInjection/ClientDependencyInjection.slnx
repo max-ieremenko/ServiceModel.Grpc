@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Client.DesignTime/Client.DesignTime.csproj" />
+  <Project Path="Client.ReflectionEmit/Client.ReflectionEmit.csproj" />
+  <Project Path="Client/Client.csproj" />
+  <Project Path="Contract/Contract.csproj" />
+  <Project Path="WebApplication/WebApplication.csproj" />
+</Solution>

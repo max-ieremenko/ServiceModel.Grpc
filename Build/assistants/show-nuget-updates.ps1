@@ -12,7 +12,7 @@ param (
 )
 
 if (-not $SkipDotnetRestore) {
-    foreach ($sln in (Get-ChildItem -Path $Path -Recurse -Filter '*.sln' -File)) {
+    foreach ($sln in (Get-ChildItem -Path $Path -Recurse -Filter '*.slnx' -File)) {
         dotnet restore $sln.FullName --verbosity q
     }
 }
