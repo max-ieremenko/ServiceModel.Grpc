@@ -23,7 +23,7 @@
     <PackageVersion Include="Mono.Reflection" Version="2.0.0" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageVersion Include="NSwag.AspNetCore" Version="14.3.0" />
+    <PackageVersion Include="NSwag.AspNetCore" Version="14.4.0" />
     <PackageVersion Include="NUnit" Version="4.3.2" />
     <PackageVersion Include="NUnit3TestAdapter" Version="5.0.0" />
     <PackageVersion Include="protobuf-net" Version="3.2.52" />
