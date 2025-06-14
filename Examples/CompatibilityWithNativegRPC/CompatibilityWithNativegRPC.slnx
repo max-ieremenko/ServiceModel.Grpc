@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Client/Client.csproj" />
+  <Project Path="Contract/Contract.csproj" />
+  <Project Path="Server.CodeFirst/Server.CodeFirst.csproj" />
+  <Project Path="Server.Proto/Server.Proto.csproj" />
+</Solution>

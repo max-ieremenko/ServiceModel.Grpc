@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'ClientFilters.sln'
+    Solution      = 'ClientFilters.slnx'
     Configuration = 'Release'
     Platform      = 'Linux'
 

@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'Compressor.sln'
+    Solution      = 'Compressor.slnx'
     Configuration = 'Release'
     Platform      = 'Linux'
 

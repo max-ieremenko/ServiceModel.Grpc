@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'CustomMarshaller.sln'
+    Solution      = 'CustomMarshaller.slnx'
     Configuration = 'Release'
     Platform      = 'Linux'
 

@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'MessagePackMarshaller.sln'
+    Solution      = 'MessagePackMarshaller.slnx'
     Configuration = 'Release'
     Platform      = 'Linux'
 

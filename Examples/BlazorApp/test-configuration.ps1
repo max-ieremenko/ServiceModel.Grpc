@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'BlazorApp.sln'
+    Solution      = 'BlazorApp.slnx'
     Configuration = 'Release'
     Platform      = 'Linux'
     BuildMode     = 'Publish'

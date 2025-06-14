@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'NSwagSwagger.sln'
+    Solution      = 'NSwagSwagger.slnx'
     Configuration = 'Release'
     Platform      = 'Linux'
 

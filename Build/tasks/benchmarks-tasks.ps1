@@ -33,7 +33,7 @@ task Clean {
 }
 
 task Build {
-    $solutionFile = Join-Path $PathSources 'Benchmarks.sln'
+    $solutionFile = Join-Path $PathSources 'Benchmarks.slnx'
     Invoke-Build -File 'task-build.ps1' -Path $solutionFile -Configuration $Configuration
 }
 

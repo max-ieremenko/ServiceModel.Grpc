@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'SwashbuckleSwagger.sln'
+    Solution      = 'SwashbuckleSwagger.slnx'
     Configuration = 'Release'
     Platform      = 'Linux'
 

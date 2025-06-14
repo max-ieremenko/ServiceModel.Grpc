@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'MessagePackMarshaller.AOT.sln'
+    Solution      = 'MessagePackMarshaller.AOT.slnx'
     Configuration = 'Release'
     Platform      = 'Linux', 'MacOS'
     BuildMode     = 'Publish'

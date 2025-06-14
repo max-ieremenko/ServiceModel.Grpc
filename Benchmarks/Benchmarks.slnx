@@ -1,0 +1,20 @@
+<Solution>
+  <Folder Name="/Sources/">
+    <Project Path="../Sources/ServiceModel.Grpc.AspNetCore/ServiceModel.Grpc.AspNetCore.csproj" />
+    <Project Path="../Sources/ServiceModel.Grpc.Core/ServiceModel.Grpc.Core.csproj" />
+    <Project Path="../Sources/ServiceModel.Grpc.Descriptions/ServiceModel.Grpc.Descriptions.csproj" />
+    <Project Path="../Sources/ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp/ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.csproj" />
+    <Project Path="../Sources/ServiceModel.Grpc.DesignTime.CodeAnalysis.Internal/ServiceModel.Grpc.DesignTime.CodeAnalysis.Internal.csproj" />
+    <Project Path="../Sources/ServiceModel.Grpc.DesignTime.CodeAnalysis/ServiceModel.Grpc.DesignTime.CodeAnalysis.csproj" />
+    <Project Path="../Sources/ServiceModel.Grpc.DesignTime.Generators/ServiceModel.Grpc.DesignTime.Generators.csproj" />
+    <Project Path="../Sources/ServiceModel.Grpc.DesignTime/ServiceModel.Grpc.DesignTime.csproj" />
+    <Project Path="../Sources/ServiceModel.Grpc.Emit/ServiceModel.Grpc.Emit.csproj" />
+    <Project Path="../Sources/ServiceModel.Grpc.Filters/ServiceModel.Grpc.Filters.csproj" />
+    <Project Path="../Sources/ServiceModel.Grpc.Interceptors/ServiceModel.Grpc.Interceptors.csproj" />
+    <Project Path="../Sources/ServiceModel.Grpc.MemoryPackMarshaller/ServiceModel.Grpc.MemoryPackMarshaller.csproj" />
+    <Project Path="../Sources/ServiceModel.Grpc.MessagePackMarshaller/ServiceModel.Grpc.MessagePackMarshaller.csproj" />
+    <Project Path="../Sources/ServiceModel.Grpc.ProtoBufMarshaller/ServiceModel.Grpc.ProtoBufMarshaller.csproj" />
+    <Project Path="../Sources/ServiceModel.Grpc/ServiceModel.Grpc.csproj" />
+  </Folder>
+  <Project Path="ServiceModel.Grpc.Benchmarks/ServiceModel.Grpc.Benchmarks.csproj" />
+</Solution>

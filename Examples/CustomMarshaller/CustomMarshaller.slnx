@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Client/Client.csproj" />
+  <Project Path="Contract/Contract.csproj" />
+  <Project Path="CustomMarshaller/CustomMarshaller.csproj" />
+  <Project Path="Server/Server.csproj" />
+</Solution>

@@ -1,5 +1,5 @@
 @{ 
-    Solution      = "SyncOverAsync.sln"
+    Solution      = "SyncOverAsync.slnx"
     Configuration = "Release"
     Platform      = "Linux"
 

@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'Interceptor.sln'
+    Solution      = 'Interceptor.slnx'
     Configuration = 'Release'
     Platform      = 'Linux'
 

@@ -1,0 +1,42 @@
+<Solution>
+  <Folder Name="/DesignTime/">
+    <Project Path="ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp/ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.csproj" />
+    <Project Path="ServiceModel.Grpc.DesignTime.CodeAnalysis.Internal/ServiceModel.Grpc.DesignTime.CodeAnalysis.Internal.csproj" />
+    <Project Path="ServiceModel.Grpc.DesignTime.CodeAnalysis/ServiceModel.Grpc.DesignTime.CodeAnalysis.csproj" />
+    <Project Path="ServiceModel.Grpc.DesignTime.Generators/ServiceModel.Grpc.DesignTime.Generators.csproj" />
+  </Folder>
+  <Folder Name="/Test/">
+    <Project Path="ServiceModel.Grpc.AspNetCore.NSwag.Test/ServiceModel.Grpc.AspNetCore.NSwag.Test.csproj" />
+    <Project Path="ServiceModel.Grpc.AspNetCore.Swashbuckle.Test/ServiceModel.Grpc.AspNetCore.Swashbuckle.Test.csproj" />
+    <Project Path="ServiceModel.Grpc.AspNetCore.Test/ServiceModel.Grpc.AspNetCore.Test.csproj" />
+    <Project Path="ServiceModel.Grpc.AspNetCore.TestApi/ServiceModel.Grpc.AspNetCore.TestApi.csproj" />
+    <Project Path="ServiceModel.Grpc.Client.DependencyInjection.Test/ServiceModel.Grpc.Client.DependencyInjection.Test.csproj" />
+    <Project Path="ServiceModel.Grpc.Core.Test/ServiceModel.Grpc.Core.Test.csproj" />
+    <Project Path="ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.Test/ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.Test.csproj" />
+    <Project Path="ServiceModel.Grpc.DesignTime.CodeAnalysis.Internal.Test/ServiceModel.Grpc.DesignTime.CodeAnalysis.Internal.Test.csproj" />
+    <Project Path="ServiceModel.Grpc.DesignTime.Generator.Test/ServiceModel.Grpc.DesignTime.Generator.Test.csproj" />
+    <Project Path="ServiceModel.Grpc.Emit.Test/ServiceModel.Grpc.Emit.Test.csproj" />
+    <Project Path="ServiceModel.Grpc.Filters.Test/ServiceModel.Grpc.Filters.Test.csproj" />
+    <Project Path="ServiceModel.Grpc.Interceptors.Test/ServiceModel.Grpc.Interceptors.Test.csproj" />
+    <Project Path="ServiceModel.Grpc.MemoryPackMarshaller.Test/ServiceModel.Grpc.MemoryPackMarshaller.Test.csproj" />
+    <Project Path="ServiceModel.Grpc.MessagePackMarshaller.Test/ServiceModel.Grpc.MessagePackMarshaller.Test.csproj" />
+    <Project Path="ServiceModel.Grpc.SelfHost.Test/ServiceModel.Grpc.SelfHost.Test.csproj" />
+    <Project Path="ServiceModel.Grpc.Test/ServiceModel.Grpc.Test.csproj" />
+    <Project Path="ServiceModel.Grpc.TestApi/ServiceModel.Grpc.TestApi.csproj" />
+  </Folder>
+  <Project Path="ServiceModel.Grpc.AspNetCore.NSwag/ServiceModel.Grpc.AspNetCore.NSwag.csproj" />
+  <Project Path="ServiceModel.Grpc.AspNetCore.Swashbuckle/ServiceModel.Grpc.AspNetCore.Swashbuckle.csproj" />
+  <Project Path="ServiceModel.Grpc.AspNetCore/ServiceModel.Grpc.AspNetCore.csproj" />
+  <Project Path="ServiceModel.Grpc.Client.DependencyInjection/ServiceModel.Grpc.Client.DependencyInjection.csproj" />
+  <Project Path="ServiceModel.Grpc.Core/ServiceModel.Grpc.Core.csproj" />
+  <Project Path="ServiceModel.Grpc.Descriptions/ServiceModel.Grpc.Descriptions.csproj" />
+  <Project Path="ServiceModel.Grpc.DesignTime/ServiceModel.Grpc.DesignTime.csproj" />
+  <Project Path="ServiceModel.Grpc.Emit/ServiceModel.Grpc.Emit.csproj" />
+  <Project Path="ServiceModel.Grpc.Filters/ServiceModel.Grpc.Filters.csproj" />
+  <Project Path="ServiceModel.Grpc.Interceptors/ServiceModel.Grpc.Interceptors.csproj" />
+  <Project Path="ServiceModel.Grpc.MemoryPackMarshaller/ServiceModel.Grpc.MemoryPackMarshaller.csproj" />
+  <Project Path="ServiceModel.Grpc.MessagePackMarshaller/ServiceModel.Grpc.MessagePackMarshaller.csproj" />
+  <Project Path="ServiceModel.Grpc.ProtoBufMarshaller/ServiceModel.Grpc.ProtoBufMarshaller.csproj" />
+  <Project Path="ServiceModel.Grpc.SelfHost/ServiceModel.Grpc.SelfHost.csproj" />
+  <Project Path="ServiceModel.Grpc/ServiceModel.Grpc.csproj" />
+</Solution>

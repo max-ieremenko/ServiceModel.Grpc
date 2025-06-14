@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'ServerFilters.sln'
+    Solution      = 'ServerFilters.slnx'
     Configuration = 'Release'
     Platform      = 'Linux'
 
