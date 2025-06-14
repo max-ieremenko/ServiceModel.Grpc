@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>Swashbuckle.AspNetCore.Swagger</id>
-    <version>8.1.1</version>
+    <version>9.0.1</version>
     <authors>domaindrivendev</authors>
     <license type="expression">MIT</license>
     <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
@@ -12,16 +12,12 @@
     <releaseNotes>See https://github.com/domaindrivendev/Swashbuckle.AspNetCore/releases for details.</releaseNotes>
     <copyright>Copyright (c) 2016-2025 Richard Morris</copyright>
     <tags>swagger documentation discovery help webapi aspnet aspnetcore</tags>
-    <repository type="git" url="https://github.com/domaindrivendev/Swashbuckle.AspNetCore.git" commit="a676de6fe7680c79bacd863125195dae89207308" />
+    <repository type="git" url="https://github.com/domaindrivendev/Swashbuckle.AspNetCore.git" commit="62641d015ff38252b5615dc9525a8c6b43a95bda" />
     <dependencies>
       <group targetFramework="net8.0">
         <dependency id="Microsoft.OpenApi" version="1.6.23" exclude="Build,Analyzers" />
       </group>
       <group targetFramework="net9.0">
-        <dependency id="Microsoft.OpenApi" version="1.6.23" exclude="Build,Analyzers" />
-      </group>
-      <group targetFramework=".NETStandard2.0">
-        <dependency id="Microsoft.AspNetCore.Routing" version="2.3.0" exclude="Build,Analyzers" />
         <dependency id="Microsoft.OpenApi" version="1.6.23" exclude="Build,Analyzers" />
       </group>
     </dependencies>
@@ -32,7 +28,6 @@
       <group targetFramework="net9.0">
         <frameworkReference name="Microsoft.AspNetCore.App" />
       </group>
-      <group targetFramework=".NETStandard2.0" />
     </frameworkReferences>
   </metadata>
 </package>

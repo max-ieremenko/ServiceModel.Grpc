@@ -1,4 +1,4 @@
-Microsoft.NET.ILLink.Tasks [8.0.15](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/8.0.15)
+Microsoft.NET.ILLink.Tasks [9.0.6](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/9.0.6)
 --------------------
 
 Used by: AspNetCore, ClientDI, Core, Emit, MemoryPack, MessagePack
