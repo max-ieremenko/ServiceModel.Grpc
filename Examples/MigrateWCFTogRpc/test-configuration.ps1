@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'MigrateWCFTogRpc.sln'
+    Solution      = 'MigrateWCFTogRpc.slnx'
     Configuration = 'Release'
     Platform      = 'Win'
 

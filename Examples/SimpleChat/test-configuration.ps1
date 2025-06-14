@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'SimpleChat.sln'
+    Solution      = 'SimpleChat.slnx'
     Configuration = 'Release'
     Platform      = 'Linux'
     BuildMode     = 'Publish'

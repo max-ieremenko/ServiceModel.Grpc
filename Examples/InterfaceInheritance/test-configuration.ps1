@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'InterfaceInheritance.sln'
+    Solution      = 'InterfaceInheritance.slnx'
     Configuration = 'Release'
     Platform      = 'Linux'
 

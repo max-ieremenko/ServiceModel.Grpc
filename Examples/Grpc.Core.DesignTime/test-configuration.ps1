@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'Grpc.Core.DesignTime.sln'
+    Solution      = 'Grpc.Core.DesignTime.slnx'
     Configuration = 'Release'
     Platform      = 'Win'
 

@@ -93,5 +93,5 @@ object DeserializeDetail(IMarshallerFactory marshallerFactory, Type detailType, 
 #### publish
 
 ```bash
-dotnet publish MessagePackMarshaller.AOT.sln
+dotnet publish MessagePackMarshaller.AOT.slnx
 ```

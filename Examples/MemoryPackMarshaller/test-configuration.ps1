@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'MemoryPackMarshaller.sln'
+    Solution      = 'MemoryPackMarshaller.slnx'
     Configuration = 'Release'
     Platform      = 'Linux'
 

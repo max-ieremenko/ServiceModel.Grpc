@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'FileUploadDownload.sln'
+    Solution      = 'FileUploadDownload.slnx'
     Configuration = 'Debug'
     Platform      = 'Linux'
 
