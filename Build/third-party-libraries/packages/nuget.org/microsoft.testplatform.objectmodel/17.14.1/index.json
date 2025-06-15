@@ -14,12 +14,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.CodeCoverage",
-          "Version": "17.13.0"
-        },
-        {
-          "Name": "Microsoft.TestPlatform.TestHost",
-          "Version": "17.13.0"
+          "Name": "System.Reflection.Metadata",
+          "Version": "8.0.0"
         }
       ]
     },
@@ -32,12 +28,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.CodeCoverage",
-          "Version": "17.13.0"
-        },
-        {
-          "Name": "Microsoft.TestPlatform.TestHost",
-          "Version": "17.13.0"
+          "Name": "System.Reflection.Metadata",
+          "Version": "8.0.0"
         }
       ]
     },
@@ -50,12 +42,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.CodeCoverage",
-          "Version": "17.13.0"
-        },
-        {
-          "Name": "Microsoft.TestPlatform.TestHost",
-          "Version": "17.13.0"
+          "Name": "System.Reflection.Metadata",
+          "Version": "8.0.0"
         }
       ]
     },
@@ -69,12 +57,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.CodeCoverage",
-          "Version": "17.13.0"
-        },
-        {
-          "Name": "Microsoft.TestPlatform.TestHost",
-          "Version": "17.13.0"
+          "Name": "System.Reflection.Metadata",
+          "Version": "8.0.0"
         }
       ]
     },
@@ -88,12 +72,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.CodeCoverage",
-          "Version": "17.13.0"
-        },
-        {
-          "Name": "Microsoft.TestPlatform.TestHost",
-          "Version": "17.13.0"
+          "Name": "System.Reflection.Metadata",
+          "Version": "8.0.0"
         }
       ]
     },
@@ -107,12 +87,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.CodeCoverage",
-          "Version": "17.13.0"
-        },
-        {
-          "Name": "Microsoft.TestPlatform.TestHost",
-          "Version": "17.13.0"
+          "Name": "System.Reflection.Metadata",
+          "Version": "8.0.0"
         }
       ]
     },
@@ -126,12 +102,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.CodeCoverage",
-          "Version": "17.13.0"
-        },
-        {
-          "Name": "Microsoft.TestPlatform.TestHost",
-          "Version": "17.13.0"
+          "Name": "System.Reflection.Metadata",
+          "Version": "8.0.0"
         }
       ]
     },
@@ -144,12 +116,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.CodeCoverage",
-          "Version": "17.13.0"
-        },
-        {
-          "Name": "Microsoft.TestPlatform.TestHost",
-          "Version": "17.13.0"
+          "Name": "System.Reflection.Metadata",
+          "Version": "8.0.0"
         }
       ]
     },
@@ -162,12 +130,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.CodeCoverage",
-          "Version": "17.13.0"
-        },
-        {
-          "Name": "Microsoft.TestPlatform.TestHost",
-          "Version": "17.13.0"
+          "Name": "System.Reflection.Metadata",
+          "Version": "8.0.0"
         }
       ]
     },
@@ -181,12 +145,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.CodeCoverage",
-          "Version": "17.13.0"
-        },
-        {
-          "Name": "Microsoft.TestPlatform.TestHost",
-          "Version": "17.13.0"
+          "Name": "System.Reflection.Metadata",
+          "Version": "8.0.0"
         }
       ]
     }

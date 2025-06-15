@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>Microsoft.TestPlatform.ObjectModel</id>
-    <version>17.13.0</version>
+    <version>17.14.1</version>
     <authors>Microsoft</authors>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <license type="expression">MIT</license>
@@ -13,16 +13,16 @@
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <tags>vstest visual-studio unittest testplatform mstest microsoft test testing</tags>
     <serviceable>true</serviceable>
-    <repository type="git" url="https://github.com/microsoft/vstest" commit="e8cf3808d0b16dea8d6e1a9b77f1660a5ff45e13" />
+    <repository type="git" url="https://github.com/microsoft/vstest" commit="490850ae3fdc1b470e3804ceab4f6a41cf89ae51" />
     <dependencies>
       <group targetFramework=".NETFramework4.6.2">
-        <dependency id="System.Reflection.Metadata" version="1.6.0" />
+        <dependency id="System.Reflection.Metadata" version="8.0.0" />
       </group>
-      <group targetFramework=".NETCoreApp3.1">
-        <dependency id="System.Reflection.Metadata" version="1.6.0" />
+      <group targetFramework="net8.0">
+        <dependency id="System.Reflection.Metadata" version="8.0.0" />
       </group>
       <group targetFramework=".NETStandard2.0">
-        <dependency id="System.Reflection.Metadata" version="1.6.0" />
+        <dependency id="System.Reflection.Metadata" version="8.0.0" />
       </group>
     </dependencies>
     <frameworkAssemblies>
