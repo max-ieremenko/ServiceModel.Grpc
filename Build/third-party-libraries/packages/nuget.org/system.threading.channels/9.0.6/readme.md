@@ -1,4 +1,4 @@
-System.Threading.Channels [9.0.4](https://www.nuget.org/packages/System.Threading.Channels/9.0.4)
+System.Threading.Channels [9.0.6](https://www.nuget.org/packages/System.Threading.Channels/9.0.6)
 --------------------
 
 Used by: Core internal

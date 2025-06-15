@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>Microsoft.CodeCoverage</id>
-    <version>17.13.0</version>
+    <version>17.14.1</version>
     <authors>Microsoft</authors>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <license type="expression">MIT</license>
@@ -13,10 +13,10 @@
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <tags>vstest visual-studio unittest testplatform mstest microsoft test testing codecoverage code-coverage</tags>
     <serviceable>true</serviceable>
-    <repository type="git" url="https://github.com/microsoft/vstest" commit="e8cf3808d0b16dea8d6e1a9b77f1660a5ff45e13" />
+    <repository type="git" url="https://github.com/microsoft/vstest" commit="490850ae3fdc1b470e3804ceab4f6a41cf89ae51" />
     <dependencies>
       <group targetFramework=".NETFramework4.6.2" />
-      <group targetFramework=".NETCoreApp3.1" />
+      <group targetFramework="net8.0" />
     </dependencies>
   </metadata>
 </package>

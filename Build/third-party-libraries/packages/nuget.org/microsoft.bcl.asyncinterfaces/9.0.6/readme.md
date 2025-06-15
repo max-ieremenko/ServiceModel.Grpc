@@ -1,4 +1,4 @@
-Microsoft.Bcl.AsyncInterfaces [9.0.4](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/9.0.4)
+Microsoft.Bcl.AsyncInterfaces [9.0.6](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/9.0.6)
 --------------------
 
 Used by: Core internal

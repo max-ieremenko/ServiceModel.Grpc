@@ -20,6 +20,10 @@
           "Version": "5.0.0"
         },
         {
+          "Name": "System.Collections.Immutable",
+          "Version": "8.0.0"
+        },
+        {
           "Name": "System.Memory",
           "Version": "4.5.4"
         },
@@ -30,6 +34,10 @@
         {
           "Name": "System.Reflection.Metadata",
           "Version": "5.0.0"
+        },
+        {
+          "Name": "System.Reflection.Metadata",
+          "Version": "8.0.0"
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",

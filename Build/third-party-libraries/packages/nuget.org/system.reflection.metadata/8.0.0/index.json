@@ -1,5 +1,5 @@
 {
-  "Source": "https://api.nuget.org/v3/index.json",
+  "Source": "https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-public/nuget/v3/index.json",
   "License": {
     "Code": "MIT",
     "Status": "AutomaticallyApproved"
@@ -14,8 +14,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "System.Reflection.Metadata",
-          "Version": "1.6.0"
+          "Name": "System.Collections.Immutable",
+          "Version": "8.0.0"
         }
       ]
     },
@@ -28,8 +28,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "System.Reflection.Metadata",
-          "Version": "1.6.0"
+          "Name": "System.Collections.Immutable",
+          "Version": "8.0.0"
         }
       ]
     },
@@ -42,8 +42,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "System.Reflection.Metadata",
-          "Version": "1.6.0"
+          "Name": "System.Collections.Immutable",
+          "Version": "8.0.0"
         }
       ]
     },
@@ -57,8 +57,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "System.Reflection.Metadata",
-          "Version": "1.6.0"
+          "Name": "System.Collections.Immutable",
+          "Version": "8.0.0"
         }
       ]
     },
@@ -72,8 +72,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "System.Reflection.Metadata",
-          "Version": "1.6.0"
+          "Name": "System.Collections.Immutable",
+          "Version": "8.0.0"
         }
       ]
     },
@@ -87,8 +87,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "System.Reflection.Metadata",
-          "Version": "5.0.0"
+          "Name": "System.Collections.Immutable",
+          "Version": "8.0.0"
         }
       ]
     },
@@ -102,8 +102,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "System.Reflection.Metadata",
-          "Version": "1.6.0"
+          "Name": "System.Collections.Immutable",
+          "Version": "8.0.0"
         }
       ]
     },
@@ -116,8 +116,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "System.Reflection.Metadata",
-          "Version": "1.6.0"
+          "Name": "System.Collections.Immutable",
+          "Version": "8.0.0"
         }
       ]
     },
@@ -130,8 +130,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "System.Reflection.Metadata",
-          "Version": "1.6.0"
+          "Name": "System.Collections.Immutable",
+          "Version": "8.0.0"
         }
       ]
     },
@@ -145,8 +145,8 @@
       ],
       "Dependencies": [
         {
-          "Name": "System.Reflection.Metadata",
-          "Version": "1.6.0"
+          "Name": "System.Collections.Immutable",
+          "Version": "8.0.0"
         }
       ]
     }
@@ -160,12 +160,11 @@
     {
       "Subject": "repository",
       "Code": "MIT",
-      "HRef": "https://github.com/microsoft/vstest"
+      "HRef": "https://github.com/dotnet/runtime"
     },
     {
       "Subject": "project",
-      "Code": "MIT",
-      "HRef": "https://github.com/microsoft/vstest"
+      "HRef": "https://dot.net/"
     }
   ]
 }

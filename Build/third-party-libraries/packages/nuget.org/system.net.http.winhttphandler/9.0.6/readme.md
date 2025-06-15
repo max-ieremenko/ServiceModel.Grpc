@@ -1,4 +1,4 @@
-System.Net.Http.WinHttpHandler [9.0.4](https://www.nuget.org/packages/System.Net.Http.WinHttpHandler/9.0.4)
+System.Net.Http.WinHttpHandler [9.0.6](https://www.nuget.org/packages/System.Net.Http.WinHttpHandler/9.0.6)
 --------------------
 
 Used by: ClientDI internal
