@@ -1,4 +1,4 @@
-Grpc.Core.Api [2.70.0](https://www.nuget.org/packages/Grpc.Core.Api/2.70.0)
+Grpc.Core.Api [2.71.0](https://www.nuget.org/packages/Grpc.Core.Api/2.71.0)
 --------------------
 
 Used by: AspNetCore, ClientDI, Core, DesignTime, SelfHost
