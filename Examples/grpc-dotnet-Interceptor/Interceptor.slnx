@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Shared/">
+    <Project Path="Contract/Contract.csproj" />
+    <Project Path="Service/Service.csproj" />
+  </Folder>
+  <Project Path="Client/Client.csproj" />
+  <Project Path="ServerAspNetHost/ServerAspNetHost.csproj" />
+  <Project Path="ServerSelfHost/ServerSelfHost.csproj" />
+</Solution>

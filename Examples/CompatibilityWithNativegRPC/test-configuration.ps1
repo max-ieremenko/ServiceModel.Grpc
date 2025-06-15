@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'CompatibilityWithNativegRPC.sln'
+    Solution      = 'CompatibilityWithNativegRPC.slnx'
     Configuration = 'Release'
     Platform      = 'Linux'
 

@@ -19,7 +19,7 @@
         },
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "17.13.0"
+          "Version": "17.14.1"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -49,7 +49,7 @@
         },
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "17.13.0"
+          "Version": "17.14.1"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -79,7 +79,7 @@
         },
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "17.13.0"
+          "Version": "17.14.1"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -110,7 +110,7 @@
         },
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "17.13.0"
+          "Version": "17.14.1"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -141,7 +141,7 @@
         },
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "17.13.0"
+          "Version": "17.14.1"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -172,7 +172,7 @@
         },
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "17.13.0"
+          "Version": "17.14.1"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -203,7 +203,7 @@
         },
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "17.13.0"
+          "Version": "17.14.1"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -233,7 +233,7 @@
         },
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "17.13.0"
+          "Version": "17.14.1"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -263,7 +263,7 @@
         },
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "17.13.0"
+          "Version": "17.14.1"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -294,7 +294,7 @@
         },
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "17.13.0"
+          "Version": "17.14.1"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",

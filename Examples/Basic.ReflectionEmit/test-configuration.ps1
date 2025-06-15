@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'Basic.ReflectionEmit.sln'
+    Solution      = 'Basic.ReflectionEmit.slnx'
     Configuration = 'Release'
     Platform      = 'Linux'
 

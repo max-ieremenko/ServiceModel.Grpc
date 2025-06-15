@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'ProtobufMarshaller.sln'
+    Solution      = 'ProtobufMarshaller.slnx'
     Configuration = 'Release'
     Platform      = 'Linux'
 

@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'Basic.DesignTime.sln'
+    Solution      = 'Basic.DesignTime.slnx'
     Configuration = 'Release'
     Platform      = 'Linux', 'MacOS'
 

@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'JsonWebTokenAuthentication.sln'
+    Solution      = 'JsonWebTokenAuthentication.slnx'
     Configuration = 'Release'
     Platform      = 'Linux'
 

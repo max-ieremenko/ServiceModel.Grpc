@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'Grpc.Core.ReflectionEmit.sln'
+    Solution      = 'Grpc.Core.ReflectionEmit.slnx'
     Configuration = 'Release'
     Platform      = 'Win'
 

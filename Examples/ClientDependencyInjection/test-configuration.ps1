@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'ClientDependencyInjection.sln'
+    Solution      = 'ClientDependencyInjection.slnx'
     Configuration = 'Release'
     Platform      = 'Linux'
 

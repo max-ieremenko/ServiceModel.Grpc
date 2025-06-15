@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/Shared/">
+    <Project Path="SimpleChat.Client.Shared/SimpleChat.Client.Shared.csproj" />
+    <Project Path="SimpleChat.Server.Shared/SimpleChat.Server.Shared.csproj" />
+    <Project Path="SimpleChat.Shared/SimpleChat.Shared.csproj" />
+  </Folder>
+  <Project Path="SimpleChat.Client.Blazor/SimpleChat.Client.Blazor.csproj" />
+  <Project Path="SimpleChat.Client.Console/SimpleChat.Client.Console.csproj" />
+  <Project Path="SimpleChat.Client.Tester/SimpleChat.Client.Tester.csproj" />
+  <Project Path="SimpleChat.Server/SimpleChat.Server.csproj" />
+</Solution>

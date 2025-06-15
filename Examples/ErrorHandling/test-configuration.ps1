@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'ErrorHandling.sln'
+    Solution      = 'ErrorHandling.slnx'
     Configuration = 'Release'
     Platform      = 'Linux'
 

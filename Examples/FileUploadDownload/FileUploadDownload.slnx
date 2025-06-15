@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Benchmarks/Benchmarks.csproj" />
+  <Project Path="Client/Client.csproj" />
+  <Project Path="Contract/Contract.csproj" />
+  <Project Path="Server/Server.csproj" />
+</Solution>

@@ -1,5 +1,5 @@
 @{ 
-    Solution      = 'Counter.sln'
+    Solution      = 'Counter.slnx'
     Configuration = 'Release'
     Platform      = 'Linux'
 

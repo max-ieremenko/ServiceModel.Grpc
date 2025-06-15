@@ -1,0 +1,45 @@
+{
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "MessagePack",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "netstandard2.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "MessagePack.Annotations",
+          "Version": "3.1.4"
+        },
+        {
+          "Name": "Microsoft.NET.StringTools",
+          "Version": "17.11.4"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT"
+    },
+    {
+      "Subject": "repository",
+      "HRef": "https://github.com/MessagePack-CSharp/MessagePack-CSharp",
+      "Description": "License code NOASSERTION"
+    },
+    {
+      "Subject": "project",
+      "HRef": "https://github.com/MessagePack-CSharp/MessagePack-CSharp",
+      "Description": "License code NOASSERTION"
+    }
+  ]
+}
