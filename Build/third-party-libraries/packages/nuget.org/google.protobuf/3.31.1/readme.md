@@ -1,4 +1,4 @@
-Google.Protobuf [3.30.2](https://www.nuget.org/packages/Google.Protobuf/3.30.2)
+Google.Protobuf [3.31.1](https://www.nuget.org/packages/Google.Protobuf/3.31.1)
 --------------------
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal

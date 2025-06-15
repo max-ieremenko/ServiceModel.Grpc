@@ -6,6 +6,20 @@
   },
   "UsedBy": [
     {
+      "Name": "AspNetCore",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Grpc.Core.Api",
+          "Version": "2.71.0"
+        }
+      ]
+    },
+    {
       "Name": "ClientDI",
       "InternalOnly": false,
       "TargetFrameworks": [
@@ -16,12 +30,23 @@
       ],
       "Dependencies": [
         {
-          "Name": "Grpc.Net.Client",
-          "Version": "2.70.0"
-        },
+          "Name": "Grpc.Core.Api",
+          "Version": "2.71.0"
+        }
+      ]
+    },
+    {
+      "Name": "Core",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net462",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
         {
-          "Name": "Microsoft.Extensions.Http",
-          "Version": "6.0.0"
+          "Name": "Grpc.Core.Api",
+          "Version": "2.71.0"
         }
       ]
     }
