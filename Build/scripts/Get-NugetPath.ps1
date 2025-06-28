@@ -8,9 +8,5 @@ function Get-NugetPath {
         $result = '~/.nuget/packages'
     }
 
-    if (-not (Test-Path $result -PathType Container)) {
-        throw "Path $result not found."
-    }
-
     $result
 }
