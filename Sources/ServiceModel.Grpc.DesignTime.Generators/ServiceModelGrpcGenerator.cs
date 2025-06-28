@@ -55,10 +55,7 @@ public sealed class ServiceModelGrpcGenerator : IIncrementalGenerator
         var logger = DebugLogger.Create(source.GlobalOptions);
         try
         {
-            using (var assemblyResolver = new AssemblyResolver(source.GlobalOptions, logger))
-            {
-                CSharpProvider.Execute(context, assemblyResolver, logger, source);
-            }
+            CSharpProvider.Execute(context, logger, source);
         }
         catch (Exception ex) when (!context.CancellationToken.IsCancellationRequested)
         {

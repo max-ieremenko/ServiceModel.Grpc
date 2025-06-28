@@ -31,7 +31,7 @@ public partial class AttributeAnalyzerTest
     [OneTimeSetUp]
     public void BeforeAllTests()
     {
-        _typeHandler = new TypeHandler(null!);
+        _typeHandler = new TypeHandler();
         _typeHandler.AddKnownAttribute(AttributeAnalyzer.TryImportGrpcService);
         _typeHandler.AddKnownAttribute(AttributeAnalyzer.TryExportGrpcService);
         _typeHandler.AddKnownAttribute(AttributeAnalyzer.TryExtension);
