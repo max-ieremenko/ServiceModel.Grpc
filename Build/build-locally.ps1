@@ -40,6 +40,7 @@ if (-not $IsWindows) {
 }
 
 . (Join-Path $PSScriptRoot 'scripts' 'Get-ModuleVersion.ps1')
+. (Join-Path $PSScriptRoot 'scripts' 'Get-NugetPath.ps1')
 . (Join-Path $PSScriptRoot 'scripts' 'Resolve-ModulePath.ps1')
 . (Join-Path $PSScriptRoot 'scripts' 'Build-LinuxSdkImage.ps1')
 
@@ -50,7 +51,7 @@ if (-not $SkipBuild) {
 if (-not $SkipLinuxSdk) {
     $repository = Join-Path $PSScriptRoot '../'
     $invokeBuild = Resolve-ModulePath -Name InvokeBuild -Version (Get-ModuleVersion -Name InvokeBuild)
-    $nugetCache = Join-Path $HOME .nuget\packages
+    $nugetCache = Get-NugetPath
     if (-not $LinuxSdkFilter) {
         $LinuxSdkFilter = ' '
     }
