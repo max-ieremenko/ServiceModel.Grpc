@@ -1,22 +1,2 @@
 <Project>
-
-  <!-- 
-       https://github.com/dotnet/sdk/issues/20355
-       -->
-  <Target Name="_CollectSMGDTAnalyzers">
-    <ItemGroup>
-      <_SMGDTAnalyzers Include="@(Analyzer)" Condition="'%(Analyzer.NuGetPackageId)' == 'ServiceModel.Grpc.DesignTime'" />
-    </ItemGroup>
-  </Target>
-
-  <Target Name="RemoveSMGDTRoslyn4"
-          Condition="'$(SupportsRoslynComponentVersioning)' != 'true'"
-          AfterTargets="ResolvePackageDependenciesForBuild;ResolveNuGetPackageAssets"
-          DependsOnTargets="_CollectSMGDTAnalyzers">
-    <ItemGroup>
-      <Analyzer Remove="@(_SMGDTAnalyzers)"
-                Condition="$([System.String]::Copy('%(_SMGDTAnalyzers.Identity)').IndexOf('roslyn4')) &gt;= 0"/>
-    </ItemGroup>
-  </Target>
-
 </Project>
