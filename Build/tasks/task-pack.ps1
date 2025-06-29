@@ -15,7 +15,7 @@ Enter-Build {
     $releaseVersion = Get-ReleaseVersion -Sources $Sources
 }
 
-task . DotnetPack, JoinServiceModelGrpc, JoinServiceModelGrpcEmit, Test
+task . DotnetPack, JoinServiceModelGrpc, JoinServiceModelGrpcEmit, DesignTimeILMerge, Test
 
 task DotnetPack {
     $projects = @()
@@ -48,6 +48,19 @@ task JoinServiceModelGrpcEmit {
     
     Merge-NugetPackages -Source (Join-Path $BuildOut "$source.$releaseVersion.nupkg") -Destination (Join-Path $BuildOut "ServiceModel.Grpc.Emit.$releaseVersion.nupkg")
     Merge-NugetPackages -Source (Join-Path $BuildOut "$source.$releaseVersion.snupkg") -Destination (Join-Path $BuildOut "ServiceModel.Grpc.Emit.$releaseVersion.snupkg")
+}
+
+task DesignTimeILMerge {
+    Push-Location -Path (Join-Path $PSScriptRoot '..')
+    try {
+        exec { dotnet tool restore --verbosity quiet }
+        
+        $package = Join-Path $BuildOut "ServiceModel.Grpc.DesignTime.$releaseVersion.nupkg"
+        Merge-DesignTimePackage -Sources $Sources -PackagePath $package
+    }
+    finally {
+        Pop-Location
+    }
 }
 
 task Test {
