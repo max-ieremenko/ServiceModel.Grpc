@@ -2,7 +2,6 @@ obj/
 bin/
 .vs/
 .vscode/
-.config/
 build-out/
 PublishProfiles/
 

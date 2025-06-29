@@ -3,10 +3,14 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AnalyzerLanguage>cs</AnalyzerLanguage>
+    <IsRoslynComponent>true</IsRoslynComponent>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
+    <PackageReference Include="Grpc.Core.Api" PrivateAssets="all" GeneratePathProperty="true" />
   </ItemGroup>
 
   <ItemGroup>
@@ -14,4 +18,20 @@
     <ProjectReference Include="..\ServiceModel.Grpc.DesignTime.CodeAnalysis.Internal\ServiceModel.Grpc.DesignTime.CodeAnalysis.Internal.csproj" />
   </ItemGroup>
 
+  <!-- https://github.com/dotnet/roslyn/discussions/47517 -->
+  <PropertyGroup>
+    <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
+  </PropertyGroup>
+  <Target Name="GetDependencyTargetPaths">
+    <ItemGroup>
+      <TargetPathWithTargetPlatformMoniker Include="$(PKGGrpc_Core_Api)\lib\netstandard2.0\Grpc.Core.Api.dll" IncludeRuntimeDependency="false" />
+      <TargetPathWithTargetPlatformMoniker Include="..\ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp\bin\$(Configuration)\ServiceModel.Grpc.Core.dll" IncludeRuntimeDependency="false" />
+      <TargetPathWithTargetPlatformMoniker Include="..\ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp\bin\$(Configuration)\ServiceModel.Grpc.Descriptions.dll" IncludeRuntimeDependency="false" />
+      <TargetPathWithTargetPlatformMoniker Include="..\ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp\bin\$(Configuration)\ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.dll" IncludeRuntimeDependency="false" />
+      <TargetPathWithTargetPlatformMoniker Include="..\ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp\bin\$(Configuration)\ServiceModel.Grpc.DesignTime.CodeAnalysis.dll" IncludeRuntimeDependency="false" />
+      <TargetPathWithTargetPlatformMoniker Include="..\ServiceModel.Grpc.DesignTime.CodeAnalysis.Internal\bin\$(Configuration)\ServiceModel.Grpc.DesignTime.CodeAnalysis.Internal.dll" IncludeRuntimeDependency="false" />
+      <TargetPathWithTargetPlatformMoniker Include="..\ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp\bin\$(Configuration)\ServiceModel.Grpc.dll" IncludeRuntimeDependency="false" />
+      <TargetPathWithTargetPlatformMoniker Include="..\ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp\bin\$(Configuration)\ServiceModel.Grpc.Filters.dll" IncludeRuntimeDependency="false" />
+    </ItemGroup>
+  </Target>
 </Project>

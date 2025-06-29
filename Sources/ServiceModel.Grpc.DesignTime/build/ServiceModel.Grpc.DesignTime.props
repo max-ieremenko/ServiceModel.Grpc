@@ -1,11 +1,2 @@
 <Project>
-
-  <PropertyGroup Condition="'$(ServiceModelGrpcDesignTime_Dependencies)' == ''">
-    <ServiceModelGrpcDesignTime_Dependencies>$(MSBuildThisFileDirectory)dependencies</ServiceModelGrpcDesignTime_Dependencies>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <CompilerVisibleProperty Include="ServiceModelGrpcDesignTime_Dependencies" />
-  </ItemGroup>
-
 </Project>
