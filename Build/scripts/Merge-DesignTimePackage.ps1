@@ -11,6 +11,19 @@ function Merge-DesignTimePackage {
         $PackagePath
     )
  
+    function Get-NugetPackagePath {
+        param (
+            [Parameter(Mandatory)]
+            [string]
+            $Name
+        )
+
+        $packageProps = Join-Path $Sources 'Directory.Packages.props'
+        $version = (Select-Xml -Path $packageProps -XPath "Project/ItemGroup/PackageVersion[@Include = '$Name']").Node.Attributes['Version'].Value
+
+        Join-Path (Get-NugetPath) "$($Name.ToLowerInvariant())" $version 'lib/netstandard2.0'
+    }
+
     $tempSource = Join-Path $env:TEMP ([Guid]::NewGuid())
     $tempOutput = Join-Path $env:TEMP ([Guid]::NewGuid())
     New-Item -Path $tempOutput -ItemType Directory | Out-Null
@@ -23,8 +36,8 @@ function Merge-DesignTimePackage {
         $dest = Join-Path $tempOutput $primary.Name
         $keyfile = Join-Path $Sources 'ServiceModel.Grpc.snk'
 
-        $codeAnalysis = Join-Path (Get-NugetPath) 'microsoft.codeanalysis.common/4.0.1/lib/netstandard2.0'
-        $bcl = Join-Path (Get-NugetPath) 'microsoft.bcl.asyncinterfaces/1.0.0/lib/netstandard2.0'
+        $codeAnalysis = Get-NugetPackagePath -Name 'Microsoft.CodeAnalysis.Common'
+        $bcl = Get-NugetPackagePath -Name 'Microsoft.Bcl.AsyncInterfaces'
 
         exec {
             dotnet ilrepack `
