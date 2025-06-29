@@ -21,16 +21,8 @@ namespace ServiceModel.Grpc.DesignTime.CodeAnalysis;
 
 public sealed class TypeHandler
 {
-    private readonly Func<string, string, Assembly> _assemblyResolver;
-    private readonly List<Func<AttributeData, Type?>> _knownTypes;
-    private readonly List<Func<AttributeData, ITypeSymbol?>> _knownSymbols;
-
-    public TypeHandler(Func<string, string, Assembly> assemblyResolver)
-    {
-        _assemblyResolver = assemblyResolver;
-        _knownTypes = new List<Func<AttributeData, Type?>>(4);
-        _knownSymbols = new List<Func<AttributeData, ITypeSymbol?>>(1);
-    }
+    private readonly List<Func<AttributeData, Type?>> _knownTypes = new(4);
+    private readonly List<Func<AttributeData, ITypeSymbol?>> _knownSymbols = new(1);
 
     public void AddKnownAttribute(Func<AttributeData, Type?> analyzer) => _knownTypes.Add(analyzer);
 
@@ -62,5 +54,5 @@ public sealed class TypeHandler
         return false;
     }
 
-    public Assembly GetAssembly(string assemblyName, string location) => _assemblyResolver(assemblyName, location);
+    public Assembly GetAssembly(string assemblyName, string location) => throw new NotImplementedException();
 }

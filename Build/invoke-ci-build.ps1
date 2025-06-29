@@ -11,11 +11,14 @@ param (
 )
 
 $ErrorActionPreference = 'Stop'
+$ProgressPreference = 'SilentlyContinue'
 Set-StrictMode -Version Latest
 
 . (Join-Path $PSScriptRoot 'scripts' 'Clear-NugetCache.ps1')
 . (Join-Path $PSScriptRoot 'scripts' 'Get-FullPath.ps1')
+. (Join-Path $PSScriptRoot 'scripts' 'Get-NugetPath.ps1')
 . (Join-Path $PSScriptRoot 'scripts' 'Get-ReleaseVersion.ps1')
+. (Join-Path $PSScriptRoot 'scripts' 'Merge-DesignTimePackage.ps1')
 . (Join-Path $PSScriptRoot 'scripts' 'Merge-NugetPackages.ps1')
 . (Join-Path $PSScriptRoot 'scripts' 'Remove-DirectoryRecurse.ps1')
 . (Join-Path $PSScriptRoot 'scripts' 'Test-NugetPackage.ps1')

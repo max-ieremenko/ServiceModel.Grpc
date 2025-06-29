@@ -17,18 +17,12 @@
 
   <Import Project="..\ServiceModel.Grpc.DesignTime\build\ServiceModel.Grpc.DesignTime.props" />
 
-  <PropertyGroup>
-    <ServiceModelGrpcDesignTime_Dependencies>$(SolutionDir)ServiceModel.Grpc.DesignTime\bin\$(Configuration)\dependencies</ServiceModelGrpcDesignTime_Dependencies>
-    <ServiceModelGrpcDesignTime_LocalBuild>true</ServiceModelGrpcDesignTime_LocalBuild>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <ServiceModelGrpcDesignTime_DebugLogFilename>$(MSBuildThisFileDirectory)/bin/_generator.log</ServiceModelGrpcDesignTime_DebugLogFilename>
     <ServiceModelGrpcDesignTime_DebugGeneratedOutput>$(MSBuildThisFileDirectory)/bin/_generated</ServiceModelGrpcDesignTime_DebugGeneratedOutput>
   </PropertyGroup>
 
   <ItemGroup>
-    <CompilerVisibleProperty Include="ServiceModelGrpcDesignTime_LocalBuild" />
     <CompilerVisibleProperty Include="ServiceModelGrpcDesignTime_DebugLogFilename" />
     <CompilerVisibleProperty Include="ServiceModelGrpcDesignTime_DebugGeneratedOutput" />
   </ItemGroup>
