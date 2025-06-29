@@ -29,13 +29,12 @@ internal static class CSharpProvider
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void Execute(
         SourceProductionContext context,
-        AssemblyResolver assemblyResolver,
         DebugLogger? logger,
         in (ImmutableArray<SyntaxNode> Candidates, AnalyzerConfigOptions GlobalOptions, Compilation Compilation) source)
     {
         var delegatingLogger = logger == null ? null : new DelegatingDebugLogger(logger.Log, logger.LogSource);
 
-        var typeHandler = new TypeHandler(assemblyResolver.Resolve);
+        var typeHandler = new TypeHandler();
         typeHandler.AddKnownAttribute(AttributeAnalyzer.TryImportGrpcService);
         typeHandler.AddKnownAttribute(AttributeAnalyzer.TryExportGrpcService);
         typeHandler.AddKnownAttribute(AttributeAnalyzer.TryMessagePack);
