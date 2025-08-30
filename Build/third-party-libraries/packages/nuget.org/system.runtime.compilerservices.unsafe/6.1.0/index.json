@@ -42,6 +42,15 @@
       ]
     },
     {
+      "Name": "NerdbankMessagePack",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "netstandard2.0"
+      ]
+    },
+    {
       "Name": "SelfHost",
       "InternalOnly": true,
       "TargetFrameworks": [

@@ -1,9 +1,9 @@
-Microsoft.NET.ILLink.Tasks [8.0.17](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/8.0.17)
+System.IO.Pipelines [8.0.0](https://www.nuget.org/packages/System.IO.Pipelines/8.0.0)
 --------------------
 
-Used by: AspNetCore, ClientDI, Core, Emit, MemoryPack, MessagePack
+Used by: NerdbankMessagePack
 
-Target frameworks: net462, net8.0, net9.0, netstandard2.0, netstandard2.1
+Target frameworks: net8.0, net9.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
@@ -13,7 +13,12 @@ License: [MIT](../../../../licenses/mit)
 
 Description
 -----------
-MSBuild tasks for running the IL Linker
+Single producer single consumer byte buffer management.
+
+Commonly Used Types:
+System.IO.Pipelines.Pipe
+System.IO.Pipelines.PipeWriter
+System.IO.Pipelines.PipeReader
 
 Remarks
 -----------

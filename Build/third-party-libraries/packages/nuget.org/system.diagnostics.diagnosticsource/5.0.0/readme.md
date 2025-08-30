@@ -1,7 +1,7 @@
 System.Diagnostics.DiagnosticSource [5.0.0](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/5.0.0)
 --------------------
 
-Used by: Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, SelfHost internal
+Used by: Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal
 
 Target frameworks: net462, net8.0, net9.0
 
