@@ -1,7 +1,7 @@
 Microsoft.SourceLink.GitHub [8.0.0](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub/8.0.0)
 --------------------
 
-Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, ProtoBuf internal, SelfHost internal
+Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, ProtoBuf internal, SelfHost internal
 
 Target frameworks: net462, net8.0, net9.0, netstandard2.0, netstandard2.1
 

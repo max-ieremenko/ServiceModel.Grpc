@@ -1,7 +1,7 @@
 Microsoft.Bcl.AsyncInterfaces [8.0.0](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/8.0.0)
 --------------------
 
-Used by: MessagePack
+Used by: MessagePack, NerdbankMessagePack
 
 Target frameworks: net8.0, net9.0, netstandard2.0
 

@@ -93,6 +93,25 @@
       ]
     },
     {
+      "Name": "NerdbankMessagePack",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "netstandard2.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Memory",
+          "Version": "4.6.0"
+        },
+        {
+          "Name": "System.Runtime.CompilerServices.Unsafe",
+          "Version": "6.1.0"
+        }
+      ]
+    },
+    {
       "Name": "SelfHost",
       "InternalOnly": true,
       "TargetFrameworks": [

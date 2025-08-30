@@ -172,6 +172,24 @@
       ]
     },
     {
+      "Name": "NerdbankMessagePack",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "DiffEngine",
+          "Version": "11.3.0"
+        },
+        {
+          "Name": "EmptyFiles",
+          "Version": "4.4.0"
+        }
+      ]
+    },
+    {
       "Name": "SelfHost",
       "InternalOnly": true,
       "TargetFrameworks": [

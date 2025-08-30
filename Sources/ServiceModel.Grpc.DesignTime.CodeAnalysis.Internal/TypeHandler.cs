@@ -21,7 +21,7 @@ namespace ServiceModel.Grpc.DesignTime.CodeAnalysis;
 
 public sealed class TypeHandler
 {
-    private readonly List<Func<AttributeData, Type?>> _knownTypes = new(4);
+    private readonly List<Func<AttributeData, Type?>> _knownTypes = new(5);
     private readonly List<Func<AttributeData, ITypeSymbol?>> _knownSymbols = new(1);
 
     public void AddKnownAttribute(Func<AttributeData, Type?> analyzer) => _knownTypes.Add(analyzer);

@@ -20,6 +20,7 @@
     <Project Path="ServiceModel.Grpc.Interceptors.Test/ServiceModel.Grpc.Interceptors.Test.csproj" />
     <Project Path="ServiceModel.Grpc.MemoryPackMarshaller.Test/ServiceModel.Grpc.MemoryPackMarshaller.Test.csproj" />
     <Project Path="ServiceModel.Grpc.MessagePackMarshaller.Test/ServiceModel.Grpc.MessagePackMarshaller.Test.csproj" />
+    <Project Path="ServiceModel.Grpc.Nerdbank.MessagePackMarshaller.Test/ServiceModel.Grpc.Nerdbank.MessagePackMarshaller.Test.csproj" Id="87b3cfec-586e-4e26-96b1-7bfd9909078b" />
     <Project Path="ServiceModel.Grpc.SelfHost.Test/ServiceModel.Grpc.SelfHost.Test.csproj" />
     <Project Path="ServiceModel.Grpc.Test/ServiceModel.Grpc.Test.csproj" />
     <Project Path="ServiceModel.Grpc.TestApi/ServiceModel.Grpc.TestApi.csproj" />
@@ -36,6 +37,7 @@
   <Project Path="ServiceModel.Grpc.Interceptors/ServiceModel.Grpc.Interceptors.csproj" />
   <Project Path="ServiceModel.Grpc.MemoryPackMarshaller/ServiceModel.Grpc.MemoryPackMarshaller.csproj" />
   <Project Path="ServiceModel.Grpc.MessagePackMarshaller/ServiceModel.Grpc.MessagePackMarshaller.csproj" />
+  <Project Path="ServiceModel.Grpc.Nerdbank.MessagePackMarshaller/ServiceModel.Grpc.Nerdbank.MessagePackMarshaller.csproj" Id="ed5b07bc-4126-4282-af74-a91b2ae03906" />
   <Project Path="ServiceModel.Grpc.ProtoBufMarshaller/ServiceModel.Grpc.ProtoBufMarshaller.csproj" />
   <Project Path="ServiceModel.Grpc.SelfHost/ServiceModel.Grpc.SelfHost.csproj" />
   <Project Path="ServiceModel.Grpc/ServiceModel.Grpc.csproj" />

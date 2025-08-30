@@ -91,6 +91,15 @@
       ]
     },
     {
+      "Name": "NerdbankMessagePack",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "netstandard2.0"
+      ]
+    },
+    {
       "Name": "ProtoBuf",
       "InternalOnly": true,
       "TargetFrameworks": [

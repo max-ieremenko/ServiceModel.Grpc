@@ -17,7 +17,7 @@
 namespace ServiceModel.Grpc.DesignTime;
 
 /// <summary>
-/// A marker to generate the source code for MemoryPack serializer.
+/// A marker to generate the source code for MessagePackMarshaller serializer.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
 [Conditional("CodeGeneration")]

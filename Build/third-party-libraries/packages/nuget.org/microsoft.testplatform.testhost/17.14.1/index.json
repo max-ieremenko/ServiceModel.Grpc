@@ -172,6 +172,24 @@
       ]
     },
     {
+      "Name": "NerdbankMessagePack",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "17.14.1"
+        },
+        {
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
+        }
+      ]
+    },
+    {
       "Name": "SelfHost",
       "InternalOnly": true,
       "TargetFrameworks": [

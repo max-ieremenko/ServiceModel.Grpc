@@ -172,6 +172,24 @@
       ]
     },
     {
+      "Name": "NerdbankMessagePack",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "EmptyFiles",
+          "Version": "4.4.0"
+        },
+        {
+          "Name": "System.Management",
+          "Version": "6.0.1"
+        }
+      ]
+    },
+    {
       "Name": "SelfHost",
       "InternalOnly": true,
       "TargetFrameworks": [

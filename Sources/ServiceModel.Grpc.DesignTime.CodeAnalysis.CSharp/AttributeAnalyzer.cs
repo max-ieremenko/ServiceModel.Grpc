@@ -26,12 +26,14 @@ public static class AttributeAnalyzer
     public const string ExtensionAttributeName = "DesignTimeExtension";
     private const string MessagePackAttributeName = $"MessagePack{ExtensionAttributeName}";
     private const string MemoryPackAttributeName = $"MemoryPack{ExtensionAttributeName}";
+    private const string NerdbankMessagePackAttributeName = $"NerdbankMessagePack{ExtensionAttributeName}";
 
     private const string ImportAttributeFullName = $"ServiceModel.Grpc.DesignTime.{ImportAttributeName}Attribute";
     private const string ExportAttributeFullName = $"ServiceModel.Grpc.DesignTime.{ExportAttributeName}Attribute";
     private const string ExtensionAttributeFullName = $"ServiceModel.Grpc.DesignTime.{ExtensionAttributeName}Attribute<";
     private const string MessagePackAttributeFullName = $"ServiceModel.Grpc.DesignTime.{MessagePackAttributeName}Attribute";
     private const string MemoryPackAttributeFullName = $"ServiceModel.Grpc.DesignTime.{MemoryPackAttributeName}Attribute";
+    private const string NerdbankMessagePackAttributeFullName = $"ServiceModel.Grpc.DesignTime.{NerdbankMessagePackAttributeName}Attribute";
 
     public static Type? TryImportGrpcService(AttributeData attribute) =>
         IsImportExportAttribute(attribute, ImportAttributeName, ImportAttributeFullName) ? typeof(ImportGrpcService) : null;
@@ -47,6 +49,11 @@ public static class AttributeAnalyzer
     public static Type? TryMemoryPack(AttributeData attribute) =>
         IsKnownAttribute(attribute, MemoryPackAttributeName, MemoryPackAttributeFullName) && attribute.ConstructorArguments.Length == 0
             ? typeof(MemoryPackMarshaller)
+            : null;
+
+    public static Type? TryNerdbankMessagePack(AttributeData attribute) =>
+        IsKnownAttribute(attribute, NerdbankMessagePackAttributeName, NerdbankMessagePackAttributeFullName) && attribute.ConstructorArguments.Length == 0
+            ? typeof(NerdbankMessagePackMarshaller)
             : null;
 
     public static ITypeSymbol? TryExtension(AttributeData attribute)
