@@ -24,7 +24,7 @@ Enter-Build {
     $releaseVersion = Get-ReleaseVersion -Sources $Sources
 }
 
-task . Core, Emit, AspNetCore, Swashbuckle, NSwag, DesignTime, SelfHost, ClientDI, ProtoBufMarshaller, MessagePackMarshaller, MemoryPackMarshaller
+task . Core, Emit, AspNetCore, Swashbuckle, NSwag, DesignTime, SelfHost, ClientDI, ProtoBufMarshaller, MessagePackMarshaller, MemoryPackMarshaller, NerdbankMessagePackMarshaller
 
 task Core {
     $projects = @(
@@ -204,6 +204,21 @@ task MemoryPackMarshaller {
         -Sources $projects `
         -Repository $Repository `
         -Title "ServiceModel.Grpc.MemoryPackMarshaller $releaseVersion" `
+        -Out $BuildOut `
+        -GithubToken $GithubToken
+}
+
+task NerdbankMessagePackMarshaller {
+    $projects = @(
+        (Join-Path $Sources 'ServiceModel.Grpc.Nerdbank.MessagePackMarshaller'),
+        (Join-Path $Sources 'ServiceModel.Grpc.Nerdbank.MessagePackMarshaller.Test')
+    )
+    
+    Write-ThirdPartyNotices `
+        -AppNames 'NerdbankMessagePack', 'Core' `
+        -Sources $projects `
+        -Repository $Repository `
+        -Title "ServiceModel.Grpc.Nerdbank.MessagePackMarshaller $releaseVersion" `
         -Out $BuildOut `
         -GithubToken $GithubToken
 }
