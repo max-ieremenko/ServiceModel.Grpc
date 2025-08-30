@@ -16,13 +16,12 @@
 
 namespace ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp.Extensions;
 
-internal sealed class MessageCodeGeneratorMetadata : IMetadataExtension
+internal sealed class NerdbankMessagePackMarshaller : IExtensionProvider
 {
-    private readonly SortedSet<string> _cctors = new(StringComparer.Ordinal);
-
-    public bool GenerateStaticRefAccessors { get; set; }
-
-    public void RequestPartialCctor(string methodName) => _cctors.Add(methodName);
-
-    public IReadOnlyCollection<string>? GetPartialCctors() => _cctors;
+    public void ProvideExtensions(ExtensionProviderDeclaration declaration, IExtensionCollection extensions, IExtensionContext context)
+    {
+        extensions.TryAdd<MPackCodeGeneratorExtension>().NerdbankMessagePack = true;
+        extensions.TryAdd<ContractCodeGeneratorMetadata>();
+        extensions.TryAdd<MessageCodeGeneratorMetadata>().GenerateStaticRefAccessors = true;
+    }
 }

@@ -52,6 +52,13 @@ internal sealed class MessageCodeGenerator : ICodeGenerator
 
             BuildCtorFull(output);
             BuildProperties(output);
+
+            if (_metadata?.GenerateStaticRefAccessors == true)
+            {
+                output.AppendLine();
+                BuildStaticRefGetValue(output);
+                BuildStaticRefSetValue(output);
+            }
         }
 
         output.AppendLine("}");
@@ -137,6 +144,49 @@ internal sealed class MessageCodeGenerator : ICodeGenerator
                 .WriteDataMemberAttribute(order)
                 .AppendFormat("public T{0} Value{0}", order)
                 .AppendLine(" { get; set; }");
+        }
+    }
+
+    private void BuildStaticRefGetValue(ICodeStringBuilder output)
+    {
+        for (var i = 0; i < _propertiesCount; i++)
+        {
+            output
+                .AppendFormat("public static T{0} GetValue{0}(ref ", i + 1)
+                .WriteGenericMessage(_propertiesCount)
+                .AppendLine(" message)")
+                .AppendLine("{");
+
+            using (output.Indent())
+            {
+                output
+                    .AppendFormat("return message.Value{0};", i + 1)
+                    .AppendLine();
+            }
+
+            output.AppendLine("}");
+        }
+    }
+
+    private void BuildStaticRefSetValue(ICodeStringBuilder output)
+    {
+        for (var i = 0; i < _propertiesCount; i++)
+        {
+            output
+                .AppendFormat("public static void SetValue{0}(ref ", i + 1)
+                .WriteGenericMessage(_propertiesCount)
+                .AppendFormat(" message, T{0} value)", i + 1)
+                .AppendLine()
+                .AppendLine("{");
+
+            using (output.Indent())
+            {
+                output
+                    .AppendFormat("message.Value{0} = value;", i + 1)
+                    .AppendLine();
+            }
+
+            output.AppendLine("}");
         }
     }
 }
