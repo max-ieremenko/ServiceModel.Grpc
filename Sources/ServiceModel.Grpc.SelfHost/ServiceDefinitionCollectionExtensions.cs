@@ -167,7 +167,7 @@ public static class ServiceDefinitionCollectionExtensions
             ServiceProvider = serviceProvider
         };
 
-        BindService(services, serviceFactory, null, configure, options);
+        BindService(services, serviceFactory, endpointBinder, configure, options);
         return services;
     }
 

@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ServiceModel.Grpc\ServiceModel.Grpc.csproj" />
+    <ProjectReference Include="..\ServiceModel.Grpc.DesignTime\ServiceModel.Grpc.DesignTime.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">

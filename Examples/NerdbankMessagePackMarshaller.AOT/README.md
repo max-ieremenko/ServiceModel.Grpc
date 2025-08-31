@@ -16,7 +16,6 @@ see [Client.csproj](Client/Client.csproj) and [Server/Server.csproj](Server/Serv
 
 ```xml
 <ItemGroup>
-    <PackageReference Include="ServiceModel.Grpc.DesignTime" />
     <PackageReference Include="ServiceModel.Grpc.Nerdbank.MessagePackMarshaller" />
 </ItemGroup>
 ```
