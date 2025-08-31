@@ -81,3 +81,4 @@ server.Services.AddServiceModelTransient(
 - [Documentation](https://max-ieremenko.github.io/ServiceModel.Grpc)
 - [ServiceModel.Grpc GitHub](https://github.com/max-ieremenko/ServiceModel.Grpc)
 - [Example](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/NerdbankMessagePackMarshaller.AOT)
+- [Example](https://github.com/max-ieremenko/ServiceModel.Grpc/tree/master/Examples/NerdbankMessagePackMarshaller.Grpc.Core)
