@@ -26,6 +26,8 @@ internal sealed class MPackCodeGeneratorExtension : ICodeGeneratorExtension
 
     public bool MemoryPack { get; set; }
 
+    public bool NerdbankMessagePack { get; set; }
+
     public void ProvideGenerators(ICodeGeneratorCollection generators, IContractDescriptionCollection descriptions, IExtensionContext context)
     {
         var distinct = new HashSet<IMessageDescription>(MessageDescriptionComparer.Default);
@@ -65,7 +67,7 @@ internal sealed class MPackCodeGeneratorExtension : ICodeGeneratorExtension
 
     private static void AddKnownFormatter(HashSet<IMessageDescription> distinct, List<IMessageDescription> data, IMessageDescription? message)
     {
-        if (message != null && message.Properties.Length > 0 && distinct.Add(message))
+        if (message?.Properties.Length > 0 && distinct.Add(message))
         {
             data.Add(message);
         }
@@ -96,6 +98,12 @@ internal sealed class MPackCodeGeneratorExtension : ICodeGeneratorExtension
         {
             generators.TryGetMetadata<ContractCodeGeneratorMetadata>()?.RequestPartialCctor(MemoryPackContractCodeGenerator.PartialCctorMethodName, contract);
             generators.Add(new MemoryPackContractCodeGenerator(contract, knownFormatters));
+        }
+
+        if (NerdbankMessagePack)
+        {
+            generators.TryGetMetadata<ContractCodeGeneratorMetadata>()?.RequestPartialCctor(NerdbankMessagePackContractCodeGenerator.PartialCctorMethodName, contract);
+            generators.Add(new NerdbankMessagePackContractCodeGenerator(contract, knownFormatters));
         }
     }
 

@@ -20,6 +20,8 @@ internal sealed class MessageCodeGeneratorMetadata : IMetadataExtension
 {
     private readonly SortedSet<string> _cctors = new(StringComparer.Ordinal);
 
+    public bool GenerateStaticRefAccessors { get; set; }
+
     public void RequestPartialCctor(string methodName) => _cctors.Add(methodName);
 
     public IReadOnlyCollection<string>? GetPartialCctors() => _cctors;

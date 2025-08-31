@@ -29,4 +29,5 @@ namespace ServiceModel.Grpc.DesignTime.Generator.Test;
 [ExportGrpcService(typeof(TrackedFilteredService), GenerateAspNetExtensions = true, GenerateSelfHostExtensions = true)]
 ////[MessagePackDesignTimeExtension]
 ////[MemoryPackDesignTimeExtension]
+////[NerdbankMessagePackDesignTimeExtension]
 public static partial class GrpcServices;

@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <PublishAot>true</PublishAot>
+    <PublishDir>bin/Release/publish/</PublishDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ServiceModel.Grpc.AspNetCore" />
+    <PackageReference Include="ServiceModel.Grpc.Nerdbank.MessagePackMarshaller" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Contract\Contract.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Trimming hint: DataContractMarshallerFactory can be removed -->
+    <RuntimeHostConfigurationOption Include="ServiceModel.Grpc.DisableDataContractMarshallerFactory" Value="true" Trim="true" />
+  </ItemGroup>
+
+</Project>

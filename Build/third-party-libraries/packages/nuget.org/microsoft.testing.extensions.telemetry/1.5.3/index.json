@@ -172,6 +172,24 @@
       ]
     },
     {
+      "Name": "NerdbankMessagePack",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.22.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "1.5.3"
+        }
+      ]
+    },
+    {
       "Name": "SelfHost",
       "InternalOnly": true,
       "TargetFrameworks": [

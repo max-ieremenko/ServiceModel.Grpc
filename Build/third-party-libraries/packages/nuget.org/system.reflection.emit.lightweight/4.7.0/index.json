@@ -21,6 +21,21 @@
       ]
     },
     {
+      "Name": "NerdbankMessagePack",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "netstandard2.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Reflection.Emit.ILGeneration",
+          "Version": "4.7.0"
+        }
+      ]
+    },
+    {
       "Name": "ProtoBuf",
       "InternalOnly": false,
       "TargetFrameworks": [

@@ -13,6 +13,7 @@
     <ProjectReference Include="..\ServiceModel.Grpc.SelfHost\ServiceModel.Grpc.SelfHost.csproj" />
     <!--<ProjectReference Include="..\ServiceModel.Grpc.MessagePackMarshaller\ServiceModel.Grpc.MessagePackMarshaller.csproj" />-->
     <!--<ProjectReference Include="..\ServiceModel.Grpc.MemoryPackMarshaller\ServiceModel.Grpc.MemoryPackMarshaller.csproj" />-->
+    <!--<ProjectReference Include="..\ServiceModel.Grpc.Nerdbank.MessagePackMarshaller\ServiceModel.Grpc.Nerdbank.MessagePackMarshaller.csproj" />-->
   </ItemGroup>
 
   <Import Project="..\ServiceModel.Grpc.DesignTime\build\ServiceModel.Grpc.DesignTime.props" />

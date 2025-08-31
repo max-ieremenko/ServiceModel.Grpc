@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net8.0;net9.0</TargetFrameworks>
+    <RootNamespace>ServiceModel.Grpc</RootNamespace>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
+    <IsTrimmable>true</IsTrimmable>
+    <EnableAOTAnalyzer>true</EnableAOTAnalyzer>
+
+    <Version>$(NerdbankMessagePackMarshallerVersion)</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nerdbank.MessagePack" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ServiceModel.Grpc\ServiceModel.Grpc.csproj" />
+    <ProjectReference Include="..\ServiceModel.Grpc.DesignTime\ServiceModel.Grpc.DesignTime.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">
+    <Content Include="README.md" PackagePath="" />
+    <Content Include="..\..\LICENSE" PackagePath="" Visible="false" />
+    <Content Include="..\..\build-out\NerdbankMessagePackThirdPartyNotices.txt" PackagePath="ThirdPartyNotices.txt" Visible="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\ServiceModel.Grpc.Core\CodeAnalysis\ExperimentalAttribute.cs" Link="CodeAnalysis\ExperimentalAttribute.cs" />
+    <Compile Include="..\ServiceModel.Grpc.Core\CodeAnalysis\NotNullWhenAttribute.cs" Link="CodeAnalysis\NotNullWhenAttribute.cs" />
+  </ItemGroup>
+</Project>

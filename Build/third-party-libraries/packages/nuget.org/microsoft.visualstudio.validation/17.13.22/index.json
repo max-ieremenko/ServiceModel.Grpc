@@ -1,0 +1,35 @@
+{
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "NerdbankMessagePack",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "netstandard2.0"
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT"
+    },
+    {
+      "Subject": "repository",
+      "HRef": "https://github.com/microsoft/vs-validation",
+      "Description": "License code NOASSERTION"
+    },
+    {
+      "Subject": "project",
+      "HRef": "https://github.com/Microsoft/vs-validation",
+      "Description": "License code NOASSERTION"
+    }
+  ]
+}

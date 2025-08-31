@@ -245,6 +245,7 @@ ServiceModel.Grpc.DesignTime | [![Version](https://img.shields.io/nuget/vpre/Ser
 ServiceModel.Grpc.MessagePackMarshaller | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.MessagePackMarshaller.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.MessagePackMarshaller) | marshaller factory, based on [MessagePack serializer](https://www.nuget.org/packages/MessagePack)
 ServiceModel.Grpc.ProtoBufMarshaller | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.ProtoBufMarshaller.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.ProtoBufMarshaller) | marshaller factory, based on [protobuf-net serializer](https://www.nuget.org/packages/protobuf-net/)
 ServiceModel.Grpc.MemoryPackMarshaller | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.MemoryPackMarshaller.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.MemoryPackMarshaller) | marshaller factory, based on [MemoryPack serializer](https://www.nuget.org/packages/MemoryPack)
+ServiceModel.Grpc.Nerdbank.MessagePackMarshaller | [![Version](https://img.shields.io/nuget/vpre/ServiceModel.Grpc.Nerdbank.MessagePackMarshaller.svg)](https://www.nuget.org/packages/ServiceModel.Grpc.Nerdbank.MessagePackMarshaller) | marshaller factory, based on [Nerdbank.MessagePack serializer](https://www.nuget.org/packages/Nerdbank.MessagePack)
 
 ## Benchmarks
 
