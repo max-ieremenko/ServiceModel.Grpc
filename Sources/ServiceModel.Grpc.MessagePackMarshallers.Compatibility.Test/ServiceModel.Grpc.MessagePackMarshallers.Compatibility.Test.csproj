@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\Test.csproj.props" />
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <RootNamespace>ServiceModel.Grpc</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ServiceModel.Grpc.MessagePackMarshaller\ServiceModel.Grpc.MessagePackMarshaller.csproj" />
+    <ProjectReference Include="..\ServiceModel.Grpc.Nerdbank.MessagePackMarshaller\ServiceModel.Grpc.Nerdbank.MessagePackMarshaller.csproj" />
+  </ItemGroup>
+
+</Project>
