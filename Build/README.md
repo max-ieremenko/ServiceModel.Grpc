@@ -8,7 +8,7 @@ Because of the dependency on net462, the build runs on Windows.
 
 [net9.0 sdk](https://dotnet.microsoft.com/download/dotnet/9.0), 
 [InvokeBuild](https://www.powershellgallery.com/packages/InvokeBuild/5.14.11),
-[ThirdPartyLibraries](https://www.powershellgallery.com/packages/ThirdPartyLibraries/3.7.0),
+[ThirdPartyLibraries](https://www.powershellgallery.com/packages/ThirdPartyLibraries/3.8.0),
 [ZipAsFolder](https://www.powershellgallery.com/packages/ZipAsFolder/1.0.0)
 
     ``` powershell
