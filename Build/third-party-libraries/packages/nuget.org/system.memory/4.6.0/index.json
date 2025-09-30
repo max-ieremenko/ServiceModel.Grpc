@@ -7,127 +7,12 @@
   },
   "UsedBy": [
     {
-      "Name": "ClientDI",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "net462",
-        "net8.0",
-        "net9.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Buffers",
-          "Version": "4.6.0"
-        },
-        {
-          "Name": "System.Numerics.Vectors",
-          "Version": "4.6.0"
-        },
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.1.0"
-        }
-      ]
-    },
-    {
-      "Name": "Core",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "net462",
-        "net8.0",
-        "net9.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Buffers",
-          "Version": "4.6.0"
-        },
-        {
-          "Name": "System.Numerics.Vectors",
-          "Version": "4.6.0"
-        },
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.1.0"
-        }
-      ]
-    },
-    {
-      "Name": "DesignTime",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "net462",
-        "net8.0",
-        "net9.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Buffers",
-          "Version": "4.6.0"
-        },
-        {
-          "Name": "System.Numerics.Vectors",
-          "Version": "4.6.0"
-        },
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.1.0"
-        }
-      ]
-    },
-    {
-      "Name": "Emit",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "net462",
-        "net8.0",
-        "net9.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Buffers",
-          "Version": "4.6.0"
-        },
-        {
-          "Name": "System.Numerics.Vectors",
-          "Version": "4.6.0"
-        },
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.1.0"
-        }
-      ]
-    },
-    {
       "Name": "NerdbankMessagePack",
       "InternalOnly": false,
       "TargetFrameworks": [
         "net8.0",
         "net9.0",
         "netstandard2.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Buffers",
-          "Version": "4.6.0"
-        },
-        {
-          "Name": "System.Numerics.Vectors",
-          "Version": "4.6.0"
-        },
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.1.0"
-        }
-      ]
-    },
-    {
-      "Name": "SelfHost",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "net462",
-        "net8.0",
-        "net9.0"
       ],
       "Dependencies": [
         {

@@ -17,11 +17,11 @@
       "Dependencies": [
         {
           "Name": "System.Memory",
-          "Version": "4.6.0"
+          "Version": "4.5.5"
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.1.0"
+          "Version": "6.0.0"
         }
       ]
     },

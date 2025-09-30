@@ -1,9 +1,9 @@
 ﻿System.Buffers [4.6.0](https://www.nuget.org/packages/System.Buffers/4.6.0)
 --------------------
 
-Used by: ClientDI internal, Core internal, DesignTime internal, Emit internal, NerdbankMessagePack, SelfHost internal
+Used by: NerdbankMessagePack
 
-Target frameworks: net462, net8.0, net9.0, netstandard2.0
+Target frameworks: net8.0, net9.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
