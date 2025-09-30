@@ -1,4 +1,4 @@
-Microsoft.Extensions.DependencyInjection [6.0.0](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection/6.0.0)
+﻿Microsoft.Extensions.DependencyInjection [6.0.0](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection/6.0.0)
 --------------------
 
 Used by: ClientDI
@@ -14,11 +14,6 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 Default implementation of dependency injection for Microsoft.Extensions.DependencyInjection.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 2
 -----------

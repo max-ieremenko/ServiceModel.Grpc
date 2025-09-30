@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/max-ieremenko/ThirdPartyLibraries/refs/heads/master/Docs/schema.package-index.json",
   "Source": "https://api.nuget.org/v3/index.json",
   "License": {
     "Code": "BSD-3-Clause",

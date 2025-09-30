@@ -1,4 +1,4 @@
-Grpc.Net.Common [2.71.0](https://www.nuget.org/packages/Grpc.Net.Common/2.71.0)
+﻿Grpc.Net.Common [2.71.0](https://www.nuget.org/packages/Grpc.Net.Common/2.71.0)
 --------------------
 
 Used by: AspNetCore, ClientDI, Core internal
@@ -14,11 +14,6 @@ License: [Apache-2.0](../../../../licenses/apache-2.0)
 Description
 -----------
 Infrastructure for common functionality in gRPC
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

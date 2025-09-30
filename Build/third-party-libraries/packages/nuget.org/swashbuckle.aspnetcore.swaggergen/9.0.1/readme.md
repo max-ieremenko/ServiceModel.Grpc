@@ -1,4 +1,4 @@
-Swashbuckle.AspNetCore.SwaggerGen [9.0.1](https://www.nuget.org/packages/Swashbuckle.AspNetCore.SwaggerGen/9.0.1)
+﻿Swashbuckle.AspNetCore.SwaggerGen [9.0.1](https://www.nuget.org/packages/Swashbuckle.AspNetCore.SwaggerGen/9.0.1)
 --------------------
 
 Used by: AspNetCoreSwashbuckle
@@ -14,11 +14,6 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 Swagger Generator for APIs built on ASP.NET Core
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

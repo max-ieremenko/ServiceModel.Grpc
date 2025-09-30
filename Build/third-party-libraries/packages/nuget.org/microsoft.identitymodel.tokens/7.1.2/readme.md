@@ -1,4 +1,4 @@
-Microsoft.IdentityModel.Tokens [7.1.2](https://www.nuget.org/packages/Microsoft.IdentityModel.Tokens/7.1.2)
+﻿Microsoft.IdentityModel.Tokens [7.1.2](https://www.nuget.org/packages/Microsoft.IdentityModel.Tokens/7.1.2)
 --------------------
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal
@@ -14,11 +14,6 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 Includes types that provide support for SecurityTokens, Cryptographic operations: Signing, Verifying Signatures, Encryption.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

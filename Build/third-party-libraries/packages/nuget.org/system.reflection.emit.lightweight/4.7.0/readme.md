@@ -1,4 +1,4 @@
-System.Reflection.Emit.Lightweight [4.7.0](https://www.nuget.org/packages/System.Reflection.Emit.Lightweight/4.7.0)
+﻿System.Reflection.Emit.Lightweight [4.7.0](https://www.nuget.org/packages/System.Reflection.Emit.Lightweight/4.7.0)
 --------------------
 
 Used by: MessagePack, NerdbankMessagePack, ProtoBuf
@@ -18,11 +18,6 @@ Commonly Used Types:
 System.Reflection.Emit.DynamicMethod
  
 When using NuGet 3.x this package requires at least version 3.4.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

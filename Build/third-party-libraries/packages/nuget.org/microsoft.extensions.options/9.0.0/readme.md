@@ -1,4 +1,4 @@
-Microsoft.Extensions.Options [9.0.0](https://www.nuget.org/packages/Microsoft.Extensions.Options/9.0.0)
+﻿Microsoft.Extensions.Options [9.0.0](https://www.nuget.org/packages/Microsoft.Extensions.Options/9.0.0)
 --------------------
 
 Used by: AspNetCoreNSwag
@@ -14,11 +14,6 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 Provides a strongly typed way of specifying and accessing settings using dependency injection.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 2
 -----------

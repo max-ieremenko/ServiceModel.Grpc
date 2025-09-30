@@ -1,4 +1,4 @@
-Nerdbank.MessagePack [0.8.131-rc](https://www.nuget.org/packages/Nerdbank.MessagePack/0.8.131-rc)
+﻿Nerdbank.MessagePack [0.8.131-rc](https://www.nuget.org/packages/Nerdbank.MessagePack/0.8.131-rc)
 --------------------
 
 Used by: NerdbankMessagePack
@@ -18,11 +18,6 @@ A fast and more user-friendly MessagePack serialization library for .NET and .NE
 Premium support for trimming and Native AOT, secure deserialization of untrusted data, async serialization, streaming deserialization, skip serializing of default values, reference preservation, and support for reference cycles.
 
 Also features an automatic structural equality API.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 4
 -----------

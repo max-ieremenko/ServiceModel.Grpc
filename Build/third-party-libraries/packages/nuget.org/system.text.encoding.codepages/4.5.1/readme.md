@@ -1,4 +1,4 @@
-System.Text.Encoding.CodePages [4.5.1](https://www.nuget.org/packages/System.Text.Encoding.CodePages/4.5.1)
+﻿System.Text.Encoding.CodePages [4.5.1](https://www.nuget.org/packages/System.Text.Encoding.CodePages/4.5.1)
 --------------------
 
 Used by: DesignTime
@@ -19,11 +19,6 @@ System.Text.CodePagesEncodingProvider
  
 99ce22c306b07f99ddae60f443d23a983ae78f7b 
 When using NuGet 3.x this package requires at least version 3.4.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 2
 -----------

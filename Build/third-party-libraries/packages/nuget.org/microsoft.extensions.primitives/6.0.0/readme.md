@@ -1,4 +1,4 @@
-Microsoft.Extensions.Primitives [6.0.0](https://www.nuget.org/packages/Microsoft.Extensions.Primitives/6.0.0)
+﻿Microsoft.Extensions.Primitives [6.0.0](https://www.nuget.org/packages/Microsoft.Extensions.Primitives/6.0.0)
 --------------------
 
 Used by: ClientDI
@@ -19,11 +19,6 @@ Commonly Used Types:
 Microsoft.Extensions.Primitives.IChangeToken
 Microsoft.Extensions.Primitives.StringValues
 Microsoft.Extensions.Primitives.StringSegment
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

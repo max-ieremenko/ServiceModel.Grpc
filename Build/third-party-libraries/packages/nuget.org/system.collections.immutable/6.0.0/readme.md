@@ -1,4 +1,4 @@
-System.Collections.Immutable [6.0.0](https://www.nuget.org/packages/System.Collections.Immutable/6.0.0)
+﻿System.Collections.Immutable [6.0.0](https://www.nuget.org/packages/System.Collections.Immutable/6.0.0)
 --------------------
 
 Used by: MemoryPack
@@ -32,11 +32,6 @@ System.Collections.Immutable.ImmutableSortedSet
 System.Collections.Immutable.ImmutableSortedSet<T>
 System.Collections.Immutable.ImmutableStack
 System.Collections.Immutable.ImmutableStack<T>
-
-Remarks
------------
-no remarks
-
 
 Dependencies 2
 -----------

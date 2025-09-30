@@ -1,4 +1,4 @@
-Microsoft.NET.Test.Sdk [17.14.1](https://www.nuget.org/packages/Microsoft.NET.Test.Sdk/17.14.1)
+﻿Microsoft.NET.Test.Sdk [17.14.1](https://www.nuget.org/packages/Microsoft.NET.Test.Sdk/17.14.1)
 --------------------
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal
@@ -14,11 +14,6 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 The MSbuild targets and properties for building .NET test projects.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 2
 -----------

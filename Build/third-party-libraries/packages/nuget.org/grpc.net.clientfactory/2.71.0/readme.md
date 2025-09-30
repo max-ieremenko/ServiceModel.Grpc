@@ -1,4 +1,4 @@
-Grpc.Net.ClientFactory [2.71.0](https://www.nuget.org/packages/Grpc.Net.ClientFactory/2.71.0)
+﻿Grpc.Net.ClientFactory [2.71.0](https://www.nuget.org/packages/Grpc.Net.ClientFactory/2.71.0)
 --------------------
 
 Used by: ClientDI
@@ -14,11 +14,6 @@ License: [Apache-2.0](../../../../licenses/apache-2.0)
 Description
 -----------
 HttpClientFactory integration the for gRPC .NET client
-
-Remarks
------------
-no remarks
-
 
 Dependencies 2
 -----------

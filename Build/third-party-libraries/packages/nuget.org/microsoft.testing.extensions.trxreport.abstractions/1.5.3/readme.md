@@ -1,4 +1,4 @@
-Microsoft.Testing.Extensions.TrxReport.Abstractions [1.5.3](https://www.nuget.org/packages/Microsoft.Testing.Extensions.TrxReport.Abstractions/1.5.3)
+﻿Microsoft.Testing.Extensions.TrxReport.Abstractions [1.5.3](https://www.nuget.org/packages/Microsoft.Testing.Extensions.TrxReport.Abstractions/1.5.3)
 --------------------
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal
@@ -14,11 +14,6 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 Package Description
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

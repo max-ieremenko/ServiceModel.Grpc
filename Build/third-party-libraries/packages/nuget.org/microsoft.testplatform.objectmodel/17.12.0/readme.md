@@ -1,4 +1,4 @@
-Microsoft.TestPlatform.ObjectModel [17.12.0](https://www.nuget.org/packages/Microsoft.TestPlatform.ObjectModel/17.12.0)
+﻿Microsoft.TestPlatform.ObjectModel [17.12.0](https://www.nuget.org/packages/Microsoft.TestPlatform.ObjectModel/17.12.0)
 --------------------
 
 Used by: ClientDI internal, Core internal, DesignTime internal, Emit internal, SelfHost internal
@@ -14,11 +14,6 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 The Microsoft Test Platform Object Model.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 2
 -----------

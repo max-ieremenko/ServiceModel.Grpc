@@ -1,4 +1,4 @@
-System.IdentityModel.Tokens.Jwt [7.1.2](https://www.nuget.org/packages/System.IdentityModel.Tokens.Jwt/7.1.2)
+﻿System.IdentityModel.Tokens.Jwt [7.1.2](https://www.nuget.org/packages/System.IdentityModel.Tokens.Jwt/7.1.2)
 --------------------
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal
@@ -14,11 +14,6 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 Includes types that provide support for creating, serializing and validating JSON Web Tokens. As of IdentityModel 7x, this is a legacy tool that should be replaced with Microsoft.IdentityModel.JsonWebTokens.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 2
 -----------

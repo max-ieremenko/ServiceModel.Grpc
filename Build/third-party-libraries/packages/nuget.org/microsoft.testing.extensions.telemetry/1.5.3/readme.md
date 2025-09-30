@@ -1,4 +1,4 @@
-Microsoft.Testing.Extensions.Telemetry [1.5.3](https://www.nuget.org/packages/Microsoft.Testing.Extensions.Telemetry/1.5.3)
+﻿Microsoft.Testing.Extensions.Telemetry [1.5.3](https://www.nuget.org/packages/Microsoft.Testing.Extensions.Telemetry/1.5.3)
 --------------------
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal
@@ -16,11 +16,6 @@ Description
 Microsoft Testing is a set of platform, framework and protocol intended to make it possible to run any test on any target or device.
 
 This package provides telemetry for the platform.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 2
 -----------

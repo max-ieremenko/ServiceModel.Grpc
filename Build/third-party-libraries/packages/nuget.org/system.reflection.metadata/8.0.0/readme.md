@@ -1,4 +1,4 @@
-System.Reflection.Metadata [8.0.0](https://www.nuget.org/packages/System.Reflection.Metadata/8.0.0)
+﻿System.Reflection.Metadata [8.0.0](https://www.nuget.org/packages/System.Reflection.Metadata/8.0.0)
 --------------------
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal
@@ -16,11 +16,6 @@ Description
 This package provides a low-level .NET (ECMA-335) metadata reader and writer. It's geared for performance and is the ideal choice for building higher-level libraries that intend to provide their own object model, such as compilers. The metadata format is defined by the ECMA-335 - Common Language Infrastructure (CLI) specification.
 
 The System.Reflection.Metadata library is built-in as part of the shared framework in .NET Runtime. The package can be installed when you need to use it in other target frameworks.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

@@ -1,4 +1,4 @@
-System.Memory [4.5.3](https://www.nuget.org/packages/System.Memory/4.5.3)
+﻿System.Memory [4.5.3](https://www.nuget.org/packages/System.Memory/4.5.3)
 --------------------
 
 Used by: Core, DesignTime, SelfHost
@@ -26,11 +26,6 @@ System.Buffers.Text.Utf8Formatter
  
 c6cf790234e063b855fcdb50f3fb1b3cfac73275 
 When using NuGet 3.x this package requires at least version 3.4.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 3
 -----------

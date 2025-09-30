@@ -1,4 +1,4 @@
-Microsoft.Extensions.FileProviders.Abstractions [8.0.0](https://www.nuget.org/packages/Microsoft.Extensions.FileProviders.Abstractions/8.0.0)
+﻿Microsoft.Extensions.FileProviders.Abstractions [8.0.0](https://www.nuget.org/packages/Microsoft.Extensions.FileProviders.Abstractions/8.0.0)
 --------------------
 
 Used by: AspNetCoreNSwag
@@ -19,11 +19,6 @@ Commonly Used Types:
 Microsoft.Extensions.FileProviders.IDirectoryContents
 Microsoft.Extensions.FileProviders.IFileInfo
 Microsoft.Extensions.FileProviders.IFileProvider
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

@@ -1,4 +1,4 @@
-Grpc.AspNetCore.Server [2.71.0](https://www.nuget.org/packages/Grpc.AspNetCore.Server/2.71.0)
+﻿Grpc.AspNetCore.Server [2.71.0](https://www.nuget.org/packages/Grpc.AspNetCore.Server/2.71.0)
 --------------------
 
 Used by: AspNetCore
@@ -14,11 +14,6 @@ License: [Apache-2.0](../../../../licenses/apache-2.0)
 Description
 -----------
 gRPC support for ASP.NET Core
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

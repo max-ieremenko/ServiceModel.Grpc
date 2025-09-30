@@ -1,4 +1,4 @@
-Swashbuckle.AspNetCore.Swagger [9.0.1](https://www.nuget.org/packages/Swashbuckle.AspNetCore.Swagger/9.0.1)
+﻿Swashbuckle.AspNetCore.Swagger [9.0.1](https://www.nuget.org/packages/Swashbuckle.AspNetCore.Swagger/9.0.1)
 --------------------
 
 Used by: AspNetCoreSwashbuckle
@@ -14,11 +14,6 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 Middleware to expose Swagger JSON endpoints from APIs built on ASP.NET Core
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

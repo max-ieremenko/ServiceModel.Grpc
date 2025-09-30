@@ -1,4 +1,4 @@
-System.Memory [4.6.0](https://www.nuget.org/packages/System.Memory/4.6.0)
+﻿System.Memory [4.6.0](https://www.nuget.org/packages/System.Memory/4.6.0)
 --------------------
 
 Used by: ClientDI internal, Core internal, DesignTime internal, Emit internal, NerdbankMessagePack, SelfHost internal
@@ -14,11 +14,6 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 System.Memory
-
-Remarks
------------
-no remarks
-
 
 Dependencies 3
 -----------

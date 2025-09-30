@@ -1,4 +1,4 @@
-Microsoft.ApplicationInsights [2.22.0](https://www.nuget.org/packages/Microsoft.ApplicationInsights/2.22.0)
+﻿Microsoft.ApplicationInsights [2.22.0](https://www.nuget.org/packages/Microsoft.ApplicationInsights/2.22.0)
 --------------------
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal
@@ -14,11 +14,6 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 Application Insights Base API. This package provides core functionality for transmission of all Application Insights Telemetry Types and is a dependent package for all other Application Insights packages. Please install the platform specific package for the best experience. Privacy statement: https://go.microsoft.com/fwlink/?LinkId=512156
-
-Remarks
------------
-no remarks
-
 
 Dependencies 2
 -----------

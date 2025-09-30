@@ -1,4 +1,4 @@
-NSwag.Generation.AspNetCore [14.4.0](https://www.nuget.org/packages/NSwag.Generation.AspNetCore/14.4.0)
+﻿NSwag.Generation.AspNetCore [14.4.0](https://www.nuget.org/packages/NSwag.Generation.AspNetCore/14.4.0)
 --------------------
 
 Used by: AspNetCoreNSwag
@@ -14,11 +14,6 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 NSwag: The OpenAPI/Swagger API toolchain for .NET and TypeScript
-
-Remarks
------------
-no remarks
-
 
 Dependencies 3
 -----------

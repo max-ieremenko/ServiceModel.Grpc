@@ -1,4 +1,4 @@
-MessagePack [3.1.4](https://www.nuget.org/packages/MessagePack/3.1.4)
+﻿MessagePack [3.1.4](https://www.nuget.org/packages/MessagePack/3.1.4)
 --------------------
 
 Used by: MessagePack
@@ -14,11 +14,6 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 Extremely Fast MessagePack(MsgPack) Serializer for C# (.NET Framework, .NET 6, Unity, Xamarin).
-
-Remarks
------------
-no remarks
-
 
 Dependencies 2
 -----------

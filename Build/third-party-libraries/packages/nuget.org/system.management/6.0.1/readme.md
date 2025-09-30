@@ -1,4 +1,4 @@
-System.Management [6.0.1](https://www.nuget.org/packages/System.Management/6.0.1)
+﻿System.Management [6.0.1](https://www.nuget.org/packages/System.Management/6.0.1)
 --------------------
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal
@@ -19,11 +19,6 @@ Commonly Used Types:
 System.Management.ManagementClass
 System.Management.ManagementObject
 System.Management.SelectQuery
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

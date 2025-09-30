@@ -1,4 +1,4 @@
-Castle.Core [5.1.1](https://www.nuget.org/packages/Castle.Core/5.1.1)
+﻿Castle.Core [5.1.1](https://www.nuget.org/packages/Castle.Core/5.1.1)
 --------------------
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal
@@ -14,11 +14,6 @@ License: [Apache-2.0](../../../../licenses/apache-2.0)
 Description
 -----------
 Castle Core, including DynamicProxy, Logging Abstractions and DictionaryAdapter
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

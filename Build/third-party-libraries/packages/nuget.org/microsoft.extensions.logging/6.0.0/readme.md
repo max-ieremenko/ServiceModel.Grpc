@@ -1,4 +1,4 @@
-Microsoft.Extensions.Logging [6.0.0](https://www.nuget.org/packages/Microsoft.Extensions.Logging/6.0.0)
+﻿Microsoft.Extensions.Logging [6.0.0](https://www.nuget.org/packages/Microsoft.Extensions.Logging/6.0.0)
 --------------------
 
 Used by: ClientDI
@@ -14,11 +14,6 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 Logging infrastructure default implementation for Microsoft.Extensions.Logging.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 5
 -----------
