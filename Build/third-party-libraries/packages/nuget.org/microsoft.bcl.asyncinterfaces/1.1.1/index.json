@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/max-ieremenko/ThirdPartyLibraries/refs/heads/master/Docs/schema.package-index.json",
   "Source": "https://api.nuget.org/v3/index.json",
   "License": {
     "Code": "MIT",
@@ -25,7 +26,6 @@
     },
     {
       "Subject": "project",
-      "Code": null,
       "HRef": "https://github.com/dotnet/corefx",
       "Description": "License should be verified on https://github.com/dotnet/corefx"
     }

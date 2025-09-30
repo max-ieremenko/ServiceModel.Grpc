@@ -1,4 +1,4 @@
-Microsoft.TestPlatform.TestHost [17.14.1](https://www.nuget.org/packages/Microsoft.TestPlatform.TestHost/17.14.1)
+﻿Microsoft.TestPlatform.TestHost [17.14.1](https://www.nuget.org/packages/Microsoft.TestPlatform.TestHost/17.14.1)
 --------------------
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal
@@ -14,11 +14,6 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 Testplatform host executes the test using specified adapter.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 2
 -----------

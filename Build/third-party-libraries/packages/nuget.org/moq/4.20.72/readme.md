@@ -1,4 +1,4 @@
-Moq [4.20.72](https://www.nuget.org/packages/Moq/4.20.72)
+﻿Moq [4.20.72](https://www.nuget.org/packages/Moq/4.20.72)
 --------------------
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal
@@ -14,11 +14,6 @@ License: [BSD-3-Clause](../../../../licenses/bsd-3-clause)
 Description
 -----------
 Moq is the most popular and friendly mocking framework for .NET.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

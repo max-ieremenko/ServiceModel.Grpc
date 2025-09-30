@@ -1,4 +1,4 @@
-Microsoft.Extensions.Http [6.0.0](https://www.nuget.org/packages/Microsoft.Extensions.Http/6.0.0)
+﻿Microsoft.Extensions.Http [6.0.0](https://www.nuget.org/packages/Microsoft.Extensions.Http/6.0.0)
 --------------------
 
 Used by: ClientDI
@@ -17,11 +17,6 @@ The HttpClient factory is a pattern for configuring and retrieving named HttpCli
 
 Commonly Used Types:
 System.Net.Http.IHttpClientFactory
-
-Remarks
------------
-no remarks
-
 
 Dependencies 4
 -----------

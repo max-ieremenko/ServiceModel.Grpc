@@ -1,4 +1,4 @@
-Microsoft.Bcl.AsyncInterfaces [6.0.0](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/6.0.0)
+﻿Microsoft.Bcl.AsyncInterfaces [6.0.0](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/6.0.0)
 --------------------
 
 Used by: ClientDI
@@ -19,11 +19,6 @@ Commonly Used Types:
 System.IAsyncDisposable
 System.Collections.Generic.IAsyncEnumerable
 System.Collections.Generic.IAsyncEnumerator
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

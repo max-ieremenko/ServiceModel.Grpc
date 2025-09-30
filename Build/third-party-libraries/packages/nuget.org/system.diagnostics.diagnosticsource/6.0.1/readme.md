@@ -1,4 +1,4 @@
-System.Diagnostics.DiagnosticSource [6.0.1](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/6.0.1)
+﻿System.Diagnostics.DiagnosticSource [6.0.1](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/6.0.1)
 --------------------
 
 Used by: ClientDI, Core internal, DesignTime internal, Emit internal, SelfHost internal
@@ -18,11 +18,6 @@ Provides Classes that allow you to decouple code logging rich (unserializable) d
 Commonly Used Types:
 System.Diagnostics.DiagnosticListener
 System.Diagnostics.DiagnosticSource
-
-Remarks
------------
-no remarks
-
 
 Dependencies 4
 -----------

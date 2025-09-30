@@ -1,4 +1,4 @@
-NJsonSchema.NewtonsoftJson [11.3.2](https://www.nuget.org/packages/NJsonSchema.NewtonsoftJson/11.3.2)
+﻿NJsonSchema.NewtonsoftJson [11.3.2](https://www.nuget.org/packages/NJsonSchema.NewtonsoftJson/11.3.2)
 --------------------
 
 Used by: AspNetCoreNSwag
@@ -14,11 +14,6 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 JSON Schema reader, generator and validator for .NET
-
-Remarks
------------
-no remarks
-
 
 Dependencies 2
 -----------

@@ -1,4 +1,4 @@
-Microsoft.Extensions.FileProviders.Embedded [9.0.0](https://www.nuget.org/packages/Microsoft.Extensions.FileProviders.Embedded/9.0.0)
+﻿Microsoft.Extensions.FileProviders.Embedded [9.0.0](https://www.nuget.org/packages/Microsoft.Extensions.FileProviders.Embedded/9.0.0)
 --------------------
 
 Used by: AspNetCoreNSwag
@@ -16,11 +16,6 @@ Description
 File provider for files in embedded resources for Microsoft.Extensions.FileProviders.
 
 This package was built from the source code at https://github.com/dotnet/aspnetcore/tree/af22effae4069a5dfb9b0735859de48820104f5b
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

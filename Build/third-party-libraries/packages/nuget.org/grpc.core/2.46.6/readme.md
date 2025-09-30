@@ -1,4 +1,4 @@
-Grpc.Core [2.46.6](https://www.nuget.org/packages/Grpc.Core/2.46.6)
+﻿Grpc.Core [2.46.6](https://www.nuget.org/packages/Grpc.Core/2.46.6)
 --------------------
 
 Used by: Core internal, SelfHost
@@ -17,11 +17,6 @@ C# implementation of gRPC based on native gRPC C-core library.
 
 Note that the Grpc.Core implementation of gRPC for C# is in maintenance mode and will be replaced by grpc-dotnet in the future.
 See https://grpc.io/blog/grpc-csharp-future/ for details.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 2
 -----------

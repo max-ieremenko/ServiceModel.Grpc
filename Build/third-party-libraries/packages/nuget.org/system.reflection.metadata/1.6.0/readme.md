@@ -1,4 +1,4 @@
-System.Reflection.Metadata [1.6.0](https://www.nuget.org/packages/System.Reflection.Metadata/1.6.0)
+﻿System.Reflection.Metadata [1.6.0](https://www.nuget.org/packages/System.Reflection.Metadata/1.6.0)
 --------------------
 
 Used by: ClientDI internal, Core internal, Emit internal, SelfHost internal
@@ -23,11 +23,6 @@ System.Reflection.PortableExecutable.ManagedPEBuilder
  
 30ab651fcb4354552bd4891619a0bdd81e0ebdbf 
 When using NuGet 3.x this package requires at least version 3.4.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 2
 -----------

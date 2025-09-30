@@ -1,4 +1,4 @@
-System.Memory [4.5.5](https://www.nuget.org/packages/System.Memory/4.5.5)
+﻿System.Memory [4.5.5](https://www.nuget.org/packages/System.Memory/4.5.5)
 --------------------
 
 Used by: MessagePack, ProtoBuf
@@ -26,11 +26,6 @@ System.Buffers.Text.Utf8Formatter
  
 32b491939fbd125f304031c35038b1e14b4e3958 
 When using NuGet 3.x this package requires at least version 3.4.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 4
 -----------

@@ -1,4 +1,4 @@
-Swashbuckle.AspNetCore.Annotations [9.0.1](https://www.nuget.org/packages/Swashbuckle.AspNetCore.Annotations/9.0.1)
+﻿Swashbuckle.AspNetCore.Annotations [9.0.1](https://www.nuget.org/packages/Swashbuckle.AspNetCore.Annotations/9.0.1)
 --------------------
 
 Used by: AspNetCoreSwashbuckle internal
@@ -14,11 +14,6 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 Provides custom attributes that can be applied to controllers, actions and models to enrich the generated Swagger
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

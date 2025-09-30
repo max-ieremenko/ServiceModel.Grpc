@@ -1,4 +1,4 @@
-Microsoft.CodeAnalysis.Common [4.0.1](https://www.nuget.org/packages/Microsoft.CodeAnalysis.Common/4.0.1)
+﻿Microsoft.CodeAnalysis.Common [4.0.1](https://www.nuget.org/packages/Microsoft.CodeAnalysis.Common/4.0.1)
 --------------------
 
 Used by: DesignTime
@@ -18,11 +18,6 @@ A shared package used by the Microsoft .NET Compiler Platform ("Roslyn").
     
       More details at https://aka.ms/roslyn-packages
       This package was built from the source at https://github.com/dotnet/roslyn/commit/b3e69109341a1017423af7981b8b84b646f5bcce.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 10
 -----------

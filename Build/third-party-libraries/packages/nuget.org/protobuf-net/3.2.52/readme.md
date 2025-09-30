@@ -1,4 +1,4 @@
-protobuf-net [3.2.52](https://www.nuget.org/packages/protobuf-net/3.2.52)
+﻿protobuf-net [3.2.52](https://www.nuget.org/packages/protobuf-net/3.2.52)
 --------------------
 
 Used by: ProtoBuf
@@ -14,11 +14,6 @@ License: [Apache-2.0](../../../../licenses/apache-2.0)
 Description
 -----------
 Provides simple access to fast and efficient "Protocol Buffers" serialization from .NET applications
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

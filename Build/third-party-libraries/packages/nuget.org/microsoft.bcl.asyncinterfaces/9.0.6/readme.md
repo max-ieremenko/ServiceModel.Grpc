@@ -1,4 +1,4 @@
-Microsoft.Bcl.AsyncInterfaces [9.0.6](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/9.0.6)
+﻿Microsoft.Bcl.AsyncInterfaces [9.0.6](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/9.0.6)
 --------------------
 
 Used by: Core internal
@@ -14,11 +14,6 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 Provides the IAsyncEnumerable<T> and IAsyncDisposable interfaces and helper types for .NET Standard 2.0. This package is not required starting with .NET Standard 2.1 and .NET Core 3.0.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

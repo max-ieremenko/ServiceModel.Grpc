@@ -1,4 +1,4 @@
-Microsoft.AspNetCore.Authentication.JwtBearer [8.0.12](https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.JwtBearer/8.0.12)
+﻿Microsoft.AspNetCore.Authentication.JwtBearer [8.0.12](https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.JwtBearer/8.0.12)
 --------------------
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal
@@ -16,11 +16,6 @@ Description
 ASP.NET Core middleware that enables an application to receive an OpenID Connect bearer token.
 
 This package was built from the source code at https://github.com/dotnet/aspnetcore/tree/31d685b2d9a86ca1243014d175a3da813f78e428
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

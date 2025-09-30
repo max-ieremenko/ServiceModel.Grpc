@@ -1,4 +1,4 @@
-MemoryPack [1.21.4](https://www.nuget.org/packages/MemoryPack/1.21.4)
+﻿MemoryPack [1.21.4](https://www.nuget.org/packages/MemoryPack/1.21.4)
 --------------------
 
 Used by: MemoryPack
@@ -14,11 +14,6 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 Zero encoding extreme performance binary serializer for C#.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

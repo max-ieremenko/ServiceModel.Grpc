@@ -1,4 +1,4 @@
-System.Net.Http.WinHttpHandler [8.0.0](https://www.nuget.org/packages/System.Net.Http.WinHttpHandler/8.0.0)
+﻿System.Net.Http.WinHttpHandler [8.0.0](https://www.nuget.org/packages/System.Net.Http.WinHttpHandler/8.0.0)
 --------------------
 
 Used by: Core internal
@@ -17,11 +17,6 @@ Provides a message handler for HttpClient based on the WinHTTP interface of Wind
 
 Commonly Used Types:
 System.Net.Http.WinHttpHandler
-
-Remarks
------------
-no remarks
-
 
 Dependencies 2
 -----------
