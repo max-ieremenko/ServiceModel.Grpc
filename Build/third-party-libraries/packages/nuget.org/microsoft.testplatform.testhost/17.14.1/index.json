@@ -20,7 +20,7 @@
         },
         {
           "Name": "Newtonsoft.Json",
-          "Version": "13.0.3"
+          "Version": "13.0.4"
         }
       ]
     },
@@ -38,7 +38,7 @@
         },
         {
           "Name": "Newtonsoft.Json",
-          "Version": "13.0.3"
+          "Version": "13.0.4"
         }
       ]
     },
@@ -56,7 +56,7 @@
         },
         {
           "Name": "Newtonsoft.Json",
-          "Version": "13.0.3"
+          "Version": "13.0.4"
         }
       ]
     },
@@ -75,7 +75,7 @@
         },
         {
           "Name": "Newtonsoft.Json",
-          "Version": "13.0.3"
+          "Version": "13.0.4"
         }
       ]
     },
@@ -94,7 +94,7 @@
         },
         {
           "Name": "Newtonsoft.Json",
-          "Version": "13.0.3"
+          "Version": "13.0.4"
         }
       ]
     },
@@ -113,7 +113,7 @@
         },
         {
           "Name": "Newtonsoft.Json",
-          "Version": "13.0.3"
+          "Version": "13.0.4"
         }
       ]
     },
@@ -132,7 +132,7 @@
         },
         {
           "Name": "Newtonsoft.Json",
-          "Version": "13.0.3"
+          "Version": "13.0.4"
         }
       ]
     },
@@ -150,7 +150,7 @@
         },
         {
           "Name": "Newtonsoft.Json",
-          "Version": "13.0.3"
+          "Version": "13.0.4"
         }
       ]
     },
@@ -168,7 +168,7 @@
         },
         {
           "Name": "Newtonsoft.Json",
-          "Version": "13.0.3"
+          "Version": "13.0.4"
         }
       ]
     },
@@ -186,7 +186,7 @@
         },
         {
           "Name": "Newtonsoft.Json",
-          "Version": "13.0.3"
+          "Version": "13.0.4"
         }
       ]
     },
@@ -205,7 +205,7 @@
         },
         {
           "Name": "Newtonsoft.Json",
-          "Version": "13.0.3"
+          "Version": "13.0.4"
         }
       ]
     }

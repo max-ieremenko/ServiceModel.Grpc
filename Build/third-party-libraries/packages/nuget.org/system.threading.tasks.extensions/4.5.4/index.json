@@ -20,10 +20,6 @@
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
           "Version": "6.0.0"
-        },
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.1.0"
         }
       ]
     },
@@ -44,7 +40,11 @@
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.1.0"
+          "Version": "5.0.0"
+        },
+        {
+          "Name": "System.Runtime.CompilerServices.Unsafe",
+          "Version": "6.0.0"
         }
       ]
     },
@@ -64,7 +64,7 @@
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.1.0"
+          "Version": "6.0.0"
         }
       ]
     },
@@ -79,7 +79,7 @@
       "Dependencies": [
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.1.0"
+          "Version": "6.0.0"
         }
       ]
     },
@@ -124,7 +124,7 @@
       "Dependencies": [
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.1.0"
+          "Version": "6.0.0"
         }
       ]
     }

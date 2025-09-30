@@ -1,7 +1,7 @@
 ﻿System.Buffers [4.5.1](https://www.nuget.org/packages/System.Buffers/4.5.1)
 --------------------
 
-Used by: ClientDI, DesignTime, MemoryPack, MessagePack, ProtoBuf
+Used by: ClientDI, Core internal, DesignTime, Emit internal, MemoryPack, MessagePack, ProtoBuf, SelfHost internal
 
 Target frameworks: net462, net8.0, net9.0, netstandard2.0, netstandard2.1
 

@@ -1,7 +1,7 @@
 ﻿System.Runtime.CompilerServices.Unsafe [6.0.0](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/6.0.0)
 --------------------
 
-Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI, DesignTime internal, MemoryPack, MessagePack, ProtoBuf
+Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI, Core internal, DesignTime internal, Emit internal, MemoryPack, MessagePack, ProtoBuf, SelfHost internal
 
 Target frameworks: net462, net8.0, net9.0, netstandard2.0, netstandard2.1
 
