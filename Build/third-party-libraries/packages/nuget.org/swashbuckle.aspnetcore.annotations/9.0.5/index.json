@@ -16,7 +16,7 @@
       "Dependencies": [
         {
           "Name": "Swashbuckle.AspNetCore.SwaggerGen",
-          "Version": "9.0.1"
+          "Version": "9.0.5"
         }
       ]
     }
