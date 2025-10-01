@@ -19,7 +19,7 @@
       "Dependencies": [
         {
           "Name": "protobuf-net.Core",
-          "Version": "3.2.52"
+          "Version": "3.2.56"
         }
       ]
     }
