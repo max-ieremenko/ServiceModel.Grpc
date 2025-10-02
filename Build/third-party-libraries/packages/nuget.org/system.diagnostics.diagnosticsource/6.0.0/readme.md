@@ -1,4 +1,4 @@
-System.Diagnostics.DiagnosticSource [6.0.0](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/6.0.0)
+﻿System.Diagnostics.DiagnosticSource [6.0.0](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/6.0.0)
 --------------------
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI, DesignTime internal
@@ -18,11 +18,6 @@ Provides Classes that allow you to decouple code logging rich (unserializable) d
 Commonly Used Types:
 System.Diagnostics.DiagnosticListener
 System.Diagnostics.DiagnosticSource
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

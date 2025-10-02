@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/max-ieremenko/ThirdPartyLibraries/refs/heads/master/Docs/schema.package-index.json",
   "Source": "https://api.nuget.org/v3/index.json",
   "License": {
     "Code": "MIT",
@@ -19,10 +20,6 @@
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
           "Version": "6.0.0"
-        },
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.1.0"
         }
       ]
     },
@@ -43,7 +40,11 @@
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.1.0"
+          "Version": "5.0.0"
+        },
+        {
+          "Name": "System.Runtime.CompilerServices.Unsafe",
+          "Version": "6.0.0"
         }
       ]
     },
@@ -63,7 +64,7 @@
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.1.0"
+          "Version": "6.0.0"
         }
       ]
     },
@@ -78,7 +79,7 @@
       "Dependencies": [
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.1.0"
+          "Version": "6.0.0"
         }
       ]
     },
@@ -123,7 +124,7 @@
       "Dependencies": [
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.1.0"
+          "Version": "6.0.0"
         }
       ]
     }

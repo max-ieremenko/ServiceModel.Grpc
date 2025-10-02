@@ -21,5 +21,6 @@ namespace ServiceModel.Grpc.Domain;
 [GenerateShapeFor<TestMessage<int?>>]
 [GenerateShapeFor<TestMessage<int?, string>>]
 [GenerateShapeFor<TestMessage<int?, string, decimal?>>]
+[GenerateShapeFor<TestMessage<int?, string, decimal?, byte>>]
 [GenerateShapeFor<byte>]
 internal sealed partial class Witness;

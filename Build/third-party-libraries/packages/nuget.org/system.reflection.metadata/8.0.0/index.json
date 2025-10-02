@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/max-ieremenko/ThirdPartyLibraries/refs/heads/master/Docs/schema.package-index.json",
   "Source": "https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-public/nuget/v3/index.json",
   "License": {
     "Code": "MIT",

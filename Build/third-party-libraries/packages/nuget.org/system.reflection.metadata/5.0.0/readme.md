@@ -1,4 +1,4 @@
-System.Reflection.Metadata [5.0.0](https://www.nuget.org/packages/System.Reflection.Metadata/5.0.0)
+﻿System.Reflection.Metadata [5.0.0](https://www.nuget.org/packages/System.Reflection.Metadata/5.0.0)
 --------------------
 
 Used by: DesignTime
@@ -23,11 +23,6 @@ System.Reflection.PortableExecutable.PEBuilder
 System.Reflection.PortableExecutable.ManagedPEBuilder
  
 When using NuGet 3.x this package requires at least version 3.4.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

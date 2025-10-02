@@ -1,4 +1,4 @@
-Shouldly [4.3.0](https://www.nuget.org/packages/Shouldly/4.3.0)
+﻿Shouldly [4.3.0](https://www.nuget.org/packages/Shouldly/4.3.0)
 --------------------
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal
@@ -14,11 +14,6 @@ License: [BSD-3-Clause](../../../../licenses/bsd-3-clause)
 Description
 -----------
 Shouldly - Assertion framework for .NET. The way asserting *Should* be
-
-Remarks
------------
-no remarks
-
 
 Dependencies 2
 -----------

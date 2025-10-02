@@ -1,0 +1,35 @@
+{
+  "$schema": "https://raw.githubusercontent.com/max-ieremenko/ThirdPartyLibraries/refs/heads/master/Docs/schema.package-index.json",
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "NerdbankMessagePack",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "netstandard2.0"
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT"
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/eiriktsarpalis/PolyType"
+    },
+    {
+      "Subject": "project",
+      "HRef": "https://eiriktsarpalis.github.io/PolyType/"
+    }
+  ]
+}

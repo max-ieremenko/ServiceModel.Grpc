@@ -1,4 +1,4 @@
-System.Threading.Tasks.Extensions [4.5.4](https://www.nuget.org/packages/System.Threading.Tasks.Extensions/4.5.4)
+﻿System.Threading.Tasks.Extensions [4.5.4](https://www.nuget.org/packages/System.Threading.Tasks.Extensions/4.5.4)
 --------------------
 
 Used by: ClientDI, Core, DesignTime, Emit internal, MessagePack, NerdbankMessagePack, SelfHost internal
@@ -18,11 +18,6 @@ Commonly Used Types:
 System.Threading.Tasks.ValueTask<TResult>
  
 7601f4f6225089ffb291dc7d58293c7bbf5c5d4f
-
-Remarks
------------
-no remarks
-
 
 Dependencies 4
 -----------

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>NSwag.Core</id>
+    <version>14.6.1</version>
+    <authors>Rico Suter</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>NuGetIcon.png</icon>
+    <projectUrl>http://nswag.org/</projectUrl>
+    <description>NSwag: The OpenAPI/Swagger API toolchain for .NET and TypeScript</description>
+    <copyright>Copyright © Rico Suter, 2025</copyright>
+    <tags>OpenAPI Swagger AspNetCore Documentation CodeGen TypeScript WebApi AspNet</tags>
+    <repository type="git" url="https://github.com/RicoSuter/NSwag.git" commit="3bf55b162311566c87f51d282105867d057777de" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.6.2">
+        <dependency id="NJsonSchema" version="11.5.1" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net8.0">
+        <dependency id="NJsonSchema" version="11.5.1" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="NJsonSchema" version="11.5.1" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

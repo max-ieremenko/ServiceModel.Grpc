@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.TestPlatform.AdapterUtilities</id>
+    <version>17.13.0</version>
+    <authors>Microsoft</authors>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>Icon.png</icon>
+    <projectUrl>https://github.com/microsoft/vstest</projectUrl>
+    <description>Includes helpers for the Test Platform's modern functionality such as standardized fully qualified names and hierarchical test case names.</description>
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <tags>vstest visual-studio unittest testplatform mstest microsoft test testing</tags>
+    <serviceable>true</serviceable>
+    <repository type="git" url="https://github.com/microsoft/vstest" commit="e8cf3808d0b16dea8d6e1a9b77f1660a5ff45e13" />
+    <dependencies>
+      <group targetFramework=".NETStandard2.0" />
+      <group targetFramework=".NETFramework4.6.2" />
+      <group targetFramework="net6.0" />
+      <group targetFramework="net8.0" />
+      <group targetFramework="net9.0" />
+    </dependencies>
+  </metadata>
+</package>

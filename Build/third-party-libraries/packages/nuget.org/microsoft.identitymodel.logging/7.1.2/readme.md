@@ -1,4 +1,4 @@
-Microsoft.IdentityModel.Logging [7.1.2](https://www.nuget.org/packages/Microsoft.IdentityModel.Logging/7.1.2)
+﻿Microsoft.IdentityModel.Logging [7.1.2](https://www.nuget.org/packages/Microsoft.IdentityModel.Logging/7.1.2)
 --------------------
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal
@@ -14,11 +14,6 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 Includes Event Source based logging support.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

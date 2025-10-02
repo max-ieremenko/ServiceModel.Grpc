@@ -1,4 +1,4 @@
-System.Text.Encodings.Web [8.0.0](https://www.nuget.org/packages/System.Text.Encodings.Web/8.0.0)
+﻿System.Text.Encodings.Web [8.0.0](https://www.nuget.org/packages/System.Text.Encodings.Web/8.0.0)
 --------------------
 
 Used by: NerdbankMessagePack
@@ -19,11 +19,6 @@ Commonly Used Types:
 System.Text.Encodings.Web.HtmlEncoder
 System.Text.Encodings.Web.UrlEncoder
 System.Text.Encodings.Web.JavaScriptEncoder
-
-Remarks
------------
-no remarks
-
 
 Dependencies 3
 -----------

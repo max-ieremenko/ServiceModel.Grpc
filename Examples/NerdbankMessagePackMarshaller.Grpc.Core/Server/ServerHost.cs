@@ -5,6 +5,7 @@ using Contract;
 using Grpc.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Server.Services;
 using ServiceModel.Grpc.Configuration;
 using ServiceModel.Grpc.Interceptors;
@@ -19,6 +20,9 @@ internal sealed class ServerHost : IHostedService
 
     public ServerHost(IServiceProvider serviceProvider)
     {
+        // redirect Grpc.Core.Logging to Microsoft.Extensions.Logging
+        GrpcEnvironment.SetLogger(new GrpcCoreLogger(serviceProvider.GetRequiredService<ILoggerFactory>()));
+
         _server = new()
         {
             Ports = { new ServerPort("localhost", Port, ServerCredentials.Insecure) }

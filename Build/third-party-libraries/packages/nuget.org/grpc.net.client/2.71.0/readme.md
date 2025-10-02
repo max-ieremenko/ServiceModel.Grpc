@@ -1,4 +1,4 @@
-Grpc.Net.Client [2.71.0](https://www.nuget.org/packages/Grpc.Net.Client/2.71.0)
+﻿Grpc.Net.Client [2.71.0](https://www.nuget.org/packages/Grpc.Net.Client/2.71.0)
 --------------------
 
 Used by: ClientDI, Core internal
@@ -14,11 +14,6 @@ License: [Apache-2.0](../../../../licenses/apache-2.0)
 Description
 -----------
 .NET client for gRPC
-
-Remarks
------------
-no remarks
-
 
 Dependencies 2
 -----------

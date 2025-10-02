@@ -1,4 +1,4 @@
-System.Reflection.Emit [4.7.0](https://www.nuget.org/packages/System.Reflection.Emit/4.7.0)
+﻿System.Reflection.Emit [4.7.0](https://www.nuget.org/packages/System.Reflection.Emit/4.7.0)
 --------------------
 
 Used by: Emit, MessagePack, ProtoBuf
@@ -27,11 +27,6 @@ System.Reflection.Emit.AssemblyBuilderAccess
 System.Reflection.Emit.EventBuilder
  
 When using NuGet 3.x this package requires at least version 3.4.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------

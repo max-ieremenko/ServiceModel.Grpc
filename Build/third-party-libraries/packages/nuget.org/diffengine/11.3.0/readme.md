@@ -1,4 +1,4 @@
-DiffEngine [11.3.0](https://www.nuget.org/packages/DiffEngine/11.3.0)
+﻿DiffEngine [11.3.0](https://www.nuget.org/packages/DiffEngine/11.3.0)
 --------------------
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal
@@ -14,11 +14,6 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 Launches diff tools based on file extensions. Designed to be consumed by snapshot testing libraries.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 2
 -----------

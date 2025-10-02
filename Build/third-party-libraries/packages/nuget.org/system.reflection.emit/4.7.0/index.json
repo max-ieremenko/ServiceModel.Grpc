@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/max-ieremenko/ThirdPartyLibraries/refs/heads/master/Docs/schema.package-index.json",
   "Source": "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\",
   "License": {
     "Code": "MIT",

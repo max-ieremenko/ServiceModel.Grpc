@@ -20,6 +20,7 @@
     <Project Path="ServiceModel.Grpc.Interceptors.Test/ServiceModel.Grpc.Interceptors.Test.csproj" />
     <Project Path="ServiceModel.Grpc.MemoryPackMarshaller.Test/ServiceModel.Grpc.MemoryPackMarshaller.Test.csproj" />
     <Project Path="ServiceModel.Grpc.MessagePackMarshaller.Test/ServiceModel.Grpc.MessagePackMarshaller.Test.csproj" />
+    <Project Path="ServiceModel.Grpc.MessagePackMarshallers.Compatibility.Test/ServiceModel.Grpc.MessagePackMarshallers.Compatibility.Test.csproj" Id="3f30bea2-125f-45f7-9cea-15a59d0f1407" />
     <Project Path="ServiceModel.Grpc.Nerdbank.MessagePackMarshaller.Test/ServiceModel.Grpc.Nerdbank.MessagePackMarshaller.Test.csproj" Id="87b3cfec-586e-4e26-96b1-7bfd9909078b" />
     <Project Path="ServiceModel.Grpc.SelfHost.Test/ServiceModel.Grpc.SelfHost.Test.csproj" />
     <Project Path="ServiceModel.Grpc.Test/ServiceModel.Grpc.Test.csproj" />
