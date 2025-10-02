@@ -15,7 +15,7 @@
 // </copyright>
 
 using System.ComponentModel;
-using PolyType.Abstractions;
+using PolyType;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Configuration.Internal;
 

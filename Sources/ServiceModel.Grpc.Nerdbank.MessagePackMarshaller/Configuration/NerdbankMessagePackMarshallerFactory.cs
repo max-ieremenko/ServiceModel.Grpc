@@ -88,7 +88,7 @@ public sealed class NerdbankMessagePackMarshallerFactory : IMarshallerFactory
     /// <returns>NerdbankMessagePackMarshallerFactory instance.</returns>
     public static NerdbankMessagePackMarshallerFactory CreateWithTypeShapeProviderFrom<TShapeable>(MessagePackSerializer serializer)
         where TShapeable : IShapeable<TShapeable> =>
-        new(serializer, TShapeable.GetShape().Provider);
+        new(serializer, TShapeable.GetTypeShape().Provider);
 #endif
 
     /// <summary>

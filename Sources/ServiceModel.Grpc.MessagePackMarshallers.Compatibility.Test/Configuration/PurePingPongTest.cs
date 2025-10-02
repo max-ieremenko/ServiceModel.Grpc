@@ -124,7 +124,7 @@ public class PurePingPongTest
 
     [Test]
     [TestCaseSource(nameof(GetMessage4NullCases))]
-    public void Message4NullTest(Func<TestMessage<int?, string, double?, decimal?>> source)
+    public void Message4NullTest(Func<TestMessage<int?, string, double?, float?>> source)
     {
         var actual = source();
         actual.ShouldBeNull();
@@ -132,7 +132,7 @@ public class PurePingPongTest
 
     [Test]
     [TestCaseSource(nameof(GetMessage4ValueNullCases))]
-    public void Message4ValueNullTest(Func<TestMessage<int?, string, double?, decimal?>> source)
+    public void Message4ValueNullTest(Func<TestMessage<int?, string, double?, float?>> source)
     {
         var actual = source();
         actual.ShouldNotBeNull();
@@ -144,14 +144,14 @@ public class PurePingPongTest
 
     [Test]
     [TestCaseSource(nameof(GetMessage4Cases))]
-    public void Message4Test(Func<TestMessage<int?, string, double?, decimal?>> source)
+    public void Message4Test(Func<TestMessage<int?, string, double?, float?>> source)
     {
         var actual = source();
         actual.ShouldNotBeNull();
         actual.Value1.ShouldBe(10);
         actual.Value2.ShouldBe("foo");
         actual.Value3.ShouldBe(12.1);
-        actual.Value4.ShouldBe(14.2m);
+        actual.Value4.ShouldBe(14.2f);
     }
 
     private static IEnumerable<TestCaseData> GetMessageNullCases() => GetCases((TestMessage?)null);
@@ -176,11 +176,11 @@ public class PurePingPongTest
 
     private static IEnumerable<TestCaseData> GetMessage3Cases() => GetCases(new TestMessage<int?, string, double?>(10, "foo", 12.1));
 
-    private static IEnumerable<TestCaseData> GetMessage4NullCases() => GetCases((TestMessage<int?, string, double?, decimal?>?)null);
+    private static IEnumerable<TestCaseData> GetMessage4NullCases() => GetCases((TestMessage<int?, string, double?, float?>?)null);
 
-    private static IEnumerable<TestCaseData> GetMessage4ValueNullCases() => GetCases(new TestMessage<int?, string, double?, decimal?>());
+    private static IEnumerable<TestCaseData> GetMessage4ValueNullCases() => GetCases(new TestMessage<int?, string, double?, float?>());
 
-    private static IEnumerable<TestCaseData> GetMessage4Cases() => GetCases(new TestMessage<int?, string, double?, decimal?>(10, "foo", 12.1, 14.2m));
+    private static IEnumerable<TestCaseData> GetMessage4Cases() => GetCases(new TestMessage<int?, string, double?, float?>(10, "foo", 12.1, 14.2f));
 
     private static IEnumerable<TestCaseData> GetCases<T>(T? expected)
     {

@@ -16,7 +16,6 @@
 
 using System.Collections.Concurrent;
 using PolyType;
-using PolyType.Abstractions;
 
 namespace ServiceModel.Grpc.Configuration.Internal;
 
@@ -54,7 +53,7 @@ internal sealed class MessageTypeShapeProvider
 
         if (!_cache.TryGetFactory(type, out var factory))
         {
-            return UserProvider.GetShape(type);
+            return UserProvider.GetTypeShape(type);
         }
 
         return _shapeByType.GetOrAdd(type, factory.CreateShape(UserProvider));
