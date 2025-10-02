@@ -6,5 +6,5 @@ namespace Contract;
 public static class PolyTypes
 {
     // share access to the generated TypeShapeProvider of this assembly
-    public static ITypeShapeProvider TypeShapeProvider => ShapeProvider_Contract.Default;
+    public static ITypeShapeProvider TypeShapeProvider => TypeShapeProvider_Contract.Default;
 }

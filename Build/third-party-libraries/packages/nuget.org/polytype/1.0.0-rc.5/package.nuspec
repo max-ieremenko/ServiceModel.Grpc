@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>PolyType</id>
-    <version>0.56.1</version>
+    <version>1.0.0-rc.5</version>
     <authors>Eirik Tsarpalis</authors>
     <license type="expression">MIT</license>
     <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
@@ -10,12 +10,13 @@
     <readme>README.md</readme>
     <projectUrl>https://eiriktsarpalis.github.io/PolyType/</projectUrl>
     <description>Practical generic programming for C#</description>
-    <releaseNotes>https://github.com/eiriktsarpalis/PolyType/releases/tag/v0.56.1</releaseNotes>
+    <releaseNotes>https://github.com/eiriktsarpalis/PolyType/releases/tag/v1.0.0-rc.5</releaseNotes>
     <copyright>2024</copyright>
     <tags>generic programming, source generator, polytypic</tags>
-    <repository type="git" url="https://github.com/eiriktsarpalis/PolyType" commit="87921dc2d649b60c3d58b0c117f3a86236e539f9" />
+    <repository type="git" url="https://github.com/eiriktsarpalis/PolyType" commit="6aa30e3b4ab7d8516fb510526abf4884564d3d73" />
     <dependencies>
       <group targetFramework="net8.0" />
+      <group targetFramework="net9.0" />
       <group targetFramework=".NETStandard2.0">
         <dependency id="System.Memory" version="4.5.5" exclude="Build,Analyzers" />
         <dependency id="System.Reflection.Emit.Lightweight" version="4.7.0" exclude="Build,Analyzers" />

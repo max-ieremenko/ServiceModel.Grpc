@@ -52,7 +52,7 @@
 
     <PackageVersion Include="MemoryPack" Version="1.21.4" />
 
-    <PackageVersion Include="Nerdbank.MessagePack" Version="0.8.131-rc" />
+    <PackageVersion Include="Nerdbank.MessagePack" Version="0.10.63-rc" />
 
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.4" />
   </ItemGroup>

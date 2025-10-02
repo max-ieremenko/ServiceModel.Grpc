@@ -25,7 +25,7 @@
         },
         {
           "Name": "PolyType",
-          "Version": "0.56.1"
+          "Version": "1.0.0-rc.5"
         },
         {
           "Name": "System.IO.Pipelines",

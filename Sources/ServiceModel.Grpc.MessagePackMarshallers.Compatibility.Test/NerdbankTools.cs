@@ -27,7 +27,7 @@ internal static class NerdbankTools
 {
     public static readonly MessagePackSerializer Serializer = new() { PerfOverSchemaStability = true };
 
-    public static ITypeShapeProvider TypeShapeProvider => ShapeProvider_ServiceModel_Grpc_MessagePackMarshallers_Compatibility_Test.Default;
+    public static ITypeShapeProvider TypeShapeProvider => TypeShapeProvider_ServiceModel_Grpc_MessagePackMarshallers_Compatibility_Test.Default;
 
     public static byte[] Serialize<T>(T? value) => Serializer.Serialize(value, TypeShapeProvider);
 

@@ -36,7 +36,7 @@ internal sealed class MessagePropertyShape<TMessage, TProperty> : IMessageProper
 
     public IPropertyShape ToShape(ITypeShapeProvider provider, IObjectTypeShape<TMessage> declaringType)
     {
-        var propertyType = provider.GetShape(typeof(TProperty));
+        var propertyType = provider.GetTypeShape<TProperty>();
         if (propertyType == null)
         {
             throw new NotSupportedException($"This provider '{provider.GetType()}' had no type shape for '{typeof(TProperty)}'.");
@@ -47,7 +47,7 @@ internal sealed class MessagePropertyShape<TMessage, TProperty> : IMessageProper
             Position = _index,
             Name = "Value" + _index.ToString(CultureInfo.InvariantCulture),
             DeclaringType = declaringType,
-            PropertyType = (ITypeShape<TProperty>)propertyType,
+            PropertyType = propertyType,
             Getter = _getter,
             Setter = _setter,
             IsField = false,
