@@ -16,8 +16,10 @@
 
 namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest;
 
-internal interface IUnaryCallTest : IDisposable
+internal interface IUnaryCallTest : IAsyncDisposable
 {
+    Task StartAsync();
+
     Task PingPongAsync();
 
     ValueTask<long> GetPingPongPayloadSize();

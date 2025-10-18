@@ -40,6 +40,8 @@ internal sealed class MagicOnionServerCallTest : IUnaryCallTest
             MessageSerializer.Create(MessagePackMarshallerFactory.Default, payload));
     }
 
+    public Task StartAsync() => Task.CompletedTask;
+
     public Task PingPongAsync() => _request.SendAsync();
 
     public async ValueTask<long> GetPingPongPayloadSize()
@@ -48,10 +50,11 @@ internal sealed class MagicOnionServerCallTest : IUnaryCallTest
         return _request.PayloadSize;
     }
 
-    public void Dispose()
+    public ValueTask DisposeAsync()
     {
         _server.Dispose();
         _client.Dispose();
+        return ValueTask.CompletedTask;
     }
 
     private sealed class Startup

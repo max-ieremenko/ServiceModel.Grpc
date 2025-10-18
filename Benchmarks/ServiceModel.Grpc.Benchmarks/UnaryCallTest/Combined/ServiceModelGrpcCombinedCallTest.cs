@@ -47,6 +47,8 @@ internal sealed class ServiceModelGrpcCombinedCallTest : IUnaryCallTest
         _proxy = _clientFactory.CreateClient<ITestService>(_channel);
     }
 
+    public Task StartAsync() => Task.CompletedTask;
+
     public Task PingPongAsync() => _proxy.PingPong(_payload);
 
     public ValueTask<long> GetPingPongPayloadSize()
@@ -58,11 +60,12 @@ internal sealed class ServiceModelGrpcCombinedCallTest : IUnaryCallTest
         });
     }
 
-    public void Dispose()
+    public ValueTask DisposeAsync()
     {
         _channel.Dispose();
         _client.Dispose();
         _server.Dispose();
+        return ValueTask.CompletedTask;
     }
 
     private sealed class Startup

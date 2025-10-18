@@ -43,6 +43,8 @@ internal sealed class ProtobufGrpcCombinedCallTest : IUnaryCallTest
         _proxy = _channel.CreateGrpcService<ITestService>();
     }
 
+    public Task StartAsync() => Task.CompletedTask;
+
     public Task PingPongAsync() => _proxy.PingPong(_payload);
 
     public ValueTask<long> GetPingPongPayloadSize()
@@ -54,11 +56,12 @@ internal sealed class ProtobufGrpcCombinedCallTest : IUnaryCallTest
         });
     }
 
-    public void Dispose()
+    public ValueTask DisposeAsync()
     {
         _channel.Dispose();
         _client.Dispose();
         _server.Dispose();
+        return ValueTask.CompletedTask;
     }
 
     private sealed class Startup

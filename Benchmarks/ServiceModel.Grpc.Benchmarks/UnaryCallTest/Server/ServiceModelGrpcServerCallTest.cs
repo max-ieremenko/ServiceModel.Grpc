@@ -44,6 +44,8 @@ internal sealed class ServiceModelGrpcServerCallTest : IUnaryCallTest
             MessageSerializer.Create(marshallerFactory, new Message<SomeObject>(payload)));
     }
 
+    public Task StartAsync() => Task.CompletedTask;
+
     public Task PingPongAsync() => _request.SendAsync();
 
     public async ValueTask<long> GetPingPongPayloadSize()
@@ -52,10 +54,11 @@ internal sealed class ServiceModelGrpcServerCallTest : IUnaryCallTest
         return _request.PayloadSize;
     }
 
-    public void Dispose()
+    public ValueTask DisposeAsync()
     {
         _server.Dispose();
         _client.Dispose();
+        return ValueTask.CompletedTask;
     }
 
     private sealed class Startup

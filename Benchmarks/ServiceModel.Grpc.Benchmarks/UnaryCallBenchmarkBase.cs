@@ -35,10 +35,11 @@ public abstract class UnaryCallBenchmarkBase
     private IUnaryCallTest _magicOnion = null!;
 
     [GlobalSetup]
-    public void GlobalSetup()
+    public async Task GlobalSetup()
     {
         var payload = DomainExtensions.CreateSomeObject();
         var protoPayload = DomainExtensions.CopyToProto(payload);
+
         _serviceModelGrpcDataContract = CreateServiceModelGrpc(DataContractMarshallerFactory.Default, payload);
         _serviceModelGrpcProtobuf = CreateServiceModelGrpc(ProtobufMarshallerFactory.Default, payload);
         _serviceModelGrpcMessagePack = CreateServiceModelGrpc(MessagePackMarshallerFactory.Default, payload);
@@ -47,18 +48,27 @@ public abstract class UnaryCallBenchmarkBase
         _native = CreateNativeGrpc(protoPayload);
         _protobufGrpc = CreateProtobufGrpc(payload);
         _magicOnion = CreateMagicOnion(payload);
+
+        await _serviceModelGrpcDataContract.StartAsync().ConfigureAwait(false);
+        await _serviceModelGrpcProtobuf.StartAsync().ConfigureAwait(false);
+        await _serviceModelGrpcMessagePack.StartAsync().ConfigureAwait(false);
+        await _serviceModelGrpcMemoryPack.StartAsync().ConfigureAwait(false);
+        await _serviceModelGrpcProto.StartAsync().ConfigureAwait(false);
+        await _native.StartAsync().ConfigureAwait(false);
+        await _protobufGrpc.StartAsync().ConfigureAwait(false);
+        await _magicOnion.StartAsync().ConfigureAwait(false);
     }
 
     [GlobalCleanup]
-    public void GlobalCleanup()
+    public async Task GlobalCleanup()
     {
-        _serviceModelGrpcDataContract?.Dispose();
-        _serviceModelGrpcProtobuf?.Dispose();
-        _serviceModelGrpcMessagePack?.Dispose();
-        _serviceModelGrpcProto?.Dispose();
-        _native?.Dispose();
-        _protobufGrpc?.Dispose();
-        _magicOnion?.Dispose();
+        await (_serviceModelGrpcDataContract?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);
+        await (_serviceModelGrpcProtobuf?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);
+        await (_serviceModelGrpcMessagePack?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);
+        await (_serviceModelGrpcProto?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);
+        await (_native?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);
+        await (_protobufGrpc?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);
+        await (_magicOnion?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);
     }
 
     [Benchmark(Description = "ServiceModelGrpc.DataContract")]
@@ -121,9 +131,9 @@ public abstract class UnaryCallBenchmarkBase
 
     private async ValueTask<long> GetSize(Func<IUnaryCallTest> sut)
     {
-        GlobalSetup();
+        await GlobalSetup().ConfigureAwait(false);
         var result = await sut().GetPingPongPayloadSize().ConfigureAwait(false);
-        GlobalCleanup();
+        await GlobalCleanup().ConfigureAwait(false);
         return result;
     }
 }

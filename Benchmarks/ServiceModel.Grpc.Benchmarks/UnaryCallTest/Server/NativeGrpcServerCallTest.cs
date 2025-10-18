@@ -39,6 +39,8 @@ internal sealed class NativeGrpcServerCallTest : IUnaryCallTest
             MessageSerializer.Create(payload));
     }
 
+    public Task StartAsync() => Task.CompletedTask;
+
     public Task PingPongAsync() => _request.SendAsync();
 
     public async ValueTask<long> GetPingPongPayloadSize()
@@ -47,10 +49,11 @@ internal sealed class NativeGrpcServerCallTest : IUnaryCallTest
         return _request.PayloadSize;
     }
 
-    public void Dispose()
+    public ValueTask DisposeAsync()
     {
         _server.Dispose();
         _client.Dispose();
+        return ValueTask.CompletedTask;
     }
 
     private sealed class Startup

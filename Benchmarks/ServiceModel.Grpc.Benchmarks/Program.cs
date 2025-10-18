@@ -45,7 +45,7 @@ public static class Program
     {
         var benchmark = new T();
         Console.WriteLine("---- {0} -----", benchmark.GetType().Name);
-        benchmark.GlobalSetup();
+        await benchmark.GlobalSetup().ConfigureAwait(false);
 
         await benchmark.ServiceModelGrpcDataContract().ConfigureAwait(false);
         Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcDataContract), await new T().GetServiceModelGrpcDataContractSize().ConfigureAwait(false));
@@ -71,7 +71,7 @@ public static class Program
         await benchmark.MagicOnion().ConfigureAwait(false);
         Console.WriteLine("{0}: {1}", nameof(benchmark.MagicOnion), await new T().GetMagicOnionSize().ConfigureAwait(false));
 
-        benchmark.GlobalCleanup();
+        await benchmark.GlobalCleanup().ConfigureAwait(false);
     }
 
     private static void RunMarshallerBenchmark<T>()

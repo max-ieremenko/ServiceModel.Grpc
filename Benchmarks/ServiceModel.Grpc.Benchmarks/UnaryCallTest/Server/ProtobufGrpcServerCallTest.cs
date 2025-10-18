@@ -41,6 +41,8 @@ internal sealed class ProtobufGrpcServerCallTest : IUnaryCallTest
             MessageSerializer.Create(ProtobufMarshallerFactory.Default, payload));
     }
 
+    public Task StartAsync() => Task.CompletedTask;
+
     public Task PingPongAsync() => _request.SendAsync();
 
     public async ValueTask<long> GetPingPongPayloadSize()
@@ -49,10 +51,11 @@ internal sealed class ProtobufGrpcServerCallTest : IUnaryCallTest
         return _request.PayloadSize;
     }
 
-    public void Dispose()
+    public ValueTask DisposeAsync()
     {
         _server.Dispose();
         _client.Dispose();
+        return ValueTask.CompletedTask;
     }
 
     private sealed class Startup

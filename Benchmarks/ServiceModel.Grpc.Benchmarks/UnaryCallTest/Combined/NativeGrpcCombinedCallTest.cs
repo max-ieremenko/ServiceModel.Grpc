@@ -42,6 +42,8 @@ internal sealed class NativeGrpcCombinedCallTest : IUnaryCallTest
         _proxy = new TestServiceNative.TestServiceNativeClient(_channel);
     }
 
+    public Task StartAsync() => Task.CompletedTask;
+
     public async Task PingPongAsync()
     {
         using (var call = _proxy.PingPongAsync(_payload))
@@ -59,11 +61,12 @@ internal sealed class NativeGrpcCombinedCallTest : IUnaryCallTest
         });
     }
 
-    public void Dispose()
+    public ValueTask DisposeAsync()
     {
         _channel.Dispose();
         _client.Dispose();
         _server.Dispose();
+        return ValueTask.CompletedTask;
     }
 
     private sealed class Startup

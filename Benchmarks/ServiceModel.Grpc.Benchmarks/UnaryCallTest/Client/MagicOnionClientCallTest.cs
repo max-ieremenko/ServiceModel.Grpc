@@ -36,6 +36,8 @@ internal sealed class MagicOnionClientCallTest : IUnaryCallTest
         _proxy = MagicOnion.Client.MagicOnionClient.Create<ITestServiceMagicOnion>(_channel);
     }
 
+    public Task StartAsync() => Task.CompletedTask;
+
     public async Task PingPongAsync()
     {
         var call = _proxy.PingPong(_payload);
@@ -49,9 +51,10 @@ internal sealed class MagicOnionClientCallTest : IUnaryCallTest
         return _httpHandler.PayloadSize;
     }
 
-    public void Dispose()
+    public ValueTask DisposeAsync()
     {
         _channel.Dispose();
         _httpHandler.Dispose();
+        return ValueTask.CompletedTask;
     }
 }
