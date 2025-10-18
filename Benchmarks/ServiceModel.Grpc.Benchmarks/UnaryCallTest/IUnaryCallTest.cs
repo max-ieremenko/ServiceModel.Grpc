@@ -21,6 +21,4 @@ internal interface IUnaryCallTest : IAsyncDisposable
     Task StartAsync();
 
     Task PingPongAsync();
-
-    ValueTask<long> GetPingPongPayloadSize();
 }

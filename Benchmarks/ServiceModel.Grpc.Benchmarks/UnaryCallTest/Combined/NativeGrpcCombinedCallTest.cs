@@ -52,15 +52,6 @@ internal sealed class NativeGrpcCombinedCallTest : IUnaryCallTest
         }
     }
 
-    public ValueTask<long> GetPingPongPayloadSize()
-    {
-        return StubHttpMessageHandler.GetPayloadSize(channel =>
-        {
-            var proxy = new TestServiceNative.TestServiceNativeClient(channel);
-            return proxy.PingPongAsync(_payload).ResponseAsync;
-        });
-    }
-
     public ValueTask DisposeAsync()
     {
         _channel.Dispose();

@@ -27,7 +27,6 @@ namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Combined;
 
 internal sealed class ServiceModelGrpcCombinedCallTest : IUnaryCallTest
 {
-    private readonly IClientFactory _clientFactory;
     private readonly SomeObject _payload;
     private readonly TestServer _server;
     private readonly HttpClient _client;
@@ -43,22 +42,13 @@ internal sealed class ServiceModelGrpcCombinedCallTest : IUnaryCallTest
         _client = _server.CreateClient();
 
         _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpClient = _client });
-        _clientFactory = new ClientFactory(new ServiceModelGrpcClientOptions { MarshallerFactory = marshallerFactory });
-        _proxy = _clientFactory.CreateClient<ITestService>(_channel);
+        var clientFactory = new ClientFactory(new ServiceModelGrpcClientOptions { MarshallerFactory = marshallerFactory });
+        _proxy = clientFactory.CreateClient<ITestService>(_channel);
     }
 
     public Task StartAsync() => Task.CompletedTask;
 
     public Task PingPongAsync() => _proxy.PingPong(_payload);
-
-    public ValueTask<long> GetPingPongPayloadSize()
-    {
-        return StubHttpMessageHandler.GetPayloadSize(channel =>
-        {
-            var proxy = _clientFactory.CreateClient<ITestService>(channel);
-            return proxy.PingPong(_payload);
-        });
-    }
 
     public ValueTask DisposeAsync()
     {

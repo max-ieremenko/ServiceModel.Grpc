@@ -52,7 +52,7 @@ internal static class HttpMessage
         };
     }
 
-    public static async Task<int> ReadAsync(HttpContent content, CancellationToken cancellationToken)
+    public static async Task ReadAsync(HttpContent content, CancellationToken cancellationToken)
     {
         await using var stream = await content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
 
@@ -63,6 +63,5 @@ internal static class HttpMessage
         }
 
         await stream.ReadExactlyAsync(NullBuffer.AsMemory(0, length), cancellationToken).ConfigureAwait(false);
-        return length;
     }
 }

@@ -48,12 +48,6 @@ internal sealed class ServiceModelGrpcServerCallTest : IUnaryCallTest
 
     public Task PingPongAsync() => _request.SendAsync();
 
-    public async ValueTask<long> GetPingPongPayloadSize()
-    {
-        await PingPongAsync().ConfigureAwait(false);
-        return _request.PayloadSize;
-    }
-
     public ValueTask DisposeAsync()
     {
         _server.Dispose();

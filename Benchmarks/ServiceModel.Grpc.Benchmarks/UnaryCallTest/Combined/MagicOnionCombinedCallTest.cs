@@ -50,16 +50,6 @@ internal sealed class MagicOnionCombinedCallTest : IUnaryCallTest
         call.Dispose();
     }
 
-    public ValueTask<long> GetPingPongPayloadSize()
-    {
-        return StubHttpMessageHandler.GetPayloadSize(async channel =>
-        {
-            var proxy = MagicOnion.Client.MagicOnionClient.Create<ITestServiceMagicOnion>(channel);
-            var call = proxy.PingPong(_payload);
-            await call;
-        });
-    }
-
     public ValueTask DisposeAsync()
     {
         _channel.Dispose();

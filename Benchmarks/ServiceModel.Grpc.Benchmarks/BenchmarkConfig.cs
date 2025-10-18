@@ -20,7 +20,6 @@ using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Environments;
 using BenchmarkDotNet.Jobs;
-using ServiceModel.Grpc.Benchmarks.Api;
 
 namespace ServiceModel.Grpc.Benchmarks;
 
@@ -41,6 +40,5 @@ internal sealed class BenchmarkConfig : ManualConfig
         AddDiagnoser(MemoryDiagnoser.Default);
 
         AddColumnProvider(DefaultColumnProviders.Instance);
-        AddColumn(StatisticColumn.OperationsPerSecond, new PayloadSizeColumn());
     }
 }

@@ -47,15 +47,6 @@ internal sealed class ProtobufGrpcCombinedCallTest : IUnaryCallTest
 
     public Task PingPongAsync() => _proxy.PingPong(_payload);
 
-    public ValueTask<long> GetPingPongPayloadSize()
-    {
-        return StubHttpMessageHandler.GetPayloadSize(channel =>
-        {
-            var proxy = channel.CreateGrpcService<ITestService>();
-            return proxy.PingPong(_payload);
-        });
-    }
-
     public ValueTask DisposeAsync()
     {
         _channel.Dispose();

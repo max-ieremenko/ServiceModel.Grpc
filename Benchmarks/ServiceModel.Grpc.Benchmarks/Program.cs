@@ -48,28 +48,20 @@ public static class Program
         await benchmark.GlobalSetup().ConfigureAwait(false);
 
         await benchmark.ServiceModelGrpcDataContract().ConfigureAwait(false);
-        Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcDataContract), await new T().GetServiceModelGrpcDataContractSize().ConfigureAwait(false));
 
         await benchmark.ServiceModelGrpcProtobuf().ConfigureAwait(false);
-        Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcProtobuf), await new T().GetServiceModelGrpcProtobufSize().ConfigureAwait(false));
 
         await benchmark.ServiceModelGrpcMessagePack().ConfigureAwait(false);
-        Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcMessagePack), await new T().GetServiceModelGrpcMessagePackSize().ConfigureAwait(false));
 
         await benchmark.ServiceModelGrpcMemoryPack().ConfigureAwait(false);
-        Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcMemoryPack), await new T().GetServiceModelGrpcMemoryPackSize().ConfigureAwait(false));
 
         await benchmark.ServiceModelGrpcProto().ConfigureAwait(false);
-        Console.WriteLine("{0}: {1}", nameof(benchmark.ServiceModelGrpcProto), await new T().GetServiceModelGrpcProtoSize().ConfigureAwait(false));
 
         await benchmark.Native().ConfigureAwait(false);
-        Console.WriteLine("{0}: {1}", nameof(benchmark.Native), await new T().GetNativeSize().ConfigureAwait(false));
 
         await benchmark.ProtobufGrpc().ConfigureAwait(false);
-        Console.WriteLine("{0}: {1}", nameof(benchmark.ProtobufGrpc), await new T().GetProtobufGrpcSize().ConfigureAwait(false));
 
         await benchmark.MagicOnion().ConfigureAwait(false);
-        Console.WriteLine("{0}: {1}", nameof(benchmark.MagicOnion), await new T().GetMagicOnionSize().ConfigureAwait(false));
 
         await benchmark.GlobalCleanup().ConfigureAwait(false);
     }

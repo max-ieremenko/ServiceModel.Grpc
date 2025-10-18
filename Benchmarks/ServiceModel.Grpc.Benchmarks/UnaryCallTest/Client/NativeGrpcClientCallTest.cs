@@ -46,12 +46,6 @@ internal sealed class NativeGrpcClientCallTest : IUnaryCallTest
         }
     }
 
-    public async ValueTask<long> GetPingPongPayloadSize()
-    {
-        await PingPongAsync().ConfigureAwait(false);
-        return _httpHandler.PayloadSize;
-    }
-
     public ValueTask DisposeAsync()
     {
         _channel.Dispose();
