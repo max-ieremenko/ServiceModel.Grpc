@@ -6,6 +6,8 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
 
+    <SupportedFrameworks>net8.0;net9.0</SupportedFrameworks>
+
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)ServiceModel.Grpc.snk</AssemblyOriginatorKeyFile>
 

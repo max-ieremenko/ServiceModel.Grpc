@@ -2,7 +2,7 @@
   <Import Project="..\Test.csproj.props" />
   
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>$(SupportedFrameworks)</TargetFrameworks>
     <RootNamespace>ServiceModel.Grpc</RootNamespace>
   </PropertyGroup>
   
