@@ -14,10 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-using Grpc.Net.Client;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceModel.Grpc.Benchmarks.Domain;
 
@@ -26,22 +23,30 @@ namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Combined;
 internal sealed class MagicOnionCombinedCallTest : IUnaryCallTest
 {
     private readonly SomeObject _payload;
-    private readonly TestServer _server;
-    private readonly HttpClient _client;
-    private readonly GrpcChannel _channel;
-    private readonly ITestServiceMagicOnion _proxy;
+    private readonly TestServerHost _host;
+    private ITestServiceMagicOnion _proxy = null!;
 
     public MagicOnionCombinedCallTest(SomeObject payload)
     {
         _payload = payload;
-        _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
-        _client = _server.CreateClient();
 
-        _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpClient = _client });
-        _proxy = MagicOnion.Client.MagicOnionClient.Create<ITestServiceMagicOnion>(_channel);
+        _host = new TestServerHost()
+            .ConfigureServices(services =>
+            {
+                services.AddGrpc();
+                services.AddMagicOnion();
+            })
+            .ConfigureEndpoints(endpoints =>
+            {
+                endpoints.MapMagicOnionService();
+            });
     }
 
-    public Task StartAsync() => Task.CompletedTask;
+    public async Task StartAsync()
+    {
+        await _host.StartAsync().ConfigureAwait(false);
+        _proxy = MagicOnion.Client.MagicOnionClient.Create<ITestServiceMagicOnion>(_host.GetGrpcChannel());
+    }
 
     public async Task PingPongAsync()
     {
@@ -50,30 +55,5 @@ internal sealed class MagicOnionCombinedCallTest : IUnaryCallTest
         call.Dispose();
     }
 
-    public ValueTask DisposeAsync()
-    {
-        _channel.Dispose();
-        _client.Dispose();
-        _server.Dispose();
-        return ValueTask.CompletedTask;
-    }
-
-    private sealed class Startup
-    {
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddGrpc();
-            services.AddMagicOnion();
-        }
-
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapMagicOnionService();
-            });
-        }
-    }
+    public ValueTask DisposeAsync() => _host.DisposeAsync();
 }

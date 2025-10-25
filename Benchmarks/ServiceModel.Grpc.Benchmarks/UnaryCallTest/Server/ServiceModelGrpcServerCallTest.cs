@@ -15,8 +15,6 @@
 // </copyright>
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceModel.Grpc.Benchmarks.Domain;
 using ServiceModel.Grpc.Channel;
@@ -26,57 +24,32 @@ namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Server;
 
 internal sealed class ServiceModelGrpcServerCallTest : IUnaryCallTest
 {
-    private readonly TestServer _server;
-    private readonly HttpClient _client;
-    private readonly StubHttpRequest _request;
+    private readonly byte[] _payload;
+    private readonly TestServerHost _host;
+    private StubHttpRequest _request = null!;
 
     public ServiceModelGrpcServerCallTest(IMarshallerFactory marshallerFactory, SomeObject payload)
     {
-        var builder = new WebHostBuilder()
-            .UseStartup(_ => new Startup(marshallerFactory));
+        _payload = MessageSerializer.Create(marshallerFactory, new Message<SomeObject>(payload));
 
-        _server = new TestServer(builder);
-        _client = _server.CreateClient();
-
-        _request = new StubHttpRequest(
-            _client,
-            "/ITestService/PingPong",
-            MessageSerializer.Create(marshallerFactory, new Message<SomeObject>(payload)));
-    }
-
-    public Task StartAsync() => Task.CompletedTask;
-
-    public Task PingPongAsync() => _request.SendAsync();
-
-    public ValueTask DisposeAsync()
-    {
-        _server.Dispose();
-        _client.Dispose();
-        return ValueTask.CompletedTask;
-    }
-
-    private sealed class Startup
-    {
-        private readonly IMarshallerFactory _marshallerFactory;
-
-        public Startup(IMarshallerFactory marshallerFactory)
-        {
-            _marshallerFactory = marshallerFactory;
-        }
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddServiceModelGrpc(options => options.DefaultMarshallerFactory = _marshallerFactory);
-        }
-
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
+        _host = new TestServerHost()
+            .ConfigureServices(services =>
+            {
+                services.AddServiceModelGrpc(options => options.DefaultMarshallerFactory = marshallerFactory);
+            })
+            .ConfigureEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<TestServiceStub>();
             });
-        }
     }
+
+    public async Task StartAsync()
+    {
+        await _host.StartAsync().ConfigureAwait(false);
+        _request = new StubHttpRequest(_host.GetClient(), "/ITestService/PingPong", _payload);
+    }
+
+    public Task PingPongAsync() => _request.SendAsync();
+
+    public ValueTask DisposeAsync() => _host.DisposeAsync();
 }

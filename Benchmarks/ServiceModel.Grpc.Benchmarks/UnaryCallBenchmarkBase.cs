@@ -15,7 +15,6 @@
 // </copyright>
 
 using BenchmarkDotNet.Attributes;
-using ServiceModel.Grpc.Benchmarks.Api;
 using ServiceModel.Grpc.Benchmarks.Domain;
 using ServiceModel.Grpc.Benchmarks.UnaryCallTest;
 using ServiceModel.Grpc.Configuration;
@@ -25,6 +24,7 @@ namespace ServiceModel.Grpc.Benchmarks;
 [Config(typeof(BenchmarkConfig))]
 public abstract class UnaryCallBenchmarkBase
 {
+    private IUnaryCallTest[] _tests = null!;
     private IUnaryCallTest _serviceModelGrpcDataContract = null!;
     private IUnaryCallTest _serviceModelGrpcProtobuf = null!;
     private IUnaryCallTest _serviceModelGrpcMessagePack = null!;
@@ -35,41 +35,28 @@ public abstract class UnaryCallBenchmarkBase
     private IUnaryCallTest _magicOnion = null!;
 
     [GlobalSetup]
-    public async Task GlobalSetup()
+    public Task GlobalSetup()
     {
         var payload = DomainExtensions.CreateSomeObject();
         var protoPayload = DomainExtensions.CopyToProto(payload);
 
-        _serviceModelGrpcDataContract = CreateServiceModelGrpc(DataContractMarshallerFactory.Default, payload);
-        _serviceModelGrpcProtobuf = CreateServiceModelGrpc(ProtobufMarshallerFactory.Default, payload);
-        _serviceModelGrpcMessagePack = CreateServiceModelGrpc(MessagePackMarshallerFactory.Default, payload);
-        _serviceModelGrpcMemoryPack = CreateServiceModelGrpc(MemoryPackMarshallerFactory.Default, payload);
-        _serviceModelGrpcProto = CreateServiceModelGrpcProto(protoPayload);
-        _native = CreateNativeGrpc(protoPayload);
-        _protobufGrpc = CreateProtobufGrpc(payload);
-        _magicOnion = CreateMagicOnion(payload);
+        _tests =
+        [
+            _serviceModelGrpcDataContract = CreateServiceModelGrpc(DataContractMarshallerFactory.Default, payload),
+            _serviceModelGrpcProtobuf = CreateServiceModelGrpc(ProtobufMarshallerFactory.Default, payload),
+            _serviceModelGrpcMessagePack = CreateServiceModelGrpc(MessagePackMarshallerFactory.Default, payload),
+            _serviceModelGrpcMemoryPack = CreateServiceModelGrpc(MemoryPackMarshallerFactory.Default, payload),
+            _serviceModelGrpcProto = CreateServiceModelGrpcProto(protoPayload),
+            _native = CreateNativeGrpc(protoPayload),
+            _protobufGrpc = CreateProtobufGrpc(payload),
+            _magicOnion = CreateMagicOnion(payload),
+        ];
 
-        await _serviceModelGrpcDataContract.StartAsync().ConfigureAwait(false);
-        await _serviceModelGrpcProtobuf.StartAsync().ConfigureAwait(false);
-        await _serviceModelGrpcMessagePack.StartAsync().ConfigureAwait(false);
-        await _serviceModelGrpcMemoryPack.StartAsync().ConfigureAwait(false);
-        await _serviceModelGrpcProto.StartAsync().ConfigureAwait(false);
-        await _native.StartAsync().ConfigureAwait(false);
-        await _protobufGrpc.StartAsync().ConfigureAwait(false);
-        await _magicOnion.StartAsync().ConfigureAwait(false);
+        return Task.WhenAll(_tests.Select(i => i.StartAsync()));
     }
 
     [GlobalCleanup]
-    public async Task GlobalCleanup()
-    {
-        await (_serviceModelGrpcDataContract?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);
-        await (_serviceModelGrpcProtobuf?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);
-        await (_serviceModelGrpcMessagePack?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);
-        await (_serviceModelGrpcProto?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);
-        await (_native?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);
-        await (_protobufGrpc?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);
-        await (_magicOnion?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);
-    }
+    public Task GlobalCleanup() => Task.WhenAll(_tests.Select(i => i.DisposeAsync().AsTask()));
 
     [Benchmark(Description = "ServiceModelGrpc.DataContract")]
     public Task ServiceModelGrpcDataContract() => _serviceModelGrpcDataContract.PingPongAsync();
