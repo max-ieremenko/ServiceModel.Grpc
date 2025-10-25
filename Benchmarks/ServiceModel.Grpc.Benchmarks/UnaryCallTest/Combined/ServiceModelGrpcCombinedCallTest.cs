@@ -14,10 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-using Grpc.Net.Client;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceModel.Grpc.Benchmarks.Domain;
 using ServiceModel.Grpc.Client;
@@ -27,66 +24,36 @@ namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Combined;
 
 internal sealed class ServiceModelGrpcCombinedCallTest : IUnaryCallTest
 {
-    private readonly IClientFactory _clientFactory;
+    private readonly IMarshallerFactory _marshallerFactory;
     private readonly SomeObject _payload;
-    private readonly TestServer _server;
-    private readonly HttpClient _client;
-    private readonly GrpcChannel _channel;
-    private readonly ITestService _proxy;
+    private readonly TestServerHost _host;
+    private ITestService _proxy = null!;
 
     public ServiceModelGrpcCombinedCallTest(IMarshallerFactory marshallerFactory, SomeObject payload)
     {
+        _marshallerFactory = marshallerFactory;
         _payload = payload;
 
-        var builder = new WebHostBuilder().UseStartup(_ => new Startup(marshallerFactory));
-        _server = new TestServer(builder);
-        _client = _server.CreateClient();
+        _host = new TestServerHost()
+            .ConfigureServices(services =>
+            {
+                services.AddServiceModelGrpc(options => options.DefaultMarshallerFactory = marshallerFactory);
+            })
+            .ConfigureEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<TestServiceStub>();
+            });
+    }
 
-        _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpClient = _client });
-        _clientFactory = new ClientFactory(new ServiceModelGrpcClientOptions { MarshallerFactory = marshallerFactory });
-        _proxy = _clientFactory.CreateClient<ITestService>(_channel);
+    public async Task StartAsync()
+    {
+        await _host.StartAsync().ConfigureAwait(false);
+
+        var clientFactory = new ClientFactory(new ServiceModelGrpcClientOptions { MarshallerFactory = _marshallerFactory });
+        _proxy = clientFactory.CreateClient<ITestService>(_host.GetGrpcChannel());
     }
 
     public Task PingPongAsync() => _proxy.PingPong(_payload);
 
-    public ValueTask<long> GetPingPongPayloadSize()
-    {
-        return StubHttpMessageHandler.GetPayloadSize(channel =>
-        {
-            var proxy = _clientFactory.CreateClient<ITestService>(channel);
-            return proxy.PingPong(_payload);
-        });
-    }
-
-    public void Dispose()
-    {
-        _channel.Dispose();
-        _client.Dispose();
-        _server.Dispose();
-    }
-
-    private sealed class Startup
-    {
-        private readonly IMarshallerFactory _marshallerFactory;
-
-        public Startup(IMarshallerFactory marshallerFactory)
-        {
-            _marshallerFactory = marshallerFactory;
-        }
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddServiceModelGrpc(options => options.DefaultMarshallerFactory = _marshallerFactory);
-        }
-
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapGrpcService<TestServiceStub>();
-            });
-        }
-    }
+    public ValueTask DisposeAsync() => _host.DisposeAsync();
 }

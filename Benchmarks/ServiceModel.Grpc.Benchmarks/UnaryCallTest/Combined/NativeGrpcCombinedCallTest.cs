@@ -14,10 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-using Grpc.Net.Client;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceModel.Grpc.Benchmarks.Domain;
 
@@ -25,21 +22,29 @@ namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Combined;
 
 internal sealed class NativeGrpcCombinedCallTest : IUnaryCallTest
 {
-    private readonly TestServer _server;
-    private readonly HttpClient _client;
-    private readonly GrpcChannel _channel;
     private readonly SomeObjectProto _payload;
-    private readonly TestServiceNative.TestServiceNativeClient _proxy;
+    private readonly TestServerHost _host;
+    private TestServiceNative.TestServiceNativeClient _proxy = null!;
 
     public NativeGrpcCombinedCallTest(SomeObjectProto payload)
     {
         _payload = payload;
-        _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
-        _client = _server.CreateClient();
 
-        _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpClient = _client });
+        _host = new TestServerHost()
+            .ConfigureServices(services =>
+            {
+                services.AddGrpc();
+            })
+            .ConfigureEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<TestServiceNativeStub>();
+            });
+    }
 
-        _proxy = new TestServiceNative.TestServiceNativeClient(_channel);
+    public async Task StartAsync()
+    {
+        await _host.StartAsync().ConfigureAwait(false);
+        _proxy = new TestServiceNative.TestServiceNativeClient(_host.GetGrpcChannel());
     }
 
     public async Task PingPongAsync()
@@ -50,37 +55,5 @@ internal sealed class NativeGrpcCombinedCallTest : IUnaryCallTest
         }
     }
 
-    public ValueTask<long> GetPingPongPayloadSize()
-    {
-        return StubHttpMessageHandler.GetPayloadSize(channel =>
-        {
-            var proxy = new TestServiceNative.TestServiceNativeClient(channel);
-            return proxy.PingPongAsync(_payload).ResponseAsync;
-        });
-    }
-
-    public void Dispose()
-    {
-        _channel.Dispose();
-        _client.Dispose();
-        _server.Dispose();
-    }
-
-    private sealed class Startup
-    {
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddGrpc();
-        }
-
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapGrpcService<TestServiceNativeStub>();
-            });
-        }
-    }
+    public ValueTask DisposeAsync() => _host.DisposeAsync();
 }

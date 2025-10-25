@@ -29,8 +29,6 @@ internal sealed class StubHttpRequest
         _payload = payload;
     }
 
-    public long PayloadSize { get; private set; }
-
     public async Task SendAsync()
     {
         using (var request = HttpMessage.CreateRequest(_url, _payload))
@@ -38,7 +36,7 @@ internal sealed class StubHttpRequest
         {
             response.EnsureSuccessStatusCode();
 
-            PayloadSize = await HttpMessage.ReadAsync(response.Content!, default).ConfigureAwait(false);
+            await HttpMessage.ReadAsync(response.Content, default).ConfigureAwait(false);
         }
     }
 }
