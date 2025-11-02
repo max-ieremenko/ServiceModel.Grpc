@@ -14,11 +14,18 @@ param(
     $Configuration
 )
 
-task . Clean, Build, Run, CopyResults
+task . Clean, Build, Run, CopyResults, TestResults
 
 Enter-Build {
     $pathApp = Join-Path $PathSources 'ServiceModel.Grpc.Benchmarks/bin' $Configuration
     $pathBuildOutArtifacts = Join-Path $PathBuildOut 'BenchmarkDotNet.Artifacts'
+    Clear-NugetCache
+    Add-NugetSource -Path $PathBuildOut
+}
+
+Exit-Build {
+    Remove-NugetSource
+    Clear-NugetCache
 }
 
 task Clean {
@@ -46,5 +53,13 @@ task CopyResults {
     if ($Configuration -eq 'Release') {
         $source = Join-Path $pathApp 'BenchmarkDotNet.Artifacts/results'
         Move-Item -Path $source $pathBuildOutArtifacts -Force
+    }
+}
+
+task TestResults -If ($Configuration -eq 'Release') {
+    $files = Get-ChildItem -Path $pathBuildOutArtifacts -File -Filter '*.md'
+    $files
+    if (($files -isnot [array]) -or ($files.Length -le 2)) {
+        throw 'It seems that BenchmarkDotNet failed to create artifacts.'
     }
 }
