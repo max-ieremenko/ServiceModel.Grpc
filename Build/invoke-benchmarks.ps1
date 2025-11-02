@@ -12,8 +12,12 @@ param (
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
+. (Join-Path $PSScriptRoot 'scripts' 'Add-NugetSource.ps1')
+. (Join-Path $PSScriptRoot 'scripts' 'Clear-NugetCache.ps1')
 . (Join-Path $PSScriptRoot 'scripts' 'Get-FullPath.ps1')
+. (Join-Path $PSScriptRoot 'scripts' 'Get-NugetPath.ps1')
 . (Join-Path $PSScriptRoot 'scripts' 'Remove-DirectoryRecurse.ps1')
+. (Join-Path $PSScriptRoot 'scripts' 'Remove-NugetSource.ps1')
 
 Invoke-Build `
     -File (Join-Path $PSScriptRoot 'tasks' 'benchmarks-tasks.ps1') `
