@@ -32,8 +32,6 @@ public class MockedFilteredServiceTest : MockedFilteredServiceTestBase
         _host = await new KestrelHost()
             .ConfigureServices(services =>
             {
-                services.AddTransient<TrackingServerFilter>();
-
                 services.AddServiceModelGrpc(options =>
                 {
                     options.Filters.Add(1, _ => new MockServerFilter());
