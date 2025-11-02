@@ -13,26 +13,11 @@ task . Clean, BuildParallel, BuildSequential, Run
 
 Enter-Build {
     Clear-NugetCache
-
-    $ownSource = $true
-    $sources = exec { dotnet nuget list source --format short }
-    foreach ($source in $sources) {
-        if ($source.Contains($PathBuildArtifacts, 'OrdinalIgnoreCase')) {
-            $ownSource = $false
-            break
-        }
-    }
-
-    if ($ownSource) {
-        exec { dotnet nuget add source -n 'ServiceModel.Grpc' $PathBuildArtifacts }
-    }
+    Add-NugetSource -Path $PathBuildArtifacts
 }
 
 Exit-Build {
-    if ($ownSource) {
-        exec { dotnet nuget remove source 'ServiceModel.Grpc' }
-    }
-
+    Remove-NugetSource
     Clear-NugetCache
 }
 
