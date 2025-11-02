@@ -16,9 +16,9 @@
 
 using System.Net;
 using Grpc.Core;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Options;
 using ServiceModel.Grpc.Client;
@@ -30,7 +30,7 @@ namespace ServiceModel.Grpc.AspNetCore.TestApi;
 public sealed class KestrelHost : IAsyncDisposable
 {
     private GrpcChannelType _channelType;
-    private IWebHost? _host;
+    private IHost? _host;
     private Action<ServiceModelGrpcClientOptions>? _clientFactoryDefaultOptions;
     private Action<IServiceCollection>? _configureServices;
     private Action<IEndpointRouteBuilder>? _configureEndpoints;
@@ -92,51 +92,46 @@ public sealed class KestrelHost : IAsyncDisposable
     {
         GrpcChannelExtensions.Http2UnencryptedSupport = true;
 
-        _host = WebHost
-            .CreateDefaultBuilder()
-            .ConfigureServices(services =>
+        var builder = WebApplication.CreateBuilder();
+
+        builder.Services.AddGrpc();
+        builder.Services.AddServiceModelGrpc((options, provider) =>
+        {
+            var clientOptions = provider.GetRequiredService<IOptions<ServiceModelGrpcClientOptions>>().Value;
+            options.DefaultMarshallerFactory = clientOptions.MarshallerFactory;
+        });
+
+        builder.Services.AddSingleton<ChannelBase>(provider =>
+        {
+            var address = provider
+                .GetRequiredService<IServer>()
+                .Features
+                .GetRequiredFeature<IServerAddressesFeature>()
+                .Addresses
+                .First();
+
+            return GrpcChannelFactory.CreateChannel(_channelType, "localhost", new Uri(address).Port);
+        });
+
+        builder.Services
+            .AddServiceModelGrpcClientFactory((options, _) =>
             {
-                services.AddGrpc();
-                services.AddServiceModelGrpc((options, provider) =>
-                {
-                    var clientOptions = provider.GetRequiredService<IOptions<ServiceModelGrpcClientOptions>>().Value;
-                    options.DefaultMarshallerFactory = clientOptions.MarshallerFactory;
-                });
+                _clientFactoryDefaultOptions?.Invoke(options);
+            });
 
-                services.AddSingleton<ChannelBase>(provider =>
-                {
-                    var address = provider
-                        .GetRequiredService<IServer>()
-                        .Features
-                        .Get<IServerAddressesFeature>()
-                        !.Addresses
-                        .First();
+        _configureServices?.Invoke(builder.Services);
 
-                    return GrpcChannelFactory.CreateChannel(_channelType, "localhost", new Uri(address).Port);
-                });
+        builder.WebHost.ConfigureKestrel(o => o.Listen(IPAddress.Loopback, 0, l => l.Protocols = protocols));
+        SuppressLogging(builder.Logging);
 
-                services
-                    .AddServiceModelGrpcClientFactory((options, _) =>
-                    {
-                        _clientFactoryDefaultOptions?.Invoke(options);
-                    });
+        var app = builder.Build();
 
-                _configureServices?.Invoke(services);
-            })
-            .Configure(app =>
-            {
-                app.UseRouting();
+        app.UseRouting();
 
-                _configureApp?.Invoke(app);
+        _configureApp?.Invoke(app);
+        _configureEndpoints?.Invoke(app);
 
-                if (_configureEndpoints != null)
-                {
-                    app.UseEndpoints(_configureEndpoints);
-                }
-            })
-            .UseKestrel(o => o.Listen(IPAddress.Loopback, 0, l => l.Protocols = protocols))
-            .ConfigureLogging(builder => SuppressLogging(builder))
-            .Build();
+        _host = app;
 
         try
         {
