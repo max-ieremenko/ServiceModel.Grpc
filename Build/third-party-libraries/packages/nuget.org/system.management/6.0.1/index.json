@@ -10,6 +10,7 @@
       "Name": "AspNetCore",
       "InternalOnly": true,
       "TargetFrameworks": [
+        "net10.0",
         "net8.0",
         "net9.0"
       ],
@@ -24,6 +25,7 @@
       "Name": "AspNetCoreNSwag",
       "InternalOnly": true,
       "TargetFrameworks": [
+        "net10.0",
         "net8.0",
         "net9.0"
       ],
@@ -38,6 +40,7 @@
       "Name": "AspNetCoreSwashbuckle",
       "InternalOnly": true,
       "TargetFrameworks": [
+        "net10.0",
         "net8.0",
         "net9.0"
       ],
@@ -52,6 +55,7 @@
       "Name": "ClientDI",
       "InternalOnly": true,
       "TargetFrameworks": [
+        "net10.0",
         "net481",
         "net8.0",
         "net9.0"
@@ -67,6 +71,7 @@
       "Name": "Core",
       "InternalOnly": true,
       "TargetFrameworks": [
+        "net10.0",
         "net481",
         "net8.0",
         "net9.0"
@@ -82,6 +87,7 @@
       "Name": "DesignTime",
       "InternalOnly": true,
       "TargetFrameworks": [
+        "net10.0",
         "net481",
         "net8.0",
         "net9.0"
@@ -97,6 +103,7 @@
       "Name": "Emit",
       "InternalOnly": true,
       "TargetFrameworks": [
+        "net10.0",
         "net481",
         "net8.0",
         "net9.0"
@@ -112,6 +119,7 @@
       "Name": "MemoryPack",
       "InternalOnly": true,
       "TargetFrameworks": [
+        "net10.0",
         "net8.0",
         "net9.0"
       ],
@@ -126,6 +134,7 @@
       "Name": "MessagePack",
       "InternalOnly": true,
       "TargetFrameworks": [
+        "net10.0",
         "net8.0",
         "net9.0"
       ],
@@ -140,6 +149,7 @@
       "Name": "NerdbankMessagePack",
       "InternalOnly": true,
       "TargetFrameworks": [
+        "net10.0",
         "net8.0",
         "net9.0"
       ],
@@ -154,6 +164,7 @@
       "Name": "SelfHost",
       "InternalOnly": true,
       "TargetFrameworks": [
+        "net10.0",
         "net481",
         "net8.0",
         "net9.0"

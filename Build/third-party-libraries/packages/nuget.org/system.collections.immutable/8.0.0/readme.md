@@ -1,9 +1,9 @@
 ﻿System.Collections.Immutable [8.0.0](https://www.nuget.org/packages/System.Collections.Immutable/8.0.0)
 --------------------
 
-Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack, NerdbankMessagePack, SelfHost internal
+Used by: DesignTime internal, MessagePack, NerdbankMessagePack
 
-Target frameworks: net481, net8.0, net9.0, netstandard2.0
+Target frameworks: net10.0, net8.0, net9.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 

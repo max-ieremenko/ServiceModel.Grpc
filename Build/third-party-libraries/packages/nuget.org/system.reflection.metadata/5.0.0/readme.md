@@ -3,7 +3,7 @@
 
 Used by: DesignTime
 
-Target frameworks: net481, net8.0, net9.0, netstandard2.0
+Target frameworks: net10.0, net481, net8.0, net9.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
