@@ -6,10 +6,10 @@
     Tests         = @(
         @( 
             @{
-                App  = 'Server/bin/Release/net462/Server.exe'
+                App  = 'Server/bin/Release/net481/Server.exe'
                 Port = 8082
             }
-            @{ App = 'Client/bin/Release/net462/Client.exe' }
+            @{ App = 'Client/bin/Release/net481/Client.exe' }
         ),
         @( 
             @{
