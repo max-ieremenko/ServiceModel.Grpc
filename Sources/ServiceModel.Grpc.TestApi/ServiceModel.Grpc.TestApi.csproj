@@ -2,7 +2,7 @@
   <Import Project="..\Test.csproj.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>net462;$(SupportedFrameworks)</TargetFrameworks>
+    <TargetFrameworks>net481;$(SupportedFrameworks)</TargetFrameworks>
     <AssemblyTitle>ServiceModel.Grpc.TestApi</AssemblyTitle>
   </PropertyGroup>
 
