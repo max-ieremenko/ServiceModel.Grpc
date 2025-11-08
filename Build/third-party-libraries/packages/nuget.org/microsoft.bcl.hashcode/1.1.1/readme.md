@@ -3,7 +3,7 @@
 
 Used by: ClientDI internal
 
-Target frameworks: net462, net8.0, net9.0
+Target frameworks: net481, net8.0, net9.0
 
 License: [MIT](../../../../licenses/mit) 
 

@@ -10,7 +10,7 @@
       "Name": "Core",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "net462",
+        "net481",
         "net8.0",
         "net9.0"
       ]
@@ -19,7 +19,7 @@
       "Name": "DesignTime",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "net462",
+        "net481",
         "net8.0",
         "net9.0",
         "netstandard2.0"
