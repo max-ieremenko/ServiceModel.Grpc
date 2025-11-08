@@ -1,9 +1,9 @@
 ﻿System.Diagnostics.DiagnosticSource [6.0.0](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/6.0.0)
 --------------------
 
-Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI, DesignTime internal
+Used by: DesignTime internal
 
-Target frameworks: net481, net8.0, net9.0, netstandard2.0, netstandard2.1
+Target frameworks: net8.0
 
 License: [MIT](../../../../licenses/mit) 
 

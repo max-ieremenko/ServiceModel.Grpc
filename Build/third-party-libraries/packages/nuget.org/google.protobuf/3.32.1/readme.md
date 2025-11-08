@@ -3,7 +3,7 @@
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal
 
-Target frameworks: net8.0, net9.0
+Target frameworks: net10.0, net8.0, net9.0
 
 License: [BSD-3-Clause](../../../../licenses/bsd-3-clause) 
 
