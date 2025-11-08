@@ -112,7 +112,7 @@ public class HttpClientBuilderExtensionsTest
         var result = _services
             .AddGrpcClient<IContract>(options => options.Address = new Uri("https://localhost1:5001"));
 
-#if NET462
+#if NET481
         // https://learn.microsoft.com/en-us/aspnet/core/grpc/netstandard?view=aspnetcore-8.0#httphandler-configuration
         result = result.ConfigurePrimaryHttpMessageHandler(() => new WinHttpHandler());
 #endif

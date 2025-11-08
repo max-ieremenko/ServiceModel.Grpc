@@ -3,7 +3,7 @@
 
 Used by: Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal
 
-Target frameworks: net462, net8.0, net9.0
+Target frameworks: net481, net8.0, net9.0
 
 License: [MIT](../../../../licenses/mit) 
 

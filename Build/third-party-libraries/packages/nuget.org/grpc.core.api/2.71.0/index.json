@@ -29,6 +29,7 @@
       "InternalOnly": false,
       "TargetFrameworks": [
         "net462",
+        "net481",
         "net8.0",
         "net9.0",
         "netstandard2.0",
