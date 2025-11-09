@@ -26,20 +26,20 @@
     <PackageVersion Include="Grpc.Tools" Version="2.76.0" />
     <PackageVersion Include="Google.Protobuf" Version="3.33.0" />
 
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.9" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.10" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.10" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.10" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="9.0.10" />
+    <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.10" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.10" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.10" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
 
-    <PackageVersion Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.9" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.10" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.10" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.10" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.10" />
 
     <PackageVersion Include="System.ServiceModel.Primitives" Version="8.1.2" />
     <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.10" />
