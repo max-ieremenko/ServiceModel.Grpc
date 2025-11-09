@@ -34,7 +34,7 @@ namespace ServiceModel.Grpc.Configuration;
 /// </summary>
 public sealed class NerdbankMessagePackMarshallerFactory : IMarshallerFactory
 {
-    private MessageTypeShapeProvider _shapeProvider;
+    private readonly MessageTypeShapeProvider _shapeProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NerdbankMessagePackMarshallerFactory"/> class with ITypeShapeProvider and default MessagePackSerializer.

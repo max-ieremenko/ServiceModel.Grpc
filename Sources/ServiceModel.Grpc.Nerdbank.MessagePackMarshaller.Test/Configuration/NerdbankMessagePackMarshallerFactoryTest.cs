@@ -15,6 +15,7 @@
 // </copyright>
 
 using NUnit.Framework;
+using PolyType;
 using ServiceModel.Grpc.Channel;
 using ServiceModel.Grpc.Domain;
 
@@ -227,7 +228,7 @@ public class NerdbankMessagePackMarshallerFactoryTest
 
     private T MarshallerDeserialize<T>(byte[] payload) => MarshallerExtensions.Deserialize(_sut.CreateMarshaller<T>(), payload);
 
-    private byte[] DefaultSerialize<T>(T value) => _sut.Serializer.Serialize(value, _sut.TypeShapeProvider);
+    private byte[] DefaultSerialize<T>(T value) => _sut.Serializer.Serialize(value, _sut.TypeShapeProvider.GetTypeShapeOrThrow<T>());
 
-    private T? DefaultDeserialize<T>(byte[] payload) => _sut.Serializer.Deserialize<T>(payload, _sut.TypeShapeProvider);
+    private T? DefaultDeserialize<T>(byte[] payload) => _sut.Serializer.Deserialize(payload, _sut.TypeShapeProvider.GetTypeShapeOrThrow<T>());
 }
