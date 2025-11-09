@@ -1,4 +1,4 @@
-﻿Microsoft.NET.StringTools [17.14.8](https://www.nuget.org/packages/Microsoft.NET.StringTools/17.14.8)
+﻿Microsoft.NET.StringTools [17.14.28](https://www.nuget.org/packages/Microsoft.NET.StringTools/17.14.28)
 --------------------
 
 Used by: NerdbankMessagePack
