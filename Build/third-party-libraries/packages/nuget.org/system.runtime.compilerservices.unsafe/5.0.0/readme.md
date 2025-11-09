@@ -1,9 +1,9 @@
 ﻿System.Runtime.CompilerServices.Unsafe [5.0.0](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/5.0.0)
 --------------------
 
-Used by: Core internal, DesignTime
+Used by: DesignTime
 
-Target frameworks: net10.0, net481, net8.0, net9.0, netstandard2.0
+Target frameworks: netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
