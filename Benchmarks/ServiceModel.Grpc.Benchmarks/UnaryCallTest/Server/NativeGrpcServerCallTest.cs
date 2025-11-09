@@ -15,8 +15,6 @@
 // </copyright>
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceModel.Grpc.Benchmarks.Domain;
 
@@ -24,50 +22,32 @@ namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest.Server;
 
 internal sealed class NativeGrpcServerCallTest : IUnaryCallTest
 {
-    private readonly TestServer _server;
-    private readonly HttpClient _client;
-    private readonly StubHttpRequest _request;
+    private readonly byte[] _payload;
+    private readonly TestServerHost _host;
+    private StubHttpRequest _request = null!;
 
     public NativeGrpcServerCallTest(SomeObjectProto payload)
     {
-        _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
-        _client = _server.CreateClient();
+        _payload = MessageSerializer.Create(payload);
 
-        _request = new StubHttpRequest(
-            _client,
-            "/TestServiceNative/PingPong",
-            MessageSerializer.Create(payload));
+        _host = new TestServerHost()
+            .ConfigureServices(services =>
+            {
+                services.AddGrpc();
+            })
+            .ConfigureEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<TestServiceNativeStub>();
+            });
+    }
+
+    public async Task StartAsync()
+    {
+        await _host.StartAsync().ConfigureAwait(false);
+        _request = new StubHttpRequest(_host.GetClient(), "/TestServiceNative/PingPong", _payload);
     }
 
     public Task PingPongAsync() => _request.SendAsync();
 
-    public async ValueTask<long> GetPingPongPayloadSize()
-    {
-        await PingPongAsync().ConfigureAwait(false);
-        return _request.PayloadSize;
-    }
-
-    public void Dispose()
-    {
-        _server.Dispose();
-        _client.Dispose();
-    }
-
-    private sealed class Startup
-    {
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddGrpc();
-        }
-
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapGrpcService<TestServiceNativeStub>();
-            });
-        }
-    }
+    public ValueTask DisposeAsync() => _host.DisposeAsync();
 }

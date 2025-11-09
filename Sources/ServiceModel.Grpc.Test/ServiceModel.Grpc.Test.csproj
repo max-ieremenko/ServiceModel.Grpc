@@ -2,13 +2,13 @@
   <Import Project="..\Test.csproj.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>net462;net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net481;$(SupportedFrameworks)</TargetFrameworks>
     <RootNamespace>ServiceModel.Grpc</RootNamespace>
     <AssemblyTitle>ServiceModel.Grpc.Test</AssemblyTitle>
     <NoWarn>$(NoWarn);ServiceModelGrpcInternalAPI</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net462'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net481'">
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>

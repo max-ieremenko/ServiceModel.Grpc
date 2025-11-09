@@ -2,10 +2,15 @@
   <Import Project="..\Sources\Directory.Packages.props" />
 
   <ItemGroup>
-    <PackageVersion Include="BenchmarkDotNet" Version="0.15.4" />
+    <PackageVersion Include="ServiceModel.Grpc.AspNetCore" Version="$(ServiceModelGrpcVersion)" />
+    <PackageVersion Include="ServiceModel.Grpc.MemoryPackMarshaller" Version="$(ServiceModelGrpcVersion)" />
+    <PackageVersion Include="ServiceModel.Grpc.MessagePackMarshaller" Version="$(ServiceModelGrpcVersion)" />
+    <PackageVersion Include="ServiceModel.Grpc.ProtoBufMarshaller" Version="$(ServiceModelGrpcVersion)" />
+
+    <PackageVersion Include="BenchmarkDotNet" Version="0.15.6" />
     <PackageVersion Include="MagicOnion" Version="7.0.6" />
     <PackageVersion Include="MagicOnion.Server" Version="7.0.6" />
-    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="9.0.9" />
+    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="9.0.10" />
     <PackageVersion Include="protobuf-net.Grpc" Version="1.2.2" />
     <PackageVersion Include="protobuf-net.Grpc.AspNetCore" Version="1.2.2" />
     <PackageVersion Include="System.ServiceModel.Primitives" Version="8.1.2" />

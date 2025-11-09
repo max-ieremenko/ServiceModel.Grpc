@@ -39,20 +39,17 @@ internal sealed class ServiceModelGrpcProtoClientCallTest : IUnaryCallTest
         _proxy = clientFactory.CreateClient<ITestService>(_channel);
     }
 
+    public Task StartAsync() => Task.CompletedTask;
+
     public Task PingPongAsync()
     {
         return _proxy.PingPongProto(_payload);
     }
 
-    public async ValueTask<long> GetPingPongPayloadSize()
-    {
-        await PingPongAsync().ConfigureAwait(false);
-        return _httpHandler.PayloadSize;
-    }
-
-    public void Dispose()
+    public ValueTask DisposeAsync()
     {
         _channel.Dispose();
         _httpHandler.Dispose();
+        return ValueTask.CompletedTask;
     }
 }

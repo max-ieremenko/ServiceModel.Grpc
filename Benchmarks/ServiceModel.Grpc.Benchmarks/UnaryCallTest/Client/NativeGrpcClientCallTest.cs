@@ -36,6 +36,8 @@ internal sealed class NativeGrpcClientCallTest : IUnaryCallTest
         _proxy = new TestServiceNative.TestServiceNativeClient(_channel);
     }
 
+    public Task StartAsync() => Task.CompletedTask;
+
     public async Task PingPongAsync()
     {
         using (var call = _proxy.PingPongAsync(_payload))
@@ -44,15 +46,10 @@ internal sealed class NativeGrpcClientCallTest : IUnaryCallTest
         }
     }
 
-    public async ValueTask<long> GetPingPongPayloadSize()
-    {
-        await PingPongAsync().ConfigureAwait(false);
-        return _httpHandler.PayloadSize;
-    }
-
-    public void Dispose()
+    public ValueTask DisposeAsync()
     {
         _channel.Dispose();
         _httpHandler.Dispose();
+        return ValueTask.CompletedTask;
     }
 }

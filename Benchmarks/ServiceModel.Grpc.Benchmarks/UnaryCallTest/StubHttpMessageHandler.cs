@@ -15,7 +15,6 @@
 // </copyright>
 
 using Grpc.Core;
-using Grpc.Net.Client;
 
 namespace ServiceModel.Grpc.Benchmarks.UnaryCallTest;
 
@@ -35,24 +34,6 @@ internal sealed class StubHttpMessageHandler : HttpMessageHandler
         _responseStatus = responseStatus.ToString("D");
     }
 
-    public long PayloadSize { get; private set; }
-
-    public static async ValueTask<long> GetPayloadSize(Func<GrpcChannel, Task> call)
-    {
-        using var httpHandler = new StubHttpMessageHandler(Array.Empty<byte>(), StatusCode.Cancelled);
-        using var channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpHandler = httpHandler });
-
-        try
-        {
-            await call(channel).ConfigureAwait(false);
-        }
-        catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
-        {
-        }
-
-        return httpHandler.PayloadSize;
-    }
-
     protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         throw new NotSupportedException();
@@ -60,7 +41,7 @@ internal sealed class StubHttpMessageHandler : HttpMessageHandler
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        PayloadSize = await HttpMessage.ReadAsync(request.Content!, cancellationToken).ConfigureAwait(false);
+        await HttpMessage.ReadAsync(request.Content!, cancellationToken).ConfigureAwait(false);
 
         return HttpMessage.CreateResponse(_responsePayload, _responseStatus);
     }

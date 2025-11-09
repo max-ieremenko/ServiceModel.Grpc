@@ -3,7 +3,7 @@
 
 Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal
 
-Target frameworks: net462, net8.0, net9.0
+Target frameworks: net10.0, net481, net8.0, net9.0
 
 License: [Apache-2.0](../../../../licenses/apache-2.0) 
 

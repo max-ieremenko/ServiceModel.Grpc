@@ -1,9 +1,9 @@
 ﻿System.Reflection.Metadata [8.0.0](https://www.nuget.org/packages/System.Reflection.Metadata/8.0.0)
 --------------------
 
-Used by: AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal
+Used by: DesignTime internal
 
-Target frameworks: net462, net8.0, net9.0
+Target frameworks: net8.0
 
 License: [MIT](../../../../licenses/mit) 
 

@@ -29,7 +29,7 @@ internal static class NerdbankTools
 
     public static ITypeShapeProvider TypeShapeProvider => TypeShapeProvider_ServiceModel_Grpc_MessagePackMarshallers_Compatibility_Test.Default;
 
-    public static byte[] Serialize<T>(T? value) => Serializer.Serialize(value, TypeShapeProvider);
+    public static byte[] Serialize<T>(T? value) => Serializer.Serialize(value, TypeShapeProvider.GetTypeShapeOrThrow<T>());
 
-    public static T? Deserialize<T>(byte[] payload) => Serializer.Deserialize<T>(payload, TypeShapeProvider);
+    public static T? Deserialize<T>(byte[] payload) => Serializer.Deserialize(payload, TypeShapeProvider.GetTypeShapeOrThrow<T>());
 }

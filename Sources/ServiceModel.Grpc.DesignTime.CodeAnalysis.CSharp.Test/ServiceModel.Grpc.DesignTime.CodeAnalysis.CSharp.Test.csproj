@@ -2,16 +2,16 @@
   <Import Project="..\Test.csproj.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>net462;net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net481;$(SupportedFrameworks)</TargetFrameworks>
     <RootNamespace>ServiceModel.Grpc.DesignTime.CodeAnalysis.CSharp</RootNamespace>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net462'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net481'">
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net481'">
     <Reference Include="System.ServiceModel" />
   </ItemGroup>
 

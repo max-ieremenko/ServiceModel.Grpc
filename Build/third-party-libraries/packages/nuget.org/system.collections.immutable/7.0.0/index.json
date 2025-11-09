@@ -10,7 +10,8 @@
       "Name": "Emit",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "net462",
+        "net10.0",
+        "net481",
         "net8.0",
         "net9.0"
       ],
@@ -29,6 +30,7 @@
       "Name": "ProtoBuf",
       "InternalOnly": false,
       "TargetFrameworks": [
+        "net10.0",
         "net462",
         "net8.0",
         "net9.0",

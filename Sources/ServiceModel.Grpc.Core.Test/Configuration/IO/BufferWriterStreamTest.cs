@@ -52,7 +52,7 @@ public class BufferWriterStreamTest
         actual.ShouldBe(expected);
     }
 
-#if !NET462
+#if !NET481
     [Test]
     [TestCase(new byte[] { 1, 2, 3 }, 0, 3, new byte[] { 1, 2, 3 })]
     [TestCase(new byte[] { 1, 2, 3 }, 1, 2, new byte[] { 2, 3 })]

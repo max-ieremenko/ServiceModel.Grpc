@@ -1,0 +1,72 @@
+{
+  "$schema": "https://raw.githubusercontent.com/max-ieremenko/ThirdPartyLibraries/refs/heads/master/Docs/schema.package-index.json",
+  "Source": "https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-public/nuget/v3/index.json",
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "ClientDI",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net481",
+        "net8.0",
+        "net9.0"
+      ]
+    },
+    {
+      "Name": "Core",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net481",
+        "net8.0",
+        "net9.0"
+      ]
+    },
+    {
+      "Name": "DesignTime",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net481",
+        "net8.0",
+        "net9.0"
+      ]
+    },
+    {
+      "Name": "Emit",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net481",
+        "net8.0",
+        "net9.0"
+      ]
+    },
+    {
+      "Name": "SelfHost",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net481",
+        "net8.0",
+        "net9.0"
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://github.com/Microsoft/dotnet/blob/master/LICENSE"
+    },
+    {
+      "Subject": "project",
+      "Code": "MIT",
+      "HRef": "https://github.com/Microsoft/dotnet/tree/master/releases/reference-assemblies"
+    }
+  ]
+}

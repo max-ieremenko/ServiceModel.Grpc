@@ -3,7 +3,7 @@ function Build-LinuxSdkImage {
     param (
         [Parameter()]
         [string]
-        $Tag = 'service-model-grpc/sdk:9.0-noble',
+        $Tag = 'service-model-grpc/sdk:10.0-noble',
 
         [Parameter()]
         [switch]

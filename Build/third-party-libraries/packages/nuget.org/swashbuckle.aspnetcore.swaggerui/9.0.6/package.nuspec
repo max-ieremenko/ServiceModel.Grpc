@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Swashbuckle.AspNetCore.SwaggerUI</id>
+    <version>9.0.6</version>
+    <authors>domaindrivendev</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <readme>package-readme.md</readme>
+    <projectUrl>https://github.com/domaindrivendev/Swashbuckle.AspNetCore</projectUrl>
+    <description>Middleware to expose an embedded version of the swagger-ui from an ASP.NET Core application</description>
+    <releaseNotes>See https://github.com/domaindrivendev/Swashbuckle.AspNetCore/releases for details.</releaseNotes>
+    <copyright>Copyright (c) 2016-2025 Richard Morris</copyright>
+    <tags>swagger documentation discovery help webapi aspnet aspnetcore</tags>
+    <repository type="git" url="https://github.com/domaindrivendev/Swashbuckle.AspNetCore.git" commit="1070368afe936b06bd4579053ea228f0fd7bce33" />
+    <dependencies>
+      <group targetFramework="net8.0" />
+      <group targetFramework="net9.0" />
+    </dependencies>
+    <frameworkReferences>
+      <group targetFramework="net8.0">
+        <frameworkReference name="Microsoft.AspNetCore.App" />
+      </group>
+      <group targetFramework="net9.0">
+        <frameworkReference name="Microsoft.AspNetCore.App" />
+      </group>
+    </frameworkReferences>
+  </metadata>
+</package>

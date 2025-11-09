@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ServiceModel.Grpc.AspNetCore" />
+    <PackageReference Include="ServiceModel.Grpc.MemoryPackMarshaller" />
+    <PackageReference Include="ServiceModel.Grpc.MessagePackMarshaller" />
+    <PackageReference Include="ServiceModel.Grpc.ProtoBufMarshaller" />
+
     <PackageReference Include="BenchmarkDotNet" />
     <PackageReference Include="Grpc.Net.Client" />
     <PackageReference Include="MagicOnion" />
@@ -17,14 +22,6 @@
     <PackageReference Include="System.ServiceModel.Primitives" />
     <PackageReference Include="Google.Protobuf" />
     <PackageReference Include="Grpc.Tools" PrivateAssets="All" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\Sources\ServiceModel.Grpc.AspNetCore\ServiceModel.Grpc.AspNetCore.csproj" />
-    <ProjectReference Include="..\..\Sources\ServiceModel.Grpc.MemoryPackMarshaller\ServiceModel.Grpc.MemoryPackMarshaller.csproj" />
-    <ProjectReference Include="..\..\Sources\ServiceModel.Grpc.MessagePackMarshaller\ServiceModel.Grpc.MessagePackMarshaller.csproj" />
-    <ProjectReference Include="..\..\Sources\ServiceModel.Grpc.ProtoBufMarshaller\ServiceModel.Grpc.ProtoBufMarshaller.csproj" />
-    <ProjectReference Include="..\..\Sources\ServiceModel.Grpc\ServiceModel.Grpc.csproj" />
   </ItemGroup>
 
   <ItemGroup>
