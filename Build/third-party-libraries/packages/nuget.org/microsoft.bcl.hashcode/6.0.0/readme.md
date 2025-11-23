@@ -1,9 +1,9 @@
 ﻿Microsoft.Bcl.HashCode [6.0.0](https://www.nuget.org/packages/Microsoft.Bcl.HashCode/6.0.0)
 --------------------
 
-Used by: NerdbankMessagePack
+Used by: ClientDI internal, NerdbankMessagePack
 
-Target frameworks: net10.0, net8.0, net9.0, netstandard2.0
+Target frameworks: net10.0, net481, net8.0, net9.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
