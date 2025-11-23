@@ -40,8 +40,8 @@ internal sealed class MessageShapeInstance<TMessage>
             Provider = _provider,
             IsRecordType = false,
             IsTupleType = false,
-            CreatePropertiesFunc = CreateProperties,
-            CreateConstructorFunc = CreateConstructor
+            PropertiesFactory = CreateProperties,
+            ConstructorFactory = CreateConstructor
         };
 
         return _value;
@@ -56,15 +56,15 @@ internal sealed class MessageShapeInstance<TMessage>
     private IConstructorShape CreateConstructor() => new SourceGenConstructorShape<TMessage, EmptyArgumentState>
     {
         DeclaringType = _value!,
-        DefaultConstructorFunc = static () => new TMessage(),
+        DefaultConstructor = static () => new TMessage(),
         IsPublic = true
     };
 
-    private IPropertyShape[] CreateProperties()
+    private IEnumerable<IPropertyShape> CreateProperties()
     {
         if (_properties.Length == 0)
         {
-            return Array.Empty<IPropertyShape>();
+            return Enumerable.Empty<IPropertyShape>();
         }
 
         var result = new IPropertyShape[_properties.Length + 1];
