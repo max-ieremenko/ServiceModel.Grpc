@@ -45,8 +45,8 @@
     <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.10" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
 
-    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="9.0.6" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.Annotations" Version="9.0.6" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.0.1" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.Annotations" Version="10.0.1" />
 
     <PackageVersion Include="MessagePack" Version="3.1.4" />
 
