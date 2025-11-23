@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>Microsoft.NET.ILLink.Tasks</id>
-    <version>9.0.10</version>
+    <version>8.0.22</version>
     <authors>Microsoft</authors>
     <license type="expression">MIT</license>
     <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
@@ -12,10 +12,10 @@
     <releaseNotes>https://go.microsoft.com/fwlink/?LinkID=799421</releaseNotes>
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <serviceable>true</serviceable>
-    <repository type="git" url="https://github.com/dotnet/runtime" commit="e1f19886fe3354963a4a790c896b3f99689fd7a5" />
+    <repository type="git" url="https://github.com/dotnet/runtime" commit="a2266c728f63a494ccb6786d794da2df135030be" />
     <dependencies>
       <group targetFramework=".NETFramework4.7.2" />
-      <group targetFramework="net9.0" />
+      <group targetFramework="net8.0" />
     </dependencies>
   </metadata>
 </package>
