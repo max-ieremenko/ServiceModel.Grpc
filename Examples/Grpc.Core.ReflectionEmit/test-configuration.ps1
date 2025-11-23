@@ -13,10 +13,10 @@
         ),
         @( 
             @{
-                App  = 'Server/bin/Release/net9.0/Server.exe'
+                App  = 'Server/bin/Release/net10.0/Server.exe'
                 Port = 8082
             }
-            @{ App = 'Client/bin/Release/net9.0/Client.exe' }
+            @{ App = 'Client/bin/Release/net10.0/Client.exe' }
         )
     )
 }
