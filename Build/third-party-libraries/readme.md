@@ -86,12 +86,12 @@ Packages 133
 |[NJsonSchema.Annotations](packages/nuget.org/njsonschema.annotations/11.5.2)|11.5.2|[nuget.org](https://www.nuget.org/packages/NJsonSchema.Annotations/11.5.2)|[MIT](licenses/mit)|AspNetCoreNSwag|
 |[NJsonSchema.NewtonsoftJson](packages/nuget.org/njsonschema.newtonsoftjson/11.5.2)|11.5.2|[nuget.org](https://www.nuget.org/packages/NJsonSchema.NewtonsoftJson/11.5.2)|[MIT](licenses/mit)|AspNetCoreNSwag|
 |[NJsonSchema.Yaml](packages/nuget.org/njsonschema.yaml/11.5.2)|11.5.2|[nuget.org](https://www.nuget.org/packages/NJsonSchema.Yaml/11.5.2)|[MIT](licenses/mit)|AspNetCoreNSwag|
-|[NSwag.Annotations](packages/nuget.org/nswag.annotations/14.6.2)|14.6.2|[nuget.org](https://www.nuget.org/packages/NSwag.Annotations/14.6.2)|[MIT](licenses/mit)|AspNetCoreNSwag|
-|[NSwag.AspNetCore](packages/nuget.org/nswag.aspnetcore/14.6.2)|14.6.2|[nuget.org](https://www.nuget.org/packages/NSwag.AspNetCore/14.6.2)|[MIT](licenses/mit)|AspNetCoreNSwag|
-|[NSwag.Core](packages/nuget.org/nswag.core/14.6.2)|14.6.2|[nuget.org](https://www.nuget.org/packages/NSwag.Core/14.6.2)|[MIT](licenses/mit)|AspNetCoreNSwag|
-|[NSwag.Core.Yaml](packages/nuget.org/nswag.core.yaml/14.6.2)|14.6.2|[nuget.org](https://www.nuget.org/packages/NSwag.Core.Yaml/14.6.2)|[MIT](licenses/mit)|AspNetCoreNSwag|
-|[NSwag.Generation](packages/nuget.org/nswag.generation/14.6.2)|14.6.2|[nuget.org](https://www.nuget.org/packages/NSwag.Generation/14.6.2)|[MIT](licenses/mit)|AspNetCoreNSwag|
-|[NSwag.Generation.AspNetCore](packages/nuget.org/nswag.generation.aspnetcore/14.6.2)|14.6.2|[nuget.org](https://www.nuget.org/packages/NSwag.Generation.AspNetCore/14.6.2)|[MIT](licenses/mit)|AspNetCoreNSwag|
+|[NSwag.Annotations](packages/nuget.org/nswag.annotations/14.6.3)|14.6.3|[nuget.org](https://www.nuget.org/packages/NSwag.Annotations/14.6.3)|[MIT](licenses/mit)|AspNetCoreNSwag|
+|[NSwag.AspNetCore](packages/nuget.org/nswag.aspnetcore/14.6.3)|14.6.3|[nuget.org](https://www.nuget.org/packages/NSwag.AspNetCore/14.6.3)|[MIT](licenses/mit)|AspNetCoreNSwag|
+|[NSwag.Core](packages/nuget.org/nswag.core/14.6.3)|14.6.3|[nuget.org](https://www.nuget.org/packages/NSwag.Core/14.6.3)|[MIT](licenses/mit)|AspNetCoreNSwag|
+|[NSwag.Core.Yaml](packages/nuget.org/nswag.core.yaml/14.6.3)|14.6.3|[nuget.org](https://www.nuget.org/packages/NSwag.Core.Yaml/14.6.3)|[MIT](licenses/mit)|AspNetCoreNSwag|
+|[NSwag.Generation](packages/nuget.org/nswag.generation/14.6.3)|14.6.3|[nuget.org](https://www.nuget.org/packages/NSwag.Generation/14.6.3)|[MIT](licenses/mit)|AspNetCoreNSwag|
+|[NSwag.Generation.AspNetCore](packages/nuget.org/nswag.generation.aspnetcore/14.6.3)|14.6.3|[nuget.org](https://www.nuget.org/packages/NSwag.Generation.AspNetCore/14.6.3)|[MIT](licenses/mit)|AspNetCoreNSwag|
 |[NUnit](packages/nuget.org/nunit/4.4.0)|4.4.0|[nuget.org](https://www.nuget.org/packages/NUnit/4.4.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal|
 |[NUnit3TestAdapter](packages/nuget.org/nunit3testadapter/5.2.0)|5.2.0|[nuget.org](https://www.nuget.org/packages/NUnit3TestAdapter/5.2.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal|
 |[PolyType](packages/nuget.org/polytype/1.0.0-rc.7)|1.0.0-rc.7|[nuget.org](https://www.nuget.org/packages/PolyType/1.0.0-rc.7)|[MIT](licenses/mit)|NerdbankMessagePack|

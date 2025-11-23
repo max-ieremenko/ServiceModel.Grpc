@@ -18,6 +18,22 @@
         {
           "Name": "NJsonSchema",
           "Version": "11.5.2"
+        },
+        {
+          "Name": "NJsonSchema.Yaml",
+          "Version": "11.5.2"
+        },
+        {
+          "Name": "NSwag.Core",
+          "Version": "14.6.3"
+        },
+        {
+          "Name": "Namotion.Reflection",
+          "Version": "3.4.3"
+        },
+        {
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     }
