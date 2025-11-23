@@ -1,4 +1,4 @@
-﻿Microsoft.NET.ILLink.Tasks [9.0.10](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/9.0.10)
+﻿Microsoft.NET.ILLink.Tasks [9.0.11](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/9.0.11)
 --------------------
 
 Used by: AspNetCore, ClientDI, Core, Emit, MemoryPack, MessagePack, NerdbankMessagePack

@@ -1,4 +1,4 @@
-﻿Microsoft.NET.ILLink.Tasks [10.0.0-rc.2.25502.107](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/10.0.0-rc.2.25502.107)
+﻿Microsoft.NET.ILLink.Tasks [8.0.22](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/8.0.22)
 --------------------
 
 Used by: AspNetCore, ClientDI, Core, Emit, MemoryPack, MessagePack, NerdbankMessagePack
@@ -8,7 +8,7 @@ Target frameworks: net10.0, net462, net8.0, net9.0, netstandard2.0, netstandard2
 License: [MIT](../../../../licenses/mit) 
 
 - package license: [MIT](https://licenses.nuget.org/MIT) 
-- repository license: [MIT](https://github.com/dotnet/dotnet) 
+- repository license: [MIT](https://github.com/dotnet/runtime) 
 - project license: [Unknown](https://dot.net/) 
 
 Description

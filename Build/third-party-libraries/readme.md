@@ -7,13 +7,13 @@ Licenses
 |[BSD-2-Clause](licenses/bsd-2-clause)|no|no|0|
 |[BSD-3-Clause](licenses/bsd-3-clause)|no|no|3|
 |[Google.Protobuf](licenses/google.protobuf)|yes|no|0|
-|[MIT](licenses/mit)|no|no|115|
+|[MIT](licenses/mit)|no|no|116|
 |[ms-net-library](licenses/ms-net-library)|no|no|0|
 |[MS-PL](licenses/ms-pl)|no|no|0|
 
 
 
-Packages 128
+Packages 129
 --------
 
 |Name|Version|Source|License|Used by|
@@ -57,13 +57,13 @@ Packages 128
 |[Microsoft.IdentityModel.Protocols](packages/nuget.org/microsoft.identitymodel.protocols/7.1.2)|7.1.2|[nuget.org](https://www.nuget.org/packages/Microsoft.IdentityModel.Protocols/7.1.2)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
 |[Microsoft.IdentityModel.Protocols.OpenIdConnect](packages/nuget.org/microsoft.identitymodel.protocols.openidconnect/7.1.2)|7.1.2|[nuget.org](https://www.nuget.org/packages/Microsoft.IdentityModel.Protocols.OpenIdConnect/7.1.2)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
 |[Microsoft.IdentityModel.Tokens](packages/nuget.org/microsoft.identitymodel.tokens/7.1.2)|7.1.2|[nuget.org](https://www.nuget.org/packages/Microsoft.IdentityModel.Tokens/7.1.2)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
-|[Microsoft.NET.ILLink.Tasks](packages/nuget.org/microsoft.net.illink.tasks/10.0.0-rc.2.25502.107)|10.0.0-rc.2.25502.107|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/10.0.0-rc.2.25502.107)|[MIT](licenses/mit)|AspNetCore, ClientDI, Core, Emit, MemoryPack, MessagePack, NerdbankMessagePack|
-|[Microsoft.NET.ILLink.Tasks](packages/nuget.org/microsoft.net.illink.tasks/8.0.21)|8.0.21|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/8.0.21)|[MIT](licenses/mit)|AspNetCore, ClientDI, Core, Emit, MemoryPack, MessagePack, NerdbankMessagePack|
-|[Microsoft.NET.ILLink.Tasks](packages/nuget.org/microsoft.net.illink.tasks/9.0.10)|9.0.10|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/9.0.10)|[MIT](licenses/mit)|AspNetCore, ClientDI, Core, Emit, MemoryPack, MessagePack, NerdbankMessagePack|
+|[Microsoft.NET.ILLink.Tasks](packages/nuget.org/microsoft.net.illink.tasks/10.0.0)|10.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/10.0.0)|[MIT](licenses/mit)|AspNetCore, ClientDI, Core, Emit, MemoryPack, MessagePack, NerdbankMessagePack|
+|[Microsoft.NET.ILLink.Tasks](packages/nuget.org/microsoft.net.illink.tasks/8.0.22)|8.0.22|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/8.0.22)|[MIT](licenses/mit)|AspNetCore, ClientDI, Core, Emit, MemoryPack, MessagePack, NerdbankMessagePack|
+|[Microsoft.NET.ILLink.Tasks](packages/nuget.org/microsoft.net.illink.tasks/9.0.11)|9.0.11|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/9.0.11)|[MIT](licenses/mit)|AspNetCore, ClientDI, Core, Emit, MemoryPack, MessagePack, NerdbankMessagePack|
 |[Microsoft.NET.StringTools](packages/nuget.org/microsoft.net.stringtools/17.11.4)|17.11.4|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.StringTools/17.11.4)|[MIT](licenses/mit)|MessagePack|
 |[Microsoft.NET.StringTools](packages/nuget.org/microsoft.net.stringtools/17.14.28)|17.14.28|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.StringTools/17.14.28)|[MIT](licenses/mit)|NerdbankMessagePack|
 |[Microsoft.NET.Test.Sdk](packages/nuget.org/microsoft.net.test.sdk/18.0.0)|18.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.Test.Sdk/18.0.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal|
-|[Microsoft.NETFramework.ReferenceAssemblies](packages/nuget.org/microsoft.netframework.referenceassemblies/1.0.3)|1.0.3|[nuget.org](https://www.nuget.org/packages/Microsoft.NETFramework.ReferenceAssemblies/1.0.3)|[MIT](licenses/mit)|ClientDI internal, Core internal, DesignTime internal, Emit internal, SelfHost internal|
+|[Microsoft.NETFramework.ReferenceAssemblies](packages/nuget.org/microsoft.netframework.referenceassemblies/1.0.3)|1.0.3|[nuget.org](https://www.nuget.org/packages/Microsoft.NETFramework.ReferenceAssemblies/1.0.3)|[MIT](licenses/mit)|ClientDI internal, Core, DesignTime internal, Emit, ProtoBuf, SelfHost|
 |[Microsoft.OpenApi](packages/nuget.org/microsoft.openapi/1.6.25)|1.6.25|[nuget.org](https://www.nuget.org/packages/Microsoft.OpenApi/1.6.25)|[MIT](licenses/mit)|AspNetCoreSwashbuckle|
 |[Microsoft.SourceLink.GitHub](packages/nuget.org/microsoft.sourcelink.github/8.0.0)|8.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub/8.0.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, ProtoBuf internal, SelfHost internal|
 |[Microsoft.Testing.Extensions.Telemetry](packages/nuget.org/microsoft.testing.extensions.telemetry/1.9.0)|1.9.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Testing.Extensions.Telemetry/1.9.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal|
@@ -145,6 +145,7 @@ Packages 128
 |[System.Text.Json](packages/nuget.org/system.text.json/8.0.6)|8.0.6|[nuget.org](https://www.nuget.org/packages/System.Text.Json/8.0.6)|[MIT](licenses/mit)|NerdbankMessagePack|
 |[System.Threading.Channels](packages/nuget.org/system.threading.channels/9.0.10)|9.0.10|[nuget.org](https://www.nuget.org/packages/System.Threading.Channels/9.0.10)|[MIT](licenses/mit)|Core internal|
 |[System.Threading.Tasks.Extensions](packages/nuget.org/system.threading.tasks.extensions/4.5.4)|4.5.4|[nuget.org](https://www.nuget.org/packages/System.Threading.Tasks.Extensions/4.5.4)|[MIT](licenses/mit)|ClientDI, Core, DesignTime, Emit internal, MessagePack, NerdbankMessagePack, SelfHost internal|
+|[System.ValueTuple](packages/nuget.org/system.valuetuple/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.ValueTuple/4.5.0)|[MIT](licenses/mit)|ClientDI internal, Core internal, DesignTime internal, Emit internal, SelfHost internal|
 |[YamlDotNet](packages/nuget.org/yamldotnet/16.3.0)|16.3.0|[nuget.org](https://www.nuget.org/packages/YamlDotNet/16.3.0)|[MIT](licenses/mit)|AspNetCoreNSwag|
 
 *This page was generated by [ThirdPartyLibraries.GlobalTool](https://github.com/max-ieremenko/ThirdPartyLibraries).*
