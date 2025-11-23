@@ -19,7 +19,7 @@ using System.Net;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using ServiceModel.Grpc.AspNetCore.Internal;
 using ServiceModel.Grpc.AspNetCore.Internal.ApiExplorer;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -96,7 +96,7 @@ internal sealed class SwaggerOperationFilter : IOperationFilter
             return;
         }
 
-        if (!operation.Responses.TryGetValue(responseType.StatusCode.ToString(), out var response))
+        if (operation.Responses == null || !operation.Responses.TryGetValue(responseType.StatusCode.ToString(), out var response))
         {
             return;
         }
@@ -105,22 +105,24 @@ internal sealed class SwaggerOperationFilter : IOperationFilter
         {
             var metadata = headers[i];
             var schema = schemaGenerator.GenerateSchema(metadata.Type, schemaRepository);
-            response.Headers.Add(metadata.Name, new OpenApiHeader { Schema = schema });
+            response.Headers?.Add(metadata.Name, new OpenApiHeader { Schema = schema });
         }
     }
 
     private static void FixRequestType(OpenApiOperation operation)
     {
-        if (operation.RequestBody == null && operation.Parameters.Count == 0)
+        if (operation.RequestBody != null || operation.Parameters?.Count > 0)
         {
-            // fix request content type when operation contract has no input
-            operation.RequestBody = new OpenApiRequestBody
-            {
-                Content =
-                {
-                    { ProtocolConstants.MediaTypeNameSwaggerRequest, new OpenApiMediaType() }
-                }
-            };
+            return;
         }
+
+        // fix request content type when operation contract has no input
+        operation.RequestBody = new OpenApiRequestBody
+        {
+            Content = new Dictionary<string, OpenApiMediaType>(1)
+            {
+                { ProtocolConstants.MediaTypeNameSwaggerRequest, new OpenApiMediaType() }
+            }
+        };
     }
 }

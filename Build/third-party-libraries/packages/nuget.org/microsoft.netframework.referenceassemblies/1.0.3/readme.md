@@ -1,9 +1,9 @@
 ﻿Microsoft.NETFramework.ReferenceAssemblies [1.0.3](https://www.nuget.org/packages/Microsoft.NETFramework.ReferenceAssemblies/1.0.3)
 --------------------
 
-Used by: ClientDI internal, Core internal, DesignTime internal, Emit internal, SelfHost internal
+Used by: ClientDI internal, Core, DesignTime internal, Emit, ProtoBuf, SelfHost
 
-Target frameworks: net10.0, net481, net8.0, net9.0
+Target frameworks: net10.0, net462, net481, net8.0, net9.0, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 

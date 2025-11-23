@@ -6,10 +6,10 @@ Because of the dependency on net462, the build runs on Windows.
 
 - install dependencies
 
-[net9.0 sdk](https://dotnet.microsoft.com/download/dotnet/9.0), 
-[InvokeBuild](https://www.powershellgallery.com/packages/InvokeBuild/5.14.19),
+[net10.0 sdk](https://dotnet.microsoft.com/download/dotnet/10.0), 
+[InvokeBuild](https://www.powershellgallery.com/packages/InvokeBuild),
 [ThirdPartyLibraries](https://www.powershellgallery.com/packages/ThirdPartyLibraries),
-[ZipAsFolder](https://www.powershellgallery.com/packages/ZipAsFolder/1.0.0)
+[ZipAsFolder](https://www.powershellgallery.com/packages/ZipAsFolder)
 
     ``` powershell
     PS> ./Build/install-dependencies.ps1

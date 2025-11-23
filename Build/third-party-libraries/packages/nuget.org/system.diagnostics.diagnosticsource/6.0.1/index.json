@@ -24,11 +24,15 @@
         },
         {
           "Name": "System.Memory",
-          "Version": "4.5.5"
+          "Version": "4.6.3"
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
           "Version": "6.0.0"
+        },
+        {
+          "Name": "System.Runtime.CompilerServices.Unsafe",
+          "Version": "6.1.2"
         }
       ]
     },
@@ -48,7 +52,7 @@
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.0.0"
+          "Version": "6.1.2"
         }
       ]
     },
@@ -68,7 +72,7 @@
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.0.0"
+          "Version": "6.1.2"
         }
       ]
     },
@@ -88,7 +92,7 @@
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.0.0"
+          "Version": "6.1.2"
         }
       ]
     },
@@ -108,7 +112,7 @@
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.0.0"
+          "Version": "6.1.2"
         }
       ]
     }

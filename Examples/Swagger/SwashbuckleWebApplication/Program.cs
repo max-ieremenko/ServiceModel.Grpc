@@ -3,7 +3,7 @@ using Contract;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using SwashbuckleWebApplication.Configuration;
 using SwashbuckleWebApplication.Services;
 
