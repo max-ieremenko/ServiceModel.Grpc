@@ -11,7 +11,6 @@
       "InternalOnly": false,
       "TargetFrameworks": [
         "net10.0",
-        "net481",
         "net8.0",
         "net9.0",
         "netstandard2.0",
@@ -51,36 +50,12 @@
       "Name": "DesignTime",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "net10.0",
-        "net481",
-        "net8.0",
-        "net9.0",
         "netstandard2.0"
       ],
       "Dependencies": [
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
           "Version": "5.0.0"
-        },
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.0.0"
-        }
-      ]
-    },
-    {
-      "Name": "Emit",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "net10.0",
-        "net481",
-        "net8.0",
-        "net9.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.0.0"
         }
       ]
     },
@@ -113,22 +88,6 @@
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
           "Version": "6.1.0"
-        }
-      ]
-    },
-    {
-      "Name": "SelfHost",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "net10.0",
-        "net481",
-        "net8.0",
-        "net9.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.0.0"
         }
       ]
     }

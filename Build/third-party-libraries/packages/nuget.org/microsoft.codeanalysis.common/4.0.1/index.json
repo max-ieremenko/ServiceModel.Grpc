@@ -39,7 +39,7 @@
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.0.0"
+          "Version": "6.1.2"
         },
         {
           "Name": "System.Text.Encoding.CodePages",
@@ -48,6 +48,10 @@
         {
           "Name": "System.Threading.Tasks.Extensions",
           "Version": "4.5.4"
+        },
+        {
+          "Name": "System.Threading.Tasks.Extensions",
+          "Version": "4.6.3"
         }
       ]
     }

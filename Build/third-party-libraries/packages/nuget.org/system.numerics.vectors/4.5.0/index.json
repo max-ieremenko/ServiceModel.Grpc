@@ -7,16 +7,6 @@
   },
   "UsedBy": [
     {
-      "Name": "ClientDI",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "net10.0",
-        "net481",
-        "net8.0",
-        "net9.0"
-      ]
-    },
-    {
       "Name": "Core",
       "InternalOnly": true,
       "TargetFrameworks": [

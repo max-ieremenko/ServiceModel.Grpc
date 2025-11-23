@@ -21,7 +21,7 @@
         },
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.0.0"
+          "Version": "18.0.1"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -52,7 +52,7 @@
         },
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.0.0"
+          "Version": "18.0.1"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -83,7 +83,7 @@
         },
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.0.0"
+          "Version": "18.0.1"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -115,7 +115,7 @@
         },
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.0.0"
+          "Version": "18.0.1"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -147,7 +147,7 @@
         },
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.0.0"
+          "Version": "18.0.1"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -179,7 +179,7 @@
         },
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.0.0"
+          "Version": "18.0.1"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -211,7 +211,7 @@
         },
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.0.0"
+          "Version": "18.0.1"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -242,7 +242,7 @@
         },
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.0.0"
+          "Version": "18.0.1"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -273,7 +273,7 @@
         },
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.0.0"
+          "Version": "18.0.1"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -304,7 +304,7 @@
         },
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.0.0"
+          "Version": "18.0.1"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -336,7 +336,7 @@
         },
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.0.0"
+          "Version": "18.0.1"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
