@@ -16,8 +16,16 @@
       ],
       "Dependencies": [
         {
-          "Name": "NSwag.Generation",
-          "Version": "14.6.2"
+          "Name": "NJsonSchema",
+          "Version": "11.5.2"
+        },
+        {
+          "Name": "Namotion.Reflection",
+          "Version": "3.4.3"
+        },
+        {
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     }

@@ -16,16 +16,24 @@
       ],
       "Dependencies": [
         {
-          "Name": "NSwag.Annotations",
-          "Version": "14.6.2"
+          "Name": "NJsonSchema",
+          "Version": "11.5.2"
         },
         {
-          "Name": "NSwag.Core.Yaml",
-          "Version": "14.6.2"
+          "Name": "NJsonSchema.NewtonsoftJson",
+          "Version": "11.5.2"
         },
         {
-          "Name": "NSwag.Generation.AspNetCore",
-          "Version": "14.6.2"
+          "Name": "NSwag.Core",
+          "Version": "14.6.3"
+        },
+        {
+          "Name": "Namotion.Reflection",
+          "Version": "3.4.3"
+        },
+        {
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     }
