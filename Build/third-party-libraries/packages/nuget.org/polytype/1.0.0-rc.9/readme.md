@@ -1,4 +1,4 @@
-﻿PolyType [1.0.0-rc.7](https://www.nuget.org/packages/PolyType/1.0.0-rc.7)
+﻿PolyType [1.0.0-rc.9](https://www.nuget.org/packages/PolyType/1.0.0-rc.9)
 --------------------
 
 Used by: NerdbankMessagePack
