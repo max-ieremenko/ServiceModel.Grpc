@@ -7,6 +7,30 @@
   },
   "UsedBy": [
     {
+      "Name": "ClientDI",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net481",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Buffers",
+          "Version": "4.5.1"
+        },
+        {
+          "Name": "System.Numerics.Vectors",
+          "Version": "4.5.0"
+        },
+        {
+          "Name": "System.Runtime.CompilerServices.Unsafe",
+          "Version": "6.1.2"
+        }
+      ]
+    },
+    {
       "Name": "Core",
       "InternalOnly": true,
       "TargetFrameworks": [

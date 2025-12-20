@@ -7,13 +7,13 @@ Licenses
 |[BSD-2-Clause](licenses/bsd-2-clause)|no|no|0|
 |[BSD-3-Clause](licenses/bsd-3-clause)|no|no|3|
 |[Google.Protobuf](licenses/google.protobuf)|yes|no|0|
-|[MIT](licenses/mit)|no|no|120|
+|[MIT](licenses/mit)|no|no|112|
 |[ms-net-library](licenses/ms-net-library)|no|no|0|
 |[MS-PL](licenses/ms-pl)|no|no|0|
 
 
 
-Packages 133
+Packages 125
 --------
 
 |Name|Version|Source|License|Used by|
@@ -39,7 +39,7 @@ Packages 133
 |[Microsoft.Bcl.AsyncInterfaces](packages/nuget.org/microsoft.bcl.asyncinterfaces/10.0.0)|10.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/10.0.0)|[MIT](licenses/mit)|Core internal|
 |[Microsoft.Bcl.AsyncInterfaces](packages/nuget.org/microsoft.bcl.asyncinterfaces/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/6.0.0)|[MIT](licenses/mit)|ClientDI|
 |[Microsoft.Bcl.AsyncInterfaces](packages/nuget.org/microsoft.bcl.asyncinterfaces/8.0.0)|8.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Bcl.AsyncInterfaces/8.0.0)|[MIT](licenses/mit)|MessagePack, NerdbankMessagePack|
-|[Microsoft.Bcl.HashCode](packages/nuget.org/microsoft.bcl.hashcode/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Bcl.HashCode/6.0.0)|[MIT](licenses/mit)|ClientDI internal, NerdbankMessagePack|
+|[Microsoft.Bcl.HashCode](packages/nuget.org/microsoft.bcl.hashcode/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Bcl.HashCode/6.0.0)|[MIT](licenses/mit)|NerdbankMessagePack|
 |[Microsoft.CodeAnalysis.Common](packages/nuget.org/microsoft.codeanalysis.common/4.0.1)|4.0.1|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeAnalysis.Common/4.0.1)|[MIT](licenses/mit)|DesignTime|
 |[Microsoft.CodeAnalysis.CSharp](packages/nuget.org/microsoft.codeanalysis.csharp/4.0.1)|4.0.1|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeAnalysis.CSharp/4.0.1)|[MIT](licenses/mit)|DesignTime|
 |[Microsoft.CodeCoverage](packages/nuget.org/microsoft.codecoverage/18.0.1)|18.0.1|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeCoverage/18.0.1)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal|
@@ -56,9 +56,6 @@ Packages 133
 |[Microsoft.IdentityModel.Protocols](packages/nuget.org/microsoft.identitymodel.protocols/7.1.2)|7.1.2|[nuget.org](https://www.nuget.org/packages/Microsoft.IdentityModel.Protocols/7.1.2)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
 |[Microsoft.IdentityModel.Protocols.OpenIdConnect](packages/nuget.org/microsoft.identitymodel.protocols.openidconnect/7.1.2)|7.1.2|[nuget.org](https://www.nuget.org/packages/Microsoft.IdentityModel.Protocols.OpenIdConnect/7.1.2)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
 |[Microsoft.IdentityModel.Tokens](packages/nuget.org/microsoft.identitymodel.tokens/7.1.2)|7.1.2|[nuget.org](https://www.nuget.org/packages/Microsoft.IdentityModel.Tokens/7.1.2)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal|
-|[Microsoft.NET.ILLink.Tasks](packages/nuget.org/microsoft.net.illink.tasks/10.0.0)|10.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/10.0.0)|[MIT](licenses/mit)|AspNetCore, ClientDI, Core, Emit, MemoryPack, MessagePack, NerdbankMessagePack|
-|[Microsoft.NET.ILLink.Tasks](packages/nuget.org/microsoft.net.illink.tasks/8.0.22)|8.0.22|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/8.0.22)|[MIT](licenses/mit)|AspNetCore, ClientDI, Core, Emit, MemoryPack, MessagePack, NerdbankMessagePack|
-|[Microsoft.NET.ILLink.Tasks](packages/nuget.org/microsoft.net.illink.tasks/9.0.11)|9.0.11|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.ILLink.Tasks/9.0.11)|[MIT](licenses/mit)|AspNetCore, ClientDI, Core, Emit, MemoryPack, MessagePack, NerdbankMessagePack|
 |[Microsoft.NET.StringTools](packages/nuget.org/microsoft.net.stringtools/17.11.4)|17.11.4|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.StringTools/17.11.4)|[MIT](licenses/mit)|MessagePack|
 |[Microsoft.NET.StringTools](packages/nuget.org/microsoft.net.stringtools/18.0.2)|18.0.2|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.StringTools/18.0.2)|[MIT](licenses/mit)|NerdbankMessagePack|
 |[Microsoft.NET.Test.Sdk](packages/nuget.org/microsoft.net.test.sdk/18.0.1)|18.0.1|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.Test.Sdk/18.0.1)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal|
@@ -80,8 +77,7 @@ Packages 133
 |[Namotion.Reflection](packages/nuget.org/namotion.reflection/3.4.3)|3.4.3|[nuget.org](https://www.nuget.org/packages/Namotion.Reflection/3.4.3)|[MIT](licenses/mit)|AspNetCoreNSwag|
 |[Nerdbank.MessagePack](packages/nuget.org/nerdbank.messagepack/0.12.4-rc)|0.12.4-rc|[nuget.org](https://www.nuget.org/packages/Nerdbank.MessagePack/0.12.4-rc)|[MIT](licenses/mit)|NerdbankMessagePack|
 |[NETStandard.Library](packages/nuget.org/netstandard.library/2.0.3)|2.0.3|[nuget.org](https://www.nuget.org/packages/NETStandard.Library/2.0.3)|[MIT](licenses/mit)|ClientDI, Core, DesignTime, Emit, MessagePack, NerdbankMessagePack, ProtoBuf, SelfHost|
-|[Newtonsoft.Json](packages/nuget.org/newtonsoft.json/13.0.3)|13.0.3|[nuget.org](https://www.nuget.org/packages/Newtonsoft.Json/13.0.3)|[MIT](licenses/mit)|AspNetCoreNSwag|
-|[Newtonsoft.Json](packages/nuget.org/newtonsoft.json/13.0.4)|13.0.4|[nuget.org](https://www.nuget.org/packages/Newtonsoft.Json/13.0.4)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal|
+|[Newtonsoft.Json](packages/nuget.org/newtonsoft.json/13.0.3)|13.0.3|[nuget.org](https://www.nuget.org/packages/Newtonsoft.Json/13.0.3)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal|
 |[NJsonSchema](packages/nuget.org/njsonschema/11.5.2)|11.5.2|[nuget.org](https://www.nuget.org/packages/NJsonSchema/11.5.2)|[MIT](licenses/mit)|AspNetCoreNSwag|
 |[NJsonSchema.Annotations](packages/nuget.org/njsonschema.annotations/11.5.2)|11.5.2|[nuget.org](https://www.nuget.org/packages/NJsonSchema.Annotations/11.5.2)|[MIT](licenses/mit)|AspNetCoreNSwag|
 |[NJsonSchema.NewtonsoftJson](packages/nuget.org/njsonschema.newtonsoftjson/11.5.2)|11.5.2|[nuget.org](https://www.nuget.org/packages/NJsonSchema.NewtonsoftJson/11.5.2)|[MIT](licenses/mit)|AspNetCoreNSwag|
@@ -106,12 +102,11 @@ Packages 133
 |[System.Buffers](packages/nuget.org/system.buffers/4.4.0)|4.4.0|[nuget.org](https://www.nuget.org/packages/System.Buffers/4.4.0)|[MIT](licenses/mit)|Core, DesignTime, SelfHost|
 |[System.Buffers](packages/nuget.org/system.buffers/4.5.1)|4.5.1|[nuget.org](https://www.nuget.org/packages/System.Buffers/4.5.1)|[MIT](licenses/mit)|ClientDI, Core internal, DesignTime, Emit internal, MessagePack, ProtoBuf, SelfHost internal|
 |[System.Buffers](packages/nuget.org/system.buffers/4.6.0)|4.6.0|[nuget.org](https://www.nuget.org/packages/System.Buffers/4.6.0)|[MIT](licenses/mit)|NerdbankMessagePack|
-|[System.Buffers](packages/nuget.org/system.buffers/4.6.1)|4.6.1|[nuget.org](https://www.nuget.org/packages/System.Buffers/4.6.1)|[MIT](licenses/mit)|ClientDI internal|
 |[System.CodeDom](packages/nuget.org/system.codedom/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/System.CodeDom/6.0.0)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal|
-|[System.Collections.Immutable](packages/nuget.org/system.collections.immutable/1.5.0)|1.5.0|[nuget.org](https://www.nuget.org/packages/System.Collections.Immutable/1.5.0)|[MIT](licenses/mit)|ClientDI internal, Core internal, SelfHost internal|
+|[System.Collections.Immutable](packages/nuget.org/system.collections.immutable/1.5.0)|1.5.0|[nuget.org](https://www.nuget.org/packages/System.Collections.Immutable/1.5.0)|[MIT](licenses/mit)|ClientDI internal, Core internal, Emit internal, SelfHost internal|
 |[System.Collections.Immutable](packages/nuget.org/system.collections.immutable/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/System.Collections.Immutable/5.0.0)|[MIT](licenses/mit)|DesignTime|
 |[System.Collections.Immutable](packages/nuget.org/system.collections.immutable/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/System.Collections.Immutable/6.0.0)|[MIT](licenses/mit)|MemoryPack|
-|[System.Collections.Immutable](packages/nuget.org/system.collections.immutable/7.0.0)|7.0.0|[nuget.org](https://www.nuget.org/packages/System.Collections.Immutable/7.0.0)|[MIT](licenses/mit)|Emit internal, ProtoBuf|
+|[System.Collections.Immutable](packages/nuget.org/system.collections.immutable/7.0.0)|7.0.0|[nuget.org](https://www.nuget.org/packages/System.Collections.Immutable/7.0.0)|[MIT](licenses/mit)|ProtoBuf|
 |[System.Collections.Immutable](packages/nuget.org/system.collections.immutable/8.0.0)|8.0.0|[nuget.org](https://www.nuget.org/packages/System.Collections.Immutable/8.0.0)|[MIT](licenses/mit)|DesignTime internal, MessagePack, NerdbankMessagePack|
 |[System.ComponentModel.Annotations](packages/nuget.org/system.componentmodel.annotations/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/System.ComponentModel.Annotations/5.0.0)|[MIT](licenses/mit)|ClientDI|
 |[System.Diagnostics.DiagnosticSource](packages/nuget.org/system.diagnostics.diagnosticsource/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/6.0.0)|[MIT](licenses/mit)|Core internal, DesignTime internal|
@@ -122,15 +117,12 @@ Packages 133
 |[System.Management](packages/nuget.org/system.management/6.0.1)|6.0.1|[nuget.org](https://www.nuget.org/packages/System.Management/6.0.1)|[MIT](licenses/mit)|AspNetCore internal, AspNetCoreNSwag internal, AspNetCoreSwashbuckle internal, ClientDI internal, Core internal, DesignTime internal, Emit internal, MemoryPack internal, MessagePack internal, NerdbankMessagePack internal, SelfHost internal|
 |[System.Memory](packages/nuget.org/system.memory/4.5.3)|4.5.3|[nuget.org](https://www.nuget.org/packages/System.Memory/4.5.3)|[MIT](licenses/mit)|Core, DesignTime, SelfHost|
 |[System.Memory](packages/nuget.org/system.memory/4.5.4)|4.5.4|[nuget.org](https://www.nuget.org/packages/System.Memory/4.5.4)|[MIT](licenses/mit)|ClientDI, DesignTime|
-|[System.Memory](packages/nuget.org/system.memory/4.5.5)|4.5.5|[nuget.org](https://www.nuget.org/packages/System.Memory/4.5.5)|[MIT](licenses/mit)|Core internal, DesignTime internal, Emit internal, MessagePack, ProtoBuf, SelfHost internal|
+|[System.Memory](packages/nuget.org/system.memory/4.5.5)|4.5.5|[nuget.org](https://www.nuget.org/packages/System.Memory/4.5.5)|[MIT](licenses/mit)|ClientDI internal, Core internal, DesignTime internal, Emit internal, MessagePack, ProtoBuf, SelfHost internal|
 |[System.Memory](packages/nuget.org/system.memory/4.6.0)|4.6.0|[nuget.org](https://www.nuget.org/packages/System.Memory/4.6.0)|[MIT](licenses/mit)|NerdbankMessagePack|
-|[System.Memory](packages/nuget.org/system.memory/4.6.3)|4.6.3|[nuget.org](https://www.nuget.org/packages/System.Memory/4.6.3)|[MIT](licenses/mit)|ClientDI internal|
-|[System.Net.Http.WinHttpHandler](packages/nuget.org/system.net.http.winhttphandler/10.0.0)|10.0.0|[nuget.org](https://www.nuget.org/packages/System.Net.Http.WinHttpHandler/10.0.0)|[MIT](licenses/mit)|ClientDI internal|
 |[System.Net.Http.WinHttpHandler](packages/nuget.org/system.net.http.winhttphandler/8.0.0)|8.0.0|[nuget.org](https://www.nuget.org/packages/System.Net.Http.WinHttpHandler/8.0.0)|[MIT](licenses/mit)|Core internal|
 |[System.Numerics.Vectors](packages/nuget.org/system.numerics.vectors/4.4.0)|4.4.0|[nuget.org](https://www.nuget.org/packages/System.Numerics.Vectors/4.4.0)|[MIT](licenses/mit)|ClientDI, Core, DesignTime, MessagePack, ProtoBuf, SelfHost|
-|[System.Numerics.Vectors](packages/nuget.org/system.numerics.vectors/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Numerics.Vectors/4.5.0)|[MIT](licenses/mit)|Core internal, DesignTime internal, Emit internal, ProtoBuf, SelfHost internal|
+|[System.Numerics.Vectors](packages/nuget.org/system.numerics.vectors/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Numerics.Vectors/4.5.0)|[MIT](licenses/mit)|ClientDI internal, Core internal, DesignTime internal, Emit internal, ProtoBuf, SelfHost internal|
 |[System.Numerics.Vectors](packages/nuget.org/system.numerics.vectors/4.6.0)|4.6.0|[nuget.org](https://www.nuget.org/packages/System.Numerics.Vectors/4.6.0)|[MIT](licenses/mit)|NerdbankMessagePack|
-|[System.Numerics.Vectors](packages/nuget.org/system.numerics.vectors/4.6.1)|4.6.1|[nuget.org](https://www.nuget.org/packages/System.Numerics.Vectors/4.6.1)|[MIT](licenses/mit)|ClientDI internal|
 |[System.Reflection.Emit](packages/nuget.org/system.reflection.emit/4.7.0)|4.7.0|[nuget.org](https://www.nuget.org/packages/System.Reflection.Emit/4.7.0)|[MIT](licenses/mit)|Emit, MessagePack, ProtoBuf|
 |[System.Reflection.Emit.ILGeneration](packages/nuget.org/system.reflection.emit.ilgeneration/4.7.0)|4.7.0|[nuget.org](https://www.nuget.org/packages/System.Reflection.Emit.ILGeneration/4.7.0)|[MIT](licenses/mit)|Emit, MessagePack, NerdbankMessagePack, ProtoBuf|
 |[System.Reflection.Emit.Lightweight](packages/nuget.org/system.reflection.emit.lightweight/4.7.0)|4.7.0|[nuget.org](https://www.nuget.org/packages/System.Reflection.Emit.Lightweight/4.7.0)|[MIT](licenses/mit)|MessagePack, NerdbankMessagePack, ProtoBuf|

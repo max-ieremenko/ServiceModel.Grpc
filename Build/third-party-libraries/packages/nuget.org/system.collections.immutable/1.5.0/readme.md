@@ -1,7 +1,7 @@
 ﻿System.Collections.Immutable [1.5.0](https://www.nuget.org/packages/System.Collections.Immutable/1.5.0)
 --------------------
 
-Used by: ClientDI internal, Core internal, SelfHost internal
+Used by: ClientDI internal, Core internal, Emit internal, SelfHost internal
 
 Target frameworks: net10.0, net481, net8.0, net9.0
 
