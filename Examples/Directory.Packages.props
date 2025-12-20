@@ -13,7 +13,7 @@
     <PackageVersion Include="ServiceModel.Grpc.ProtoBufMarshaller" Version="$(ServiceModelGrpcVersion)" />
     <PackageVersion Include="ServiceModel.Grpc.MessagePackMarshaller" Version="$(ServiceModelGrpcVersion)" />
     <PackageVersion Include="ServiceModel.Grpc.MemoryPackMarshaller" Version="$(ServiceModelGrpcVersion)" />
-    <PackageVersion Include="ServiceModel.Grpc.Nerdbank.MessagePackMarshaller" Version="$(NerdbankMessagePackMarshallerVersion)" />
+    <PackageVersion Include="ServiceModel.Grpc.Nerdbank.MessagePackMarshaller" Version="$(ServiceModelGrpcVersion)" />
     <PackageVersion Include="ServiceModel.Grpc.AspNetCore.Swashbuckle" Version="$(ServiceModelGrpcVersion)" />
     <PackageVersion Include="ServiceModel.Grpc.AspNetCore.NSwag" Version="$(ServiceModelGrpcVersion)" />
 
@@ -52,7 +52,7 @@
 
     <PackageVersion Include="MemoryPack" Version="1.21.4" />
 
-    <PackageVersion Include="Nerdbank.MessagePack" Version="0.12.4-rc" />
+    <PackageVersion Include="Nerdbank.MessagePack" Version="1.0.11" />
 
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.6" />
   </ItemGroup>
