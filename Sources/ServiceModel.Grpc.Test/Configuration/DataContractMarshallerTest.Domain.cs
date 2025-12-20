@@ -15,13 +15,10 @@
 // </copyright>
 
 using System.Runtime.Serialization;
-using Grpc.Core;
-using Newtonsoft.Json;
-using ProtoBuf;
 
-namespace ServiceModel.Grpc.Emit.Configuration;
+namespace ServiceModel.Grpc.Configuration;
 
-public partial class MessageMarshallingTest
+public partial class DataContractMarshallerTest
 {
     [DataContract]
     public record Person
@@ -43,8 +40,6 @@ public partial class MessageMarshallingTest
     [DataContract]
     [KnownType(typeof(Sword))]
     [KnownType(typeof(Knife))]
-    [ProtoInclude(3, typeof(Sword))]
-    [ProtoInclude(4, typeof(Knife))]
     public abstract record Weapon
     {
         [DataMember(Order = 1)]
@@ -95,35 +90,6 @@ public partial class MessageMarshallingTest
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue(nameof(Value), Value);
-        }
-    }
-
-    public sealed class JsonMarshaller<T>
-    {
-        public static readonly Marshaller<T> Default = new(Serialize, Deserialize);
-
-        private static byte[] Serialize(T value)
-        {
-            using (var buffer = new MemoryStream())
-            {
-                using (var writer = new StreamWriter(buffer, Encoding.Unicode, 1024, true))
-                {
-                    var serializer = JsonSerializer.CreateDefault(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
-                    serializer.Serialize(writer, value);
-                }
-
-                return buffer.ToArray();
-            }
-        }
-
-        private static T Deserialize(byte[] value)
-        {
-            using (var buffer = new MemoryStream(value))
-            using (var reader = new JsonTextReader(new StreamReader(buffer)))
-            {
-                var serializer = JsonSerializer.CreateDefault(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
-                return serializer.Deserialize<T>(reader)!;
-            }
         }
     }
 }

@@ -18,7 +18,6 @@ using Grpc.Core;
 using Grpc.Core.Utils;
 using Nerdbank.MessagePack;
 using PolyType;
-using PolyType.Abstractions;
 using ServiceModel.Grpc.Configuration.Internal;
 using SerializationContext = Grpc.Core.SerializationContext;
 
