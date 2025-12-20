@@ -19,14 +19,13 @@ Commonly Used Types:
 System.Diagnostics.DiagnosticListener
 System.Diagnostics.DiagnosticSource
 
-Dependencies 5
+Dependencies 4
 -----------
 
 |Name|Version|
 |----------|:----|
 |[System.Memory](../../../../packages/nuget.org/system.memory/4.5.4)|4.5.4|
 |[System.Memory](../../../../packages/nuget.org/system.memory/4.5.5)|4.5.5|
-|[System.Memory](../../../../packages/nuget.org/system.memory/4.6.3)|4.6.3|
 |[System.Runtime.CompilerServices.Unsafe](../../../../packages/nuget.org/system.runtime.compilerservices.unsafe/6.0.0)|6.0.0|
 |[System.Runtime.CompilerServices.Unsafe](../../../../packages/nuget.org/system.runtime.compilerservices.unsafe/6.1.2)|6.1.2|
 

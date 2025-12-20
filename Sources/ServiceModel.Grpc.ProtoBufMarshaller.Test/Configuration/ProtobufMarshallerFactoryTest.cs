@@ -17,18 +17,19 @@
 using System.Reflection;
 using NUnit.Framework;
 using ServiceModel.Grpc.Channel;
+using ServiceModel.Grpc.Configuration;
 
-namespace ServiceModel.Grpc.Configuration;
+namespace ServiceModel.Grpc.ProtoBufMarshaller.Configuration;
 
 [TestFixture]
-public partial class DataContractMarshallerTest
+public partial class ProtobufMarshallerFactoryTest
 {
     [Test]
     [TestCaseSource(nameof(GetMarshallTestCases))]
     public void Marshall(object expected)
     {
-        var payload = MarshallerExtensions.SerializeObject(DataContractMarshallerFactory.Default, expected);
-        var actual = MarshallerExtensions.DeserializeObject(DataContractMarshallerFactory.Default, expected.GetType(), payload);
+        var payload = MarshallerExtensions.SerializeObject(ProtobufMarshallerFactory.Default, expected);
+        var actual = MarshallerExtensions.DeserializeObject(ProtobufMarshallerFactory.Default, expected.GetType(), payload);
 
         actual.ShouldNotBeNull();
         Compare(expected, actual);
@@ -37,11 +38,12 @@ public partial class DataContractMarshallerTest
     [Test]
     public void MarshallNull()
     {
-        var payload = MarshallerExtensions.Serialize(DataContractMarshaller<string>.Default, null!);
+        var marshaller = ProtobufMarshallerFactory.Default.CreateMarshaller<string>();
+        var payload = MarshallerExtensions.Serialize(marshaller, null!);
 
-        var actual = MarshallerExtensions.Deserialize(DataContractMarshaller<string>.Default, payload);
+        var actual = MarshallerExtensions.Deserialize(marshaller, payload);
 
-        actual.ShouldBeNull();
+        actual.ShouldBeEmpty();
     }
 
     private static void Compare(object expected, object actual)
@@ -61,8 +63,6 @@ public partial class DataContractMarshallerTest
         yield return new Message();
         yield return new Message<int>(1);
         yield return new Message<int, string>(1, "ab");
-        yield return new Message<double>(1);
-        yield return new Message<Tuple<Tuple<string>>>(new Tuple<Tuple<string>>(new Tuple<string>("data")));
 
         yield return new Message<int, string, Person>(
             1,
@@ -87,9 +87,5 @@ public partial class DataContractMarshallerTest
             { "value1", new Knife { HitDamage = 1 } },
             { "value2", new Sword { HitDamage = 3, Length = 5 } }
         });
-
-        yield return new Message<DynamicObject>(new DynamicObject { Values = { new DynamicObject() } });
-        yield return new Message<TheContainer<int>>(new TheContainer<int>(10));
-        yield return new Message<TheContainer<string>>(new TheContainer<string>("abc"));
     }
 }
