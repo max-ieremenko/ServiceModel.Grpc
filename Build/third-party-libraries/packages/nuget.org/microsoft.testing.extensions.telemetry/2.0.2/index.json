@@ -1,0 +1,241 @@
+{
+  "$schema": "https://raw.githubusercontent.com/max-ieremenko/ThirdPartyLibraries/refs/heads/master/Docs/schema.package-index.json",
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "AspNetCore",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.23.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "2.0.2"
+        }
+      ]
+    },
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.23.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "2.0.2"
+        }
+      ]
+    },
+    {
+      "Name": "AspNetCoreSwashbuckle",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.23.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "2.0.2"
+        }
+      ]
+    },
+    {
+      "Name": "ClientDI",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net481",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.23.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "2.0.2"
+        }
+      ]
+    },
+    {
+      "Name": "Core",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net481",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.23.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "2.0.2"
+        }
+      ]
+    },
+    {
+      "Name": "DesignTime",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net481",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.23.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "2.0.2"
+        }
+      ]
+    },
+    {
+      "Name": "Emit",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net481",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.23.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "2.0.2"
+        }
+      ]
+    },
+    {
+      "Name": "MemoryPack",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.23.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "2.0.2"
+        }
+      ]
+    },
+    {
+      "Name": "MessagePack",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.23.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "2.0.2"
+        }
+      ]
+    },
+    {
+      "Name": "NerdbankMessagePack",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.23.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "2.0.2"
+        }
+      ]
+    },
+    {
+      "Name": "SelfHost",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net481",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.ApplicationInsights",
+          "Version": "2.23.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "2.0.2"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT"
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/microsoft/testfx"
+    },
+    {
+      "Subject": "project",
+      "Code": "MIT",
+      "HRef": "https://github.com/microsoft/testfx"
+    }
+  ]
+}

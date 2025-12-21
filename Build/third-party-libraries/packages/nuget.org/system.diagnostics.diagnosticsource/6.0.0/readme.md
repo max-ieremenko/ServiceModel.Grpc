@@ -1,7 +1,7 @@
 ﻿System.Diagnostics.DiagnosticSource [6.0.0](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/6.0.0)
 --------------------
 
-Used by: Core internal, DesignTime internal
+Used by: Core internal
 
 Target frameworks: net10.0, net481, net8.0, net9.0
 

@@ -28,13 +28,6 @@
       ]
     },
     {
-      "Name": "DesignTime",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "net8.0"
-      ]
-    },
-    {
       "Name": "MemoryPack",
       "InternalOnly": false,
       "TargetFrameworks": [
