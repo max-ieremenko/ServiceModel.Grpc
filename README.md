@@ -301,70 +301,70 @@ message SomeObjectProto {
 ### Client async unary call, server is stub
 
 ```
-BenchmarkDotNet v0.14.0, Ubuntu 22.04.5 LTS (Jammy Jellyfish)
-AMD EPYC 7763, 1 CPU, 4 logical and 2 physical cores
-.NET SDK 9.0.100
-  [Host]   : .NET 9.0.0 (9.0.24.52809), X64 RyuJIT AVX2
-  ShortRun : .NET 9.0.0 (9.0.24.52809), X64 RyuJIT AVX2
+BenchmarkDotNet v0.15.8, Linux Ubuntu 24.04.3 LTS (Noble Numbat)
+AMD EPYC 7763 2.45GHz, 1 CPU, 4 logical and 2 physical cores
+.NET SDK 10.0.101
+  [Host]   : .NET 10.0.1 (10.0.1, 10.0.125.57005), X64 RyuJIT x86-64-v3
+  ShortRun : .NET 10.0.1 (10.0.1, 10.0.125.57005), X64 RyuJIT x86-64-v3
 
 Job=ShortRun  Platform=X64  Force=True  
 Server=False  IterationCount=15  LaunchCount=1  
 RunStrategy=Throughput  WarmupCount=3  
 
 ```
-| Method                           | Mean       | Error     | StdDev    | Op/s      | Ratio | RatioSD | Message size | Gen0   | Allocated | Alloc Ratio |
-|--------------------------------- |-----------:|----------:|----------:|----------:|------:|--------:|------------- |-------:|----------:|------------:|
-| ServiceModelGrpc.DataContract    | 124.528 μs | 3.6707 μs | 2.8658 μs |   8,030.3 | 22.74 |    0.52 | 6.55 KB      |      - |  51.44 KB |        7.70 |
-| ServiceModelGrpc.Protobuf        |  11.658 μs | 0.0362 μs | 0.0302 μs |  85,776.6 |  2.13 |    0.01 | 1.33 KB      | 0.1068 |   9.07 KB |        1.36 |
-| ServiceModelGrpc.MessagePack     |   6.663 μs | 0.0208 μs | 0.0174 μs | 150,077.3 |  1.22 |    0.01 | 1.52 KB      | 0.1221 |  10.06 KB |        1.51 |
-| ServiceModelGrpc.MemoryPack      |   3.955 μs | 0.0238 μs | 0.0211 μs | 252,822.8 |  0.72 |    0.01 | 1.62 KB      | 0.1297 |  11.18 KB |        1.67 |
-| grpc-dotnet                      |   5.477 μs | 0.0415 μs | 0.0346 μs | 182,573.9 |  1.00 |    0.01 | 1.32 KB      | 0.0763 |   6.68 KB |        1.00 |
-| ServiceModelGrpc.proto-emulation |   5.757 μs | 0.0239 μs | 0.0224 μs | 173,690.9 |  1.05 |    0.01 | 1.32 KB      | 0.0763 |    6.8 KB |        1.02 |
+| Method                           | Mean       | Error      | StdDev    | Ratio | RatioSD | Gen0   | Gen1   | Allocated | Alloc Ratio |
+|--------------------------------- |-----------:|-----------:|----------:|------:|--------:|-------:|-------:|----------:|------------:|
+| ServiceModelGrpc.DataContract    | 119.129 μs | 10.1822 μs | 8.5026 μs | 28.00 |    1.94 | 2.9297 |      - |  51.39 KB |        7.75 |
+| ServiceModelGrpc.Protobuf        |  10.489 μs |  0.0917 μs | 0.0813 μs |  2.47 |    0.03 | 0.5493 |      - |   9.02 KB |        1.36 |
+| ServiceModelGrpc.MessagePack     |   5.306 μs |  0.0643 μs | 0.0601 μs |  1.25 |    0.02 | 0.7019 | 0.0153 |  11.55 KB |        1.74 |
+| ServiceModelGrpc.MemoryPack      |   3.315 μs |  0.0646 μs | 0.0604 μs |  0.78 |    0.02 | 0.6790 | 0.0153 |  11.13 KB |        1.68 |
+| grpc-dotnet                      |   4.254 μs |  0.0447 μs | 0.0418 μs |  1.00 |    0.01 | 0.4044 | 0.0076 |   6.63 KB |        1.00 |
+| ServiceModelGrpc.proto-emulation |   4.629 μs |  0.1077 μs | 0.1007 μs |  1.09 |    0.03 | 0.4120 | 0.0076 |   6.76 KB |        1.02 |
 
 ### Server async unary call, client is stub
 
 ```
 
-BenchmarkDotNet v0.14.0, Ubuntu 22.04.5 LTS (Jammy Jellyfish)
-AMD EPYC 7763, 1 CPU, 4 logical and 2 physical cores
-.NET SDK 9.0.100
-  [Host]   : .NET 9.0.0 (9.0.24.52809), X64 RyuJIT AVX2
-  ShortRun : .NET 9.0.0 (9.0.24.52809), X64 RyuJIT AVX2
+BenchmarkDotNet v0.15.8, Linux Ubuntu 24.04.3 LTS (Noble Numbat)
+AMD EPYC 7763 2.45GHz, 1 CPU, 4 logical and 2 physical cores
+.NET SDK 10.0.101
+  [Host]   : .NET 10.0.1 (10.0.1, 10.0.125.57005), X64 RyuJIT x86-64-v3
+  ShortRun : .NET 10.0.1 (10.0.1, 10.0.125.57005), X64 RyuJIT x86-64-v3
 
 Job=ShortRun  Platform=X64  Force=True  
 Server=False  IterationCount=15  LaunchCount=1  
 RunStrategy=Throughput  WarmupCount=3  
 
 ```
-| Method                           | Mean      | Error    | StdDev   | Op/s     | Ratio | RatioSD | Message size | Gen0   | Allocated | Alloc Ratio |
-|--------------------------------- |----------:|---------:|---------:|---------:|------:|--------:|------------- |-------:|----------:|------------:|
-| ServiceModelGrpc.DataContract    | 199.83 μs | 8.409 μs | 7.022 μs |  5,004.3 |  5.22 |    0.32 | 6.55 KB      |      - |  60.67 KB |        3.87 |
-| ServiceModelGrpc.Protobuf        |  54.28 μs | 0.775 μs | 0.687 μs | 18,424.1 |  1.42 |    0.07 | 1.33 KB      |      - |  18.01 KB |        1.15 |
-| ServiceModelGrpc.MessagePack     |  40.07 μs | 4.014 μs | 3.755 μs | 24,953.5 |  1.05 |    0.11 | 1.52 KB      |      - |  19.01 KB |        1.21 |
-| ServiceModelGrpc.MemoryPack      |  29.80 μs | 3.904 μs | 3.651 μs | 33,555.3 |  0.78 |    0.10 | 1.62 KB      | 0.2441 |  20.13 KB |        1.28 |
-| grpc-dotnet                      |  38.37 μs | 1.899 μs | 1.777 μs | 26,062.1 |  1.00 |    0.07 | 1.32 KB      |      - |  15.67 KB |        1.00 |
-| ServiceModelGrpc.proto-emulation |  34.57 μs | 3.891 μs | 3.639 μs | 28,927.5 |  0.90 |    0.10 | 1.32 KB      |      - |  15.76 KB |        1.01 |
+| Method                           | Mean      | Error     | StdDev    | Median    | Ratio | RatioSD | Gen0   | Allocated | Alloc Ratio |
+|--------------------------------- |----------:|----------:|----------:|----------:|------:|--------:|-------:|----------:|------------:|
+| ServiceModelGrpc.DataContract    | 210.35 μs | 41.818 μs | 37.071 μs | 199.85 μs |  7.07 |    2.51 | 2.9297 |  60.47 KB |        3.92 |
+| ServiceModelGrpc.Protobuf        |  50.70 μs |  1.047 μs |  0.817 μs |  50.69 μs |  1.70 |    0.52 | 0.9766 |  17.82 KB |        1.16 |
+| ServiceModelGrpc.MessagePack     |  33.08 μs |  4.812 μs |  3.757 μs |  32.12 μs |  1.11 |    0.36 | 1.2207 |  20.32 KB |        1.32 |
+| ServiceModelGrpc.MemoryPack      |  34.96 μs | 17.439 μs | 15.459 μs |  27.94 μs |  1.17 |    0.64 | 1.2207 |   19.9 KB |        1.29 |
+| grpc-dotnet                      |  34.00 μs | 16.692 μs | 14.797 μs |  25.67 μs |  1.14 |    0.61 | 0.7324 |  15.42 KB |        1.00 |
+| ServiceModelGrpc.proto-emulation |  30.96 μs |  8.989 μs |  7.018 μs |  30.52 μs |  1.04 |    0.40 | 0.7324 |   15.6 KB |        1.01 |
 
 ### Client plus server async unary call, without stubs
 
 ```
 
-BenchmarkDotNet v0.14.0, Ubuntu 22.04.5 LTS (Jammy Jellyfish)
-AMD EPYC 7763, 1 CPU, 4 logical and 2 physical cores
-.NET SDK 9.0.100
-  [Host]   : .NET 9.0.0 (9.0.24.52809), X64 RyuJIT AVX2
-  ShortRun : .NET 9.0.0 (9.0.24.52809), X64 RyuJIT AVX2
+BenchmarkDotNet v0.15.8, Linux Ubuntu 24.04.3 LTS (Noble Numbat)
+AMD EPYC 7763 2.45GHz, 1 CPU, 4 logical and 2 physical cores
+.NET SDK 10.0.101
+  [Host]   : .NET 10.0.1 (10.0.1, 10.0.125.57005), X64 RyuJIT x86-64-v3
+  ShortRun : .NET 10.0.1 (10.0.1, 10.0.125.57005), X64 RyuJIT x86-64-v3
 
 Job=ShortRun  Platform=X64  Force=True  
 Server=False  IterationCount=15  LaunchCount=1  
 RunStrategy=Throughput  WarmupCount=3  
 
 ```
-| Method                           | Mean      | Error     | StdDev    | Op/s     | Ratio | RatioSD | Message size | Gen0   | Allocated | Alloc Ratio |
-|--------------------------------- |----------:|----------:|----------:|---------:|------:|--------:|------------- |-------:|----------:|------------:|
-| ServiceModelGrpc.DataContract    | 342.65 μs | 37.438 μs | 31.262 μs |  2,918.4 |  6.42 |    1.42 | 6.55 KB      |      - |  98.36 KB |        5.17 |
-| ServiceModelGrpc.Protobuf        |  80.59 μs |  1.913 μs |  1.494 μs | 12,408.2 |  1.51 |    0.31 | 1.33 KB      |      - |  23.79 KB |        1.25 |
-| ServiceModelGrpc.MessagePack     |  55.76 μs |  1.197 μs |  1.119 μs | 17,932.5 |  1.04 |    0.21 | 1.52 KB      | 0.2441 |  25.38 KB |        1.33 |
-| ServiceModelGrpc.MemoryPack      |  38.86 μs |  3.701 μs |  3.462 μs | 25,732.0 |  0.73 |    0.16 | 1.62 KB      | 0.2441 |  27.38 KB |        1.44 |
-| grpc-dotnet                      |  56.27 μs | 17.011 μs | 15.080 μs | 17,770.3 |  1.05 |    0.35 | 1.32 KB      |      - |  19.03 KB |        1.00 |
-| ServiceModelGrpc.proto-emulation |  50.95 μs |  0.609 μs |  0.508 μs | 19,627.1 |  0.95 |    0.19 | 1.32 KB      |      - |   19.3 KB |        1.01 |
+| Method                           | Mean      | Error     | StdDev    | Median    | Ratio | RatioSD | Gen0   | Allocated | Alloc Ratio |
+|--------------------------------- |----------:|----------:|----------:|----------:|------:|--------:|-------:|----------:|------------:|
+| ServiceModelGrpc.DataContract    | 347.73 μs | 74.072 μs | 65.663 μs | 323.57 μs |  5.79 |    2.63 | 5.8594 |   98.2 KB |        5.20 |
+| ServiceModelGrpc.Protobuf        |  95.14 μs | 32.059 μs | 28.419 μs |  78.86 μs |  1.59 |    0.81 | 1.4648 |  23.64 KB |        1.25 |
+| ServiceModelGrpc.MessagePack     |  46.98 μs |  2.294 μs |  1.916 μs |  47.53 μs |  0.78 |    0.32 | 1.7090 |   28.3 KB |        1.50 |
+| ServiceModelGrpc.MemoryPack      |  32.99 μs |  3.622 μs |  2.828 μs |  31.31 μs |  0.55 |    0.23 | 1.7090 |  27.23 KB |        1.44 |
+| grpc-dotnet                      |  74.24 μs | 40.437 μs | 37.825 μs |  52.25 μs |  1.24 |    0.83 | 0.9766 |  18.87 KB |        1.00 |
+| ServiceModelGrpc.proto-emulation |  41.47 μs |  3.090 μs |  2.580 μs |  40.35 μs |  0.69 |    0.29 | 0.9766 |  19.14 KB |        1.01 |
