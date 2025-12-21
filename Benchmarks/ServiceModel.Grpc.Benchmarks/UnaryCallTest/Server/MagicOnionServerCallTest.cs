@@ -39,7 +39,7 @@ internal sealed class MagicOnionServerCallTest : IUnaryCallTest
             })
             .ConfigureEndpoints(endpoints =>
             {
-                endpoints.MapMagicOnionService();
+                endpoints.MapMagicOnionService<TestServiceMagicOnionStub>();
             });
     }
 
