@@ -6,7 +6,6 @@
     <PackageReference Include="NUnit" />
     <PackageReference Include="Moq" />
     <PackageReference Include="Shouldly" />
-    <PackageReference Include="Newtonsoft.Json" />
   </ItemGroup>
 
   <ItemGroup>

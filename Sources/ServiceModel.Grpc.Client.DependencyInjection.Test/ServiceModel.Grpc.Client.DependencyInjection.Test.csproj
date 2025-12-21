@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Net.Http.WinHttpHandler" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\ServiceModel.Grpc.Client.DependencyInjection\ServiceModel.Grpc.Client.DependencyInjection.csproj" />
     <ProjectReference Include="..\ServiceModel.Grpc.TestApi\ServiceModel.Grpc.TestApi.csproj" />
   </ItemGroup>

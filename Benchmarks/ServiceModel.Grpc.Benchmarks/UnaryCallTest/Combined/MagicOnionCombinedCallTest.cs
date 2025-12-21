@@ -38,7 +38,7 @@ internal sealed class MagicOnionCombinedCallTest : IUnaryCallTest
             })
             .ConfigureEndpoints(endpoints =>
             {
-                endpoints.MapMagicOnionService();
+                endpoints.MapMagicOnionService<TestServiceMagicOnionStub>();
             });
     }
 

@@ -25,19 +25,6 @@
           "Version": "6.0.0"
         }
       ]
-    },
-    {
-      "Name": "DesignTime",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "net8.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.0.0"
-        }
-      ]
     }
   ],
   "Licenses": [

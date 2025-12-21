@@ -7,15 +7,102 @@
   },
   "UsedBy": [
     {
-      "Name": "DesignTime",
+      "Name": "ClientDI",
       "InternalOnly": true,
       "TargetFrameworks": [
-        "net8.0"
+        "net10.0",
+        "net481",
+        "net8.0",
+        "net9.0"
       ],
       "Dependencies": [
         {
           "Name": "System.Collections.Immutable",
           "Version": "8.0.0"
+        },
+        {
+          "Name": "System.Memory",
+          "Version": "4.5.5"
+        }
+      ]
+    },
+    {
+      "Name": "Core",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net481",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Collections.Immutable",
+          "Version": "8.0.0"
+        },
+        {
+          "Name": "System.Memory",
+          "Version": "4.5.5"
+        }
+      ]
+    },
+    {
+      "Name": "DesignTime",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net481",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Collections.Immutable",
+          "Version": "8.0.0"
+        },
+        {
+          "Name": "System.Memory",
+          "Version": "4.5.5"
+        }
+      ]
+    },
+    {
+      "Name": "Emit",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net481",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Collections.Immutable",
+          "Version": "8.0.0"
+        },
+        {
+          "Name": "System.Memory",
+          "Version": "4.5.5"
+        }
+      ]
+    },
+    {
+      "Name": "SelfHost",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net481",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Collections.Immutable",
+          "Version": "8.0.0"
+        },
+        {
+          "Name": "System.Memory",
+          "Version": "4.5.5"
         }
       ]
     }

@@ -14,22 +14,24 @@
 // limitations under the License.
 // </copyright>
 
+using System.Reflection;
 using NUnit.Framework;
+using ServiceModel.Grpc.Channel;
 
 namespace ServiceModel.Grpc.Configuration;
 
 [TestFixture]
-public class DataContractMarshallerTest
+public partial class DataContractMarshallerTest
 {
     [Test]
     [TestCaseSource(nameof(GetMarshallTestCases))]
-    public void Marshall(object value)
+    public void Marshall(object expected)
     {
-        var payload = MarshallerExtensions.SerializeObject(DataContractMarshallerFactory.Default, value);
+        var payload = MarshallerExtensions.SerializeObject(DataContractMarshallerFactory.Default, expected);
+        var actual = MarshallerExtensions.DeserializeObject(DataContractMarshallerFactory.Default, expected.GetType(), payload);
 
-        var actual = MarshallerExtensions.DeserializeObject(DataContractMarshallerFactory.Default, value.GetType(), payload);
-
-        actual.ShouldBe(value);
+        actual.ShouldNotBeNull();
+        Compare(expected, actual);
     }
 
     [Test]
@@ -42,11 +44,52 @@ public class DataContractMarshallerTest
         actual.ShouldBeNull();
     }
 
-    private static IEnumerable<TestCaseData> GetMarshallTestCases()
+    private static void Compare(object expected, object actual)
     {
-        yield return new TestCaseData("abc");
-        yield return new TestCaseData(1);
-        yield return new TestCaseData(1.1);
-        yield return new TestCaseData(new Tuple<Tuple<string>>(new Tuple<string>("data")));
+        expected.GetType().ShouldBe(actual.GetType());
+
+        foreach (var property in expected.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
+        {
+            var expectedValue = property.GetValue(expected);
+            var actualValue = property.GetValue(actual);
+            actualValue.ShouldBe(expectedValue, property.Name);
+        }
+    }
+
+    private static IEnumerable<object> GetMarshallTestCases()
+    {
+        yield return new Message();
+        yield return new Message<int>(1);
+        yield return new Message<int, string>(1, "ab");
+        yield return new Message<double>(1);
+        yield return new Message<Tuple<Tuple<string>>>(new Tuple<Tuple<string>>(new Tuple<string>("data")));
+
+        yield return new Message<int, string, Person>(
+            1,
+            "ab",
+            new Person
+            {
+                Name = "person name",
+                Address = new PersonAddress { Street = "the street" }
+            });
+
+        yield return new Message<Person, Weapon, Weapon>(
+            new Person { Name = "person name" },
+            new Knife { HitDamage = 1 },
+            new Sword { HitDamage = 3, Length = 5 });
+
+        yield return new Message<Person, Knife>(
+            new Person { Name = "person name" },
+            new Knife { HitDamage = 1 });
+
+        yield return new Message<IDictionary<string, Weapon>>(new Dictionary<string, Weapon>
+        {
+            { "value1", new Knife { HitDamage = 1 } },
+            { "value2", new Sword { HitDamage = 3, Length = 5 } }
+        });
+
+        yield return new Message<DynamicObject>(new DynamicObject { Values = { new DynamicObject() } });
+        yield return new Message<TheContainer<int>>(new TheContainer<int>(10));
+        yield return new Message<TheContainer<string>>(new TheContainer<string>("abc"));
     }
 }

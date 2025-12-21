@@ -1,6 +1,5 @@
 <Project>
   <PropertyGroup>
-    <ServiceModelGrpcVersion>1.20.0</ServiceModelGrpcVersion>
-    <NerdbankMessagePackMarshallerVersion>$(ServiceModelGrpcVersion)-pre1</NerdbankMessagePackMarshallerVersion>
+    <ServiceModelGrpcVersion>1.21.0</ServiceModelGrpcVersion>
   </PropertyGroup>
 </Project>

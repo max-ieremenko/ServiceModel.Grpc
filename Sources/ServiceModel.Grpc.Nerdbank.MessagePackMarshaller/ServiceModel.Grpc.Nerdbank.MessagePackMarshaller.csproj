@@ -7,8 +7,6 @@
     <IsPackable>true</IsPackable>
     <IsTrimmable>true</IsTrimmable>
     <EnableAOTAnalyzer>true</EnableAOTAnalyzer>
-
-    <Version>$(NerdbankMessagePackMarshallerVersion)</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' != 'Debug'">

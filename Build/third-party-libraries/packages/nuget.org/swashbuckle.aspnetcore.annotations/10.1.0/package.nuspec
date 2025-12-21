@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Swashbuckle.AspNetCore.Annotations</id>
+    <version>10.1.0</version>
+    <authors>domaindrivendev</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <readme>package-readme.md</readme>
+    <projectUrl>https://github.com/domaindrivendev/Swashbuckle.AspNetCore</projectUrl>
+    <description>Provides custom attributes that can be applied to controllers, actions and models to enrich the generated Swagger</description>
+    <releaseNotes>See https://github.com/domaindrivendev/Swashbuckle.AspNetCore/releases for details.</releaseNotes>
+    <copyright>Copyright (c) 2016-2025 Richard Morris</copyright>
+    <tags>swagger openapi documentation discovery help webapi aspnet aspnetcore annotations</tags>
+    <repository type="git" url="https://github.com/domaindrivendev/Swashbuckle.AspNetCore.git" commit="99cea7b9de7d404d3d83590c22f42891a402ce9c" />
+    <dependencies>
+      <group targetFramework="net8.0">
+        <dependency id="Swashbuckle.AspNetCore.SwaggerGen" version="10.1.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net9.0">
+        <dependency id="Swashbuckle.AspNetCore.SwaggerGen" version="10.1.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net10.0">
+        <dependency id="Swashbuckle.AspNetCore.SwaggerGen" version="10.1.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
