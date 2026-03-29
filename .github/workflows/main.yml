@@ -38,7 +38,7 @@ jobs:
       run: ./Build/invoke-ci-build.ps1 "${{ secrets.GITHUB_TOKEN }}"
 
     - name: Artifact nuget packages
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: nuget-packages
         path: |
@@ -163,7 +163,7 @@ jobs:
       run: ./Build/invoke-benchmarks.ps1 -Configuration "Release"
 
     - name: Artifact results
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: benchmark-results
         path: |
