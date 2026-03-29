@@ -27,11 +27,7 @@
         },
         {
           "Name": "System.Memory",
-          "Version": "4.5.4"
-        },
-        {
-          "Name": "System.Memory",
-          "Version": "4.5.5"
+          "Version": "4.6.3"
         },
         {
           "Name": "System.Reflection.Metadata",
@@ -40,10 +36,6 @@
         {
           "Name": "System.Reflection.Metadata",
           "Version": "8.0.0"
-        },
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "5.0.0"
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",

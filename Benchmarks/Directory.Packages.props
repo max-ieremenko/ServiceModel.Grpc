@@ -8,9 +8,9 @@
     <PackageVersion Include="ServiceModel.Grpc.ProtoBufMarshaller" Version="$(ServiceModelGrpcVersion)" />
 
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
-    <PackageVersion Include="MagicOnion" Version="7.0.8" />
-    <PackageVersion Include="MagicOnion.Server" Version="7.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="10.0.1" />
+    <PackageVersion Include="MagicOnion" Version="7.10.0" />
+    <PackageVersion Include="MagicOnion.Server" Version="7.10.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="10.0.5" />
     <PackageVersion Include="protobuf-net.Grpc" Version="1.2.2" />
     <PackageVersion Include="protobuf-net.Grpc.AspNetCore" Version="1.2.2" />
     <PackageVersion Include="System.ServiceModel.Primitives" Version="10.0.652802" />

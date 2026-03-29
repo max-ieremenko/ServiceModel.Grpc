@@ -15,7 +15,7 @@
       "Dependencies": [
         {
           "Name": "System.Memory",
-          "Version": "4.5.4"
+          "Version": "4.6.3"
         }
       ]
     }

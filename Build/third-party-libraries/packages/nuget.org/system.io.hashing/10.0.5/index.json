@@ -1,0 +1,207 @@
+{
+  "$schema": "https://raw.githubusercontent.com/max-ieremenko/ThirdPartyLibraries/refs/heads/master/Docs/schema.package-index.json",
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "AspNetCore",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net10.0",
+        "net8.0",
+        "net9.0"
+      ]
+    },
+    {
+      "Name": "AspNetCoreNSwag",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net10.0",
+        "net8.0",
+        "net9.0"
+      ]
+    },
+    {
+      "Name": "AspNetCoreSwashbuckle",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net10.0",
+        "net8.0",
+        "net9.0"
+      ]
+    },
+    {
+      "Name": "ClientDI",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net10.0",
+        "net481",
+        "net8.0",
+        "net9.0",
+        "netstandard2.0",
+        "netstandard2.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Buffers",
+          "Version": "4.6.1"
+        },
+        {
+          "Name": "System.Memory",
+          "Version": "4.6.3"
+        }
+      ]
+    },
+    {
+      "Name": "Core",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net10.0",
+        "net462",
+        "net481",
+        "net8.0",
+        "net9.0",
+        "netstandard2.0",
+        "netstandard2.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Buffers",
+          "Version": "4.6.1"
+        },
+        {
+          "Name": "System.Memory",
+          "Version": "4.6.3"
+        }
+      ]
+    },
+    {
+      "Name": "DesignTime",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net10.0",
+        "net481",
+        "net8.0",
+        "net9.0",
+        "netstandard2.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Buffers",
+          "Version": "4.6.1"
+        },
+        {
+          "Name": "System.Memory",
+          "Version": "4.6.3"
+        }
+      ]
+    },
+    {
+      "Name": "Emit",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net10.0",
+        "net462",
+        "net481",
+        "net8.0",
+        "net9.0",
+        "netstandard2.0",
+        "netstandard2.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Buffers",
+          "Version": "4.6.1"
+        },
+        {
+          "Name": "System.Memory",
+          "Version": "4.6.3"
+        }
+      ]
+    },
+    {
+      "Name": "MemoryPack",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net10.0",
+        "net8.0",
+        "net9.0",
+        "netstandard2.1"
+      ]
+    },
+    {
+      "Name": "MessagePack",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net10.0",
+        "net8.0",
+        "net9.0",
+        "netstandard2.0"
+      ]
+    },
+    {
+      "Name": "NerdbankMessagePack",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net10.0",
+        "net8.0",
+        "net9.0",
+        "netstandard2.0"
+      ]
+    },
+    {
+      "Name": "ProtoBuf",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net10.0",
+        "net462",
+        "net8.0",
+        "net9.0",
+        "netstandard2.0",
+        "netstandard2.1"
+      ]
+    },
+    {
+      "Name": "SelfHost",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net10.0",
+        "net462",
+        "net481",
+        "net8.0",
+        "net9.0",
+        "netstandard2.0",
+        "netstandard2.1"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Buffers",
+          "Version": "4.6.1"
+        },
+        {
+          "Name": "System.Memory",
+          "Version": "4.6.3"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT"
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/dotnet/dotnet"
+    },
+    {
+      "Subject": "project",
+      "HRef": "https://dot.net/"
+    }
+  ]
+}
