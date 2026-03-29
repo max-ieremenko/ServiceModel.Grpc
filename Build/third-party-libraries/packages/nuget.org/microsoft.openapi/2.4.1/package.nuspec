@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>Microsoft.OpenApi</id>
-    <version>2.3.0</version>
+    <version>2.4.1</version>
     <authors>Microsoft</authors>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <license type="expression">MIT</license>
@@ -14,7 +14,7 @@
     <releaseNotes>https://github.com/microsoft/OpenAPI.NET/releases</releaseNotes>
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <tags>OpenAPI .NET</tags>
-    <repository type="git" url="https://github.com/Microsoft/OpenAPI.NET" commit="171cf910a4bd59bfcc6c233958a0ce32d280ed22" />
+    <repository type="git" url="https://github.com/Microsoft/OpenAPI.NET" commit="68ea59cd528da1ef3535bb64ccb014ad515018d7" />
     <dependencies>
       <group targetFramework="net8.0">
         <dependency id="System.Text.Json" version="8.0.5" exclude="Build,Analyzers" />

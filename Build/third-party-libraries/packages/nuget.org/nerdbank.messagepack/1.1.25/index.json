@@ -7,17 +7,30 @@
   },
   "UsedBy": [
     {
-      "Name": "AspNetCoreSwashbuckle",
+      "Name": "NerdbankMessagePack",
       "InternalOnly": false,
       "TargetFrameworks": [
         "net10.0",
         "net8.0",
-        "net9.0"
+        "net9.0",
+        "netstandard2.0"
       ],
       "Dependencies": [
         {
-          "Name": "Swashbuckle.AspNetCore.Swagger",
-          "Version": "10.1.0"
+          "Name": "Microsoft.NET.StringTools",
+          "Version": "18.4.0"
+        },
+        {
+          "Name": "Microsoft.VisualStudio.Validation",
+          "Version": "17.13.22"
+        },
+        {
+          "Name": "PolyType",
+          "Version": "1.2.1"
+        },
+        {
+          "Name": "System.IO.Pipelines",
+          "Version": "8.0.0"
         }
       ]
     }
@@ -31,12 +44,11 @@
     {
       "Subject": "repository",
       "Code": "MIT",
-      "HRef": "https://github.com/domaindrivendev/Swashbuckle.AspNetCore.git"
+      "HRef": "https://github.com/AArnott/Nerdbank.MessagePack"
     },
     {
       "Subject": "project",
-      "Code": "MIT",
-      "HRef": "https://github.com/domaindrivendev/Swashbuckle.AspNetCore"
+      "HRef": "https://aarnott.github.io/Nerdbank.MessagePack/"
     }
   ]
 }
