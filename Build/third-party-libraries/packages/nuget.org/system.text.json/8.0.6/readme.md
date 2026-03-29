@@ -23,9 +23,9 @@ Dependencies 6
 |Name|Version|
 |----------|:----|
 |[Microsoft.Bcl.AsyncInterfaces](../../../../packages/nuget.org/microsoft.bcl.asyncinterfaces/8.0.0)|8.0.0|
-|[System.Buffers](../../../../packages/nuget.org/system.buffers/4.6.0)|4.6.0|
-|[System.Memory](../../../../packages/nuget.org/system.memory/4.6.0)|4.6.0|
-|[System.Runtime.CompilerServices.Unsafe](../../../../packages/nuget.org/system.runtime.compilerservices.unsafe/6.1.0)|6.1.0|
+|[System.Buffers](../../../../packages/nuget.org/system.buffers/4.6.1)|4.6.1|
+|[System.Memory](../../../../packages/nuget.org/system.memory/4.6.3)|4.6.3|
+|[System.Runtime.CompilerServices.Unsafe](../../../../packages/nuget.org/system.runtime.compilerservices.unsafe/6.1.2)|6.1.2|
 |[System.Text.Encodings.Web](../../../../packages/nuget.org/system.text.encodings.web/8.0.0)|8.0.0|
 |[System.Threading.Tasks.Extensions](../../../../packages/nuget.org/system.threading.tasks.extensions/4.5.4)|4.5.4|
 

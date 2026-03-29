@@ -18,7 +18,7 @@
       "Dependencies": [
         {
           "Name": "System.Memory",
-          "Version": "4.5.5"
+          "Version": "4.6.3"
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
@@ -38,7 +38,7 @@
       "Dependencies": [
         {
           "Name": "System.Memory",
-          "Version": "4.5.5"
+          "Version": "4.6.3"
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
@@ -58,7 +58,7 @@
       "Dependencies": [
         {
           "Name": "System.Memory",
-          "Version": "4.5.5"
+          "Version": "4.6.3"
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
@@ -78,7 +78,7 @@
       "Dependencies": [
         {
           "Name": "System.Memory",
-          "Version": "4.5.5"
+          "Version": "4.6.3"
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",

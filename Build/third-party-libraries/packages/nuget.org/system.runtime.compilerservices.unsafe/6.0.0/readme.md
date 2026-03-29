@@ -1,9 +1,9 @@
 ﻿System.Runtime.CompilerServices.Unsafe [6.0.0](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/6.0.0)
 --------------------
 
-Used by: ClientDI, Core internal, MemoryPack, MessagePack, ProtoBuf
+Used by: ClientDI, MemoryPack, ProtoBuf
 
-Target frameworks: net10.0, net462, net481, net8.0, net9.0, netstandard2.0, netstandard2.1
+Target frameworks: net10.0, net462, net8.0, net9.0, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 
