@@ -8,7 +8,7 @@
   "UsedBy": [
     {
       "Name": "AspNetCore",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "net10.0",
         "net8.0",
@@ -17,7 +17,7 @@
     },
     {
       "Name": "AspNetCoreNSwag",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "net10.0",
         "net8.0",
@@ -26,7 +26,7 @@
     },
     {
       "Name": "AspNetCoreSwashbuckle",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "net10.0",
         "net8.0",
@@ -35,7 +35,7 @@
     },
     {
       "Name": "ClientDI",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "net10.0",
         "net481",
@@ -43,21 +43,11 @@
         "net9.0",
         "netstandard2.0",
         "netstandard2.1"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Buffers",
-          "Version": "4.6.1"
-        },
-        {
-          "Name": "System.Memory",
-          "Version": "4.6.3"
-        }
       ]
     },
     {
       "Name": "Core",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "net10.0",
         "net462",
@@ -66,42 +56,22 @@
         "net9.0",
         "netstandard2.0",
         "netstandard2.1"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Buffers",
-          "Version": "4.6.1"
-        },
-        {
-          "Name": "System.Memory",
-          "Version": "4.6.3"
-        }
       ]
     },
     {
       "Name": "DesignTime",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "net10.0",
         "net481",
         "net8.0",
         "net9.0",
         "netstandard2.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Buffers",
-          "Version": "4.6.1"
-        },
-        {
-          "Name": "System.Memory",
-          "Version": "4.6.3"
-        }
       ]
     },
     {
       "Name": "Emit",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "net10.0",
         "net462",
@@ -110,21 +80,11 @@
         "net9.0",
         "netstandard2.0",
         "netstandard2.1"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Buffers",
-          "Version": "4.6.1"
-        },
-        {
-          "Name": "System.Memory",
-          "Version": "4.6.3"
-        }
       ]
     },
     {
       "Name": "MemoryPack",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "net10.0",
         "net8.0",
@@ -134,7 +94,7 @@
     },
     {
       "Name": "MessagePack",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "net10.0",
         "net8.0",
@@ -144,7 +104,7 @@
     },
     {
       "Name": "NerdbankMessagePack",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "net10.0",
         "net8.0",
@@ -154,7 +114,7 @@
     },
     {
       "Name": "ProtoBuf",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "net10.0",
         "net462",
@@ -166,7 +126,7 @@
     },
     {
       "Name": "SelfHost",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "net10.0",
         "net462",
@@ -175,16 +135,6 @@
         "net9.0",
         "netstandard2.0",
         "netstandard2.1"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Buffers",
-          "Version": "4.6.1"
-        },
-        {
-          "Name": "System.Memory",
-          "Version": "4.6.3"
-        }
       ]
     }
   ],
@@ -197,11 +147,12 @@
     {
       "Subject": "repository",
       "Code": "MIT",
-      "HRef": "https://github.com/dotnet/dotnet"
+      "HRef": "https://github.com/dotnet/sourcelink"
     },
     {
       "Subject": "project",
-      "HRef": "https://dot.net/"
+      "Code": "MIT",
+      "HRef": "https://github.com/dotnet/sourcelink"
     }
   ]
 }
