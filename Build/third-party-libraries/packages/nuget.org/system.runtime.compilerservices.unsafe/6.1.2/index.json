@@ -8,61 +8,42 @@
   "UsedBy": [
     {
       "Name": "ClientDI",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "net10.0",
         "net481",
         "net8.0",
-        "net9.0",
-        "netstandard2.0",
-        "netstandard2.1"
+        "net9.0"
       ]
     },
     {
       "Name": "Core",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "net10.0",
-        "net462",
         "net481",
         "net8.0",
-        "net9.0",
-        "netstandard2.0",
-        "netstandard2.1"
+        "net9.0"
       ]
     },
     {
       "Name": "DesignTime",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "net10.0",
         "net481",
         "net8.0",
-        "net9.0",
-        "netstandard2.0"
+        "net9.0"
       ]
     },
     {
       "Name": "Emit",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "net10.0",
-        "net462",
         "net481",
         "net8.0",
-        "net9.0",
-        "netstandard2.0",
-        "netstandard2.1"
-      ]
-    },
-    {
-      "Name": "MessagePack",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "net10.0",
-        "net8.0",
-        "net9.0",
-        "netstandard2.0"
+        "net9.0"
       ]
     },
     {
@@ -76,28 +57,13 @@
       ]
     },
     {
-      "Name": "ProtoBuf",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "net10.0",
-        "net462",
-        "net8.0",
-        "net9.0",
-        "netstandard2.0",
-        "netstandard2.1"
-      ]
-    },
-    {
       "Name": "SelfHost",
-      "InternalOnly": false,
+      "InternalOnly": true,
       "TargetFrameworks": [
         "net10.0",
-        "net462",
         "net481",
         "net8.0",
-        "net9.0",
-        "netstandard2.0",
-        "netstandard2.1"
+        "net9.0"
       ]
     }
   ],

@@ -1,9 +1,9 @@
 ﻿System.Memory [4.6.3](https://www.nuget.org/packages/System.Memory/4.6.3)
 --------------------
 
-Used by: ClientDI, Core, DesignTime, Emit, MessagePack, NerdbankMessagePack, ProtoBuf, SelfHost
+Used by: NerdbankMessagePack
 
-Target frameworks: net10.0, net462, net481, net8.0, net9.0, netstandard2.0, netstandard2.1
+Target frameworks: net10.0, net8.0, net9.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
