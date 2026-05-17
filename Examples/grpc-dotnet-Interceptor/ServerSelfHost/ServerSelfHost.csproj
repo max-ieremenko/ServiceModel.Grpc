@@ -7,8 +7,6 @@
 
   <ItemGroup>
     <PackageReference Include="ServiceModel.Grpc.SelfHost" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
   </ItemGroup>
 
