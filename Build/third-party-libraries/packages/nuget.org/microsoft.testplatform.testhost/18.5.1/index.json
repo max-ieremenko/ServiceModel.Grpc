@@ -20,16 +20,8 @@
           "Version": "18.5.1"
         },
         {
-          "Name": "Microsoft.Testing.Extensions.Telemetry",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Platform",
-          "Version": "2.1.0"
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     },
@@ -47,16 +39,8 @@
           "Version": "18.5.1"
         },
         {
-          "Name": "Microsoft.Testing.Extensions.Telemetry",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Platform",
-          "Version": "2.1.0"
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     },
@@ -74,16 +58,8 @@
           "Version": "18.5.1"
         },
         {
-          "Name": "Microsoft.Testing.Extensions.Telemetry",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Platform",
-          "Version": "2.1.0"
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     },
@@ -102,16 +78,8 @@
           "Version": "18.5.1"
         },
         {
-          "Name": "Microsoft.Testing.Extensions.Telemetry",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Platform",
-          "Version": "2.1.0"
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     },
@@ -130,16 +98,8 @@
           "Version": "18.5.1"
         },
         {
-          "Name": "Microsoft.Testing.Extensions.Telemetry",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Platform",
-          "Version": "2.1.0"
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     },
@@ -158,16 +118,8 @@
           "Version": "18.5.1"
         },
         {
-          "Name": "Microsoft.Testing.Extensions.Telemetry",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Platform",
-          "Version": "2.1.0"
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     },
@@ -186,16 +138,8 @@
           "Version": "18.5.1"
         },
         {
-          "Name": "Microsoft.Testing.Extensions.Telemetry",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Platform",
-          "Version": "2.1.0"
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     },
@@ -213,16 +157,8 @@
           "Version": "18.5.1"
         },
         {
-          "Name": "Microsoft.Testing.Extensions.Telemetry",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Platform",
-          "Version": "2.1.0"
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     },
@@ -240,16 +176,8 @@
           "Version": "18.5.1"
         },
         {
-          "Name": "Microsoft.Testing.Extensions.Telemetry",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Platform",
-          "Version": "2.1.0"
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     },
@@ -267,16 +195,8 @@
           "Version": "18.5.1"
         },
         {
-          "Name": "Microsoft.Testing.Extensions.Telemetry",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Platform",
-          "Version": "2.1.0"
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     },
@@ -295,16 +215,8 @@
           "Version": "18.5.1"
         },
         {
-          "Name": "Microsoft.Testing.Extensions.Telemetry",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
-          "Version": "2.1.0"
-        },
-        {
-          "Name": "Microsoft.Testing.Platform",
-          "Version": "2.1.0"
+          "Name": "Newtonsoft.Json",
+          "Version": "13.0.3"
         }
       ]
     }
@@ -318,12 +230,12 @@
     {
       "Subject": "repository",
       "Code": "MIT",
-      "HRef": "https://github.com/microsoft/testfx"
+      "HRef": "https://github.com/microsoft/vstest"
     },
     {
       "Subject": "project",
       "Code": "MIT",
-      "HRef": "https://github.com/microsoft/testfx"
+      "HRef": "https://github.com/microsoft/vstest"
     }
   ]
 }

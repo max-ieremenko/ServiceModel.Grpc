@@ -7,37 +7,17 @@
   },
   "UsedBy": [
     {
-      "Name": "Core",
-      "InternalOnly": true,
+      "Name": "AspNetCore",
+      "InternalOnly": false,
       "TargetFrameworks": [
         "net10.0",
-        "net481",
         "net8.0",
         "net9.0"
       ],
       "Dependencies": [
         {
-          "Name": "Grpc.Core.Api",
+          "Name": "Grpc.Net.Common",
           "Version": "2.80.0"
-        }
-      ]
-    },
-    {
-      "Name": "SelfHost",
-      "InternalOnly": false,
-      "TargetFrameworks": [
-        "net462",
-        "netstandard2.0",
-        "netstandard2.1"
-      ],
-      "Dependencies": [
-        {
-          "Name": "Grpc.Core.Api",
-          "Version": "2.80.0"
-        },
-        {
-          "Name": "System.Memory",
-          "Version": "4.5.3"
         }
       ]
     }
@@ -51,12 +31,12 @@
     {
       "Subject": "repository",
       "Code": "Apache-2.0",
-      "HRef": "https://github.com/grpc/grpc.git"
+      "HRef": "https://github.com/grpc/grpc-dotnet.git"
     },
     {
       "Subject": "project",
       "Code": "Apache-2.0",
-      "HRef": "https://github.com/grpc/grpc"
+      "HRef": "https://github.com/grpc/grpc-dotnet"
     }
   ]
 }
