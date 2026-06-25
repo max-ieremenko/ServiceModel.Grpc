@@ -22,7 +22,7 @@
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 
-    <NoWarn>$(NoWarn);NETSDK1210;NETSDK1212</NoWarn>
+    <NoWarn>$(NoWarn);NETSDK1210;NETSDK1212;NU1902;NU1903</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>
