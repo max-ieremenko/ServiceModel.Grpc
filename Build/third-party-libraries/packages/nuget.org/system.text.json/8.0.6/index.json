@@ -22,15 +22,15 @@
         },
         {
           "Name": "System.Buffers",
-          "Version": "4.6.1"
+          "Version": "4.5.1"
         },
         {
           "Name": "System.Memory",
-          "Version": "4.6.3"
+          "Version": "4.5.5"
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.1.2"
+          "Version": "6.0.0"
         },
         {
           "Name": "System.Text.Encodings.Web",

@@ -17,7 +17,7 @@
       "Dependencies": [
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.5.1"
+          "Version": "18.7.0"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -44,7 +44,7 @@
       "Dependencies": [
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.5.1"
+          "Version": "18.7.0"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -71,7 +71,7 @@
       "Dependencies": [
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.5.1"
+          "Version": "18.7.0"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -99,7 +99,7 @@
       "Dependencies": [
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.5.1"
+          "Version": "18.7.0"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -127,7 +127,7 @@
       "Dependencies": [
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.5.1"
+          "Version": "18.7.0"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -155,7 +155,7 @@
       "Dependencies": [
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.5.1"
+          "Version": "18.7.0"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -183,7 +183,7 @@
       "Dependencies": [
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.5.1"
+          "Version": "18.7.0"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -210,7 +210,7 @@
       "Dependencies": [
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.5.1"
+          "Version": "18.7.0"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -237,7 +237,7 @@
       "Dependencies": [
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.5.1"
+          "Version": "18.7.0"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -264,7 +264,7 @@
       "Dependencies": [
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.5.1"
+          "Version": "18.7.0"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
@@ -292,7 +292,7 @@
       "Dependencies": [
         {
           "Name": "Microsoft.TestPlatform.ObjectModel",
-          "Version": "18.5.1"
+          "Version": "18.7.0"
         },
         {
           "Name": "Microsoft.Testing.Extensions.Telemetry",
