@@ -25,6 +25,10 @@ jobs:
     steps:
     - uses: actions/checkout@v6
 
+    - name: Powershell info
+      shell: pwsh
+      run: $PSVersionTable
+
     - name: Install dependencies
       shell: pwsh
       run: ./Build/install-dependencies.ps1
@@ -33,9 +37,13 @@ jobs:
       shell: pwsh
       run: dotnet --info
 
-    - name: Build
+    - name: CI build
       shell: pwsh
-      run: ./Build/invoke-ci-build.ps1 "${{ secrets.GITHUB_TOKEN }}"
+      run: ./Build/invoke-ci-build.ps1
+
+    - name: Build artifacts
+      shell: pwsh
+      run: ./Build/invoke-artifacts-build.ps1 "${{ secrets.GITHUB_TOKEN }}"
 
     - name: Artifact nuget packages
       uses: actions/upload-artifact@v6

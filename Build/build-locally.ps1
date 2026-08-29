@@ -8,6 +8,10 @@ param (
 
     [Parameter()]
     [switch]
+    $SkipArtifacts,
+
+    [Parameter()]
+    [switch]
     $SkipLinuxSdk,
 
     [Parameter()]
@@ -48,6 +52,10 @@ if (-not $SkipBuild) {
     & (Join-Path $PSScriptRoot 'invoke-ci-build.ps1')
 }
 
+if (-not $SkipArtifacts) {
+    & (Join-Path $PSScriptRoot 'invoke-artifacts-build.ps1')
+}
+
 if (-not $SkipLinuxSdk) {
     $repository = Join-Path $PSScriptRoot '../'
     $invokeBuild = Resolve-ModulePath -Name InvokeBuild -Version (Get-ModuleVersion -Name InvokeBuild)
@@ -79,7 +87,6 @@ if (-not $SkipWinSdk) {
     & (Join-Path $PSScriptRoot 'invoke-sdk-test.ps1') -Filter $WinSdkFilter
 }
 
-# benchmarks
 if (-not $SkipBenchmarks) {
     & (Join-Path $PSScriptRoot 'invoke-benchmarks.ps1') -Configuration $BenchmarksConfiguration
 }
