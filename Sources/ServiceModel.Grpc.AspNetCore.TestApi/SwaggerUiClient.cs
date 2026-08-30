@@ -15,7 +15,7 @@
 // </copyright>
 
 using System.Net.Http.Headers;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace ServiceModel.Grpc.AspNetCore.TestApi;
 
@@ -49,8 +49,8 @@ public sealed class SwaggerUiClient
 
         response.EnsureSuccessStatusCode();
 
-        var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-        return JsonSerializer.CreateDefault().Deserialize<T>(new JsonTextReader(new StreamReader(content)))!;
+        await using var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+        return JsonSerializer.Deserialize<T>(content)!;
     }
 
     public async Task<HttpResponseMessage> PostAsync(string methodName, IDictionary<string, object>? parameters = null, IDictionary<string, string>? headers = null)
@@ -62,10 +62,7 @@ public sealed class SwaggerUiClient
         using var client = new HttpClient();
 
         using var requestBody = new MemoryStream();
-        using (var writer = new StreamWriter(requestBody, leaveOpen: true))
-        {
-            JsonSerializer.CreateDefault().Serialize(writer, parameters);
-        }
+        await JsonSerializer.SerializeAsync(requestBody, parameters).ConfigureAwait(false);
 
         HttpResponseMessage response;
 

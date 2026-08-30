@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.CodeCoverage</id>
+    <version>18.9.0</version>
+    <authors>Microsoft</authors>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>Icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/microsoft/vstest</projectUrl>
+    <description>Microsoft.CodeCoverage package brings infra for collecting code coverage from vstest.console.exe and "dotnet test".</description>
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <tags>vstest visual-studio unittest testplatform mstest microsoft test testing codecoverage code-coverage</tags>
+    <serviceable>true</serviceable>
+    <repository type="git" url="https://github.com/microsoft/vstest" branch="18.9" commit="2b12a89cee3798c4ab3fd301e384d1bd5532f9de" />
+  </metadata>
+</package>

@@ -15,23 +15,30 @@ Enter-Build {
     $releaseVersion = Get-ReleaseVersion -Sources $Sources
 }
 
-task . DotnetPack, JoinServiceModelGrpc, JoinServiceModelGrpcEmit, DesignTimeILMerge, Test
+task . DotnetPack, TestDotnetPack, JoinServiceModelGrpc, JoinServiceModelGrpcEmit, DesignTimeILMerge, Test
 
 task DotnetPack {
-    $projects = @()
-    foreach ($file in (Get-ChildItem -Path $Sources -Recurse -Filter *.csproj)) {
-        $test = Select-Xml -Path $file -XPath 'Project/PropertyGroup/IsPackable'
-        if ($test -and $test.Node.InnerText -eq 'true') {
-            $projects += $file.FullName
-        }
-    }
+    Invoke-Build -File 'task-dotnet-pack.ps1' -ProjectFile $Sources -BuildOut $BuildOut
+}
 
-    $builds = @()
-    foreach ($project in $projects) {
-        $builds += @{ File = 'task-dotnet-pack.ps1'; ProjectFile = $project; BuildOut = $BuildOut }
-    }
-
-    Build-Parallel $builds -ShowParameter ProjectFile -MaximumBuilds 1
+task TestDotnetPack {
+    Test-NugetPackageList -BuildOut $BuildOut -Name `
+        "ServiceModel.Grpc.$releaseVersion" `
+        , "ServiceModel.Grpc.AspNetCore.$releaseVersion" `
+        , "ServiceModel.Grpc.AspNetCore.NSwag.$releaseVersion" `
+        , "ServiceModel.Grpc.AspNetCore.Swashbuckle.$releaseVersion" `
+        , "ServiceModel.Grpc.Client.DependencyInjection.$releaseVersion" `
+        , "ServiceModel.Grpc.Core.$releaseVersion" `
+        , "ServiceModel.Grpc.Descriptions.$releaseVersion" `
+        , "ServiceModel.Grpc.DesignTime.$releaseVersion" `
+        , "ServiceModel.Grpc.Emit.$releaseVersion" `
+        , "ServiceModel.Grpc.Filters.$releaseVersion" `
+        , "ServiceModel.Grpc.Interceptors.$releaseVersion" `
+        , "ServiceModel.Grpc.MemoryPackMarshaller.$releaseVersion" `
+        , "ServiceModel.Grpc.MessagePackMarshaller.$releaseVersion" `
+        , "ServiceModel.Grpc.Nerdbank.MessagePackMarshaller.$releaseVersion" `
+        , "ServiceModel.Grpc.ProtoBufMarshaller.$releaseVersion" `
+        , "ServiceModel.Grpc.SelfHost.$releaseVersion"
 }
 
 task JoinServiceModelGrpc {

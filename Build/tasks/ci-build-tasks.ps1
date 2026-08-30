@@ -5,20 +5,11 @@ param(
     $PathSources,
 
     [Parameter(Mandatory)]
-    [ValidateScript({ Test-Path $_ })]
     [string]
-    $PathThirdParty,
-
-    [Parameter(Mandatory)]
-    [string]
-    $PathBuildOut,
-
-    [Parameter()]
-    [string]
-    $GithubToken
+    $PathBuildOut
 )
 
-task . Clean, Build, UnitTest, ThirdPartyNotices, Pack
+task . Clean, Build, UnitTest
 
 task Clean {
     Remove-DirectoryRecurse -Path $PathBuildOut
@@ -43,12 +34,4 @@ task UnitTest {
     )
     
     Build-Parallel $builds -ShowParameter Framework -MaximumBuilds 4
-}
-
-task ThirdPartyNotices {
-    Invoke-Build -File 'task-third-party-notices.ps1' -Sources $PathSources -Repository $PathThirdParty -BuildOut $PathBuildOut -GithubToken $GithubToken
-}
-
-task Pack {
-    Invoke-Build -File 'task-pack.ps1' -Sources $PathSources -BuildOut $PathBuildOut
 }
