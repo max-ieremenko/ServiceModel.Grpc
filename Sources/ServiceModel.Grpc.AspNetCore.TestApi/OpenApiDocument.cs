@@ -15,24 +15,23 @@
 // </copyright>
 
 using System.Net.Mime;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using Shouldly;
 
 namespace ServiceModel.Grpc.AspNetCore.TestApi;
 
 public class OpenApiDocument
 {
-    public OpenApiDocument(JObject content)
+    public OpenApiDocument(JsonElement content)
     {
         Content = content;
     }
 
-    public JObject Content { get; }
+    public JsonElement Content { get; }
 
     public static async Task<OpenApiDocument> DownloadAsync(string location)
     {
-        JObject content;
+        JsonElement content;
 
         using (var client = new HttpClient())
         {
@@ -41,7 +40,7 @@ public class OpenApiDocument
                 response.EnsureSuccessStatusCode();
                 using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                 {
-                    content = (JObject)JsonSerializer.CreateDefault().Deserialize(new JsonTextReader(new StreamReader(stream)))!;
+                    content = JsonSerializer.Deserialize<JsonElement>(stream);
                 }
             }
         }
@@ -49,21 +48,15 @@ public class OpenApiDocument
         return new OpenApiDocument(content);
     }
 
-    public string GetEndpoint(string serviceName, string methodName)
-    {
-        return string.Format("/{0}/{1}", serviceName, methodName);
-    }
+    public string GetEndpoint(string serviceName, string methodName) => $"/{serviceName}/{methodName}";
 
     public string GetRequestContentType(string endpoint)
     {
-        var post = Content.Value<JObject>("paths")!.Value<JObject>(endpoint)!.Value<JObject>("post")!;
+        var body = Content.GetProperty("paths").GetProperty(endpoint).GetProperty("post").GetProperty("requestBody");
 
-        post.ShouldNotBeNull(endpoint);
-
-        var body = post.Value<JObject>("requestBody");
-        var contentType = body?.Value<JObject>("content")!.Properties().First().Name;
+        var contentType = body.GetProperty("content").EnumerateObject().First().Name;
         contentType.ShouldBe(MediaTypeNames.Application.Json + "+servicemodel.grpc", "Body is empty or content type is not set.");
 
-        return contentType!;
+        return contentType;
     }
 }
