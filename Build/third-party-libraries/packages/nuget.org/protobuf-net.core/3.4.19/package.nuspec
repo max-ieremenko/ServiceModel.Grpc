@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>protobuf-net.Core</id>
+    <version>3.4.19</version>
+    <title>protobuf-net.Core</title>
+    <authors>Marc Gravell</authors>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>protobuf-net.png</icon>
+    <readme>readme.md</readme>
+    <projectUrl>https://github.com/protobuf-net/protobuf-net</projectUrl>
+    <description>The protobuf-net serialization engine and build-time tooling; most projects should reference protobuf-net, which adds the runtime type model</description>
+    <releaseNotes>https://github.com/protobuf-net/protobuf-net/releases</releaseNotes>
+    <copyright>See https://github.com/protobuf-net/protobuf-net</copyright>
+    <tags>binary serialization protobuf</tags>
+    <repository type="git" url="https://github.com/protobuf-net/protobuf-net" commit="e379f9b709d1ee01456cc9012a6e41ec753e7494" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.6.2">
+        <dependency id="System.Collections.Immutable" version="10.0.11" exclude="Build,Analyzers" />
+        <dependency id="System.Memory" version="4.6.3" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net8.0" />
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="System.Collections.Immutable" version="10.0.11" exclude="Build,Analyzers" />
+        <dependency id="System.Memory" version="4.6.3" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.1">
+        <dependency id="System.Collections.Immutable" version="10.0.11" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
