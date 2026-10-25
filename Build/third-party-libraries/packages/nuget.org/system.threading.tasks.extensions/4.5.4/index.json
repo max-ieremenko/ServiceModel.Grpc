@@ -19,7 +19,7 @@
       "Dependencies": [
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.0.0"
+          "Version": "6.1.2"
         }
       ]
     },
@@ -29,7 +29,6 @@
       "TargetFrameworks": [
         "net10.0",
         "net462",
-        "net481",
         "net8.0",
         "net9.0",
         "netstandard2.0",
@@ -38,11 +37,7 @@
       "Dependencies": [
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "4.5.3"
-        },
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.0.0"
+          "Version": "6.1.2"
         }
       ]
     },
@@ -55,7 +50,7 @@
       "Dependencies": [
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "5.0.0"
+          "Version": "6.1.2"
         }
       ]
     },
@@ -71,7 +66,7 @@
       "Dependencies": [
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.0.0"
+          "Version": "6.1.2"
         }
       ]
     },
@@ -87,7 +82,7 @@
       "Dependencies": [
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.0.0"
+          "Version": "6.1.2"
         }
       ]
     }

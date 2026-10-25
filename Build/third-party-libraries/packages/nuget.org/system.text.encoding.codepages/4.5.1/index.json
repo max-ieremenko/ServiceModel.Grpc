@@ -19,10 +19,6 @@
       "Dependencies": [
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "5.0.0"
-        },
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
           "Version": "6.1.2"
         }
       ]
