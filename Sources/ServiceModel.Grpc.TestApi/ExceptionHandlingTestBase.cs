@@ -16,7 +16,6 @@
 
 using Grpc.Core;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using ServiceModel.Grpc.Client.Internal;
 using ServiceModel.Grpc.TestApi.Domain;
 
@@ -44,13 +43,13 @@ public abstract class ExceptionHandlingTestBase
     [TearDown]
     public void AfterEachTest()
     {
-        _cancellationSource?.Dispose();
+        _cancellationSource.Dispose();
     }
 
     [Test]
     public void ThrowApplicationException()
     {
-        var ex = Assert.Throws<ServerException>(() => DomainService.ThrowApplicationException("some text"));
+        var ex = Should.Throw<ServerException>(() => DomainService.ThrowApplicationException("some text"));
 
         ex.ShouldNotBeNull();
         ex.Message.ShouldBe("some text");
@@ -60,9 +59,9 @@ public abstract class ExceptionHandlingTestBase
     }
 
     [Test]
-    public void ThrowApplicationExceptionAsync()
+    public async Task ThrowApplicationExceptionAsync()
     {
-        var ex = Assert.ThrowsAsync<ServerException>(() => DomainService.ThrowApplicationExceptionAsync("some text"));
+        var ex = await Should.ThrowAsync<ServerException>(() => DomainService.ThrowApplicationExceptionAsync("some text"));
 
         ex.ShouldNotBeNull();
         ex.Message.ShouldBe("some text");
@@ -75,7 +74,7 @@ public abstract class ExceptionHandlingTestBase
     public void ThrowOperationCanceledException()
     {
         // handled as regular exception
-        var ex = Assert.Throws<ServerException>(() => DomainService.ThrowOperationCanceledException());
+        var ex = Should.Throw<ServerException>(() => DomainService.ThrowOperationCanceledException());
 
         ex.ShouldNotBeNull();
         ex.Detail.ErrorType.ShouldBe(typeof(OperationCanceledException).FullName);
@@ -87,7 +86,7 @@ public abstract class ExceptionHandlingTestBase
     {
         _cancellationSource.CancelAfter(300);
 
-        var ex = Assert.Throws<OperationCanceledException>(() => DomainService.CancelOperation(_cancellationSource.Token));
+        var ex = Should.Throw<OperationCanceledException>(() => DomainService.CancelOperation(_cancellationSource.Token));
 
         ex.ShouldNotBeNull();
         ex.CancellationToken.ShouldBe(_cancellationSource.Token);
@@ -95,11 +94,11 @@ public abstract class ExceptionHandlingTestBase
     }
 
     [Test]
-    public void CancelOperationAsync()
+    public async Task CancelOperationAsync()
     {
         _cancellationSource.CancelAfter(300);
 
-        var ex = Assert.ThrowsAsync<OperationCanceledException>(() => DomainService.CancelOperationAsync(_cancellationSource.Token));
+        var ex = await Assert.ThrowsAsync<OperationCanceledException>(() => DomainService.CancelOperationAsync(_cancellationSource.Token));
 
         ex.ShouldNotBeNull();
         ex.CancellationToken.ShouldBe(_cancellationSource.Token);
@@ -111,7 +110,7 @@ public abstract class ExceptionHandlingTestBase
     {
         _cancellationSource.CancelAfter(300);
 
-        var ex = Assert.Throws<OperationCanceledException>(() => DomainService.ThrowApplicationExceptionAfterCancel("some text", _cancellationSource.Token));
+        var ex = Should.Throw<OperationCanceledException>(() => DomainService.ThrowApplicationExceptionAfterCancel("some text", _cancellationSource.Token));
 
         ex.ShouldNotBeNull();
         ex.CancellationToken.ShouldBe(_cancellationSource.Token);
@@ -119,11 +118,11 @@ public abstract class ExceptionHandlingTestBase
     }
 
     [Test]
-    public void ThrowApplicationExceptionAfterCancelAsync()
+    public async Task ThrowApplicationExceptionAfterCancelAsync()
     {
         _cancellationSource.CancelAfter(300);
 
-        var ex = Assert.ThrowsAsync<OperationCanceledException>(() => DomainService.ThrowApplicationExceptionAfterCancelAsync("some text", _cancellationSource.Token));
+        var ex = await Assert.ThrowsAsync<OperationCanceledException>(() => DomainService.ThrowApplicationExceptionAfterCancelAsync("some text", _cancellationSource.Token));
 
         ex.ShouldNotBeNull();
         ex.CancellationToken.ShouldBe(_cancellationSource.Token);
@@ -131,7 +130,7 @@ public abstract class ExceptionHandlingTestBase
     }
 
     [Test]
-    public void ThrowApplicationExceptionClientStreamingBeforeRead()
+    public async Task ThrowApplicationExceptionClientStreamingBeforeRead()
     {
         var channel = System.Threading.Channels.Channel.CreateUnbounded<int>();
         Task? clientStreamWriter = null;
@@ -142,14 +141,16 @@ public abstract class ExceptionHandlingTestBase
             "some text",
             CallContextExtensions.WithClientStreamingTracer(new(), i => clientStreamWriter = i));
 
-        var ex = Assert.ThrowsAsync<ServerException>(() => call);
+        var ex = await Should.ThrowAsync<ServerException>(() => call);
 
         ex.ShouldNotBeNull();
         ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
         ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         clientStreamWriter.ShouldNotBeNull();
-        Assert.ThrowsAsync(new InstanceOfTypeConstraint(typeof(OperationCanceledException)), () => clientStreamWriter);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        await Should.ThrowAsync<OperationCanceledException>(() => clientStreamWriter);
     }
 
     [Test]
@@ -167,7 +168,7 @@ public abstract class ExceptionHandlingTestBase
 
         await channel.Writer.WriteAsync(1).ConfigureAwait(false);
 
-        var ex = Assert.ThrowsAsync<ServerException>(() => call);
+        var ex = await Should.ThrowAsync<ServerException>(() => call);
 
         ex.ShouldNotBeNull();
         ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
@@ -176,7 +177,7 @@ public abstract class ExceptionHandlingTestBase
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         clientStreamWriter.ShouldNotBeNull();
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        Assert.ThrowsAsync(new InstanceOfTypeConstraint(typeof(OperationCanceledException)), () => clientStreamWriter);
+        await Should.ThrowAsync<OperationCanceledException>(() => clientStreamWriter);
     }
 
     [Test]
@@ -195,7 +196,7 @@ public abstract class ExceptionHandlingTestBase
         await channel.Writer.WriteAsync(1).ConfigureAwait(false);
         channel.Writer.Complete();
 
-        var ex = Assert.ThrowsAsync<ServerException>(() => call);
+        var ex = await Should.ThrowAsync<ServerException>(() => call);
 
         ex.ShouldNotBeNull();
         ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
@@ -211,7 +212,7 @@ public abstract class ExceptionHandlingTestBase
     public async Task ThrowApplicationExceptionServerStreamingBeforeRead()
     {
         var call = await DomainService.ThrowApplicationExceptionServerStreaming(0, "some text").ConfigureAwait(false);
-        var ex = Assert.ThrowsAsync<ServerException>(() => call.ToListAsync());
+        var ex = await Should.ThrowAsync<ServerException>(call.ToListAsync);
 
         ex.ShouldNotBeNull();
         ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
@@ -222,7 +223,7 @@ public abstract class ExceptionHandlingTestBase
     public async Task ThrowApplicationExceptionServerStreamingOnRead()
     {
         var call = await DomainService.ThrowApplicationExceptionServerStreaming(1, "some text").ConfigureAwait(false);
-        var ex = Assert.ThrowsAsync<ServerException>(() => call.ToListAsync());
+        var ex = await Should.ThrowAsync<ServerException>(call.ToListAsync);
 
         ex.ShouldNotBeNull();
         ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
@@ -233,7 +234,7 @@ public abstract class ExceptionHandlingTestBase
     public async Task ThrowApplicationExceptionServerStreamingAfterRead()
     {
         var call = await DomainService.ThrowApplicationExceptionServerStreaming(2, "some text").ConfigureAwait(false);
-        var ex = Assert.ThrowsAsync<ServerException>(() => call.ToListAsync());
+        var ex = await Should.ThrowAsync<ServerException>(call.ToListAsync);
 
         ex.ShouldNotBeNull();
         ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
@@ -241,10 +242,10 @@ public abstract class ExceptionHandlingTestBase
     }
 
     [Test]
-    public void ThrowApplicationExceptionServerStreamingHeader()
+    public async Task ThrowApplicationExceptionServerStreamingHeader()
     {
         var call = DomainService.ThrowApplicationExceptionServerStreamingHeader("some text");
-        var ex = Assert.ThrowsAsync<ServerException>(async () => await call.ConfigureAwait(false));
+        var ex = await Should.ThrowAsync<ServerException>(async () => await call.ConfigureAwait(false));
 
         ex.ShouldNotBeNull();
         ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
@@ -252,7 +253,7 @@ public abstract class ExceptionHandlingTestBase
     }
 
     [Test]
-    public void ThrowApplicationExceptionDuplexStreamingBeforeRead()
+    public async Task ThrowApplicationExceptionDuplexStreamingBeforeRead()
     {
         var channel = System.Threading.Channels.Channel.CreateUnbounded<int>();
         Task? clientStreamWriter = null;
@@ -263,14 +264,16 @@ public abstract class ExceptionHandlingTestBase
                 0,
                 CallContextExtensions.WithClientStreamingTracer(new(), i => clientStreamWriter = i))
             .ToListAsync();
-        var ex = Assert.ThrowsAsync<ServerException>(() => call);
+        var ex = await Should.ThrowAsync<ServerException>(() => call);
 
         ex.ShouldNotBeNull();
         ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
         ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         clientStreamWriter.ShouldNotBeNull();
-        Assert.ThrowsAsync(new InstanceOfTypeConstraint(typeof(OperationCanceledException)), () => clientStreamWriter);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        await Should.ThrowAsync<OperationCanceledException>(() => clientStreamWriter);
     }
 
     [Test]
@@ -288,7 +291,7 @@ public abstract class ExceptionHandlingTestBase
 
         await channel.Writer.WriteAsync(1).ConfigureAwait(false);
 
-        var ex = Assert.ThrowsAsync<ServerException>(() => call);
+        var ex = await Should.ThrowAsync<ServerException>(() => call);
 
         ex.ShouldNotBeNull();
         ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
@@ -297,7 +300,7 @@ public abstract class ExceptionHandlingTestBase
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         clientStreamWriter.ShouldNotBeNull();
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        Assert.ThrowsAsync(new InstanceOfTypeConstraint(typeof(OperationCanceledException)), () => clientStreamWriter);
+        await Should.ThrowAsync<OperationCanceledException>(() => clientStreamWriter);
     }
 
     [Test]
@@ -315,7 +318,7 @@ public abstract class ExceptionHandlingTestBase
 
         channel.Writer.Complete();
 
-        var ex = Assert.ThrowsAsync<ServerException>(() => call);
+        var ex = await Should.ThrowAsync<ServerException>(() => call);
 
         ex.ShouldNotBeNull();
         ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
@@ -328,7 +331,7 @@ public abstract class ExceptionHandlingTestBase
     }
 
     [Test]
-    public void ThrowApplicationExceptionDuplexStreamingHeaderBeforeRead()
+    public async Task ThrowApplicationExceptionDuplexStreamingHeaderBeforeRead()
     {
         var channel = System.Threading.Channels.Channel.CreateUnbounded<int>();
         Task? clientStreamWriter = null;
@@ -338,14 +341,16 @@ public abstract class ExceptionHandlingTestBase
             "some text",
             0,
             CallContextExtensions.WithClientStreamingTracer(new(), i => clientStreamWriter = i));
-        var ex = Assert.ThrowsAsync<ServerException>(async () => await call.ConfigureAwait(false));
+        var ex = await Should.ThrowAsync<ServerException>(async () => await call.ConfigureAwait(false));
 
         ex.ShouldNotBeNull();
         ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
         ex.InnerException.ShouldBeOfType<RpcException>().StatusCode.ShouldBe(StatusCode.Internal);
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         clientStreamWriter.ShouldNotBeNull();
-        Assert.ThrowsAsync(new InstanceOfTypeConstraint(typeof(OperationCanceledException)), () => clientStreamWriter);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        await Should.ThrowAsync<OperationCanceledException>(() => clientStreamWriter);
     }
 
     [Test]
@@ -362,7 +367,7 @@ public abstract class ExceptionHandlingTestBase
 
         await channel.Writer.WriteAsync(1).ConfigureAwait(false);
 
-        var ex = Assert.ThrowsAsync<ServerException>(async () => await call.ConfigureAwait(false));
+        var ex = await Should.ThrowAsync<ServerException>(async () => await call.ConfigureAwait(false));
 
         ex.ShouldNotBeNull();
         ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
@@ -371,7 +376,7 @@ public abstract class ExceptionHandlingTestBase
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         clientStreamWriter.ShouldNotBeNull();
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        Assert.ThrowsAsync(new InstanceOfTypeConstraint(typeof(OperationCanceledException)), () => clientStreamWriter);
+        await Should.ThrowAsync<OperationCanceledException>(() => clientStreamWriter);
     }
 
     [Test]
@@ -388,7 +393,7 @@ public abstract class ExceptionHandlingTestBase
 
         channel.Writer.Complete();
 
-        var ex = Assert.ThrowsAsync<ServerException>(async () => await call.ConfigureAwait(false));
+        var ex = await Should.ThrowAsync<ServerException>(async () => await call.ConfigureAwait(false));
 
         ex.ShouldNotBeNull();
         ex.Detail.ErrorType.ShouldBe(typeof(ApplicationException).FullName);
@@ -406,7 +411,7 @@ public abstract class ExceptionHandlingTestBase
         if (ChannelType == GrpcChannelType.GrpcCore)
         {
             // gRPC core channel: ignores interceptors, exception comes directly to the caller
-            var ex = Assert.Throws<ApplicationException>(() => DomainService.PassSerializationFail(new DomainObjectSerializationFail { OnSerializedError = "On serialized error" }));
+            var ex = Should.Throw<ApplicationException>(() => DomainService.PassSerializationFail(new DomainObjectSerializationFail { OnSerializedError = "On serialized error" }));
             TestOutput.WriteLine(ex);
 
             ex.ShouldNotBeNull();
@@ -415,7 +420,7 @@ public abstract class ExceptionHandlingTestBase
         else
         {
             // gRPC .net channel: invokes interceptors
-            var ex = Assert.Throws<RpcException>(() => DomainService.PassSerializationFail(new DomainObjectSerializationFail { OnSerializedError = "On serialized error" }));
+            var ex = Should.Throw<RpcException>(() => DomainService.PassSerializationFail(new DomainObjectSerializationFail { OnSerializedError = "On serialized error" }));
             TestOutput.WriteLine(ex);
 
             ex.ShouldNotBeNull();
@@ -427,7 +432,7 @@ public abstract class ExceptionHandlingTestBase
     [Test]
     public void ExceptionOnClientDeserialize()
     {
-        var ex = Assert.Throws<RpcException>(() => DomainService.ReturnSerializationFail(onDeserializedError: "On deserialized error"));
+        var ex = Should.Throw<RpcException>(() => DomainService.ReturnSerializationFail(onDeserializedError: "On deserialized error"));
         TestOutput.WriteLine(ex);
 
         ex.ShouldNotBeNull();
@@ -449,7 +454,7 @@ public abstract class ExceptionHandlingTestBase
     [Test]
     public void ExceptionOnServerDeserialize()
     {
-        var ex = Assert.Throws<RpcException>(() => DomainService.PassSerializationFail(new DomainObjectSerializationFail { OnDeserializedError = "On deserialized error" }));
+        var ex = Should.Throw<RpcException>(() => DomainService.PassSerializationFail(new DomainObjectSerializationFail { OnDeserializedError = "On deserialized error" }));
         TestOutput.WriteLine(ex);
 
         ex.ShouldNotBeNull();
@@ -460,7 +465,7 @@ public abstract class ExceptionHandlingTestBase
     [Test]
     public void ExceptionOnServerSerialize()
     {
-        var ex = Assert.Throws<RpcException>(() => DomainService.ReturnSerializationFail(onSerializedError: "On serialized error"));
+        var ex = Should.Throw<RpcException>(() => DomainService.ReturnSerializationFail(onSerializedError: "On serialized error"));
 
         ex.ShouldNotBeNull();
         TestOutput.WriteLine(ex);
