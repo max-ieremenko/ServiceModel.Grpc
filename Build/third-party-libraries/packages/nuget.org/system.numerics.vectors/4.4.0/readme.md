@@ -1,9 +1,9 @@
 ﻿System.Numerics.Vectors [4.4.0](https://www.nuget.org/packages/System.Numerics.Vectors/4.4.0)
 --------------------
 
-Used by: ClientDI, Core, DesignTime, MessagePack, NerdbankMessagePack, SelfHost
+Used by: SelfHost
 
-Target frameworks: net10.0, net462, net8.0, net9.0, netstandard2.0, netstandard2.1
+Target frameworks: net462, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 

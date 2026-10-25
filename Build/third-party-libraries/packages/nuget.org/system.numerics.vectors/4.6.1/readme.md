@@ -1,9 +1,9 @@
 ﻿System.Numerics.Vectors [4.6.1](https://www.nuget.org/packages/System.Numerics.Vectors/4.6.1)
 --------------------
 
-Used by: ProtoBuf
+Used by: ClientDI, Core, DesignTime, Emit internal, MessagePack, NerdbankMessagePack, ProtoBuf, SelfHost
 
-Target frameworks: net10.0, net462, net8.0, net9.0, netstandard2.0, netstandard2.1
+Target frameworks: net10.0, net462, net481, net8.0, net9.0, netstandard2.0, netstandard2.1
 
 License: [MIT](../../../../licenses/mit) 
 

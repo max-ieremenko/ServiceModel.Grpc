@@ -18,11 +18,11 @@
       "Dependencies": [
         {
           "Name": "System.Collections.Immutable",
-          "Version": "8.0.0"
+          "Version": "10.0.0"
         },
         {
           "Name": "System.Memory",
-          "Version": "4.5.5"
+          "Version": "4.6.3"
         }
       ]
     },
@@ -38,11 +38,11 @@
       "Dependencies": [
         {
           "Name": "System.Collections.Immutable",
-          "Version": "8.0.0"
+          "Version": "10.0.0"
         },
         {
           "Name": "System.Memory",
-          "Version": "4.5.5"
+          "Version": "4.6.3"
         }
       ]
     },
@@ -58,11 +58,11 @@
       "Dependencies": [
         {
           "Name": "System.Collections.Immutable",
-          "Version": "8.0.0"
+          "Version": "10.0.0"
         },
         {
           "Name": "System.Memory",
-          "Version": "4.5.5"
+          "Version": "4.6.3"
         }
       ]
     },
@@ -78,11 +78,11 @@
       "Dependencies": [
         {
           "Name": "System.Collections.Immutable",
-          "Version": "8.0.0"
+          "Version": "10.0.0"
         },
         {
           "Name": "System.Memory",
-          "Version": "4.5.5"
+          "Version": "4.6.3"
         }
       ]
     },
@@ -98,11 +98,11 @@
       "Dependencies": [
         {
           "Name": "System.Collections.Immutable",
-          "Version": "8.0.0"
+          "Version": "10.0.0"
         },
         {
           "Name": "System.Memory",
-          "Version": "4.5.5"
+          "Version": "4.6.3"
         }
       ]
     }

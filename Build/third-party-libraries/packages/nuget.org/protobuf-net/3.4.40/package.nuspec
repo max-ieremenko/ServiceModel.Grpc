@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>protobuf-net</id>
+    <version>3.4.40</version>
+    <title>protobuf-net</title>
+    <authors>Marc Gravell</authors>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>protobuf-net.png</icon>
+    <readme>readme.md</readme>
+    <projectUrl>https://protobuf-net.dev/</projectUrl>
+    <description>Provides simple access to fast and efficient "Protocol Buffers" serialization from .NET applications</description>
+    <releaseNotes>https://github.com/protobuf-net/protobuf-net/releases</releaseNotes>
+    <copyright>See https://github.com/protobuf-net/protobuf-net</copyright>
+    <tags>binary serialization protobuf</tags>
+    <repository type="git" url="https://github.com/protobuf-net/protobuf-net" commit="3aa672eaaf7763b86d62bec9ed7d7896b0511a8b" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.6.2">
+        <dependency id="protobuf-net.Core" version="3.4.40" include="All" />
+        <dependency id="System.Collections.Immutable" version="10.0.13" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net8.0">
+        <dependency id="protobuf-net.Core" version="3.4.40" include="All" />
+        <dependency id="System.Collections.Immutable" version="10.0.13" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="protobuf-net.Core" version="3.4.40" include="All" />
+        <dependency id="System.Collections.Immutable" version="10.0.13" exclude="Build,Analyzers" />
+        <dependency id="System.Reflection.Emit" version="4.7.0" exclude="Build,Analyzers" />
+        <dependency id="System.Reflection.Emit.Lightweight" version="4.7.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.1">
+        <dependency id="protobuf-net.Core" version="3.4.40" include="All" />
+        <dependency id="System.Collections.Immutable" version="10.0.13" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
