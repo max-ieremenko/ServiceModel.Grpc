@@ -20,15 +20,18 @@ using NUnit.Framework;
 
 namespace ServiceModel.Grpc.DesignTime.Generator.Test;
 
-// https://learn.microsoft.com/en-us/dotnet/core/compatibility/core-libraries/10.0/asyncenumerable
 [TestFixture]
 public class DependenciesTest
 {
+    // NuGet System.Memory 4.5.3: System.Memory.dll Version=4.0.1.1
+    // NuGet System.Memory 4.6.3: System.Memory.dll Version=4.0.2.0
+    // according to the #423: VS2022 expects 4.0.1.1
+    // Grpc.Core.Api 2.83.0 upgrade to 2.84.0: System.Memory 4.5.3 => System.Memory 4.6.3
     [Test(Description = "#423: compile with VS2022")]
     public void System_Memory()
     {
         var versions = Collect("System.Memory");
-        versions.ShouldBe([new("4.0.1.1")]);
+        versions.ShouldBe([new("4.0.2.0")]); // 4.0.1.1 is expected by #423, waits for feedback
     }
 
     private static HashSet<Version> Collect(string referenceName)

@@ -7,86 +7,6 @@
   },
   "UsedBy": [
     {
-      "Name": "ClientDI",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "net10.0",
-        "net481",
-        "net8.0",
-        "net9.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Memory",
-          "Version": "4.5.5"
-        },
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.1.2"
-        }
-      ]
-    },
-    {
-      "Name": "Core",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "net10.0",
-        "net481",
-        "net8.0",
-        "net9.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Memory",
-          "Version": "4.5.5"
-        },
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.0.0"
-        }
-      ]
-    },
-    {
-      "Name": "DesignTime",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "net10.0",
-        "net481",
-        "net8.0",
-        "net9.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Memory",
-          "Version": "4.5.5"
-        },
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.1.2"
-        }
-      ]
-    },
-    {
-      "Name": "Emit",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "net10.0",
-        "net481",
-        "net8.0",
-        "net9.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Memory",
-          "Version": "4.5.5"
-        },
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.1.2"
-        }
-      ]
-    },
-    {
       "Name": "MessagePack",
       "InternalOnly": false,
       "TargetFrameworks": [
@@ -98,11 +18,11 @@
       "Dependencies": [
         {
           "Name": "System.Memory",
-          "Version": "4.5.5"
+          "Version": "4.6.3"
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.0.0"
+          "Version": "6.1.2"
         }
       ]
     },
@@ -118,27 +38,7 @@
       "Dependencies": [
         {
           "Name": "System.Memory",
-          "Version": "4.5.5"
-        },
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.0.0"
-        }
-      ]
-    },
-    {
-      "Name": "SelfHost",
-      "InternalOnly": true,
-      "TargetFrameworks": [
-        "net10.0",
-        "net481",
-        "net8.0",
-        "net9.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Memory",
-          "Version": "4.5.5"
+          "Version": "4.6.3"
         },
         {
           "Name": "System.Runtime.CompilerServices.Unsafe",
